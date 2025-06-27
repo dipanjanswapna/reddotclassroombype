@@ -16,6 +16,8 @@ import {
   ChevronDown,
   BookCopy,
   HelpCircle,
+  Users,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,6 +77,20 @@ type FaqItem = {
   id: string;
   question: string;
   answer: string;
+}
+
+type InstructorItem = {
+  id: string;
+  name: string;
+  title: string;
+  avatarUrl: string;
+}
+
+type ClassRoutineItem = {
+  id: string;
+  day: string;
+  subject: string;
+  time: string;
 }
 
 function SortableSyllabusItem({ 
@@ -199,6 +215,14 @@ export default function CourseBuilderPage() {
       { id: 'faq1', question: 'Is this course for beginners?', answer: 'Yes, it is designed for all levels.' }
   ]);
 
+  const [instructors, setInstructors] = useState<InstructorItem[]>([
+      { id: 'ins1', name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png' }
+  ]);
+  
+  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([
+      { id: 'cr1', day: 'Saturday', subject: 'Physics', time: '7:00 PM' }
+  ]);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -234,7 +258,6 @@ export default function CourseBuilderPage() {
     setSyllabus(prev => prev.filter(item => item.id !== id));
   };
   
-  // Handlers for What You Will Learn
   const addOutcome = () => setWhatYouWillLearn(prev => [...prev, '']);
   const updateOutcome = (index: number, value: string) => {
       const newOutcomes = [...whatYouWillLearn];
@@ -243,16 +266,26 @@ export default function CourseBuilderPage() {
   };
   const removeOutcome = (index: number) => setWhatYouWillLearn(prev => prev.filter((_, i) => i !== index));
 
-  // Handlers for FAQs
   const addFaq = () => setFaqs(prev => [...prev, { id: Date.now().toString(), question: '', answer: '' }]);
   const updateFaq = (id: string, field: 'question' | 'answer', value: string) => {
       setFaqs(prev => prev.map(faq => faq.id === id ? { ...faq, [field]: value } : faq));
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
+  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: '' }]);
+  const updateInstructor = (id: string, field: keyof Omit<InstructorItem, 'id'>, value: string) => {
+      setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
+  };
+  const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
+
+  const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '' }]);
+  const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
+      setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
+  };
+  const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
   const handleSaveDraft = () => {
-    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs };
+    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine };
     console.log("Saving Draft:", courseData);
     toast({
       title: "Draft Saved!",
@@ -261,7 +294,7 @@ export default function CourseBuilderPage() {
   };
 
   const handleSubmitForApproval = () => {
-    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs };
+    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine };
     console.log("Submitting for Approval:", courseData);
     toast({
       title: "Submitted for Approval",
@@ -273,6 +306,8 @@ export default function CourseBuilderPage() {
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
+    { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'media', label: 'Media', icon: CloudUpload },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
@@ -389,6 +424,51 @@ export default function CourseBuilderPage() {
                         ))}
                     </div>
                     <Button variant="outline" className="mt-4" onClick={addOutcome}><PlusCircle className="mr-2"/>Add Outcome</Button>
+                </CardContent>
+            )}
+            
+            {activeTab === 'instructors' && (
+                <CardContent className="pt-6">
+                    <CardDescription className="mb-4">Add and manage instructors for this course.</CardDescription>
+                     <div className="space-y-4">
+                        {instructors.map(instructor => (
+                            <div key={instructor.id} className="p-4 border rounded-md space-y-4 relative">
+                                <Button variant="ghost" size="icon" className="absolute top-1 right-1" onClick={() => removeInstructor(instructor.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-1">
+                                      <Label htmlFor={`ins-name-${instructor.id}`}>Instructor Name</Label>
+                                      <Input id={`ins-name-${instructor.id}`} value={instructor.name} onChange={e => updateInstructor(instructor.id, 'name', e.target.value)} />
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor={`ins-title-${instructor.id}`}>Title/Subject</Label>
+                                      <Input id={`ins-title-${instructor.id}`} value={instructor.title} onChange={e => updateInstructor(instructor.id, 'title', e.target.value)} />
+                                  </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor={`ins-avatar-${instructor.id}`}>Avatar URL</Label>
+                                    <Input id={`ins-avatar-${instructor.id}`} value={instructor.avatarUrl} onChange={e => updateInstructor(instructor.id, 'avatarUrl', e.target.value)} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="mt-4" onClick={addInstructor}><PlusCircle className="mr-2"/>Add Instructor</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'routine' && (
+                <CardContent className="pt-6">
+                    <CardDescription className="mb-4">Set the weekly class schedule for this course.</CardDescription>
+                     <div className="space-y-2">
+                        {classRoutine.map(item => (
+                            <div key={item.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
+                                <Input placeholder="Day (e.g., Saturday)" value={item.day} onChange={e => updateRoutineItem(item.id, 'day', e.target.value)} />
+                                <Input placeholder="Subject" value={item.subject} onChange={e => updateRoutineItem(item.id, 'subject', e.target.value)} />
+                                <Input placeholder="Time (e.g., 7:00 PM)" value={item.time} onChange={e => updateRoutineItem(item.id, 'time', e.target.value)} />
+                                <Button variant="ghost" size="icon" onClick={() => removeRoutineItem(item.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            </div>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="mt-4" onClick={addRoutineItem}><PlusCircle className="mr-2"/>Add Routine Item</Button>
                 </CardContent>
             )}
 
