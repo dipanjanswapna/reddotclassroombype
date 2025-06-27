@@ -831,3 +831,54 @@ export const blogPosts: BlogPost[] = [
         `
     },
 ];
+
+export const mockGrades = [
+  {
+    id: 'g1',
+    courseName: 'HSC 2025 Crash Course - Science',
+    assignmentName: 'Physics Model Test 1',
+    score: 85,
+    grade: 'A+',
+    date: '2024-06-20',
+  },
+  {
+    id: 'g2',
+    courseName: 'HSC 2025 Crash Course - Science',
+    assignmentName: 'Chemistry Quiz 3',
+    score: 92,
+    grade: 'A+',
+    date: '2024-06-18',
+  },
+  {
+    id: 'g3',
+    courseName: 'IELTS Preparation Course',
+    assignmentName: 'Writing Task 2 Practice',
+    score: 75,
+    grade: 'B+',
+    date: '2024-06-15',
+  },
+  {
+    id: 'g4',
+    courseName: 'IELTS Preparation Course',
+    assignmentName: 'Listening Mock Test',
+    score: 80,
+    grade: 'A',
+    date: '2024-06-12',
+  },
+  {
+    id: 'g5',
+    courseName: 'Data Science with Python',
+    assignmentName: 'Project 1: Pandas Data Analysis',
+    score: 95,
+    grade: 'A+',
+    date: '2024-06-10',
+  },
+   {
+    id: 'g6',
+    courseName: 'HSC 2025 Crash Course - Science',
+    assignmentName: 'Math Weekly Exam',
+    score: 68,
+    grade: 'B',
+    date: '2024-06-05',
+  },
+];
