@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RdcLogo } from "./rdc-logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -14,21 +20,39 @@ const navLinks = [
   { href: "/tutor", label: "AI Tutor" },
 ];
 
+const journeyLinks = [
+    { href: "/courses?category=6-10", label: "ক্লাস ৬-১০" },
+    { href: "/courses?category=hsc", label: "একাদশ-দ্বাদশ" },
+    { href: "/courses?category=admission", label: "বিশ্ববিদ্যালয় ভর্তি" },
+    { href: "/courses?category=skills", label: "স্কিলস" },
+];
+
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <RdcLogo className="h-8 w-auto" />
-            <span className="hidden font-bold sm:inline-block font-headline">
-              Red Dot Classroom
-            </span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map((link) => (
+             <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-1">
+                  শেখার যাত্রা শুরু <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {journeyLinks.map((link) => (
+                    <DropdownMenuItem key={link.href} asChild>
+                        <Link href={link.href}>{link.label}</Link>
+                    </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {navLinks.slice(1).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -53,10 +77,9 @@ export function Header() {
                 <div className="flex flex-col space-y-3">
                     <Link href="/" className="flex items-center space-x-2" onClick={() => setMenuOpen(false)}>
                         <RdcLogo className="h-8 w-auto" />
-                        <span className="font-bold font-headline">Red Dot Classroom</span>
                     </Link>
                     <div className="flex flex-col space-y-2 pt-4">
-                        {navLinks.map((link) => (
+                        {[...navLinks, ...journeyLinks].map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
@@ -75,7 +98,6 @@ export function Header() {
         
         <Link href="/" className="md:hidden flex items-center space-x-2 ml-4">
             <RdcLogo className="h-8 w-auto" />
-            <span className="font-bold font-headline">RDC</span>
         </Link>
 
 
@@ -89,7 +111,7 @@ export function Header() {
           <Button asChild variant="ghost">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild>
+          <Button asChild variant="accent">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </div>

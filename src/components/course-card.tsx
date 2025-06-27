@@ -1,24 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Users } from "lucide-react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 type CourseCardProps = {
   id: string;
   title: string;
-  instructor: string;
+  instructor?: string;
   imageUrl: string;
-  category: string;
-  rating: number;
-  reviews: number;
-  price: string;
+  category?: string;
+  price?: string;
   dataAiHint?: string;
 };
 
-export function CourseCard({ id, title, instructor, imageUrl, category, rating, reviews, price, dataAiHint }: CourseCardProps) {
+export function CourseCard({ id, title, instructor, imageUrl, category, price, dataAiHint }: CourseCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 rounded-lg bg-card">
       <CardHeader className="p-0">
         <Link href={`/courses/${id}`}>
           <Image
@@ -26,33 +23,23 @@ export function CourseCard({ id, title, instructor, imageUrl, category, rating, 
             alt={title}
             width={600}
             height={400}
-            className="w-full h-48 object-cover"
+            className="w-full h-auto object-cover aspect-[16/10]"
             data-ai-hint={dataAiHint}
           />
         </Link>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <div className="flex justify-between items-center mb-2">
-            <Badge variant="secondary">{category}</Badge>
-            <p className="font-headline text-lg font-bold text-primary">{price}</p>
-        </div>
+        {category && <Badge variant="outline" className="mb-2 text-primary border-primary">{category}</Badge>}
         <Link href={`/courses/${id}`}>
-          <CardTitle className="font-headline text-lg leading-snug hover:text-primary transition-colors">{title}</CardTitle>
+          <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{title}</h3>
         </Link>
-        <p className="text-muted-foreground text-sm mt-2">By {instructor}</p>
+        {instructor && <p className="text-muted-foreground text-sm mt-2">By {instructor}</p>}
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-yellow-400">
-            <Star className="w-4 h-4 fill-current" />
-            <span className="font-bold text-foreground">{rating}</span>
-          </div>
-          <div className="flex items-center gap-1 text-muted-foreground text-sm">
-            <span>({reviews} reviews)</span>
-          </div>
-        </div>
-        <Link href={`/courses/${id}`} className="text-sm font-semibold text-primary hover:underline">View Details</Link>
-      </CardFooter>
+      {price && (
+        <CardFooter className="p-4 pt-0">
+            <p className="font-headline text-lg font-bold text-primary">{price}</p>
+        </CardFooter>
+      )}
     </Card>
   );
 }
