@@ -14,15 +14,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/tutor');
 
-  if (isDashboardPage) {
-    return <>{children}</>;
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow flex flex-col">{children}</main>
-      <Footer />
+      {!isDashboardPage && <Footer />}
     </div>
   );
 }
