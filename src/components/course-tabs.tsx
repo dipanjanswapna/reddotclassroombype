@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const tabs = [
-    { id: 'features', label: 'কোর্স সম্পর্কে' },
-    { id: 'instructors', label: 'কোর্স ইন্সট্রাক্টর' },
-    { id: 'routine', label: 'ক্লাস রুটিন' },
-    { id: 'syllabus', label: 'সিলেবাস' },
+    { id: 'features', label: 'Overview' },
+    { id: 'instructors', label: 'Instructors' },
+    { id: 'routine', label: 'Routine' },
+    { id: 'syllabus', label: 'Syllabus' },
+    { id: 'reviews', label: 'Reviews' },
     { id: 'faq', label: 'FAQ' },
+    { id: 'payment', label: 'Payment' },
 ];
 
 export function CourseTabs() {

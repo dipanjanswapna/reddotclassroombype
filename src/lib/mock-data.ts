@@ -1,14 +1,6 @@
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
-import {
-  Video,
-  FileText,
-  ClipboardList,
-  HelpCircle,
-  Trophy,
-} from 'lucide-react';
-
 export type Lesson = {
   id: string;
   title: string;
@@ -24,6 +16,17 @@ export type SyllabusModule = {
   lessons: Lesson[];
 };
 
+export type Review = {
+  id: string;
+  user: {
+    name: string;
+    avatarUrl: string;
+    dataAiHint: string;
+  };
+  rating: number;
+  comment: string;
+  date: string;
+};
 
 export type Course = {
   id: string;
@@ -56,6 +59,7 @@ export type Course = {
   imageTitle?: string;
   classRoutine?: { day: string; subject: string; time: string }[];
   faqs?: { question: string; answer: string }[];
+  reviewsData?: Review[];
 };
 
 
@@ -141,7 +145,7 @@ export const courses: Course[] = [
         { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
         { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
-        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
     ],
     imageTitle: 'PCMB',
     classRoutine: [
@@ -154,6 +158,10 @@ export const courses: Course[] = [
         { question: 'কোর্সটি কীভাবে কিনব?', answer: 'আপনি "Enroll Now" বাটনে ক্লিক করে বিকাশ, নগদ বা কার্ডের মাধ্যমে পেমেন্ট করে কোর্সটি কিনতে পারেন।' },
         { question: 'ক্লাসগুলো কি লাইভ হবে?', answer: 'হ্যাঁ, সকল ক্লাস লাইভ অনুষ্ঠিত হবে এবং প্রতিটি ক্লাসের রেকর্ডেড ভিডিও পোর্টালে পাওয়া যাবে।' },
         { question: 'কোর্সের ম্যাটেরিয়ালগুলো কোথায় পাব?', answer: 'সকল লেকচার শীট এবং অন্যান্য রিসোর্স আপনার স্টুডেন্ট ড্যাশবোর্ডের "Resources" সেকশনে পাবেন।' }
+    ],
+    reviewsData: [
+      { id: 'r1', user: { name: 'Rahim Sheikh', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male student' }, rating: 5, comment: 'This course is amazing! The instructors explain everything so clearly.', date: 'June 15, 2024' },
+      { id: 'r2', user: { name: 'Fatima Akter', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female student' }, rating: 4, comment: 'Great content, but I wish there were more practice problems.', date: 'June 12, 2024' },
     ]
   },
   {
@@ -274,6 +282,9 @@ export const courses: Course[] = [
     faqs: [
         { question: 'What is the duration of this course?', answer: 'This is a self-paced course with lifetime access to materials. Live sessions are held weekly.' },
         { question: 'Will I get a certificate?', answer: 'Yes, a certificate of completion is provided after you finish all the modules and mock tests.' },
+    ],
+    reviewsData: [
+      { id: 'r3', user: { name: 'John Doe', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male person' }, rating: 5, comment: 'Excellent course for IELTS prep. The instructor is very knowledgeable.', date: 'May 20, 2024' },
     ]
   },
   {

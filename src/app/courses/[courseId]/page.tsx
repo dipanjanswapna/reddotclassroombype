@@ -5,17 +5,10 @@ import {
   CheckCircle,
   PlayCircle,
   Star,
-  Users,
-  Video,
   BookOpen,
-  ClipboardList,
-  FileText,
-  Clock,
   HelpCircle,
   Trophy,
   MessageCircle,
-  ChevronRight,
-  Plus,
 } from 'lucide-react';
 import {
   Accordion,
@@ -24,7 +17,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { courses } from '@/lib/mock-data';
@@ -104,7 +96,7 @@ export default function CourseDetailPage({
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: course.rating?.toString() || '5',
-      reviewCount: course.reviews?.toString() || '1',
+      reviewCount: (course.reviewsData?.length || course.reviews)?.toString() || '1',
     },
     offers: {
       '@type': 'Offer',
@@ -115,15 +107,6 @@ export default function CourseDetailPage({
       '@type': 'CourseInstance',
       courseMode: 'online',
     },
-  };
-
-  const featureIcons: { [key: string]: React.ElementType } = {
-    'লাইভ ক্লাস': Video,
-    'লেকচার শীট': FileText,
-    'ডেইলি এক্সাম': ClipboardList,
-    'সাপ্তাহিক পরীক্ষা': ClipboardList,
-    'প্রশ্ন-উত্তর সেশন': HelpCircle,
-    'ফাইনাল মডেল টেস্ট': Trophy,
   };
 
   return (
@@ -208,31 +191,20 @@ export default function CourseDetailPage({
       <main className="container mx-auto px-4 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
-            {/* Features Section */}
-            {course.features_detailed && (
-              <section id="features">
-                <Card className="bg-gray-900 text-white">
-                  <CardHeader>
-                    <CardTitle>From this course you'll find out</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {course.features_detailed?.map((feature, index) => {
-                        const Icon = featureIcons[feature.title] || HelpCircle;
-                        return (
-                          <div key={index} className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg">
-                            <Icon className="w-6 h-6 text-primary mt-1" />
-                            <div>
-                              <h4 className="font-semibold">{feature.title}</h4>
-                              <p className="text-sm text-gray-400">{feature.description}</p>
+            
+            {/* What you'll learn */}
+            {course.whatYouWillLearn && (
+                <section id="features">
+                    <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {course.whatYouWillLearn.map((item, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-primary mt-1 shrink-0" />
+                                <p>{item}</p>
                             </div>
-                          </div>
-                        );
-                      })}
+                        ))}
                     </div>
-                  </CardContent>
-                </Card>
-              </section>
+                </section>
             )}
 
             {/* Instructors Section */}
@@ -307,7 +279,15 @@ export default function CourseDetailPage({
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="pl-12">
-                        {item.content}
+                        <ul className="space-y-2">
+                            {item.lessons.map(lesson => (
+                                <li key={lesson.id} className="flex items-center gap-2 text-muted-foreground">
+                                    <PlayCircle className="w-4 h-4"/>
+                                    <span>{lesson.title}</span>
+                                    <span className="ml-auto text-xs">{lesson.duration}</span>
+                                </li>
+                            ))}
+                        </ul>
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -317,6 +297,38 @@ export default function CourseDetailPage({
                 </div>
               </section>
             )}
+
+            {/* Student Reviews Section */}
+            {course.reviewsData && (
+              <section id="reviews">
+                <h2 className="font-headline text-3xl font-bold mb-6">Student Feedback</h2>
+                <Card>
+                  <CardContent className="pt-6 space-y-6">
+                    {course.reviewsData.map((review) => (
+                      <div key={review.id} className="flex items-start gap-4">
+                        <Avatar>
+                          <AvatarImage src={review.user.avatarUrl} alt={review.user.name} data-ai-hint={review.user.dataAiHint} />
+                          <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold">{review.user.name}</p>
+                            <p className="text-xs text-muted-foreground">{review.date}</p>
+                          </div>
+                          <div className="flex items-center gap-0.5 mt-1">
+                            {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`w-4 h-4 text-yellow-400 ${i < review.rating ? 'fill-current' : ''}`} />
+                            ))}
+                          </div>
+                          <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
 
             {/* FAQ Section */}
             {course.faqs && (

@@ -11,6 +11,7 @@ import {
   Megaphone,
   MessageSquare,
   Star,
+  Users,
   Video,
 } from 'lucide-react';
 import {
@@ -46,13 +47,13 @@ export default function CourseLayout({
     { href: `/student/my-courses/${course.id}/assignments`, label: 'Assignments', icon: FileText },
     { href: `/student/my-courses/${course.id}/live-classes`, label: 'Live Classes', icon: Video },
     { href: `/student/my-courses/${course.id}/announcements`, label: 'Announcements', icon: Megaphone },
-    { href: `/student/my-courses/${course.id}/community`, label: 'Community', icon: MessageSquare },
+    { href: `/student/my-courses/${course.id}/community`, label: 'Community', icon: Users },
     { href: `/student/my-courses/${course.id}/reviews`, label: 'Reviews', icon: Star },
   ];
   
   const getIsActive = (href: string) => {
     // 'Lessons' is special: it's active for the course root AND any lesson detail page.
-    if (href === `/student/my-courses/${course.id}`) {
+    if (href.endsWith(params.courseId)) {
         return pathname === href || pathname.startsWith(`${href}/lesson`);
     }
     // All other links just need an exact match for now.
