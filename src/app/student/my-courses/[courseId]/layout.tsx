@@ -91,7 +91,9 @@ export default function CourseLayout({
                 <SidebarTrigger />
                 <h2 className="font-semibold text-base truncate ml-2">{course.title}</h2>
             </div>
-            {children}
+            <div className="p-4 sm:p-6 lg:p-8">
+                {children}
+            </div>
         </SidebarInset>
       </div>
     </SidebarProvider>

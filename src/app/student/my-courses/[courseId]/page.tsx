@@ -24,8 +24,18 @@ export default function CourseHomePage({
     notFound();
   }
 
-  // Mock progress
-  const courseProgress = 70; 
+  // Mock progress dynamically based on course ID for a more realistic feel
+  const getMockProgress = (id: string) => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+        const char = id.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return (Math.abs(hash) % 75) + 20; // Progress between 20 and 95
+  };
+
+  const courseProgress = getMockProgress(course.id); 
 
   const getLessonIcon = (type: string) => {
     switch (type) {

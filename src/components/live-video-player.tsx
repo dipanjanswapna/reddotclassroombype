@@ -4,6 +4,7 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { LiveClass } from '@/lib/mock-data';
 
 // Make sure FB object is available on window
 declare global {
@@ -64,7 +65,7 @@ const YouTubePlayer = ({ url }: { url: string }) => {
   );
 };
 
-const FacebookPlayer = ({ url }: { url: string }) => {
+const FacebookPlayer = ({ url }: { url:string }) => {
    useEffect(() => {
     if (!document.getElementById('fb-root')) {
       const fbRoot = document.createElement('div');
@@ -75,18 +76,18 @@ const FacebookPlayer = ({ url }: { url: string }) => {
   }, []);
 
   return (
-    <>
-      <div className="mb-4 text-center p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900/50 dark:text-yellow-200 text-yellow-800 border border-yellow-200 dark:border-yellow-800 text-sm">
-        <strong>Developer Note:</strong> To enable this player, you need to replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the component source code.
+    <div className="w-full h-full flex flex-col items-center justify-center bg-card p-4 rounded-lg">
+      <div className="mb-4 text-center p-3 rounded-lg bg-blue-100 dark:bg-blue-900/50 dark:text-blue-200 text-blue-800 border border-blue-200 dark:border-blue-800 text-sm w-full">
+        <strong>Action Required:</strong> The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in this component's source code.
       </div>
       <div
-        className="fb-video"
+        className="fb-video w-full"
         data-href={url}
         data-width="100%"
         data-show-text="false"
         data-autoplay="true"
       ></div>
-    </>
+    </div>
   );
 };
 
@@ -111,5 +112,3 @@ export const LiveVideoPlayer = ({ platform, url }: { platform: LiveClass['platfo
       );
   }
 };
-
-    

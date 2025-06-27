@@ -41,8 +41,8 @@ const FacebookComments = ({ href }: { href: string }) => {
 
   return (
     <>
-        <div className="mb-4 text-center p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900/50 dark:text-yellow-200 text-yellow-800 border border-yellow-200 dark:border-yellow-800 text-sm">
-            <strong>Developer Note:</strong> To enable comment moderation and analytics, you need to replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the component source code.
+        <div className="mb-4 text-center p-3 rounded-lg bg-blue-100 dark:bg-blue-900/50 dark:text-blue-200 text-blue-800 border border-blue-200 dark:border-blue-800 text-sm">
+            <strong>Action Required:</strong> The Facebook Comments plugin is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in this component's source code.
         </div>
         <div className="fb-comments" data-href={href} data-width="100%" data-numposts="5"></div>
     </>
