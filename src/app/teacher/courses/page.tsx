@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -16,9 +16,27 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { courses } from '@/lib/mock-data';
+import type { VariantProps } from 'class-variance-authority';
 
 // For demo, we'll just show courses by 'Jubayer Ahmed'
-const teacherCourses = courses.filter(course => course.instructor.name === 'Jubayer Ahmed');
+const teacherCourses = courses.filter(course => 
+  course.instructors.some(instructor => instructor.name === 'Jubayer Ahmed')
+);
+
+type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
+
+const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariants>['variant'] => {
+  switch (status) {
+    case 'Published':
+      return 'accent';
+    case 'Pending Approval':
+      return 'warning';
+    case 'Rejected':
+      return 'destructive';
+    default:
+      return 'secondary';
+  }
+};
 
 export default function TeacherCoursesPage() {
   return (
@@ -62,11 +80,7 @@ export default function TeacherCoursesPage() {
                                 <TableCell>{course.price}</TableCell>
                                 <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell>
                                 <TableCell>
-                                    <Badge className={
-                                        course.status === 'Pending Approval' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 
-                                        course.status === 'Published' ? 'bg-green-500 text-white hover:bg-green-600' :
-                                        'bg-gray-500 text-white'
-                                    }>
+                                    <Badge variant={getStatusBadgeVariant(course.status)}>
                                         {course.status}
                                     </Badge>
                                 </TableCell>

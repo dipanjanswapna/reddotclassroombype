@@ -1,4 +1,6 @@
 
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,13 +8,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Metadata } from 'next';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
+// Metadata can still be exported from a client component
 export const metadata: Metadata = {
   title: 'Teacher Signup',
   description: 'Register as a teacher on Red Dot Classroom and start sharing your knowledge.',
 };
 
 export default function TeacherSignupPage() {
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // In a real app, you would send the form data to the server here.
+    toast({
+      title: "Application Submitted!",
+      description: "Thank you for your application. It is now under review by our admin team.",
+    });
+    // Redirect the user after submission
+    router.push('/');
+  }
+
   return (
     <div className="flex items-center justify-center py-12 px-4 bg-gray-50">
       <Card className="w-full max-w-lg shadow-lg">
@@ -21,7 +40,7 @@ export default function TeacherSignupPage() {
           <CardDescription>Join our team of expert instructors. Fill out the form below to get started.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
+          <form className="grid gap-4" onSubmit={handleSubmit}>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="grid gap-2">
                     <Label htmlFor="full-name">Full Name</Label>

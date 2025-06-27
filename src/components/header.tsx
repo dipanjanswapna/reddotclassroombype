@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { UserNav } from "./user-nav";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const mainNavLinks = [
   { href: "/courses?category=class-6-12", label: "ক্লাস ৬-১২" },
@@ -63,8 +62,7 @@ export function Header() {
                     <span className="sr-only">Toggle Menu</span>
                 </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-full max-w-sm">
-                <div className="flex h-full flex-col">
+                <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col">
                     <div className="p-4 border-b">
                     <Link
                         href="/"
@@ -118,21 +116,7 @@ export function Header() {
                     <Separator />
                     {isLoggedIn ? (
                         <div className="w-full mt-2">
-                            <div className="flex items-center gap-3 mb-4">
-                            <Avatar className="h-10 w-10">
-                                <AvatarImage src="https://placehold.co/100x100.png" alt="Student" />
-                                <AvatarFallback>SN</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="font-semibold">Student Name</p>
-                                <p className="text-sm text-muted-foreground">student@rdc.com</p>
-                            </div>
-                            </div>
-                            <Button asChild variant="outline" className="w-full">
-                            <Link href="/" onClick={() => setMenuOpen(false)}>
-                                লগআউট
-                            </Link>
-                            </Button>
+                           <UserNav />
                         </div>
                     ) : (
                         <div className="flex gap-2 mt-2">
@@ -149,7 +133,6 @@ export function Header() {
                         </div>
                     )}
                     </div>
-                </div>
                 </SheetContent>
             </Sheet>
             </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import Link from 'next/link';
 import { PlusCircle, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -29,6 +30,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { courses as initialCourses, Course } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
+type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
+
+const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariants>['variant'] => {
+  switch (status) {
+    case 'Published':
+      return 'accent';
+    case 'Pending Approval':
+      return 'warning';
+    case 'Rejected':
+      return 'destructive';
+    default:
+      return 'secondary';
+  }
+};
+
 
 export default function AdminCourseManagementPage() {
   const { toast } = useToast();
@@ -36,7 +54,7 @@ export default function AdminCourseManagementPage() {
   const [categories, setCategories] = useState<string[]>([...new Set(initialCourses.map(c => c.category))]);
   const [newCategory, setNewCategory] = useState('');
 
-  const handleStatusChange = (id: string, status: 'Published' | 'Rejected') => {
+  const handleStatusChange = (id: string, status: Status) => {
     setCourses(courses.map(course =>
       course.id === id ? { ...course, status } : course
     ));
@@ -116,14 +134,10 @@ export default function AdminCourseManagementPage() {
                                 {courses.map((course) => (
                                     <TableRow key={course.id}>
                                         <TableCell className="font-medium">{course.title}</TableCell>
-                                        <TableCell>{course.instructor.name}</TableCell>
+                                        <TableCell>{course.instructors?.[0]?.name || 'N/A'}</TableCell>
                                         <TableCell>{course.price}</TableCell>
                                         <TableCell>
-                                            <Badge className={
-                                                course.status === 'Pending Approval' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 
-                                                course.status === 'Published' ? 'bg-green-500 text-white hover:bg-green-600' :
-                                                'bg-red-500 text-white hover:bg-red-600'
-                                            }>
+                                            <Badge variant={getStatusBadgeVariant(course.status)}>
                                                 {course.status}
                                             </Badge>
                                         </TableCell>

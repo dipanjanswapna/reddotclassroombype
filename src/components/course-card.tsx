@@ -7,7 +7,7 @@ import { Course } from "@/lib/mock-data";
 
 type CourseCardProps = Partial<Course>;
 
-export function CourseCard({ id, title, instructor, imageUrl, category, price, dataAiHint, isArchived }: CourseCardProps) {
+export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived }: CourseCardProps) {
   if (!id || !title || !imageUrl) {
     return null;
   }
@@ -31,7 +31,7 @@ export function CourseCard({ id, title, instructor, imageUrl, category, price, d
         <Link href={`/courses/${id}`}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{title}</h3>
         </Link>
-        {instructor && <p className="text-muted-foreground text-sm mt-2">By {instructor.name}</p>}
+        {instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>}
       </CardContent>
       <CardFooter className="p-4 pt-0">
         {isArchived ? (

@@ -5,6 +5,9 @@ import { useEffect } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { LiveClass } from '@/lib/mock-data';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { MonitorWarning } from 'lucide-react';
+
 
 // Make sure FB object is available on window
 declare global {
@@ -12,6 +15,10 @@ declare global {
     FB?: any;
   }
 }
+
+// IMPORTANT: Replace with your actual Facebook App ID
+const FACEBOOK_APP_ID = 'YOUR_APP_ID';
+
 
 const initializeFacebookSDK = () => {
   if (window.FB) {
@@ -26,8 +33,7 @@ const loadFacebookSDK = () => {
   }
   const script = document.createElement('script');
   script.id = 'facebook-jssdk';
-  // IMPORTANT: Replace YOUR_APP_ID with a real Facebook App ID.
-  script.src = `https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v20.0&appId=YOUR_APP_ID&autoLogAppEvents=1`;
+  script.src = `https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v20.0&appId=${FACEBOOK_APP_ID}&autoLogAppEvents=1`;
   script.async = true;
   script.defer = true;
   script.crossOrigin = 'anonymous';
@@ -67,6 +73,8 @@ const YouTubePlayer = ({ url }: { url: string }) => {
 
 const FacebookPlayer = ({ url }: { url:string }) => {
    useEffect(() => {
+    if (FACEBOOK_APP_ID === 'YOUR_APP_ID') return;
+
     if (!document.getElementById('fb-root')) {
       const fbRoot = document.createElement('div');
       fbRoot.id = 'fb-root';
@@ -75,19 +83,28 @@ const FacebookPlayer = ({ url }: { url:string }) => {
     loadFacebookSDK();
   }, []);
 
+  if (FACEBOOK_APP_ID === 'YOUR_APP_ID') {
+    return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-card p-4 rounded-lg">
+            <Alert variant="destructive" className="bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-200">
+                <MonitorWarning className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
+                <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
+                <AlertDescription>
+                    The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/components/live-video-player.tsx</code> file.
+                </AlertDescription>
+            </Alert>
+        </div>
+    );
+  }
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-card p-4 rounded-lg">
-      <div className="mb-4 text-center p-3 rounded-lg bg-blue-100 dark:bg-blue-900/50 dark:text-blue-200 text-blue-800 border border-blue-200 dark:border-blue-800 text-sm w-full">
-        <strong>Action Required:</strong> The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in this component's source code.
-      </div>
-      <div
-        className="fb-video w-full"
-        data-href={url}
-        data-width="100%"
-        data-show-text="false"
-        data-autoplay="true"
-      ></div>
-    </div>
+    <div
+      className="fb-video w-full"
+      data-href={url}
+      data-width="100%"
+      data-show-text="false"
+      data-autoplay="true"
+    ></div>
   );
 };
 

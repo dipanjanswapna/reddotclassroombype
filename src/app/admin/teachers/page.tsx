@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Eye, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -15,23 +15,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { allInstructors as initialInstructors } from '@/lib/mock-data';
+import { allInstructors as initialInstructors, Instructor } from '@/lib/mock-data';
+import type { VariantProps } from 'class-variance-authority';
+import { useToast } from '@/hooks/use-toast';
+
+const getStatusBadgeVariant = (status: Instructor['status']): VariantProps<typeof badgeVariants>['variant'] => {
+  switch (status) {
+    case 'Approved':
+      return 'accent';
+    case 'Pending Approval':
+      return 'warning';
+    case 'Rejected':
+      return 'destructive';
+    default:
+      return 'secondary';
+  }
+};
 
 export default function TeacherManagementPage() {
   const [instructors, setInstructors] = useState(initialInstructors);
+  const { toast } = useToast();
 
   const handleStatusChange = (id: string, newStatus: 'Approved' | 'Rejected') => {
     setInstructors(instructors.map(inst => inst.id === id ? { ...inst, status: newStatus } : inst));
+    toast({
+      title: "Instructor Status Updated",
+      description: `The instructor has been ${newStatus.toLowerCase()}.`,
+    });
   };
-  
-  const getStatusBadge = (status: 'Approved' | 'Pending Approval' | 'Rejected') => {
-    switch(status) {
-        case 'Approved': return <Badge className="bg-green-500 text-white hover:bg-green-600">Approved</Badge>;
-        case 'Pending Approval': return <Badge className="bg-yellow-500 text-black hover:bg-yellow-600">Pending Approval</Badge>;
-        case 'Rejected': return <Badge className="bg-red-500 text-white hover:bg-red-600">Rejected</Badge>;
-        default: return <Badge>{status}</Badge>;
-    }
-  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -64,7 +75,7 @@ export default function TeacherManagementPage() {
                                 <TableCell className="font-medium">{instructor.name}</TableCell>
                                 <TableCell>{instructor.title}</TableCell>
                                 <TableCell>
-                                    {getStatusBadge(instructor.status)}
+                                    <Badge variant={getStatusBadgeVariant(instructor.status)}>{instructor.status}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex gap-2 justify-end">
