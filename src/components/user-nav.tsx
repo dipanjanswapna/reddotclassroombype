@@ -25,7 +25,7 @@ export function UserNav() {
   const user = {
     name: "Student Name",
     email: "student@rdc.com",
-    avatar: "https://placehold.co/100x100",
+    avatar: "https://placehold.co/100x100.png",
     initials: "SN",
     role: "student"
   };
@@ -71,7 +71,7 @@ export function UserNav() {
              <Link href="/student/profile"><User className="mr-2" />Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-             <Link href="/student/profile"><Settings className="mr-2" />Settings</Link>
+             <Link href="/student/settings"><Settings className="mr-2" />Settings</Link>
           </DropdownMenuItem>
            <DropdownMenuItem asChild>
              <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>

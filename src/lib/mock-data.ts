@@ -60,17 +60,17 @@ export const courses: Course[] = [
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Lead Developer & Instructor',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher',
     },
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
-       { name: 'Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
-       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male instructor' },
-       { name: 'Ayesha Khan', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female instructor' },
+       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       { name: 'Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
+       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male instructor' },
+       { name: 'Ayesha Khan', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'physics class',
     category: 'HSC',
     subCategory: 'বিজ্ঞান',
@@ -119,17 +119,17 @@ export const courses: Course[] = [
     instructor: {
       name: 'Dr. Sadia Islam',
       title: 'Medical Admission Specialist',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
       dataAiHint: 'female doctor'
     },
     instructors: [
-       { name: 'Dr. Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female doctor' },
-       { name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male doctor' },
-       { name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female scientist' },
-       { name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Dr. Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor' },
+       { name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor' },
+       { name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist' },
+       { name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'medical students',
     category: 'Admission',
     subCategory: 'Medical',
@@ -171,15 +171,15 @@ export const courses: Course[] = [
     instructor: {
         name: 'Raihan Chowdhury',
         title: 'Certified IELTS Trainer',
-        avatarUrl: 'https://placehold.co/100x100',
+        avatarUrl: 'https://placehold.co/100x100.png',
         bio: 'Raihan has been teaching IELTS for over 8 years and has a proven track record of helping students achieve high scores.',
         dataAiHint: 'english teacher'
     },
     instructors: [
-       { name: 'Raihan Chowdhury', title: 'Speaking & Writing', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male instructor' },
-       { name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female instructor' },
+       { name: 'Raihan Chowdhury', title: 'Speaking & Writing', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male instructor' },
+       { name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'ielts exam',
     category: 'Language',
     price: 'BDT 3000',
@@ -217,15 +217,15 @@ export const courses: Course[] = [
     instructor: {
         name: 'Ayesha Khan',
         title: 'Data Scientist',
-        avatarUrl: 'https://placehold.co/100x100',
+        avatarUrl: 'https://placehold.co/100x100.png',
         bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
         dataAiHint: 'female programmer'
     },
      instructors: [
-       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female programmer' },
-       { name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male programmer' },
+       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female programmer' },
+       { name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male programmer' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'python code',
     category: 'Skills',
     price: 'BDT 5500',
@@ -263,15 +263,15 @@ export const courses: Course[] = [
     instructor: {
       name: 'Farhan Mahmud',
       title: 'Experienced SSC Tutor',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
       dataAiHint: 'male teacher'
     },
     instructors: [
-       { name: 'Farhan Mahmud', title: 'General Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
-       { name: 'Nusrat Jahan', title: 'English', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
+       { name: 'Farhan Mahmud', title: 'General Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       { name: 'Nusrat Jahan', title: 'English', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'classroom students',
     category: 'SSC',
     price: 'BDT 4000',
@@ -310,15 +310,15 @@ export const courses: Course[] = [
     instructor: {
       name: 'Nusrat Jahan',
       title: 'HSC Specialist',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
       dataAiHint: 'female teacher'
     },
     instructors: [
-       { name: 'Nusrat Jahan', title: 'Accounting', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
-       { name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Nusrat Jahan', title: 'Accounting', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
+       { name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'lecture hall',
     category: 'HSC',
     subCategory: 'বাণিজ্য',
@@ -355,14 +355,14 @@ export const courses: Course[] = [
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'ICT Expert',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher'
     },
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Jubayer Ahmed', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'computer circuit',
     category: 'HSC',
     price: 'BDT 2500',
@@ -396,14 +396,14 @@ export const courses: Course[] = [
     instructor: {
       name: 'Sadia Islam',
       title: 'Professional Graphic Designer',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Sadia is a creative designer with a passion for visual storytelling and teaching design principles.',
       dataAiHint: 'female artist'
     },
     instructors: [
-       { name: 'Sadia Islam', title: 'Lead Designer', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female artist' },
+       { name: 'Sadia Islam', title: 'Lead Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female artist' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'graphic design',
     category: 'Skills',
     price: 'BDT 3500',
@@ -441,16 +441,16 @@ export const courses: Course[] = [
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Engineering Admission Expert',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male engineer'
     },
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male engineer' },
-       { name: 'Dr. Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female scientist' },
-       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male engineer' },
+       { name: 'Dr. Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist' },
+       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'engineering drawing',
     category: 'Admission',
     subCategory: 'Engineering',
@@ -487,14 +487,14 @@ export const courses: Course[] = [
     instructor: {
       name: 'Farhan Mahmud',
       title: 'DU Admission Mentor',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
       dataAiHint: 'male teacher'
     },
     instructors: [
-       { name: 'Farhan Mahmud', title: 'Lead Mentor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Farhan Mahmud', title: 'Lead Mentor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'university building',
     category: 'Admission',
     price: 'BDT 5000',
@@ -528,14 +528,14 @@ export const courses: Course[] = [
     instructor: {
       name: 'Raihan Chowdhury',
       title: 'BCS Cadre Officer',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Raihan has been teaching for over 8 years and has a proven track record of helping students achieve high scores.',
       dataAiHint: 'government official'
     },
     instructors: [
-       { name: 'Raihan Chowdhury', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'government official' },
+       { name: 'Raihan Chowdhury', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'government official' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'government building',
     category: 'Job Prep',
     price: 'BDT 4000',
@@ -569,14 +569,14 @@ export const courses: Course[] = [
     instructor: {
       name: 'Ayesha Khan',
       title: 'Bank Officer',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
       dataAiHint: 'female banker'
     },
     instructors: [
-       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female banker' },
+       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female banker' },
     ],
-    imageUrl: 'https://placehold.co/600x400',
+    imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'bank interior',
     category: 'Job Prep',
     price: 'BDT 3500',
@@ -611,19 +611,19 @@ export const courses: Course[] = [
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
     price: '৳ ৪২০০',
     imageTitle: 'মানবিক শাখা',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'history book',
     description: 'A complete online batch for HSC 2025 Arts students covering all subjects with live classes, lecture sheets, and regular exams.',
     instructor: {
       name: 'Nusrat Jahan',
       title: 'HSC Specialist',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
       dataAiHint: 'female teacher'
     },
     instructors: [
-       { name: 'Nusrat Jahan', title: 'History', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
-       { name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Nusrat Jahan', title: 'History', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
+       { name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
     rating: 4.5,
     reviews: 70,
@@ -654,19 +654,19 @@ export const courses: Course[] = [
     category: 'বিষয়ভিত্তিক কোর্স',
     price: '৳ ৭৫০',
     imageTitle: 'PHYSICS',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'physics equation',
     features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'সাপোর্ট সেশন'],
     description: 'Master Physics for your HSC exams with our detailed subject-based course. Access recorded classes, lecture sheets, and quizzes anytime.',
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Physics Expert',
-      avatarUrl: 'https://placehold.co/100x100',
+      avatarUrl: 'https://placehold.co/100x100.png',
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher'
     },
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
     rating: 4.9,
     reviews: 180,
@@ -694,20 +694,20 @@ export const courses: Course[] = [
     subCategory: 'বিজ্ঞান',
     price: '৳ ৯৫০',
     imageTitle: 'বিজ্ঞান শাখা',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'exam paper',
     features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি', 'হায়ার ম্যাথ'],
     description: 'Solve test papers for the science stream with our expert teachers. Get ready for your final exams with confidence.',
     instructor: {
         name: 'Sadia Islam',
         title: 'Exam Specialist',
-        avatarUrl: 'https://placehold.co/100x100',
+        avatarUrl: 'https://placehold.co/100x100.png',
         bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
         dataAiHint: 'female doctor'
     },
     instructors: [
-       { name: 'Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female doctor' },
-       { name: 'Jubayer Ahmed', title: 'Physics & Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor' },
+       { name: 'Jubayer Ahmed', title: 'Physics & Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
     rating: 4.8,
     reviews: 130,
@@ -736,19 +736,19 @@ export const courses: Course[] = [
     category: 'মাস্টার কোর্স',
     price: 'Free',
     imageTitle: 'ওয়েব ডেভেলপমেন্ট',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'programming code',
     features: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'],
     description: 'Learn the basics of web development for free. Start your journey into the world of coding with our master course.',
     instructor: {
         name: 'Jubayer Ahmed',
         title: 'Lead Developer & Instructor',
-        avatarUrl: 'https://placehold.co/100x100',
+        avatarUrl: 'https://placehold.co/100x100.png',
         bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
         dataAiHint: 'male teacher'
     },
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
     ],
     rating: 4.9,
     reviews: 500,
@@ -778,7 +778,7 @@ export const blogPosts: BlogPost[] = [
         slug: "study-tips-for-hsc",
         title: "Effective Study Tips for HSC Candidates",
         excerpt: "Discover proven strategies to boost your preparation for the upcoming HSC exams and achieve your desired results.",
-        imageUrl: "https://placehold.co/600x400",
+        imageUrl: "https://placehold.co/600x400.png",
         dataAiHint: "student studying",
         content: `
         <p>The HSC exam is a significant milestone in a student's life in Bangladesh. Proper preparation is key to success. Here are some effective study tips to help you excel:</p>
@@ -797,7 +797,7 @@ export const blogPosts: BlogPost[] = [
         slug: "choosing-university-subject",
         title: "How to Choose the Right University Subject for You",
         excerpt: "A comprehensive guide to help you navigate the difficult decision of choosing a subject for your university studies.",
-        imageUrl: "https://placehold.co/600x400",
+        imageUrl: "https://placehold.co/600x400.png",
         dataAiHint: "university campus",
         content: `
         <p>Choosing a university subject is one of the most critical decisions of your life. It can shape your career and future. Here’s a guide to help you make an informed choice:</p>
@@ -816,7 +816,7 @@ export const blogPosts: BlogPost[] = [
         slug: "importance-of-skills-development",
         title: "The Importance of Skill Development Beyond Academics",
         excerpt: "Learn why developing practical skills is crucial for your career and how you can get started today.",
-        imageUrl: "https://placehold.co/600x400",
+        imageUrl: "https://placehold.co/600x400.png",
         dataAiHint: "person coding",
         content: `
         <p>In today's competitive job market, academic qualifications alone are often not enough. Developing practical skills is essential for career success. Here's why:</p>

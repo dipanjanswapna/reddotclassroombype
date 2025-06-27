@@ -6,6 +6,7 @@ import { LayoutDashboard, BookOpen, HelpCircle, Award, Bot, User, Settings, LogO
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { Header } from '@/components/header';
 
 export default function StudentLayout({
   children,
@@ -39,48 +40,53 @@ export default function StudentLayout({
   ];
   
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2">
-            <Avatar className="size-8">
-              <AvatarImage src="https://placehold.co/100x100" alt="Student Avatar" data-ai-hint="male student"/>
-              <AvatarFallback>SA</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold">Student Name</span>
-              <span className="text-xs text-muted-foreground">student@rdc.com</span>
-            </div>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            {menuItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
-                  <item.icon />
-                  {item.label}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-             {footerMenuItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
-                  <item.icon />
-                  {item.label}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <Header />
+      <SidebarProvider>
+         <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
+          <Sidebar>
+            <SidebarHeader>
+              <div className="flex items-center gap-2">
+                <Avatar className="size-8">
+                  <AvatarImage src="https://placehold.co/100x100.png" alt="Student Avatar" data-ai-hint="male student"/>
+                  <AvatarFallback>SA</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Student Name</span>
+                  <span className="text-xs text-muted-foreground">student@rdc.com</span>
+                </div>
+              </div>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarMenu>
+                {menuItems.map(item => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
+                      <item.icon />
+                      {item.label}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarContent>
+            <SidebarFooter>
+              <SidebarMenu>
+                {footerMenuItems.map(item => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
+                      <item.icon />
+                      {item.label}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarFooter>
+          </Sidebar>
+          <SidebarInset>
+            {children}
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </>
   );
 }

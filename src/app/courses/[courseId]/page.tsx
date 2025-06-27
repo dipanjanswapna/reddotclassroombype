@@ -159,7 +159,7 @@ export default function CourseDetailPage({
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Image
                     key={i}
-                    src={`https://placehold.co/160x90`}
+                    src={`https://placehold.co/160x90.png`}
                     alt={`Thumbnail ${i}`}
                     width={160}
                     height={90}
