@@ -1,14 +1,15 @@
 
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-  BookCopy,
-  Users,
+  User,
+  BookOpen,
+  BarChart3,
+  Wallet,
   MessageSquare,
   LayoutDashboard,
-  Video,
-  DollarSign,
-  User,
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -25,11 +26,9 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import React from 'react';
 
-export default function TeacherLayout({
+export default function GuardianLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -37,12 +36,11 @@ export default function TeacherLayout({
   const pathname = usePathname();
 
   const menuItems = [
-    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
-    { href: "#", icon: Users, label: "Students" },
-    { href: "#", icon: MessageSquare, label: "Grading" },
-    { href: "#", icon: Video, label: "Live Classes" },
-    { href: "#", icon: DollarSign, label: "Earnings" },
+    { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "#", icon: BarChart3, label: "Child's Progress" },
+    { href: "#", icon: BookOpen, label: "Enrolled Courses" },
+    { href: "#", icon: Wallet, label: "Payment History" },
+    { href: "#", icon: MessageSquare, label: "Contact Teachers" },
   ];
 
   const footerMenuItems = [
@@ -50,14 +48,6 @@ export default function TeacherLayout({
     { href: "#", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
-  
-  const getIsActive = (href: string) => {
-    if (href === '/teacher/dashboard') {
-        return pathname === href;
-    }
-    return pathname.startsWith(href);
-  };
-
 
   return (
     <SidebarProvider>
@@ -68,25 +58,25 @@ export default function TeacherLayout({
               <Avatar className="size-8">
                 <AvatarImage
                   src="https://placehold.co/100x100.png"
-                  alt="Teacher Avatar"
-                  data-ai-hint="male teacher"
+                  alt="Guardian Avatar"
+                  data-ai-hint="parent"
                 />
-                <AvatarFallback>TA</AvatarFallback>
+                <AvatarFallback>GA</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">Teacher Name</span>
+                <span className="text-sm font-semibold">Guardian Name</span>
                 <span className="text-xs text-muted-foreground">
-                  teacher@rdc.com
+                  guardian@rdc.com
                 </span>
               </div>
             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-              {menuItems.map(item => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item.href)}>
-                     <Link href={item.href}>
+              {menuItems.map((item) => (
+                 <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                    <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
                     </Link>
@@ -97,10 +87,10 @@ export default function TeacherLayout({
           </SidebarContent>
           <SidebarFooter>
             <SidebarMenu>
-              {footerMenuItems.map(item => (
+              {footerMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.href}>
+                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
                     </Link>
@@ -111,9 +101,9 @@ export default function TeacherLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <div className="md:hidden flex items-center border-b p-2">
+           <div className="md:hidden flex items-center border-b p-2">
               <SidebarTrigger />
-              <span className="font-semibold text-base ml-2">Teacher Portal</span>
+              <span className="font-semibold text-base ml-2">Guardian Portal</span>
             </div>
           {children}
         </SidebarInset>

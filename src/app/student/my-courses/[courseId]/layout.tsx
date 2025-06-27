@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/sidebar';
 import { courses } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 
 export default function CourseLayout({
   children,
@@ -88,15 +87,11 @@ export default function CourseLayout({
           </SidebarContent>
         </Sidebar>
         <SidebarInset>
-            <div className="md:hidden flex items-center justify-between border-b p-2">
-              <div className="flex items-center gap-2">
+            <div className="sticky top-16 md:hidden flex items-center justify-start border-b p-2 bg-background z-10">
                 <SidebarTrigger />
-                <h2 className="font-semibold text-base truncate">{course.title}</h2>
-              </div>
+                <h2 className="font-semibold text-base truncate ml-2">{course.title}</h2>
             </div>
-            <div className="p-4 sm:p-6 lg:p-8">
-             {children}
-            </div>
+            {children}
         </SidebarInset>
       </div>
     </SidebarProvider>

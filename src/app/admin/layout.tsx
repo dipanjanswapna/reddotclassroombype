@@ -22,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarInset,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
@@ -101,6 +102,10 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
+           <div className="md:hidden flex items-center border-b p-2">
+              <SidebarTrigger />
+              <span className="font-semibold text-base ml-2">Admin Portal</span>
+            </div>
           {children}
         </SidebarInset>
       </div>

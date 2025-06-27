@@ -1,7 +1,7 @@
 
 'use client';
 
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { LayoutDashboard, BookOpen, HelpCircle, Award, Bot, User, Settings, LogOut, BarChart3, CalendarClock, GraduationCap, Library, BookMarked, MessageSquare, Users as UsersIcon, Trophy, Heart, Wallet, Bell } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
@@ -85,6 +85,10 @@ export default function StudentLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
+           <div className="md:hidden flex items-center border-b p-2">
+              <SidebarTrigger />
+              <span className="font-semibold text-base ml-2">Student Portal</span>
+            </div>
           {children}
         </SidebarInset>
       </div>
