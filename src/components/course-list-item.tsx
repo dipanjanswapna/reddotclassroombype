@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -66,7 +67,7 @@ export default function CourseLayout({
           <SidebarHeader>
             <div className="p-2">
                 <h2 className="font-semibold text-base">{course.title}</h2>
-                <p className="text-xs text-muted-foreground">by {course.instructor.name}</p>
+                <p className="text-xs text-muted-foreground">by {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
             </div>
           </SidebarHeader>
           <SidebarContent>

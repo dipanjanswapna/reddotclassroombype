@@ -58,15 +58,13 @@ export type Course = {
   id: string;
   title: string;
   description: string;
-  // `instructor` property is deprecated but kept for compatibility. Use `instructors[0]` instead.
-  instructor: Instructor; 
   instructors: Instructor[]; // Multiple instructors for the course
   imageUrl: string;
   dataAiHint: string;
   category: string;
   subCategory?: string;
   price: string;
-  status: 'Published' | 'Pending Approval' | 'Draft';
+  status: 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
   rating?: number;
   reviews?: number;
   whatYouWillLearn?: string[];
@@ -145,7 +143,6 @@ export const courses: Course[] = [
     title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
     description: 'এইচএসসি ২০২৫ পরীক্ষার্থীদের জন্য পূর্ণাঙ্গ প্রস্তুতি নিশ্চিত করতে একটি সম্পূর্ণ অনলাইন ব্যাচ। অভিজ্ঞ শিক্ষকদের সাথে লাইভ ক্লাস, লেকচার শিট, এবং পরীক্ষার মাধ্যমে সেরা প্রস্তুতি নিন।',
     status: 'Pending Approval',
-    instructor: getInst('ins-ja'),
     instructors: [
        getInst('ins-ja'),
        getInst('ins-si'),
@@ -237,7 +234,6 @@ export const courses: Course[] = [
     title: 'Admission Test Prep (Medical)',
     description: 'A comprehensive course designed to help you ace the medical admission tests with in-depth lessons, practice questions, and mock tests.',
     status: 'Published',
-    instructor: getInst('ins-si'),
     instructors: [
        getInst('ins-si'),
        { id: 'ins-ka', name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor', slug: 'karim-ahmed', status: 'Approved', bio: 'Bio for Karim' },
@@ -295,7 +291,6 @@ export const courses: Course[] = [
     title: 'IELTS Preparation Course',
     description: 'Achieve your desired IELTS band score with our intensive preparation course covering all four modules: Listening, Reading, Writing, and Speaking.',
     status: 'Published',
-    instructor: getInst('ins-rc'),
     instructors: [
        getInst('ins-rc'),
        { id: 'ins-jm', name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor', slug: 'jessica-miller', status: 'Approved', bio: 'Bio for Jessica' },
@@ -353,7 +348,6 @@ export const courses: Course[] = [
     title: 'Data Science with Python',
     description: 'Learn the fundamentals of data science and machine learning using Python. This course is perfect for beginners with no prior programming experience.',
     status: 'Published',
-    instructor: getInst('ins-ak'),
      instructors: [
        getInst('ins-ak'),
        { id: 'ins-dc', name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male programmer', slug: 'david-chen', status: 'Approved', bio: 'Bio for David' },
@@ -405,7 +399,6 @@ export const courses: Course[] = [
     title: 'SSC 2025 Online Batch',
     description: 'A complete online batch for SSC 2025 candidates covering all subjects with live classes, lecture sheets, and regular exams.',
     status: 'Published',
-    instructor: getInst('ins-fm'),
     instructors: [
        getInst('ins-fm'),
        getInst('ins-nj'),
@@ -458,7 +451,6 @@ export const courses: Course[] = [
     title: 'HSC 2025 Commerce Batch',
     description: 'Join our comprehensive online batch for HSC 2025 commerce students. Get access to live classes, solve practice problems and clear your doubts.',
     status: 'Published',
-    instructor: getInst('ins-nj'),
     instructors: [
        getInst('ins-nj'),
        { id: 'ins-ik', name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'imran-khan', status: 'Approved', bio: 'Bio for Imran' },
@@ -509,7 +501,6 @@ export const courses: Course[] = [
     title: 'HSC ICT Masterclass',
     description: 'Master the HSC ICT syllabus with our recorded masterclass. Learn from the best and score high in your exams.',
     status: 'Published',
-    instructor: getInst('ins-ja'),
     instructors: [
        getInst('ins-ja'),
     ],
@@ -556,7 +547,6 @@ export const courses: Course[] = [
     title: 'Graphic Design Fundamentals',
     description: 'Learn the basics of graphic design including Photoshop, Illustrator, and Figma. Build a strong portfolio to start your design career.',
     status: 'Published',
-    instructor: getInst('ins-si'),
     instructors: [
        getInst('ins-si'),
     ],
@@ -606,7 +596,6 @@ export const courses: Course[] = [
     title: 'Engineering Admission',
     description: 'Prepare for engineering university admission tests with our specialized course. Cover Physics, Chemistry, and Higher Math in detail.',
     status: 'Published',
-    instructor: getInst('ins-ja'),
     instructors: [
        getInst('ins-ja'),
        getInst('ins-si'),
@@ -658,7 +647,6 @@ export const courses: Course[] = [
     title: 'University (Ka unit) Admission',
     description: 'A complete guide for Dhaka University Ka-unit admission test. Prepare with the best mentors and materials.',
     status: 'Published',
-    instructor: getInst('ins-fm'),
     instructors: [
        getInst('ins-fm'),
     ],
@@ -697,7 +685,6 @@ export const courses: Course[] = [
     title: 'BCS Preliminary Course',
     description: 'Prepare for the BCS preliminary exam with our comprehensive course covering all subjects.',
     status: 'Published',
-    instructor: getInst('ins-rc'),
     instructors: [
        getInst('ins-rc'),
     ],
@@ -736,7 +723,6 @@ export const courses: Course[] = [
     title: 'Bank Job Preparation',
     description: 'A complete course for bank job seekers. Cover math, english, general knowledge and analytical skills.',
     status: 'Published',
-    instructor: getInst('ins-ak'),
     instructors: [
        getInst('ins-ak'),
     ],
@@ -782,7 +768,6 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'history book',
     description: 'A complete online batch for HSC 2025 Arts students covering all subjects with live classes, lecture sheets, and regular exams.',
-    instructor: getInst('ins-nj'),
     instructors: [
        getInst('ins-nj'),
        { id: 'ins-ik', name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'imran-khan', status: 'Approved', bio: 'Bio for Imran' },
@@ -824,7 +809,6 @@ export const courses: Course[] = [
     dataAiHint: 'physics equation',
     features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'সাপোর্ট সেশন'],
     description: 'Master Physics for your HSC exams with our detailed subject-based course. Access recorded classes, lecture sheets, and quizzes anytime.',
-    instructor: getInst('ins-ja'),
     instructors: [
        getInst('ins-ja'),
     ],
@@ -864,7 +848,6 @@ export const courses: Course[] = [
     dataAiHint: 'exam paper',
     features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি', 'হায়ার ম্যাথ'],
     description: 'Solve test papers for the science stream with our expert teachers. Get ready for your final exams with confidence.',
-    instructor: getInst('ins-si'),
     instructors: [
        getInst('ins-si'),
        getInst('ins-ja'),
@@ -904,7 +887,6 @@ export const courses: Course[] = [
     dataAiHint: 'programming code',
     features: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'],
     description: 'Learn the basics of web development for free. Start your journey into the world of coding with our master course.',
-    instructor: getInst('ins-ja'),
     instructors: [
        getInst('ins-ja'),
     ],
@@ -951,7 +933,6 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'old books',
     description: 'An archived version of the HSC 2024 crash course for science students.',
-    instructor: getInst('ins-ja'),
     instructors: [getInst('ins-ja')],
     rating: 4.8,
     reviews: 500,
@@ -967,7 +948,6 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'archive box',
     description: 'The complete course for the 2023 medical admission test. Archived for reference.',
-    instructor: getInst('ins-si'),
     instructors: [getInst('ins-si')],
     rating: 4.9,
     reviews: 800,

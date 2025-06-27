@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -145,6 +146,7 @@ export default function UserManagementPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem><Eye className="mr-2" />View Profile</DropdownMenuItem>
                         <DropdownMenuItem><Pencil className="mr-2" />Edit User</DropdownMenuItem>
+                        <DropdownMenuItem><AreaChart className="mr-2" />View Activity</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSuspendUser(user)}>
                             {user.status === 'Active' ? 'Suspend User' : 'Activate User'}
                         </DropdownMenuItem>

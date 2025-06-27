@@ -43,7 +43,7 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
         <Link href={courseLink}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
         </Link>
-        <p className="text-muted-foreground text-sm mt-1">By {course.instructor.name}</p>
+        <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
 
         {status === 'in-progress' && typeof course.progress === 'number' && (
           <div className="mt-4">
@@ -61,10 +61,6 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
         
         {status === 'wishlisted' && (
             <p className="font-headline text-lg font-bold text-primary mt-4">{course.price}</p>
-        )}
-
-        {status === 'archived' && (
-             <Badge variant="secondary" className="mt-4">Included Archived Content</Badge>
         )}
 
       </CardContent>

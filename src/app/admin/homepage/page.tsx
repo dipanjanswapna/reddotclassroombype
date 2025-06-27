@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { homepageConfig as initialConfig } from '@/lib/homepage-data';
-import { PlusCircle, Save, Trash2 } from 'lucide-react';
+import { PlusCircle, Save, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 
 type HomepageConfig = typeof initialConfig;
@@ -71,6 +71,38 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addHeroBanner = () => {
+    setConfig(prev => ({
+      ...prev,
+      heroBanners: [
+        ...prev.heroBanners,
+        { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
+      ]
+    }));
+  };
+  const removeHeroBanner = (id: number) => {
+    setConfig(prev => ({
+      ...prev,
+      heroBanners: prev.heroBanners.filter(banner => banner.id !== id)
+    }));
+  };
+
+  const addStat = () => {
+      setConfig(prev => ({
+          ...prev,
+          stats: [
+              ...prev.stats,
+              { value: '', label: ''}
+          ]
+      }))
+  };
+  const removeStat = (index: number) => {
+      setConfig(prev => ({
+          ...prev,
+          stats: prev.stats.filter((_, i) => i !== index)
+      }));
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div className="flex items-center justify-between">
@@ -90,7 +122,8 @@ export default function AdminHomepageManagementPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {config.heroBanners.map((banner, index) => (
-                <div key={banner.id} className="p-4 border rounded-lg space-y-2">
+                <div key={banner.id} className="p-4 border rounded-lg space-y-2 relative">
+                   <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeHeroBanner(banner.id)}><X className="text-destructive h-4 w-4"/></Button>
                   <h4 className="font-semibold">Banner {index + 1}</h4>
                    <div className="space-y-1">
                       <Label>Image URL</Label>
@@ -102,6 +135,7 @@ export default function AdminHomepageManagementPage() {
                     </div>
                 </div>
               ))}
+               <Button variant="outline" className="w-full border-dashed" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
             </CardContent>
           </Card>
           
@@ -184,7 +218,8 @@ export default function AdminHomepageManagementPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {config.stats.map((stat, index) => (
-                <div key={index} className="p-4 border rounded-lg space-y-2">
+                <div key={index} className="p-4 border rounded-lg space-y-2 relative">
+                    <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeStat(index)}><X className="text-destructive h-4 w-4"/></Button>
                     <div className="space-y-1">
                       <Label>Value</Label>
                       <Input value={stat.value} onChange={(e) => handleInputChange('stats', 'value', e.target.value, index)} />
@@ -195,6 +230,7 @@ export default function AdminHomepageManagementPage() {
                     </div>
                 </div>
               ))}
+              <Button variant="outline" className="w-full border-dashed" onClick={addStat}><PlusCircle className="mr-2"/>Add Stat</Button>
             </CardContent>
           </Card>
         </div>

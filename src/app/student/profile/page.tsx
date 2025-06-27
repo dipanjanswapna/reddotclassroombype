@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+
 
 // Mock user data for demonstration
 const currentUser = {
@@ -153,7 +155,7 @@ export default function ProfilePage() {
           </Card>
         </div>
 
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 space-y-8">
            <Card>
              <CardHeader>
               <CardTitle>Account Management</CardTitle>
@@ -182,6 +184,32 @@ export default function ProfilePage() {
                     Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
              </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+                <CardTitle>Notification Settings</CardTitle>
+                <CardDescription>Manage how you receive notifications.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <Label htmlFor="email-notifications">Email Notifications</Label>
+                        <p className="text-[0.8rem] text-muted-foreground">
+                            Receive emails about course updates and announcements.
+                        </p>
+                    </div>
+                    <Switch id="email-notifications" defaultChecked />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <Label htmlFor="push-notifications">Push Notifications</Label>
+                         <p className="text-[0.8rem] text-muted-foreground">
+                            Get push notifications on your devices.
+                        </p>
+                    </div>
+                    <Switch id="push-notifications" />
+                </div>
+            </CardContent>
           </Card>
         </div>
       </div>
