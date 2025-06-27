@@ -1,8 +1,12 @@
+'use client'; // This directive is needed for useEffect and useState
+
 import { notFound } from 'next/navigation';
 import { courses } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Download, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import FacebookComments from '@/components/facebook-comments';
+import { useEffect, useState } from 'react';
 
 const getLessonData = (courseId: string, lessonId: string) => {
   const course = courses.find((c) => c.id === courseId);
@@ -23,6 +27,13 @@ export default function LessonPage({
   params: { courseId: string; lessonId: string };
 }) {
   const data = getLessonData(params.courseId, params.lessonId);
+  const [pageUrl, setPageUrl] = useState('');
+
+  useEffect(() => {
+    // This runs only on the client-side after the component mounts,
+    // so `window` is safely available.
+    setPageUrl(window.location.href);
+  }, []);
 
   if (!data) {
     notFound();
@@ -65,7 +76,7 @@ export default function LessonPage({
         )}
       </div>
 
-       <Card>
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare />
@@ -73,10 +84,15 @@ export default function LessonPage({
           </CardTitle>
         </CardHeader>
         <CardContent>
-            <p className="text-muted-foreground">The discussion forum for this lesson is coming soon. You'll be able to ask questions and interact with your instructor and peers here.</p>
+          {pageUrl ? (
+            <FacebookComments href={pageUrl} />
+          ) : (
+            <div className="flex items-center justify-center p-4">
+              <p className="text-muted-foreground">Loading comments...</p>
+            </div>
+          )}
         </CardContent>
       </Card>
-
     </div>
   );
 }
