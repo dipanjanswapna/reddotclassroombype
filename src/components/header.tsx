@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BookMarked, Menu, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { RdcLogo } from "./rdc-logo";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -21,7 +22,7 @@ export function Header() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <BookMarked className="h-6 w-6 text-primary" />
+            <RdcLogo className="h-8 w-auto" />
             <span className="hidden font-bold sm:inline-block font-headline">
               Red Dot Classroom
             </span>
@@ -51,7 +52,7 @@ export function Header() {
               <div className="px-2">
                 <div className="flex flex-col space-y-3">
                     <Link href="/" className="flex items-center space-x-2" onClick={() => setMenuOpen(false)}>
-                        <BookMarked className="h-6 w-6 text-primary" />
+                        <RdcLogo className="h-8 w-auto" />
                         <span className="font-bold font-headline">Red Dot Classroom</span>
                     </Link>
                     <div className="flex flex-col space-y-2 pt-4">
@@ -73,7 +74,7 @@ export function Header() {
         </div>
         
         <Link href="/" className="md:hidden flex items-center space-x-2 ml-4">
-            <BookMarked className="h-6 w-6 text-primary" />
+            <RdcLogo className="h-8 w-auto" />
             <span className="font-bold font-headline">RDC</span>
         </Link>
 

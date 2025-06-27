@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BookMarked, Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
+import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
+import { RdcLogo } from "./rdc-logo";
 
 export function Footer() {
   return (
@@ -8,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <BookMarked className="h-8 w-8 text-primary" />
+              <RdcLogo className="h-10 w-auto" />
               <span className="font-bold text-xl font-headline">
                 Red Dot Classroom
               </span>
