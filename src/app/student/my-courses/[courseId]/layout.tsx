@@ -12,6 +12,7 @@ import {
   Star,
   Users,
   Video,
+  Archive,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,6 +51,10 @@ export default function CourseLayout({
     { href: `/student/my-courses/${course.id}/community`, label: 'Community', icon: Users },
     { href: `/student/my-courses/${course.id}/reviews`, label: 'Reviews', icon: Star },
   ];
+  
+  if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
+    courseNavItems.push({ href: `/student/my-courses/${course.id}/archive`, label: 'Archived Content', icon: Archive });
+  }
   
   const getIsActive = (href: string) => {
     // 'Lessons' is special: it's active for the course root AND any lesson detail page.
