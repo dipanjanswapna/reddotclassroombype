@@ -115,18 +115,51 @@ export const courses: Course[] = [
     title: 'Admission Test Prep (Medical)',
     description: 'A comprehensive course designed to help you ace the medical admission tests with in-depth lessons, practice questions, and mock tests.',
     instructor: {
-      name: 'Sadia Islam',
+      name: 'Dr. Sadia Islam',
       title: 'Medical Admission Specialist',
       avatarUrl: 'https://placehold.co/100x100',
       bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
       dataAiHint: 'female doctor'
     },
+    instructors: [
+       { name: 'Dr. Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female doctor' },
+       { name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male doctor' },
+       { name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female scientist' },
+       { name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'medical students',
     category: 'Admission',
     price: 'BDT 5000',
-    features: ['বিষয়ভিত্তিক ক্লাস', 'প্রশ্নব্যাংক সলভ', 'ফাইনাল মডেল টেস্ট'],
+    rating: 4.9,
+    reviews: 250,
+    features: ['বিষয়ভিত্তিক ক্লাস', 'প্রশ্নব্যাংক সলভ', 'ফাইনাল মডেল টেস্ট', 'লেকচার শীট', 'ডেইলি এক্সাম', 'সাপ্তাহিক পরীক্ষা'],
     imageTitle: 'Medical',
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'লেকচার শীট', description: 'প্রতিটি ক্লাসের পর নোট' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+        { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+    ],
+    syllabus: [
+        { title: 'জীববিজ্ঞান', content: 'প্রাণী বৈচিত্র্য, কোষ ও টিস্যু, জেনেটিক্স, মানব শারীরতত্ত্ব, উদ্ভিদ বিজ্ঞান।' },
+        { title: 'রসায়ন', content: 'জৈব রসায়ন, পরিমাণগত রসায়ন, তড়িৎ রসায়ন, পরিবেশ রসায়ন।' },
+        { title: 'পদার্থবিজ্ঞান', content: 'আধুনিক পদার্থবিজ্ঞান, ভৌত আলোকবিজ্ঞান, চল তড়িৎ, চৌম্বক।' },
+        { title: 'সাধারণ জ্ঞান ও ইংরেজি', content: 'বাংলাদেশ ও আন্তর্জাতিক বিষয়াবলী, ইংরেজি গ্রামার ও ভোকাবুলারি।' },
+    ],
+    classRoutine: [
+        { day: 'শনি', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'সোম', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'বুধ', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'বৃহঃ', subject: 'সাধারণ জ্ঞান ও ইংরেজি', time: 'রাত ৯:০০' },
+    ],
+    faqs: [
+        { question: 'মেডিকেল ভর্তি পরীক্ষার জন্য যোগ্যতা কী?', answer: 'সাধারণত এসএসসি এবং এইচএসসিতে জীববিজ্ঞানসহ নির্দিষ্ট জিপিএ প্রয়োজন হয়। বিস্তারিত সার্কুলারে উল্লেখ থাকে।' },
+        { question: 'নেগেটিভ মার্কিং আছে কি?', answer: 'হ্যাঁ, মেডিকেল ভর্তি পরীক্ষায় প্রতিটি ভুল উত্তরের জন্য ০.২৫ নম্বর কাটা হয়।' },
+        { question: 'এই কোর্সের ক্লাসগুলো রেকর্ডেড থাকবে?', answer: 'হ্যাঁ, প্রতিটি লাইভ ক্লাসের রেকর্ডিং আপনার ড্যাশবোর্ডে পাওয়া যাবে।' }
+    ]
   },
   {
     id: '3',
@@ -139,12 +172,40 @@ export const courses: Course[] = [
         bio: 'Raihan has been teaching IELTS for over 8 years and has a proven track record of helping students achieve high scores.',
         dataAiHint: 'english teacher'
     },
+    instructors: [
+       { name: 'Raihan Chowdhury', title: 'Speaking & Writing', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male instructor' },
+       { name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female instructor' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'ielts exam',
     category: 'Language',
     price: 'BDT 3000',
-    features: [' রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ' ],
-    imageTitle: 'IELTS Prep'
+    rating: 4.7,
+    reviews: 180,
+    features: [' রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'মক টেস্ট', 'Speaking সেশন' ],
+    imageTitle: 'IELTS Prep',
+    features_detailed: [
+        { title: 'Listening Module', description: 'Practice with real exam-like audio clips.' },
+        { title: 'Reading Module', description: 'Learn strategies for different question types.' },
+        { title: 'Writing Module', description: 'Master Task 1 and Task 2 with expert feedback.' },
+        { title: 'Speaking Module', description: 'One-on-one practice sessions.' },
+        { title: 'Mock Tests', description: 'Full-length mock tests to simulate exam conditions.' },
+        { title: 'Strategy Sessions', description: 'Tips and tricks to maximize your score.' },
+    ],
+    syllabus: [
+        { title: 'Listening', content: 'Introduction to listening skills, question types, note-taking, practice tests.' },
+        { title: 'Reading', content: 'Skimming, scanning, understanding academic texts, practice with passages.' },
+        { title: 'Writing', content: 'Analyzing Task 1 (graphs, charts), structuring Task 2 essays, vocabulary for writing.' },
+        { title: 'Speaking', content: 'Part 1, Part 2 (cue card), and Part 3 practice, pronunciation, and fluency development.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'Recorded Modules', time: 'Anytime' },
+        { day: 'Saturday', subject: 'Live Speaking Practice', time: '8:00 PM' },
+    ],
+    faqs: [
+        { question: 'What is the duration of this course?', answer: 'This is a self-paced course with lifetime access to materials. Live sessions are held weekly.' },
+        { question: 'Will I get a certificate?', answer: 'Yes, a certificate of completion is provided after you finish all the modules and mock tests.' },
+    ]
   },
   {
     id: '4',
@@ -157,12 +218,40 @@ export const courses: Course[] = [
         bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
         dataAiHint: 'female programmer'
     },
+     instructors: [
+       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female programmer' },
+       { name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male programmer' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'python code',
     category: 'Skills',
     price: 'BDT 5500',
-    features: [' রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ' ],
-    imageTitle: 'Data Science'
+    rating: 4.8,
+    reviews: 300,
+    features: [' রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'প্রজেক্ট', 'সার্টিফিকেট' ],
+    imageTitle: 'Data Science',
+    features_detailed: [
+        { title: 'Python Programming', description: 'Master the basics of Python for data analysis.' },
+        { title: 'Data Analysis', description: 'Learn libraries like NumPy and Pandas.' },
+        { title: 'Data Visualization', description: 'Create stunning charts with Matplotlib and Seaborn.' },
+        { title: 'Machine Learning', description: 'Understand algorithms with Scikit-learn.' },
+        { title: 'Real-world Projects', description: 'Apply your skills to solve practical problems.' },
+        { title: 'Career Guidance', description: 'Get tips on building your data science portfolio.' },
+    ],
+    syllabus: [
+        { title: 'Module 1: Python Basics', content: 'Variables, data types, loops, functions, and object-oriented programming.' },
+        { title: 'Module 2: Data Manipulation with Pandas', content: 'DataFrames, data cleaning, grouping, and merging.' },
+        { title: 'Module 3: Data Visualization', content: 'Creating plots, charts, and histograms to understand data.' },
+        { title: 'Module 4: Introduction to Machine Learning', content: 'Supervised vs. unsupervised learning, regression, classification.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
+        { day: 'Sunday', subject: 'Live Q&A Session', time: '9:00 PM' },
+    ],
+    faqs: [
+        { question: 'Do I need any prior programming experience?', answer: 'No, this course is designed for absolute beginners.' },
+        { question: 'What software will I need?', answer: 'You will need a computer with Python and Jupyter Notebook installed. We will guide you through the setup process.' },
+    ]
   },
   {
     id: '5',
@@ -175,17 +264,46 @@ export const courses: Course[] = [
       bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
       dataAiHint: 'male teacher'
     },
+    instructors: [
+       { name: 'Farhan Mahmud', title: 'General Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Nusrat Jahan', title: 'English', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'classroom students',
     category: 'SSC',
     price: 'BDT 4000',
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-    imageTitle: 'SSC 2025'
+    rating: 4.7,
+    reviews: 95,
+    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট', 'সাপ্তাহিক পরীক্ষা'],
+    imageTitle: 'SSC 2025',
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'লেকচার শীট', description: 'প্রতিটি ক্লাসের পর নোট' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+        { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+    ],
+    syllabus: [
+        { title: 'গণিত', content: 'বীজগণিত, জ্যামিতি, ত্রিকোণমিতি, এবং পরিমিতি।' },
+        { title: 'ইংরেজি', content: 'Grammar, composition, seen and unseen passages.' },
+        { title: 'বিজ্ঞান', content: 'পদার্থ, রসায়ন, এবং জীববিজ্ঞানের মৌলিক ধারণা।' },
+        { title: 'বাংলাদেশ ও বিশ্বপরিচয়', content: ' ইতিহাস, ভূগোল, এবং নাগরিকত্ব।' },
+    ],
+    classRoutine: [
+        { day: 'শনি', subject: 'গণিত', time: 'বিকাল ৫:০০' },
+        { day: 'সোম', subject: 'ইংরেজি', time: 'বিকাল ৫:০০' },
+        { day: 'বুধ', subject: 'বিজ্ঞান', time: 'বিকাল ৫:০০' },
+    ],
+    faqs: [
+        { question: 'এই কোর্সটি কোন বোর্ডের জন্য?', answer: 'এই কোর্সটি বাংলাদেশের সকল শিক্ষা বোর্ডের সিলেবাস অনুযায়ী তৈরি করা হয়েছে।' },
+        { question: 'ক্লাস মিস করলে কী হবে?', answer: 'প্রতিটি লাইভ ক্লাসের রেকর্ডিং আপনার ড্যাশবোর্ডে থাকবে, তাই আপনি যেকোনো সময় দেখে নিতে পারবেন।' }
+    ]
   },
   {
     id: '6',
-    title: 'HSC 2025 Online Batch',
-    description: 'Join our comprehensive online batch for HSC 2025 students. Get access to live classes, solve practice problems and clear your doubts.',
+    title: 'HSC 2025 Commerce Batch',
+    description: 'Join our comprehensive online batch for HSC 2025 commerce students. Get access to live classes, solve practice problems and clear your doubts.',
     instructor: {
       name: 'Nusrat Jahan',
       title: 'HSC Specialist',
@@ -193,12 +311,38 @@ export const courses: Course[] = [
       bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
       dataAiHint: 'female teacher'
     },
+    instructors: [
+       { name: 'Nusrat Jahan', title: 'Accounting', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
+       { name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'lecture hall',
     category: 'HSC',
     price: 'BDT 4500',
+    rating: 4.6,
+    reviews: 80,
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-    imageTitle: 'HSC 2025'
+    imageTitle: 'HSC 2025',
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'লেকচার শীট', description: 'প্রতিটি ক্লাসের পর নোট' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+    ],
+     syllabus: [
+        { title: 'হিসাববিজ্ঞান', content: 'হিসাববিজ্ঞানের পরিচিতি, হিসাবের বইসমূহ, রেওয়ামিল, আর্থিক বিবরণী।' },
+        { title: 'ফিন্যান্স, ব্যাংকিং ও বীমা', content: 'অর্থায়নের সূচনা, আর্থিক বাজার, ব্যাংকের পরিচিতি, বীমার ধারণা।' },
+        { title: 'ব্যবসায় সংগঠন ও ব্যবস্থাপনা', content: 'ব্যবসায়ের মৌলিক ধারণা, একমালিকানা ব্যবসায়, অংশীদারি ব্যবসায়, ব্যবস্থাপনা।' },
+    ],
+    classRoutine: [
+        { day: 'রবি', subject: 'হিসাববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'মঙ্গল', subject: 'ফিন্যান্স, ব্যাংকিং ও বীমা', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'বৃহঃ', subject: 'ব্যবসায় সংগঠন', time: 'সন্ধ্যা ৭:০০' },
+    ],
+    faqs: [
+        { question: 'এই কোর্সটি কাদের জন্য?', answer: 'এই কোর্সটি এইচএসসি ২০২৫ এর বাণিজ্য বিভাগের শিক্ষার্থীদের জন্য।' },
+        { question: 'কোর্সের মেয়াদ কতদিন?', answer: 'কোর্সটি এইচএসসি পরীক্ষা পর্যন্ত চলবে।' }
+    ]
   },
   {
     id: '7',
@@ -211,12 +355,35 @@ export const courses: Course[] = [
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher'
     },
+    instructors: [
+       { name: 'Jubayer Ahmed', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'computer circuit',
     category: 'HSC',
     price: 'BDT 2500',
-    features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'],
-    imageTitle: 'HSC ICT'
+    rating: 4.9,
+    reviews: 150,
+    features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'সাপোর্ট সেশন'],
+    imageTitle: 'HSC ICT',
+    features_detailed: [
+        { title: 'Chapter-wise Lectures', description: 'Detailed video lectures for all chapters.' },
+        { title: 'Problem Solving', description: 'Creative question and programming problem solving.' },
+        { title: 'CQ & MCQ Practice', description: 'Practice sessions for both types of questions.' },
+        { title: '24/7 Support', description: 'Get your doubts cleared anytime in the support forum.' },
+    ],
+    syllabus: [
+        { title: 'Chapter 1: Information & Communication Technology', content: 'World Village, Virtual Reality, AI.' },
+        { title: 'Chapter 3: Number Systems & Digital Devices', content: 'Binary, Octal, Hexadecimal, Logic Gates.' },
+        { title: 'Chapter 4: Introduction to HTML', content: 'Web design basics, tags, tables, forms.' },
+        { title: 'Chapter 5: Programming Language', content: 'Introduction to C programming, loops, arrays, functions.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
+    ],
+    faqs: [
+        { question: 'Is this course enough for A+?', answer: 'Yes, this course covers the entire syllabus in-depth and is designed to help you achieve the highest grade.' },
+    ]
   },
   {
     id: '8',
@@ -229,12 +396,39 @@ export const courses: Course[] = [
       bio: 'Sadia is a creative designer with a passion for visual storytelling and teaching design principles.',
       dataAiHint: 'female artist'
     },
+    instructors: [
+       { name: 'Sadia Islam', title: 'Lead Designer', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female artist' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'graphic design',
     category: 'Skills',
     price: 'BDT 3500',
-    features: ['ফটোশপ', 'ইলাস্ট্রেটর', 'ফিigma'],
-    imageTitle: 'Graphics'
+    rating: 4.8,
+    reviews: 210,
+    features: ['ফটোশপ', 'ইলাস্ট্রেটর', 'ফিigma', 'ফ্রিল্যান্সিং গাইডলাইন'],
+    imageTitle: 'Graphics',
+    features_detailed: [
+        { title: 'Adobe Photoshop', description: 'Photo editing, manipulation, and digital art.' },
+        { title: 'Adobe Illustrator', description: 'Vector graphics, logo design, and illustrations.' },
+        { title: 'Figma', description: 'UI/UX design for web and mobile apps.' },
+        { title: 'Design Principles', description: 'Learn about color theory, typography, and layout.' },
+        { title: 'Portfolio Building', description: 'Create a professional portfolio to showcase your work.' },
+        { title: 'Freelancing', description: 'Learn how to start your career as a freelance designer.' },
+    ],
+    syllabus: [
+        { title: 'Module 1: Introduction to Design', content: 'Elements and principles of design.' },
+        { title: 'Module 2: Mastering Photoshop', content: 'Tools, layers, masks, and projects.' },
+        { title: 'Module 3: Vector Art with Illustrator', content: 'Pen tool, shapes, gradients, and branding projects.' },
+        { title: 'Module 4: UI/UX with Figma', content: 'Wireframing, prototyping, and creating user interfaces.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
+        { day: 'Friday', subject: 'Live Project Review', time: '8:00 PM' },
+    ],
+    faqs: [
+        { question: 'Do I need a powerful computer for this course?', answer: 'A mid-range computer that can run Adobe software smoothly is recommended.' },
+        { question: 'Will I get any software?', answer: 'We do not provide software. Students need to have their own licensed copies of Adobe Photoshop and Illustrator.' },
+    ]
   },
   {
     id: '9',
@@ -247,12 +441,39 @@ export const courses: Course[] = [
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male engineer'
     },
+    instructors: [
+       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male engineer' },
+       { name: 'Dr. Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female scientist' },
+       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'engineering drawing',
     category: 'Admission',
     price: 'BDT 5000',
-    features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'হায়ার ম্যাথ'],
-    imageTitle: 'Engineering'
+    rating: 4.8,
+    reviews: 280,
+    features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'হায়ার ম্যাথ', 'প্রশ্নব্যাংক সলভ', 'মডেল টেস্ট'],
+    imageTitle: 'Engineering',
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'প্রশ্নব্যাংক সলভ', description: 'বিগত বছরের প্রশ্ন সমাধান' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+        { title: 'শর্টকাট টেকনিক', description: 'দ্রুত প্রব্লেম সলভ করার কৌশল' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+    ],
+    syllabus: [
+        { title: 'Physics', content: 'Mechanics, Electromagnetism, Modern Physics, and problem-solving sessions.' },
+        { title: 'Chemistry', content: 'Organic Chemistry, Inorganic Chemistry, Physical Chemistry concepts and practice.' },
+        { title: 'Higher Math', content: 'Calculus, Matrices, Complex Numbers, Analytical Geometry, and advanced topics.' },
+    ],
+    classRoutine: [
+        { day: 'শনি-সোম-বুধ', subject: 'Physics, Chemistry, Math', time: 'রাত ৮:০০' },
+    ],
+    faqs: [
+        { question: 'Is this course suitable for BUET admission?', answer: 'Yes, this course is designed to cover the syllabus of all major engineering universities in Bangladesh, including BUET, KUET, RUET, and CUET.' },
+        { question: 'How many model tests are included?', answer: 'There are over 20 model tests included in this course.' },
+    ]
   },
   {
     id: '10',
@@ -265,12 +486,35 @@ export const courses: Course[] = [
       bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
       dataAiHint: 'male teacher'
     },
+    instructors: [
+       { name: 'Farhan Mahmud', title: 'Lead Mentor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'university building',
     category: 'Admission',
     price: 'BDT 5000',
+    rating: 4.7,
+    reviews: 220,
     features: ['বিষয়ভিত্তিক ক্লাস', 'প্রশ্নব্যাংক সলভ', 'ফাইনাল মডেল টেস্ট'],
-    imageTitle: 'DU Ka Unit'
+    imageTitle: 'DU Ka Unit',
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'প্রশ্নব্যাংক সলভ', description: 'বিগত বছরের প্রশ্ন সমাধান' },
+        { title: 'এক্সাম', description: 'প্রস্তুতি যাচাই' },
+        { title: 'মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+    ],
+    syllabus: [
+        { title: 'Physics', content: 'HSC syllabus based in-depth lectures.' },
+        { title: 'Chemistry', content: 'HSC syllabus based in-depth lectures.' },
+        { title: 'Math', content: 'HSC syllabus based in-depth lectures.' },
+        { title: 'Biology', content: 'HSC syllabus based in-depth lectures.' },
+    ],
+    classRoutine: [
+        { day: 'প্রতিদিন', subject: 'লাইভ ক্লাস ও পরীক্ষা', time: 'সন্ধ্যা ৭:৩০' },
+    ],
+    faqs: [
+        { question: 'How is this course different?', answer: 'We focus on the specific patterns of DU Ka-unit questions and provide exclusive shortcut techniques.' },
+    ]
   },
   {
     id: '11',
@@ -283,12 +527,35 @@ export const courses: Course[] = [
       bio: 'Raihan has been teaching for over 8 years and has a proven track record of helping students achieve high scores.',
       dataAiHint: 'government official'
     },
+    instructors: [
+       { name: 'Raihan Chowdhury', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'government official' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'government building',
     category: 'Job Prep',
     price: 'BDT 4000',
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম'],
-    imageTitle: 'BCS Preli'
+    rating: 4.8,
+    reviews: 400,
+    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম', 'মডেল টেস্ট'],
+    imageTitle: 'BCS Preli',
+    features_detailed: [
+        { title: 'Subject-wise Classes', description: 'Detailed classes on all 10 subjects.' },
+        { title: 'PDF Lecture Sheets', description: 'Downloadable notes for every class.' },
+        { title: 'Regular Exams', description: 'Quizzes and exams to track your progress.' },
+        { title: 'Final Model Tests', description: 'Prepare for the final exam with full-length model tests.' },
+    ],
+    syllabus: [
+        { title: 'Bangla & English', content: 'Language and literature.' },
+        { title: 'Bangladesh & International Affairs', content: 'Current events, history, and geography.' },
+        { title: 'General Science & ICT', content: 'Basic science concepts and computer literacy.' },
+        { title: 'Mathematical Reasoning & Mental Ability', content: 'Problem-solving and analytical skills.' },
+    ],
+    classRoutine: [
+        { day: 'Friday & Saturday', subject: 'Live Classes', time: '10:00 AM & 8:00 PM' },
+    ],
+    faqs: [
+        { question: 'Is this course enough for the preliminary exam?', answer: 'Yes, this course comprehensively covers all the topics required for the BCS preliminary exam.' },
+    ]
   },
   {
     id: '12',
@@ -301,22 +568,45 @@ export const courses: Course[] = [
       bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
       dataAiHint: 'female banker'
     },
+    instructors: [
+       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female banker' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'bank interior',
     category: 'Job Prep',
     price: 'BDT 3500',
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম'],
-    imageTitle: 'Bank Job'
+    rating: 4.7,
+    reviews: 350,
+    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম', 'ভাইভা টিপস'],
+    imageTitle: 'Bank Job',
+    features_detailed: [
+        { title: 'Math Classes', description: 'Shortcut techniques for quick problem-solving.' },
+        { title: 'English Classes', description: 'Focus on grammar, vocabulary, and writing.' },
+        { title: 'General Knowledge', description: 'Covering recent and important topics.' },
+        { title: 'Mock Tests', description: 'Simulate real bank job exams.' },
+    ],
+    syllabus: [
+        { title: 'Quantitative Aptitude', content: 'Arithmetic, Algebra, Geometry.' },
+        { title: 'English Language', content: 'Grammar, Comprehension, Vocabulary.' },
+        { title: 'General Awareness', content: 'Current affairs, banking industry knowledge.' },
+        { title: 'Analytical Ability', content: 'Puzzles, data interpretation.' },
+    ],
+    classRoutine: [
+        { day: 'Sunday & Tuesday', subject: 'Live Classes', time: '9:00 PM' },
+    ],
+    faqs: [
+        { question: 'Which banks does this course cover?', answer: 'This course is designed for the recruitment exams of all government and private banks in Bangladesh.' },
+    ]
   },
   {
     id: '13',
     title: 'HSC 25 Online Batch - Arts',
     category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-    price: '৳ ১২৫০',
-    imageTitle: 'বাংলা ঐচ্ছিক',
+    price: '৳ ৪২০০',
+    imageTitle: 'মানবিক শাখা',
     imageUrl: 'https://placehold.co/300x400',
-    dataAiHint: 'bangla literature',
+    dataAiHint: 'history book',
     description: 'A complete online batch for HSC 2025 Arts students covering all subjects with live classes, lecture sheets, and regular exams.',
     instructor: {
       name: 'Nusrat Jahan',
@@ -325,6 +615,32 @@ export const courses: Course[] = [
       bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
       dataAiHint: 'female teacher'
     },
+    instructors: [
+       { name: 'Nusrat Jahan', title: 'History', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
+       { name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
+    rating: 4.5,
+    reviews: 70,
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'লেকচার শীট', description: 'প্রতিটি ক্লাসের পর নোট' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+    ],
+    syllabus: [
+        { title: 'ইতিহাস', content: 'বাংলার ইতিহাস, ইউরোপের ইতিহাস, এবং বিশ্ব ইতিহাস।' },
+        { title: 'পৌরনীতি ও সুশাসন', content: 'মৌলিক ধারণা, সরকার, সংবিধান, এবং রাজনৈতিক ব্যবস্থা।' },
+        { title: 'অর্থনীতি', content: 'মৌলিক অর্থনৈতিক ধারণা, চাহিদা ও জোগান, বাজার।' },
+        { title: 'যুক্তিবিদ্যা', content: 'যুক্তিবিদ্যার পরিচিতি, অবরোহ ও আরোহ অনুমান।' },
+    ],
+    classRoutine: [
+        { day: 'রবি', subject: 'ইতিহাস', time: 'বিকাল ৪:০০' },
+        { day: 'মঙ্গল', subject: 'পৌরনীতি', time: 'বিকাল ৪:০০' },
+        { day: 'বৃহঃ', subject: 'অর্থনীতি', time: 'বিকাল ৪:০০' },
+    ],
+    faqs: [
+        { question: 'Will this course cover all subjects for the Arts group?', answer: 'Yes, this course covers all compulsory and major subjects for the HSC Arts stream.' },
+    ]
   },
   {
     id: '14',
@@ -334,7 +650,7 @@ export const courses: Course[] = [
     imageTitle: 'PHYSICS',
     imageUrl: 'https://placehold.co/300x400',
     dataAiHint: 'physics equation',
-    features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'],
+    features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'সাপোর্ট সেশন'],
     description: 'Master Physics for your HSC exams with our detailed subject-based course. Access recorded classes, lecture sheets, and quizzes anytime.',
     instructor: {
       name: 'Jubayer Ahmed',
@@ -343,6 +659,27 @@ export const courses: Course[] = [
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher'
     },
+    instructors: [
+       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
+    rating: 4.9,
+    reviews: 180,
+    features_detailed: [
+        { title: 'Chapter-wise Videos', description: 'In-depth recorded lectures for each chapter.' },
+        { title: 'Concept Clarity', description: 'Focus on building strong conceptual understanding.' },
+        { title: 'Problem Solving', description: 'Solutions to a wide range of creative questions.' },
+        { title: 'Doubt Clearing', description: 'Dedicated sessions to clear your doubts.' },
+    ],
+    syllabus: [
+        { title: 'Physics 1st Paper', content: 'Vectors, Dynamics, Newtonian Mechanics, Work Power Energy, Gravitation, etc.' },
+        { title: 'Physics 2nd Paper', content: 'Thermal Physics, Static Electricity, Current Electricity, Modern Physics, etc.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
+    ],
+    faqs: [
+        { question: 'Is this course recorded or live?', answer: 'This is a fully recorded course, so you can learn at your own pace.' },
+    ]
   },
    {
     id: '15',
@@ -352,7 +689,7 @@ export const courses: Course[] = [
     imageTitle: 'বিজ্ঞান শাখা',
     imageUrl: 'https://placehold.co/300x400',
     dataAiHint: 'exam paper',
-    features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি'],
+    features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি', 'হায়ার ম্যাথ'],
     description: 'Solve test papers for the science stream with our expert teachers. Get ready for your final exams with confidence.',
     instructor: {
         name: 'Sadia Islam',
@@ -361,6 +698,30 @@ export const courses: Course[] = [
         bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
         dataAiHint: 'female doctor'
     },
+    instructors: [
+       { name: 'Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female doctor' },
+       { name: 'Jubayer Ahmed', title: 'Physics & Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
+    rating: 4.8,
+    reviews: 130,
+    features_detailed: [
+        { title: 'Live Solving Classes', description: 'Solve top college test papers live with teachers.' },
+        { title: 'PDF Solve Sheets', description: 'Get detailed PDF solutions for every question.' },
+        { title: 'Time Management', description: 'Learn how to manage your time effectively in exams.' },
+        { title: 'Suggestion', description: 'Get important suggestions before your exam.' },
+    ],
+    syllabus: [
+        { title: 'Physics', content: 'Solving test papers from top colleges.' },
+        { title: 'Chemistry', content: 'Solving test papers from top colleges.' },
+        { title: 'Higher Math', content: 'Solving test papers from top colleges.' },
+        { title: 'Biology', content: 'Solving test papers from top colleges.' },
+    ],
+    classRoutine: [
+        { day: 'Daily', subject: 'Live Solving Class', time: '8:30 PM' },
+    ],
+    faqs: [
+        { question: 'Which test papers will be solved?', answer: 'We will be solving test papers from renowned colleges across the country.' },
+    ]
   },
   {
     id: '16',
@@ -370,7 +731,7 @@ export const courses: Course[] = [
     imageTitle: 'ওয়েব ডেভেলপমেন্ট',
     imageUrl: 'https://placehold.co/300x400',
     dataAiHint: 'programming code',
-    features: ['HTML', 'CSS', 'JavaScript'],
+    features: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'],
     description: 'Learn the basics of web development for free. Start your journey into the world of coding with our master course.',
     instructor: {
         name: 'Jubayer Ahmed',
@@ -379,6 +740,29 @@ export const courses: Course[] = [
         bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
         dataAiHint: 'male teacher'
     },
+    instructors: [
+       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+    ],
+    rating: 4.9,
+    reviews: 500,
+    features_detailed: [
+        { title: 'HTML5', description: 'Learn the structure of web pages.' },
+        { title: 'CSS3', description: 'Style your web pages and create beautiful layouts.' },
+        { title: 'JavaScript', description: 'Make your web pages interactive.' },
+        { title: 'Bootstrap 5', description: 'Build responsive websites quickly.' },
+    ],
+    syllabus: [
+        { title: 'HTML', content: 'Tags, attributes, forms, and semantic HTML.' },
+        { title: 'CSS', content: 'Selectors, box model, Flexbox, Grid, and responsive design.' },
+        { title: 'JavaScript', content: 'Variables, data types, DOM manipulation, and events.' },
+    ],
+    classRoutine: [
+        { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
+    ],
+    faqs: [
+        { question: 'Is this course really free?', answer: 'Yes, this master course is completely free of charge.' },
+        { question: 'Will I get a certificate?', answer: 'Yes, you will receive a certificate of completion after finishing the course.' },
+    ]
   }
 ];
 
