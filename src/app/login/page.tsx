@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Key } from 'lucide-react';
 
 function GoogleIcon() {
   return (
@@ -44,6 +45,12 @@ export default function LoginPage() {
             </div>
             <Button type="submit" className="w-full">
               Login
+            </Button>
+            <Button variant="secondary" className="w-full" asChild>
+              <Link href="/dashboard">
+                <Key />
+                Demo Login
+              </Link>
             </Button>
             <Button variant="outline" className="w-full">
               <GoogleIcon />
