@@ -13,15 +13,15 @@ import { Button } from './ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ClassNames from 'embla-carousel-class-names';
 
-const heroBanners = [
-  { id: 1, href: '/courses/9', imageUrl: 'https://placehold.co/800x450.png', alt: 'Engineering Program', dataAiHint: 'engineering program' },
-  { id: 2, href: '/courses/2', imageUrl: 'https://placehold.co/800x450.png', alt: 'Medical 25 Program', dataAiHint: 'medical program students' },
-  { id: 3, href: '/courses/1', imageUrl: 'https://placehold.co/800x450.png', alt: 'ID Timers Batch 25', dataAiHint: 'classroom students' },
-  { id: 4, href: '/courses/10', imageUrl: 'https://placehold.co/800x450.png', alt: 'ACS Program', dataAiHint: 'university admission' },
-  { id: 5, href: '/courses/13', imageUrl: 'https://placehold.co/800x450.png', alt: 'Arts Program', dataAiHint: 'history book' },
-];
+type HeroBanner = {
+  id: number;
+  href: string;
+  imageUrl: string;
+  alt: string;
+  dataAiHint: string;
+};
 
-export function HeroCarousel() {
+export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const plugins = [ClassNames()];
@@ -51,7 +51,7 @@ export function HeroCarousel() {
         className="w-full hero-carousel"
       >
         <CarouselContent className="-ml-8">
-          {heroBanners.map((banner, index) => (
+          {banners.map((banner, index) => (
             <CarouselItem
               key={banner.id}
               className="pl-8 basis-full md:basis-[50%] lg:basis-[40%]"
@@ -93,7 +93,7 @@ export function HeroCarousel() {
         </Button>
       </Carousel>
       <div className="hero-carousel-dots">
-        {heroBanners.map((_, index) => (
+        {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}

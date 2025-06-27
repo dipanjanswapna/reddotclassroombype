@@ -1,14 +1,13 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  Video,
   BookOpen,
   PlayCircle,
   Users,
   Trophy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { CourseCard } from '@/components/course-card';
 import {
   Carousel,
@@ -21,31 +20,39 @@ import { Badge } from '@/components/ui/badge';
 import { courses } from '@/lib/mock-data';
 import type { Metadata } from 'next';
 import { HeroCarousel } from '@/components/hero-carousel';
+import { homepageConfig } from '@/lib/homepage-data';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  // The title is already set in the root layout's template.
-  // We can override the description for better SEO on the homepage.
   description: 'Join thousands of learners at Red Dot Classroom. We offer high-quality online courses for HSC, SSC, Admission Tests, and professional skills development in Bangladesh.',
 };
 
-const liveCourses = courses.filter(c => c.category === 'এইচএসসি ২৫ অনলাইন ব্যাচ').slice(0, 4);
-const sscHscCourses = courses.filter(c => c.category === 'SSC' || c.category === 'HSC').slice(0, 4);
-const masterClasses = courses.filter(c => c.category === 'মাস্টার কোর্স').slice(0, 4);
-const admissionCourses = courses.filter(c => c.category === 'Admission').slice(0, 4);
-const jobCourses = courses.filter(c => c.category === 'Job Prep').slice(0, 4);
+const WhyChooseUsIcon = ({ iconName }: { iconName: string }) => {
+  const iconProps = { className: "w-8 h-8 text-primary" };
+  switch (iconName) {
+    case 'Trophy':
+      return <Trophy {...iconProps} />;
+    case 'BookOpen':
+      return <BookOpen {...iconProps} />;
+    case 'Users':
+      return <Users {...iconProps} />;
+    default:
+      return <Trophy {...iconProps} />;
+  }
+};
 
-
-const whyChooseUs = [
-  { icon: Trophy, title: 'সেরা প্রশিক্ষক', description: 'দেশের সেরা শিক্ষকরা ক্লাস নেন' },
-  { icon: BookOpen, title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
-  { icon: Users, title: 'সহপাঠীদের সাথে প্রস্তুতি', description: 'একসাথে পড়াশোনা ও মডেল টেস্ট' },
-];
 
 export default function Home() {
+  const liveCourses = courses.filter(c => homepageConfig.liveCoursesIds.includes(c.id));
+  const sscHscCourses = courses.filter(c => homepageConfig.sscHscCourseIds.includes(c.id));
+  const masterClasses = courses.filter(c => homepageConfig.masterClassesIds.includes(c.id));
+  const admissionCourses = courses.filter(c => homepageConfig.admissionCoursesIds.includes(c.id));
+  const jobCourses = courses.filter(c => homepageConfig.jobCoursesIds.includes(c.id));
+
   return (
     <div className="flex flex-col bg-background">
       {/* Hero Carousel Section */}
-      <HeroCarousel />
+      <HeroCarousel banners={homepageConfig.heroBanners} />
       
       {/* Hero Section */}
       <section className="py-12 bg-gray-900 text-white" aria-labelledby="hero-heading">
@@ -73,21 +80,17 @@ export default function Home() {
       {/* Video Section */}
       <section className="py-16" aria-labelledby="video-section-heading">
         <div className="container mx-auto px-4 text-center">
-            <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">সফল শিক্ষার্থীদের কোর্সে কী কী থাকছে?</h2>
-            <p className="text-muted-foreground mb-8">নিজেকে এগিয়ে রাখতে আজই শুরু করুন আপনার পছন্দের কোর্স</p>
+            <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title}</h2>
+            <p className="text-muted-foreground mb-8">{homepageConfig.videoSection.description}</p>
             <div className="grid md:grid-cols-2 gap-8">
-                <div className="relative rounded-lg overflow-hidden group">
-                    <Image src="https://placehold.co/600x400.png" alt="Online course feature" width={600} height={400} className="w-full" data-ai-hint="online learning"/>
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
-                    </div>
-                </div>
-                <div className="relative rounded-lg overflow-hidden group">
-                    <Image src="https://placehold.co/600x400.png" alt="Best science videos" width={600} height={400} className="w-full" data-ai-hint="science experiment"/>
-                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
-                    </div>
-                </div>
+                {homepageConfig.videoSection.videos.map((video, index) => (
+                  <div key={index} className="relative rounded-lg overflow-hidden group">
+                      <Image src={video.imageUrl} alt={video.alt} width={600} height={400} className="w-full" data-ai-hint={video.dataAiHint}/>
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                      </div>
+                  </div>
+                ))}
             </div>
             <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
               <Link href="/courses">সকল কোর্স দেখুন</Link>
@@ -161,17 +164,17 @@ export default function Home() {
       <section className="py-16 bg-card" aria-labelledby="why-choose-us-heading">
         <div className="container mx-auto px-4">
           <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
-            কেন আমরাই শিক্ষার্থী ও অভিভাবকদের প্রথম পছন্দ?
+            {homepageConfig.whyChooseUs.title}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {whyChooseUs.map((feature) => (
-              <Card key={feature.title} className="text-center p-6 border-0 shadow-none bg-transparent">
+            {homepageConfig.whyChooseUs.features.map((feature, index) => (
+              <div key={index} className="text-center p-6">
                 <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-8 h-8 text-primary" />
+                  <WhyChooseUsIcon iconName={feature.icon} />
                 </div>
                 <h3 className="font-headline text-xl font-semibold">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
@@ -182,10 +185,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-8">
               <div>
-                  <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-white">টেন মিনিট স্কুলের নোট পড়ে পাস!</h3>
-                  <p className="text-gray-300 mt-2">সেরা নোট, লেকচার শিট ও গুরুত্বপূর্ণ সাজেশন খুঁজে নাও সহজেই।</p>
+                  <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-white">{homepageConfig.notesBanner.title}</h3>
+                  <p className="text-gray-300 mt-2">{homepageConfig.notesBanner.description}</p>
               </div>
-              <Button variant="accent" size="lg" className="font-bold shrink-0">নোটস এবং সাজেশন</Button>
+              <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner.buttonText}</Button>
           </div>
         </div>
       </section>
@@ -193,20 +196,14 @@ export default function Home() {
       {/* Stats Section */}
       <section className="py-12 bg-red-800 text-white" aria-labelledby="stats-heading">
         <div className="container mx-auto px-4 text-center">
-            <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">২০২২-২৪ শিক্ষাবর্ষে টেন মিনিট স্কুলের এডমিশন সাফল্য</h2>
+            <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSectionTitle}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                    <p className="font-headline text-5xl font-bold">১,২১৬</p>
-                    <p className="mt-2 text-lg">মেডিকেল ও ডেন্টাল</p>
-                </div>
-                <div className="text-center">
-                    <p className="font-headline text-5xl font-bold">৮৫+</p>
-                    <p className="mt-2 text-lg">বুয়েট</p>
-                </div>
-                <div className="text-center">
-                    <p className="font-headline text-5xl font-bold">৯</p>
-                    <p className="mt-2 text-lg">আইবিএ (ঢাকা বিশ্ববিদ্যালয়)</p>
-                </div>
+                {homepageConfig.stats.map((stat, index) => (
+                    <div key={index} className="text-center">
+                        <p className="font-headline text-5xl font-bold">{stat.value}</p>
+                        <p className="mt-2 text-lg">{stat.label}</p>
+                    </div>
+                ))}
             </div>
         </div>
       </section>
@@ -215,19 +212,19 @@ export default function Home() {
       <section className="py-16 bg-gray-900 text-white" aria-labelledby="app-promo-heading">
           <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
               <div className="text-center md:text-left">
-                <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">যেকোনো জায়গায় বসে শিখুন, যখন যা প্রয়োজন!</h2>
-                <p className="mt-4 text-lg text-gray-300">আমাদের অ্যাপ ডাউনলোড করে স্মার্টফোনেই গুছিয়ে নিন আপনার সম্পূর্ণ প্রস্তুতি।</p>
+                <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">{homepageConfig.appPromo.title}</h2>
+                <p className="mt-4 text-lg text-gray-300">{homepageConfig.appPromo.description}</p>
                 <div className="flex justify-center md:justify-start gap-4 mt-8">
-                    <Link href="#">
+                    <Link href={homepageConfig.appPromo.googlePlayUrl}>
                         <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
                     </Link>
-                    <Link href="#">
+                    <Link href={homepageConfig.appPromo.appStoreUrl}>
                         <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
                     </Link>
                 </div>
               </div>
               <div className="flex justify-center">
-                  <Image src="https://placehold.co/400x500.png" width={400} height={500} alt="RDC App" data-ai-hint="mobile app screenshot"/>
+                  <Image src={homepageConfig.appPromo.imageUrl} width={400} height={500} alt="RDC App" data-ai-hint="mobile app screenshot"/>
               </div>
           </div>
       </section>

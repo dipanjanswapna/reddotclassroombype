@@ -11,6 +11,7 @@ import {
   LogOut,
   LayoutDashboard,
   DollarSign,
+  Home,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -38,6 +39,7 @@ export default function AdminLayout({
 
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "#", icon: Users, label: "User Management" },
         { href: "/admin/courses", icon: BookCopy, label: "Course Management" },
         { href: "#", icon: UserCog, label: "Teacher Management" },
