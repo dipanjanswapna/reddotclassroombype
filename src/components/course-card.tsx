@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Course } from "@/lib/mock-data";
 
 type CourseCardProps = Partial<Course>;
 
-export function CourseCard({ id, title, instructor, imageUrl, category, price, dataAiHint }: CourseCardProps) {
+export function CourseCard({ id, title, instructor, imageUrl, category, price, dataAiHint, isArchived }: CourseCardProps) {
   if (!id || !title || !imageUrl) {
     return null;
   }
@@ -32,11 +33,13 @@ export function CourseCard({ id, title, instructor, imageUrl, category, price, d
         </Link>
         {instructor && <p className="text-muted-foreground text-sm mt-2">By {instructor.name}</p>}
       </CardContent>
-      {price && (
-        <CardFooter className="p-4 pt-0">
-            <p className="font-headline text-lg font-bold text-primary">{price}</p>
-        </CardFooter>
-      )}
+      <CardFooter className="p-4 pt-0">
+        {isArchived ? (
+            <Badge variant="secondary">Enrollment Closed</Badge>
+        ) : (
+            price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
+        )}
+      </CardFooter>
     </Card>
   );
 }

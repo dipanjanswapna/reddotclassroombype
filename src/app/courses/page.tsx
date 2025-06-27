@@ -47,13 +47,15 @@ export default function CoursesPage({
   };
 }) {
 
-  // Only show published courses on the public page
-  const publishedCourses = courses.filter(course => course.status === 'Published');
+  // Separate all published courses into active and archived
+  const allPublishedCourses = courses.filter(course => course.status === 'Published');
+  const activeCourses = allPublishedCourses.filter(course => !course.isArchived);
+  const archivedCourses = allPublishedCourses.filter(course => course.isArchived);
 
   const selectedCategory = searchParams?.category;
   const selectedSubCategory = searchParams?.subCategory;
 
-  let filteredCourses = publishedCourses;
+  let filteredCourses = activeCourses;
 
   if (selectedCategory) {
     filteredCourses = filteredCourses.filter(
@@ -78,9 +80,9 @@ export default function CoursesPage({
     return indexA - indexB;
   });
   
-  // The filter bar should also only show categories from published courses
-  const allCategories = [...new Set(publishedCourses.map(course => course.category))].sort();
-  const allSubCategories = [...new Set(publishedCourses.map(course => course.subCategory).filter(Boolean))] as string[];
+  // The filter bar should also only show categories from active courses
+  const allCategories = [...new Set(activeCourses.map(course => course.category))].sort();
+  const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
 
 
   return (
@@ -138,6 +140,19 @@ export default function CoursesPage({
                   </div>
                 </section>
               ))}
+
+              {archivedCourses.length > 0 && (
+                <section id="old-is-gold">
+                    <h2 className="font-headline mb-6 text-3xl font-bold">
+                        OLD IS GOLD
+                    </h2>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {archivedCourses.map((course) => (
+                        <CourseCard key={course.id} {...course} />
+                        ))}
+                    </div>
+                </section>
+              )}
             </div>
         )}
       </main>

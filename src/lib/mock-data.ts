@@ -78,6 +78,7 @@ export type Course = {
   faqs?: { question: string; answer: string; id?: string; }[];
   reviewsData?: Review[];
   liveClasses?: LiveClass[];
+  isArchived?: boolean;
 };
 
 
@@ -936,6 +937,38 @@ export const courses: Course[] = [
         { question: 'Is this course really free?', answer: 'Yes, this master course is completely free of charge.' },
         { question: 'Will I get a certificate?', answer: 'Yes, you will receive a certificate of completion after finishing the course.' },
     ]
+  },
+  {
+    id: '17',
+    title: 'HSC 2024 Crash Course (Archived)',
+    category: 'Old is Gold',
+    price: 'N/A',
+    status: 'Published',
+    isArchived: true,
+    imageTitle: 'বিজ্ঞান শাখা',
+    imageUrl: 'https://placehold.co/300x400.png',
+    dataAiHint: 'old books',
+    description: 'An archived version of the HSC 2024 crash course for science students.',
+    instructor: getInst('ins-ja'),
+    instructors: [getInst('ins-ja')],
+    rating: 4.8,
+    reviews: 500,
+  },
+  {
+    id: '18',
+    title: 'Medical Admission 2023 (Archived)',
+    category: 'Old is Gold',
+    price: 'N/A',
+    status: 'Published',
+    isArchived: true,
+    imageTitle: 'মেডিকেল',
+    imageUrl: 'https://placehold.co/300x400.png',
+    dataAiHint: 'archive box',
+    description: 'The complete course for the 2023 medical admission test. Archived for reference.',
+    instructor: getInst('ins-si'),
+    instructors: [getInst('ins-si')],
+    rating: 4.9,
+    reviews: 800,
   }
 ];
 
