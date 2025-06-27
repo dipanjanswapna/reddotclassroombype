@@ -12,11 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "./ui/input";
 
 const navLinks = [
-  { href: "/", label: "Home" },
   { href: "/courses", label: "Courses" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/blog", label: "Blog" },
+  { href: "/student/dashboard", label: "Dashboard" },
   { href: "/tutor", label: "AI Tutor" },
 ];
 
@@ -36,8 +37,9 @@ export function Header() {
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <RdcLogo className="h-8 w-auto" />
+            <span className="font-bold text-lg hidden lg:inline-block">Red Dot Classroom</span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          <nav className="flex items-center space-x-1 text-sm font-medium">
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-1">
@@ -52,18 +54,24 @@ export function Header() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            {navLinks.slice(1).map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition-colors hover:text-primary"
-              >
-                {link.label}
-              </Link>
+            {navLinks.map((link) => (
+              <Button key={link.href} variant="ghost" asChild>
+                <Link
+                  href={link.href}
+                  className="transition-colors hover:text-primary"
+                >
+                  {link.label}
+                </Link>
+              </Button>
             ))}
+             <div className="relative ml-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input placeholder="কী খুঁজতে চান?" className="pl-10 w-48" />
+             </div>
           </nav>
         </div>
 
+        {/* Mobile Header */}
         <div className="md:hidden">
           <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
@@ -77,6 +85,7 @@ export function Header() {
                 <div className="flex flex-col space-y-3">
                     <Link href="/" className="flex items-center space-x-2" onClick={() => setMenuOpen(false)}>
                         <RdcLogo className="h-8 w-auto" />
+                         <span className="font-bold text-lg">Red Dot Classroom</span>
                     </Link>
                     <div className="flex flex-col space-y-2 pt-4">
                         {[...navLinks, ...journeyLinks].map((link) => (
@@ -102,17 +111,11 @@ export function Header() {
 
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/courses">
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-            </Link>
+          <Button asChild variant="outline" className="hidden sm:inline-flex">
+            <Link href="/login">লগইন</Link>
           </Button>
-          <Button asChild variant="ghost">
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild variant="accent">
-            <Link href="/signup">Sign Up</Link>
+          <Button asChild>
+            <Link href="/signup">সাইন আপ</Link>
           </Button>
         </div>
       </div>
