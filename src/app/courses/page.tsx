@@ -1,6 +1,7 @@
 import { CourseListItem } from '@/components/course-list-item';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { CourseFilterBar } from '@/components/course-filter-bar';
 
 const hscScienceCourses = [
   {
@@ -67,7 +68,7 @@ const masterCourses = [
 
 export default function CoursesPage() {
   return (
-    <div className="bg-gray-50 dark:bg-gray-950">
+    <div className="bg-background">
       <div className="bg-gray-900 text-white">
         <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-8 md:grid-cols-2">
           <div>
@@ -75,7 +76,7 @@ export default function CoursesPage() {
             <p className="mt-2 text-gray-300">
               তোমার প্রয়োজন অনুযায়ী বেছে নাও সেরা কোর্স
             </p>
-            <Button className="mt-4 bg-blue-500 font-bold text-white hover:bg-blue-600">
+            <Button className="mt-4 bg-red-600 font-bold text-white hover:bg-red-700">
               <Sparkles className="mr-2 h-4 w-4" />
               Start learning free
             </Button>
@@ -86,6 +87,7 @@ export default function CoursesPage() {
             </div>
           </div>
         </div>
+        <CourseFilterBar />
       </div>
 
       <div className="container mx-auto px-4 py-12">
