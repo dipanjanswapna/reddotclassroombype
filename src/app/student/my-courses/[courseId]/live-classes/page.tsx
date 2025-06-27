@@ -6,6 +6,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Video } from 'lucide-react';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+
+function getPlatformBadgeColor(platform: string) {
+    switch (platform.toLowerCase()) {
+        case 'youtube live':
+            return 'bg-red-600 hover:bg-red-700';
+        case 'facebook live':
+            return 'bg-blue-600 hover:bg-blue-700';
+        case 'zoom':
+            return 'bg-sky-500 hover:bg-sky-600';
+        case 'google meet':
+            return 'bg-green-600 hover:bg-green-700';
+        default:
+            return 'bg-gray-500 hover:bg-gray-600';
+    }
+}
 
 export default function LiveClassesPage({ params }: { params: { courseId: string } }) {
   const course = courses.find((c) => c.id === params.courseId);
@@ -44,10 +60,14 @@ export default function LiveClassesPage({ params }: { params: { courseId: string
                   <TableRow key={liveClass.id}>
                     <TableCell className="font-medium">{liveClass.topic}</TableCell>
                     <TableCell>{liveClass.date} at {liveClass.time}</TableCell>
-                    <TableCell>{liveClass.platform}</TableCell>
+                    <TableCell>
+                        <Badge className={`${getPlatformBadgeColor(liveClass.platform)} text-white`}>
+                            {liveClass.platform}
+                        </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button asChild>
-                        <Link href={liveClass.joinUrl} target="_blank" rel="noopener noreferrer">
+                        <Link href={`/student/my-courses/${course.id}/live-classes/${liveClass.id}`}>
                           <Video className="mr-2" />
                           Join Class
                         </Link>
@@ -67,3 +87,5 @@ export default function LiveClassesPage({ params }: { params: { courseId: string
     </div>
   );
 }
+
+    

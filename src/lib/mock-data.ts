@@ -1,3 +1,4 @@
+
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
@@ -179,9 +180,9 @@ export const courses: Course[] = [
       { id: 'r2', user: { name: 'Fatima Akter', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female student' }, rating: 4, comment: 'Great content, but I wish there were more practice problems.', date: 'June 12, 2024' },
     ],
     liveClasses: [
-        { id: 'lc1-1', topic: 'ভেক্টর প্রবলেম সলভিং', date: 'July 10, 2024', time: '8:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
-        { id: 'lc1-2', topic: 'গতিবিদ্যা রিভিউ', date: 'July 12, 2024', time: '8:00 PM', platform: 'Google Meet', joinUrl: 'https://meet.google.com/abc-defg-hij' },
-        { id: 'lc1-3', topic: 'রসায়ন বিশেষ লাইভ', date: 'July 15, 2024', time: '7:00 PM', platform: 'Facebook Live', joinUrl: 'https://facebook.com/live/12345' },
+        { id: 'lc1-1', topic: 'ভেক্টর প্রবলেম সলভিং', date: 'July 10, 2024', time: '8:00 PM', platform: 'YouTube Live', joinUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' },
+        { id: 'lc1-2', topic: 'গতিবিদ্যা রিভিউ', date: 'July 12, 2024', time: '8:00 PM', platform: 'Facebook Live', joinUrl: 'https://www.facebook.com/watch/live/?ref=watch_permalink&v=1158671215243119' },
+        { id: 'lc1-3', topic: 'রসায়ন বিশেষ লাইভ', date: 'July 15, 2024', time: '7:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
     ]
   },
   {
@@ -1093,3 +1094,5 @@ export const mockGrades = [
     date: '2024-06-05',
   },
 ];
+
+    
