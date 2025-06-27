@@ -1,11 +1,73 @@
 
+'use client';
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Upload } from "lucide-react";
 
 export default function ProfilePage() {
+    const { toast } = useToast();
+
+    // State for personal information
+    const [fullName, setFullName] = useState("Student Name");
+    const [email, setEmail] = useState("student@rdc.com");
+    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
+
+    const handleInfoSave = () => {
+        toast({
+            title: "Profile Updated",
+            description: "Your personal information has been saved.",
+        });
+    };
+
+    const handlePasswordSave = () => {
+         toast({
+            title: "Password Updated",
+            description: "Your password has been changed successfully.",
+        });
+    };
+    
+    const handleDeleteAccount = () => {
+        toast({
+            title: "Account Deletion Requested",
+            description: "Your account is scheduled for deletion. This action cannot be undone.",
+            variant: "destructive"
+        });
+    };
+    
+    // A dummy function to simulate file upload
+    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarUrl(reader.result as string);
+                 toast({
+                    title: "Avatar Updated",
+                    description: "Your new profile picture has been set.",
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div>
@@ -21,17 +83,36 @@ export default function ProfilePage() {
               <CardDescription>Update your personal details here.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+               <div className="flex items-center gap-4">
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage src={avatarUrl} alt={fullName} data-ai-hint="male student" />
+                    <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-grow">
+                    <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
+                    <div className="relative">
+                        <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24" />
+                        <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
+                            <Button asChild variant="outline" className="rounded-l-none -ml-px">
+                                <div><Upload className="mr-2"/>Upload</div>
+                            </Button>
+                        </label>
+                        <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
+                    </div>
+                  </div>
+                </div>
+
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" defaultValue="Student Name" />
+                <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="student@rdc.com" />
+                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
               </div>
             </CardContent>
             <div className="p-6 pt-0">
-                <Button>Save Changes</Button>
+                <Button onClick={handleInfoSave}>Save Changes</Button>
             </div>
           </Card>
 
@@ -55,7 +136,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
             <div className="p-6 pt-0">
-                <Button>Update Password</Button>
+                <Button onClick={handlePasswordSave}>Update Password</Button>
             </div>
           </Card>
         </div>
@@ -66,7 +147,25 @@ export default function ProfilePage() {
               <CardTitle>Account Management</CardTitle>
             </CardHeader>
              <CardContent>
-                <Button variant="destructive" className="w-full">Delete Account</Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="w-full">Delete Account</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action is permanent and cannot be undone. This will permanently delete your account and all associated data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteAccount}>
+                                Yes, delete my account
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <p className="text-xs text-muted-foreground mt-2">
                     Permanently delete your account and all associated data. This action cannot be undone.
                 </p>

@@ -37,10 +37,10 @@ export default function GuardianLayout({
 
   const menuItems = [
     { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "#", icon: BarChart3, label: "Child's Progress" },
-    { href: "#", icon: BookOpen, label: "Enrolled Courses" },
-    { href: "#", icon: Wallet, label: "Payment History" },
-    { href: "#", icon: MessageSquare, label: "Contact Teachers" },
+    { href: "/guardian/progress", icon: BarChart3, label: "Child's Progress" },
+    { href: "/guardian/courses", icon: BookOpen, label: "Enrolled Courses" },
+    { href: "/guardian/payment-history", icon: Wallet, label: "Payment History" },
+    { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact Teachers" },
   ];
 
   const footerMenuItems = [
