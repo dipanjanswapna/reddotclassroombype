@@ -39,24 +39,27 @@ export type Review = {
 };
 
 export type Instructor = {
+  id: string;
   name: string;
   title: string;
   avatarUrl: string;
   dataAiHint: string;
-  id?: string; // Optional id for builder key
+  slug: string;
+  status: 'Approved' | 'Pending Approval' | 'Rejected';
+  bio: string;
+  socials?: {
+    linkedin?: string;
+    facebook?: string;
+    twitter?: string;
+  }
 }
 
 export type Course = {
   id: string;
   title: string;
   description: string;
-  instructor: { // Primary instructor - can be derived from instructors[0]
-    name: string;
-    title: string;
-    avatarUrl: string;
-    bio: string;
-    dataAiHint: string;
-  };
+  // `instructor` property is deprecated but kept for compatibility. Use `instructors[0]` instead.
+  instructor: Instructor; 
   instructors: Instructor[]; // Multiple instructors for the course
   imageUrl: string;
   dataAiHint: string;
@@ -87,24 +90,65 @@ export type BlogPost = {
   content: string;
 };
 
+
+// Master list of all instructors in the platform
+export const allInstructors: Instructor[] = [
+    { 
+        id: 'ins-ja', name: 'Jubayer Ahmed', title: 'Lead Developer & ICT Instructor', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher',
+        slug: 'jubayer-ahmed', status: 'Approved', 
+        bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies. He specializes in making complex ICT topics easy to understand for HSC students.',
+        socials: { linkedin: '#', facebook: '#'}
+    },
+    { 
+        id: 'ins-si', name: 'Dr. Sadia Islam', title: 'Medical Admission Specialist', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor',
+        slug: 'sadia-islam', status: 'Approved',
+        bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges. Her expertise is in Biology and Chemistry.',
+        socials: { linkedin: '#'}
+    },
+    { 
+        id: 'ins-rc', name: 'Raihan Chowdhury', title: 'Certified IELTS Trainer & Math Expert', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'english teacher',
+        slug: 'raihan-chowdhury', status: 'Approved',
+        bio: 'Raihan has been teaching IELTS for over 8 years and has a proven track record of helping students achieve high scores. He also has a passion for teaching Mathematics for admission tests.',
+        socials: { facebook: '#'}
+    },
+    { 
+        id: 'ins-ak', name: 'Ayesha Khan', title: 'Data Scientist & Bank Job Mentor', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female programmer',
+        slug: 'ayesha-khan', status: 'Pending Approval',
+        bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge. She also mentors students for bank job preparations.',
+        socials: { twitter: '#'}
+    },
+    { 
+        id: 'ins-fm', name: 'Farhan Mahmud', title: 'Experienced SSC & DU Admission Tutor', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher',
+        slug: 'farhan-mahmud', status: 'Approved',
+        bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams like SSC and Dhaka University admission tests.',
+    },
+    { 
+        id: 'ins-nj', name: 'Nusrat Jahan', title: 'HSC Specialist (Commerce & Arts)', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher',
+        slug: 'nusrat-jahan', status: 'Rejected',
+        bio: 'Nusrat is a passionate educator with a knack for making complex topics in Commerce and Arts subjects easy to understand for HSC students.'
+    },
+];
+
+const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
+
 export const courses: Course[] = [
   {
     id: '1',
     title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
     description: 'এইচএসসি ২০২৫ পরীক্ষার্থীদের জন্য পূর্ণাঙ্গ প্রস্তুতি নিশ্চিত করতে একটি সম্পূর্ণ অনলাইন ব্যাচ। অভিজ্ঞ শিক্ষকদের সাথে লাইভ ক্লাস, লেকচার শিট, এবং পরীক্ষার মাধ্যমে সেরা প্রস্তুতি নিন।',
     status: 'Pending Approval',
-    instructor: {
-      name: 'Jubayer Ahmed',
-      title: 'Lead Developer & Instructor',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
-      dataAiHint: 'male teacher',
-    },
+    instructor: getInst('ins-ja'),
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
-       { name: 'Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
-       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male instructor' },
-       { name: 'Ayesha Khan', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor' },
+       getInst('ins-ja'),
+       getInst('ins-si'),
+       getInst('ins-rc'),
+       getInst('ins-ak'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'physics class',
@@ -190,18 +234,12 @@ export const courses: Course[] = [
     title: 'Admission Test Prep (Medical)',
     description: 'A comprehensive course designed to help you ace the medical admission tests with in-depth lessons, practice questions, and mock tests.',
     status: 'Published',
-    instructor: {
-      name: 'Dr. Sadia Islam',
-      title: 'Medical Admission Specialist',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
-      dataAiHint: 'female doctor'
-    },
+    instructor: getInst('ins-si'),
     instructors: [
-       { name: 'Dr. Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor' },
-       { name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor' },
-       { name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist' },
-       { name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-si'),
+       { id: 'ins-ka', name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor', slug: 'karim-ahmed', status: 'Approved', bio: 'Bio for Karim' },
+       { id: 'ins-fb', name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist', slug: 'farzana-begum', status: 'Approved', bio: 'Bio for Farzana' },
+       { id: 'ins-ah', name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'anisul-haque', status: 'Approved', bio: 'Bio for Anisul' },
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'medical students',
@@ -254,16 +292,10 @@ export const courses: Course[] = [
     title: 'IELTS Preparation Course',
     description: 'Achieve your desired IELTS band score with our intensive preparation course covering all four modules: Listening, Reading, Writing, and Speaking.',
     status: 'Published',
-    instructor: {
-        name: 'Raihan Chowdhury',
-        title: 'Certified IELTS Trainer',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        bio: 'Raihan has been teaching IELTS for over 8 years and has a proven track record of helping students achieve high scores.',
-        dataAiHint: 'english teacher'
-    },
+    instructor: getInst('ins-rc'),
     instructors: [
-       { name: 'Raihan Chowdhury', title: 'Speaking & Writing', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male instructor' },
-       { name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor' },
+       getInst('ins-rc'),
+       { id: 'ins-jm', name: 'Jessica Miller', title: 'Listening & Reading', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female instructor', slug: 'jessica-miller', status: 'Approved', bio: 'Bio for Jessica' },
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'ielts exam',
@@ -318,16 +350,10 @@ export const courses: Course[] = [
     title: 'Data Science with Python',
     description: 'Learn the fundamentals of data science and machine learning using Python. This course is perfect for beginners with no prior programming experience.',
     status: 'Published',
-    instructor: {
-        name: 'Ayesha Khan',
-        title: 'Data Scientist',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
-        dataAiHint: 'female programmer'
-    },
+    instructor: getInst('ins-ak'),
      instructors: [
-       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female programmer' },
-       { name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male programmer' },
+       getInst('ins-ak'),
+       { id: 'ins-dc', name: 'David Chen', title: 'Machine Learning Expert', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male programmer', slug: 'david-chen', status: 'Approved', bio: 'Bio for David' },
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'python code',
@@ -376,16 +402,10 @@ export const courses: Course[] = [
     title: 'SSC 2025 Online Batch',
     description: 'A complete online batch for SSC 2025 candidates covering all subjects with live classes, lecture sheets, and regular exams.',
     status: 'Published',
-    instructor: {
-      name: 'Farhan Mahmud',
-      title: 'Experienced SSC Tutor',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
-      dataAiHint: 'male teacher'
-    },
+    instructor: getInst('ins-fm'),
     instructors: [
-       { name: 'Farhan Mahmud', title: 'General Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
-       { name: 'Nusrat Jahan', title: 'English', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
+       getInst('ins-fm'),
+       getInst('ins-nj'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'classroom students',
@@ -435,16 +455,10 @@ export const courses: Course[] = [
     title: 'HSC 2025 Commerce Batch',
     description: 'Join our comprehensive online batch for HSC 2025 commerce students. Get access to live classes, solve practice problems and clear your doubts.',
     status: 'Published',
-    instructor: {
-      name: 'Nusrat Jahan',
-      title: 'HSC Specialist',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
-      dataAiHint: 'female teacher'
-    },
+    instructor: getInst('ins-nj'),
     instructors: [
-       { name: 'Nusrat Jahan', title: 'Accounting', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
-       { name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-nj'),
+       { id: 'ins-ik', name: 'Imran Khan', title: 'Finance', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'imran-khan', status: 'Approved', bio: 'Bio for Imran' },
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'lecture hall',
@@ -492,15 +506,9 @@ export const courses: Course[] = [
     title: 'HSC ICT Masterclass',
     description: 'Master the HSC ICT syllabus with our recorded masterclass. Learn from the best and score high in your exams.',
     status: 'Published',
-    instructor: {
-      name: 'Jubayer Ahmed',
-      title: 'ICT Expert',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
-      dataAiHint: 'male teacher'
-    },
+    instructor: getInst('ins-ja'),
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-ja'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'computer circuit',
@@ -545,15 +553,9 @@ export const courses: Course[] = [
     title: 'Graphic Design Fundamentals',
     description: 'Learn the basics of graphic design including Photoshop, Illustrator, and Figma. Build a strong portfolio to start your design career.',
     status: 'Published',
-    instructor: {
-      name: 'Sadia Islam',
-      title: 'Professional Graphic Designer',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Sadia is a creative designer with a passion for visual storytelling and teaching design principles.',
-      dataAiHint: 'female artist'
-    },
+    instructor: getInst('ins-si'),
     instructors: [
-       { name: 'Sadia Islam', title: 'Lead Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female artist' },
+       getInst('ins-si'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'graphic design',
@@ -601,17 +603,11 @@ export const courses: Course[] = [
     title: 'Engineering Admission',
     description: 'Prepare for engineering university admission tests with our specialized course. Cover Physics, Chemistry, and Higher Math in detail.',
     status: 'Published',
-    instructor: {
-      name: 'Jubayer Ahmed',
-      title: 'Engineering Admission Expert',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
-      dataAiHint: 'male engineer'
-    },
+    instructor: getInst('ins-ja'),
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male engineer' },
-       { name: 'Dr. Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist' },
-       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-ja'),
+       getInst('ins-si'),
+       getInst('ins-rc'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'engineering drawing',
@@ -659,15 +655,9 @@ export const courses: Course[] = [
     title: 'University (Ka unit) Admission',
     description: 'A complete guide for Dhaka University Ka-unit admission test. Prepare with the best mentors and materials.',
     status: 'Published',
-    instructor: {
-      name: 'Farhan Mahmud',
-      title: 'DU Admission Mentor',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams.',
-      dataAiHint: 'male teacher'
-    },
+    instructor: getInst('ins-fm'),
     instructors: [
-       { name: 'Farhan Mahmud', title: 'Lead Mentor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-fm'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'university building',
@@ -704,15 +694,9 @@ export const courses: Course[] = [
     title: 'BCS Preliminary Course',
     description: 'Prepare for the BCS preliminary exam with our comprehensive course covering all subjects.',
     status: 'Published',
-    instructor: {
-      name: 'Raihan Chowdhury',
-      title: 'BCS Cadre Officer',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Raihan has been teaching for over 8 years and has a proven track record of helping students achieve high scores.',
-      dataAiHint: 'government official'
-    },
+    instructor: getInst('ins-rc'),
     instructors: [
-       { name: 'Raihan Chowdhury', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'government official' },
+       getInst('ins-rc'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'government building',
@@ -749,15 +733,9 @@ export const courses: Course[] = [
     title: 'Bank Job Preparation',
     description: 'A complete course for bank job seekers. Cover math, english, general knowledge and analytical skills.',
     status: 'Published',
-    instructor: {
-      name: 'Ayesha Khan',
-      title: 'Bank Officer',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge.',
-      dataAiHint: 'female banker'
-    },
+    instructor: getInst('ins-ak'),
     instructors: [
-       { name: 'Ayesha Khan', title: 'Lead Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female banker' },
+       getInst('ins-ak'),
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'bank interior',
@@ -801,16 +779,10 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'history book',
     description: 'A complete online batch for HSC 2025 Arts students covering all subjects with live classes, lecture sheets, and regular exams.',
-    instructor: {
-      name: 'Nusrat Jahan',
-      title: 'HSC Specialist',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Nusrat is a passionate educator with a knack for making complex topics easy to understand.',
-      dataAiHint: 'female teacher'
-    },
+    instructor: getInst('ins-nj'),
     instructors: [
-       { name: 'Nusrat Jahan', title: 'History', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher' },
-       { name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-nj'),
+       { id: 'ins-ik', name: 'Imran Khan', title: 'Civics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'imran-khan', status: 'Approved', bio: 'Bio for Imran' },
     ],
     rating: 4.5,
     reviews: 70,
@@ -849,15 +821,9 @@ export const courses: Course[] = [
     dataAiHint: 'physics equation',
     features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ', 'সাপোর্ট সেশন'],
     description: 'Master Physics for your HSC exams with our detailed subject-based course. Access recorded classes, lecture sheets, and quizzes anytime.',
-    instructor: {
-      name: 'Jubayer Ahmed',
-      title: 'Physics Expert',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
-      dataAiHint: 'male teacher'
-    },
+    instructor: getInst('ins-ja'),
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-ja'),
     ],
     rating: 4.9,
     reviews: 180,
@@ -895,16 +861,10 @@ export const courses: Course[] = [
     dataAiHint: 'exam paper',
     features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি', 'হায়ার ম্যাথ'],
     description: 'Solve test papers for the science stream with our expert teachers. Get ready for your final exams with confidence.',
-    instructor: {
-        name: 'Sadia Islam',
-        title: 'Exam Specialist',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges.',
-        dataAiHint: 'female doctor'
-    },
+    instructor: getInst('ins-si'),
     instructors: [
-       { name: 'Sadia Islam', title: 'Biology', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor' },
-       { name: 'Jubayer Ahmed', title: 'Physics & Math', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-si'),
+       getInst('ins-ja'),
     ],
     rating: 4.8,
     reviews: 130,
@@ -941,15 +901,9 @@ export const courses: Course[] = [
     dataAiHint: 'programming code',
     features: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'],
     description: 'Learn the basics of web development for free. Start your journey into the world of coding with our master course.',
-    instructor: {
-        name: 'Jubayer Ahmed',
-        title: 'Lead Developer & Instructor',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
-        dataAiHint: 'male teacher'
-    },
+    instructor: getInst('ins-ja'),
     instructors: [
-       { name: 'Jubayer Ahmed', title: 'Instructor', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher' },
+       getInst('ins-ja'),
     ],
     rating: 4.9,
     reviews: 500,

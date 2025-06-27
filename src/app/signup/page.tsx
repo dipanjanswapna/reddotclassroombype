@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import type { Metadata } from 'next';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { UserSquare } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Sign Up',
@@ -37,7 +40,14 @@ export default function SignupPage() {
           <CardDescription>Join our community and start your learning journey!</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
+          <div className="grid gap-4">
+              <Alert className="bg-primary/5 border-primary/20">
+                <UserSquare className="h-4 w-4 !text-primary" />
+                <AlertTitle className="text-primary font-semibold">Want to be a Teacher?</AlertTitle>
+                <AlertDescription>
+                    Apply to become an instructor. <Link href="/auth/teacher-signup" className="font-bold underline">Click here!</Link>
+                </AlertDescription>
+            </Alert>
             <div className="grid gap-2">
               <Label htmlFor="full-name">Full Name</Label>
               <Input id="full-name" placeholder="Jubayer Ahmed" required />
@@ -51,8 +61,8 @@ export default function SignupPage() {
               <Input id="password" type="password" required />
             </div>
             <div className="grid gap-2">
-                <Label>I am a...</Label>
-                <RadioGroup defaultValue="student" className="grid grid-cols-3 gap-2">
+                <Label>I am registering as a...</Label>
+                <RadioGroup defaultValue="student" className="grid grid-cols-2 gap-2">
                     <div>
                         <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
                         <Label
@@ -60,15 +70,6 @@ export default function SignupPage() {
                             className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
                             Student
-                        </Label>
-                    </div>
-                    <div>
-                        <RadioGroupItem value="teacher" id="role-teacher" className="peer sr-only" />
-                        <Label
-                            htmlFor="role-teacher"
-                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                        >
-                            Teacher
                         </Label>
                     </div>
                     <div>
@@ -113,7 +114,7 @@ export default function SignupPage() {
               <GoogleIcon />
               <span className="ml-2">Sign up with Google</span>
             </Button>
-          </form>
+          </div>
           <div className="mt-6 text-center text-sm">
             Already have an account?{' '}
             <Link href="/login" className="font-semibold text-primary hover:underline">

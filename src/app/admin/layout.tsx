@@ -42,7 +42,7 @@ export default function AdminLayout({
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "#", icon: Users, label: "User Management" },
         { href: "/admin/courses", icon: BookCopy, label: "Course Management" },
-        { href: "#", icon: UserCog, label: "Teacher Management" },
+        { href: "/admin/teachers", icon: UserCog, label: "Teacher Management" },
         { href: "#", icon: DollarSign, label: "Financials" },
         { href: "#", icon: AreaChart, label: "Reports" },
     ];
