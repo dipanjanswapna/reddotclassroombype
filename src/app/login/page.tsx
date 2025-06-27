@@ -22,7 +22,7 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center py-12 px-4">
+    <div className="flex items-center justify-center py-12 px-4 bg-background">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
@@ -46,7 +46,7 @@ export default function LoginPage() {
             <Button type="submit" className="w-full">
               Login
             </Button>
-            <Button variant="secondary" className="w-full" asChild>
+            <Button variant="outline" className="w-full" asChild>
               <Link href="/dashboard">
                 <Key />
                 Demo Login

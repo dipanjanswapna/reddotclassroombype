@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BookMarked, Menu, X } from "lucide-react";
+import { BookMarked, Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -79,6 +79,12 @@ export function Header() {
 
 
         <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/courses">
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Search</span>
+            </Link>
+          </Button>
           <Button asChild variant="ghost">
             <Link href="/login">Login</Link>
           </Button>

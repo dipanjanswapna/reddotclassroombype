@@ -18,6 +18,7 @@ const courses = [
     category: 'Development',
     rating: 4.8,
     reviews: 120,
+    price: 'BDT 4500',
     dataAiHint: 'programming code',
   },
   {
@@ -28,6 +29,7 @@ const courses = [
     category: 'Language',
     rating: 4.9,
     reviews: 250,
+    price: 'BDT 3000',
     dataAiHint: 'lecture notes',
   },
   {
@@ -38,6 +40,7 @@ const courses = [
     category: 'Academic',
     rating: 4.7,
     reviews: 300,
+    price: 'BDT 5000',
     dataAiHint: 'university campus',
   },
   {
@@ -48,6 +51,7 @@ const courses = [
     category: 'Marketing',
     rating: 4.8,
     reviews: 180,
+    price: 'BDT 2500',
     dataAiHint: 'marketing chart',
   },
   {
@@ -58,6 +62,7 @@ const courses = [
     category: 'Development',
     rating: 4.9,
     reviews: 450,
+    price: 'BDT 5500',
     dataAiHint: 'data analytics',
   },
   {
@@ -68,6 +73,7 @@ const courses = [
     category: 'Design',
     rating: 4.8,
     reviews: 220,
+    price: 'BDT 3500',
     dataAiHint: 'design tools',
   },
 ];

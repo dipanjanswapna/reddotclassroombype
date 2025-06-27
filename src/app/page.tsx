@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Star, Users, Video } from 'lucide-react';
+import { ArrowRight, BookOpen, Briefcase, Languages, BarChart, Search, PlayCircle, Bot, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CourseCard } from '@/components/course-card';
@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { Input } from '@/components/ui/input';
 
 const featuredCourses = [
   {
@@ -22,6 +23,7 @@ const featuredCourses = [
     category: 'Development',
     rating: 4.8,
     reviews: 120,
+    price: 'BDT 4500',
     dataAiHint: 'programming code',
   },
   {
@@ -32,6 +34,7 @@ const featuredCourses = [
     category: 'Language',
     rating: 4.9,
     reviews: 250,
+    price: 'BDT 3000',
     dataAiHint: 'lecture notes',
   },
   {
@@ -42,6 +45,7 @@ const featuredCourses = [
     category: 'Academic',
     rating: 4.7,
     reviews: 300,
+    price: 'BDT 5000',
     dataAiHint: 'university campus',
   },
   {
@@ -52,6 +56,7 @@ const featuredCourses = [
     category: 'Marketing',
     rating: 4.8,
     reviews: 180,
+    price: 'BDT 2500',
     dataAiHint: 'marketing chart',
   },
 ];
@@ -77,26 +82,49 @@ const instructors = [
   },
 ];
 
+const featureCards = [
+    { icon: PlayCircle, title: 'Video Lectures', description: 'High-quality, engaging video lessons.' },
+    { icon: BookOpen, title: 'Interactive Quizzes', description: 'Test your knowledge and track progress.' },
+    { icon: Bot, title: 'AI Tutor', description: 'Get instant help from our virtual assistant.' },
+    { icon: Users, title: 'Community Support', description: 'Learn with peers and expert mentors.' }
+];
+
 export default function Home() {
   return (
     <div className="flex flex-col">
-      <section className="py-20 md:py-32 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight text-primary">
-            Unlock Your Potential with Red Dot Classroom
-          </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground">
-            High-quality, interactive online education for academic excellence and skill development in Bangladesh.
-          </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <Button asChild size="lg" className="font-bold">
-              <Link href="/courses">
-                Browse Courses <ArrowRight className="ml-2" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="font-bold">
-              <Link href="/signup">Get Started</Link>
-            </Button>
+      <section className="py-20 md:py-24 bg-background">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+          <div className="text-center md:text-left">
+            <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight text-foreground">
+              Start your learning journey with Red Dot Classroom
+            </h1>
+            <p className="mt-4 max-w-xl mx-auto md:mx-0 text-lg md:text-xl text-muted-foreground">
+              High-quality, interactive online education for academic excellence and skill development in Bangladesh.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-2 max-w-md mx-auto md:mx-0">
+              <Input placeholder="Search for courses..." className="h-12 text-base" />
+              <Button size="lg" className="h-12 font-bold text-base">
+                <Search className="mr-2" /> Search
+              </Button>
+            </div>
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              {featureCards.map(feature => (
+                <div key={feature.title}>
+                  <feature.icon className="w-8 h-8 mx-auto text-primary mb-2" />
+                  <p className="font-semibold text-sm">{feature.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <Image 
+              src="https://placehold.co/600x500" 
+              alt="A student learning online with Red Dot Classroom" 
+              width={600} 
+              height={500} 
+              className="rounded-xl shadow-lg"
+              data-ai-hint="student online learning"
+            />
           </div>
         </div>
       </section>
@@ -107,29 +135,21 @@ export default function Home() {
             Popular Course Categories
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
+            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow p-6">
                 <BookOpen className="w-12 h-12 mx-auto text-primary mb-4" />
                 <h3 className="font-headline text-xl font-semibold">Academic</h3>
-              </CardContent>
             </Card>
-            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <Video className="w-12 h-12 mx-auto text-primary mb-4" />
+            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow p-6">
+                <Briefcase className="w-12 h-12 mx-auto text-primary mb-4" />
                 <h3 className="font-headline text-xl font-semibold">Skill Development</h3>
-              </CardContent>
             </Card>
-            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <Users className="w-12 h-12 mx-auto text-primary mb-4" />
-                <h3 className="font-headline text-xl font-semibold">Admission Test</h3>
-              </CardContent>
-            </Card>
-            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <BookOpen className="w-12 h-12 mx-auto text-primary mb-4" />
+            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow p-6">
+                <Languages className="w-12 h-12 mx-auto text-primary mb-4" />
                 <h3 className="font-headline text-xl font-semibold">Language Learning</h3>
-              </CardContent>
+            </Card>
+            <Card className="text-center hover:shadow-primary/20 hover:shadow-lg transition-shadow p-6">
+                <BarChart className="w-12 h-12 mx-auto text-primary mb-4" />
+                <h3 className="font-headline text-xl font-semibold">Admission Test</h3>
             </Card>
           </div>
         </div>
@@ -137,9 +157,12 @@ export default function Home() {
 
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="font-headline text-3xl font-bold text-center mb-12">
-            Featured Courses
-          </h2>
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl font-bold">
+              Featured Courses
+            </h2>
+            <p className="text-muted-foreground mt-2">Explore our most popular courses</p>
+          </div>
           <Carousel opts={{ align: 'start', loop: true }}>
             <CarouselContent>
               {featuredCourses.map((course) => (
@@ -153,6 +176,13 @@ export default function Home() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
+           <div className="text-center mt-12">
+            <Button asChild size="lg" className="font-bold">
+                <Link href="/courses">
+                  Browse All Courses <ArrowRight className="ml-2" />
+                </Link>
+              </Button>
+           </div>
         </div>
       </section>
 
@@ -172,55 +202,6 @@ export default function Home() {
                 <p className="text-muted-foreground">{instructor.title}</p>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-headline text-3xl font-bold mb-4">Success Stories</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Hear from our students who have achieved their goals with Red Dot Classroom.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://placehold.co/100x100" alt="Anik Sarker" data-ai-hint="male student" />
-                    <AvatarFallback>AS</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-lg">Anik Sarker</CardTitle>
-                    <div className="flex text-yellow-400">
-                      <Star /><Star /><Star /><Star /><Star />
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="italic">"The admission test prep course was a game-changer. I got into my dream university, and I owe it all to the amazing instructors and comprehensive material."</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="https://placehold.co/100x100" alt="Fatima Haque" data-ai-hint="female student" />
-                    <AvatarFallback>FH</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-lg">Fatima Haque</CardTitle>
-                     <div className="flex text-yellow-400">
-                      <Star /><Star /><Star /><Star /><Star />
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="italic">"I never thought learning to code could be so intuitive. The web development course provided hands-on projects that prepared me for a real-world job."</p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>

@@ -171,17 +171,22 @@ export default function CourseDetailPage({ params }: { params: { courseId: strin
 
         <div className="lg:col-span-1">
           <Card className="sticky top-24">
-            <Image
-              src={course.imageUrl}
-              alt={course.title}
-              width={1280}
-              height={720}
-              className="rounded-t-lg"
-              data-ai-hint={course.dataAiHint}
-            />
+            <div className="relative aspect-video bg-muted rounded-t-lg flex items-center justify-center">
+                 <Image
+                    src={course.imageUrl}
+                    alt={course.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-t-lg"
+                    data-ai-hint={course.dataAiHint}
+                />
+                <div className="absolute inset-0 bg-black/40 rounded-t-lg flex items-center justify-center">
+                    <PlayCircle className="w-16 h-16 text-white/80 hover:text-white transition-colors cursor-pointer" />
+                </div>
+            </div>
             <CardContent className="p-6">
-              <h2 className="text-3xl font-bold mb-4">{course.price}</h2>
-              <Button size="lg" className="w-full font-bold bg-accent hover:bg-accent/90 text-accent-foreground">Enroll Now</Button>
+              <h2 className="text-3xl font-bold mb-4 text-primary">{course.price}</h2>
+              <Button size="lg" className="w-full font-bold">Enroll Now</Button>
               <p className="text-center text-sm text-muted-foreground mt-2">30-Day Money-Back Guarantee</p>
               <ul className="space-y-2 mt-6 text-sm">
                 <li className="flex items-center gap-2"><PlayCircle className="w-4 h-4 text-muted-foreground"/> 12 hours on-demand video</li>
