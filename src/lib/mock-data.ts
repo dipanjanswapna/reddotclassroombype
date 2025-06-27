@@ -9,6 +9,22 @@ import {
   Trophy,
 } from 'lucide-react';
 
+export type Lesson = {
+  id: string;
+  title: string;
+  type: 'video' | 'quiz' | 'document';
+  duration: string;
+  videoId?: string;
+  lectureSheetUrl?: string;
+};
+
+export type SyllabusModule = {
+  id: string;
+  title: string;
+  lessons: Lesson[];
+};
+
+
 export type Course = {
   id: string;
   title: string;
@@ -34,7 +50,7 @@ export type Course = {
   rating?: number;
   reviews?: number;
   whatYouWillLearn?: string[];
-  syllabus?: { title: string; content: string }[];
+  syllabus?: SyllabusModule[];
   features?: string[];
   features_detailed?: { title: string; description: string }[];
   imageTitle?: string;
@@ -85,10 +101,38 @@ export const courses: Course[] = [
         'Deploy applications using Docker and Vercel',
     ],
     syllabus: [
-        { title: 'পদার্থবিজ্ঞান', content: 'ভৌত জগৎ ও পরিমাপ, ভেক্টর, গতিবিদ্যা, নিউটনীয় বলবিদ্যা, কাজ, ক্ষমতা ও শক্তি।' },
-        { title: 'রসায়ন', content: 'ল্যাবরেটরির নিরাপদ ব্যবহার, গুণগত রসায়ন, মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন, রাসায়নিক পরিবর্তন।' },
-        { title: 'উচ্চতর গণিত', content: 'ম্যাট্রিক্স ও নির্ণায়ক, ভেক্টর, সরলরেখা, বৃত্ত, বিন্যাস ও সমাবেশ।' },
-        { title: 'জীববিজ্ঞান', content: 'কোষ ও এর গঠন, কোষ বিভাজন, অণুজীব, উদ্ভিদ শারীরতত্ত্ব, প্রাণী শারীরতত্ত্ব। ' },
+        { 
+            id: 'm1-1',
+            title: 'পদার্থবিজ্ঞান',
+            lessons: [
+                { id: 'l1-1-1', title: 'ভৌত জগৎ ও পরিমাপ', type: 'video', duration: '45 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l1-1-2', title: 'ভেক্টর', type: 'video', duration: '55 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/'  },
+                { id: 'l1-1-3', title: 'গতিবিদ্যা', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/'  },
+                { id: 'l1-1-4', title: 'Chapter 1 Quiz', type: 'quiz', duration: '15 min' },
+            ]
+        },
+        { 
+            id: 'm1-2',
+            title: 'রসায়ন',
+            lessons: [
+                { id: 'l1-2-1', title: 'ল্যাবরেটরির নিরাপদ ব্যবহার', type: 'video', duration: '40 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l1-2-2', title: 'গুণগত রসায়ন', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm1-3',
+            title: 'উচ্চতর গণিত',
+            lessons: [
+                 { id: 'l1-3-1', title: 'ম্যাট্রিক্স ও নির্ণায়ক', type: 'video', duration: '65 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm1-4',
+            title: 'জীববিজ্ঞান',
+            lessons: [
+                { id: 'l1-4-1', title: 'কোষ ও এর গঠন', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম', 'সাপ্তাহিক পরীক্ষা', 'প্রশ্ন-উত্তর সেশন', 'ফাইনাল মডেল টেস্ট'],
     features_detailed: [
@@ -147,10 +191,21 @@ export const courses: Course[] = [
         { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ানত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
-        { title: 'জীববিজ্ঞান', content: 'প্রাণী বৈচিত্র্য, কোষ ও টিস্যু, জেনেটিক্স, মানব শারীরতত্ত্ব, উদ্ভিদ বিজ্ঞান।' },
-        { title: 'রসায়ন', content: 'জৈব রসায়ন, পরিমাণগত রসায়ন, তড়িৎ রসায়ন, পরিবেশ রসায়ন।' },
-        { title: 'পদার্থবিজ্ঞান', content: 'আধুনিক পদার্থবিজ্ঞান, ভৌত আলোকবিজ্ঞান, চল তড়িৎ, চৌম্বক।' },
-        { title: 'সাধারণ জ্ঞান ও ইংরেজি', content: 'বাংলাদেশ ও আন্তর্জাতিক বিষয়াবলী, ইংরেজি গ্রামার ও ভোকাবুলারি।' },
+        { 
+            id: 'm2-1',
+            title: 'জীববিজ্ঞান',
+            lessons: [
+                { id: 'l2-1-1', title: 'প্রাণী বৈচিত্র্য', type: 'video', duration: '45 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l2-1-2', title: 'কোষ ও টিস্যু', type: 'video', duration: '55 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm2-2',
+            title: 'রসায়ন',
+            lessons: [
+                { id: 'l2-2-1', title: 'জৈব রসায়ন', type: 'video', duration: '70 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'শনি', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
@@ -196,10 +251,21 @@ export const courses: Course[] = [
         { title: 'Strategy Sessions', description: 'Tips and tricks to maximize your score.' },
     ],
     syllabus: [
-        { title: 'Listening', content: 'Introduction to listening skills, question types, note-taking, practice tests.' },
-        { title: 'Reading', content: 'Skimming, scanning, understanding academic texts, practice with passages.' },
-        { title: 'Writing', content: 'Analyzing Task 1 (graphs, charts), structuring Task 2 essays, vocabulary for writing.' },
-        { title: 'Speaking', content: 'Part 1, Part 2 (cue card), and Part 3 practice, pronunciation, and fluency development.' },
+        { 
+            id: 'm3-1',
+            title: 'Listening',
+            lessons: [
+                { id: 'l3-1-1', title: 'Introduction to Listening Skills', type: 'video', duration: '30 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l3-1-2', title: 'Practice Test 1', type: 'quiz', duration: '40 min' },
+            ]
+        },
+        { 
+            id: 'm3-2',
+            title: 'Reading',
+            lessons: [
+                { id: 'l3-2-1', title: 'Skimming and Scanning', type: 'video', duration: '35 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'Recorded Modules', time: 'Anytime' },
@@ -242,10 +308,21 @@ export const courses: Course[] = [
         { title: 'Career Guidance', description: 'Get tips on building your data science portfolio.' },
     ],
     syllabus: [
-        { title: 'Module 1: Python Basics', content: 'Variables, data types, loops, functions, and object-oriented programming.' },
-        { title: 'Module 2: Data Manipulation with Pandas', content: 'DataFrames, data cleaning, grouping, and merging.' },
-        { title: 'Module 3: Data Visualization', content: 'Creating plots, charts, and histograms to understand data.' },
-        { title: 'Module 4: Introduction to Machine Learning', content: 'Supervised vs. unsupervised learning, regression, classification.' },
+        { 
+            id: 'm4-1',
+            title: 'Module 1: Python Basics',
+            lessons: [
+                { id: 'l4-1-1', title: 'Variables and Data Types', type: 'video', duration: '45 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l4-1-2', title: 'Functions', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm4-2',
+            title: 'Module 2: Data Manipulation with Pandas',
+            lessons: [
+                { id: 'l4-2-1', title: 'Introduction to DataFrames', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
@@ -288,10 +365,21 @@ export const courses: Course[] = [
         { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ানত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
-        { title: 'গণিত', content: 'বীজগণিত, জ্যামিতি, ত্রিকোণমিতি, এবং পরিমিতি।' },
-        { title: 'ইংরেজি', content: 'Grammar, composition, seen and unseen passages.' },
-        { title: 'বিজ্ঞান', content: 'পদার্থ, রসায়ন, এবং জীববিজ্ঞানের মৌলিক ধারণা।' },
-        { title: 'বাংলাদেশ ও বিশ্বপরিচয়', content: ' ইতিহাস, ভূগোল, এবং নাগরিকত্ব।' },
+        { 
+            id: 'm5-1',
+            title: 'গণিত',
+            lessons: [
+                { id: 'l5-1-1', title: 'বীজগণিত', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l5-1-2', title: 'জ্যামিতি', type: 'video', duration: '45 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm5-2',
+            title: 'ইংরেজি',
+            lessons: [
+                 { id: 'l5-2-1', title: 'Grammar: Tenses', type: 'video', duration: '55 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'শনি', subject: 'গণিত', time: 'বিকাল ৫:০০' },
@@ -334,9 +422,20 @@ export const courses: Course[] = [
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
     ],
      syllabus: [
-        { title: 'হিসাববিজ্ঞান', content: 'হিসাববিজ্ঞানের পরিচিতি, হিসাবের বইসমূহ, রেওয়ামিল, আর্থিক বিবরণী।' },
-        { title: 'ফিন্যান্স, ব্যাংকিং ও বীমা', content: 'অর্থায়নের সূচনা, আর্থিক বাজার, ব্যাংকের পরিচিতি, বীমার ধারণা।' },
-        { title: 'ব্যবসায় সংগঠন ও ব্যবস্থাপনা', content: 'ব্যবসায়ের মৌলিক ধারণা, একমালিকানা ব্যবসায়, অংশীদারি ব্যবসায়, ব্যবস্থাপনা।' },
+        { 
+            id: 'm6-1',
+            title: 'হিসাববিজ্ঞান',
+            lessons: [
+                { id: 'l6-1-1', title: 'হিসাববিজ্ঞানের পরিচিতি', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm6-2',
+            title: 'ফিন্যান্স, ব্যাংকিং ও বীমা',
+            lessons: [
+                 { id: 'l6-2-1', title: 'অর্থায়নের সূচনা', type: 'video', duration: '55 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'রবি', subject: 'হিসাববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
@@ -377,10 +476,21 @@ export const courses: Course[] = [
         { title: '24/7 Support', description: 'Get your doubts cleared anytime in the support forum.' },
     ],
     syllabus: [
-        { title: 'Chapter 1: Information & Communication Technology', content: 'World Village, Virtual Reality, AI.' },
-        { title: 'Chapter 3: Number Systems & Digital Devices', content: 'Binary, Octal, Hexadecimal, Logic Gates.' },
-        { title: 'Chapter 4: Introduction to HTML', content: 'Web design basics, tags, tables, forms.' },
-        { title: 'Chapter 5: Programming Language', content: 'Introduction to C programming, loops, arrays, functions.' },
+        { 
+            id: 'm7-1',
+            title: 'Chapter 3: Number Systems & Digital Devices',
+            lessons: [
+                { id: 'l7-1-1', title: 'Number Systems', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+                { id: 'l7-1-2', title: 'Logic Gates', type: 'video', duration: '75 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm7-2',
+            title: 'Chapter 5: Programming Language',
+            lessons: [
+                { id: 'l7-2-1', title: 'Introduction to C', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
@@ -420,10 +530,20 @@ export const courses: Course[] = [
         { title: 'Freelancing', description: 'Learn how to start your career as a freelance designer.' },
     ],
     syllabus: [
-        { title: 'Module 1: Introduction to Design', content: 'Elements and principles of design.' },
-        { title: 'Module 2: Mastering Photoshop', content: 'Tools, layers, masks, and projects.' },
-        { title: 'Module 3: Vector Art with Illustrator', content: 'Pen tool, shapes, gradients, and branding projects.' },
-        { title: 'Module 4: UI/UX with Figma', content: 'Wireframing, prototyping, and creating user interfaces.' },
+        { 
+            id: 'm8-1',
+            title: 'Module 2: Mastering Photoshop',
+            lessons: [
+                { id: 'l8-1-1', title: 'Introduction to Photoshop UI', type: 'video', duration: '40 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm8-2',
+            title: 'Module 3: Vector Art with Illustrator',
+            lessons: [
+                { id: 'l8-2-1', title: 'Mastering the Pen Tool', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
@@ -468,9 +588,20 @@ export const courses: Course[] = [
         { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
-        { title: 'Physics', content: 'Mechanics, Electromagnetism, Modern Physics, and problem-solving sessions.' },
-        { title: 'Chemistry', content: 'Organic Chemistry, Inorganic Chemistry, Physical Chemistry concepts and practice.' },
-        { title: 'Higher Math', content: 'Calculus, Matrices, Complex Numbers, Analytical Geometry, and advanced topics.' },
+        { 
+            id: 'm9-1',
+            title: 'Physics',
+            lessons: [
+                 { id: 'l9-1-1', title: 'Mechanics Review', type: 'video', duration: '80 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm9-2',
+            title: 'Chemistry',
+            lessons: [
+                { id: 'l9-2-1', title: 'Organic Chemistry Review', type: 'video', duration: '90 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'শনি-সোম-বুধ', subject: 'Physics, Chemistry, Math', time: 'রাত ৮:০০' },
@@ -509,10 +640,13 @@ export const courses: Course[] = [
         { title: 'মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
-        { title: 'Physics', content: 'HSC syllabus based in-depth lectures.' },
-        { title: 'Chemistry', content: 'HSC syllabus based in-depth lectures.' },
-        { title: 'Math', content: 'HSC syllabus based in-depth lectures.' },
-        { title: 'Biology', content: 'HSC syllabus based in-depth lectures.' },
+        { 
+            id: 'm10-1',
+            title: 'Physics',
+            lessons: [
+                 { id: 'l10-1-1', title: 'Physics Ka Unit Analysis', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'প্রতিদিন', subject: 'লাইভ ক্লাস ও পরীক্ষা', time: 'সন্ধ্যা ৭:৩০' },
@@ -550,10 +684,13 @@ export const courses: Course[] = [
         { title: 'Final Model Tests', description: 'Prepare for the final exam with full-length model tests.' },
     ],
     syllabus: [
-        { title: 'Bangla & English', content: 'Language and literature.' },
-        { title: 'Bangladesh & International Affairs', content: 'Current events, history, and geography.' },
-        { title: 'General Science & ICT', content: 'Basic science concepts and computer literacy.' },
-        { title: 'Mathematical Reasoning & Mental Ability', content: 'Problem-solving and analytical skills.' },
+        { 
+            id: 'm11-1',
+            title: 'Bangladesh Affairs',
+            lessons: [
+                 { id: 'l11-1-1', title: 'History of Bangladesh', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Friday & Saturday', subject: 'Live Classes', time: '10:00 AM & 8:00 PM' },
@@ -591,10 +728,13 @@ export const courses: Course[] = [
         { title: 'Mock Tests', description: 'Simulate real bank job exams.' },
     ],
     syllabus: [
-        { title: 'Quantitative Aptitude', content: 'Arithmetic, Algebra, Geometry.' },
-        { title: 'English Language', content: 'Grammar, Comprehension, Vocabulary.' },
-        { title: 'General Awareness', content: 'Current affairs, banking industry knowledge.' },
-        { title: 'Analytical Ability', content: 'Puzzles, data interpretation.' },
+        { 
+            id: 'm12-1',
+            title: 'Quantitative Aptitude',
+            lessons: [
+                 { id: 'l12-1-1', title: 'Percentage and Profit-Loss', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Sunday & Tuesday', subject: 'Live Classes', time: '9:00 PM' },
@@ -634,10 +774,13 @@ export const courses: Course[] = [
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
     ],
     syllabus: [
-        { title: 'ইতিহাস', content: 'বাংলার ইতিহাস, ইউরোপের ইতিহাস, এবং বিশ্ব ইতিহাস।' },
-        { title: 'পৌরনীতি ও সুশাসন', content: 'মৌলিক ধারণা, সরকার, সংবিধান, এবং রাজনৈতিক ব্যবস্থা।' },
-        { title: 'অর্থনীতি', content: 'মৌলিক অর্থনৈতিক ধারণা, চাহিদা ও জোগান, বাজার।' },
-        { title: 'যুক্তিবিদ্যা', content: 'যুক্তিবিদ্যার পরিচিতি, অবরোহ ও আরোহ অনুমান।' },
+        { 
+            id: 'm13-1',
+            title: 'ইতিহাস',
+            lessons: [
+                 { id: 'l13-1-1', title: 'বাংলার ইতিহাস', type: 'video', duration: '50 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'রবি', subject: 'ইতিহাস', time: 'বিকাল ৪:০০' },
@@ -677,8 +820,13 @@ export const courses: Course[] = [
         { title: 'Doubt Clearing', description: 'Dedicated sessions to clear your doubts.' },
     ],
     syllabus: [
-        { title: 'Physics 1st Paper', content: 'Vectors, Dynamics, Newtonian Mechanics, Work Power Energy, Gravitation, etc.' },
-        { title: 'Physics 2nd Paper', content: 'Thermal Physics, Static Electricity, Current Electricity, Modern Physics, etc.' },
+        { 
+            id: 'm14-1',
+            title: 'Physics 1st Paper',
+            lessons: [
+                { id: 'l14-1-1', title: 'Vectors', type: 'video', duration: '60 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
@@ -718,10 +866,13 @@ export const courses: Course[] = [
         { title: 'Suggestion', description: 'Get important suggestions before your exam.' },
     ],
     syllabus: [
-        { title: 'Physics', content: 'Solving test papers from top colleges.' },
-        { title: 'Chemistry', content: 'Solving test papers from top colleges.' },
-        { title: 'Higher Math', content: 'Solving test papers from top colleges.' },
-        { title: 'Biology', content: 'Solving test papers from top colleges.' },
+        { 
+            id: 'm15-1',
+            title: 'Physics Test Papers',
+            lessons: [
+                 { id: 'l15-1-1', title: 'Dhaka College Test Paper Solve', type: 'video', duration: '90 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Daily', subject: 'Live Solving Class', time: '8:30 PM' },
@@ -759,9 +910,20 @@ export const courses: Course[] = [
         { title: 'Bootstrap 5', description: 'Build responsive websites quickly.' },
     ],
     syllabus: [
-        { title: 'HTML', content: 'Tags, attributes, forms, and semantic HTML.' },
-        { title: 'CSS', content: 'Selectors, box model, Flexbox, Grid, and responsive design.' },
-        { title: 'JavaScript', content: 'Variables, data types, DOM manipulation, and events.' },
+        { 
+            id: 'm16-1',
+            title: 'HTML',
+            lessons: [
+                 { id: 'l16-1-1', title: 'HTML Basics', type: 'video', duration: '30 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
+        { 
+            id: 'm16-2',
+            title: 'CSS',
+            lessons: [
+                 { id: 'l16-2-1', title: 'CSS Basics', type: 'video', duration: '45 min', videoId: 'dQw4w9WgXcQ', lectureSheetUrl: 'https://www.google.com/drive/' },
+            ]
+        },
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },

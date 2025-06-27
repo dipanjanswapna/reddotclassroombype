@@ -13,10 +13,14 @@ type EnrolledCourseCardProps = {
 };
 
 export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) {
+  
+  const courseLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
+  const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
+
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
       <CardHeader className="p-0 relative">
-        <Link href={`/courses/${course.id}`}>
+        <Link href={courseLink}>
           <Image
             src={course.imageUrl}
             alt={course.title}
@@ -35,7 +39,7 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
       </CardHeader>
 
       <CardContent className="p-4 flex-grow">
-        <Link href={`/courses/${course.id}`}>
+        <Link href={courseLink}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
         </Link>
         <p className="text-muted-foreground text-sm mt-1">By {course.instructor.name}</p>
@@ -63,7 +67,7 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
       <CardFooter className="p-4 pt-0">
         {status === 'in-progress' && (
            <Button asChild className="w-full font-bold">
-                <Link href={`/courses/${course.id}`}>কোর্স চালিয়ে যান</Link>
+                <Link href={continueLink}>কোর্স চালিয়ে যান</Link>
            </Button>
         )}
         {status === 'completed' && (
