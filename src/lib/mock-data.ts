@@ -1,17 +1,31 @@
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
+import {
+  Video,
+  FileText,
+  ClipboardList,
+  HelpCircle,
+  Trophy,
+} from 'lucide-react';
+
 export type Course = {
   id: string;
   title: string;
   description: string;
-  instructor: {
+  instructor: { // Primary instructor
     name: string;
     title: string;
     avatarUrl: string;
     bio: string;
     dataAiHint: string;
   };
+  instructors?: { // Multiple instructors for the course
+    name: string;
+    title: string;
+    avatarUrl: string;
+    dataAiHint: string;
+  }[];
   imageUrl: string;
   dataAiHint: string;
   category: string;
@@ -21,8 +35,12 @@ export type Course = {
   whatYouWillLearn?: string[];
   syllabus?: { title: string; content: string }[];
   features?: string[];
+  features_detailed?: { title: string; description: string }[];
   imageTitle?: string;
+  classRoutine?: { day: string; subject: string; time: string }[];
+  faqs?: { question: string; answer: string }[];
 };
+
 
 export type BlogPost = {
   slug: string;
@@ -37,7 +55,7 @@ export const courses: Course[] = [
   {
     id: '1',
     title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
-    description: 'Master modern web development with React, Next.js, and advanced backend techniques. This course covers everything from building dynamic user interfaces to deploying scalable applications.',
+    description: 'এইচএসসি ২০২৫ পরীক্ষার্থীদের জন্য পূর্ণাঙ্গ প্রস্তুতি নিশ্চিত করতে একটি সম্পূর্ণ অনলাইন ব্যাচ। অভিজ্ঞ শিক্ষকদের সাথে লাইভ ক্লাস, লেকচার শিট, এবং পরীক্ষার মাধ্যমে সেরা প্রস্তুতি নিন।',
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Lead Developer & Instructor',
@@ -45,6 +63,12 @@ export const courses: Course[] = [
       bio: 'Jubayer is a seasoned full-stack developer with over 10 years of experience building applications for high-growth startups and established tech companies.',
       dataAiHint: 'male teacher',
     },
+    instructors: [
+       { name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male teacher' },
+       { name: 'Sadia Islam', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female teacher' },
+       { name: 'Raihan Chowdhury', title: 'Math', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'male instructor' },
+       { name: 'Ayesha Khan', title: 'Biology', avatarUrl: 'https://placehold.co/100x100', dataAiHint: 'female instructor' },
+    ],
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'physics class',
     category: 'HSC',
@@ -59,14 +83,32 @@ export const courses: Course[] = [
         'Deploy applications using Docker and Vercel',
     ],
     syllabus: [
-        { title: 'Module 1: React Fundamentals Deep Dive', content: 'Advanced hooks, context API, performance optimization.' },
-        { title: 'Module 2: Introduction to Next.js', content: 'Pages router, data fetching, static site generation.' },
-        { title: 'Module 3: Backend with Node.js & Express', content: 'Building REST APIs, middleware, database integration.' },
-        { title: 'Module 4: Authentication & Security', content: 'JWT, OAuth, password hashing, common vulnerabilities.' },
-        { title: 'Module 5: Deployment & DevOps', content: 'Docker basics, CI/CD pipelines, deploying to the cloud.' },
+        { title: 'পদার্থবিজ্ঞান', content: 'ভৌত জগৎ ও পরিমাপ, ভেক্টর, গতিবিদ্যা, নিউটনীয় বলবিদ্যা, কাজ, ক্ষমতা ও শক্তি।' },
+        { title: 'রসায়ন', content: 'ল্যাবরেটরির নিরাপদ ব্যবহার, গুণগত রসায়ন, মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন, রাসায়নিক পরিবর্তন।' },
+        { title: 'উচ্চতর গণিত', content: 'ম্যাট্রিক্স ও নির্ণায়ক, ভেক্টর, সরলরেখা, বৃত্ত, বিন্যাস ও সমাবেশ।' },
+        { title: 'জীববিজ্ঞান', content: 'কোষ ও এর গঠন, কোষ বিভাজন, অণুজীব, উদ্ভিদ শারীরতত্ত্ব, প্রাণী শারীরতত্ত্ব। ' },
     ],
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
+    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'ডেইলি এক্সাম', 'সাপ্তাহিক পরীক্ষা', 'প্রশ্ন-উত্তর সেশন', 'ফাইনাল মডেল টেস্ট'],
+    features_detailed: [
+        { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'লেকচার শীট', description: 'প্রতিটি ক্লাসের পর নোট' },
+        { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
+        { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
+        { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+    ],
     imageTitle: 'PCMB',
+    classRoutine: [
+        { day: 'শনি', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'রবি', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'সোম', subject: 'উচ্চতর গণিত', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'মঙ্গল', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+    ],
+    faqs: [
+        { question: 'কোর্সটি কীভাবে কিনব?', answer: 'আপনি "Enroll Now" বাটনে ক্লিক করে বিকাশ, নগদ বা কার্ডের মাধ্যমে পেমেন্ট করে কোর্সটি কিনতে পারেন।' },
+        { question: 'ক্লাসগুলো কি লাইভ হবে?', answer: 'হ্যাঁ, সকল ক্লাস লাইভ অনুষ্ঠিত হবে এবং প্রতিটি ক্লাসের রেকর্ডেড ভিডিও পোর্টালে পাওয়া যাবে।' },
+        { question: 'কোর্সের ম্যাটেরিয়ালগুলো কোথায় পাব?', answer: 'সকল লেকচার শীট এবং অন্যান্য রিসোর্স আপনার স্টুডেন্ট ড্যাশবোর্ডের "Resources" সেকশনে পাবেন।' }
+    ]
   },
   {
     id: '2',
