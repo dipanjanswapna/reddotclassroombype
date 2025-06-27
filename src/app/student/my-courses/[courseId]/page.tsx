@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { courses } from '@/lib/mock-data';

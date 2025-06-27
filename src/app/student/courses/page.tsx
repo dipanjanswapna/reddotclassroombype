@@ -1,3 +1,4 @@
+
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
 import { courses } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
