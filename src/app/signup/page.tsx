@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 function GoogleIcon() {
   return (
@@ -42,6 +43,38 @@ export default function SignupPage() {
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required />
+            </div>
+            <div className="grid gap-2">
+                <Label>I am a...</Label>
+                <RadioGroup defaultValue="student" className="grid grid-cols-3 gap-2">
+                    <div>
+                        <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
+                        <Label
+                            htmlFor="role-student"
+                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                        >
+                            Student
+                        </Label>
+                    </div>
+                    <div>
+                        <RadioGroupItem value="teacher" id="role-teacher" className="peer sr-only" />
+                        <Label
+                            htmlFor="role-teacher"
+                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                        >
+                            Teacher
+                        </Label>
+                    </div>
+                    <div>
+                        <RadioGroupItem value="guardian" id="role-guardian" className="peer sr-only" />
+                        <Label
+                            htmlFor="role-guardian"
+                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                        >
+                            Guardian
+                        </Label>
+                    </div>
+                </RadioGroup>
             </div>
              <div className="flex items-start space-x-2">
                 <Checkbox id="terms" required/>
