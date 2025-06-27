@@ -21,13 +21,22 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 
+// Mock user data for demonstration
+const currentUser = {
+    id: 'usr_stud_001',
+    fullName: "Student Name",
+    email: "student@rdc.com",
+    avatarUrl: "https://placehold.co/100x100.png",
+};
+
+
 export default function ProfilePage() {
     const { toast } = useToast();
 
     // State for personal information
-    const [fullName, setFullName] = useState("Student Name");
-    const [email, setEmail] = useState("student@rdc.com");
-    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
+    const [fullName, setFullName] = useState(currentUser.fullName);
+    const [email, setEmail] = useState(currentUser.email);
+    const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
 
     const handleInfoSave = () => {
         toast({
@@ -101,7 +110,10 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-
+              <div className="space-y-2">
+                <Label htmlFor="userId">User ID</Label>
+                <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -43,11 +42,11 @@ type User = {
 };
 
 const mockUsers: User[] = [
-  { id: 'usr1', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20' },
-  { id: 'usr2', name: 'Teacher Name', email: 'teacher@rdc.com', role: 'Teacher', status: 'Active', joined: '2024-03-10' },
-  { id: 'usr3', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21' },
-  { id: 'usr4', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
-  { id: 'usr5', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15' },
+  { id: 'usr_stud_001', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20' },
+  { id: 'usr_tech_002', name: 'Teacher Name', email: 'teacher@rdc.com', role: 'Teacher', status: 'Active', joined: '2024-03-10' },
+  { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21' },
+  { id: 'usr_admn_004', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
+  { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15' },
 ];
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
@@ -108,6 +107,7 @@ export default function UserManagementPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
+                <TableHead>User ID</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Joined Date</TableHead>
@@ -120,6 +120,9 @@ export default function UserManagementPage() {
                   <TableCell>
                     <div className="font-medium">{user.name}</div>
                     <div className="text-sm text-muted-foreground">{user.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{user.id}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>
