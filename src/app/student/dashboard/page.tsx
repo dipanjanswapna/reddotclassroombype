@@ -23,7 +23,18 @@ import {
   User,
   Settings,
   LogOut,
-  BarChart3
+  BarChart3,
+  CalendarClock,
+  GraduationCap,
+  Library,
+  BookMarked,
+  MessageSquare,
+  History,
+  Heart,
+  Bell,
+  Wallet,
+  Users,
+  Trophy,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -32,7 +43,7 @@ import { Button } from '@/components/ui/button';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="flex h-full">
+      <div className="flex h-full bg-background">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -49,7 +60,7 @@ export default function DashboardPage() {
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#" isActive>
+                <SidebarMenuButton href="/student/dashboard" isActive>
                   <LayoutDashboard />
                   Dashboard
                 </SidebarMenuButton>
@@ -60,10 +71,58 @@ export default function DashboardPage() {
                   My Courses
                 </SidebarMenuButton>
               </SidebarMenuItem>
+                <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <CalendarClock />
+                  Upcoming Deadlines
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <GraduationCap />
+                  Grades & Feedback
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <Library />
+                  Resources Library
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton href="#">
                   <HelpCircle />
                   Interactive Quizzes
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <BookMarked />
+                  Study Planner
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <Users />
+                  Community Forum
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton href="/tutor">
+                  <Bot />
+                  Virtual Tutor
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <Heart />
+                  Wishlist
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <Wallet />
+                  Payment History
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -72,10 +131,16 @@ export default function DashboardPage() {
                   Certificates
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#">
+                  <Trophy />
+                  Achievements
+                </SidebarMenuButton>
+              </SidebarMenuItem>
                <SidebarMenuItem>
-                <SidebarMenuButton href="/tutor">
-                  <Bot />
-                  Virtual Tutor
+                <SidebarMenuButton href="#">
+                  <Bell />
+                  Notifications
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -85,17 +150,23 @@ export default function DashboardPage() {
               <SidebarMenuItem>
                 <SidebarMenuButton href="#">
                   <User />
-                  Profile
+                  Profile & Settings
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton href="#">
-                  <Settings />
-                  Settings
+                   <Users />
+                  Guardian Management
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton href="#">
+                  <MessageSquare />
+                  Help & Support
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="/">
                   <LogOut />
                   Logout
                 </SidebarMenuButton>
@@ -107,7 +178,7 @@ export default function DashboardPage() {
             <div className="p-4 sm:p-6 lg:p-8">
                 <div className="mb-6">
                     <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, Student Name!</h1>
-                    <p className="text-muted-foreground">আপনার শেখার যাত্রা শুরু করুন।</p>
+                    <p className="text-muted-foreground">আপনার পরবর্তী ক্লাস আজ সন্ধ্যা ৭টায়।</p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <Card>
