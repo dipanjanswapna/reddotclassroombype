@@ -5,6 +5,7 @@ import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, S
 import { LayoutDashboard, BookOpen, HelpCircle, Award, Bot, User, Settings, LogOut, BarChart3, CalendarClock, GraduationCap, Library, BookMarked, MessageSquare, Users as UsersIcon, Trophy, Heart, Wallet, Bell } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import React from 'react';
 
 export default function StudentLayout({
@@ -58,9 +59,11 @@ export default function StudentLayout({
             <SidebarMenu>
               {menuItems.map(item => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
-                    <item.icon />
-                    {item.label}
+                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -70,9 +73,11 @@ export default function StudentLayout({
             <SidebarMenu>
               {footerMenuItems.map(item => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
-                    <item.icon />
-                    {item.label}
+                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
