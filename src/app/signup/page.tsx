@@ -5,6 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Sign Up',
+  description: 'Create a new account on Red Dot Classroom to start your learning journey.',
+};
 
 function GoogleIcon() {
   return (

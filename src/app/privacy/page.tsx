@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Read the privacy policy for Red Dot Classroom.',
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="container mx-auto px-4 py-12">

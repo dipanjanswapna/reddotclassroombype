@@ -4,6 +4,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions',
+  description: 'Find answers to common questions about Red Dot Classroom courses, payments, and account management.',
+};
 
 const faqs = [
   {

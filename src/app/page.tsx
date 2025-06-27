@@ -22,12 +22,26 @@ import {
 } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
 import { courses } from '@/lib/mock-data';
+import type { Metadata } from 'next';
 
-const liveCourses = courses.slice(0, 4);
-const sscHscCourses = courses.filter(c => c.category === 'SSC' || c.category === 'HSC').slice(0, 3);
-const masterClasses = courses.filter(c => c.category === 'Skills' || c.category === 'Language').slice(0, 4);
-const admissionCourses = courses.filter(c => c.category === 'Admission').slice(0, 3);
+export const metadata: Metadata = {
+  // The title is already set in the root layout's template.
+  // We can override the description for better SEO on the homepage.
+  description: 'Join thousands of learners at Red Dot Classroom. We offer high-quality online courses for HSC, SSC, Admission Tests, and professional skills development in Bangladesh.',
+};
+
+const featuredCourses = courses.filter(c => c.rating && c.rating >= 4.8).slice(0, 4);
+if (featuredCourses.length < 4) {
+    const fallback = courses.slice(0, 4 - featuredCourses.length);
+    featuredCourses.push(...fallback);
+}
+
+const liveCourses = courses.filter(c => c.category === 'এইচএসসি ২৫ অনলাইন ব্যাচ').slice(0, 4);
+const sscHscCourses = courses.filter(c => c.category === 'SSC' || c.category === 'HSC').slice(0, 4);
+const masterClasses = courses.filter(c => c.category === 'মাস্টার কোর্স').slice(0, 4);
+const admissionCourses = courses.filter(c => c.category === 'Admission').slice(0, 4);
 const jobCourses = courses.filter(c => c.category === 'Job Prep').slice(0, 4);
+
 
 const whyChooseUs = [
   { icon: Trophy, title: 'সেরা প্রশিক্ষক', description: 'দেশের সেরা শিক্ষকরা ক্লাস নেন' },
@@ -39,9 +53,9 @@ export default function Home() {
   return (
     <div className="flex flex-col bg-background">
       {/* Hero Section */}
-      <section className="py-12 bg-gray-900 text-white">
+      <section className="py-12 bg-gray-900 text-white" aria-labelledby="hero-heading">
         <div className="container mx-auto px-4">
-          <h2 className="font-headline text-3xl font-bold text-center mb-2">শেখার যাত্রা শুরু</h2>
+          <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-2">শেখার যাত্রা শুরু</h2>
           <div className="grid md:grid-cols-2 gap-8 items-stretch mt-8">
             <Card className="bg-blue-900/40 border-blue-700">
               <CardContent className="p-6">
@@ -67,11 +81,10 @@ export default function Home() {
             </Card>
             <Card className="bg-yellow-900/20 border-yellow-700">
                <CardContent className="p-6">
-                 <div className="grid grid-cols-2 gap-4">
-                    <CourseCard {...courses.find(c => c.id === '1')!} />
-                    <CourseCard {...courses.find(c => c.id === '2')!} />
-                    <CourseCard {...courses.find(c => c.id === '9')!} />
-                    <CourseCard {...courses.find(c => c.id === '5')!} />
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {featuredCourses.map(course => (
+                        <CourseCard key={course.id} {...course} />
+                    ))}
                  </div>
               </CardContent>
             </Card>
@@ -96,9 +109,9 @@ export default function Home() {
       </section>
 
       {/* Video Section */}
-      <section className="py-16">
+      <section className="py-16" aria-labelledby="video-section-heading">
         <div className="container mx-auto px-4 text-center">
-            <h2 className="font-headline text-3xl font-bold mb-2">সফল শিক্ষার্থীদের কোর্সে কী কী থাকছে?</h2>
+            <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">সফল শিক্ষার্থীদের কোর্সে কী কী থাকছে?</h2>
             <p className="text-muted-foreground mb-8">নিজেকে এগিয়ে রাখতে আজই শুরু করুন আপনার পছন্দের কোর্স</p>
             <div className="grid md:grid-cols-2 gap-8">
                 <div className="relative rounded-lg overflow-hidden group">
@@ -121,20 +134,20 @@ export default function Home() {
       </section>
 
       {/* SSC & HSC Section */}
-      <section className="py-16 bg-card">
+      <section className="py-16 bg-card" aria-labelledby="ssc-hsc-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-2">SSC ও HSC</Badge>
-              <h2 className="font-headline text-3xl font-bold mb-8">SSC ও HSC শিক্ষার্থীদের জন্য</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">SSC ও HSC শিক্ষার্থীদের জন্য</h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
           </div>
       </section>
 
       {/* Masterclass Section */}
-      <section className="py-16 bg-gray-900 text-white">
+      <section className="py-16 bg-gray-900 text-white" aria-labelledby="masterclass-heading">
           <div className="container mx-auto px-4 text-center">
-              <h2 className="font-headline text-3xl font-bold mb-8">তোমাদের জন্য রয়েছে রেকর্ডেড মাস্টারক্লাস</h2>
+              <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">তোমাদের জন্য রয়েছে রেকর্ডেড মাস্টারক্লাস</h2>
                <Carousel opts={{ align: 'start', loop: true }}>
                 <CarouselContent>
                   {masterClasses.map((course) => (
@@ -149,43 +162,43 @@ export default function Home() {
                 <CarouselNext className="text-white"/>
               </Carousel>
               <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
-                <Link href="/courses">সকল কোর্স দেখুন</Link>
+                <Link href="/courses?category=মাস্টার কোর্স">সকল কোর্স দেখুন</Link>
               </Button>
           </div>
       </section>
 
       {/* Admission Section */}
-      <section className="py-16 bg-card">
+      <section className="py-16 bg-card" aria-labelledby="admission-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-2">Admission</Badge>
-              <h2 className="font-headline text-3xl font-bold mb-8">আপনার ভার্সিটির সম্পূর্ণ প্রস্তুতি</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">আপনার ভার্সিটির সম্পূর্ণ প্রস্তুতি</h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
                <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
-                <Link href="/courses">সকল কোর্স দেখুন</Link>
+                <Link href="/courses?category=Admission">সকল কোর্স দেখুন</Link>
                </Button>
           </div>
       </section>
       
       {/* Job Prep Section */}
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-background" aria-labelledby="job-prep-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-2">Job Preparation</Badge>
-              <h2 className="font-headline text-3xl font-bold mb-8">সরকারি চাকরির সর্বোচ্চ প্রস্তুতি</h2>
+              <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">সরকারি চাকরির সর্বোচ্চ প্রস্তুতি</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
                <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
-                <Link href="/courses">সকল কোর্স দেখুন</Link>
+                <Link href="/courses?category=Job+Prep">সকল কোর্স দেখুন</Link>
               </Button>
           </div>
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-16 bg-card">
+      <section className="py-16 bg-card" aria-labelledby="why-choose-us-heading">
         <div className="container mx-auto px-4">
-          <h2 className="font-headline text-3xl font-bold text-center mb-12">
+          <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
             কেন আমরাই শিক্ষার্থী ও অভিভাবকদের প্রথম পছন্দ?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -203,11 +216,11 @@ export default function Home() {
       </section>
 
       {/* Notes Banner */}
-      <section className="py-12 bg-gray-900">
+      <section className="py-12 bg-gray-900" aria-labelledby="notes-banner-heading">
         <div className="container mx-auto px-4">
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-8">
               <div>
-                  <h3 className="font-headline text-2xl font-bold text-white">টেন মিনিট স্কুলের নোট পড়ে পাস!</h3>
+                  <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-white">টেন মিনিট স্কুলের নোট পড়ে পাস!</h3>
                   <p className="text-gray-300 mt-2">সেরা নোট, লেকচার শিট ও গুরুত্বপূর্ণ সাজেশন খুঁজে নাও সহজেই।</p>
               </div>
               <Button variant="accent" size="lg" className="font-bold shrink-0">নোটস এবং সাজেশন</Button>
@@ -216,9 +229,9 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-red-800 text-white">
+      <section className="py-12 bg-red-800 text-white" aria-labelledby="stats-heading">
         <div className="container mx-auto px-4 text-center">
-            <h2 className="font-headline text-3xl font-bold mb-8">২০২২-২৪ শিক্ষাবর্ষে টেন মিনিট স্কুলের এডমিশন সাফল্য</h2>
+            <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">২০২২-২৪ শিক্ষাবর্ষে টেন মিনিট স্কুলের এডমিশন সাফল্য</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">
                     <p className="font-headline text-5xl font-bold">১,২১৬</p>
@@ -237,10 +250,10 @@ export default function Home() {
       </section>
 
       {/* App Promo Section */}
-      <section className="py-16 bg-gray-900 text-white">
+      <section className="py-16 bg-gray-900 text-white" aria-labelledby="app-promo-heading">
           <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
               <div className="text-center md:text-left">
-                <h2 className="font-headline text-4xl font-bold">যেকোনো জায়গায় বসে শিখুন, যখন যা প্রয়োজন!</h2>
+                <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">যেকোনো জায়গায় বসে শিখুন, যখন যা প্রয়োজন!</h2>
                 <p className="mt-4 text-lg text-gray-300">আমাদের অ্যাপ ডাউনলোড করে স্মার্টফোনেই গুছিয়ে নিন আপনার সম্পূর্ণ প্রস্তুতি।</p>
                 <div className="flex justify-center md:justify-start gap-4 mt-8">
                     <Link href="#">

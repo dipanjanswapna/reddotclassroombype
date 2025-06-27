@@ -4,6 +4,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { blogPosts } from "@/lib/mock-data";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Our Blog',
+  description: 'Articles, tips, and resources from Red Dot Classroom to help you on your learning journey.',
+};
 
 export default function BlogPage() {
   return (

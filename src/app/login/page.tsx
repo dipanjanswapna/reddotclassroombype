@@ -5,6 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Shield, UserCog, UserSquare } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Login',
+  description: 'Login to your Red Dot Classroom account to access your dashboard and courses.',
+};
 
 function GoogleIcon() {
   return (

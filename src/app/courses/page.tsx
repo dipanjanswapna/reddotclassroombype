@@ -5,6 +5,12 @@ import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
 import { courses, Course } from '@/lib/mock-data';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'All Courses',
+  description: 'Explore a wide range of courses on Red Dot Classroom. Find the perfect course for HSC, SSC, Admission Tests, Job Prep, and Skills development.',
+};
 
 // Helper to group courses by category
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {

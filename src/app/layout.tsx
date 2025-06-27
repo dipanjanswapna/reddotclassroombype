@@ -5,8 +5,11 @@ import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 
 export const metadata: Metadata = {
-  title: 'Red Dot Classroom',
-  description: 'A modern online learning management system for Bangladesh.',
+  title: {
+    default: 'Red Dot Classroom | Online Learning Platform for Bangladesh',
+    template: '%s | Red Dot Classroom',
+  },
+  description: 'A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
 };
 
 export default function RootLayout({

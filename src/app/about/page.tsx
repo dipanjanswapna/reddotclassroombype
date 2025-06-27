@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: "Learn more about Red Dot Classroom's mission, vision, and the team behind our online learning platform.",
+};
+
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-12">
