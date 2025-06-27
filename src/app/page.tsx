@@ -1,17 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  ArrowRight,
   Video,
   BookOpen,
-  ClipboardList,
-  FileText,
   PlayCircle,
   Users,
   Trophy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { CourseCard } from '@/components/course-card';
 import {
   Carousel,
@@ -23,18 +19,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { courses } from '@/lib/mock-data';
 import type { Metadata } from 'next';
+import { HeroCarousel } from '@/components/hero-carousel';
 
 export const metadata: Metadata = {
   // The title is already set in the root layout's template.
   // We can override the description for better SEO on the homepage.
   description: 'Join thousands of learners at Red Dot Classroom. We offer high-quality online courses for HSC, SSC, Admission Tests, and professional skills development in Bangladesh.',
 };
-
-const featuredCourses = courses.filter(c => c.rating && c.rating >= 4.8).slice(0, 4);
-if (featuredCourses.length < 4) {
-    const fallback = courses.slice(0, 4 - featuredCourses.length);
-    featuredCourses.push(...fallback);
-}
 
 const liveCourses = courses.filter(c => c.category === 'এইচএসসি ২৫ অনলাইন ব্যাচ').slice(0, 4);
 const sscHscCourses = courses.filter(c => c.category === 'SSC' || c.category === 'HSC').slice(0, 4);
@@ -52,15 +43,13 @@ const whyChooseUs = [
 export default function Home() {
   return (
     <div className="flex flex-col bg-background">
+      {/* Hero Carousel Section */}
+      <HeroCarousel />
+      
       {/* Hero Section */}
       <section className="py-12 bg-gray-900 text-white" aria-labelledby="hero-heading">
         <div className="container mx-auto px-4">
           <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-2">শেখার যাত্রা শুরু</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-            {featuredCourses.map(course => (
-                <CourseCard key={course.id} {...course} />
-            ))}
-          </div>
            <div className="mt-12">
             <h3 className="font-headline text-2xl font-bold text-center mb-6 text-white">আমাদের লাইভ কোর্সসমূহ</h3>
              <Carousel opts={{ align: 'start', loop: true }}>

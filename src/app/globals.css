@@ -82,3 +82,66 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .hero-carousel-container {
+    @apply relative bg-gray-100 dark:bg-black/20 py-16;
+  }
+
+  .hero-carousel .embla__viewport {
+    @apply overflow-visible;
+  }
+
+  .hero-carousel .embla__container {
+    backface-visibility: hidden;
+  }
+
+  .hero-carousel .embla__slide {
+    @apply opacity-40 transition-all duration-500 ease-in-out;
+    transform: scale(0.85);
+  }
+
+  .hero-carousel .embla__slide.is-active {
+    @apply opacity-100;
+    transform: scale(1);
+    z-index: 10;
+  }
+
+  .carousel-image-wrapper {
+    @apply relative;
+    -webkit-box-reflect: below 2px linear-gradient(
+      to bottom,
+      transparent 60%,
+      rgba(255, 255, 255, 0.3)
+    );
+  }
+  .dark .carousel-image-wrapper {
+    -webkit-box-reflect: below 2px linear-gradient(
+      to bottom,
+      transparent 60%,
+      rgba(0, 0, 0, 0.2)
+    );
+  }
+
+  .hero-carousel-arrow {
+    @apply absolute top-1/2 -translate-y-1/2 z-20 text-white bg-black/10 hover:bg-black/40 h-10 w-10 sm:h-12 sm:w-12 rounded-full;
+  }
+  .hero-carousel-prev {
+    @apply left-2 sm:left-4 md:left-24 lg:left-48;
+  }
+  .hero-carousel-next {
+    @apply right-2 sm:right-4 md:right-24 lg:right-48;
+  }
+
+  .hero-carousel-dots {
+    @apply absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20;
+  }
+
+  .hero-carousel-dot {
+    @apply w-2 h-2 rounded-full bg-white/50 transition-all cursor-pointer;
+  }
+
+  .hero-carousel-dot.active {
+    @apply w-4 bg-white;
+  }
+}
