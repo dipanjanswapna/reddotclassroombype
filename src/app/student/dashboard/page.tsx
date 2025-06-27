@@ -79,7 +79,9 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium">80% সম্পন্ন</p>
                     </CardContent>
                     <div className="p-6 pt-0">
-                      <Button className="w-full">কোর্স চালিয়ে যান</Button>
+                      <Button asChild className="w-full">
+                        <Link href="/student/my-courses/1">কোর্স চালিয়ে যান</Link>
+                      </Button>
                     </div>
                 </Card>
                 <Card className="flex flex-col">
@@ -92,7 +94,9 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium">55% সম্পন্ন</p>
                     </CardContent>
                      <div className="p-6 pt-0">
-                      <Button className="w-full">কোর্স চালিয়ে যান</Button>
+                      <Button asChild className="w-full">
+                        <Link href="/student/my-courses/3">কোর্স চালিয়ে যান</Link>
+                      </Button>
                     </div>
                 </Card>
              </div>
