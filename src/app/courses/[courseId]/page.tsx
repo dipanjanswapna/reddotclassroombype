@@ -77,6 +77,7 @@ export default function CourseDetailPage({
 }) {
   const course = getCourseById(params.courseId);
   const relatedCourses = courses.filter((c) => c.id !== course?.id).slice(0, 4);
+  const includedCourses = courses.filter(c => course?.includedArchivedCourseIds?.includes(c.id));
 
   if (!course) {
     notFound();
@@ -361,6 +362,18 @@ export default function CourseDetailPage({
             {/* This space can be used for another sticky element or ads if needed */}
           </div>
         </div>
+
+        {/* Included Archived Courses */}
+        {includedCourses.length > 0 && (
+          <section className="mt-16">
+            <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {includedCourses.map(includedCourse => (
+                <CourseCard key={includedCourse.id} {...includedCourse} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Related Courses */}
          <section className="mt-16">

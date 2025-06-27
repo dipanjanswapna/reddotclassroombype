@@ -10,12 +10,12 @@ import { Clock, Star, Trash2 } from "lucide-react";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
-  status: 'in-progress' | 'completed' | 'wishlisted';
+  status: 'in-progress' | 'completed' | 'wishlisted' | 'archived';
 };
 
 export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) {
   
-  const courseLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
+  const courseLink = (status === 'in-progress' || status === 'archived') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
 
   return (
@@ -63,6 +63,10 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
             <p className="font-headline text-lg font-bold text-primary mt-4">{course.price}</p>
         )}
 
+        {status === 'archived' && (
+             <Badge variant="secondary" className="mt-4">Included Archived Content</Badge>
+        )}
+
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
@@ -90,6 +94,11 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
                 <Trash2 className="h-4 w-4" />
              </Button>
            </div>
+        )}
+        {status === 'archived' && (
+           <Button asChild className="w-full" variant="outline">
+                <Link href={courseLink}>View Archived Content</Link>
+           </Button>
         )}
       </CardFooter>
     </Card>

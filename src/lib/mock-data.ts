@@ -79,6 +79,7 @@ export type Course = {
   reviewsData?: Review[];
   liveClasses?: LiveClass[];
   isArchived?: boolean;
+  includedArchivedCourseIds?: string[];
 };
 
 
@@ -228,7 +229,8 @@ export const courses: Course[] = [
         { id: 'lc1-1', topic: 'ভেক্টর প্রবলেম সলভিং', date: 'July 10, 2024', time: '8:00 PM', platform: 'YouTube Live', joinUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' },
         { id: 'lc1-2', topic: 'গতিবিদ্যা রিভিউ', date: 'July 12, 2024', time: '8:00 PM', platform: 'Facebook Live', joinUrl: 'https://www.facebook.com/watch/live/?ref=watch_permalink&v=1158671215243119' },
         { id: 'lc1-3', topic: 'রসায়ন বিশেষ লাইভ', date: 'July 15, 2024', time: '7:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
-    ]
+    ],
+    includedArchivedCourseIds: ['17'],
   },
   {
     id: '2',

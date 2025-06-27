@@ -19,6 +19,7 @@ import {
   HelpCircle,
   Users,
   Calendar,
+  Archive,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,9 +54,11 @@ import {CSS} from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 const allCategories = [...new Set(courses.map(course => course.category))];
+const archivedCourses = courses.filter(c => c.isArchived);
 
 type LessonData = {
     id: string;
@@ -210,6 +213,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
+  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>(courseToEdit?.includedArchivedCourseIds || []);
 
   const getSyllabusItems = (): SyllabusItem[] => {
     if (!courseToEdit?.syllabus) return [];
@@ -307,8 +311,18 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
+  const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
+    setIncludedCourseIds(prev => {
+        if (isChecked) {
+            return [...prev, courseId];
+        } else {
+            return prev.filter(id => id !== courseId);
+        }
+    });
+  };
+
   const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine });
+    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
     toast({
       title: "Draft Saved!",
       description: "Your course has been saved as a draft.",
@@ -316,7 +330,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
 
   const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine });
+    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
     toast({
       title: "Submitted for Approval",
       description: "Your course has been submitted and is pending review.",
@@ -332,6 +346,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     { id: 'media', label: 'Media', icon: CloudUpload },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
+    { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
 
   return (
@@ -562,6 +577,32 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                     <div className="space-y-2 max-w-sm">
                         <Label htmlFor="price">Price (BDT)</Label>
                         <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
+                    </div>
+                </CardContent>
+            )}
+
+            {activeTab === 'bundles' && (
+                <CardContent className="pt-6">
+                    <CardDescription className="mb-4">
+                        Select any archived courses to bundle for free with this course.
+                        Students who purchase this course will get free access to the selected archived content.
+                    </CardDescription>
+                    <div className="space-y-2">
+                        {archivedCourses.map(course => (
+                            <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
+                                <Checkbox
+                                    id={`bundle-${course.id}`}
+                                    checked={includedCourseIds.includes(course.id)}
+                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id, !!checked)}
+                                />
+                                <Label htmlFor={`bundle-${course.id}`} className="cursor-pointer">
+                                    {course.title} <span className="text-muted-foreground text-xs">({course.category})</span>
+                                </Label>
+                            </div>
+                        ))}
+                        {archivedCourses.length === 0 && (
+                            <p className="text-sm text-muted-foreground p-2">No archived courses available to bundle.</p>
+                        )}
                     </div>
                 </CardContent>
             )}
