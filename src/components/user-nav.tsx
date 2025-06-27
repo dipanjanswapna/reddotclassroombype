@@ -23,7 +23,7 @@ import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "l
 type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'unknown';
 
 const getUserDetails = (pathname: string) => {
-  if (pathname.startsWith('/student') || pathname.startsWith('/tutor')) {
+  if (pathname.startsWith('/student')) {
     return {
       role: 'student' as UserRole,
       name: "Student Name",
@@ -113,10 +113,7 @@ export function UserNav() {
                 <Link href="/student/courses"><BookOpen className="mr-2" />My Courses</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                 <Link href="/student/profile"><User className="mr-2" />Profile</Link>
-              </DropdownMenuItem>
-               <DropdownMenuItem asChild>
-                 <Link href="/student/profile"><Settings className="mr-2" />Settings</Link>
+                 <Link href="/student/profile"><User className="mr-2" />Profile & Settings</Link>
               </DropdownMenuItem>
             </>
           )}

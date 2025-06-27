@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -7,7 +8,6 @@ import {
   BookCopy,
   FileText,
   HelpCircle,
-  LayoutDashboard,
   Megaphone,
   MessageSquare,
   Star,
@@ -23,7 +23,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
 import { courses } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
 
@@ -42,8 +41,7 @@ export default function CourseLayout({
   }
 
   const courseNavItems = [
-    { href: `/student/my-courses/${course.id}`, label: 'Course Home', icon: LayoutDashboard, exact: true },
-    { href: `/student/my-courses/${course.id}/lessons`, label: 'Lessons', icon: BookCopy },
+    { href: `/student/my-courses/${course.id}`, label: 'Lessons', icon: BookCopy },
     { href: `/student/my-courses/${course.id}/quizzes`, label: 'Quizzes', icon: HelpCircle },
     { href: `/student/my-courses/${course.id}/assignments`, label: 'Assignments', icon: FileText },
     { href: `/student/my-courses/${course.id}/live-classes`, label: 'Live Classes', icon: Video },
@@ -52,13 +50,14 @@ export default function CourseLayout({
     { href: `/student/my-courses/${course.id}/reviews`, label: 'Reviews', icon: Star },
   ];
   
-  // The main /student/my-courses/[courseId] page is the lesson list, so we map the href to that.
-  const getIsActive = (item: typeof courseNavItems[0]) => {
-      if (item.href.endsWith('lessons')) {
-          return pathname === `/student/my-courses/${course.id}` || pathname.startsWith(item.href)
-      }
-      return pathname.startsWith(item.href);
-  }
+  const getIsActive = (href: string) => {
+    // 'Lessons' is special: it's active for the course root AND any lesson detail page.
+    if (href === `/student/my-courses/${course.id}`) {
+        return pathname === href || pathname.startsWith(`${href}/lesson`);
+    }
+    // All other links just need an exact match for now.
+    return pathname === href;
+  };
 
 
   return (
@@ -75,7 +74,7 @@ export default function CourseLayout({
             <SidebarMenu>
               {courseNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item)}>
+                  <SidebarMenuButton asChild isActive={getIsActive(item.href)}>
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
