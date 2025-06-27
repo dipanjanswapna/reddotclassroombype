@@ -47,10 +47,13 @@ export default function CoursesPage({
   };
 }) {
 
+  // Only show published courses on the public page
+  const publishedCourses = courses.filter(course => course.status === 'Published');
+
   const selectedCategory = searchParams?.category;
   const selectedSubCategory = searchParams?.subCategory;
 
-  let filteredCourses = courses;
+  let filteredCourses = publishedCourses;
 
   if (selectedCategory) {
     filteredCourses = filteredCourses.filter(
@@ -75,8 +78,9 @@ export default function CoursesPage({
     return indexA - indexB;
   });
   
-  const allCategories = [...new Set(courses.map(course => course.category))].sort();
-  const allSubCategories = [...new Set(courses.map(course => course.subCategory).filter(Boolean))] as string[];
+  // The filter bar should also only show categories from published courses
+  const allCategories = [...new Set(publishedCourses.map(course => course.category))].sort();
+  const allSubCategories = [...new Set(publishedCourses.map(course => course.subCategory).filter(Boolean))] as string[];
 
 
   return (
