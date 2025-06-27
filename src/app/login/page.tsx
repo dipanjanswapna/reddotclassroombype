@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Key } from 'lucide-react';
+import { GraduationCap, Shield, UserCog, UserSquare } from 'lucide-react';
 
 function GoogleIcon() {
   return (
@@ -51,12 +51,45 @@ export default function LoginPage() {
             <Button type="submit" className="w-full font-bold">
               Login
             </Button>
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/student/dashboard">
-                <Key className="mr-2 h-4 w-4" />
-                Demo Login
-              </Link>
-            </Button>
+            
+            <div className="relative pt-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or use a demo account
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" asChild>
+                <Link href="/student/dashboard">
+                  <GraduationCap className="mr-2 h-4 w-4" />
+                  Student
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/teacher/dashboard">
+                  <UserSquare className="mr-2 h-4 w-4" />
+                  Teacher
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/guardian/dashboard">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Guardian
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/admin/dashboard">
+                  <UserCog className="mr-2 h-4 w-4" />
+                  Admin
+                </Link>
+              </Button>
+            </div>
+            
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
