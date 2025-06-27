@@ -13,6 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "./ui/input";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 
 const navLinks = [
   { href: "/courses", label: "Courses" },
@@ -80,32 +87,78 @@ export function Header() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
-              <div className="px-2">
-                <div className="flex flex-col space-y-3">
-                    <Link href="/" className="flex items-center space-x-2" onClick={() => setMenuOpen(false)}>
-                        <RdcLogo className="h-8 w-auto" />
-                         <span className="font-bold text-lg">Red Dot Classroom</span>
+            <SheetContent side="left" className="p-0">
+              <div className="flex h-full flex-col">
+                <div className="p-4 border-b">
+                  <Link
+                    href="/"
+                    className="flex items-center space-x-2"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <RdcLogo className="h-8 w-auto" />
+                    <span className="font-bold text-lg">Red Dot Classroom</span>
+                  </Link>
+                </div>
+                <div className="p-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input placeholder="কী খুঁজতে চান?" className="pl-10 w-full" />
+                  </div>
+                </div>
+                <div className="flex-grow overflow-y-auto px-2">
+                  <div className="flex flex-col space-y-1">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="journey-links" className="border-b-0">
+                        <AccordionTrigger className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md hover:no-underline justify-start gap-1">
+                          শেখার যাত্রা শুরু
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="flex flex-col space-y-1 pl-7">
+                            {journeyLinks.map((link) => (
+                              <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setMenuOpen(false)}
+                                className="px-2 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md"
+                              >
+                                {link.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <Separator />
+                <div className="p-4 flex gap-2">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/login" onClick={() => setMenuOpen(false)}>
+                      লগইন
                     </Link>
-                    <div className="flex flex-col space-y-2 pt-4">
-                        {[...navLinks, ...journeyLinks].map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setMenuOpen(false)}
-                            className="px-2 py-2 text-lg font-medium transition-colors hover:text-primary rounded-md"
-                        >
-                            {link.label}
-                        </Link>
-                        ))}
-                    </div>
+                  </Button>
+                  <Button asChild className="w-full">
+                    <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                      সাইন আপ
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </SheetContent>
           </Sheet>
         </div>
         
-        <Link href="/" className="md:hidden flex items-center space-x-2 ml-4">
+        <Link href="/" className="md:hidden flex-1 flex justify-center items-center">
             <RdcLogo className="h-8 w-auto" />
         </Link>
 
