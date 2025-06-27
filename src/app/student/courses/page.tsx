@@ -27,13 +27,6 @@ export default function MyCoursesPage() {
   
   const wishlistedCourses = courses.slice(5, 7);
 
-  // Find any bundled courses associated with the in-progress courses
-  const bundledArchivedCourses = inProgressCourses
-    .flatMap(enrolledCourse => enrolledCourse.includedArchivedCourseIds || [])
-    .map(courseId => courses.find(c => c.id === courseId))
-    .filter((c): c is Course => !!c);
-
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -63,17 +56,6 @@ export default function MyCoursesPage() {
               ))}
             </div>
         </section>
-
-        {bundledArchivedCourses.length > 0 && (
-          <section>
-              <h2 className="font-headline text-2xl font-bold mb-4">Included Archived Content</h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {bundledArchivedCourses.map((course) => (
-                  <EnrolledCourseCard key={course.id} course={course} status="archived" />
-                ))}
-              </div>
-          </section>
-        )}
 
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
