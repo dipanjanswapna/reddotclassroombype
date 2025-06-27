@@ -1,7 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from 'next/navigation';
 import { Menu, Search, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -20,11 +22,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { UserNav } from "./user-nav";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/blog", label: "Blog" },
-  { href: "/student/dashboard", label: "Dashboard" },
   { href: "/tutor", label: "AI Tutor" },
 ];
 
@@ -37,6 +40,13 @@ const journeyLinks = [
 
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isLoggedIn = 
+    pathname.startsWith('/student') ||
+    pathname.startsWith('/teacher') ||
+    pathname.startsWith('/guardian') ||
+    pathname.startsWith('/admin');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -128,7 +138,14 @@ export function Header() {
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
-                    {navLinks.map((link) => (
+                     <Link
+                        href={isLoggedIn ? "/student/dashboard" : "/courses"}
+                        onClick={() => setMenuOpen(false)}
+                        className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md"
+                      >
+                        {isLoggedIn ? "Dashboard" : "Courses"}
+                      </Link>
+                    {navLinks.filter(l => l.href !== '/courses' && l.href !== '/student/dashboard').map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
@@ -142,16 +159,38 @@ export function Header() {
                 </div>
                 <Separator />
                 <div className="p-4 flex gap-2">
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href="/login" onClick={() => setMenuOpen(false)}>
-                      লগইন
-                    </Link>
-                  </Button>
-                  <Button asChild className="w-full">
-                    <Link href="/signup" onClick={() => setMenuOpen(false)}>
-                      সাইন আপ
-                    </Link>
-                  </Button>
+                  {isLoggedIn ? (
+                     <div className="w-full">
+                        <div className="flex items-center gap-3 mb-4">
+                           <Avatar className="h-10 w-10">
+                              <AvatarImage src="https://placehold.co/100x100" alt="Student" />
+                              <AvatarFallback>SN</AvatarFallback>
+                           </Avatar>
+                           <div>
+                              <p className="font-semibold">Student Name</p>
+                              <p className="text-sm text-muted-foreground">student@rdc.com</p>
+                           </div>
+                        </div>
+                        <Button asChild variant="outline" className="w-full">
+                          <Link href="/" onClick={() => setMenuOpen(false)}>
+                            লগআউট
+                          </Link>
+                        </Button>
+                      </div>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href="/login" onClick={() => setMenuOpen(false)}>
+                          লগইন
+                        </Link>
+                      </Button>
+                      <Button asChild className="w-full">
+                        <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                          সাইন আপ
+                        </Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -164,12 +203,18 @@ export function Header() {
 
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button asChild variant="outline" className="hidden sm:inline-flex">
-            <Link href="/login">লগইন</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">সাইন আপ</Link>
-          </Button>
+          {isLoggedIn ? (
+            <UserNav />
+          ) : (
+            <>
+              <Button asChild variant="outline" className="hidden sm:inline-flex">
+                <Link href="/login">লগইন</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">সাইন আপ</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
