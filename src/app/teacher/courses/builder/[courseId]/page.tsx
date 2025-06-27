@@ -59,7 +59,7 @@ const allCategories = [...new Set(courses.map(course => course.category))];
 
 type LessonData = {
     id: string;
-    type: 'lesson' | 'quiz' | 'document';
+    type: 'video' | 'quiz' | 'document';
     title: string;
     duration: string;
     videoId?: string;
@@ -94,6 +94,7 @@ type ClassRoutineItem = {
   day: string;
   subject: string;
   time: string;
+  instructorName?: string;
 }
 
 function SortableSyllabusItem({ 
@@ -250,7 +251,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const addSyllabusItem = (type: 'module' | 'lesson') => {
     const newItem: SyllabusItem = type === 'module' 
       ? { id: Date.now().toString(), type, title: 'New Module' }
-      : { id: Date.now().toString(), type, title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
+      : { id: Date.now().toString(), type: 'video', title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
     
     // Logic to add a lesson under the last module if one exists
     if (type === 'lesson') {
@@ -300,7 +301,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
 
-  const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '' }]);
+  const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '', instructorName: '' }]);
   const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
       setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
@@ -477,13 +478,28 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
 
             {activeTab === 'routine' && (
                 <CardContent className="pt-6">
-                    <CardDescription className="mb-4">Set the weekly class schedule for this course.</CardDescription>
+                    <CardDescription className="mb-4">Set the weekly class schedule. Select an instructor from the list of instructors you added.</CardDescription>
                      <div className="space-y-2">
                         {classRoutine.map(item => (
-                            <div key={item.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
+                            <div key={item.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center">
                                 <Input placeholder="Day (e.g., Saturday)" value={item.day} onChange={e => updateRoutineItem(item.id, 'day', e.target.value)} />
                                 <Input placeholder="Subject" value={item.subject} onChange={e => updateRoutineItem(item.id, 'subject', e.target.value)} />
                                 <Input placeholder="Time (e.g., 7:00 PM)" value={item.time} onChange={e => updateRoutineItem(item.id, 'time', e.target.value)} />
+                                 <Select
+                                    value={item.instructorName}
+                                    onValueChange={(value) => updateRoutineItem(item.id, 'instructorName', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Instructor" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {instructors.map((ins) => (
+                                            <SelectItem key={ins.id} value={ins.name}>
+                                                {ins.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <Button variant="ghost" size="icon" onClick={() => removeRoutineItem(item.id)}><X className="text-destructive h-4 w-4"/></Button>
                             </div>
                         ))}

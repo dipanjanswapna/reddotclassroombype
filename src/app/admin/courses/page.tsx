@@ -59,17 +59,28 @@ export default function AdminCourseManagementPage() {
                                 <TableCell>{course.instructor.name}</TableCell>
                                 <TableCell>{course.price}</TableCell>
                                 <TableCell>
-                                    <Badge className={course.id === '1' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 'bg-green-500 text-white hover:bg-green-600'}>
-                                        {course.id === '1' ? 'Pending Approval' : 'Published'}
+                                    <Badge className={
+                                        course.status === 'Pending Approval' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 
+                                        course.status === 'Published' ? 'bg-green-500 text-white hover:bg-green-600' :
+                                        'bg-gray-500 text-white'
+                                    }>
+                                        {course.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="outline" size="sm" asChild>
-                                        <Link href={`/teacher/courses/builder/${course.id}`}>
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Edit
-                                        </Link>
-                                    </Button>
+                                     {course.status === 'Pending Approval' ? (
+                                        <div className="flex gap-2 justify-end">
+                                            <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100">Approve</Button>
+                                            <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100">Reject</Button>
+                                        </div>
+                                    ) : (
+                                        <Button variant="outline" size="sm" asChild>
+                                            <Link href={`/teacher/courses/builder/${course.id}`}>
+                                                <Pencil className="mr-2 h-4 w-4" />
+                                                Edit
+                                            </Link>
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

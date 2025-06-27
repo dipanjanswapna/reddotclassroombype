@@ -53,6 +53,7 @@ export type Course = {
   category: string;
   subCategory?: string;
   price: string;
+  status: 'Published' | 'Pending Approval' | 'Draft';
   rating?: number;
   reviews?: number;
   whatYouWillLearn?: string[];
@@ -60,7 +61,7 @@ export type Course = {
   features?: string[];
   features_detailed?: { title: string; description: string }[];
   imageTitle?: string;
-  classRoutine?: { day: string; subject: string; time: string; id?: string; }[];
+  classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
   faqs?: { question: string; answer: string; id?: string; }[];
   reviewsData?: Review[];
 };
@@ -80,6 +81,7 @@ export const courses: Course[] = [
     id: '1',
     title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
     description: 'এইচএসসি ২০২৫ পরীক্ষার্থীদের জন্য পূর্ণাঙ্গ প্রস্তুতি নিশ্চিত করতে একটি সম্পূর্ণ অনলাইন ব্যাচ। অভিজ্ঞ শিক্ষকদের সাথে লাইভ ক্লাস, লেকচার শিট, এবং পরীক্ষার মাধ্যমে সেরা প্রস্তুতি নিন।',
+    status: 'Pending Approval',
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Lead Developer & Instructor',
@@ -152,10 +154,10 @@ export const courses: Course[] = [
     ],
     imageTitle: 'PCMB',
     classRoutine: [
-        { day: 'শনি', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'রবি', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'সোম', subject: 'উচ্চতর গণিত', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'মঙ্গল', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'শনি', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Jubayer Ahmed' },
+        { day: 'রবি', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Sadia Islam' },
+        { day: 'সোম', subject: 'উচ্চতর গণিত', time: 'সন্ধ্যা ৭:০০', instructorName: 'Raihan Chowdhury' },
+        { day: 'মঙ্গল', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Ayesha Khan' },
     ],
     faqs: [
         { question: 'কোর্সটি কীভাবে কিনব?', answer: 'আপনি "Enroll Now" বাটনে ক্লিক করে বিকাশ, নগদ বা কার্ডের মাধ্যমে পেমেন্ট করে কোর্সটি কিনতে পারেন।' },
@@ -171,6 +173,7 @@ export const courses: Course[] = [
     id: '2',
     title: 'Admission Test Prep (Medical)',
     description: 'A comprehensive course designed to help you ace the medical admission tests with in-depth lessons, practice questions, and mock tests.',
+    status: 'Published',
     instructor: {
       name: 'Dr. Sadia Islam',
       title: 'Medical Admission Specialist',
@@ -219,10 +222,10 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'শনি', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'সোম', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'বুধ', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'বৃহঃ', subject: 'সাধারণ জ্ঞান ও ইংরেজি', time: 'রাত ৯:০০' },
+        { day: 'শনি', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Sadia Islam' },
+        { day: 'সোম', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Karim Ahmed' },
+        { day: 'বুধ', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Farzana Begum' },
+        { day: 'বৃহঃ', subject: 'সাধারণ জ্ঞান ও ইংরেজি', time: 'রাত ৯:০০', instructorName: 'Mr. Anisul Haque' },
     ],
     faqs: [
         { question: 'মেডিকেল ভর্তি পরীক্ষার জন্য যোগ্যতা কী?', answer: 'সাধারণত এসএসসি এবং এইচএসসিতে জীববিজ্ঞানসহ নির্দিষ্ট জিপিএ প্রয়োজন হয়। বিস্তারিত সার্কুলারে উল্লেখ থাকে।' },
@@ -234,6 +237,7 @@ export const courses: Course[] = [
     id: '3',
     title: 'IELTS Preparation Course',
     description: 'Achieve your desired IELTS band score with our intensive preparation course covering all four modules: Listening, Reading, Writing, and Speaking.',
+    status: 'Published',
     instructor: {
         name: 'Raihan Chowdhury',
         title: 'Certified IELTS Trainer',
@@ -280,7 +284,7 @@ export const courses: Course[] = [
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'Recorded Modules', time: 'Anytime' },
-        { day: 'Saturday', subject: 'Live Speaking Practice', time: '8:00 PM' },
+        { day: 'Saturday', subject: 'Live Speaking Practice', time: '8:00 PM', instructorName: 'Raihan Chowdhury' },
     ],
     faqs: [
         { question: 'What is the duration of this course?', answer: 'This is a self-paced course with lifetime access to materials. Live sessions are held weekly.' },
@@ -294,6 +298,7 @@ export const courses: Course[] = [
     id: '4',
     title: 'Data Science with Python',
     description: 'Learn the fundamentals of data science and machine learning using Python. This course is perfect for beginners with no prior programming experience.',
+    status: 'Published',
     instructor: {
         name: 'Ayesha Khan',
         title: 'Data Scientist',
@@ -340,7 +345,7 @@ export const courses: Course[] = [
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
-        { day: 'Sunday', subject: 'Live Q&A Session', time: '9:00 PM' },
+        { day: 'Sunday', subject: 'Live Q&A Session', time: '9:00 PM', instructorName: 'Ayesha Khan' },
     ],
     faqs: [
         { question: 'Do I need any prior programming experience?', answer: 'No, this course is designed for absolute beginners.' },
@@ -351,6 +356,7 @@ export const courses: Course[] = [
     id: '5',
     title: 'SSC 2025 Online Batch',
     description: 'A complete online batch for SSC 2025 candidates covering all subjects with live classes, lecture sheets, and regular exams.',
+    status: 'Published',
     instructor: {
       name: 'Farhan Mahmud',
       title: 'Experienced SSC Tutor',
@@ -396,9 +402,9 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'শনি', subject: 'গণিত', time: 'বিকাল ৫:০০' },
-        { day: 'সোম', subject: 'ইংরেজি', time: 'বিকাল ৫:০০' },
-        { day: 'বুধ', subject: 'বিজ্ঞান', time: 'বিকাল ৫:০০' },
+        { day: 'শনি', subject: 'গণিত', time: 'বিকাল ৫:০০', instructorName: 'Farhan Mahmud' },
+        { day: 'সোম', subject: 'ইংরেজি', time: 'বিকাল ৫:০০', instructorName: 'Nusrat Jahan' },
+        { day: 'বুধ', subject: 'বিজ্ঞান', time: 'বিকাল ৫:০০', instructorName: 'Farhan Mahmud' },
     ],
     faqs: [
         { question: 'এই কোর্সটি কোন বোর্ডের জন্য?', answer: 'এই কোর্সটি বাংলাদেশের সকল শিক্ষা বোর্ডের সিলেবাস অনুযায়ী তৈরি করা হয়েছে।' },
@@ -409,6 +415,7 @@ export const courses: Course[] = [
     id: '6',
     title: 'HSC 2025 Commerce Batch',
     description: 'Join our comprehensive online batch for HSC 2025 commerce students. Get access to live classes, solve practice problems and clear your doubts.',
+    status: 'Published',
     instructor: {
       name: 'Nusrat Jahan',
       title: 'HSC Specialist',
@@ -452,9 +459,9 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'রবি', subject: 'হিসাববিজ্ঞান', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'মঙ্গল', subject: 'ফিন্যান্স, ব্যাংকিং ও বীমা', time: 'সন্ধ্যা ৭:০০' },
-        { day: 'বৃহঃ', subject: 'ব্যবসায় সংগঠন', time: 'সন্ধ্যা ৭:০০' },
+        { day: 'রবি', subject: 'হিসাববিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Nusrat Jahan' },
+        { day: 'মঙ্গল', subject: 'ফিন্যান্স, ব্যাংকিং ও বীমা', time: 'সন্ধ্যা ৭:০০', instructorName: 'Imran Khan' },
+        { day: 'বৃহঃ', subject: 'ব্যবসায় সংগঠন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Nusrat Jahan' },
     ],
     faqs: [
         { question: 'এই কোর্সটি কাদের জন্য?', answer: 'এই কোর্সটি এইচএসসি ২০২৫ এর বাণিজ্য বিভাগের শিক্ষার্থীদের জন্য।' },
@@ -465,6 +472,7 @@ export const courses: Course[] = [
     id: '7',
     title: 'HSC ICT Masterclass',
     description: 'Master the HSC ICT syllabus with our recorded masterclass. Learn from the best and score high in your exams.',
+    status: 'Published',
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'ICT Expert',
@@ -517,6 +525,7 @@ export const courses: Course[] = [
     id: '8',
     title: 'Graphic Design Fundamentals',
     description: 'Learn the basics of graphic design including Photoshop, Illustrator, and Figma. Build a strong portfolio to start your design career.',
+    status: 'Published',
     instructor: {
       name: 'Sadia Islam',
       title: 'Professional Graphic Designer',
@@ -561,7 +570,7 @@ export const courses: Course[] = [
     ],
     classRoutine: [
         { day: 'Flexible', subject: 'All Modules (Recorded)', time: 'Anytime' },
-        { day: 'Friday', subject: 'Live Project Review', time: '8:00 PM' },
+        { day: 'Friday', subject: 'Live Project Review', time: '8:00 PM', instructorName: 'Sadia Islam' },
     ],
     faqs: [
         { question: 'Do I need a powerful computer for this course?', answer: 'A mid-range computer that can run Adobe software smoothly is recommended.' },
@@ -572,6 +581,7 @@ export const courses: Course[] = [
     id: '9',
     title: 'Engineering Admission',
     description: 'Prepare for engineering university admission tests with our specialized course. Cover Physics, Chemistry, and Higher Math in detail.',
+    status: 'Published',
     instructor: {
       name: 'Jubayer Ahmed',
       title: 'Engineering Admission Expert',
@@ -618,7 +628,7 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'শনি-সোম-বুধ', subject: 'Physics, Chemistry, Math', time: 'রাত ৮:০০' },
+        { day: 'শনি-সোম-বুধ', subject: 'Physics, Chemistry, Math', time: 'রাত ৮:০০', instructorName: 'Jubayer Ahmed' },
     ],
     faqs: [
         { question: 'Is this course suitable for BUET admission?', answer: 'Yes, this course is designed to cover the syllabus of all major engineering universities in Bangladesh, including BUET, KUET, RUET, and CUET.' },
@@ -629,6 +639,7 @@ export const courses: Course[] = [
     id: '10',
     title: 'University (Ka unit) Admission',
     description: 'A complete guide for Dhaka University Ka-unit admission test. Prepare with the best mentors and materials.',
+    status: 'Published',
     instructor: {
       name: 'Farhan Mahmud',
       title: 'DU Admission Mentor',
@@ -663,7 +674,7 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'প্রতিদিন', subject: 'লাইভ ক্লাস ও পরীক্ষা', time: 'সন্ধ্যা ৭:৩০' },
+        { day: 'প্রতিদিন', subject: 'লাইভ ক্লাস ও পরীক্ষা', time: 'সন্ধ্যা ৭:৩০', instructorName: 'Farhan Mahmud' },
     ],
     faqs: [
         { question: 'How is this course different?', answer: 'We focus on the specific patterns of DU Ka-unit questions and provide exclusive shortcut techniques.' },
@@ -673,6 +684,7 @@ export const courses: Course[] = [
     id: '11',
     title: 'BCS Preliminary Course',
     description: 'Prepare for the BCS preliminary exam with our comprehensive course covering all subjects.',
+    status: 'Published',
     instructor: {
       name: 'Raihan Chowdhury',
       title: 'BCS Cadre Officer',
@@ -707,7 +719,7 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'Friday & Saturday', subject: 'Live Classes', time: '10:00 AM & 8:00 PM' },
+        { day: 'Friday & Saturday', subject: 'Live Classes', time: '10:00 AM & 8:00 PM', instructorName: 'Raihan Chowdhury' },
     ],
     faqs: [
         { question: 'Is this course enough for the preliminary exam?', answer: 'Yes, this course comprehensively covers all the topics required for the BCS preliminary exam.' },
@@ -717,6 +729,7 @@ export const courses: Course[] = [
     id: '12',
     title: 'Bank Job Preparation',
     description: 'A complete course for bank job seekers. Cover math, english, general knowledge and analytical skills.',
+    status: 'Published',
     instructor: {
       name: 'Ayesha Khan',
       title: 'Bank Officer',
@@ -751,7 +764,7 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'Sunday & Tuesday', subject: 'Live Classes', time: '9:00 PM' },
+        { day: 'Sunday & Tuesday', subject: 'Live Classes', time: '9:00 PM', instructorName: 'Ayesha Khan' },
     ],
     faqs: [
         { question: 'Which banks does this course cover?', answer: 'This course is designed for the recruitment exams of all government and private banks in Bangladesh.' },
@@ -764,6 +777,7 @@ export const courses: Course[] = [
     subCategory: 'মানবিক',
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
     price: '৳ ৪২০০',
+    status: 'Published',
     imageTitle: 'মানবিক শাখা',
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'history book',
@@ -797,9 +811,9 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'রবি', subject: 'ইতিহাস', time: 'বিকাল ৪:০০' },
-        { day: 'মঙ্গল', subject: 'পৌরনীতি', time: 'বিকাল ৪:০০' },
-        { day: 'বৃহঃ', subject: 'অর্থনীতি', time: 'বিকাল ৪:০০' },
+        { day: 'রবি', subject: 'ইতিহাস', time: 'বিকাল ৪:০০', instructorName: 'Nusrat Jahan' },
+        { day: 'মঙ্গল', subject: 'পৌরনীতি', time: 'বিকাল ৪:০০', instructorName: 'Imran Khan' },
+        { day: 'বৃহঃ', subject: 'অর্থনীতি', time: 'বিকাল ৪:০০', instructorName: 'Nusrat Jahan' },
     ],
     faqs: [
         { question: 'Will this course cover all subjects for the Arts group?', answer: 'Yes, this course covers all compulsory and major subjects for the HSC Arts stream.' },
@@ -810,6 +824,7 @@ export const courses: Course[] = [
     title: 'HSC Physics Subject Course',
     category: 'বিষয়ভিত্তিক কোর্স',
     price: '৳ ৭৫০',
+    status: 'Published',
     imageTitle: 'PHYSICS',
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'physics equation',
@@ -855,6 +870,7 @@ export const courses: Course[] = [
     category: 'টেস্ট পেপার সলভ',
     subCategory: 'বিজ্ঞান',
     price: '৳ ৯৫০',
+    status: 'Published',
     imageTitle: 'বিজ্ঞান শাখা',
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'exam paper',
@@ -889,7 +905,7 @@ export const courses: Course[] = [
         },
     ],
     classRoutine: [
-        { day: 'Daily', subject: 'Live Solving Class', time: '8:30 PM' },
+        { day: 'Daily', subject: 'Live Solving Class', time: '8:30 PM', instructorName: 'Jubayer Ahmed' },
     ],
     faqs: [
         { question: 'Which test papers will be solved?', answer: 'We will be solving test papers from renowned colleges across the country.' },
@@ -900,6 +916,7 @@ export const courses: Course[] = [
     title: 'মাস্টার কোর্স - ওয়েব ডেভেলপমেন্ট',
     category: 'মাস্টার কোর্স',
     price: 'Free',
+    status: 'Published',
     imageTitle: 'ওয়েব ডেভেলপমেন্ট',
     imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'programming code',

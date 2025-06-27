@@ -62,8 +62,12 @@ export default function TeacherCoursesPage() {
                                 <TableCell>{course.price}</TableCell>
                                 <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell>
                                 <TableCell>
-                                    <Badge className={course.id === '1' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 'bg-green-500 text-white hover:bg-green-600'}>
-                                        {course.id === '1' ? 'Pending Approval' : 'Published'}
+                                    <Badge className={
+                                        course.status === 'Pending Approval' ? 'bg-yellow-500 text-black hover:bg-yellow-600' : 
+                                        course.status === 'Published' ? 'bg-green-500 text-white hover:bg-green-600' :
+                                        'bg-gray-500 text-white'
+                                    }>
+                                        {course.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
