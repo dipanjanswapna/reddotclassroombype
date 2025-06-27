@@ -28,23 +28,26 @@ export type Review = {
   date: string;
 };
 
+export type Instructor = {
+  name: string;
+  title: string;
+  avatarUrl: string;
+  dataAiHint: string;
+  id?: string; // Optional id for builder key
+}
+
 export type Course = {
   id: string;
   title: string;
   description: string;
-  instructor: { // Primary instructor
+  instructor: { // Primary instructor - can be derived from instructors[0]
     name: string;
     title: string;
     avatarUrl: string;
     bio: string;
     dataAiHint: string;
   };
-  instructors?: { // Multiple instructors for the course
-    name: string;
-    title: string;
-    avatarUrl: string;
-    dataAiHint: string;
-  }[];
+  instructors: Instructor[]; // Multiple instructors for the course
   imageUrl: string;
   dataAiHint: string;
   category: string;
@@ -57,8 +60,8 @@ export type Course = {
   features?: string[];
   features_detailed?: { title: string; description: string }[];
   imageTitle?: string;
-  classRoutine?: { day: string; subject: string; time: string }[];
-  faqs?: { question: string; answer: string }[];
+  classRoutine?: { day: string; subject: string; time: string; id?: string; }[];
+  faqs?: { question: string; answer: string; id?: string; }[];
   reviewsData?: Review[];
 };
 

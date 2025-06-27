@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import {
   Book,
   FileText,
@@ -31,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { courses } from '@/lib/mock-data';
+import { courses, Course } from '@/lib/mock-data';
 import {
   DndContext,
   closestCenter,
@@ -58,20 +59,21 @@ const allCategories = [...new Set(courses.map(course => course.category))];
 
 type LessonData = {
     id: string;
-    type: 'lesson';
+    type: 'lesson' | 'quiz' | 'document';
     title: string;
     duration: string;
-    videoId: string;
-    lectureSheetUrl: string;
+    videoId?: string;
+    lectureSheetUrl?: string;
 };
 
 type ModuleData = {
     id: string;
     type: 'module';
     title: string;
+    lessons: LessonData[];
 };
 
-type SyllabusItem = LessonData | ModuleData;
+type SyllabusItem = ModuleData['lessons'][0] | Omit<ModuleData, 'lessons'>;
 
 type FaqItem = {
   id: string;
@@ -84,6 +86,7 @@ type InstructorItem = {
   name: string;
   title: string;
   avatarUrl: string;
+  dataAiHint: string;
 }
 
 type ClassRoutineItem = {
@@ -140,7 +143,7 @@ function SortableSyllabusItem({
     }
 
     return (
-        <Collapsible ref={setNodeRef} style={style} className="bg-background rounded-md border">
+        <Collapsible ref={setNodeRef} style={style} className="bg-background rounded-md border ml-6">
             <div className="flex items-center gap-2 p-2">
                 <div {...attributes} {...listeners} className="cursor-grab p-1">
                     <GripVertical className="h-5 w-5 text-muted-foreground" />
@@ -187,41 +190,43 @@ function SortableSyllabusItem({
     );
 }
 
-export default function CourseBuilderPage() {
+export default function CourseBuilderPage({ params }: { params: { courseId: string } }) {
+  const isNewCourse = params.courseId === 'new';
+  const courseToEdit = isNewCourse ? null : courses.find(c => c.id === params.courseId);
+
+  if (!isNewCourse && !courseToEdit) {
+    notFound();
+  }
+    
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('details');
 
-  // State for all course fields
-  const [title, setTitle] = useState('HSC 2025 Physics Crash Course');
-  const [description, setDescription] = useState('A complete online batch for HSC 2025 science candidates. Get the best preparation with live classes, lecture sheets, and regular exams from experienced teachers.');
-  const [category, setCategory] = useState('HSC');
-  const [price, setPrice] = useState('4500');
-  const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
+  const [title, setTitle] = useState(courseToEdit?.title || '');
+  const [description, setDescription] = useState(courseToEdit?.description || '');
+  const [category, setCategory] = useState(courseToEdit?.category || allCategories[0] || '');
+  const [price, setPrice] = useState(courseToEdit?.price?.replace(/[^0-9.]/g, '') || '');
+  const [thumbnailUrl, setThumbnailUrl] = useState(courseToEdit?.imageUrl || 'https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
-  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([
-    'Build enterprise-level React applications',
-    'Master server-side rendering with Next.js',
-  ]);
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
 
-  const [syllabus, setSyllabus] = useState<SyllabusItem[]>([
-    { id: '1', type: 'module', title: 'Module 1: Introduction' },
-    { id: '2', type: 'lesson', title: 'Lesson 1.1: What is this course about?', duration: '10 min', videoId: 'intro-vid', lectureSheetUrl: '' },
-    { id: '3', type: 'lesson', title: 'Lesson 1.2: Core Concepts', duration: '45 min', videoId: 'core-concepts', lectureSheetUrl: 'https://example.com/sheet1' },
-    { id: '4', type: 'module', title: 'Module 2: Deep Dive' },
-  ]);
+  const getSyllabusItems = (): SyllabusItem[] => {
+    if (!courseToEdit?.syllabus) return [];
+    const items: SyllabusItem[] = [];
+    courseToEdit.syllabus.forEach(module => {
+        items.push({ id: module.id, type: 'module', title: module.title });
+        module.lessons.forEach(lesson => {
+            items.push({ ...lesson });
+        });
+    });
+    return items;
+  }
 
-  const [faqs, setFaqs] = useState<FaqItem[]>([
-      { id: 'faq1', question: 'Is this course for beginners?', answer: 'Yes, it is designed for all levels.' }
-  ]);
+  const [syllabus, setSyllabus] = useState<SyllabusItem[]>(getSyllabusItems());
 
-  const [instructors, setInstructors] = useState<InstructorItem[]>([
-      { id: 'ins1', name: 'Jubayer Ahmed', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png' }
-  ]);
-  
-  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([
-      { id: 'cr1', day: 'Saturday', subject: 'Physics', time: '7:00 PM' }
-  ]);
+  const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
+  const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
+  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -246,6 +251,23 @@ export default function CourseBuilderPage() {
     const newItem: SyllabusItem = type === 'module' 
       ? { id: Date.now().toString(), type, title: 'New Module' }
       : { id: Date.now().toString(), type, title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
+    
+    // Logic to add a lesson under the last module if one exists
+    if (type === 'lesson') {
+        let lastModuleIndex = -1;
+        for (let i = syllabus.length - 1; i >= 0; i--) {
+            if (syllabus[i].type === 'module') {
+                lastModuleIndex = i;
+                break;
+            }
+        }
+        if (lastModuleIndex !== -1) {
+            const newSyllabus = [...syllabus];
+            newSyllabus.splice(lastModuleIndex + 1, 0, newItem);
+            setSyllabus(newSyllabus);
+            return;
+        }
+    }
     setSyllabus(prev => [...prev, newItem]);
   };
   
@@ -272,7 +294,7 @@ export default function CourseBuilderPage() {
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
-  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: '' }]);
+  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person' }]);
   const updateInstructor = (id: string, field: keyof Omit<InstructorItem, 'id'>, value: string) => {
       setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
@@ -285,8 +307,7 @@ export default function CourseBuilderPage() {
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
   const handleSaveDraft = () => {
-    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine };
-    console.log("Saving Draft:", courseData);
+    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine });
     toast({
       title: "Draft Saved!",
       description: "Your course has been saved as a draft.",
@@ -294,8 +315,7 @@ export default function CourseBuilderPage() {
   };
 
   const handleSubmitForApproval = () => {
-    const courseData = { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine };
-    console.log("Submitting for Approval:", courseData);
+    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine });
     toast({
       title: "Submitted for Approval",
       description: "Your course has been submitted and is pending review.",
@@ -318,10 +338,10 @@ export default function CourseBuilderPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    Course Builder
+                    {isNewCourse ? 'Create New Course' : `Edit: ${courseToEdit?.title}`}
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
-                   Create and manage your course content with ease.
+                   {isNewCourse ? 'Create a new course from scratch.' : 'Manage your course content with ease.'}
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
@@ -535,5 +555,3 @@ export default function CourseBuilderPage() {
     </div>
   );
 }
-
-    

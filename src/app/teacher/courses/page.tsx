@@ -33,7 +33,7 @@ export default function TeacherCoursesPage() {
                 </p>
             </div>
             <Button asChild>
-                <Link href="/teacher/courses/builder">
+                <Link href="/teacher/courses/builder/new">
                     <PlusCircle className="mr-2" />
                     Create New Course
                 </Link>
@@ -68,7 +68,7 @@ export default function TeacherCoursesPage() {
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="outline" size="sm" asChild>
-                                        <Link href="/teacher/courses/builder">
+                                        <Link href={`/teacher/courses/builder/${course.id}`}>
                                             <Pencil className="mr-2 h-4 w-4" />
                                             Edit
                                         </Link>
