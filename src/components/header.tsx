@@ -119,7 +119,7 @@ export function Header() {
                      <div className="w-full mt-2">
                         <div className="flex items-center gap-3 mb-4">
                            <Avatar className="h-10 w-10">
-                              <AvatarImage src="https://placehold.co/100x100" alt="Student" />
+                              <AvatarImage src="https://placehold.co/100x100.png" alt="Student" />
                               <AvatarFallback>SN</AvatarFallback>
                            </Avatar>
                            <div>

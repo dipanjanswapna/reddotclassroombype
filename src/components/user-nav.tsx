@@ -1,8 +1,8 @@
 
-
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Avatar,
   AvatarFallback,
@@ -20,32 +20,75 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
 
-export function UserNav() {
-  // In a real app, you'd get user data from session/context
-  const user = {
-    name: "Student Name",
-    email: "student@rdc.com",
-    avatar: "https://placehold.co/100x100.png",
-    initials: "SN",
-    role: "student"
-  };
+type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'unknown';
 
-  const getDashboardLink = () => {
-    switch(user.role) {
-      case 'student': return '/student/dashboard';
-      case 'teacher': return '/teacher/dashboard';
-      case 'guardian': return '/guardian/dashboard';
-      case 'admin': return '/admin/dashboard';
-      default: return '/';
-    }
+const getUserDetails = (pathname: string) => {
+  if (pathname.startsWith('/student') || pathname.startsWith('/tutor')) {
+    return {
+      role: 'student' as UserRole,
+      name: "Student Name",
+      email: "student@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: "SN",
+      dashboardLink: "/student/dashboard",
+      aiHint: "male student"
+    };
   }
+  if (pathname.startsWith('/teacher')) {
+    return {
+      role: 'teacher' as UserRole,
+      name: "Teacher Name",
+      email: "teacher@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: "TN",
+      dashboardLink: "/teacher/dashboard",
+      aiHint: "male teacher"
+    };
+  }
+   if (pathname.startsWith('/guardian')) {
+    return {
+      role: 'guardian' as UserRole,
+      name: "Guardian Name",
+      email: "guardian@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: "GN",
+      dashboardLink: "/guardian/dashboard",
+      aiHint: "parent"
+    };
+  }
+   if (pathname.startsWith('/admin')) {
+    return {
+      role: 'admin' as UserRole,
+      name: "Admin Name",
+      email: "admin@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: "AN",
+      dashboardLink: "/admin/dashboard",
+      aiHint: "administrator"
+    };
+  }
+  // Default fallback
+  return {
+      role: 'unknown' as UserRole,
+      name: "User",
+      email: "user@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: "U",
+      dashboardLink: "/",
+      aiHint: "person"
+  };
+};
+
+export function UserNav() {
+  const pathname = usePathname();
+  const user = getUserDetails(pathname);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="male student" />
+            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint={user.aiHint} />
             <AvatarFallback>{user.initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -62,17 +105,21 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2" />My Dashboard</Link>
+            <Link href={user.dashboardLink}><LayoutDashboard className="mr-2" />My Dashboard</Link>
           </DropdownMenuItem>
-           <DropdownMenuItem asChild>
-            <Link href="/student/courses"><BookOpen className="mr-2" />My Courses</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-             <Link href="/student/profile"><User className="mr-2" />Profile</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-             <Link href="/student/settings"><Settings className="mr-2" />Settings</Link>
-          </DropdownMenuItem>
+          {user.role === 'student' && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/student/courses"><BookOpen className="mr-2" />My Courses</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                 <Link href="/student/profile"><User className="mr-2" />Profile</Link>
+              </DropdownMenuItem>
+               <DropdownMenuItem asChild>
+                 <Link href="/student/profile"><Settings className="mr-2" />Settings</Link>
+              </DropdownMenuItem>
+            </>
+          )}
            <DropdownMenuItem asChild>
              <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>
           </DropdownMenuItem>
