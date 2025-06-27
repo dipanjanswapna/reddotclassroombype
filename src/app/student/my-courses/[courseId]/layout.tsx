@@ -9,7 +9,6 @@ import {
   FileText,
   HelpCircle,
   Megaphone,
-  MessageSquare,
   Star,
   Users,
   Video,
