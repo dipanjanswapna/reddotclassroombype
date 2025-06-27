@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, LogOut, Settings, User } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
 
 export function UserNav() {
   // In a real app, you'd get user data from session/context
@@ -61,13 +61,19 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2" />Dashboard</Link>
+            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2" />My Dashboard</Link>
+          </DropdownMenuItem>
+           <DropdownMenuItem asChild>
+            <Link href="#"><BookOpen className="mr-2" />My Courses</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
              <Link href="#"><User className="mr-2" />Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
              <Link href="#"><Settings className="mr-2" />Settings</Link>
+          </DropdownMenuItem>
+           <DropdownMenuItem asChild>
+             <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
