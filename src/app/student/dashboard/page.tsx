@@ -32,7 +32,7 @@ import { Button } from '@/components/ui/button';
 export default function DashboardPage() {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex h-full">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
