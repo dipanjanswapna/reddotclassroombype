@@ -18,7 +18,6 @@ const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } 
   }, {} as { [key: string]: Course[] });
 };
 
-const coursesByCategory = groupCoursesByCategory(courses);
 // Define a preferred order for categories to ensure a logical layout
 const categoryOrder = [
     'HSC',
@@ -33,16 +32,47 @@ const categoryOrder = [
     'মাস্টার কোর্স',
 ];
 
-const sortedCategories = Object.keys(coursesByCategory).sort((a, b) => {
+export default function CoursesPage({
+  searchParams,
+}: {
+  searchParams?: {
+    category?: string;
+    subCategory?: string;
+  };
+}) {
+
+  const selectedCategory = searchParams?.category;
+  const selectedSubCategory = searchParams?.subCategory;
+
+  let filteredCourses = courses;
+
+  if (selectedCategory) {
+    filteredCourses = filteredCourses.filter(
+      (course) => course.category === selectedCategory
+    );
+  }
+  if (selectedSubCategory) {
+    filteredCourses = filteredCourses.filter(
+      (course) => course.subCategory === selectedSubCategory
+    );
+  }
+  
+  const hasFilters = selectedCategory || selectedSubCategory;
+  
+  const coursesByCategory = groupCoursesByCategory(filteredCourses);
+
+  const sortedCategories = Object.keys(coursesByCategory).sort((a, b) => {
     const indexA = categoryOrder.indexOf(a);
     const indexB = categoryOrder.indexOf(b);
-    if (indexA === -1) return 1; // Put categories not in the order list at the end
+    if (indexA === -1) return 1;
     if (indexB === -1) return -1;
     return indexA - indexB;
-});
+  });
+  
+  const allCategories = [...new Set(courses.map(course => course.category))].sort();
+  const allSubCategories = [...new Set(courses.map(course => course.subCategory).filter(Boolean))] as string[];
 
 
-export default function CoursesPage() {
   return (
     <div className="bg-background">
       <div className="bg-gray-900 text-white">
@@ -65,24 +95,41 @@ export default function CoursesPage() {
             </div>
           </div>
         </div>
-        <CourseFilterBar />
+        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} />
       </div>
 
       <main className="container mx-auto px-4 py-12">
-        <div className="space-y-16">
-          {sortedCategories.map((category) => (
-            <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
+        {hasFilters ? (
+            <section>
               <h2 className="font-headline mb-6 text-3xl font-bold">
-                {category}
+                Filtered Results ({filteredCourses.length})
               </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {coursesByCategory[category].map((course) => (
-                  <CourseCard key={course.id} {...course} />
-                ))}
-              </div>
+              {filteredCourses.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {filteredCourses.map((course) => (
+                    <CourseCard key={course.id} {...course} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
+              )}
             </section>
-          ))}
-        </div>
+        ) : (
+            <div className="space-y-16">
+              {sortedCategories.map((category) => (
+                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
+                  <h2 className="font-headline mb-6 text-3xl font-bold">
+                    {category}
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {coursesByCategory[category].map((course) => (
+                      <CourseCard key={course.id} {...course} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+        )}
       </main>
     </div>
   );

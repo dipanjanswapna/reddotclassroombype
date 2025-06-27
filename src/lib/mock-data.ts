@@ -29,6 +29,7 @@ export type Course = {
   imageUrl: string;
   dataAiHint: string;
   category: string;
+  subCategory?: string;
   price: string;
   rating?: number;
   reviews?: number;
@@ -72,6 +73,7 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'physics class',
     category: 'HSC',
+    subCategory: 'বিজ্ঞান',
     price: 'BDT 4500',
     rating: 4.8,
     reviews: 120,
@@ -130,6 +132,7 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'medical students',
     category: 'Admission',
+    subCategory: 'Medical',
     price: 'BDT 5000',
     rating: 4.9,
     reviews: 250,
@@ -141,7 +144,7 @@ export const courses: Course[] = [
         { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
         { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
-        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ানত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
         { title: 'জীববিজ্ঞান', content: 'প্রাণী বৈচিত্র্য, কোষ ও টিস্যু, জেনেটিক্স, মানব শারীরতত্ত্ব, উদ্ভিদ বিজ্ঞান।' },
@@ -282,7 +285,7 @@ export const courses: Course[] = [
         { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
         { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
-        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ানত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
         { title: 'গণিত', content: 'বীজগণিত, জ্যামিতি, ত্রিকোণমিতি, এবং পরিমিতি।' },
@@ -318,6 +321,7 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'lecture hall',
     category: 'HSC',
+    subCategory: 'বাণিজ্য',
     price: 'BDT 4500',
     rating: 4.6,
     reviews: 80,
@@ -449,6 +453,7 @@ export const courses: Course[] = [
     imageUrl: 'https://placehold.co/600x400',
     dataAiHint: 'engineering drawing',
     category: 'Admission',
+    subCategory: 'Engineering',
     price: 'BDT 5000',
     rating: 4.8,
     reviews: 280,
@@ -460,7 +465,7 @@ export const courses: Course[] = [
         { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
         { title: 'শর্টকাট টেকনিক', description: 'দ্রুত প্রব্লেম সলভ করার কৌশল' },
-        { title: 'ফাইনাল মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
         { title: 'Physics', content: 'Mechanics, Electromagnetism, Modern Physics, and problem-solving sessions.' },
@@ -501,7 +506,7 @@ export const courses: Course[] = [
         { title: 'লাইভ ক্লাস', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
         { title: 'প্রশ্নব্যাংক সলভ', description: 'বিগত বছরের প্রশ্ন সমাধান' },
         { title: 'এক্সাম', description: 'প্রস্তুতি যাচাই' },
-        { title: 'মডেল টেস্ট', description: 'চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
     ],
     syllabus: [
         { title: 'Physics', content: 'HSC syllabus based in-depth lectures.' },
@@ -602,6 +607,7 @@ export const courses: Course[] = [
     id: '13',
     title: 'HSC 25 Online Batch - Arts',
     category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
+    subCategory: 'মানবিক',
     features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
     price: '৳ ৪২০০',
     imageTitle: 'মানবিক শাখা',
@@ -685,6 +691,7 @@ export const courses: Course[] = [
     id: '15',
     title: 'টেস্ট পেপার সলভ - বিজ্ঞান',
     category: 'টেস্ট পেপার সলভ',
+    subCategory: 'বিজ্ঞান',
     price: '৳ ৯৫০',
     imageTitle: 'বিজ্ঞান শাখা',
     imageUrl: 'https://placehold.co/300x400',
