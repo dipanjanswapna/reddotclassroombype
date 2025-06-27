@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function GoogleIcon() {
   return (
@@ -22,14 +23,14 @@ function GoogleIcon() {
 
 export default function SignupPage() {
   return (
-    <div className="flex items-center justify-center py-12 px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex items-center justify-center py-12 px-4 bg-gray-50">
+      <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-headline">Create an Account</CardTitle>
-          <CardDescription>Enter your information to get started.</CardDescription>
+          <CardDescription>Join our community and start your learning journey!</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="full-name">Full Name</Label>
               <Input id="full-name" placeholder="Jubayer Ahmed" required />
@@ -42,17 +43,41 @@ export default function SignupPage() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
+             <div className="flex items-start space-x-2">
+                <Checkbox id="terms" required/>
+                <div className="grid gap-1.5 leading-none">
+                    <Label
+                    htmlFor="terms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                    Accept terms and conditions
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                    You agree to our <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className='text-primary hover:underline'>Privacy Policy</Link>.
+                    </p>
+                </div>
+            </div>
+            <Button type="submit" className="w-full font-bold">
               Create Account
             </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
             <Button variant="outline" className="w-full">
               <GoogleIcon />
               <span className="ml-2">Sign up with Google</span>
             </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
+          </form>
+          <div className="mt-6 text-center text-sm">
             Already have an account?{' '}
-            <Link href="/login" className="underline">
+            <Link href="/login" className="font-semibold text-primary hover:underline">
               Login
             </Link>
           </div>
