@@ -3,30 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const blogPosts = [
-    {
-        slug: "study-tips-for-hsc",
-        title: "Effective Study Tips for HSC Candidates",
-        excerpt: "Discover proven strategies to boost your preparation for the upcoming HSC exams and achieve your desired results.",
-        imageUrl: "https://placehold.co/600x400",
-        dataAiHint: "student studying",
-    },
-    {
-        slug: "choosing-university-subject",
-        title: "How to Choose the Right University Subject for You",
-        excerpt: "A comprehensive guide to help you navigate the difficult decision of choosing a subject for your university studies.",
-        imageUrl: "https://placehold.co/600x400",
-        dataAiHint: "university campus",
-    },
-    {
-        slug: "importance-of-skills-development",
-        title: "The Importance of Skill Development Beyond Academics",
-        excerpt: "Learn why developing practical skills is crucial for your career and how you can get started today.",
-        imageUrl: "https://placehold.co/600x400",
-        dataAiHint: "person coding",
-    },
-];
+import { blogPosts } from "@/lib/mock-data";
 
 export default function BlogPage() {
   return (

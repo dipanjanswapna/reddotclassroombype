@@ -2,18 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Course } from "@/lib/mock-data";
 
-type CourseCardProps = {
-  id: string;
-  title: string;
-  instructor?: string;
-  imageUrl: string;
-  category?: string;
-  price?: string;
-  dataAiHint?: string;
-};
+type CourseCardProps = Partial<Course>;
 
 export function CourseCard({ id, title, instructor, imageUrl, category, price, dataAiHint }: CourseCardProps) {
+  if (!id || !title || !imageUrl) {
+    return null;
+  }
+  
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 rounded-lg bg-card">
       <CardHeader className="p-0">
@@ -33,7 +30,7 @@ export function CourseCard({ id, title, instructor, imageUrl, category, price, d
         <Link href={`/courses/${id}`}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{title}</h3>
         </Link>
-        {instructor && <p className="text-muted-foreground text-sm mt-2">By {instructor}</p>}
+        {instructor && <p className="text-muted-foreground text-sm mt-2">By {instructor.name}</p>}
       </CardContent>
       {price && (
         <CardFooter className="p-4 pt-0">

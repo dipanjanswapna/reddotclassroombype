@@ -2,69 +2,13 @@ import { CourseListItem } from '@/components/course-list-item';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
+import { courses } from '@/lib/mock-data';
 
-const hscScienceCourses = [
-  {
-    id: '1',
-    category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-    price: '৳ ১২৫০',
-    imageTitle: 'PCMB',
-    imageUrl: 'https://placehold.co/300x400',
-    dataAiHint: 'science textbook',
-  },
-  {
-    id: '2',
-    category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
-    features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-    price: '৳ ১২৫০',
-    imageTitle: 'B/E/I',
-    imageUrl: 'https://placehold.co/300x400',
-    dataAiHint: 'english textbook',
-  },
-];
-
-const hscArtsCourses = [
-    {
-        id: '3',
-        category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
-        features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-        price: '৳ ১২৫০',
-        imageTitle: 'বাংলা ঐচ্ছিক',
-        imageUrl: 'https://placehold.co/300x400',
-        dataAiHint: 'bangla literature',
-    },
-    {
-        id: '4',
-        category: 'এইচএসসি ২৫ অনলাইন ব্যাচ',
-        features: ['লাইভ ক্লাস', 'লেকচার শীট', 'প্র্যাকটিস', 'ফাইনাল মডেল টেস্ট'],
-        price: '৳ ১২৫০',
-        imageTitle: 'সাইকোলজি',
-        imageUrl: 'https://placehold.co/300x400',
-        dataAiHint: 'psychology book',
-    },
-];
-
-const hscSubjectCourses = [
-    { id: '5', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'PHYSICS', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'physics equation', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '6', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'CHEMISTRY', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'chemistry lab', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '7', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'H.MATH', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'math formulas', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '8', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'BIOLOGY', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'biology microscope', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '9', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'BANGLA', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'bangla book', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '10', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'ENGLISH', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'english dictionary', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '11', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'ICT', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'computer circuit', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-    { id: '12', category: 'বিষয়ভিত্তিক কোর্স', price: '৳ ৭৫০', imageTitle: 'FINANCE', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'stock market', features: ['রেকর্ডেড ক্লাস', 'লেকচার শীট', 'কুইজ'] },
-];
-
-const testPaperCourses = [
-    { id: '13', category: 'টেস্ট পেপার সলভ', price: '৳ ৯৫০', imageTitle: 'বিজ্ঞান শাখা', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'exam paper', features: ['ফিজিক্স', 'ক্যামিস্ট্রি', 'বায়োলজি'] },
-    { id: '14', category: 'টেস্ট পেপার সলভ', price: '৳ ৯৫০', imageTitle: 'মানবিক শাখা', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'history book', features: ['ইতিহাস', 'পৌরনীতি', 'অর্থনীতি'] },
-];
-
-const masterCourses = [
-    { id: '15', category: 'মাস্টার কোর্স', price: 'Free', imageTitle: 'গ্রাফিক্স ডিজাইন', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'design tools', features: ['ফটোশপ', 'ইলাস্ট্রেটর', 'ফিigma'] },
-    { id: '16', category: 'মাস্টার কোর্স', price: 'Free', imageTitle: 'ওয়েব ডেভেলপমেন্ট', imageUrl: 'https://placehold.co/300x400', dataAiHint: 'programming code', features: ['HTML', 'CSS', 'JavaScript'] },
-];
+const hscScienceCourses = courses.filter(c => c.category === 'এইচএসসি ২৫ অনলাইন ব্যাচ').slice(0, 2);
+const hscArtsCourses = courses.filter(c => c.category === 'এইচএসসি ২৫ অনলাইন ব্যাচ').slice(0, 2);
+const hscSubjectCourses = courses.filter(c => c.category === 'বিষয়ভিত্তিক কোর্স').slice(0, 8);
+const testPaperCourses = courses.filter(c => c.category === 'টেস্ট পেপার সলভ').slice(0, 2);
+const masterCourses = courses.filter(c => c.category === 'মাস্টার কোর্স').slice(0, 2);
 
 export default function CoursesPage() {
   return (

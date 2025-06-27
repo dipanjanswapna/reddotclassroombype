@@ -9,11 +9,9 @@ import {
   PlayCircle,
   Users,
   Trophy,
-  BarChart,
-  CheckCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { CourseCard } from '@/components/course-card';
 import {
   Carousel,
@@ -23,96 +21,13 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
+import { courses } from '@/lib/mock-data';
 
-const liveCourses = [
-  {
-    id: '1',
-    title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
-    instructor: 'Jubayer Ahmed',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'HSC',
-    price: 'BDT 4500',
-    dataAiHint: 'physics class',
-  },
-  {
-    id: '2',
-    title: 'Admission Test Prep (Medical)',
-    instructor: 'Sadia Islam',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'Admission',
-    price: 'BDT 5000',
-    dataAiHint: 'medical students',
-  },
-  {
-    id: '3',
-    title: 'IELTS Preparation Course',
-    instructor: 'Raihan Chowdhury',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'Language',
-    price: 'BDT 3000',
-    dataAiHint: 'ielts exam',
-  },
-    {
-    id: '4',
-    title: 'Data Science with Python',
-    instructor: 'Ayesha Khan',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'Skills',
-    price: 'BDT 5500',
-    dataAiHint: 'python code',
-  },
-];
-
-const sscHscCourses = [
-  {
-    id: '5',
-    title: 'SSC 2025 Online Batch',
-    instructor: 'Farhan Mahmud',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'SSC',
-    price: 'BDT 4000',
-    dataAiHint: 'classroom students',
-  },
-  {
-    id: '6',
-    title: 'HSC 2025 Online Batch',
-    instructor: 'Nusrat Jahan',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'HSC',
-    price: 'BDT 4500',
-    dataAiHint: 'lecture hall',
-  },
-  {
-    id: '7',
-    title: 'HSC ICT Masterclass',
-    instructor: 'Jubayer Ahmed',
-    imageUrl: 'https://placehold.co/600x400',
-    category: 'HSC',
-    price: 'BDT 2500',
-    dataAiHint: 'computer circuit',
-  },
-];
-
-const masterClasses = [
-    { id: '3', title: 'IELTS Preparation Course', instructor: 'Raihan Chowdhury', imageUrl: 'https://placehold.co/600x400', category: 'Language', price: 'BDT 3000', dataAiHint: 'ielts exam' },
-    { id: '4', title: 'Data Science with Python', instructor: 'Ayesha Khan', imageUrl: 'https://placehold.co/600x400', category: 'Skills', price: 'BDT 5500', dataAiHint: 'python code' },
-    { id: '6', title: 'HSC ICT Masterclass', instructor: 'Nusrat Jahan', imageUrl: 'https://placehold.co/600x400', category: 'HSC', price: 'BDT 2500', dataAiHint: 'computer circuit' },
-    { id: '8', title: 'Graphic Design Fundamentals', instructor: 'Sadia Islam', imageUrl: 'https://placehold.co/600x400', category: 'Skills', price: 'BDT 3500', dataAiHint: 'graphic design' },
-];
-
-const admissionCourses = [
-    { id: '2', title: 'Medical Admission Course', instructor: 'Sadia Islam', imageUrl: 'https://placehold.co/600x400', category: 'Admission', price: 'BDT 5000', dataAiHint: 'medical students' },
-    { id: '9', title: 'Engineering Admission', instructor: 'Jubayer Ahmed', imageUrl: 'https://placehold.co/600x400', category: 'Admission', price: 'BDT 5000', dataAiHint: 'engineering drawing' },
-    { id: '10', title: 'University (Ka unit) Admission', instructor: 'Farhan Mahmud', imageUrl: 'https://placehold.co/600x400', category: 'Admission', price: 'BDT 5000', dataAiHint: 'university building' },
-];
-
-const jobCourses = [
-    { id: '11', title: 'BCS Preliminary Course', instructor: 'Raihan Chowdhury', imageUrl: 'https://placehold.co/600x400', category: 'Job Prep', price: 'BDT 4000', dataAiHint: 'government building' },
-    { id: '12', title: 'Bank Job Preparation', instructor: 'Ayesha Khan', imageUrl: 'https://placehold.co/600x400', category: 'Job Prep', price: 'BDT 3500', dataAiHint: 'bank interior' },
-    { id: '13', title: 'Primary Assistant Teacher', instructor: 'Nusrat Jahan', imageUrl: 'https://placehold.co/600x400', category: 'Job Prep', price: 'BDT 3000', dataAiHint: 'teacher classroom' },
-    { id: '14', title: 'IBA Admission Preparation', instructor: 'Farhan Mahmud', imageUrl: 'https://placehold.co/600x400', category: 'Job Prep', price: 'BDT 5500', dataAiHint: 'business meeting' },
-];
-
+const liveCourses = courses.slice(0, 4);
+const sscHscCourses = courses.filter(c => c.category === 'SSC' || c.category === 'HSC').slice(0, 3);
+const masterClasses = courses.filter(c => c.category === 'Skills' || c.category === 'Language').slice(0, 4);
+const admissionCourses = courses.filter(c => c.category === 'Admission').slice(0, 3);
+const jobCourses = courses.filter(c => c.category === 'Job Prep').slice(0, 4);
 
 const whyChooseUs = [
   { icon: Trophy, title: 'সেরা প্রশিক্ষক', description: 'দেশের সেরা শিক্ষকরা ক্লাস নেন' },
@@ -153,10 +68,10 @@ export default function Home() {
             <Card className="bg-yellow-900/20 border-yellow-700">
                <CardContent className="p-6">
                  <div className="grid grid-cols-2 gap-4">
-                    <CourseCard id="1" title="HSC 2025 ক্র্যাশ কোর্স" imageUrl="https://placehold.co/600x400" dataAiHint="science class" />
-                    <CourseCard id="2" title="মেডিকেল এডমিশন কোর্স" imageUrl="https://placehold.co/600x400" dataAiHint="doctor student" />
-                    <CourseCard id="9" title="ইঞ্জিনিয়ারিং এডমিশন" imageUrl="https://placehold.co/600x400" dataAiHint="engineering blueprint" />
-                    <CourseCard id="5" title="SSC 2025 Online Batch" imageUrl="https://placehold.co/600x400" dataAiHint="students writing" />
+                    <CourseCard {...courses.find(c => c.id === '1')!} />
+                    <CourseCard {...courses.find(c => c.id === '2')!} />
+                    <CourseCard {...courses.find(c => c.id === '9')!} />
+                    <CourseCard {...courses.find(c => c.id === '5')!} />
                  </div>
               </CardContent>
             </Card>
@@ -199,7 +114,9 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            <Button variant="accent" size="lg" className="mt-8 font-bold">সকল কোর্স দেখুন</Button>
+            <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
+              <Link href="/courses">সকল কোর্স দেখুন</Link>
+            </Button>
         </div>
       </section>
 
@@ -231,7 +148,9 @@ export default function Home() {
                 <CarouselPrevious className="text-white"/>
                 <CarouselNext className="text-white"/>
               </Carousel>
-              <Button variant="accent" size="lg" className="mt-8 font-bold">সকল কোর্স দেখুন</Button>
+              <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
+                <Link href="/courses">সকল কোর্স দেখুন</Link>
+              </Button>
           </div>
       </section>
 
@@ -243,7 +162,9 @@ export default function Home() {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
-               <Button variant="accent" size="lg" className="mt-8 font-bold">সকল কোর্স দেখুন</Button>
+               <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
+                <Link href="/courses">সকল কোর্স দেখুন</Link>
+               </Button>
           </div>
       </section>
       
@@ -255,7 +176,9 @@ export default function Home() {
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
-               <Button variant="accent" size="lg" className="mt-8 font-bold">সকল কোর্স দেখুন</Button>
+               <Button asChild variant="accent" size="lg" className="mt-8 font-bold">
+                <Link href="/courses">সকল কোর্স দেখুন</Link>
+              </Button>
           </div>
       </section>
 
