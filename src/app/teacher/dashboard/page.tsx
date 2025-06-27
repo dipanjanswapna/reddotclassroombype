@@ -57,7 +57,7 @@ export default function TeacherDashboardPage() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/teacher/courses">
                   <BookCopy />
                   My Courses
                 </SidebarMenuButton>

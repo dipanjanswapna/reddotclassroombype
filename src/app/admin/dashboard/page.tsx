@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="#">
+                <SidebarMenuButton href="/admin/courses">
                   <BookCopy />
                   Course Management
                 </SidebarMenuButton>
