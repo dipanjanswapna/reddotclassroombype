@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   CheckCircle,
@@ -39,6 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Link from 'next/link';
 
 const getCourseById = (id: string) => {
   return courses.find((course) => course.id === id);
@@ -209,29 +209,31 @@ export default function CourseDetailPage({
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             {/* Features Section */}
-            <section id="features">
-              <Card className="bg-gray-900 text-white">
-                <CardHeader>
-                  <CardTitle>From this course you'll find out</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {course.features_detailed?.map((feature, index) => {
-                      const Icon = featureIcons[feature.title] || HelpCircle;
-                      return (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg">
-                          <Icon className="w-6 h-6 text-primary mt-1" />
-                          <div>
-                            <h4 className="font-semibold">{feature.title}</h4>
-                            <p className="text-sm text-gray-400">{feature.description}</p>
+            {course.features_detailed && (
+              <section id="features">
+                <Card className="bg-gray-900 text-white">
+                  <CardHeader>
+                    <CardTitle>From this course you'll find out</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {course.features_detailed?.map((feature, index) => {
+                        const Icon = featureIcons[feature.title] || HelpCircle;
+                        return (
+                          <div key={index} className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg">
+                            <Icon className="w-6 h-6 text-primary mt-1" />
+                            <div>
+                              <h4 className="font-semibold">{feature.title}</h4>
+                              <p className="text-sm text-gray-400">{feature.description}</p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
 
             {/* Instructors Section */}
             <section id="instructors">
