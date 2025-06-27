@@ -41,7 +41,7 @@ export default function TeacherLayout({
     { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
     { href: "#", icon: Users, label: "Students" },
     { href: "#", icon: MessageSquare, label: "Grading" },
-    { href: "#", icon: Video, label: "Live Classes" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "#", icon: DollarSign, label: "Earnings" },
   ];
 

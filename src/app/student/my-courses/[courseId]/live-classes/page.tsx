@@ -1,15 +1,11 @@
+
 import { notFound } from 'next/navigation';
 import { courses } from '@/lib/mock-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Video } from 'lucide-react';
-
-const mockLiveClasses = [
-    { id: 'lc1', topic: 'Vector Advanced Problems', date: 'July 5, 2024', time: '8:00 PM', platform: 'Zoom' },
-    { id: 'lc2', topic: 'Organic Chemistry Q&A', date: 'July 8, 2024', time: '8:00 PM', platform: 'Google Meet' },
-    { id: 'lc3', topic: 'Calculus Final Review', date: 'July 12, 2024', time: '7:00 PM', platform: 'Facebook Live' },
-];
+import Link from 'next/link';
 
 export default function LiveClassesPage({ params }: { params: { courseId: string } }) {
   const course = courses.find((c) => c.id === params.courseId);
@@ -17,6 +13,8 @@ export default function LiveClassesPage({ params }: { params: { courseId: string
   if (!course) {
     notFound();
   }
+
+  const liveClasses = course.liveClasses || [];
 
   return (
     <div className="space-y-8">
@@ -31,29 +29,39 @@ export default function LiveClassesPage({ params }: { params: { courseId: string
           <CardDescription>Don't miss out on these interactive sessions with your instructors.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Topic</TableHead>
-                <TableHead>Date & Time</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockLiveClasses.map((liveClass) => (
-                <TableRow key={liveClass.id}>
-                  <TableCell className="font-medium">{liveClass.topic}</TableCell>
-                  <TableCell>{liveClass.date} at {liveClass.time}</TableCell>
-                  <TableCell className="text-right">
-                    <Button>
-                      <Video className="mr-2" />
-                      Join Class
-                    </Button>
-                  </TableCell>
+          {liveClasses.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Topic</TableHead>
+                  <TableHead>Date & Time</TableHead>
+                  <TableHead>Platform</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {liveClasses.map((liveClass) => (
+                  <TableRow key={liveClass.id}>
+                    <TableCell className="font-medium">{liveClass.topic}</TableCell>
+                    <TableCell>{liveClass.date} at {liveClass.time}</TableCell>
+                    <TableCell>{liveClass.platform}</TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild>
+                        <Link href={liveClass.joinUrl} target="_blank" rel="noopener noreferrer">
+                          <Video className="mr-2" />
+                          Join Class
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+             <div className="text-center py-8 text-muted-foreground">
+                <p>There are no upcoming live classes scheduled for this course at the moment.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

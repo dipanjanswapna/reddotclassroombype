@@ -1,6 +1,15 @@
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
+export type LiveClass = {
+  id: string;
+  topic: string;
+  date: string;
+  time: string;
+  platform: 'Zoom' | 'Google Meet' | 'Facebook Live' | 'YouTube Live';
+  joinUrl: string;
+};
+
 export type Lesson = {
   id: string;
   title: string;
@@ -64,6 +73,7 @@ export type Course = {
   classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
   faqs?: { question: string; answer: string; id?: string; }[];
   reviewsData?: Review[];
+  liveClasses?: LiveClass[];
 };
 
 
@@ -167,6 +177,11 @@ export const courses: Course[] = [
     reviewsData: [
       { id: 'r1', user: { name: 'Rahim Sheikh', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male student' }, rating: 5, comment: 'This course is amazing! The instructors explain everything so clearly.', date: 'June 15, 2024' },
       { id: 'r2', user: { name: 'Fatima Akter', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female student' }, rating: 4, comment: 'Great content, but I wish there were more practice problems.', date: 'June 12, 2024' },
+    ],
+    liveClasses: [
+        { id: 'lc1-1', topic: 'ভেক্টর প্রবলেম সলভিং', date: 'July 10, 2024', time: '8:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
+        { id: 'lc1-2', topic: 'গতিবিদ্যা রিভিউ', date: 'July 12, 2024', time: '8:00 PM', platform: 'Google Meet', joinUrl: 'https://meet.google.com/abc-defg-hij' },
+        { id: 'lc1-3', topic: 'রসায়ন বিশেষ লাইভ', date: 'July 15, 2024', time: '7:00 PM', platform: 'Facebook Live', joinUrl: 'https://facebook.com/live/12345' },
     ]
   },
   {
@@ -292,6 +307,9 @@ export const courses: Course[] = [
     ],
     reviewsData: [
       { id: 'r3', user: { name: 'John Doe', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male person' }, rating: 5, comment: 'Excellent course for IELTS prep. The instructor is very knowledgeable.', date: 'May 20, 2024' },
+    ],
+    liveClasses: [
+        { id: 'lc3-1', topic: 'Speaking Test Simulation', date: 'July 11, 2024', time: '9:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
     ]
   },
   {
