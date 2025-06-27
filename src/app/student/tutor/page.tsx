@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState } from "react";
@@ -10,12 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { virtualTutorChatbot, VirtualTutorChatbotInput } from "@/ai/flows/virtual-tutor-chatbot";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
-import { LayoutDashboard, BookOpen, HelpCircle, Award, User, Settings, LogOut, BarChart3, CalendarClock, GraduationCap, Library, BookMarked, MessageSquare, History, Heart, Bell, Wallet, Users as UsersIcon, Trophy } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-
-export default function TutorPage() {
+export default function VirtualTutorPage() {
   const [courseMaterial, setCourseMaterial] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -127,4 +122,3 @@ export default function TutorPage() {
     </div>
   );
 }
-

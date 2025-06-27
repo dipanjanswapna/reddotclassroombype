@@ -1,5 +1,6 @@
 
-"use client"
+
+"use client";
 
 import Link from "next/link";
 import {
@@ -64,13 +65,13 @@ export function UserNav() {
             <Link href={getDashboardLink()}><LayoutDashboard className="mr-2" />My Dashboard</Link>
           </DropdownMenuItem>
            <DropdownMenuItem asChild>
-            <Link href="#"><BookOpen className="mr-2" />My Courses</Link>
+            <Link href="/student/courses"><BookOpen className="mr-2" />My Courses</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-             <Link href="#"><User className="mr-2" />Profile</Link>
+             <Link href="/student/profile"><User className="mr-2" />Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-             <Link href="#"><Settings className="mr-2" />Settings</Link>
+             <Link href="/student/profile"><Settings className="mr-2" />Settings</Link>
           </DropdownMenuItem>
            <DropdownMenuItem asChild>
              <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>
