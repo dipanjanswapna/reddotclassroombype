@@ -96,9 +96,7 @@ export default function CourseLayout({
               </div>
             </div>
             <div className="p-4 sm:p-6 lg:p-8">
-             <div className="max-w-5xl mx-auto">
-                {children}
-              </div>
+             {children}
             </div>
         </SidebarInset>
       </div>
