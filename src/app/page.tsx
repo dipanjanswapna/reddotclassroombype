@@ -56,38 +56,10 @@ export default function Home() {
       <section className="py-12 bg-gray-900 text-white" aria-labelledby="hero-heading">
         <div className="container mx-auto px-4">
           <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-2">শেখার যাত্রা শুরু</h2>
-          <div className="grid md:grid-cols-2 gap-8 items-stretch mt-8">
-            <Card className="bg-blue-900/40 border-blue-700">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col items-center justify-center p-4 bg-gray-800/50 rounded-lg">
-                    <Video className="w-10 h-10 text-primary mb-2"/>
-                    <p className="font-semibold text-center">লাইভ ক্লাস</p>
-                  </div>
-                   <div className="flex flex-col items-center justify-center p-4 bg-gray-800/50 rounded-lg">
-                    <BookOpen className="w-10 h-10 text-green-400 mb-2"/>
-                    <p className="font-semibold text-center">ভিডিও লেকচার</p>
-                  </div>
-                   <div className="flex flex-col items-center justify-center p-4 bg-gray-800/50 rounded-lg">
-                    <ClipboardList className="w-10 h-10 text-yellow-400 mb-2"/>
-                    <p className="font-semibold text-center">প্র্যাকটিস</p>
-                  </div>
-                   <div className="flex flex-col items-center justify-center p-4 bg-gray-800/50 rounded-lg">
-                    <FileText className="w-10 h-10 text-purple-400 mb-2"/>
-                    <p className="font-semibold text-center">নোট</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-yellow-900/20 border-yellow-700">
-               <CardContent className="p-6">
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {featuredCourses.map(course => (
-                        <CourseCard key={course.id} {...course} />
-                    ))}
-                 </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+            {featuredCourses.map(course => (
+                <CourseCard key={course.id} {...course} />
+            ))}
           </div>
            <div className="mt-12">
             <h3 className="font-headline text-2xl font-bold text-center mb-6 text-white">আমাদের লাইভ কোর্সসমূহ</h3>
