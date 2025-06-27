@@ -36,7 +36,7 @@ export default function DashboardPage() {
           <SidebarHeader>
             <div className="flex items-center gap-2">
               <Avatar className="size-8">
-                <AvatarImage src="https://placehold.co/100x100" data-ai-hint="male student"/>
+                <AvatarImage src="https://placehold.co/100x100" alt="Student Avatar" data-ai-hint="male student"/>
                 <AvatarFallback>SA</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">

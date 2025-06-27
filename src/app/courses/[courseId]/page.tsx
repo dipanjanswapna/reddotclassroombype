@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import { CheckCircle, PlayCircle, Star, Users } from 'lucide-react';
 import {
@@ -45,12 +46,69 @@ const courseData = {
   ],
 };
 
+export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
+  // In a real app, you would fetch course data based on params.courseId
+  const course = courseData;
+
+  return {
+    title: `${course.title} | Red Dot Classroom`,
+    description: course.description,
+    openGraph: {
+      title: `${course.title} | Red Dot Classroom`,
+      description: course.description,
+      images: [
+        {
+          url: course.imageUrl,
+          width: 1280,
+          height: 720,
+          alt: course.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
+  };
+}
+
+
 export default function CourseDetailPage({ params }: { params: { courseId: string } }) {
   // We use the same mock data for any courseId for this example
   const course = courseData;
 
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": course.title,
+    "description": course.description,
+    "provider": {
+      "@type": "Organization",
+      "name": "Red Dot Classroom",
+      "sameAs": "https://reddotclassroom.com"
+    },
+    "courseCode": course.id,
+    "image": course.imageUrl,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": course.rating.toString(),
+      "reviewCount": course.reviews.toString()
+    },
+    "offers": {
+        "@type": "Offer",
+        "price": course.price.replace('BDT ', ''),
+        "priceCurrency": "BDT"
+    },
+    "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online"
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
+      />
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <Badge variant="secondary" className="mb-2">{course.category}</Badge>
@@ -98,7 +156,7 @@ export default function CourseDetailPage({ params }: { params: { courseId: strin
             <Card className="bg-card">
               <CardContent className="p-6 flex items-start gap-6">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src={course.instructor.avatarUrl} data-ai-hint={course.instructor.dataAiHint} />
+                  <AvatarImage src={course.instructor.avatarUrl} alt={course.instructor.name} data-ai-hint={course.instructor.dataAiHint} />
                   <AvatarFallback>{course.instructor.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>

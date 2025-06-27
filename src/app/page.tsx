@@ -187,7 +187,7 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    <AvatarImage src="https://placehold.co/100x100" data-ai-hint="male student" />
+                    <AvatarImage src="https://placehold.co/100x100" alt="Anik Sarker" data-ai-hint="male student" />
                     <AvatarFallback>AS</AvatarFallback>
                   </Avatar>
                   <div>
@@ -206,7 +206,7 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    <AvatarImage src="https://placehold.co/100x100" data-ai-hint="female student" />
+                    <AvatarImage src="https://placehold.co/100x100" alt="Fatima Haque" data-ai-hint="female student" />
                     <AvatarFallback>FH</AvatarFallback>
                   </Avatar>
                   <div>
