@@ -47,6 +47,12 @@ export type Organization = {
   subdomain: string;
   primaryColor: string;
   secondaryColor: string;
+  hero?: {
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+    dataAiHint?: string;
+  };
 };
 
 export type Instructor = {
@@ -121,9 +127,9 @@ export type PromoCode = {
 }
 
 export const organizations: Organization[] = [
-  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%' },
-  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%' },
-  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending', subdomain: 'jobprep', primaryColor: '45 95% 51%', secondaryColor: '45 100% 95%' },
+  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%', hero: { title: 'Welcome to MediShark Academy', subtitle: 'Your gateway to medical excellence. We provide top-tier courses for medical admission tests and professional exams.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'medical students' } },
+  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%', hero: { title: 'ACS: Your Partner in Admission Success', subtitle: 'Guiding you to your dream university with our expert-led courses.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'university campus' } },
+  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending', subdomain: 'jobprep', primaryColor: '45 95% 51%', secondaryColor: '45 100% 95%', hero: { title: 'Land Your Dream Job with Us', subtitle: 'Comprehensive preparation for government and bank jobs.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'job interview' } },
 ];
 
 
