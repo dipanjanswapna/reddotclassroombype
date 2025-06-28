@@ -37,13 +37,14 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
         <Link href={`/courses/${id}`}>
           <h3 className="font-headline text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</h3>
         </Link>
-        {provider && (
+        {provider ? (
            <div className="flex items-center gap-2 mt-2">
-            <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full"/>
+            <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
             <p className="text-xs text-muted-foreground">By {provider.name}</p>
           </div>
+        ) : (
+          instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>
         )}
-        {!provider && instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>}
       </CardContent>
       <CardFooter className="p-4 pt-0">
         {isPrebookingActive ? (
