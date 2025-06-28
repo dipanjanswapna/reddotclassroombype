@@ -7,9 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Course, organizations } from "@/lib/mock-data";
 import { Button } from "./ui/button";
 
-type CourseCardProps = Partial<Course>;
+type CourseCardProps = Partial<Course> & {
+  partnerSubdomain?: string;
+};
 
-export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, organizationName }: CourseCardProps) {
+export function CourseCard(props: CourseCardProps) {
+  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain } = props;
+
   if (!id || !title || !imageUrl) {
     return null;
   }
@@ -17,10 +21,14 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
   const provider = organizations.find(o => o.id === organizationId);
 
+  const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
+  const prebookUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/pre-book/${id}` : `/pre-book/${id}`;
+  const checkoutUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/checkout/${id}` : `/checkout/${id}`;
+
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
       <CardHeader className="p-0 overflow-hidden relative">
-        <Link href={`/courses/${id}`} className="block overflow-hidden">
+        <Link href={coursePageUrl} className="block overflow-hidden">
           <Image
             src={imageUrl}
             alt={title}
@@ -34,7 +42,7 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}
-        <Link href={`/courses/${id}`}>
+        <Link href={coursePageUrl}>
           <h3 className="font-headline text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</h3>
         </Link>
         {provider ? (
@@ -60,9 +68,9 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
       </CardFooter>
       <div className="p-4 pt-0">
          {isPrebookingActive ? (
-             <Button asChild className="w-full"><Link href={`/pre-book/${id}`}>Pre-book Now</Link></Button>
+             <Button asChild className="w-full"><Link href={prebookUrl}>Pre-book Now</Link></Button>
          ) : !isArchived ? (
-             <Button asChild className="w-full"><Link href={`/checkout/${id}`}>Enroll Now</Link></Button>
+             <Button asChild className="w-full"><Link href={checkoutUrl}>Enroll Now</Link></Button>
          ) : null}
       </div>
     </Card>

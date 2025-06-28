@@ -74,7 +74,7 @@ export default function PartnerSitePage({ params }: { params: { site: string } }
         {partnerCourses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {partnerCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <CourseCard key={course.id} {...course} partnerSubdomain={params.site} />
             ))}
           </div>
         ) : (
