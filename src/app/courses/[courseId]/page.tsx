@@ -158,7 +158,7 @@ export default function CourseDetailPage({
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {course.instructors?.map((instructor, index) => (
-                  <div key={index} className="text-center flex flex-col items-center">
+                  <Link key={instructor.slug || index} href={`/teachers/${instructor.slug}`} className="text-center flex flex-col items-center group">
                     <Avatar className="w-24 h-24 mx-auto mb-2">
                       <AvatarImage
                         src={instructor.avatarUrl}
@@ -169,11 +169,11 @@ export default function CourseDetailPage({
                         {instructor.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <h3 className="font-semibold">{instructor.name}</h3>
+                    <h3 className="font-semibold group-hover:text-primary transition-colors">{instructor.name}</h3>
                     <p className="text-sm text-muted-foreground">
                       {instructor.title}
                     </p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>

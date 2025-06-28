@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Linkedin, Facebook, Twitter, CheckCircle, Star, Users } from 'lucide-react';
 import { CourseCard } from '@/components/course-card';
+import Link from 'next/link';
 
 const getTeacherBySlug = (slug: string): Instructor | undefined => {
   return allInstructors.find((instructor) => instructor.slug === slug && instructor.status === 'Approved');
