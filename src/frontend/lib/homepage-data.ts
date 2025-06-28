@@ -30,6 +30,41 @@ export const homepageConfig = {
       { icon: 'Users', title: 'সহপাঠীদের সাথে প্রস্তুতি', description: 'একসাথে পড়াশোনা ও মডেল টেস্ট' },
     ]
   },
+  collaborations: {
+    title: 'Our Collaborations',
+    items: [
+      {
+        id: 1,
+        name: 'MA-NAVI LTD.',
+        type: 'organization',
+        logoUrl: 'https://placehold.co/150x150.png',
+        dataAiHint: 'company logo',
+        description: 'Ma-Navi is a consulting firm that helps students from around the world enter universities or language schools in Japan and supports Bangladeshis in securing jobs in Japan.',
+        cta: { text: 'View Website', href: '#' },
+        socials: { facebook: '#', youtube: '' }
+      },
+      {
+        id: 2,
+        name: 'MediShark',
+        type: 'organization',
+        logoUrl: 'https://placehold.co/150x150.png',
+        dataAiHint: 'medical logo',
+        description: 'Undergraduate courses for 1st - 2nd year, 3rd - 4th year, and 5th year students. Postgraduate courses for FCPS and MRCP students.',
+        cta: { text: 'View Website', href: '#' },
+        socials: { facebook: '#', youtube: '#' }
+      },
+      {
+        id: 3,
+        name: 'Md Nazmus Sakib',
+        type: 'individual',
+        logoUrl: 'https://placehold.co/150x150.png',
+        dataAiHint: 'male portrait',
+        description: 'Chemistry Dept. Dhaka University, COO, ACS Group. Instructor of Chemistry.',
+        cta: { text: 'All Courses', href: '#' },
+        socials: { facebook: '#', youtube: '#' }
+      }
+    ]
+  },
   notesBanner: {
     title: 'টেন মিনিট স্কুলের নোট পড়ে পাস!',
     description: 'সেরা নোট, লেকচার শিট ও গুরুত্বপূর্ণ সাজেশন খুঁজে নাও সহজেই।',

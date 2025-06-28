@@ -48,6 +48,25 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const handleCollaborationChange = (id: number, field: string, value: string, subField?: string) => {
+    setConfig(prev => {
+        const newCollaborations = { ...prev.collaborations };
+        newCollaborations.items = newCollaborations.items.map(item => {
+            if (item.id === id) {
+                const updatedItem = { ...item };
+                if (subField === 'cta' || subField === 'socials') {
+                    (updatedItem as any)[subField] = { ...(updatedItem as any)[subField], [field]: value };
+                } else {
+                    (updatedItem as any)[field] = value;
+                }
+                return updatedItem;
+            }
+            return item;
+        });
+        return { ...prev, collaborations: newCollaborations };
+    });
+};
+
   const handleStringArrayChange = (section: CourseIdSections, value: string) => {
     const ids = value.split(',').map(id => id.trim()).filter(Boolean);
     setConfig(prev => ({ ...prev, [section]: ids }));
@@ -101,6 +120,38 @@ export default function AdminHomepageManagementPage() {
           ...prev,
           stats: prev.stats.filter((_, i) => i !== index)
       }));
+  };
+
+  const addCollaboration = () => {
+    setConfig(prev => ({
+      ...prev,
+      collaborations: {
+        ...prev.collaborations,
+        items: [
+          ...prev.collaborations.items,
+          {
+            id: Date.now(),
+            name: 'New Partner',
+            type: 'organization',
+            logoUrl: 'https://placehold.co/150x150.png',
+            dataAiHint: 'logo',
+            description: '',
+            cta: { text: 'View Website', href: '#' },
+            socials: { facebook: '', youtube: '' }
+          }
+        ]
+      }
+    }));
+  };
+
+  const removeCollaboration = (id: number) => {
+    setConfig(prev => ({
+      ...prev,
+      collaborations: {
+        ...prev.collaborations,
+        items: prev.collaborations.items.filter(item => item.id !== id)
+      }
+    }));
   };
 
   return (
@@ -166,6 +217,60 @@ export default function AdminHomepageManagementPage() {
                       <Input id="jobCoursesIds" value={config.jobCoursesIds.join(', ')} onChange={(e) => handleStringArrayChange('jobCoursesIds', e.target.value)} />
                   </div>
               </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Collaborations Section</CardTitle>
+              <CardDescription>Manage the collaboration partners carousel.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Section Title</Label>
+                <Input value={config.collaborations.title} onChange={(e) => setConfig(prev => ({...prev, collaborations: {...prev.collaborations, title: e.target.value}}))} />
+              </div>
+              {config.collaborations.items.map((item, index) => (
+                <div key={item.id} className="p-4 border rounded-lg space-y-4 relative">
+                   <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeCollaboration(item.id)}><X className="text-destructive h-4 w-4"/></Button>
+                  <h4 className="font-semibold">Partner {index + 1}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-1">
+                        <Label>Name</Label>
+                        <Input value={item.name} onChange={(e) => handleCollaborationChange(item.id, 'name', e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Logo/Image URL</Label>
+                        <Input value={item.logoUrl} onChange={(e) => handleCollaborationChange(item.id, 'logoUrl', e.target.value)} />
+                      </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Description</Label>
+                    <Textarea value={item.description} onChange={(e) => handleCollaborationChange(item.id, 'description', e.target.value)} />
+                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-1">
+                        <Label>CTA Text</Label>
+                        <Input value={item.cta.text} onChange={(e) => handleCollaborationChange(item.id, 'text', e.target.value, 'cta')} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>CTA Link</Label>
+                        <Input value={item.cta.href} onChange={(e) => handleCollaborationChange(item.id, 'href', e.target.value, 'cta')} />
+                      </div>
+                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-1">
+                        <Label>Facebook URL</Label>
+                        <Input value={item.socials.facebook} onChange={(e) => handleCollaborationChange(item.id, 'facebook', e.target.value, 'socials')} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>YouTube URL</Label>
+                        <Input value={item.socials.youtube} onChange={(e) => handleCollaborationChange(item.id, 'youtube', e.target.value, 'socials')} />
+                      </div>
+                  </div>
+                </div>
+              ))}
+               <Button variant="outline" className="w-full border-dashed" onClick={addCollaboration}><PlusCircle className="mr-2"/>Add Partner</Button>
+            </CardContent>
           </Card>
 
 

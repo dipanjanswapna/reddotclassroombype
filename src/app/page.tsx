@@ -22,25 +22,23 @@ import type { Metadata } from 'next';
 import { HeroCarousel } from '@/components/hero-carousel';
 import { homepageConfig } from '@/lib/homepage-data';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { CollaborationsCarousel } from '@/components/collaborations-carousel';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   description: 'Join thousands of learners at Red Dot Classroom. We offer high-quality online courses for HSC, SSC, Admission Tests, and professional skills development in Bangladesh.',
 };
 
-const WhyChooseUsIcon = ({ iconName }: { iconName: string }) => {
-  const iconProps = { className: "w-8 h-8 text-primary" };
-  switch (iconName) {
-    case 'Trophy':
-      return <Trophy {...iconProps} />;
-    case 'BookOpen':
-      return <BookOpen {...iconProps} />;
-    case 'Users':
-      return <Users {...iconProps} />;
-    default:
-      return <Trophy {...iconProps} />;
-  }
+const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
+  const Icon = icon;
+  return <Icon className={cn("w-8 h-8 text-primary", className)} />;
 };
 
+const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  Trophy,
+  BookOpen,
+  Users,
+};
 
 export default function Home() {
   const liveCourses = courses.filter(c => homepageConfig.liveCoursesIds.includes(c.id));
@@ -170,13 +168,23 @@ export default function Home() {
             {homepageConfig.whyChooseUs.features.map((feature, index) => (
               <div key={index} className="text-center p-6">
                 <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <WhyChooseUsIcon iconName={feature.icon} />
+                  <WhyChooseUsIcon icon={iconMap[feature.icon] || Trophy} />
                 </div>
                 <h3 className="font-headline text-xl font-semibold">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Collaborations Section */}
+      <section className="py-16 bg-gray-100 dark:bg-gray-900/50" aria-labelledby="collaborations-heading">
+        <div className="container mx-auto px-4">
+          <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
+            {homepageConfig.collaborations.title}
+          </h2>
+          <CollaborationsCarousel items={homepageConfig.collaborations.items} />
         </div>
       </section>
 
