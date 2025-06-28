@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge, badgeVariants } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -27,7 +27,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/hooks/use-toast';
-import { courses as allCourses, Course, organizations } from '@/lib/mock-data';
+import { courses as allCourses, Course } from '@/lib/mock-data';
+import { badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
 
 const partnerId = 'org_medishark'; // Mock partner ID
@@ -73,8 +74,7 @@ export default function PartnerCourseManagementPage() {
           </p>
         </div>
         <Button asChild>
-          {/* This link should eventually be scoped to the partner */}
-          <Link href="/teacher/courses/builder/new">
+          <Link href="/partner/courses/builder/new">
             <PlusCircle className="mr-2" />
             Create New Course
           </Link>
@@ -109,7 +109,7 @@ export default function PartnerCourseManagementPage() {
                   <TableCell className="text-right">
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/teacher/courses/builder/${course.id}`}>
+                        <Link href={`/partner/courses/builder/${course.id}`}>
                           <Pencil className="mr-2 h-4 w-4" />
                           Edit
                         </Link>

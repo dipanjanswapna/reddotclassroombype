@@ -52,7 +52,7 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                 </CardHeader>
                 <CardContent className="p-4 flex-grow">
                   <p className="text-muted-foreground text-sm">
-                    {typeof item.description === 'object' ? item.description[language] : item.description}
+                    {item.description[language]}
                   </p>
                 </CardContent>
                 <CardFooter className="p-0 flex-col w-full gap-4">
@@ -71,7 +71,7 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                   <Button asChild variant="outline" className="w-full">
                     <Link href={item.cta.href} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
-                      {typeof item.cta.text === 'object' ? item.cta.text[language] : item.cta.text}
+                      {item.cta.text[language]}
                     </Link>
                   </Button>
                 </CardFooter>
