@@ -31,6 +31,7 @@ import { Label } from '@/components/ui/label';
 import { courses as initialCourses, Course } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import type { VariantProps } from 'class-variance-authority';
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -105,7 +106,7 @@ export default function AdminCourseManagementPage() {
                 </p>
             </div>
             <Button asChild>
-                <Link href="/teacher/courses/builder/new">
+                <Link href="/admin/courses/builder/new">
                     <PlusCircle className="mr-2" />
                     Create New Course
                 </Link>
@@ -156,7 +157,7 @@ export default function AdminCourseManagementPage() {
                                                     </>
                                                 )}
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/teacher/courses/builder/${course.id}`}>
+                                                    <Link href={`/admin/courses/builder/${course.id}`}>
                                                         <Pencil className="mr-2 h-4 w-4" />
                                                         Edit
                                                     </Link>
