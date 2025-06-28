@@ -10,6 +10,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Handshake, Shield, UserCog, UserSquare } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 function GoogleIcon() {
   return (
@@ -61,50 +67,6 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  {t.or_demo[language]}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" asChild>
-                <Link href="/student/dashboard">
-                  <GraduationCap className="mr-2 h-4 w-4" />
-                  {t.student[language]}
-                </Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/teacher/dashboard">
-                  <UserSquare className="mr-2 h-4 w-4" />
-                  {t.teacher[language]}
-                </Link>
-              </Button>
-               <Button variant="outline" asChild>
-                <Link href="/partner/dashboard">
-                  <Handshake className="mr-2 h-4 w-4" />
-                  Partner
-                </Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/guardian/dashboard">
-                  <Shield className="mr-2 h-4 w-4" />
-                  {t.guardian[language]}
-                </Link>
-              </Button>
-              <Button variant="outline" asChild className="col-span-2">
-                <Link href="/admin/dashboard">
-                  <UserCog className="mr-2 h-4 w-4" />
-                  {t.admin[language]}
-                </Link>
-              </Button>
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
                   {t.or_continue_with[language]}
                 </span>
               </div>
@@ -113,6 +75,58 @@ export default function LoginPage() {
               <GoogleIcon />
               <span className="ml-2">{t.login_with_google[language]}</span>
             </Button>
+
+            <div className="relative pt-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  {t.or_demo[language]}
+                </span>
+              </div>
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  Login as a Demo User
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link href="/student/dashboard" className="flex items-center w-full">
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    <span>{t.student[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/teacher/dashboard" className="flex items-center w-full">
+                    <UserSquare className="mr-2 h-4 w-4" />
+                    <span>{t.teacher[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/partner/dashboard" className="flex items-center w-full">
+                    <Handshake className="mr-2 h-4 w-4" />
+                    <span>Partner</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/guardian/dashboard" className="flex items-center w-full">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>{t.guardian[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/dashboard" className="flex items-center w-full">
+                    <UserCog className="mr-2 h-4 w-4" />
+                    <span>{t.admin[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
           </form>
           <div className="mt-6 text-center text-sm">
             {t.no_account[language]}{' '}
