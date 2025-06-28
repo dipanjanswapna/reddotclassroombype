@@ -29,7 +29,7 @@ function GoogleIcon() {
 
 export default function SignupPage() {
   return (
-    <div className="flex items-center justify-center py-12 px-4 bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-headline">Create an Account</CardTitle>
@@ -101,7 +101,7 @@ export default function SignupPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
+                <span className="bg-card px-2 text-muted-foreground">
                   Or continue with
                 </span>
               </div>
