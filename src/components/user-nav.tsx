@@ -124,7 +124,7 @@ export function UserNav() {
           {user.role === 'student' && (
             <>
               <DropdownMenuItem asChild>
-                <Link href="/student/courses"><BookOpen className="mr-2" />My Courses</Link>
+                <Link href="/student/my-courses"><BookOpen className="mr-2" />My Courses</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                  <Link href="/student/profile"><User className="mr-2" />Profile & Settings</Link>
