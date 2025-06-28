@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tag } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
+import { Badge } from '@/components/ui/badge';
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
@@ -29,7 +30,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     notFound();
   }
 
-  const isPrebooking = course.isPrebooking && new Date(course.prebookingEndDate!) > new Date();
+  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
   const originalPrice = parseFloat((isPrebooking ? course.prebookingPrice! : course.price).replace(/[^0-9.]/g, ''));
   const finalPrice = originalPrice - discount;
 
