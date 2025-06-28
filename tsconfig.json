@@ -2,6 +2,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
     "target": "ES2017",
     "lib": [
       "dom",
@@ -23,15 +28,7 @@
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": [
-        "src/frontend/*"
-      ],
-      "@/backend/*": [
-        "src/backend/*"
-      ]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
