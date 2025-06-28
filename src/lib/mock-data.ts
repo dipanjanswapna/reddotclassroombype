@@ -221,6 +221,15 @@ export type User = {
   joined: string;
 };
 
+export type StudyPlanEvent = {
+  id: string;
+  date: Date;
+  title: string;
+  type: 'live-class' | 'assignment' | 'study-session' | 'exam';
+  courseId?: string;
+  courseTitle?: string;
+};
+
 export const organizations: Organization[] = [
   { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%', hero: { title: 'Welcome to MediShark Academy', subtitle: 'Your gateway to medical excellence. We provide top-tier courses for medical admission tests and professional exams.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'medical students' } },
   { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%', hero: { title: 'ACS: Your Partner in Admission Success', subtitle: 'Guiding you to your dream university with our expert-led courses.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'university campus' } },
@@ -1317,4 +1326,47 @@ export const mockSupportTickets: SupportTicket[] = [
       { author: 'Support', message: 'We are looking into the issue and will get back to you shortly.', date: '2024-06-25' }
     ]
   },
+];
+
+export const mockStudyPlan: StudyPlanEvent[] = [
+    {
+        id: 'plan-1',
+        date: new Date(new Date().setDate(new Date().getDate() + 2)),
+        title: 'ভেক্টর প্রবলেম সলভিং',
+        type: 'live-class',
+        courseId: '1',
+        courseTitle: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান'
+    },
+    {
+        id: 'plan-2',
+        date: new Date(new Date().setDate(new Date().getDate() + 5)),
+        title: 'Vector Problem Set',
+        type: 'assignment',
+        courseId: '1',
+        courseTitle: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান'
+    },
+    {
+        id: 'plan-3',
+        date: new Date(),
+        title: 'Review Chapter 1-3',
+        type: 'study-session',
+        courseId: '1',
+        courseTitle: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান'
+    },
+    {
+        id: 'plan-4',
+        date: new Date(new Date().setDate(new Date().getDate() + 7)),
+        title: 'Weekly Exam 1',
+        type: 'exam',
+        courseId: '1',
+        courseTitle: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান'
+    },
+     {
+        id: 'plan-5',
+        date: new Date(),
+        title: 'Speaking Practice',
+        type: 'live-class',
+        courseId: '3',
+        courseTitle: 'IELTS Preparation Course'
+    }
 ];
