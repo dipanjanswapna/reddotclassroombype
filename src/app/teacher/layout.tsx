@@ -40,7 +40,7 @@ export default function TeacherLayout({
   const menuItems = [
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
-    { href: "#", icon: Users, label: "Students" },
+    { href: "/teacher/students", icon: Users, label: "Students" },
     { href: "#", icon: MessageSquare, label: "Grading" },
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
