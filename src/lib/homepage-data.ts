@@ -11,6 +11,21 @@ export const homepageConfig = {
     { id: 5, href: '/courses/13', imageUrl: 'https://placehold.co/800x450.png', alt: 'Arts Program', dataAiHint: 'history book' },
   ],
   liveCoursesIds: ['13', '1', '6', '14'],
+  teachersSection: {
+    title: {
+      bn: 'প্রতি বিষয়ের একাধিক অভিজ্ঞ শিক্ষক',
+      en: 'Experienced Teachers for Every Subject'
+    },
+    subtitle: {
+      bn: 'আমাদের এডমিশন ইউনিট এ বিগত বছর গুলোয় অভাবনীয় সাফল্য',
+      en: 'Unprecedented success in our admission unit over the past years'
+    },
+    buttonText: {
+      bn: 'সবাইকে দেখুন',
+      en: 'See All'
+    },
+    instructorIds: ['ins-ja', 'ins-si', 'ins-rc', 'ins-fm', 'ins-ka']
+  },
   videoSection: {
     title: {
       bn: 'সফল শিক্ষার্থীদের কোর্সে কী কী থাকছে?',

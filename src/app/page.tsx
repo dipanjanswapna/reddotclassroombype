@@ -23,7 +23,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
-import { courses } from '@/lib/mock-data';
+import { courses, allInstructors } from '@/lib/mock-data';
 import { HeroCarousel } from '@/components/hero-carousel';
 import { homepageConfig } from '@/lib/homepage-data';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
@@ -59,6 +59,7 @@ export default function Home() {
   const { language } = useLanguage();
 
   const liveCourses = courses.filter(c => homepageConfig.liveCoursesIds.includes(c.id));
+  const featuredInstructors = allInstructors.filter(i => homepageConfig.teachersSection.instructorIds.includes(i.id) && i.status === 'Approved');
   const sscHscCourses = courses.filter(c => homepageConfig.sscHscCourseIds.includes(c.id));
   const masterClasses = courses.filter(c => homepageConfig.masterClassesIds.includes(c.id));
   const admissionCourses = courses.filter(c => homepageConfig.admissionCoursesIds.includes(c.id));
@@ -88,6 +89,46 @@ export default function Home() {
                 <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
             </Carousel>
            </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="teachers-heading">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+              <div>
+                  <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection.title[language]}</h2>
+                  <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection.subtitle[language]}</p>
+              </div>
+              <Button asChild variant="outline">
+                  <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
+              </Button>
+          </div>
+          <Carousel opts={{ align: 'start' }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {featuredInstructors.map((instructor) => (
+                <CarouselItem key={instructor.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
+                   <Link href={`/teachers/${instructor.slug}`} className="block group text-center">
+                    <div className="relative overflow-hidden rounded-lg">
+                      <Image
+                        src={instructor.avatarUrl}
+                        alt={instructor.name}
+                        width={250}
+                        height={300}
+                        className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
+                        data-ai-hint={instructor.dataAiHint}
+                      />
+                      <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
+                        <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
+                        <p className="text-xs opacity-80 truncate">{instructor.title}</p>
+                      </div>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-foreground -left-4 hidden sm:flex" />
+            <CarouselNext className="text-foreground -right-4 hidden sm:flex" />
+          </Carousel>
         </div>
       </section>
 
