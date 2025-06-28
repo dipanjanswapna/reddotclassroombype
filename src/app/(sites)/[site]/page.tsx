@@ -8,8 +8,13 @@ const getPartner = (slug: string) => {
   return organizations.find(org => org.subdomain === slug);
 };
 
+// Create an async version for generateMetadata to satisfy Next.js expectations
+const getPartnerAsync = async (slug: string) => {
+  return organizations.find(org => org.subdomain === slug);
+};
+
 export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
-  const partner = getPartner(params.site);
+  const partner = await getPartnerAsync(params.site);
 
   if (!partner) {
     return {
