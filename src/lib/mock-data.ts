@@ -1,4 +1,16 @@
 
+/**
+ * @fileOverview Mock Database for the RDC Application.
+ *
+ * This file serves as a centralized mock database for the entire Red Dot Classroom application.
+ * In a real-world scenario, this data would be fetched from a backend server and a database.
+ * For the purpose of this prototype, all data structures (types) and sample content for courses,
+ * instructors, users, reviews, etc., are defined and exported from here.
+ *
+ * This approach allows for rapid prototyping and development of the frontend without a live backend.
+ * All major entities of the application are represented here.
+ */
+
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 

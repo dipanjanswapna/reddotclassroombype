@@ -1,5 +1,12 @@
 
-// Central dictionary for internationalization (i18n)
+/**
+ * @fileOverview Internationalization (i18n) Dictionary.
+ * This file contains a central dictionary of translations for the application.
+ * It uses a simple object structure where each key maps to an object containing
+ * translations for different languages (e.g., 'en' for English, 'bn' for Bengali).
+ * This allows for easy and centralized management of all UI text, making it
+ * straightforward to switch languages across the application.
+ */
 export const t = {
   // Header
   nav_class_6_12: { en: 'Class 6-12', bn: 'ক্লাস ৬-১২' },

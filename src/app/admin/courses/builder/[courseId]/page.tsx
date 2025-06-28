@@ -54,16 +54,26 @@ import {
 } from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { format } from 'date-fns';
 
+/**
+ * @fileOverview Course Builder Page.
+ * This is a comprehensive, multi-tabbed interface for creating and editing courses.
+ * It allows admins/teachers to manage everything from basic details and syllabus
+ * to media, pricing, and advanced features like quizzes and assignments.
+ * It features a drag-and-drop syllabus editor using dnd-kit.
+ */
 
+// Constants derived from mock data
 const allCategories = [...new Set(courses.map(course => course.category))];
 const archivedCourses = courses.filter(c => c.isArchived);
+
+// --- Type Definitions for various data structures used in the component ---
 
 type LessonData = {
     id: string;
@@ -81,6 +91,7 @@ type ModuleData = {
     lessons: LessonData[];
 };
 
+// A flattened union type for syllabus items to work with dnd-kit
 type SyllabusItem = ModuleData['lessons'][0] | Omit<ModuleData, 'lessons'>;
 
 type FaqItem = {
@@ -133,6 +144,10 @@ type AssignmentData = {
   deadline?: Date;
 };
 
+/**
+ * A sortable component representing a single item in the syllabus (either a module or a lesson).
+ * It uses `useSortable` from dnd-kit to enable drag-and-drop functionality.
+ */
 function SortableSyllabusItem({ 
     item,
     updateItem,
@@ -155,6 +170,7 @@ function SortableSyllabusItem({
         transition,
     };
 
+    // Render a module item
     if (item.type === 'module') {
         return (
              <div ref={setNodeRef} style={style} className="flex items-center gap-2 p-2 bg-muted rounded-md border">
@@ -179,6 +195,7 @@ function SortableSyllabusItem({
         )
     }
 
+    // Render a lesson item (collapsible)
     return (
         <Collapsible ref={setNodeRef} style={style} className="bg-background rounded-md border ml-6">
             <div className="flex items-center gap-2 p-2">
@@ -236,8 +253,10 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   }
     
   const { toast } = useToast();
+  // State for managing the active tab in the course builder UI
   const [activeTab, setActiveTab] = useState('details');
 
+  // --- Core Course Details State ---
   const [title, setTitle] = useState(courseToEdit?.title || '');
   const [description, setDescription] = useState(courseToEdit?.description || '');
   const [category, setCategory] = useState(courseToEdit?.category || allCategories[0] || '');
@@ -245,9 +264,16 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [thumbnailUrl, setThumbnailUrl] = useState(courseToEdit?.imageUrl || 'https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
+  // --- Learning Outcomes State ---
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
+  
+  // --- Bundled Courses State ---
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>(courseToEdit?.includedArchivedCourseIds || []);
 
+  /**
+   * Helper function to convert the nested syllabus structure from mock data
+   * into a flattened array suitable for the drag-and-drop interface.
+   */
   const getSyllabusItems = (): SyllabusItem[] => {
     if (!courseToEdit?.syllabus) return [];
     const items: SyllabusItem[] = [];
@@ -260,15 +286,25 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     return items;
   }
 
+  // --- Syllabus Management State ---
+  // The syllabus is a flattened array of modules and lessons for easier drag-and-drop reordering.
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>(getSyllabusItems());
 
+  // --- FAQ Management State ---
   const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
+  
+  // --- Instructor Management State ---
   const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
+  
+  // --- Class Routine State ---
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+
+  // --- Announcements State ---
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(courseToEdit?.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   
+  // --- Quizzes State ---
   const [quizzes, setQuizzes] = useState<QuizData[]>(courseToEdit?.quizzes?.map(q => ({
     id: q.id,
     title: q.title,
@@ -281,6 +317,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     }))
   })) || []);
 
+  // --- Assignments State ---
   const [assignments, setAssignments] = useState<AssignmentData[]>(courseToEdit?.assignments?.map(a => ({
       id: a.id,
       title: a.title,
@@ -288,7 +325,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
       deadline: new Date(a.deadline)
   })) || []);
 
-
+  // dnd-kit sensors setup for pointer and keyboard interactions.
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -296,6 +333,11 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     })
   );
 
+  /**
+   * Handles the end of a drag-and-drop operation for the syllabus.
+   * Uses `dnd-kit` to reorder the items in the `syllabus` state array.
+   * @param {DragEndEvent} event - The drag end event from dnd-kit.
+   */
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
 
@@ -308,6 +350,13 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     }
   }
 
+  // --- Handler functions for managing course content ---
+
+  /**
+   * Adds a new item (module or lesson) to the syllabus.
+   * Inserts lessons intelligently after the last module.
+   * @param {'module' | 'lesson'} type - The type of item to add.
+   */
   const addSyllabusItem = (type: 'module' | 'lesson') => {
     const newItem: SyllabusItem = type === 'module' 
       ? { id: Date.now().toString(), type, title: 'New Module' }
@@ -341,6 +390,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setSyllabus(prev => prev.filter(item => item.id !== id));
   };
   
+  // CRUD operations for "What you will learn" outcomes.
   const addOutcome = () => setWhatYouWillLearn(prev => [...prev, '']);
   const updateOutcome = (index: number, value: string) => {
       const newOutcomes = [...whatYouWillLearn];
@@ -349,24 +399,28 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeOutcome = (index: number) => setWhatYouWillLearn(prev => prev.filter((_, i) => i !== index));
 
+  // CRUD operations for FAQs.
   const addFaq = () => setFaqs(prev => [...prev, { id: Date.now().toString(), question: '', answer: '' }]);
   const updateFaq = (id: string, field: 'question' | 'answer', value: string) => {
       setFaqs(prev => prev.map(faq => faq.id === id ? { ...faq, [field]: value } : faq));
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
+  // CRUD operations for instructors.
   const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person' }]);
   const updateInstructor = (id: string, field: keyof Omit<InstructorItem, 'id'>, value: string) => {
       setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
 
+  // CRUD operations for class routine.
   const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '', instructorName: '' }]);
   const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
       setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
+  // CRUD operations for Quizzes and their questions/options.
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
   const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
@@ -401,6 +455,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
   };
 
+  // CRUD operations for assignments.
   const addAssignment = () => setAssignments(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date() }]);
   const removeAssignment = (id: string) => setAssignments(prev => prev.filter(a => a.id !== id));
   const updateAssignment = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
@@ -438,6 +493,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setAnnouncements(prev => prev.filter(a => a.id !== id));
   };
 
+  // Main submission handlers
   const handleSaveDraft = () => {
     console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
     toast({
@@ -454,6 +510,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     });
   };
   
+  // Configuration for the tabbed navigation
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },

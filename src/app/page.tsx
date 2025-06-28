@@ -54,10 +54,22 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   }
 };
 
-
+/**
+ * @fileOverview The main landing page for the Red Dot Classroom application.
+ * This component dynamically renders various sections like the hero carousel,
+ * featured courses, teacher showcases, and promotional content.
+ * The content is primarily driven by the `homepageConfig` object, making it
+ * easy to update without modifying the component's structure.
+ */
 export default function Home() {
   const { language } = useLanguage();
 
+  // --- Dynamic Homepage Content ---
+  // The content for this homepage is fetched from a centralized configuration object (`homepageConfig`).
+  // This allows for easy updates to featured courses and other content without changing the component's code.
+  // In a real application, this data would likely come from a CMS or a dedicated API endpoint.
+
+  // Filter courses and instructors based on IDs defined in the homepage configuration
   const liveCourses = courses.filter(c => homepageConfig.liveCoursesIds.includes(c.id));
   const featuredInstructors = allInstructors.filter(i => homepageConfig.teachersSection.instructorIds.includes(i.id) && i.status === 'Approved');
   const sscHscCourses = courses.filter(c => homepageConfig.sscHscCourseIds.includes(c.id));

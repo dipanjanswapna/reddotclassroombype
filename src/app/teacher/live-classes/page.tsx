@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { courses, LiveClass } from '@/lib/mock-data';
 
 // Mock data: find all classes assigned to a specific teacher
@@ -217,5 +217,4 @@ export default function TeacherLiveClassesPage() {
     </div>
   );
 }
-
     

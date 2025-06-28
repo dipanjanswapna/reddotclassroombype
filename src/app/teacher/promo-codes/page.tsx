@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { allPromoCodes as initialPromoCodes, PromoCode, courses } from '@/lib/mock-data';
 import {
   Dialog,

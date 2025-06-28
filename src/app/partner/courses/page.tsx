@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { courses as allCourses, Course } from '@/lib/mock-data';
 import { badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';

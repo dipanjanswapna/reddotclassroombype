@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge, badgeVariants } from '@/components/ui/badge';
 import { FileText, Upload, CheckCircle, MessageSquare, Edit } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogContent,

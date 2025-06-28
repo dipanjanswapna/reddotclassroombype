@@ -5,10 +5,19 @@ import { usePathname } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 
+/**
+ * @fileOverview LayoutWrapper component.
+ * This component acts as a conditional layout manager for the entire application.
+ * It inspects the current URL pathname to decide whether to render the main
+ * Header and Footer components. This allows for different page types, such as
+ * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
+ * interfaces, to have distinct layouts.
+ */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   
-  // These pages have a completely custom layout, no Header or Footer from here.
+  // An array of path prefixes that should have a completely custom layout
+  // (i.e., no main Header or Footer from this wrapper).
   const isFullPageLayout =
     pathname.startsWith('/sites/') ||
     pathname.startsWith('/login') ||
@@ -21,7 +30,9 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
   
-  // These pages get the Header, but not the Footer.
+  // An array of path prefixes for internal dashboard pages.
+  // These pages get the main Header, but not the main Footer,
+  // as they typically have their own sidebar-based navigation and layout.
   const isDashboardPage = 
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
@@ -29,6 +40,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/partner');
 
+  // Default layout for all other pages (e.g., home, about, contact).
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />

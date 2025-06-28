@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/table';
 import { allInstructors as initialInstructors, Instructor } from '@/lib/mock-data';
 import type { VariantProps } from 'class-variance-authority';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 const getStatusBadgeVariant = (status: Instructor['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
