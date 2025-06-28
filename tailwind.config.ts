@@ -4,9 +4,8 @@ import type {Config} from 'tailwindcss';
 export default {
   darkMode: ['class'],
   content: [
-    './src/frontend/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/frontend/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/frontend/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/frontend/components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     container: {
