@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -45,7 +46,7 @@ export default function GuardianLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
         {children}
       </main>
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
