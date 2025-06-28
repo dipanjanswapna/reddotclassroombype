@@ -94,7 +94,7 @@
   }
 
   .hero-carousel .embla__viewport {
-    @apply overflow-visible;
+    @apply overflow-hidden;
   }
 
   .hero-carousel .embla__container {
