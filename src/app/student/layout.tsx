@@ -37,6 +37,7 @@ import {
   Crown,
   Video,
   Voicemail,
+  Calculator,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -69,6 +70,7 @@ export default function StudentLayout({
     { href: "/student/achievements", icon: Trophy, label: "Achievements" },
     { href: "/student/tutor", icon: Bot, label: "Virtual Tutor" },
     { href: "/student/tts", icon: Voicemail, label: "Text to Speech" },
+    { href: "/student/calculator", icon: Calculator, label: "Calculator" },
   ];
   
   const accountItems = [
