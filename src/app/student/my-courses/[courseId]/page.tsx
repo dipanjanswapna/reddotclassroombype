@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
-export default function CourseHomePage({
+export default async function CourseHomePage({
   params,
 }: {
   params: { courseId: string };
