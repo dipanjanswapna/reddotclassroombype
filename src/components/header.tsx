@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from 'next/navigation';
-import { Menu, Search, X, ChevronDown, Phone, Bell } from "lucide-react";
+import { Menu, Search, X, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RdcLogo } from "./rdc-logo";
@@ -25,6 +25,7 @@ import { UserNav } from "./user-nav";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
+import { NotificationBell } from "./notification-bell";
 
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -35,7 +36,8 @@ export function Header() {
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
     pathname.startsWith('/guardian') ||
-    pathname.startsWith('/admin');
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/partner');
 
   const mainNavLinks = [
     { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
@@ -188,10 +190,7 @@ export function Header() {
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
               </Button>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-                <span className="sr-only">Notifications</span>
-              </Button>
+              <NotificationBell />
               <UserNav />
             </>
           ) : (
