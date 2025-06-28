@@ -118,6 +118,15 @@ export type Achievement = {
   date: string;
 };
 
+export type LeaderboardEntry = {
+  id: string;
+  rank: number;
+  name: string;
+  email: string;
+  avatar: string;
+  points: number;
+};
+
 export type Course = {
   id: string;
   title: string;
@@ -1231,4 +1240,13 @@ export const mockAchievements: Achievement[] = [
   { id: 'ach4', title: 'Curious Mind', description: 'Asked 5 questions in the community forum', icon: 'BrainCircuit', date: '2024-06-25' },
   { id: 'ach5', title: 'Bookworm', description: 'Completed 5 courses on the platform', icon: 'BookOpenCheck', date: '2024-07-01' },
 ];
-    
+
+export const mockLeaderboardData: LeaderboardEntry[] = [
+    { id: 's2', rank: 1, name: 'Fatima Chowdhury', email: 'fatima@example.com', avatar: 'https://placehold.co/100x100.png', points: 15200 },
+    { id: 's4', rank: 2, name: 'Nadia Islam', email: 'nadia@example.com', avatar: 'https://placehold.co/100x100.png', points: 14850 },
+    { id: 's3', rank: 3, name: 'Jamal Uddin', email: 'jamal@example.com', avatar: 'https://placehold.co/100x100.png', points: 13900 },
+    { id: 's1', rank: 4, name: 'Karim Rahman', email: 'karim@example.com', avatar: 'https://placehold.co/100x100.png', points: 12500 },
+    { id: 's5', rank: 5, name: 'Ahmed Ali', email: 'ahmed@example.com', avatar: 'https://placehold.co/100x100.png', points: 11800 },
+    { id: 's6', rank: 6, name: 'Sumaiya Begum', email: 'sumaiya@example.com', avatar: 'https://placehold.co/100x100.png', points: 11200 },
+    { id: 's7', rank: 7, name: 'Tanvir Hossain', email: 'tanvir@example.com', avatar: 'https://placehold.co/100x100.png', points: 10500 },
+];

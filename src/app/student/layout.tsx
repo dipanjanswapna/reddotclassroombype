@@ -2,7 +2,7 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, BookOpen, HelpCircle, Award, Bot, User, Settings, LogOut, BarChart3, CalendarClock, GraduationCap, Library, BookMarked, MessageSquare, Users as UsersIcon, Trophy, Heart, Wallet, Bell } from 'lucide-react';
+import { LayoutDashboard, BookOpen, HelpCircle, Award, Bot, User, Settings, LogOut, BarChart3, CalendarClock, GraduationCap, Library, BookMarked, MessageSquare, Users as UsersIcon, Trophy, Heart, Wallet, Bell, Crown } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import React from 'react';
@@ -23,6 +23,7 @@ export default function StudentLayout({
     { href: "/student/quizzes", icon: HelpCircle, label: "Interactive Quizzes" },
     { href: "/student/planner", icon: BookMarked, label: "Study Planner" },
     { href: "/student/community", icon: UsersIcon, label: "Community Forum" },
+    { href: "/student/leaderboard", icon: Crown, label: "Leaderboard" },
     { href: "/student/tutor", icon: Bot, label: "Virtual Tutor" },
     { href: "/student/wishlist", icon: Heart, label: "Wishlist" },
     { href: "/student/payments", icon: Wallet, label: "Payment History" },
