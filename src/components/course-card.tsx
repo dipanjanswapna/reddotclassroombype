@@ -93,5 +93,3 @@ export function CourseCard(props: CourseCardProps) {
     </Card>
   );
 }
-
-    

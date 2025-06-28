@@ -1,3 +1,4 @@
+
 import { Organization } from "@/lib/mock-data";
 import Link from "next/link";
 import { RdcLogo } from "./rdc-logo";

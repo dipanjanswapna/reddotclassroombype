@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { Organization } from "@/lib/mock-data";
 import Image from "next/image";
