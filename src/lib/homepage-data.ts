@@ -1,3 +1,4 @@
+
 // This file acts as a mock database for homepage content.
 // In a real application, this data would be fetched from a CMS or database.
 
@@ -124,11 +125,11 @@ export const homepageConfig = {
     ]
   },
   notesBanner: {
-    title: 'টেন মিনিট স্কুলের নোট পড়ে পাস!',
+    title: 'আমাদের নোট ও সাজেশন পড়ে প্রস্তুতি নাও!',
     description: 'সেরা নোট, লেকচার শিট ও গুরুত্বপূর্ণ সাজেশন খুঁজে নাও সহজেই।',
-    buttonText: 'নোটস এবং সাজেশন',
+    buttonText: 'সকল নোটস দেখুন',
   },
-  statsSectionTitle: '২০২২-২৪ শিক্ষাবর্ষে টেন মিনিট স্কুলের এডমিশন সাফল্য',
+  statsSectionTitle: 'আমাদের শিক্ষার্থীদের সাফল্য',
   stats: [
     { value: '১,২১৬', label: 'মেডিকেল ও ডেন্টাল' },
     { value: '৮৫+', label: 'বুয়েট' },

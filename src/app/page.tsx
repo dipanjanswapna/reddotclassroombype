@@ -184,7 +184,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {homepageConfig.whyChooseUs.features.map((feature, index) => (
-              <div key={index} className="flex flex-col items-center p-6 bg-card rounded-lg shadow-sm">
+              <div key={index} className="flex flex-col items-center p-6 bg-card rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10">
                   <WhyChooseUsIcon icon={iconMap[feature.icon] || Trophy} />
                 </div>
@@ -277,7 +277,7 @@ export default function Home() {
             <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSectionTitle}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {homepageConfig.stats.map((stat, index) => (
-                    <div key={index} className="text-center">
+                    <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
                         <p className="font-headline text-5xl font-bold">{stat.value}</p>
                         <p className="mt-2 text-lg opacity-90">{stat.label}</p>
                     </div>
