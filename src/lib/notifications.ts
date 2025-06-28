@@ -1,3 +1,4 @@
+
 import { courses } from '@/lib/mock-data';
 import { Megaphone, Award, Video } from 'lucide-react';
 
