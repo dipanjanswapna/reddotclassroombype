@@ -1,4 +1,5 @@
 
+
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
@@ -78,6 +79,9 @@ export type Course = {
   liveClasses?: LiveClass[];
   isArchived?: boolean;
   includedArchivedCourseIds?: string[];
+  isPrebooking?: boolean;
+  prebookingPrice?: string;
+  prebookingEndDate?: string;
 };
 
 
@@ -89,6 +93,19 @@ export type BlogPost = {
   dataAiHint: string;
   content: string;
 };
+
+export type PromoCode = {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  usageCount: number;
+  usageLimit: number;
+  expiresAt: string;
+  isActive: boolean;
+  applicableCourseIds: string[]; // 'all' for all courses
+  createdBy: 'admin' | string; // admin or teacherId
+}
 
 
 // Master list of all instructors in the platform
@@ -137,12 +154,22 @@ export const allInstructors: Instructor[] = [
 
 const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
 
+export const allPromoCodes: PromoCode[] = [
+  { id: 'promo1', code: 'EID20', type: 'percentage', value: 20, usageCount: 25, usageLimit: 100, expiresAt: '2024-12-31', isActive: true, applicableCourseIds: ['all'], createdBy: 'admin' },
+  { id: 'promo2', code: 'RDC100', type: 'fixed', value: 100, usageCount: 50, usageLimit: 200, expiresAt: '2024-10-31', isActive: true, applicableCourseIds: ['all'], createdBy: 'admin' },
+  { id: 'promo3', code: 'ICTMASTER', type: 'percentage', value: 15, usageCount: 10, usageLimit: 50, expiresAt: '2024-09-30', isActive: true, applicableCourseIds: ['7'], createdBy: 'ins-ja' },
+];
+
 export const courses: Course[] = [
   {
     id: '1',
     title: 'HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান',
     description: 'এইচএসসি ২০২৫ পরীক্ষার্থীদের জন্য পূর্ণাঙ্গ প্রস্তুতি নিশ্চিত করতে একটি সম্পূর্ণ অনলাইন ব্যাচ। অভিজ্ঞ শিক্ষকদের সাথে লাইভ ক্লাস, লেকচার শিট, এবং পরীক্ষার মাধ্যমে সেরা প্রস্তুতি নিন।',
     status: 'Pending Approval',
+    isPrebooking: true,
+    price: 'BDT 5000',
+    prebookingPrice: 'BDT 4500',
+    prebookingEndDate: '2024-12-31',
     instructors: [
        getInst('ins-ja'),
        getInst('ins-si'),
@@ -153,7 +180,6 @@ export const courses: Course[] = [
     dataAiHint: 'physics class',
     category: 'HSC',
     subCategory: 'বিজ্ঞান',
-    price: 'BDT 4500',
     rating: 4.8,
     reviews: 120,
     whatYouWillLearn: [

@@ -12,6 +12,8 @@ import {
   LayoutDashboard,
   DollarSign,
   Home,
+  TicketPercent,
+  CalendarPlus,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -43,6 +45,8 @@ export default function AdminLayout({
         { href: "/admin/users", icon: Users, label: "User Management" },
         { href: "/admin/courses", icon: BookCopy, label: "Course Management" },
         { href: "/admin/teachers", icon: UserCog, label: "Teacher Management" },
+        { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
+        { href: "#", icon: CalendarPlus, label: "Pre-bookings" },
         { href: "#", icon: DollarSign, label: "Financials" },
         { href: "#", icon: AreaChart, label: "Reports" },
     ];

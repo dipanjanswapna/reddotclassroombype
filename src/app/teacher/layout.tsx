@@ -11,6 +11,8 @@ import {
   User,
   Settings,
   LogOut,
+  TicketPercent,
+  CalendarPlus,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -42,6 +44,8 @@ export default function TeacherLayout({
     { href: "#", icon: Users, label: "Students" },
     { href: "#", icon: MessageSquare, label: "Grading" },
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
+    { href: "#", icon: CalendarPlus, label: "Pre-bookings" },
     { href: "#", icon: DollarSign, label: "Earnings" },
   ];
 

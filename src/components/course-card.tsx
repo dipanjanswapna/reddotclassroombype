@@ -4,17 +4,20 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Course } from "@/lib/mock-data";
+import { Button } from "./ui/button";
 
 type CourseCardProps = Partial<Course>;
 
-export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived }: CourseCardProps) {
+export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate }: CourseCardProps) {
   if (!id || !title || !imageUrl) {
     return null;
   }
   
+  const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
+
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
-      <CardHeader className="p-0 overflow-hidden">
+      <CardHeader className="p-0 overflow-hidden relative">
         <Link href={`/courses/${id}`}>
           <Image
             src={imageUrl}
@@ -25,6 +28,7 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
             data-ai-hint={dataAiHint}
           />
         </Link>
+        {isPrebookingActive && <Badge className="absolute top-2 left-2" variant="warning">Pre-booking</Badge>}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}
@@ -34,12 +38,24 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
         {instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>}
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        {isArchived ? (
+        {isPrebookingActive ? (
+          <div className="flex flex-col items-start w-full">
+            <p className="text-sm text-muted-foreground line-through">{price}</p>
+            <p className="font-headline text-lg font-bold text-primary">{prebookingPrice}</p>
+          </div>
+        ) : isArchived ? (
             <Badge variant="outline">Enrollment Closed</Badge>
         ) : (
             price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
         )}
       </CardFooter>
+      <div className="p-4 pt-0">
+         {isPrebookingActive ? (
+             <Button asChild className="w-full"><Link href={`/pre-book/${id}`}>Pre-book Now</Link></Button>
+         ) : !isArchived ? (
+             <Button asChild className="w-full"><Link href={`/checkout/${id}`}>Enroll Now</Link></Button>
+         ) : null}
+      </div>
     </Card>
   );
 }

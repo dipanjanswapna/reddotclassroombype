@@ -1,4 +1,6 @@
 
+'use client';
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -29,43 +31,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 const getCourseById = (id: string) => {
   return courses.find((course) => course.id === id);
 };
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { courseId: string };
-}): Promise<Metadata> {
-  const course = getCourseById(params.courseId);
-
-  if (!course) {
-    return {
-      title: 'Course Not Found',
-    };
-  }
-
-  return {
-    title: `${course.title} | RDC SHOP`,
-    description: course.description,
-    openGraph: {
-      title: `${course.title} | RDC SHOP`,
-      description: course.description,
-      images: [
-        {
-          url: course.imageUrl,
-          width: 1280,
-          height: 720,
-          alt: course.title,
-        },
-      ],
-      locale: 'en_US',
-      type: 'website',
-    },
-  };
-}
 
 export default function CourseDetailPage({
   params,
@@ -80,48 +51,16 @@ export default function CourseDetailPage({
     notFound();
   }
 
-  const courseSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Course',
-    name: course.title,
-    description: course.description,
-    url: `https://reddotclassroom.com/courses/${course.id}`,
-    provider: {
-      '@type': 'Organization',
-      name: 'Red Dot Classroom',
-      sameAs: 'https://reddotclassroom.com',
-    },
-    courseCode: course.id,
-    image: course.imageUrl,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: course.rating?.toString() || '5',
-      reviewCount: (course.reviewsData?.length || course.reviews)?.toString() || '1',
-    },
-    offers: {
-      '@type': 'Offer',
-      price: course.price.replace(/[^0-9.]/g, ''),
-      priceCurrency: 'BDT',
-      availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    },
-    hasCourseInstance: {
-      '@type': 'CourseInstance',
-      courseMode: 'online',
-    },
-  };
+  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
   return (
     <div className="bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
-      />
       {/* Hero Section */}
       <section className="bg-secondary/50 pt-12 pb-12">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
+              {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
               <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
                 {course.title}
               </h1>
@@ -157,13 +96,18 @@ export default function CourseDetailPage({
             <div className="lg:col-span-1">
               <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
                 <CardHeader>
+                    {isPrebookingActive && (
+                        <p className="text-muted-foreground line-through">{course.price}</p>
+                    )}
                   <CardTitle className="text-3xl font-bold text-primary">
-                    {course.price}
+                    {isPrebookingActive ? course.prebookingPrice : course.price}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700">
-                    Enroll Now
+                  <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+                    <Link href={isPrebookingActive ? `/pre-book/${course.id}` : `/checkout/${course.id}`}>
+                        {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
+                    </Link>
                   </Button>
                   <div className="mt-6">
                     <h3 className="font-headline font-semibold mb-3">
@@ -194,7 +138,6 @@ export default function CourseDetailPage({
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             
-            {/* What you'll learn */}
             {course.whatYouWillLearn && (
                 <section id="features" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
@@ -209,7 +152,6 @@ export default function CourseDetailPage({
                 </section>
             )}
 
-            {/* Instructors Section */}
             <section id="instructors" className="scroll-mt-24 py-0">
               <h2 className="font-headline text-3xl font-bold mb-6">
                 কোর্স ইন্সট্রাক্টর
@@ -236,7 +178,6 @@ export default function CourseDetailPage({
               </div>
             </section>
             
-            {/* Class Routine */}
             {course.classRoutine && (
                 <section id="routine" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">ক্লাস রুটিন</h2>
@@ -265,7 +206,6 @@ export default function CourseDetailPage({
                 </section>
             )}
 
-            {/* Syllabus Section */}
             {course.syllabus && (
               <section id="syllabus" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
@@ -300,7 +240,6 @@ export default function CourseDetailPage({
               </section>
             )}
 
-            {/* Student Reviews Section */}
             {course.reviewsData && (
               <section id="reviews" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">Student Feedback</h2>
@@ -332,7 +271,6 @@ export default function CourseDetailPage({
             )}
 
 
-            {/* FAQ Section */}
             {course.faqs && (
               <section id="faq" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
@@ -351,7 +289,6 @@ export default function CourseDetailPage({
               </section>
             )}
             
-            {/* Payment Process */}
             <section id="payment" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">পেমেন্ট প্রক্রিয়া</h2>
                 <p className="text-muted-foreground">আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। বিস্তারিত জানতে <Link href="/contact" className="text-primary hover:underline">এখানে ক্লিক করুন</Link>।</p>
@@ -359,11 +296,9 @@ export default function CourseDetailPage({
           </div>
 
           <div className="lg:col-span-1">
-            {/* This space can be used for another sticky element or ads if needed */}
           </div>
         </div>
 
-        {/* Included Archived Courses */}
         {includedCourses.length > 0 && (
           <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
@@ -375,7 +310,6 @@ export default function CourseDetailPage({
           </section>
         )}
 
-        {/* Related Courses */}
          <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
