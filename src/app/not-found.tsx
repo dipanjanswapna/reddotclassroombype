@@ -32,11 +32,11 @@ export default function NotFound() {
           </div>
           <div className="relative h-96">
             <Image
-              src="https://placehold.co/600x400.png"
-              alt="Astronaut floating in space around 404 text"
+              src="https://i.imgur.com/T0J0Uq5.png"
+              alt="Red Dot Classroom 404 Error"
               fill
               className="object-contain"
-              data-ai-hint="astronaut 404"
+              data-ai-hint="error 404"
             />
           </div>
         </div>
