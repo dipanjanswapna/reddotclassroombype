@@ -145,7 +145,7 @@ export const allInstructors: Instructor[] = [
         id: 'ins-rc', name: 'Raihan Chowdhury', title: 'Certified IELTS Trainer & Math Expert', 
         avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'english teacher',
         slug: 'raihan-chowdhury', status: 'Approved',
-        bio: 'Raihan has been teaching IELTS for over 8 years and has a proven track record of helping students achieve high scores. He also has a passion for teaching Mathematics for admission tests.',
+        bio: 'Raihan has been teaching for over 8 years and has a proven track record of helping students achieve high scores. He also has a passion for teaching Mathematics for admission tests.',
         socials: { facebook: '#'}
     },
     { 
@@ -168,6 +168,11 @@ export const allInstructors: Instructor[] = [
         avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female teacher',
         slug: 'nusrat-jahan', status: 'Rejected',
         bio: 'Nusrat is a passionate educator with a knack for making complex topics in Commerce and Arts subjects easy to understand for HSC students.'
+    },
+     { 
+        id: 'ins-ka', name: 'Dr. Karim Ahmed', title: 'Chemistry', 
+        avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor', slug: 'karim-ahmed', 
+        status: 'Approved', organizationId: 'org_medishark', bio: 'Bio for Karim' 
     },
 ];
 
@@ -283,9 +288,7 @@ export const courses: Course[] = [
     organizationName: 'MediShark',
     instructors: [
        getInst('ins-si'),
-       { id: 'ins-ka', name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor', slug: 'karim-ahmed', status: 'Approved', bio: 'Bio for Karim' },
-       { id: 'ins-fb', name: 'Dr. Farzana Begum', title: 'Physics', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female scientist', slug: 'farzana-begum', status: 'Approved', bio: 'Bio for Farzana' },
-       { id: 'ins-ah', name: 'Mr. Anisul Haque', title: 'General Knowledge', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher', slug: 'anisul-haque', status: 'Approved', bio: 'Bio for Anisul' },
+       getInst('ins-ka')
     ],
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'medical students',
@@ -1099,7 +1102,7 @@ export const mockGrades = [
   },
   {
     id: 'g5',
-    title: 'Data Science with Python',
+    courseName: 'Data Science with Python',
     assignmentName: 'Project 1: Pandas Data Analysis',
     score: 95,
     grade: 'A+',
