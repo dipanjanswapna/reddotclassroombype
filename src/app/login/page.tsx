@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,12 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GraduationCap, Shield, UserCog, UserSquare } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Login',
-  description: 'Login to your Red Dot Classroom account to access your dashboard and courses.',
-};
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
 
 function GoogleIcon() {
   return (
@@ -25,34 +23,36 @@ function GoogleIcon() {
 }
 
 export default function LoginPage() {
+  const { language } = useLanguage();
+
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Welcome Back!</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+          <CardTitle className="text-2xl font-headline">{t.login_welcome[language]}</CardTitle>
+          <CardDescription>{t.login_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.email[language]}</Label>
               <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.password[language]}</Label>
               <Input id="password" type="password" required />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox id="remember-me" />
-                <Label htmlFor="remember-me" className="text-sm font-medium">Remember me</Label>
+                <Label htmlFor="remember-me" className="text-sm font-medium">{t.remember_me[language]}</Label>
               </div>
               <Link href="/password-reset" className="text-sm text-primary hover:underline">
-                Forgot password?
+                {t.forgot_password[language]}
               </Link>
             </div>
             <Button type="submit" className="w-full font-bold">
-              Login
+              {t.login[language]}
             </Button>
             
             <div className="relative pt-2">
@@ -61,7 +61,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Or use a demo account
+                  {t.or_demo[language]}
                 </span>
               </div>
             </div>
@@ -70,25 +70,25 @@ export default function LoginPage() {
               <Button variant="outline" asChild>
                 <Link href="/student/dashboard">
                   <GraduationCap className="mr-2 h-4 w-4" />
-                  Student
+                  {t.student[language]}
                 </Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/teacher/dashboard">
                   <UserSquare className="mr-2 h-4 w-4" />
-                  Teacher
+                  {t.teacher[language]}
                 </Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/guardian/dashboard">
                   <Shield className="mr-2 h-4 w-4" />
-                  Guardian
+                  {t.guardian[language]}
                 </Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/admin/dashboard">
                   <UserCog className="mr-2 h-4 w-4" />
-                  Admin
+                  {t.admin[language]}
                 </Link>
               </Button>
             </div>
@@ -99,19 +99,19 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
+                  {t.or_continue_with[language]}
                 </span>
               </div>
             </div>
             <Button variant="outline" className="w-full">
               <GoogleIcon />
-              <span className="ml-2">Login with Google</span>
+              <span className="ml-2">{t.login_with_google[language]}</span>
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            Don&apos;t have an account?{' '}
+            {t.no_account[language]}{' '}
             <Link href="/signup" className="font-semibold text-primary hover:underline">
-              Sign up
+              {t.signup[language]}
             </Link>
           </div>
         </CardContent>

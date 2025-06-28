@@ -1,16 +1,14 @@
 
+"use client";
+
 import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
 import { courses, Course } from '@/lib/mock-data';
 import Link from 'next/link';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'RDC SHOP | Browse All Courses',
-  description: 'Welcome to the RDC SHOP. Browse and purchase from a wide range of courses on Red Dot Classroom. Find the perfect course for HSC, SSC, Admission Tests, Job Prep, and Skills development.',
-};
+import { useLanguage } from '@/context/language-context';
+import { useSearchParams } from 'next/navigation';
 
 // Helper to group courses by category
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {
@@ -38,22 +36,17 @@ const categoryOrder = [
     'মাস্টার কোর্স',
 ];
 
-export default function CoursesPage({
-  searchParams,
-}: {
-  searchParams?: {
-    category?: string;
-    subCategory?: string;
-  };
-}) {
+export default function CoursesPage() {
+  const { language } = useLanguage();
+  const searchParams = useSearchParams();
 
   // Separate all published courses into active and archived
   const allPublishedCourses = courses.filter(course => course.status === 'Published');
   const activeCourses = allPublishedCourses.filter(course => !course.isArchived);
   const archivedCourses = allPublishedCourses.filter(course => course.isArchived);
 
-  const selectedCategory = searchParams?.category;
-  const selectedSubCategory = searchParams?.subCategory;
+  const selectedCategory = searchParams?.get('category');
+  const selectedSubCategory = searchParams?.get('subCategory');
 
   let filteredCourses = activeCourses;
 
@@ -80,10 +73,8 @@ export default function CoursesPage({
     return indexA - indexB;
   });
   
-  // The filter bar should also only show categories from active courses
   const allCategories = [...new Set(activeCourses.map(course => course.category))].sort();
   const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
-
 
   return (
     <div className="bg-background">
@@ -92,12 +83,12 @@ export default function CoursesPage({
           <div>
             <h1 className="font-headline text-4xl font-bold tracking-tight">RDC SHOP</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              আপনার প্রয়োজনীয় সকল কোর্স এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
+              {language === 'bn' ? 'আপনার প্রয়োজনীয় সকল কোর্স এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।' : 'All the courses you need are now at RDC SHOP. Start your learning journey with the best teachers.'}
             </p>
             <Button asChild className="mt-6 bg-green-600 font-bold text-white hover:bg-green-700">
               <Link href="/courses#master-course">
                  <Sparkles className="mr-2 h-4 w-4" />
-                 আমাদের ফ্রি কোর্সগুলো দেখুন
+                 {language === 'bn' ? 'আমাদের ফ্রি কোর্সগুলো দেখুন' : 'See Our Free Courses'}
               </Link>
             </Button>
           </div>
@@ -117,7 +108,7 @@ export default function CoursesPage({
         {hasFilters ? (
             <section className='py-0'>
               <h2 className="font-headline mb-6 text-3xl font-bold">
-                Filtered Results ({filteredCourses.length})
+                {language === 'bn' ? `ফিল্টার ফলাফল (${filteredCourses.length})` : `Filtered Results (${filteredCourses.length})`}
               </h2>
               {filteredCourses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -126,7 +117,7 @@ export default function CoursesPage({
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
+                <p className="text-muted-foreground">{language === 'bn' ? 'আপনার মানদণ্ডের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টারগুলো মুছে ফেলার চেষ্টা করুন।' : 'No courses found matching your criteria. Try clearing the filters.'}</p>
               )}
             </section>
         ) : (

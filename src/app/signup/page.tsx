@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,14 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import type { Metadata } from 'next';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { UserSquare } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Sign Up',
-  description: 'Create a new account on Red Dot Classroom to start your learning journey.',
-};
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
 
 function GoogleIcon() {
   return (
@@ -28,36 +26,39 @@ function GoogleIcon() {
 
 
 export default function SignupPage() {
+  const { language } = useLanguage();
+
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Create an Account</CardTitle>
-          <CardDescription>Join our community and start your learning journey!</CardDescription>
+          <CardTitle className="text-2xl font-headline">{t.create_account[language]}</CardTitle>
+          <CardDescription>{t.signup_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4">
               <Alert className="bg-primary/5 border-primary/20">
                 <UserSquare className="h-4 w-4 !text-primary" />
-                <AlertTitle className="text-primary font-semibold">Want to be a Teacher?</AlertTitle>
+                <AlertTitle className="text-primary font-semibold">{t.want_to_be_teacher[language]}</AlertTitle>
                 <AlertDescription>
-                    Apply to become an instructor. <Link href="/auth/teacher-signup" className="font-bold underline">Click here!</Link>
+                    {t.apply_to_be_instructor[language]}{' '}
+                    <Link href="/auth/teacher-signup" className="font-bold underline">{t.click_here[language]}</Link>
                 </AlertDescription>
             </Alert>
             <div className="grid gap-2">
-              <Label htmlFor="full-name">Full Name</Label>
+              <Label htmlFor="full-name">{t.full_name[language]}</Label>
               <Input id="full-name" placeholder="Jubayer Ahmed" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.email[language]}</Label>
               <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.password[language]}</Label>
               <Input id="password" type="password" required />
             </div>
             <div className="grid gap-2">
-                <Label>I am registering as a...</Label>
+                <Label>{t.registering_as[language]}</Label>
                 <RadioGroup defaultValue="student" className="grid grid-cols-2 gap-2">
                     <div>
                         <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
@@ -65,7 +66,7 @@ export default function SignupPage() {
                             htmlFor="role-student"
                             className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
-                            Student
+                            {t.student[language]}
                         </Label>
                     </div>
                     <div>
@@ -74,7 +75,7 @@ export default function SignupPage() {
                             htmlFor="role-guardian"
                             className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
-                            Guardian
+                            {t.guardian[language]}
                         </Label>
                     </div>
                 </RadioGroup>
@@ -86,15 +87,16 @@ export default function SignupPage() {
                     htmlFor="terms"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                    Accept terms and conditions
+                    {t.accept_terms[language]}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                    You agree to our <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className='text-primary hover:underline'>Privacy Policy</Link>.
+                    {t.you_agree_to[language]}{' '}
+                    <Link href="/terms" className="text-primary hover:underline">{t.terms_of_service[language]}</Link> {t.and[language]} <Link href="/privacy" className='text-primary hover:underline'>{t.privacy_policy[language]}</Link>.
                     </p>
                 </div>
             </div>
             <Button type="submit" className="w-full font-bold">
-              Create Account
+              {t.create_account[language]}
             </Button>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -102,19 +104,19 @@ export default function SignupPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
+                  {t.or_continue_with[language]}
                 </span>
               </div>
             </div>
             <Button variant="outline" className="w-full">
               <GoogleIcon />
-              <span className="ml-2">Sign up with Google</span>
+              <span className="ml-2">{t.signup_with_google[language]}</span>
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            Already have an account?{' '}
+            {t.already_have_account[language]}{' '}
             <Link href="/login" className="font-semibold text-primary hover:underline">
-              Login
+              {t.login[language]}
             </Link>
           </div>
         </CardContent>

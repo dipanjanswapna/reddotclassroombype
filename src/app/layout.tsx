@@ -3,6 +3,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
+import { LanguageProvider } from '@/context/language-context';
 
 export const metadata: Metadata = {
   title: {
@@ -26,8 +27,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body antialiased min-h-screen bg-background')}>
-        <LayoutWrapper>{children}</LayoutWrapper>
-        <Toaster />
+        <LanguageProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+          <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );

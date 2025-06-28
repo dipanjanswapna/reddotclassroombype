@@ -22,24 +22,14 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { UserNav } from "./user-nav";
-
-const mainNavLinks = [
-  { href: "/courses?category=class-6-12", label: "ক্লাস ৬-১২" },
-  { href: "/courses?category=skills", label: "স্কিলস" },
-  { href: "/courses?category=admission", label: "ভর্তি পরীক্ষা" },
-  { href: "/courses?category=online-batch", label: "অনলাইন ব্যাচ" },
-];
-
-const moreLinks = [
-  { href: "/blog", label: "Blog" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/about", label: "About Us" },
-  { href: "/contact", label: "Contact" },
-];
+import { useLanguage } from "@/context/language-context";
+import { t } from "@/lib/i18n";
+import { LanguageToggle } from "./language-toggle";
 
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { language } = useLanguage();
 
   const isLoggedIn = 
     pathname.startsWith('/student') ||
@@ -47,13 +37,25 @@ export function Header() {
     pathname.startsWith('/guardian') ||
     pathname.startsWith('/admin');
 
+  const mainNavLinks = [
+    { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
+    { href: "/courses?category=skills", label: t.nav_skills[language] },
+    { href: "/courses?category=admission", label: t.nav_admission_test[language] },
+    { href: "/courses?category=online-batch", label: t.nav_online_batch[language] },
+  ];
+
+  const moreLinks = [
+    { href: "/blog", label: t.nav_blog[language] },
+    { href: "/faq", label: t.nav_faq[language] },
+    { href: "/about", label: t.nav_about[language] },
+    { href: "/contact", label: t.nav_contact[language] },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         
-        {/* Left side: Mobile Menu Trigger or Desktop Logo & Nav */}
         <div className="flex items-center">
-            {/* Mobile Menu Trigger */}
             <div className="md:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
@@ -89,7 +91,7 @@ export function Header() {
                         <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="more-links" className="border-b-0">
                             <AccordionTrigger className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md hover:no-underline justify-start gap-1">
-                            More
+                            {t.nav_more[language]}
                             </AccordionTrigger>
                             <AccordionContent>
                             <div className="flex flex-col space-y-1 pl-7">
@@ -112,7 +114,7 @@ export function Header() {
 
                     <Separator />
                     <div className="p-4 flex flex-col gap-2">
-                    <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> 16910</Button>
+                    <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 16910</Button>
                     <Separator />
                     {isLoggedIn ? (
                         <div className="w-full mt-2">
@@ -122,21 +124,23 @@ export function Header() {
                         <div className="flex gap-2 mt-2">
                         <Button asChild variant="outline" className="w-full">
                             <Link href="/login" onClick={() => setMenuOpen(false)}>
-                            লগইন
+                            {t.login[language]}
                             </Link>
                         </Button>
                         <Button asChild className="w-full">
                             <Link href="/signup" onClick={() => setMenuOpen(false)}>
-                            সাইন আপ
+                            {t.signup[language]}
                             </Link>
                         </Button>
                         </div>
                     )}
+                     <div className="pt-2">
+                        <LanguageToggle />
+                     </div>
                     </div>
                 </SheetContent>
             </Sheet>
             </div>
-            {/* Desktop Logo & Nav */}
             <div className="hidden md:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
                     <RdcLogo className="h-8 w-auto" />
@@ -156,7 +160,7 @@ export function Header() {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="flex items-center gap-1">
-                            More <ChevronDown className="h-4 w-4" />
+                            {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -171,14 +175,12 @@ export function Header() {
             </div>
         </div>
 
-        {/* Mobile Logo (centered) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden">
             <Link href="/">
                 <RdcLogo className="h-8 w-auto" />
             </Link>
         </div>
         
-        {/* Right side elements */}
         <div className="flex items-center justify-end space-x-2">
           {isLoggedIn ? (
             <>
@@ -194,12 +196,13 @@ export function Header() {
             </>
           ) : (
             <div className="hidden sm:flex items-center space-x-2">
-              <Button variant="ghost" className="hidden lg:inline-flex"><Phone className="mr-2"/> 16910</Button>
+              <LanguageToggle />
+              <Button variant="ghost" className="hidden lg:inline-flex"><Phone className="mr-2"/> {t.hotline[language]}: 16910</Button>
               <Button asChild variant="outline">
-                <Link href="/login">লগইন</Link>
+                <Link href="/login">{t.login[language]}</Link>
               </Button>
               <Button asChild>
-                <Link href="/signup">সাইন আপ</Link>
+                <Link href="/signup">{t.signup[language]}</Link>
               </Button>
             </div>
           )}

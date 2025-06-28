@@ -14,10 +14,12 @@ import {
 } from '@/components/ui/carousel';
 import { Facebook, Youtube, ExternalLink } from 'lucide-react';
 import { homepageConfig } from '@/lib/homepage-data';
+import { useLanguage } from '@/context/language-context';
 
 type CollaborationItem = typeof homepageConfig.collaborations.items[0];
 
 export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }) {
+  const { language } = useLanguage();
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
   );
@@ -50,7 +52,7 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                 </CardHeader>
                 <CardContent className="p-4 flex-grow">
                   <p className="text-muted-foreground text-sm">
-                    {item.description}
+                    {typeof item.description === 'object' ? item.description[language] : item.description}
                   </p>
                 </CardContent>
                 <CardFooter className="p-0 flex-col w-full gap-4">
@@ -69,7 +71,7 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                   <Button asChild variant="outline" className="w-full">
                     <Link href={item.cta.href} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
-                      {item.cta.text}
+                      {typeof item.cta.text === 'object' ? item.cta.text[language] : item.cta.text}
                     </Link>
                   </Button>
                 </CardFooter>
