@@ -57,12 +57,12 @@ export default function CourseLayout({
   }
   
   const getIsActive = (href: string) => {
-    // 'Lessons' is special: it's active for the course root AND any lesson detail page.
+    // Exact match for the main course page
     if (href.endsWith(params.courseId)) {
-        return pathname === href || pathname.startsWith(`${href}/lesson`);
+      return pathname === href;
     }
-    // All other links just need an exact match for now.
-    return pathname === href;
+    // For nested pages, check if the pathname starts with the href
+    return pathname.startsWith(href);
   };
 
 

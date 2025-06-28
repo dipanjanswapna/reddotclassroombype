@@ -72,6 +72,13 @@ export type Instructor = {
   organizationId?: string;
 }
 
+export type QuizQuestion = {
+    id: string;
+    text: string;
+    options: string[];
+    correctAnswer: number; // index of the correct option
+};
+
 export type Quiz = {
   id: string;
   title: string;
@@ -80,6 +87,7 @@ export type Quiz = {
   duration: number; // in minutes
   status: 'Completed' | 'Not Started' | 'In Progress';
   score?: number;
+  questions: QuizQuestion[];
 };
 
 export type Assignment = {
@@ -310,8 +318,21 @@ export const courses: Course[] = [
     ],
     includedArchivedCourseIds: ['17'],
     quizzes: [
-      { id: 'q1', title: 'Chapter 1 Quiz', topic: 'ভৌত জগৎ ও পরিমাপ', totalQuestions: 10, duration: 15, status: 'Completed', score: 80 },
-      { id: 'q2', title: 'Chapter 2 Quiz', topic: 'ভেক্টর', totalQuestions: 15, duration: 20, status: 'Not Started' },
+      { 
+        id: 'q1', title: 'Chapter 1 Quiz', topic: 'ভৌত জগৎ ও পরিমাপ', totalQuestions: 2, duration: 5, status: 'Completed', score: 50,
+        questions: [
+            { id: 'q1-1', text: 'Which of the following is a fundamental unit?', options: ['Newton', 'Joule', 'Ampere', 'Watt'], correctAnswer: 2 },
+            { id: 'q1-2', text: 'What is the dimension of velocity?', options: ['LT', 'L/T', 'L/T^2', 'T/L'], correctAnswer: 1 }
+        ]
+      },
+      { 
+        id: 'q2', title: 'Chapter 2 Quiz', topic: 'ভেক্টর', totalQuestions: 3, duration: 10, status: 'Not Started',
+        questions: [
+            { id: 'q2-1', text: 'What is the dot product of two perpendicular vectors?', options: ['0', '1', 'Their product', 'Their sum'], correctAnswer: 0 },
+            { id: 'q2-2', text: 'Which of the following is a scalar quantity?', options: ['Velocity', 'Acceleration', 'Work', 'Force'], correctAnswer: 2 },
+            { id: 'q2-3', text: 'The cross product of two parallel vectors is?', options: ['A scalar', 'A zero vector', 'A unit vector', 'Their product'], correctAnswer: 1 }
+        ]
+      },
     ],
     assignments: [
       { id: 'a1', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Pending' },
@@ -366,8 +387,6 @@ export const courses: Course[] = [
     classRoutine: [
         { day: 'শনি', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Sadia Islam' },
         { day: 'সোম', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Karim Ahmed' },
-        { day: 'বুধ', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Farzana Begum' },
-        { day: 'বৃহঃ', subject: 'সাধারণ জ্ঞান ও ইংরেজি', time: 'রাত ৯:০০', instructorName: 'Mr. Anisul Haque' },
     ],
     faqs: [
         { question: 'মেডিকেল ভর্তি পরীক্ষার জন্য যোগ্যতা কী?', answer: 'সাধারণত এসএসসি এবং এইচএসসিতে জীববিজ্ঞানসহ নির্দিষ্ট জিপিএ প্রয়োজন হয়। বিস্তারিত সার্কুলারে উল্লেখ থাকে।' },
@@ -432,8 +451,8 @@ export const courses: Course[] = [
         { id: 'lc3-1', topic: 'Speaking Test Simulation', date: 'July 11, 2024', time: '9:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
     ],
     quizzes: [
-        { id: 'q3', title: 'Listening Mock Test', topic: 'Full Module', totalQuestions: 40, duration: 30, status: 'Completed', score: 85 },
-        { id: 'q4', title: 'Reading Practice 1', topic: 'Skimming and Scanning', totalQuestions: 10, duration: 15, status: 'In Progress' },
+      { id: 'q3', title: 'Listening Mock Test', topic: 'Full Module', totalQuestions: 40, duration: 30, status: 'Completed', score: 85, questions: [] },
+      { id: 'q4', title: 'Reading Practice 1', topic: 'Skimming and Scanning', totalQuestions: 10, duration: 15, status: 'In Progress', questions: [] },
     ],
     assignments: [
       { id: 'a3', title: 'Writing Task 1 Sample', topic: 'Report Writing', deadline: '2024-07-18', status: 'Graded', grade: '7.5' },

@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { courses } from '@/lib/mock-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,14 +68,16 @@ export default function QuizzesPage({ params }: { params: { courseId: string } }
                     </TableCell>
                     <TableCell className="text-right">
                       {quiz.status === 'Completed' ? (
-                        <Button variant="outline" size="sm">
-                           View Results
+                        <Button variant="outline" size="sm" asChild>
+                           <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
+                                View Results
+                           </Link>
                         </Button>
                       ) : (
                          <Button asChild size="sm">
-                            <Link href="#">
+                            <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
                                 <PlayCircle className="mr-2" />
-                                Start Quiz
+                                {quiz.status === 'In Progress' ? 'Continue Quiz' : 'Start Quiz'}
                             </Link>
                          </Button>
                       )}
