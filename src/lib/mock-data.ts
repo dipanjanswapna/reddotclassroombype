@@ -110,6 +110,14 @@ export type Announcement = {
   date: string;
 };
 
+export type Achievement = {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'Medal' | 'Trophy' | 'Zap' | 'BrainCircuit' | 'BookOpenCheck';
+  date: string;
+};
+
 export type Course = {
   id: string;
   title: string;
@@ -1213,4 +1221,11 @@ export const mockGrades = [
   },
 ];
 
+export const mockAchievements: Achievement[] = [
+  { id: 'ach1', title: 'Course Conqueror', description: 'Completed your first course: HSC 2025 Crash Course', icon: 'Medal', date: '2024-06-15' },
+  { id: 'ach2', title: 'Quiz Whiz', description: 'Scored 100% on a quiz for the first time', icon: 'Trophy', date: '2024-06-18' },
+  { id: 'ach3', title: 'Perfect Week', description: 'Logged in and studied every day for 7 days straight', icon: 'Zap', date: '2024-06-22' },
+  { id: 'ach4', title: 'Curious Mind', description: 'Asked 5 questions in the community forum', icon: 'BrainCircuit', date: '2024-06-25' },
+  { id: 'ach5', title: 'Bookworm', description: 'Completed 5 courses on the platform', icon: 'BookOpenCheck', date: '2024-07-01' },
+];
     
