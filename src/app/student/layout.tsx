@@ -36,6 +36,7 @@ import {
   Bell,
   Crown,
   Video,
+  Voicemail,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -67,6 +68,7 @@ export default function StudentLayout({
     { href: "/student/leaderboard", icon: Crown, label: "Leaderboard" },
     { href: "/student/achievements", icon: Trophy, label: "Achievements" },
     { href: "/student/tutor", icon: Bot, label: "Virtual Tutor" },
+    { href: "/student/tts", icon: Voicemail, label: "Text to Speech" },
   ];
   
   const accountItems = [
