@@ -115,7 +115,7 @@ export default function CoursesPage({
 
       <main className="container mx-auto px-4 py-16">
         {hasFilters ? (
-            <section>
+            <section className='py-0'>
               <h2 className="font-headline mb-6 text-3xl font-bold">
                 Filtered Results ({filteredCourses.length})
               </h2>
@@ -132,7 +132,7 @@ export default function CoursesPage({
         ) : (
             <div className="space-y-16">
               {sortedCategories.map((category) => (
-                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
+                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0'>
                   <h2 className="font-headline mb-6 text-3xl font-bold">
                     {category}
                   </h2>
@@ -145,7 +145,7 @@ export default function CoursesPage({
               ))}
 
               {archivedCourses.length > 0 && (
-                <section id="old-is-gold">
+                <section id="old-is-gold" className='py-0'>
                     <h2 className="font-headline mb-6 text-3xl font-bold">
                         OLD IS GOLD
                     </h2>
