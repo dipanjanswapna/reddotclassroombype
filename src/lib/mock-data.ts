@@ -72,6 +72,25 @@ export type Instructor = {
   organizationId?: string;
 }
 
+export type Quiz = {
+  id: string;
+  title: string;
+  topic: string;
+  totalQuestions: number;
+  duration: number; // in minutes
+  status: 'Completed' | 'Not Started' | 'In Progress';
+  score?: number;
+};
+
+export type Assignment = {
+  id: string;
+  title: string;
+  topic: string;
+  deadline: string;
+  status: 'Submitted' | 'Pending' | 'Graded' | 'Late';
+  grade?: string;
+};
+
 export type Course = {
   id: string;
   title: string;
@@ -101,6 +120,8 @@ export type Course = {
   prebookingEndDate?: string;
   organizationId?: string;
   organizationName?: string;
+  quizzes?: Quiz[];
+  assignments?: Assignment[];
 };
 
 
@@ -287,6 +308,14 @@ export const courses: Course[] = [
         { id: 'lc1-3', topic: 'রসায়ন বিশেষ লাইভ', date: 'July 15, 2024', time: '7:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
     ],
     includedArchivedCourseIds: ['17'],
+    quizzes: [
+      { id: 'q1', title: 'Chapter 1 Quiz', topic: 'ভৌত জগৎ ও পরিমাপ', totalQuestions: 10, duration: 15, status: 'Completed', score: 80 },
+      { id: 'q2', title: 'Chapter 2 Quiz', topic: 'ভেক্টর', totalQuestions: 15, duration: 20, status: 'Not Started' },
+    ],
+    assignments: [
+      { id: 'a1', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Pending' },
+      { id: 'a2', title: 'Lab Safety Report', topic: 'ল্যাবরেটরির নিরাপদ ব্যবহার', deadline: '2024-07-25', status: 'Submitted' },
+    ]
   },
   {
     id: '2',
@@ -400,6 +429,14 @@ export const courses: Course[] = [
     ],
     liveClasses: [
         { id: 'lc3-1', topic: 'Speaking Test Simulation', date: 'July 11, 2024', time: '9:00 PM', platform: 'Zoom', joinUrl: 'https://zoom.us/j/1234567890' },
+    ],
+    quizzes: [
+        { id: 'q3', title: 'Listening Mock Test', topic: 'Full Module', totalQuestions: 40, duration: 30, status: 'Completed', score: 85 },
+        { id: 'q4', title: 'Reading Practice 1', topic: 'Skimming and Scanning', totalQuestions: 10, duration: 15, status: 'In Progress' },
+    ],
+    assignments: [
+      { id: 'a3', title: 'Writing Task 1 Sample', topic: 'Report Writing', deadline: '2024-07-18', status: 'Graded', grade: '7.5' },
+      { id: 'a4', title: 'Writing Task 2 Essay', topic: 'Argumentative Essay', deadline: '2024-07-22', status: 'Pending' },
     ]
   },
   {
