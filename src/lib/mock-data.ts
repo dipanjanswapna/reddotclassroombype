@@ -98,6 +98,9 @@ export type Assignment = {
   grade?: string;
   feedback?: string;
   submissionDate?: string;
+  studentId: string;
+  studentName: string;
+  submissionText?: string;
 };
 
 export type Course = {
@@ -216,6 +219,13 @@ export const allInstructors: Instructor[] = [
 ];
 
 const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
+
+export const mockStudents = [
+  { id: 's1', name: 'Karim Rahman', email: 'karim@example.com', avatar: 'https://placehold.co/100x100.png' },
+  { id: 's2', name: 'Fatima Chowdhury', email: 'fatima@example.com', avatar: 'https://placehold.co/100x100.png' },
+  { id: 's3', name: 'Jamal Uddin', email: 'jamal@example.com', avatar: 'https://placehold.co/100x100.png' },
+  { id: 's4', name: 'Nadia Islam', email: 'nadia@example.com', avatar: 'https://placehold.co/100x100.png' },
+];
 
 export const allPromoCodes: PromoCode[] = [
   { id: 'promo1', code: 'EID20', type: 'percentage', value: 20, usageCount: 25, usageLimit: 100, expiresAt: '2024-12-31', isActive: true, applicableCourseIds: ['all'], createdBy: 'admin' },
@@ -336,10 +346,11 @@ export const courses: Course[] = [
       },
     ],
     assignments: [
-      { id: 'a1', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Graded', grade: 'A+', feedback: 'Excellent work! You have a strong grasp of vector concepts. Keep it up.', submissionDate: '2024-07-19' },
-      { id: 'a2', title: 'Lab Safety Report', topic: 'ল্যাবরেটরির নিরাপদ ব্যবহার', deadline: '2024-07-25', status: 'Submitted', submissionDate: '2024-07-24' },
-      { id: 'a3', title: 'Kinematics Problems', topic: 'গতিবিদ্যা', deadline: '2024-08-01', status: 'Pending' },
-      { id: 'a4', title: 'Organic Chemistry Reactions', topic: 'জৈব রসায়ন', deadline: '2024-07-15', status: 'Late' },
+      { id: 'a1', studentId: 's1', studentName: 'Karim Rahman', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Graded', grade: 'A+', feedback: 'Excellent work! You have a strong grasp of vector concepts. Keep it up.', submissionDate: '2024-07-19', submissionText: 'Here are my solutions for the vector problems.' },
+      { id: 'a2', studentId: 's2', studentName: 'Fatima Chowdhury', title: 'Lab Safety Report', topic: 'ল্যাবরেটরির নিরাপদ ব্যবহার', deadline: '2024-07-25', status: 'Submitted', submissionDate: '2024-07-24', submissionText: 'Please find my lab safety report attached.' },
+      { id: 'a3', studentId: 's1', studentName: 'Karim Rahman', title: 'Kinematics Problems', topic: 'গতিবিদ্যা', deadline: '2024-08-01', status: 'Pending' },
+      { id: 'a4', studentId: 's3', studentName: 'Jamal Uddin', title: 'Organic Chemistry Reactions', topic: 'জৈব রসায়ন', deadline: '2024-07-15', status: 'Late', submissionText: 'Sorry for the late submission.' },
+      { id: 'a5', studentId: 's4', studentName: 'Nadia Islam', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Submitted', submissionDate: '2024-07-18', submissionText: 'My submission for the vector assignment.'}
     ]
   },
   {
@@ -458,8 +469,8 @@ export const courses: Course[] = [
       { id: 'q4', title: 'Reading Practice 1', topic: 'Skimming and Scanning', totalQuestions: 10, duration: 15, status: 'In Progress', questions: [] },
     ],
     assignments: [
-      { id: 'a3', title: 'Writing Task 1 Sample', topic: 'Report Writing', deadline: '2024-07-18', status: 'Graded', grade: '7.5' },
-      { id: 'a4', title: 'Writing Task 2 Essay', topic: 'Argumentative Essay', deadline: '2024-07-22', status: 'Pending' },
+      { id: 'a3', studentId: 's1', studentName: 'Karim Rahman', title: 'Writing Task 1 Sample', topic: 'Report Writing', deadline: '2024-07-18', status: 'Graded', grade: '7.5' },
+      { id: 'a4', studentId: 's2', studentName: 'Fatima Chowdhury', title: 'Writing Task 2 Essay', topic: 'Argumentative Essay', deadline: '2024-07-22', status: 'Pending' },
     ]
   },
   {

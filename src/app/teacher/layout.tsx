@@ -5,7 +5,6 @@
 import {
   BookCopy,
   Users,
-  MessageSquare,
   LayoutDashboard,
   Video,
   DollarSign,
@@ -14,6 +13,7 @@ import {
   LogOut,
   TicketPercent,
   CalendarPlus,
+  FileCheck2,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -41,7 +41,7 @@ export default function TeacherLayout({
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
     { href: "/teacher/students", icon: Users, label: "Students" },
-    { href: "#", icon: MessageSquare, label: "Grading" },
+    { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
     { href: "#", icon: CalendarPlus, label: "Pre-bookings" },

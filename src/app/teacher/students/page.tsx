@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { courses } from '@/lib/mock-data';
+import { courses, mockStudents } from '@/lib/mock-data';
 
 type Student = {
   id: string;
@@ -30,24 +30,51 @@ const teacherId = 'ins-ja';
 const teacherCourses = courses.filter(c => c.instructors.some(i => i.id === teacherId));
 const teacherCourseIds = teacherCourses.map(c => c.id);
 
-const allStudents = [
-  { id: 's1', name: 'Karim Rahman', email: 'karim@example.com', avatar: 'https://placehold.co/100x100.png', enrolledCourseId: '1', progress: 85 },
-  { id: 's2', name: 'Fatima Chowdhury', email: 'fatima@example.com', avatar: 'https://placehold.co/100x100.png', enrolledCourseId: '1', progress: 92 },
-  { id: 's3', name: 'Jamal Uddin', email: 'jamal@example.com', avatar: 'https://placehold.co/100x100.png', enrolledCourseId: '7', progress: 60 },
-  { id: 's4', name: 'Nadia Islam', email: 'nadia@example.com', avatar: 'https://placehold.co/100x100.png', enrolledCourseId: '7', progress: 45 },
-  { id: 's5', name: 'Ali Hasan', email: 'ali@example.com', avatar: 'https://placehold.co/100x100.png', enrolledCourseId: '9', progress: 78 },
-];
+// This is a more complex data derivation just for the demo
+// In a real app, you'd fetch students for the teacher's courses
+const getTeacherStudents = () => {
+    const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
 
-const mockStudents: Student[] = allStudents
-    .filter(s => teacherCourseIds.includes(s.enrolledCourseId))
-    .map(s => ({
-        ...s,
-        enrolledCourse: courses.find(c => c.id === s.enrolledCourseId)?.title || 'Unknown Course',
-    }));
+    // Correlate students to courses they are enrolled in that this teacher teaches
+    courses.forEach(course => {
+        if (teacherCourseIds.includes(course.id)) {
+            course.assignments?.forEach(assignment => {
+                if (!studentCourseMap.has(assignment.studentId)) {
+                    studentCourseMap.set(assignment.studentId, []);
+                }
+                const studentCourses = studentCourseMap.get(assignment.studentId)!;
+                if (!studentCourses.some(c => c.courseTitle === course.title)) {
+                    studentCourses.push({
+                        courseTitle: course.title,
+                        progress: Math.floor(Math.random() * 80) + 20 // Mock progress
+                    });
+                }
+            });
+        }
+    });
+
+    const teacherStudents: Student[] = [];
+    studentCourseMap.forEach((courseData, studentId) => {
+        const studentInfo = mockStudents.find(s => s.id === studentId);
+        if (studentInfo) {
+            courseData.forEach(cd => {
+                teacherStudents.push({
+                    id: `${studentInfo.id}-${cd.courseTitle.replace(/\s/g, '-')}`,
+                    name: studentInfo.name,
+                    email: studentInfo.email,
+                    avatar: studentInfo.avatar,
+                    enrolledCourse: cd.courseTitle,
+                    progress: cd.progress
+                });
+            });
+        }
+    });
+    return teacherStudents;
+};
 
 
 export default function TeacherStudentsPage() {
-  const [students] = useState<Student[]>(mockStudents);
+  const [students] = useState<Student[]>(getTeacherStudents());
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredStudents = students.filter(student =>
