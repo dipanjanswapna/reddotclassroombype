@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { MonitorWarning } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -50,7 +49,7 @@ const FacebookComments = ({ href }: { href: string }) => {
   if (FACEBOOK_APP_ID === 'YOUR_APP_ID') {
     return (
       <Alert variant="destructive" className="bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-200">
-        <MonitorWarning className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
+        <AlertTriangle className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
         <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
         <AlertDescription>
           The Facebook Comments plugin is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/components/facebook-comments.tsx</code> file.

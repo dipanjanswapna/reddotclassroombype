@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -6,7 +5,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { LiveClass } from '@/lib/mock-data';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { MonitorWarning } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 
 // Make sure FB object is available on window
@@ -87,7 +86,7 @@ const FacebookPlayer = ({ url }: { url:string }) => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-card p-4 rounded-lg">
             <Alert variant="destructive" className="bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-200">
-                <MonitorWarning className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
+                <AlertTriangle className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
                 <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
                 <AlertDescription>
                     The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/components/live-video-player.tsx</code> file.
