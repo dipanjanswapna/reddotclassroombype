@@ -7,9 +7,6 @@ import {
   PlayCircle,
   Star,
   BookOpen,
-  HelpCircle,
-  Trophy,
-  MessageCircle,
 } from 'lucide-react';
 import {
   Accordion,
@@ -118,17 +115,17 @@ export default function CourseDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
       />
       {/* Hero Section */}
-      <section className="bg-gray-900 text-white">
-        <div className="container mx-auto px-4 py-8">
+      <section className="bg-secondary/50 pt-12 pb-12">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
                 {course.title}
               </h1>
-              <p className="text-lg text-gray-300 mb-4">
+              <p className="text-lg text-muted-foreground mb-4">
                 {course.description}
               </p>
-              <div className="relative aspect-video rounded-lg overflow-hidden group mb-2">
+              <div className="relative aspect-video rounded-lg overflow-hidden group mb-2 shadow-lg">
                 <Image
                   src={course.imageUrl}
                   alt={course.title}
@@ -155,7 +152,7 @@ export default function CourseDetailPage({
               </div>
             </div>
             <div className="lg:col-span-1">
-              <Card className="sticky top-24 bg-card text-card-foreground">
+              <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-3xl font-bold text-primary">
                     {course.price}
@@ -190,7 +187,7 @@ export default function CourseDetailPage({
 
       <CourseTabs />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 pb-12">
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             
@@ -198,11 +195,11 @@ export default function CourseDetailPage({
             {course.whatYouWillLearn && (
                 <section id="features">
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {course.whatYouWillLearn.map((item, index) => (
                             <div key={index} className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-primary mt-1 shrink-0" />
-                                <p>{item}</p>
+                                <p className='text-muted-foreground'>{item}</p>
                             </div>
                         ))}
                     </div>
@@ -216,7 +213,7 @@ export default function CourseDetailPage({
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {course.instructors?.map((instructor, index) => (
-                  <div key={index} className="text-center">
+                  <div key={index} className="text-center flex flex-col items-center">
                     <Avatar className="w-24 h-24 mx-auto mb-2">
                       <AvatarImage
                         src={instructor.avatarUrl}
@@ -365,7 +362,7 @@ export default function CourseDetailPage({
 
         {/* Included Archived Courses */}
         {includedCourses.length > 0 && (
-          <section className="mt-16">
+          <section className="mt-16 py-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {includedCourses.map(includedCourse => (
@@ -376,7 +373,7 @@ export default function CourseDetailPage({
         )}
 
         {/* Related Courses */}
-         <section className="mt-16">
+         <section className="mt-16 py-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {relatedCourses.map(course => (

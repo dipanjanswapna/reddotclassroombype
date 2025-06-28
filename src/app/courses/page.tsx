@@ -87,11 +87,11 @@ export default function CoursesPage({
 
   return (
     <div className="bg-background">
-      <div className="bg-gray-900 text-white">
-        <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-12 md:grid-cols-2">
+      <div className="bg-secondary/50 border-b">
+        <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16 md:grid-cols-2">
           <div>
             <h1 className="font-headline text-4xl font-bold tracking-tight">আমাদের কোর্সসমূহ</h1>
-            <p className="mt-2 text-lg text-gray-300">
+            <p className="mt-2 text-lg text-muted-foreground">
               তোমার প্রয়োজন অনুযায়ী বেছে নাও সেরা কোর্সটি, আর শুরু করো তোমার শেখার নতুন যাত্রা।
             </p>
             <Button asChild className="mt-6 bg-green-600 font-bold text-white hover:bg-green-700">
@@ -102,17 +102,20 @@ export default function CoursesPage({
             </Button>
           </div>
           <div className="hidden items-center justify-center md:flex md:justify-end">
-            <div className="flex h-40 w-40 items-center justify-center rounded-full bg-primary/20 border-2 border-primary">
-              <BookOpenText className="h-20 w-20 text-primary" />
+            <div className="relative flex h-48 w-48 items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse"></div>
+              <div className="relative flex h-40 w-40 items-center justify-center rounded-full bg-background border-2 border-primary">
+                <BookOpenText className="h-20 w-20 text-primary" />
+              </div>
             </div>
           </div>
         </div>
         <CourseFilterBar categories={allCategories} subCategories={allSubCategories} />
       </div>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-16">
         {hasFilters ? (
-            <section>
+            <div>
               <h2 className="font-headline mb-6 text-3xl font-bold">
                 Filtered Results ({filteredCourses.length})
               </h2>
@@ -125,11 +128,11 @@ export default function CoursesPage({
               ) : (
                 <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
               )}
-            </section>
+            </div>
         ) : (
             <div className="space-y-16">
               {sortedCategories.map((category) => (
-                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
+                <div key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
                   <h2 className="font-headline mb-6 text-3xl font-bold">
                     {category}
                   </h2>
@@ -138,11 +141,11 @@ export default function CoursesPage({
                       <CourseCard key={course.id} {...course} />
                     ))}
                   </div>
-                </section>
+                </div>
               ))}
 
               {archivedCourses.length > 0 && (
-                <section id="old-is-gold">
+                <div id="old-is-gold">
                     <h2 className="font-headline mb-6 text-3xl font-bold">
                         OLD IS GOLD
                     </h2>
@@ -151,7 +154,7 @@ export default function CoursesPage({
                         <CourseCard key={course.id} {...course} />
                         ))}
                     </div>
-                </section>
+                </div>
               )}
             </div>
         )}
