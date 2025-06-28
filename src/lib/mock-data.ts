@@ -211,7 +211,8 @@ const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
 export const allPromoCodes: PromoCode[] = [
   { id: 'promo1', code: 'EID20', type: 'percentage', value: 20, usageCount: 25, usageLimit: 100, expiresAt: '2024-12-31', isActive: true, applicableCourseIds: ['all'], createdBy: 'admin' },
   { id: 'promo2', code: 'RDC100', type: 'fixed', value: 100, usageCount: 50, usageLimit: 200, expiresAt: '2024-10-31', isActive: true, applicableCourseIds: ['all'], createdBy: 'admin' },
-  { id: 'promo3', code: 'ICTMASTER', type: 'percentage', value: 15, usageCount: 10, usageLimit: 50, expiresAt: '2024-09-30', isActive: true, applicableCourseIds: ['7'], createdBy: 'ins-ja' },
+  { id: 'promo3', code: 'ICTMASTER', type: 'percentage', value: 15, usageCount: 10, usageLimit: 50, expiresAt: '2024-09-30', isActive: true, applicableCourseIds: ['7', '14'], createdBy: 'ins-ja' },
+  { id: 'promo4', code: 'ADMISSION500', type: 'fixed', value: 500, usageCount: 5, usageLimit: 20, expiresAt: '2024-08-31', isActive: true, applicableCourseIds: ['2', '9', '10'], createdBy: 'admin' },
 ];
 
 export const courses: Course[] = [

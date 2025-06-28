@@ -35,6 +35,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { format } from 'date-fns';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const teacherId = 'ins-ja'; // Mock teacher ID
 const teacherCourses = courses.filter(c => c.instructors.some(i => i.id === teacherId));
@@ -50,7 +53,26 @@ export default function TeacherPromoCodePage() {
   const [value, setValue] = useState(0);
   const [expiresAt, setExpiresAt] = useState<Date | undefined>(new Date());
   const [usageLimit, setUsageLimit] = useState(100);
-  const [selectedCourse, setSelectedCourse] = useState('all');
+  const [applicableCourseIds, setApplicableCourseIds] = useState<string[]>(['all']);
+
+  const handleCourseSelection = (courseId: string) => {
+    setApplicableCourseIds(prev => {
+        const isAllSelected = prev.includes('all');
+        if (isAllSelected) {
+            return [courseId];
+        }
+
+        const newSelection = new Set(prev);
+        if (newSelection.has(courseId)) {
+            newSelection.delete(courseId);
+        } else {
+            newSelection.add(courseId);
+        }
+
+        const newIds = Array.from(newSelection);
+        return newIds.length > 0 ? newIds : ['all'];
+    });
+  };
 
   const handleCreateCode = () => {
     const newCode: PromoCode = {
@@ -62,7 +84,7 @@ export default function TeacherPromoCodePage() {
       usageLimit,
       expiresAt: expiresAt ? format(expiresAt, 'yyyy-MM-dd') : '',
       isActive: true,
-      applicableCourseIds: [selectedCourse],
+      applicableCourseIds: applicableCourseIds,
       createdBy: teacherId,
     };
 
@@ -75,12 +97,19 @@ export default function TeacherPromoCodePage() {
     setValue(0);
     setExpiresAt(new Date());
     setUsageLimit(100);
-    setSelectedCourse('all');
+    setApplicableCourseIds(['all']);
   };
 
   const handleDelete = (id: string) => {
     setPromoCodes(prev => prev.filter(p => p.id !== id));
     toast({ title: 'Promo Code Deleted', variant: 'destructive' });
+  }
+
+  const getCourseTitles = (ids: string[]) => {
+    if (ids.includes('all')) return 'All My Courses';
+    if (ids.length === 0) return 'No Courses';
+    if (ids.length > 2) return `${ids.length} courses`;
+    return ids.map(id => teacherCourses.find(c => c.id === id)?.title || 'Unknown').join(', ');
   }
 
   return (
@@ -100,19 +129,37 @@ export default function TeacherPromoCodePage() {
               <DialogDescription>Fill in the details for the new promotional code for your course.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-               <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Course</Label>
-                <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All My Courses</SelectItem>
-                    {teacherCourses.map(course => (
-                      <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="col-span-3 justify-start truncate">
+                            {getCourseTitles(applicableCourseIds)}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-64" align="start">
+                        <ScrollArea className="h-48">
+                            <DropdownMenuItem
+                                onSelect={(e) => e.preventDefault()}
+                                onClick={() => setApplicableCourseIds(['all'])}
+                            >
+                                <Checkbox checked={applicableCourseIds.includes('all')} readOnly className="mr-2"/>
+                                All My Courses
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {teacherCourses.map(course => (
+                                <DropdownMenuItem 
+                                    key={course.id} 
+                                    onSelect={(e) => e.preventDefault()}
+                                    onClick={() => handleCourseSelection(course.id)}
+                                >
+                                    <Checkbox checked={applicableCourseIds.includes(course.id)} readOnly className="mr-2"/>
+                                    <span className="truncate">{course.title}</span>
+                                </DropdownMenuItem>
+                            ))}
+                        </ScrollArea>
+                    </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="code" className="text-right">Code</Label>
@@ -161,7 +208,7 @@ export default function TeacherPromoCodePage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Code</TableHead>
-                <TableHead>Course</TableHead>
+                <TableHead>Applies To</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Usage</TableHead>
                 <TableHead>Status</TableHead>
@@ -172,8 +219,8 @@ export default function TeacherPromoCodePage() {
               {promoCodes.map((promo) => (
                 <TableRow key={promo.id}>
                   <TableCell className="font-mono">{promo.code}</TableCell>
-                  <TableCell>
-                    {promo.applicableCourseIds.includes('all') ? 'All Courses' : courses.find(c => c.id === promo.applicableCourseIds[0])?.title || 'N/A'}
+                  <TableCell className="max-w-[200px] truncate" title={getCourseTitles(promo.applicableCourseIds)}>
+                    {getCourseTitles(promo.applicableCourseIds)}
                   </TableCell>
                   <TableCell>{promo.type === 'percentage' ? `${promo.value}%` : `৳${promo.value}`}</TableCell>
                   <TableCell>{promo.usageCount} / {promo.usageLimit}</TableCell>
