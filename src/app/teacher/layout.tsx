@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import {
@@ -15,22 +13,10 @@ import {
   CalendarPlus,
   FileCheck2,
 } from 'lucide-react';
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-  SidebarInset,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import React from 'react';
-import { RdcLogo } from '@/components/rdc-logo';
+import { cn } from '@/lib/utils';
 
 export default function TeacherLayout({
   children,
@@ -41,18 +27,15 @@ export default function TeacherLayout({
 
   const menuItems = [
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
+    { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
     { href: "/teacher/students", icon: Users, label: "Students" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
-    { href: "#", icon: CalendarPlus, label: "Pre-bookings" },
+    { href: "/teacher/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
     { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
-  ];
-
-  const footerMenuItems = [
-    { href: "#", icon: User, label: "Profile" },
-    { href: "#", icon: Settings, label: "Settings" },
+    { href: "/teacher/profile", icon: User, label: "Profile" },
+    { href: "/teacher/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -60,57 +43,36 @@ export default function TeacherLayout({
     if (href === '/teacher/dashboard') {
         return pathname === href;
     }
+     // De-dupe / from the end of the href
+    const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
+    if (newHref === '') return false; // Don't match the root logout button
     return pathname.startsWith(href);
   };
 
-
   return (
-    <SidebarProvider>
-      <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <Sidebar collapsible="icon">
-          <SidebarHeader>
-             <div className="p-2 flex items-center justify-between">
-                <RdcLogo className="h-7 w-auto group-data-[collapsible=icon]:hidden" />
-                <SidebarTrigger className="hidden md:flex" />
-             </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {menuItems.map(item => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item.href)} tooltip={item.label}>
-                     <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenu>
-              {footerMenuItems.map(item => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild tooltip={item.label}>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
-        <SidebarInset>
-            <div className="md:hidden flex items-center border-b p-2">
-              <SidebarTrigger />
-              <span className="font-semibold text-base ml-2">Teacher Portal</span>
-            </div>
-          {children}
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+        {children}
+      </main>
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
+                  getIsActive(item.href)
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+              )}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs whitespace-nowrap">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </div>
   );
 }
