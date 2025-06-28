@@ -71,10 +71,10 @@ export default function Home() {
       
       <section className="bg-secondary/50" aria-labelledby="hero-heading">
         <div className="container mx-auto px-4">
-          <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{language === 'bn' ? 'শেখার যাত্রা শুরু' : 'Start Your Learning Journey'}</h2>
-          <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{language === 'bn' ? 'আপনার সন্তানের উজ্জ্বল ভবিষ্যতের জন্য আমাদের কোর্সগুলোতে ভর্তি করুন। সেরা শিক্ষকমণ্ডলী আর আধুনিক পাঠ্যক্রম নিয়ে আমরা আছি আপনার পাশে।' : 'Enroll your child in our courses for a bright future. We are here with the best teachers and modern curriculum.'}</p>
+          <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection.title[language]}</h2>
+          <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
            <div>
-            <h3 className="font-headline text-2xl font-bold text-center mb-6">{language === 'bn' ? 'আমাদের লাইভ কোর্সসমূহ' : 'Our Live Courses'}</h3>
+            <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
              <Carousel opts={{ align: 'start', loop: true }}>
                 <CarouselContent>
                   {liveCourses.map((course) => (
@@ -147,15 +147,15 @@ export default function Home() {
                 ))}
             </div>
             <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-              <Link href="/courses">{language === 'bn' ? 'সকল কোর্স দেখুন' : 'See All Courses'}</Link>
+              <Link href="/courses">{homepageConfig.videoSection.buttonText[language]}</Link>
             </Button>
         </div>
       </section>
 
       <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
           <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">SSC & HSC</Badge>
-              <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{language === 'bn' ? 'SSC ও HSC শিক্ষার্থীদের জন্য' : 'For SSC & HSC Students'}</h2>
+              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection.badge[language]}</Badge>
+              <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection.title[language]}</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
@@ -164,7 +164,7 @@ export default function Home() {
 
       <section aria-labelledby="masterclass-heading">
           <div className="container mx-auto px-4 text-center">
-              <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{language === 'bn' ? 'তোমাদের জন্য রয়েছে রেকর্ডেড মাস্টারক্লাস' : 'Recorded Masterclasses For You'}</h2>
+              <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
                <Carousel opts={{ align: 'start', loop: true }}>
                 <CarouselContent>
                   {masterClasses.map((course) => (
@@ -179,33 +179,33 @@ export default function Home() {
                 <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
               </Carousel>
               <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=মাস্টার কোর্স">{language === 'bn' ? 'সকল কোর্স দেখুন' : 'See All Courses'}</Link>
+                <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
               </Button>
           </div>
       </section>
 
       <section className="bg-secondary/50" aria-labelledby="admission-heading">
           <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">Admission</Badge>
-              <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{language === 'bn' ? 'আপনার ভার্সিটির সম্পূর্ণ প্রস্তুতি' : 'Complete Preparation for Your University'}</h2>
+              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection.badge[language]}</Badge>
+              <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection.title[language]}</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=Admission">{language === 'bn' ? 'সকল কোর্স দেখুন' : 'See All Courses'}</Link>
+                <Link href="/courses?category=Admission">{homepageConfig.admissionSection.buttonText[language]}</Link>
                </Button>
           </div>
       </section>
       
       <section aria-labelledby="job-prep-heading">
           <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">Job Preparation</Badge>
-              <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{language === 'bn' ? 'সরকারি চাকরির সর্বোচ্চ প্রস্তুতি' : 'Ultimate Preparation for Government Jobs'}</h2>
+              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection.badge[language]}</Badge>
+              <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection.title[language]}</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
               </div>
                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=Job+Prep">{language === 'bn' ? 'সকল কোর্স দেখুন' : 'See All Courses'}</Link>
+                <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection.buttonText[language]}</Link>
               </Button>
           </div>
       </section>

@@ -10,6 +10,11 @@ export const homepageConfig = {
     { id: 4, href: '/courses/10', imageUrl: 'https://placehold.co/800x450.png', alt: 'ACS Program', dataAiHint: 'university admission' },
     { id: 5, href: '/courses/13', imageUrl: 'https://placehold.co/800x450.png', alt: 'Arts Program', dataAiHint: 'history book' },
   ],
+  journeySection: {
+    title: { bn: 'শেখার যাত্রা শুরু', en: 'Start Your Learning Journey' },
+    subtitle: { bn: 'আপনার সন্তানের উজ্জ্বল ভবিষ্যতের জন্য আমাদের কোর্সগুলোতে ভর্তি করুন। সেরা শিক্ষকমণ্ডলী আর আধুনিক পাঠ্যক্রম নিয়ে আমরা আছি আপনার পাশে।', en: 'Enroll your child in our courses for a bright future. We are here with the best teachers and modern curriculum.' },
+    courseTitle: { bn: 'আমাদের লাইভ কোর্সসমূহ', en: 'Our Live Courses' },
+  },
   liveCoursesIds: ['13', '1', '6', '14'],
   teachersSection: {
     title: {
@@ -38,11 +43,33 @@ export const homepageConfig = {
     videos: [
       { imageUrl: 'https://placehold.co/600x400.png', alt: 'Online course feature', videoUrl: '#', dataAiHint: 'online learning' },
       { imageUrl: 'https://placehold.co/600x400.png', alt: 'Best science videos', videoUrl: '#', dataAiHint: 'science experiment' },
-    ]
+    ],
+    buttonText: {
+      bn: 'সকল কোর্স দেখুন',
+      en: 'See All Courses'
+    }
+  },
+  sscHscSection: {
+      badge: { bn: 'SSC ও HSC', en: 'SSC & HSC'},
+      title: { bn: 'SSC ও HSC শিক্ষার্থীদের জন্য', en: 'For SSC & HSC Students'}
   },
   sscHscCourseIds: ['5', '1', '6', '7'],
+  masterclassSection: {
+      title: { bn: 'তোমাদের জন্য রয়েছে রেকর্ডেড মাস্টারক্লাস', en: 'Recorded Masterclasses For You'},
+      buttonText: { bn: 'সকল কোর্স দেখুন', en: 'See All Courses'}
+  },
   masterClassesIds: ['16', '7', '8', '3'],
+  admissionSection: {
+      badge: { bn: 'Admission', en: 'Admission'},
+      title: { bn: 'আপনার ভার্সিটির সম্পূর্ণ প্রস্তুতি', en: 'Complete Preparation for Your University'},
+      buttonText: { bn: 'সকল কোর্স দেখুন', en: 'See All Courses'}
+  },
   admissionCoursesIds: ['2', '9', '10', '1'],
+  jobPrepSection: {
+      badge: { bn: 'Job Preparation', en: 'Job Preparation'},
+      title: { bn: 'সরকারি চাকরির সর্বোচ্চ প্রস্তুতি', en: 'Ultimate Preparation for Government Jobs'},
+      buttonText: { bn: 'সকল কোর্স দেখুন', en: 'See All Courses'}
+  },
   jobCoursesIds: ['11', '12', '4', '8'],
   whyChooseUs: {
     title: {
