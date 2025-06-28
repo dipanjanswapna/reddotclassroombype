@@ -21,7 +21,8 @@ import { courses } from '@/lib/mock-data';
 import type { Metadata } from 'next';
 import { HeroCarousel } from '@/components/hero-carousel';
 import { homepageConfig } from '@/lib/homepage-data';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { CollaborationsCarousel } from '@/components/collaborations-carousel';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   description: 'Join thousands of learners at Red Dot Classroom. We offer high-quality online courses for HSC, SSC, Admission Tests, and professional skills development in Bangladesh.',
@@ -173,6 +174,16 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Collaborations Section */}
+      <section className="py-16 bg-gray-100 dark:bg-gray-900/50" aria-labelledby="collaborations-heading">
+        <div className="container mx-auto px-4">
+          <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
+            {homepageConfig.collaborations.title}
+          </h2>
+          <CollaborationsCarousel items={homepageConfig.collaborations.items} />
         </div>
       </section>
 
