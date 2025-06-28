@@ -48,10 +48,10 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${course.title} | RDC Shop Courses`,
+    title: `${course.title} | RDC SHOP`,
     description: course.description,
     openGraph: {
-      title: `${course.title} | RDC Shop Courses`,
+      title: `${course.title} | RDC SHOP`,
       description: course.description,
       images: [
         {
@@ -85,6 +85,7 @@ export default function CourseDetailPage({
     '@type': 'Course',
     name: course.title,
     description: course.description,
+    url: `https://reddotclassroom.com/courses/${course.id}`,
     provider: {
       '@type': 'Organization',
       name: 'Red Dot Classroom',
@@ -101,6 +102,8 @@ export default function CourseDetailPage({
       '@type': 'Offer',
       price: course.price.replace(/[^0-9.]/g, ''),
       priceCurrency: 'BDT',
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
     },
     hasCourseInstance: {
       '@type': 'CourseInstance',

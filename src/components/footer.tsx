@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { RdcLogo } from "./rdc-logo";
@@ -27,7 +28,7 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link href="/courses" className="hover:text-white">Courses</Link></li>
+              <li><Link href="/courses" className="hover:text-white">RDC SHOP</Link></li>
               <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
               <li><Link href="/about" className="hover:text-white">About Us</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>

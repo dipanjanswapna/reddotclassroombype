@@ -8,8 +8,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'All Courses',
-  description: 'Explore a wide range of courses on Red Dot Classroom. Find the perfect course for HSC, SSC, Admission Tests, Job Prep, and Skills development.',
+  title: 'RDC SHOP | Browse All Courses',
+  description: 'Welcome to the RDC SHOP. Browse and purchase from a wide range of courses on Red Dot Classroom. Find the perfect course for HSC, SSC, Admission Tests, Job Prep, and Skills development.',
 };
 
 // Helper to group courses by category
@@ -90,9 +90,9 @@ export default function CoursesPage({
       <div className="bg-secondary/50 border-b">
         <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16 md:grid-cols-2">
           <div>
-            <h1 className="font-headline text-4xl font-bold tracking-tight">আমাদের কোর্সসমূহ</h1>
+            <h1 className="font-headline text-4xl font-bold tracking-tight">RDC SHOP</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              তোমার প্রয়োজন অনুযায়ী বেছে নাও সেরা কোর্সটি, আর শুরু করো তোমার শেখার নতুন যাত্রা।
+              আপনার প্রয়োজনীয় সকল কোর্স এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
             </p>
             <Button asChild className="mt-6 bg-green-600 font-bold text-white hover:bg-green-700">
               <Link href="/courses#master-course">
