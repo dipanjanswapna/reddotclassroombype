@@ -198,6 +198,20 @@ export type PromoCode = {
   createdBy: 'admin' | string; // admin or teacherId
 }
 
+export type SupportTicket = {
+  id: string;
+  subject: string;
+  description: string;
+  status: 'Open' | 'In Progress' | 'Closed';
+  createdAt: string;
+  updatedAt: string;
+  replies: {
+    author: 'Student' | 'Support';
+    message: string;
+    date: string;
+  }[];
+};
+
 export const organizations: Organization[] = [
   { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%', hero: { title: 'Welcome to MediShark Academy', subtitle: 'Your gateway to medical excellence. We provide top-tier courses for medical admission tests and professional exams.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'medical students' } },
   { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%', hero: { title: 'ACS: Your Partner in Admission Success', subtitle: 'Guiding you to your dream university with our expert-led courses.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'university campus' } },
@@ -1261,4 +1275,29 @@ export const mockLeaderboardData: LeaderboardEntry[] = [
     { id: 's5', rank: 5, name: 'Ahmed Ali', email: 'ahmed@example.com', avatar: 'https://placehold.co/100x100.png', points: 11800 },
     { id: 's6', rank: 6, name: 'Sumaiya Begum', email: 'sumaiya@example.com', avatar: 'https://placehold.co/100x100.png', points: 11200 },
     { id: 's7', rank: 7, name: 'Tanvir Hossain', email: 'tanvir@example.com', avatar: 'https://placehold.co/100x100.png', points: 10500 },
+];
+
+export const mockSupportTickets: SupportTicket[] = [
+  {
+    id: 'ticket-001',
+    subject: 'Cannot access live class recording',
+    description: 'I missed the live class for Physics Chapter 2 yesterday and I cannot find the recording in my dashboard.',
+    status: 'Closed',
+    createdAt: '2024-06-20',
+    updatedAt: '2024-06-21',
+    replies: [
+      { author: 'Support', message: 'Hi! We have fixed the issue. The recording is now available under the "Lessons" tab for the course. Sorry for the inconvenience.', date: '2024-06-21' }
+    ]
+  },
+  {
+    id: 'ticket-002',
+    subject: 'Question about payment',
+    description: 'I was trying to enroll in the IELTS course, but my payment failed. Can you please check?',
+    status: 'In Progress',
+    createdAt: '2024-06-25',
+    updatedAt: '2024-06-25',
+    replies: [
+      { author: 'Support', message: 'We are looking into the issue and will get back to you shortly.', date: '2024-06-25' }
+    ]
+  },
 ];

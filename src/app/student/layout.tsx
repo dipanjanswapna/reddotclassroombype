@@ -35,7 +35,7 @@ export default function StudentLayout({
   const footerMenuItems = [
     { href: "/student/profile", icon: User, label: "Profile & Settings" },
     { href: "/student/guardian", icon: UsersIcon, label: "Guardian Management" },
-    { href: "/student/support", icon: MessageSquare, label: "Help & Support" },
+    { href: "/student/tickets", icon: MessageSquare, label: "Support Tickets" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
