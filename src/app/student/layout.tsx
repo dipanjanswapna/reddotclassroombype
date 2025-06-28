@@ -53,6 +53,16 @@ export default function StudentLayout({
 }) {
   const pathname = usePathname();
 
+  // Check if the path is a specific course page. Example: /student/my-courses/1, /student/my-courses/1/assignments
+  // It should NOT match /student/my-courses
+  const isCourseSpecificPage = /^\/student\/my-courses\/.+/.test(pathname);
+
+  // If it is a course page, render only the children, allowing the nested course layout to take over.
+  if (isCourseSpecificPage) {
+    return <>{children}</>;
+  }
+
+
   const mainItems = [
     { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/student/my-courses", icon: BookOpen, label: "My Courses" },

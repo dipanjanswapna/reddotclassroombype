@@ -15,19 +15,9 @@ import {
   Video,
   Archive,
 } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { courses } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function CourseLayout({
   children,
@@ -54,7 +44,7 @@ export default function CourseLayout({
   ];
   
   if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
-    courseNavItems.push({ href: `/student/my-courses/${course.id}/archive`, label: 'Archived Content', icon: Archive });
+    courseNavItems.push({ href: `/student/my-courses/${course.id}/archive`, label: 'Archive', icon: Archive });
   }
   
   const getIsActive = (href: string) => {
@@ -68,43 +58,29 @@ export default function CourseLayout({
 
 
   return (
-    <SidebarProvider>
-      <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <Sidebar collapsible="icon">
-           <SidebarHeader>
-             <div className="p-2 flex items-center justify-between">
-                <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                    <h2 className="font-semibold text-base truncate">{course.title}</h2>
-                    <p className="text-xs text-muted-foreground">by {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
-                </div>
-                <SidebarTrigger className="hidden md:flex" />
-             </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {courseNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item.href)} tooltip={item.label}>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset>
-            <div className="sticky top-16 md:hidden flex items-center justify-start border-b p-2 bg-background z-10">
-                <SidebarTrigger />
-                <h2 className="font-semibold text-base truncate ml-2">{course.title}</h2>
-            </div>
-            <div className="p-4 sm:p-6 lg:p-8">
-                {children}
-            </div>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+        {children}
+      </main>
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
+          {courseNavItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
+                  getIsActive(item.href)
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+              )}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs whitespace-nowrap">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </div>
   );
 }
