@@ -32,7 +32,7 @@ export default function PlannerPage() {
   
   // Form state for new event
   const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventCourseId, setNewEventCourseId] = useState('');
+  const [newEventCourseId, setNewEventCourseId] = useState<string | undefined>();
 
   const selectedDayEvents = events
     .filter((event) => date && format(event.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'))
@@ -49,7 +49,7 @@ export default function PlannerPage() {
         date: date,
         title: newEventTitle,
         type: 'study-session',
-        courseId: newEventCourseId || undefined,
+        courseId: newEventCourseId,
         courseTitle: courses.find(c => c.id === newEventCourseId)?.title,
     };
 
@@ -58,7 +58,7 @@ export default function PlannerPage() {
 
     // Reset form and close dialog
     setNewEventTitle('');
-    setNewEventCourseId('');
+    setNewEventCourseId(undefined);
     setIsDialogOpen(false);
   };
 
@@ -130,12 +130,12 @@ export default function PlannerPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="event-course">Related Course (Optional)</Label>
-                                 <Select value={newEventCourseId} onValueChange={setNewEventCourseId}>
+                                 <Select value={newEventCourseId} onValueChange={(value) => setNewEventCourseId(value === 'none' ? undefined : value)}>
                                     <SelectTrigger id="event-course">
                                         <SelectValue placeholder="Select a course"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">No specific course</SelectItem>
+                                        <SelectItem value="none">No specific course</SelectItem>
                                         {enrolledCourses.map(course => (
                                             <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
                                         ))}
