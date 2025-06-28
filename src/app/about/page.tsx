@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About Us',
-  description: "Learn more about Red Dot Classroom's mission, vision, and the team behind our online learning platform.",
+  title: 'About Us | RED DOT CLASSROOM (RDC)',
+  description: "Learn more about RED DOT CLASSROOM (RDC)'s mission, vision, and the team behind our online learning platform, powered by PRANGONS ECOSYSTEM.",
 };
 
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center">
-        <h1 className="font-headline text-4xl font-bold tracking-tight">About Us</h1>
+        <h1 className="font-headline text-4xl font-bold tracking-tight">About RED DOT CLASSROOM</h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Learn more about Red Dot Classroom's mission, vision, and the team behind it.
+          Learn more about RED DOT CLASSROOM (RDC)'s mission, vision, and the team behind it, powered by PRANGONS ECOSYSTEM.
         </p>
       </div>
       <div className="mt-12 max-w-4xl mx-auto text-center">

@@ -18,7 +18,7 @@ export function Footer() {
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <RdcLogo className="h-10 w-auto" />
               <span className="font-bold text-xl font-headline text-white">
-                Red Dot Classroom
+                RED DOT CLASSROOM
               </span>
             </Link>
             <p className="text-gray-400">
@@ -65,7 +65,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Red Dot Classroom. {t.copyright[language]}</p>
+          <p>&copy; {new Date().getFullYear()} RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. {t.copyright[language]}</p>
         </div>
       </div>
     </footer>

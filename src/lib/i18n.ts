@@ -16,7 +16,7 @@ export const t = {
   signup: { en: 'Sign Up', bn: 'সাইন আপ' },
 
   // Footer
-  footer_tagline: { en: 'Empowering learners across Bangladesh with quality education.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন' },
+  footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },
   quick_links: { en: 'Quick Links', bn: 'কুইক লিঙ্ক' },
   rdc_shop: { en: 'RDC SHOP', bn: 'RDC SHOP' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },

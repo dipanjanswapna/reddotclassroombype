@@ -7,10 +7,10 @@ import { LanguageProvider } from '@/context/language-context';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Red Dot Classroom | Online Learning Platform for Bangladesh',
-    template: '%s | Red Dot Classroom',
+    default: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM',
+    template: '%s | RED DOT CLASSROOM (RDC)',
   },
-  description: 'A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
+  description: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
 };
 
 export default function RootLayout({

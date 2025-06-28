@@ -72,7 +72,7 @@ export function Header() {
                         onClick={() => setMenuOpen(false)}
                     >
                         <RdcLogo className="h-8 w-auto" />
-                        <span className="font-bold text-lg">Red Dot Classroom</span>
+                        <span className="font-bold text-lg">RED DOT CLASSROOM</span>
                     </Link>
                     </div>
                     
@@ -144,7 +144,7 @@ export function Header() {
             <div className="hidden md:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
                     <RdcLogo className="h-8 w-auto" />
-                    <span className="font-bold text-lg hidden lg:inline-block">Red Dot Classroom</span>
+                    <span className="font-bold text-lg hidden lg:inline-block">RED DOT CLASSROOM</span>
                 </Link>
                 <nav className="flex items-center space-x-1 text-sm font-medium">
                     {mainNavLinks.map((link) => (
