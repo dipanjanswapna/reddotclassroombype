@@ -86,6 +86,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  section {
+    @apply py-16 lg:py-20;
+  }
 }
 
 @layer components {

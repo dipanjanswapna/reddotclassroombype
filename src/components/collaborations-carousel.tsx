@@ -56,12 +56,12 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                 <CardFooter className="p-0 flex-col w-full gap-4">
                   <div className="flex gap-4">
                     {item.socials.facebook && (
-                      <Link href={item.socials.facebook} target="_blank">
+                      <Link href={item.socials.facebook} target="_blank"  rel="noopener noreferrer">
                         <Facebook className="text-muted-foreground hover:text-primary" />
                       </Link>
                     )}
                     {item.socials.youtube && (
-                      <Link href={item.socials.youtube} target="_blank">
+                      <Link href={item.socials.youtube} target="_blank"  rel="noopener noreferrer">
                         <Youtube className="text-muted-foreground hover:text-destructive" />
                       </Link>
                     )}

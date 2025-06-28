@@ -131,7 +131,7 @@ export const homepageConfig = {
   },
   statsSectionTitle: 'আমাদের শিক্ষার্থীদের সাফল্য',
   stats: [
-    { value: '১,২১৬', label: 'মেডিকেল ও ডেন্টাল' },
+    { value: '১,২১৬+', label: 'মেডিকেল ও ডেন্টাল' },
     { value: '৮৫+', label: 'বুয়েট' },
     { value: '৯', label: 'আইবিএ (ঢাকা বিশ্ববিদ্যালয়)' },
   ],

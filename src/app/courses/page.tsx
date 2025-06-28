@@ -115,7 +115,7 @@ export default function CoursesPage({
 
       <main className="container mx-auto px-4 py-16">
         {hasFilters ? (
-            <div>
+            <section>
               <h2 className="font-headline mb-6 text-3xl font-bold">
                 Filtered Results ({filteredCourses.length})
               </h2>
@@ -128,11 +128,11 @@ export default function CoursesPage({
               ) : (
                 <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
               )}
-            </div>
+            </section>
         ) : (
             <div className="space-y-16">
               {sortedCategories.map((category) => (
-                <div key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
+                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')}>
                   <h2 className="font-headline mb-6 text-3xl font-bold">
                     {category}
                   </h2>
@@ -141,11 +141,11 @@ export default function CoursesPage({
                       <CourseCard key={course.id} {...course} />
                     ))}
                   </div>
-                </div>
+                </section>
               ))}
 
               {archivedCourses.length > 0 && (
-                <div id="old-is-gold">
+                <section id="old-is-gold">
                     <h2 className="font-headline mb-6 text-3xl font-bold">
                         OLD IS GOLD
                     </h2>
@@ -154,7 +154,7 @@ export default function CoursesPage({
                         <CourseCard key={course.id} {...course} />
                         ))}
                     </div>
-                </div>
+                </section>
               )}
             </div>
         )}

@@ -187,13 +187,13 @@ export default function CourseDetailPage({
 
       <CourseTabs />
 
-      <main className="container mx-auto px-4 pb-12">
+      <main className="container mx-auto px-4 py-16">
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             
             {/* What you'll learn */}
             {course.whatYouWillLearn && (
-                <section id="features">
+                <section id="features" className="scroll-mt-24">
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {course.whatYouWillLearn.map((item, index) => (
@@ -207,7 +207,7 @@ export default function CourseDetailPage({
             )}
 
             {/* Instructors Section */}
-            <section id="instructors">
+            <section id="instructors" className="scroll-mt-24">
               <h2 className="font-headline text-3xl font-bold mb-6">
                 কোর্স ইন্সট্রাক্টর
               </h2>
@@ -235,7 +235,7 @@ export default function CourseDetailPage({
             
             {/* Class Routine */}
             {course.classRoutine && (
-                <section id="routine">
+                <section id="routine" className="scroll-mt-24">
                     <h2 className="font-headline text-3xl font-bold mb-6">ক্লাস রুটিন</h2>
                     <Card>
                         <CardContent className="p-0">
@@ -264,7 +264,7 @@ export default function CourseDetailPage({
 
             {/* Syllabus Section */}
             {course.syllabus && (
-              <section id="syllabus">
+              <section id="syllabus" className="scroll-mt-24">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   সিলেবাস
                 </h2>
@@ -299,7 +299,7 @@ export default function CourseDetailPage({
 
             {/* Student Reviews Section */}
             {course.reviewsData && (
-              <section id="reviews">
+              <section id="reviews" className="scroll-mt-24">
                 <h2 className="font-headline text-3xl font-bold mb-6">Student Feedback</h2>
                 <Card>
                   <CardContent className="pt-6 space-y-6">
@@ -331,7 +331,7 @@ export default function CourseDetailPage({
 
             {/* FAQ Section */}
             {course.faqs && (
-              <section id="faq">
+              <section id="faq" className="scroll-mt-24">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   Frequently Asked Questions
                 </h2>
@@ -349,7 +349,7 @@ export default function CourseDetailPage({
             )}
             
             {/* Payment Process */}
-            <section id="payment">
+            <section id="payment" className="scroll-mt-24">
                 <h2 className="font-headline text-3xl font-bold mb-6">পেমেন্ট প্রক্রিয়া</h2>
                 <p className="text-muted-foreground">আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। বিস্তারিত জানতে <Link href="/contact" className="text-primary hover:underline">এখানে ক্লিক করুন</Link>।</p>
             </section>
@@ -362,7 +362,7 @@ export default function CourseDetailPage({
 
         {/* Included Archived Courses */}
         {includedCourses.length > 0 && (
-          <section className="mt-16 py-16">
+          <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {includedCourses.map(includedCourse => (
@@ -373,7 +373,7 @@ export default function CourseDetailPage({
         )}
 
         {/* Related Courses */}
-         <section className="mt-16 py-16">
+         <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {relatedCourses.map(course => (

@@ -40,12 +40,12 @@ export function CourseFilterBar({ categories, subCategories }: CourseFilterBarPr
   }
 
   return (
-    <div className="bg-gray-900 border-y border-gray-700/50">
+    <div className="border-t bg-card">
       <div className="container mx-auto flex flex-wrap items-center gap-2 py-2">
-        <span className="text-sm font-semibold text-gray-300 pr-2">ফিল্টার করুন:</span>
+        <span className="text-sm font-semibold pr-2">ফিল্টার করুন:</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="text-white hover:bg-gray-700 data-[state=open]:bg-gray-700">
+            <Button variant="outline" className="border-dashed">
               {selectedCategory || 'ক্যাটাগরি'}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
@@ -62,7 +62,7 @@ export function CourseFilterBar({ categories, subCategories }: CourseFilterBarPr
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="text-white hover:bg-gray-700 data-[state=open]:bg-gray-700" disabled={!subCategories.length}>
+            <Button variant="outline" className="border-dashed" disabled={!subCategories.length}>
               {selectedSubCategory || 'সাব-ক্যাটাগরি'}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
@@ -78,7 +78,7 @@ export function CourseFilterBar({ categories, subCategories }: CourseFilterBarPr
         </DropdownMenu>
         
         {(selectedCategory || selectedSubCategory) && (
-            <Button variant="ghost" size="sm" className="text-red-400 hover:bg-red-400/10 hover:text-red-300" onClick={clearFilters}>
+            <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearFilters}>
                 <X className="mr-1 h-4 w-4" />
                 ফিল্টার মুছুন
             </Button>
