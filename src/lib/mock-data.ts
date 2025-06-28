@@ -44,6 +44,9 @@ export type Organization = {
   name: string;
   logoUrl: string;
   status: 'approved' | 'pending' | 'rejected';
+  subdomain: string;
+  primaryColor: string;
+  secondaryColor: string;
 };
 
 export type Instructor = {
@@ -118,9 +121,9 @@ export type PromoCode = {
 }
 
 export const organizations: Organization[] = [
-  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved' },
-  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved' },
-  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending' },
+  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 6% 90%' },
+  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 92%' },
+  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending', subdomain: 'jobprep', primaryColor: '25 95% 53%', secondaryColor: '25 15% 94%' },
 ];
 
 
@@ -259,7 +262,7 @@ export const courses: Course[] = [
     imageTitle: 'PCMB',
     classRoutine: [
         { day: 'শনি', subject: 'পদার্থবিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Jubayer Ahmed' },
-        { day: 'রবি', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Sadia Islam' },
+        { day: 'রবি', subject: 'রসায়ন', time: 'সন্ধ্যা ৭:০০', instructorName: 'Dr. Sadia Islam' },
         { day: 'সোম', subject: 'উচ্চতর গণিত', time: 'সন্ধ্যা ৭:০০', instructorName: 'Raihan Chowdhury' },
         { day: 'মঙ্গল', subject: 'জীববিজ্ঞান', time: 'সন্ধ্যা ৭:০০', instructorName: 'Ayesha Khan' },
     ],
