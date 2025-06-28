@@ -1,5 +1,4 @@
 
-
 // This file acts as a mock database, centralizing all content.
 // In a real-world application, this data would come from a database via an API.
 
@@ -97,6 +96,8 @@ export type Assignment = {
   deadline: string;
   status: 'Submitted' | 'Pending' | 'Graded' | 'Late';
   grade?: string;
+  feedback?: string;
+  submissionDate?: string;
 };
 
 export type Course = {
@@ -335,8 +336,10 @@ export const courses: Course[] = [
       },
     ],
     assignments: [
-      { id: 'a1', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Pending' },
-      { id: 'a2', title: 'Lab Safety Report', topic: 'ল্যাবরেটরির নিরাপদ ব্যবহার', deadline: '2024-07-25', status: 'Submitted' },
+      { id: 'a1', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Graded', grade: 'A+', feedback: 'Excellent work! You have a strong grasp of vector concepts. Keep it up.', submissionDate: '2024-07-19' },
+      { id: 'a2', title: 'Lab Safety Report', topic: 'ল্যাবরেটরির নিরাপদ ব্যবহার', deadline: '2024-07-25', status: 'Submitted', submissionDate: '2024-07-24' },
+      { id: 'a3', title: 'Kinematics Problems', topic: 'গতিবিদ্যা', deadline: '2024-08-01', status: 'Pending' },
+      { id: 'a4', title: 'Organic Chemistry Reactions', topic: 'জৈব রসায়ন', deadline: '2024-07-15', status: 'Late' },
     ]
   },
   {
