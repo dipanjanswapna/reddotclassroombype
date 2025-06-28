@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,7 +31,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type User = {
   id: string;
@@ -68,6 +72,55 @@ export default function UserManagementPage() {
   const [users, setUsers] = useState(mockUsers);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const { toast } = useToast();
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  // Form state for the dialog
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState<User['role']>('Student');
+
+  const handleOpenDialog = (user: User | null) => {
+    setEditingUser(user);
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+      setRole(user.role);
+    } else {
+      // Reset for new user
+      setName('');
+      setEmail('');
+      setRole('Student');
+    }
+    setIsDialogOpen(true);
+  };
+  
+  const handleSaveUser = () => {
+    if (!name || !email) {
+      toast({ title: "Missing Information", description: "Please fill out all fields.", variant: "destructive" });
+      return;
+    }
+    if (editingUser) {
+        // Update user
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, name, email, role } : u));
+        toast({ title: "User Updated", description: `Details for ${name} have been updated.` });
+    } else {
+        // Create new user
+        const newUser: User = {
+            id: `usr_new_${Date.now()}`,
+            name,
+            email,
+            role,
+            status: 'Active',
+            joined: new Date().toISOString().split('T')[0]
+        };
+        setUsers([newUser, ...users]);
+        toast({ title: "User Created", description: `${name} has been added to the system.` });
+    }
+    setIsDialogOpen(false);
+  };
+
 
   const handleDeleteUser = () => {
     if (!userToDelete) return;
@@ -93,10 +146,16 @@ export default function UserManagementPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="font-headline text-3xl font-bold tracking-tight">User Management</h1>
-        <p className="mt-1 text-lg text-muted-foreground">View and manage all user accounts on the platform.</p>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-headline text-3xl font-bold tracking-tight">User Management</h1>
+          <p className="mt-1 text-lg text-muted-foreground">View and manage all user accounts on the platform.</p>
+        </div>
+        <Button onClick={() => handleOpenDialog(null)}>
+          <PlusCircle className="mr-2" />
+          Create User
+        </Button>
       </div>
       <Card>
         <CardHeader>
@@ -145,7 +204,7 @@ export default function UserManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem><Eye className="mr-2" />View Profile</DropdownMenuItem>
-                        <DropdownMenuItem><Pencil className="mr-2" />Edit User</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
                         <DropdownMenuItem><AreaChart className="mr-2" />View Activity</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSuspendUser(user)}>
                             {user.status === 'Active' ? 'Suspend User' : 'Activate User'}
@@ -181,6 +240,45 @@ export default function UserManagementPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingUser ? 'Edit User' : 'Create New User'}</DialogTitle>
+              <DialogDescription>
+                {editingUser ? 'Update the details for this user.' : 'Fill in the details for the new user.'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">Name</Label>
+                <Input id="name" value={name} onChange={e => setName(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">Email</Label>
+                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Role</Label>
+                <Select value={role} onValueChange={(v: User['role']) => setRole(v)}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Student">Student</SelectItem>
+                    <SelectItem value="Teacher">Teacher</SelectItem>
+                    <SelectItem value="Guardian">Guardian</SelectItem>
+                    <SelectItem value="Admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+              <Button onClick={handleSaveUser}>Save User</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
     </div>
   );
 }
