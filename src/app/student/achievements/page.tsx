@@ -1,19 +1,14 @@
 
-'use client';
-
 import { mockAchievements, Achievement } from '@/lib/mock-data';
 import type { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Medal, Trophy, Zap, BrainCircuit, BookOpenCheck } from 'lucide-react';
 import React from 'react';
 
-// Metadata can be defined in client components but it's often better in layout or server components.
-// For simplicity, we define it here but acknowledge it won't be applied on the server.
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: 'My Achievements',
   description: 'Track your learning milestones and badges earned on Red Dot Classroom.',
 };
-
 
 const iconMap: { [key in Achievement['icon']]: React.ComponentType<{ className?: string }> } = {
   Medal,

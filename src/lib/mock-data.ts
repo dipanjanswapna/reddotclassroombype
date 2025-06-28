@@ -212,6 +212,15 @@ export type SupportTicket = {
   }[];
 };
 
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin';
+  status: 'Active' | 'Suspended';
+  joined: string;
+};
+
 export const organizations: Organization[] = [
   { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%', hero: { title: 'Welcome to MediShark Academy', subtitle: 'Your gateway to medical excellence. We provide top-tier courses for medical admission tests and professional exams.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'medical students' } },
   { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%', hero: { title: 'ACS: Your Partner in Admission Success', subtitle: 'Guiding you to your dream university with our expert-led courses.', imageUrl: 'https://placehold.co/1200x400.png', dataAiHint: 'university campus' } },
@@ -272,6 +281,14 @@ export const allInstructors: Instructor[] = [
 ];
 
 const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
+
+export const mockUsers: User[] = [
+  { id: 'usr_stud_001', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20' },
+  { id: 'usr_tech_002', name: 'Teacher Name', email: 'teacher@rdc.com', role: 'Teacher', status: 'Active', joined: '2024-03-10' },
+  { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21' },
+  { id: 'usr_admn_004', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
+  { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15' },
+];
 
 export const mockStudents = [
   { id: 's1', name: 'Karim Rahman', email: 'karim@example.com', avatar: 'https://placehold.co/100x100.png' },

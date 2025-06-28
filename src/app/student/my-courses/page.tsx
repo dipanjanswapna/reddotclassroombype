@@ -25,7 +25,7 @@ export default function MyCoursesPage() {
       completedDate: ['2024-05-15', '2024-06-01'][index],
   }));
   
-  const wishlistedCourses = courses.slice(5, 7);
+  const wishlistedCourses = courses.filter(course => course.isWishlisted);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">

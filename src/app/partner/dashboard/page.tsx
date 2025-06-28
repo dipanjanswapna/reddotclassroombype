@@ -6,8 +6,14 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { courses } from '@/lib/mock-data';
+
+// Mock partner ID for demonstration
+const partnerId = 'org_medishark';
 
 export default function PartnerDashboardPage() {
+  const partnerCourses = courses.filter(c => c.organizationId === partnerId);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
@@ -41,7 +47,7 @@ export default function PartnerDashboardPage() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">8</div>
+                <div className="text-2xl font-bold">{partnerCourses.length}</div>
                 <p className="text-xs text-muted-foreground">
                 +2 new this month
                 </p>

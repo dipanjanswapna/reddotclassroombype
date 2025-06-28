@@ -36,23 +36,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { mockUsers, User } from '@/lib/mock-data';
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin';
-  status: 'Active' | 'Suspended';
-  joined: string;
-};
-
-const mockUsers: User[] = [
-  { id: 'usr_stud_001', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20' },
-  { id: 'usr_tech_002', name: 'Teacher Name', email: 'teacher@rdc.com', role: 'Teacher', status: 'Active', joined: '2024-03-10' },
-  { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21' },
-  { id: 'usr_admn_004', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
-  { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15' },
-];
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Student: <GraduationCap className="h-4 w-4" />,

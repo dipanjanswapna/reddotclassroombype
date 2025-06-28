@@ -6,6 +6,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { courses, mockUsers } from '@/lib/mock-data';
 
 export default function AdminDashboardPage() {
   return (
@@ -27,7 +28,7 @@ export default function AdminDashboardPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">10,542</div>
+                <div className="text-2xl font-bold">{mockUsers.length}</div>
                 <p className="text-xs text-muted-foreground">
                 +5% from last month
                 </p>
@@ -41,7 +42,7 @@ export default function AdminDashboardPage() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">150</div>
+                <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
                 +10 new this month
                 </p>
