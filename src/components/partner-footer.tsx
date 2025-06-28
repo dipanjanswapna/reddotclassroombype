@@ -9,7 +9,7 @@ export function PartnerFooter({ partner }: { partner: Organization }) {
         <p>&copy; {new Date().getFullYear()} {partner.name}. All rights reserved.</p>
         <div className="flex items-center justify-center gap-2 mt-2">
             <span>Powered by</span>
-            <Link href="https://rdc.com" className="flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors">
+            <Link href="/" className="flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors">
                 <RdcLogo className="h-5 w-auto" />
                 Red Dot Classroom
             </Link>
