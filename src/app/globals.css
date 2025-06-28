@@ -84,17 +84,17 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
   }
 }
 
 @layer components {
   .hero-carousel-container {
-    @apply relative bg-secondary/50 py-16;
+    @apply relative bg-secondary/50 py-16 overflow-hidden;
   }
 
   .hero-carousel .embla__viewport {
-    @apply overflow-hidden;
+    @apply overflow-visible;
   }
 
   .hero-carousel .embla__container {
