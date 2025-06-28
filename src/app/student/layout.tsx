@@ -35,6 +35,7 @@ import {
   Wallet,
   Bell,
   Crown,
+  Video,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -55,6 +56,7 @@ export default function StudentLayout({
   const academicItems = [
     { href: "/student/deadlines", icon: CalendarClock, label: "Deadlines" },
     { href: "/student/grades", icon: GraduationCap, label: "Grades" },
+    { href: "/student/live-classes", icon: Video, label: "Live Classes" },
     { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
     { href: "/student/planner", icon: BookMarked, label: "Study Planner" },
