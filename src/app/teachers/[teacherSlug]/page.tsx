@@ -54,7 +54,7 @@ export async function generateStaticParams() {
         }));
 }
 
-export default function TeacherProfilePage({ params }: { params: { teacherSlug: string } }) {
+export default async function TeacherProfilePage({ params }: { params: { teacherSlug: string } }) {
   const teacher = getTeacherBySlug(params.teacherSlug);
 
   if (!teacher) {
