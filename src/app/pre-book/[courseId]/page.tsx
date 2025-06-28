@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { notFound, useRouter, useParams } from 'next/navigation';
 import { courses } from '@/lib/mock-data';
-import { Loader2 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function PreBookRedirectPage() {
   const router = useRouter();
@@ -33,10 +33,9 @@ export default function PreBookRedirectPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Redirecting to checkout...</p>
+    <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <LoadingSpinner />
+        <p className="text-muted-foreground">Redirecting to checkout...</p>
     </div>
   );
 }
-
