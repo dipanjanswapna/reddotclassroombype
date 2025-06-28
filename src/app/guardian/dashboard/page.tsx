@@ -1,13 +1,36 @@
 
+'use client';
+
 import {
   User,
   BookOpen,
   BarChart,
+  Book,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { mockUsers, courses } from '@/lib/mock-data';
+
+// Mock current guardian
+const currentGuardianId = 'usr_guar_003';
 
 export default function GuardianDashboardPage() {
+  const guardian = mockUsers.find(u => u.id === currentGuardianId);
+  const student = mockUsers.find(u => u.id === guardian?.linkedStudentId);
+
+  // In a real app, this would be calculated from real data
+  const enrolledCoursesCount = courses.filter(c => c.assignments?.some(a => a.studentId === student?.id)).length || 3;
+  const overallProgress = 75;
+
+  if (!student) {
+      return (
+          <div className="p-4 sm:p-6 lg:p-8">
+             <h1 className="font-headline text-4xl font-bold tracking-tight">Guardian Dashboard</h1>
+             <p className="mt-4 text-muted-foreground">No student is currently linked to your account. Please ask your child to send an invitation from their portal.</p>
+          </div>
+      );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
@@ -27,8 +50,8 @@ export default function GuardianDashboardPage() {
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Student Name</div>
-            <p className="text-xs text-muted-foreground">Class 10</p>
+            <div className="text-2xl font-bold">{student.name}</div>
+            <p className="text-xs text-muted-foreground">{student.className || 'N/A'}</p>
           </CardContent>
         </Card>
         <Card>
@@ -39,8 +62,8 @@ export default function GuardianDashboardPage() {
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">75%</div>
-            <Progress value={75} className="mt-2 h-2" />
+            <div className="text-2xl font-bold">{overallProgress}%</div>
+            <Progress value={overallProgress} className="mt-2 h-2" />
           </CardContent>
         </Card>
         <Card>
@@ -51,7 +74,7 @@ export default function GuardianDashboardPage() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4</div>
+            <div className="text-2xl font-bold">{enrolledCoursesCount}</div>
             <p className="text-xs text-muted-foreground">
               Active enrollments
             </p>

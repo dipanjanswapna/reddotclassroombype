@@ -219,6 +219,9 @@ export type User = {
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin';
   status: 'Active' | 'Suspended';
   joined: string;
+  className?: string; // Add class for student
+  linkedStudentId?: string; // For guardians
+  linkedGuardianId?: string; // For students
 };
 
 export type StudyPlanEvent = {
@@ -292,11 +295,11 @@ export const allInstructors: Instructor[] = [
 const getInst = (id: string) => allInstructors.find(i => i.id === id)!;
 
 export const mockUsers: User[] = [
-  { id: 'usr_stud_001', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20' },
+  { id: 'usr_stud_001', name: 'Student Name', email: 'student@rdc.com', role: 'Student', status: 'Active', joined: '2024-05-20', className: 'Class 12', linkedGuardianId: 'usr_guar_003' },
   { id: 'usr_tech_002', name: 'Teacher Name', email: 'teacher@rdc.com', role: 'Teacher', status: 'Active', joined: '2024-03-10' },
-  { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21' },
+  { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21', linkedStudentId: 'usr_stud_001' },
   { id: 'usr_admn_004', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
-  { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15' },
+  { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15', className: 'Class 11' },
 ];
 
 export const mockStudents = [

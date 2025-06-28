@@ -1,6 +1,8 @@
 
+'use client';
+
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { courses } from '@/lib/mock-data';
+import { courses, mockUsers } from '@/lib/mock-data';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,19 +10,26 @@ export const metadata: Metadata = {
   description: "View all the courses your child is enrolled in at Red Dot Classroom.",
 };
 
+// Mock current guardian
+const currentGuardianId = 'usr_guar_003';
+
 export default function GuardianCoursesPage() {
-    // Mocking the child's enrolled courses. In a real app, this would be fetched based on the guardian-student link.
-    const childsCourses = courses.slice(0, 3).map((course, index) => ({
+    const guardian = mockUsers.find(u => u.id === currentGuardianId);
+    const student = mockUsers.find(u => u.id === guardian?.linkedStudentId);
+
+    // Get courses the linked student is enrolled in (mock logic)
+    const childsCourses = student ? courses.filter(c => c.assignments?.some(a => a.studentId === student.id)).map((course, index) => ({
         ...course,
-        progress: [70, 45, 90][index],
-    }));
+        progress: [70, 45, 90][index], // Still mock progress for simplicity
+    })) : [];
+
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Your Child's Courses</h1>
                 <p className="mt-1 text-lg text-muted-foreground">
-                    An overview of all the courses your child is currently enrolled in.
+                    An overview of all the courses your child, {student?.name || 'N/A'}, is currently enrolled in.
                 </p>
             </div>
             
@@ -34,7 +43,7 @@ export default function GuardianCoursesPage() {
                     </div>
                 ) : (
                      <div className="text-center py-16 bg-muted rounded-lg">
-                        <p className="text-muted-foreground">Your child is not currently enrolled in any courses.</p>
+                        <p className="text-muted-foreground">{student ? `${student.name} is not currently enrolled in any courses.` : 'No student linked to your account.'}</p>
                     </div>
                 )}
             </section>
