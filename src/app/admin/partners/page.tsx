@@ -58,14 +58,14 @@ export default function AdminPartnerManagementPage() {
         </div>
         <Button>
           <PlusCircle className="mr-2" />
-          Add New Partner
+          Invite Partner
         </Button>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>All Partner Organizations</CardTitle>
-          <CardDescription>A list of all partner organizations in the system.</CardDescription>
+          <CardDescription>A list of all partner organizations in the system, including pending applications.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>

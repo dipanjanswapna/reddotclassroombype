@@ -1,3 +1,4 @@
+
 // Central dictionary for internationalization (i18n)
 export const t = {
   // Header
@@ -21,6 +22,9 @@ export const t = {
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
   register: { en: 'Register', bn: 'রেজিস্টার' },
   dashboard: { en: 'Dashboard', bn: 'ড্যাশবোর্ড' },
+  for_partners: { en: 'For Partners', bn: 'পার্টনারদের জন্য' },
+  become_a_partner: { en: 'Become a Partner', bn: 'পার্টনার হন' },
+  partner_login: { en: 'Partner Login', bn: 'পার্টনার লগইন' },
   legal: { en: 'Legal', bn: 'আইন' },
   privacy_policy: { en: 'Privacy Policy', bn: 'প্রাইভেসি পলিসি' },
   terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },

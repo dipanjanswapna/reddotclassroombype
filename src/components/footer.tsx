@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-gray-900 text-gray-400">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div>
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <RdcLogo className="h-10 w-auto" />
@@ -47,6 +47,13 @@ export function Footer() {
               <li><Link href="/login" className="hover:text-white">{t.login[language]}</Link></li>
               <li><Link href="/signup" className="hover:text-white">{t.register[language]}</Link></li>
               <li><Link href="/student/dashboard" className="hover:text-white">{t.dashboard[language]}</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-headline font-semibold mb-4 text-white">{t.for_partners[language]}</h3>
+            <ul className="space-y-2">
+              <li><Link href="/partner-program/apply" className="hover:text-white">{t.become_a_partner[language]}</Link></li>
+              <li><Link href="/login" className="hover:text-white">{t.partner_login[language]}</Link></li>
             </ul>
           </div>
           <div>
