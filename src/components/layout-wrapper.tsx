@@ -7,14 +7,10 @@ import { Header } from '@/components/header';
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isFullPageLayout = 
-    pathname.startsWith('/student') ||
-    pathname.startsWith('/teacher') ||
-    pathname.startsWith('/guardian') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/partner') || // Partner's own dashboard
-    pathname.startsWith('/sites/') ||   // Partner's public site
-    pathname.startsWith('/tutor') ||
+  
+  // These pages have a completely custom layout, no Header or Footer from here.
+  const isFullPageLayout =
+    pathname.startsWith('/sites/') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth/teacher-signup') ||
     pathname.startsWith('/signup') ||
@@ -24,12 +20,20 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   if (isFullPageLayout) {
     return <>{children}</>;
   }
+  
+  // These pages get the Header, but not the Footer.
+  const isDashboardPage = 
+    pathname.startsWith('/student') ||
+    pathname.startsWith('/teacher') ||
+    pathname.startsWith('/guardian') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/partner');
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-grow flex flex-col">{children}</main>
-      <Footer />
+      {!isDashboardPage && <Footer />}
     </div>
   );
 }

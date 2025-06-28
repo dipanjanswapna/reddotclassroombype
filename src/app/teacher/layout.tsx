@@ -17,7 +17,6 @@ import {
 import {
   SidebarProvider,
   Sidebar,
-  SidebarHeader,
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
@@ -26,7 +25,6 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import React from 'react';
@@ -67,25 +65,7 @@ export default function TeacherLayout({
     <SidebarProvider>
       <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
         <Sidebar>
-          <SidebarHeader>
-            <div className="flex items-center gap-2">
-              <Avatar className="size-8">
-                <AvatarImage
-                  src="https://placehold.co/100x100.png"
-                  alt="Teacher Avatar"
-                  data-ai-hint="male teacher"
-                />
-                <AvatarFallback>TA</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold">Teacher Name</span>
-                <span className="text-xs text-muted-foreground">
-                  teacher@rdc.com
-                </span>
-              </div>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="pt-4">
             <SidebarMenu>
               {menuItems.map(item => (
                 <SidebarMenuItem key={item.href}>

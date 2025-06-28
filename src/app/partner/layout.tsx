@@ -4,20 +4,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  User,
-  LayoutDashboard,
   Settings,
   LogOut,
   BookCopy,
   Users as UsersIcon,
   BarChart3,
   Paintbrush,
-  Banknote
+  Banknote,
+  LayoutDashboard
 } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
-  SidebarHeader,
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
@@ -26,12 +24,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React from 'react';
-import { organizations } from '@/lib/mock-data';
-
-// Mocking the current partner for demo purposes
-const currentPartner = organizations[0];
 
 export default function PartnerLayout({
   children,
@@ -59,24 +52,7 @@ export default function PartnerLayout({
     <SidebarProvider>
       <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
         <Sidebar>
-          <SidebarHeader>
-            <div className="flex items-center gap-2">
-              <Avatar className="size-8">
-                <AvatarImage
-                  src={currentPartner.logoUrl}
-                  alt={currentPartner.name}
-                />
-                <AvatarFallback>{currentPartner.name.substring(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold">{currentPartner.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  partner@rdc.com
-                </span>
-              </div>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="pt-4">
             <SidebarMenu>
               {menuItems.map((item) => (
                  <SidebarMenuItem key={item.href}>
