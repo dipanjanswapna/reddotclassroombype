@@ -70,18 +70,21 @@ export default function CourseLayout({
   return (
     <SidebarProvider>
       <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <Sidebar>
-          <SidebarHeader>
-            <div className="p-2">
-                <h2 className="font-semibold text-base">{course.title}</h2>
-                <p className="text-xs text-muted-foreground">by {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
-            </div>
+        <Sidebar collapsible="icon">
+           <SidebarHeader>
+             <div className="p-2 flex items-center justify-between">
+                <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+                    <h2 className="font-semibold text-base truncate">{course.title}</h2>
+                    <p className="text-xs text-muted-foreground">by {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
+                </div>
+                <SidebarTrigger className="hidden md:flex" />
+             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
               {courseNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item.href)}>
+                  <SidebarMenuButton asChild isActive={getIsActive(item.href)} tooltip={item.label}>
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>

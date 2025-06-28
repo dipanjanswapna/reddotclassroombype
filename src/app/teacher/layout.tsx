@@ -18,6 +18,7 @@ import {
 import {
   SidebarProvider,
   Sidebar,
+  SidebarHeader,
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
@@ -29,6 +30,7 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import React from 'react';
+import { RdcLogo } from '@/components/rdc-logo';
 
 export default function TeacherLayout({
   children,
@@ -65,12 +67,18 @@ export default function TeacherLayout({
   return (
     <SidebarProvider>
       <div className="flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <Sidebar>
-          <SidebarContent className="pt-4">
+        <Sidebar collapsible="icon">
+          <SidebarHeader>
+             <div className="p-2 flex items-center justify-between">
+                <RdcLogo className="h-7 w-auto group-data-[collapsible=icon]:hidden" />
+                <SidebarTrigger className="hidden md:flex" />
+             </div>
+          </SidebarHeader>
+          <SidebarContent>
             <SidebarMenu>
               {menuItems.map(item => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={getIsActive(item.href)}>
+                  <SidebarMenuButton asChild isActive={getIsActive(item.href)} tooltip={item.label}>
                      <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
@@ -84,7 +92,7 @@ export default function TeacherLayout({
             <SidebarMenu>
               {footerMenuItems.map(item => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.label}>
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
