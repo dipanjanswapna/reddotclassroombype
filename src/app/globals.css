@@ -84,7 +84,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  section {
+    @apply py-12 sm:py-16 lg:py-20;
   }
 }
 

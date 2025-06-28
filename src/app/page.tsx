@@ -70,7 +70,7 @@ export default function Home() {
       <HeroCarousel banners={homepageConfig.heroBanners} />
       
       {/* Hero Section */}
-      <section className="bg-secondary/50 py-16 lg:py-20" aria-labelledby="hero-heading">
+      <section className="bg-secondary/50" aria-labelledby="hero-heading">
         <div className="container mx-auto px-4">
           <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">শেখার যাত্রা শুরু</h2>
           <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">আপনার সন্তানের উজ্জ্বল ভবিষ্যতের জন্য আমাদের কোর্সগুলোতে ভর্তি করুন। সেরা শিক্ষকমণ্ডলী আর আধুনিক পাঠ্যক্রম নিয়ে আমরা আছি আপনার পাশে।</p>
@@ -86,15 +86,15 @@ export default function Home() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="text-foreground"/>
-                <CarouselNext className="text-foreground"/>
+                <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
+                <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
             </Carousel>
            </div>
         </div>
       </section>
 
       {/* Video Section */}
-      <section className="py-16 lg:py-20" aria-labelledby="video-section-heading">
+      <section aria-labelledby="video-section-heading">
         <div className="container mx-auto px-4 text-center">
             <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title}</h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description}</p>
@@ -115,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* SSC & HSC Section */}
-      <section className="bg-secondary/50 py-16 lg:py-20" aria-labelledby="ssc-hsc-heading">
+      <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">SSC ও HSC</Badge>
               <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">SSC ও HSC শিক্ষার্থীদের জন্য</h2>
@@ -126,7 +126,7 @@ export default function Home() {
       </section>
 
       {/* Masterclass Section */}
-      <section className="py-16 lg:py-20" aria-labelledby="masterclass-heading">
+      <section aria-labelledby="masterclass-heading">
           <div className="container mx-auto px-4 text-center">
               <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">তোমাদের জন্য রয়েছে রেকর্ডেড মাস্টারক্লাস</h2>
                <Carousel opts={{ align: 'start', loop: true }}>
@@ -139,8 +139,8 @@ export default function Home() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="text-foreground"/>
-                <CarouselNext className="text-foreground"/>
+                <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
+                <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
               </Carousel>
               <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                 <Link href="/courses?category=মাস্টার কোর্স">সকল কোর্স দেখুন</Link>
@@ -149,7 +149,7 @@ export default function Home() {
       </section>
 
       {/* Admission Section */}
-      <section className="bg-secondary/50 py-16 lg:py-20" aria-labelledby="admission-heading">
+      <section className="bg-secondary/50" aria-labelledby="admission-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">Admission</Badge>
               <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">আপনার ভার্সিটির সম্পূর্ণ প্রস্তুতি</h2>
@@ -163,7 +163,7 @@ export default function Home() {
       </section>
       
       {/* Job Prep Section */}
-      <section className="py-16 lg:py-20" aria-labelledby="job-prep-heading">
+      <section aria-labelledby="job-prep-heading">
           <div className="container mx-auto px-4 text-center">
               <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">Job Preparation</Badge>
               <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">সরকারি চাকরির সর্বোচ্চ প্রস্তুতি</h2>
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="bg-secondary/50 py-16 lg:py-20" aria-labelledby="why-choose-us-heading">
+      <section className="bg-secondary/50" aria-labelledby="why-choose-us-heading">
         <div className="container mx-auto px-4">
           <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
             {homepageConfig.whyChooseUs.title}
@@ -197,7 +197,7 @@ export default function Home() {
       </section>
 
       {/* Collaborations Section */}
-      <section className="py-16 lg:py-20" aria-labelledby="collaborations-heading">
+      <section aria-labelledby="collaborations-heading">
         <div className="container mx-auto px-4">
           <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
             {homepageConfig.collaborations.title}
@@ -207,7 +207,7 @@ export default function Home() {
       </section>
 
       {/* Social Media Section */}
-      <section className="bg-secondary/30 py-16 lg:py-20" aria-labelledby="social-media-heading">
+      <section className="bg-secondary/30" aria-labelledby="social-media-heading">
         <div className="container mx-auto px-4 text-center">
           <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
             {homepageConfig.socialMediaSection.title}
@@ -257,7 +257,7 @@ export default function Home() {
       </section>
 
       {/* Notes Banner */}
-      <section className="bg-secondary/50 py-16 lg:py-20" aria-labelledby="notes-banner-heading">
+      <section className="bg-secondary/50" aria-labelledby="notes-banner-heading">
         <div className="container mx-auto px-4">
           <Card className="shadow-lg">
             <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
@@ -272,7 +272,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground py-16 lg:py-20" aria-labelledby="stats-heading">
+      <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
         <div className="container mx-auto px-4 text-center">
             <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSectionTitle}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -287,7 +287,7 @@ export default function Home() {
       </section>
 
       {/* App Promo Section */}
-      <section className="py-16 lg:py-20" aria-labelledby="app-promo-heading">
+      <section aria-labelledby="app-promo-heading">
           <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
               <div className="text-center md:text-left">
                 <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">{homepageConfig.appPromo.title}</h2>
