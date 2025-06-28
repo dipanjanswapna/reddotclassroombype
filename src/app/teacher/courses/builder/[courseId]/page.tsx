@@ -21,6 +21,7 @@ import {
   Calendar,
   Archive,
   Megaphone,
+  ClipboardEdit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,9 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { DatePicker } from '@/components/ui/date-picker';
+import { format } from 'date-fns';
 
 
 const allCategories = [...new Set(courses.map(course => course.category))];
@@ -107,6 +111,27 @@ type AnnouncementItem = {
   content: string;
   date: string;
 }
+
+type QuizQuestionData = {
+  id: string;
+  text: string;
+  options: { id: string; text: string }[];
+  correctAnswerId: string;
+};
+
+type QuizData = {
+  id: string;
+  title: string;
+  topic: string;
+  questions: QuizQuestionData[];
+};
+
+type AssignmentData = {
+  id: string;
+  title: string;
+  topic: string;
+  deadline?: Date;
+};
 
 function SortableSyllabusItem({ 
     item,
@@ -243,6 +268,26 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(courseToEdit?.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  
+  const [quizzes, setQuizzes] = useState<QuizData[]>(courseToEdit?.quizzes?.map(q => ({
+    id: q.id,
+    title: q.title,
+    topic: q.topic,
+    questions: q.questions.map(qq => ({
+        id: qq.id,
+        text: qq.text,
+        options: qq.options.map((opt, i) => ({ id: `${qq.id}-opt-${i}`, text: opt })),
+        correctAnswerId: `${qq.id}-opt-${qq.correctAnswer}`
+    }))
+  })) || []);
+
+  const [assignments, setAssignments] = useState<AssignmentData[]>(courseToEdit?.assignments?.map(a => ({
+      id: a.id,
+      title: a.title,
+      topic: a.topic,
+      deadline: new Date(a.deadline)
+  })) || []);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -322,6 +367,46 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
+  const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
+  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
+  const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
+    setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
+  };
+  const addQuestion = (quizId: string) => {
+    setQuizzes(prev => prev.map(q => {
+      if (q.id === quizId) {
+        const newQuestionId = Date.now().toString();
+        const newOptionId = `${newQuestionId}-opt-0`;
+        return { ...q, questions: [...q.questions, { id: newQuestionId, text: '', options: [{id: newOptionId, text: ''}], correctAnswerId: newOptionId }] };
+      }
+      return q;
+    }));
+  };
+  const removeQuestion = (quizId: string, questionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.filter(qu => qu.id !== questionId) } : q));
+  };
+  const updateQuestionText = (quizId: string, questionId: string, text: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, text } : qu) } : q));
+  };
+  const addOption = (quizId: string, questionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : qu) } : q));
+  };
+  const removeOption = (quizId: string, questionId: string, optionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
+  };
+  const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
+  };
+  const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
+  };
+
+  const addAssignment = () => setAssignments(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date() }]);
+  const removeAssignment = (id: string) => setAssignments(prev => prev.filter(a => a.id !== id));
+  const updateAssignment = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
+    setAssignments(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+  };
+
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
     setIncludedCourseIds(prev => {
         if (isChecked) {
@@ -354,7 +439,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
 
   const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements });
+    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
     toast({
       title: "Draft Saved!",
       description: "Your course has been saved as a draft.",
@@ -362,7 +447,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
 
   const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements });
+    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
     toast({
       title: "Submitted for Approval",
       description: "Your course has been submitted and is pending review.",
@@ -372,6 +457,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
+    { id: 'quizzes', label: 'Quizzes', icon: HelpCircle },
+    { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'routine', label: 'Routine', icon: Calendar },
@@ -480,7 +567,85 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 </div>
               </CardContent>
             )}
-            
+
+            {activeTab === 'quizzes' && (
+                <CardContent className="pt-6 space-y-4">
+                    <CardDescription>Create and manage quizzes for this course.</CardDescription>
+                    {quizzes.map((quiz) => (
+                      <Card key={quiz.id} className="bg-muted/50">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-xl">Quiz: {quiz.title}</CardTitle>
+                                <Button variant="ghost" size="icon" onClick={() => removeQuiz(quiz.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <Input value={quiz.title} onChange={e => updateQuiz(quiz.id, 'title', e.target.value)} placeholder="Quiz Title" />
+                                <Input value={quiz.topic} onChange={e => updateQuiz(quiz.id, 'topic', e.target.value)} placeholder="Quiz Topic" />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {quiz.questions.map((q, qIndex) => (
+                                <Collapsible key={q.id} className="p-4 border rounded-md bg-background">
+                                    <div className="flex items-center justify-between">
+                                      <p className="font-semibold">Question {qIndex + 1}</p>
+                                      <div>
+                                        <Button variant="ghost" size="icon" onClick={() => removeQuestion(quiz.id, q.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                        <CollapsibleTrigger asChild>
+                                            <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" /></Button>
+                                        </CollapsibleTrigger>
+                                      </div>
+                                    </div>
+                                    <CollapsibleContent className="mt-4 space-y-2">
+                                        <Label>Question Text</Label>
+                                        <Textarea value={q.text} onChange={e => updateQuestionText(quiz.id, q.id, e.target.value)} />
+                                        <Label>Options (select the correct one)</Label>
+                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectAnswer(quiz.id, q.id, value)}>
+                                            {q.options.map((opt) => (
+                                                <div key={opt.id} className="flex items-center gap-2">
+                                                    <RadioGroupItem value={opt.id} id={opt.id} />
+                                                    <Input value={opt.text} onChange={e => updateOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
+                                                    <Button variant="ghost" size="icon" onClick={() => removeOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                        <Button variant="outline" size="sm" onClick={() => addOption(quiz.id, q.id)}>Add Option</Button>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            ))}
+                            <Button variant="outline" className="w-full border-dashed" onClick={() => addQuestion(quiz.id)}><PlusCircle className="mr-2"/>Add Question</Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addQuiz}><PlusCircle className="mr-2"/>Add New Quiz</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'assignments' && (
+                <CardContent className="pt-6 space-y-4">
+                    <CardDescription>Create and manage assignments for this course.</CardDescription>
+                     {assignments.map(assignment => (
+                        <div key={assignment.id} className="flex items-end gap-2 p-4 border rounded-md">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-title-${assignment.id}`}>Assignment Title</Label>
+                                    <Input id={`as-title-${assignment.id}`} value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-topic-${assignment.id}`}>Topic</Label>
+                                    <Input id={`as-topic-${assignment.id}`} value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
+                                    <DatePicker date={assignment.deadline} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} />
+                                </div>
+                            </div>
+                             <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
+                        </div>
+                     ))}
+                    <Button variant="outline" className="w-full" onClick={addAssignment}><PlusCircle className="mr-2"/>Add New Assignment</Button>
+                </CardContent>
+            )}
+
             {activeTab === 'outcomes' && (
                 <CardContent className="pt-6">
                     <CardDescription className="mb-4">List the key skills and knowledge students will gain from this course.</CardDescription>
