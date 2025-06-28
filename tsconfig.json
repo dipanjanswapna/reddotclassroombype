@@ -25,20 +25,11 @@
       }
     ],
     "paths": {
-      "@/backend/*": [
-        "src/backend/*"
-      ],
-      "@/components/*": [
-        "src/frontend/components/*"
-      ],
-      "@/lib/*": [
-        "src/frontend/lib/*"
-      ],
-      "@/hooks/*": [
-        "src/frontend/hooks/*"
-      ],
       "@/*": [
         "src/frontend/*"
+      ],
+      "@/backend/*": [
+        "src/backend/*"
       ]
     }
   },
