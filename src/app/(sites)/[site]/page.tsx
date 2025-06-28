@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { courses, organizations } from '@/lib/mock-data';
 import { CourseCard } from '@/components/course-card';
@@ -8,13 +9,14 @@ const getPartner = (slug: string) => {
   return organizations.find(org => org.subdomain === slug);
 };
 
-// Create an async version for generateMetadata to satisfy Next.js expectations
-const getPartnerAsync = async (slug: string) => {
-  return organizations.find(org => org.subdomain === slug);
-};
+export async function generateStaticParams() {
+  return organizations.map((org) => ({
+    site: org.subdomain,
+  }));
+}
 
 export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
-  const partner = await getPartnerAsync(params.site);
+  const partner = getPartner(params.site);
 
   if (!partner) {
     return {
