@@ -1,21 +1,18 @@
 
-
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-  Users,
-  BookCopy,
-  UserCog,
-  AreaChart,
+  User,
+  LayoutDashboard,
   Settings,
   LogOut,
-  LayoutDashboard,
-  DollarSign,
-  Home,
-  TicketPercent,
-  CalendarPlus,
-  Handshake,
+  BookCopy,
+  Users as UsersIcon,
+  BarChart3,
+  Paintbrush,
+  Banknote
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -30,34 +27,33 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { usePathname } from 'next/navigation';
 import React from 'react';
+import { organizations } from '@/lib/mock-data';
 
+// Mocking the current partner for demo purposes
+const currentPartner = organizations[0];
 
-export default function AdminLayout({
+export default function PartnerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-    const pathname = usePathname();
+  const pathname = usePathname();
 
-    const menuItems = [
-        { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { href: "/admin/homepage", icon: Home, label: "Homepage" },
-        { href: "/admin/users", icon: Users, label: "User Management" },
-        { href: "/admin/partners", icon: Handshake, label: "Partner Management" },
-        { href: "/admin/courses", icon: BookCopy, label: "Course Management" },
-        { href: "/admin/teachers", icon: UserCog, label: "Teacher Management" },
-        { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
-        { href: "#", icon: CalendarPlus, label: "Pre-bookings" },
-        { href: "#", icon: DollarSign, label: "Financials" },
-        { href: "#", icon: AreaChart, label: "Reports" },
-    ];
+  const menuItems = [
+    { href: "/partner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/partner/courses", icon: BookCopy, label: "Courses" },
+    { href: "/partner/teachers", icon: UsersIcon, label: "Teachers" },
+    { href: "/partner/students", icon: UsersIcon, label: "Students" },
+    { href: "/partner/analytics", icon: BarChart3, label: "Analytics" },
+    { href: "/partner/payouts", icon: Banknote, label: "Payouts" },
+    { href: "/partner/branding", icon: Paintbrush, label: "Branding" },
+  ];
 
-    const footerMenuItems = [
-        { href: "#", icon: Settings, label: "Settings" },
-        { href: "/", icon: LogOut, label: "Logout" },
-    ];
+  const footerMenuItems = [
+    { href: "#", icon: Settings, label: "Settings" },
+    { href: "/", icon: LogOut, label: "Logout" },
+  ];
 
   return (
     <SidebarProvider>
@@ -67,26 +63,25 @@ export default function AdminLayout({
             <div className="flex items-center gap-2">
               <Avatar className="size-8">
                 <AvatarImage
-                  src="https://placehold.co/100x100.png"
-                  alt="Admin Avatar"
-                  data-ai-hint="administrator"
+                  src={currentPartner.logoUrl}
+                  alt={currentPartner.name}
                 />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarFallback>{currentPartner.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">Admin Name</span>
+                <span className="text-sm font-semibold">{currentPartner.name}</span>
                 <span className="text-xs text-muted-foreground">
-                  admin@rdc.com
+                  partner@rdc.com
                 </span>
               </div>
             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-               {menuItems.map(item => (
-                <SidebarMenuItem key={item.href}>
+              {menuItems.map((item) => (
+                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
-                     <Link href={item.href}>
+                    <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
                     </Link>
@@ -97,10 +92,10 @@ export default function AdminLayout({
           </SidebarContent>
           <SidebarFooter>
             <SidebarMenu>
-             {footerMenuItems.map(item => (
+              {footerMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.href}>
+                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
                     </Link>
@@ -113,7 +108,7 @@ export default function AdminLayout({
         <SidebarInset>
            <div className="md:hidden flex items-center border-b p-2">
               <SidebarTrigger />
-              <span className="font-semibold text-base ml-2">Admin Portal</span>
+              <span className="font-semibold text-base ml-2">Partner Portal</span>
             </div>
           {children}
         </SidebarInset>

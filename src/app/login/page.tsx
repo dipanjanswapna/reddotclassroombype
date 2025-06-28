@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from 'next/link';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { GraduationCap, Shield, UserCog, UserSquare } from 'lucide-react';
+import { GraduationCap, Handshake, Shield, UserCog, UserSquare } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 
@@ -79,13 +80,19 @@ export default function LoginPage() {
                   {t.teacher[language]}
                 </Link>
               </Button>
+               <Button variant="outline" asChild>
+                <Link href="/partner/dashboard">
+                  <Handshake className="mr-2 h-4 w-4" />
+                  Partner
+                </Link>
+              </Button>
               <Button variant="outline" asChild>
                 <Link href="/guardian/dashboard">
                   <Shield className="mr-2 h-4 w-4" />
                   {t.guardian[language]}
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="col-span-2">
                 <Link href="/admin/dashboard">
                   <UserCog className="mr-2 h-4 w-4" />
                   {t.admin[language]}

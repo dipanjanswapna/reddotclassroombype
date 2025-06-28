@@ -39,6 +39,13 @@ export type Review = {
   date: string;
 };
 
+export type Organization = {
+  id: string;
+  name: string;
+  logoUrl: string;
+  status: 'approved' | 'pending' | 'rejected';
+};
+
 export type Instructor = {
   id: string;
   name: string;
@@ -53,6 +60,7 @@ export type Instructor = {
     facebook?: string;
     twitter?: string;
   }
+  organizationId?: string;
 }
 
 export type Course = {
@@ -82,6 +90,8 @@ export type Course = {
   isPrebooking?: boolean;
   prebookingPrice?: string;
   prebookingEndDate?: string;
+  organizationId?: string;
+  organizationName?: string;
 };
 
 
@@ -107,6 +117,12 @@ export type PromoCode = {
   createdBy: 'admin' | string; // admin or teacherId
 }
 
+export const organizations: Organization[] = [
+  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved' },
+  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved' },
+  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending' },
+];
+
 
 // Master list of all instructors in the platform
 export const allInstructors: Instructor[] = [
@@ -121,6 +137,7 @@ export const allInstructors: Instructor[] = [
         id: 'ins-si', name: 'Dr. Sadia Islam', title: 'Medical Admission Specialist', 
         avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female doctor',
         slug: 'sadia-islam', status: 'Approved',
+        organizationId: 'org_medishark',
         bio: 'Sadia is a doctor and an experienced instructor who has helped hundreds of students get into their dream medical colleges. Her expertise is in Biology and Chemistry.',
         socials: { linkedin: '#'}
     },
@@ -135,6 +152,7 @@ export const allInstructors: Instructor[] = [
         id: 'ins-ak', name: 'Ayesha Khan', title: 'Data Scientist & Bank Job Mentor', 
         avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'female programmer',
         slug: 'ayesha-khan', status: 'Pending Approval',
+        organizationId: 'org_jobprep',
         bio: 'Ayesha is a professional data scientist working in the tech industry, with a passion for teaching and sharing her knowledge. She also mentors students for bank job preparations.',
         socials: { twitter: '#'}
     },
@@ -142,6 +160,7 @@ export const allInstructors: Instructor[] = [
         id: 'ins-fm', name: 'Farhan Mahmud', title: 'Experienced SSC & DU Admission Tutor', 
         avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male teacher',
         slug: 'farhan-mahmud', status: 'Approved',
+        organizationId: 'org_acs',
         bio: 'Farhan has been teaching for over 12 years and specializes in preparing students for public exams like SSC and Dhaka University admission tests.',
     },
     { 
@@ -260,6 +279,8 @@ export const courses: Course[] = [
     title: 'Admission Test Prep (Medical)',
     description: 'A comprehensive course designed to help you ace the medical admission tests with in-depth lessons, practice questions, and mock tests.',
     status: 'Published',
+    organizationId: 'org_medishark',
+    organizationName: 'MediShark',
     instructors: [
        getInst('ins-si'),
        { id: 'ins-ka', name: 'Dr. Karim Ahmed', title: 'Chemistry', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'male doctor', slug: 'karim-ahmed', status: 'Approved', bio: 'Bio for Karim' },
@@ -673,6 +694,8 @@ export const courses: Course[] = [
     title: 'University (Ka unit) Admission',
     description: 'A complete guide for Dhaka University Ka-unit admission test. Prepare with the best mentors and materials.',
     status: 'Published',
+    organizationId: 'org_acs',
+    organizationName: 'ACS Group',
     instructors: [
        getInst('ins-fm'),
     ],
@@ -749,6 +772,8 @@ export const courses: Course[] = [
     title: 'Bank Job Preparation',
     description: 'A complete course for bank job seekers. Cover math, english, general knowledge and analytical skills.',
     status: 'Published',
+    organizationId: 'org_jobprep',
+    organizationName: 'Job Prep Inc.',
     instructors: [
        getInst('ins-ak'),
     ],
@@ -1074,7 +1099,7 @@ export const mockGrades = [
   },
   {
     id: 'g5',
-    courseName: 'Data Science with Python',
+    title: 'Data Science with Python',
     assignmentName: 'Project 1: Pandas Data Analysis',
     score: 95,
     grade: 'A+',

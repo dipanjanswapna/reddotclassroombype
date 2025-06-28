@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -19,8 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
+import { organizations } from "@/lib/mock-data";
 
-type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'unknown';
+type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'partner' | 'unknown';
 
 const getUserDetails = (pathname: string) => {
   if (pathname.startsWith('/student')) {
@@ -65,6 +67,18 @@ const getUserDetails = (pathname: string) => {
       initials: "AN",
       dashboardLink: "/admin/dashboard",
       aiHint: "administrator"
+    };
+  }
+   if (pathname.startsWith('/partner')) {
+    const partner = organizations[0];
+    return {
+      role: 'partner' as UserRole,
+      name: partner.name,
+      email: "partner@rdc.com",
+      avatar: partner.logoUrl,
+      initials: partner.name.substring(0,2),
+      dashboardLink: "/partner/dashboard",
+      aiHint: "company logo"
     };
   }
   // Default fallback

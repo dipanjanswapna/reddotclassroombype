@@ -1,24 +1,26 @@
 
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Course } from "@/lib/mock-data";
+import { Course, organizations } from "@/lib/mock-data";
 import { Button } from "./ui/button";
 
 type CourseCardProps = Partial<Course>;
 
-export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate }: CourseCardProps) {
+export function CourseCard({ id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, organizationName }: CourseCardProps) {
   if (!id || !title || !imageUrl) {
     return null;
   }
   
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
+  const provider = organizations.find(o => o.id === organizationId);
 
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
       <CardHeader className="p-0 overflow-hidden relative">
-        <Link href={`/courses/${id}`}>
+        <Link href={`/courses/${id}`} className="block overflow-hidden">
           <Image
             src={imageUrl}
             alt={title}
@@ -35,7 +37,13 @@ export function CourseCard({ id, title, instructors, imageUrl, category, price, 
         <Link href={`/courses/${id}`}>
           <h3 className="font-headline text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</h3>
         </Link>
-        {instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>}
+        {provider && (
+           <div className="flex items-center gap-2 mt-2">
+            <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full"/>
+            <p className="text-xs text-muted-foreground">By {provider.name}</p>
+          </div>
+        )}
+        {!provider && instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>}
       </CardContent>
       <CardFooter className="p-4 pt-0">
         {isPrebookingActive ? (

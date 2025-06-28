@@ -1,11 +1,12 @@
 
+
 "use client";
 
 import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
-import { courses, Course } from '@/lib/mock-data';
+import { courses, Course, organizations } from '@/lib/mock-data';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
 import { useSearchParams } from 'next/navigation';
@@ -47,6 +48,7 @@ export default function CoursesPage() {
 
   const selectedCategory = searchParams?.get('category');
   const selectedSubCategory = searchParams?.get('subCategory');
+  const selectedProvider = searchParams?.get('provider');
 
   let filteredCourses = activeCourses;
 
@@ -60,8 +62,13 @@ export default function CoursesPage() {
       (course) => course.subCategory === selectedSubCategory
     );
   }
+   if (selectedProvider) {
+    filteredCourses = filteredCourses.filter(
+      (course) => course.organizationId === selectedProvider
+    );
+  }
   
-  const hasFilters = selectedCategory || selectedSubCategory;
+  const hasFilters = selectedCategory || selectedSubCategory || selectedProvider;
   
   const coursesByCategory = groupCoursesByCategory(filteredCourses);
 
@@ -75,6 +82,7 @@ export default function CoursesPage() {
   
   const allCategories = [...new Set(activeCourses.map(course => course.category))].sort();
   const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
+  const allProviders = organizations.filter(org => org.status === 'approved');
 
   return (
     <div className="bg-background">
@@ -101,7 +109,7 @@ export default function CoursesPage() {
             </div>
           </div>
         </div>
-        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} />
+        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
       <main className="container mx-auto px-4 py-16">

@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -6,21 +7,25 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, X } from 'lucide-react';
 import React from 'react';
+import { Organization } from '@/lib/mock-data';
 
 type CourseFilterBarProps = {
   categories: string[];
   subCategories: string[];
+  providers: Organization[];
 };
 
-export function CourseFilterBar({ categories, subCategories }: CourseFilterBarProps) {
+export function CourseFilterBar({ categories, subCategories, providers }: CourseFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const selectedCategory = searchParams.get('category');
   const selectedSubCategory = searchParams.get('subCategory');
+  const selectedProvider = searchParams.get('provider');
+  const providerName = providers.find(p => p.id === selectedProvider)?.name;
 
-  const handleSelect = (type: 'category' | 'subCategory', value: string) => {
+  const handleSelect = (type: 'category' | 'subCategory' | 'provider', value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     if (value === 'all') {
@@ -76,8 +81,25 @@ export function CourseFilterBar({ categories, subCategories }: CourseFilterBarPr
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+         <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="border-dashed">
+              {providerName || 'Provider'}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onSelect={() => handleSelect('provider', 'all')}>All Providers</DropdownMenuItem>
+            {providers.map((provider) => (
+              <DropdownMenuItem key={provider.id} onSelect={() => handleSelect('provider', provider.id)}>
+                {provider.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         
-        {(selectedCategory || selectedSubCategory) && (
+        {(selectedCategory || selectedSubCategory || selectedProvider) && (
             <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearFilters}>
                 <X className="mr-1 h-4 w-4" />
                 ফিল্টার মুছুন
