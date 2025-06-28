@@ -20,12 +20,13 @@ import {
   Users,
   Calendar,
   Archive,
+  Megaphone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -98,6 +99,13 @@ type ClassRoutineItem = {
   subject: string;
   time: string;
   instructorName?: string;
+}
+
+type AnnouncementItem = {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
 }
 
 function SortableSyllabusItem({ 
@@ -232,6 +240,9 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
   const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(courseToEdit?.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
+  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
+  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -321,8 +332,29 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     });
   };
 
+  const handlePostAnnouncement = () => {
+    if (!newAnnouncementTitle || !newAnnouncementContent) {
+      toast({ title: 'Error', description: 'Title and content cannot be empty.', variant: 'destructive' });
+      return;
+    }
+    const newAnnouncement: AnnouncementItem = {
+      id: Date.now().toString(),
+      title: newAnnouncementTitle,
+      content: newAnnouncementContent,
+      date: new Date().toISOString().split('T')[0],
+    };
+    setAnnouncements(prev => [newAnnouncement, ...prev]);
+    setNewAnnouncementTitle('');
+    setNewAnnouncementContent('');
+    toast({ title: 'Success', description: 'Announcement posted.' });
+  };
+
+  const removeAnnouncement = (id: string) => {
+    setAnnouncements(prev => prev.filter(a => a.id !== id));
+  };
+
   const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
+    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements });
     toast({
       title: "Draft Saved!",
       description: "Your course has been saved as a draft.",
@@ -330,7 +362,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
 
   const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
+    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements });
     toast({
       title: "Submitted for Approval",
       description: "Your course has been submitted and is pending review.",
@@ -344,6 +376,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'media', label: 'Media', icon: CloudUpload },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'bundles', label: 'Bundles', icon: Archive },
@@ -550,6 +583,56 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 </CardContent>
             )}
             
+            {activeTab === 'announcements' && (
+                <CardContent className="pt-6 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Post a New Announcement</CardTitle>
+                            <CardDescription>This will be visible to all students enrolled in this course.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="ann-title">Title</Label>
+                                <Input id="ann-title" value={newAnnouncementTitle} onChange={e => setNewAnnouncementTitle(e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="ann-content">Content</Label>
+                                <Textarea id="ann-content" value={newAnnouncementContent} onChange={e => setNewAnnouncementContent(e.target.value)} rows={4} />
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={handlePostAnnouncement}>Post Announcement</Button>
+                        </CardFooter>
+                    </Card>
+
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold">Posted Announcements</h3>
+                        {announcements.length > 0 ? (
+                            announcements.map(ann => (
+                                <Card key={ann.id} className="bg-muted/50">
+                                    <CardHeader>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle className="text-lg">{ann.title}</CardTitle>
+                                                <CardDescription>Posted on {ann.date}</CardDescription>
+                                            </div>
+                                            <Button variant="ghost" size="icon" onClick={() => removeAnnouncement(ann.id)}>
+                                                <X className="text-destructive h-4 w-4"/>
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="whitespace-pre-wrap">{ann.content}</p>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No announcements posted yet.</p>
+                        )}
+                    </div>
+                </CardContent>
+            )}
+
             {activeTab === 'faq' && (
                  <CardContent className="pt-6">
                     <CardDescription className="mb-4">Add frequently asked questions to help students.</CardDescription>

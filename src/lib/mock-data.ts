@@ -103,6 +103,13 @@ export type Assignment = {
   submissionText?: string;
 };
 
+export type Announcement = {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+};
+
 export type Course = {
   id: string;
   title: string;
@@ -134,6 +141,7 @@ export type Course = {
   organizationName?: string;
   quizzes?: Quiz[];
   assignments?: Assignment[];
+  announcements?: Announcement[];
 };
 
 
@@ -351,7 +359,11 @@ export const courses: Course[] = [
       { id: 'a3', studentId: 's1', studentName: 'Karim Rahman', title: 'Kinematics Problems', topic: 'গতিবিদ্যা', deadline: '2024-08-01', status: 'Pending' },
       { id: 'a4', studentId: 's3', studentName: 'Jamal Uddin', title: 'Organic Chemistry Reactions', topic: 'জৈব রসায়ন', deadline: '2024-07-15', status: 'Late', submissionText: 'Sorry for the late submission.' },
       { id: 'a5', studentId: 's4', studentName: 'Nadia Islam', title: 'Vector Problem Set', topic: 'ভেক্টর', deadline: '2024-07-20', status: 'Submitted', submissionDate: '2024-07-18', submissionText: 'My submission for the vector assignment.'}
-    ]
+    ],
+    announcements: [
+        { id: 'ann1', title: 'Welcome to the Course!', content: 'Welcome everyone to the HSC 2025 Crash Course! We are excited to start this journey with you. Please check the routine and join the first class on time.', date: '2024-07-01' },
+        { id: 'ann2', title: 'Class Rescheduled', content: 'The Physics class scheduled for July 5th has been rescheduled to July 6th at the same time due to unavoidable circumstances. We apologize for the inconvenience.', date: '2024-07-03' }
+    ],
   },
   {
     id: '2',
