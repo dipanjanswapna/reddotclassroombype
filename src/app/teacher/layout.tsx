@@ -45,7 +45,7 @@ export default function TeacherLayout({
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
     { href: "#", icon: CalendarPlus, label: "Pre-bookings" },
-    { href: "#", icon: DollarSign, label: "Earnings" },
+    { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
   ];
 
   const footerMenuItems = [
