@@ -151,6 +151,7 @@ export type Course = {
   assignments?: Assignment[];
   announcements?: Announcement[];
   isWishlisted?: boolean;
+  communityUrl?: string;
 };
 
 
@@ -373,6 +374,7 @@ export const courses: Course[] = [
         { id: 'ann1', title: 'Welcome to the Course!', content: 'Welcome everyone to the HSC 2025 Crash Course! We are excited to start this journey with you. Please check the routine and join the first class on time.', date: '2024-07-01' },
         { id: 'ann2', title: 'Class Rescheduled', content: 'The Physics class scheduled for July 5th has been rescheduled to July 6th at the same time due to unavoidable circumstances. We apologize for the inconvenience.', date: '2024-07-03' }
     ],
+    communityUrl: 'https://www.facebook.com/groups/rdc.community.hsc25',
   },
   {
     id: '2',
@@ -427,7 +429,8 @@ export const courses: Course[] = [
         { question: 'মেডিকেল ভর্তি পরীক্ষার জন্য যোগ্যতা কী?', answer: 'সাধারণত এসএসসি এবং এইচএসসিতে জীববিজ্ঞানসহ নির্দিষ্ট জিপিএ প্রয়োজন হয়। বিস্তারিত সার্কুলারে উল্লেখ থাকে।' },
         { question: 'নেগেটিভ মার্কিং আছে কি?', answer: 'হ্যাঁ, মেডিকেল ভর্তি পরীক্ষায় প্রতিটি ভুল উত্তরের জন্য ০.২৫ নম্বর কাটা হয়।' },
         { question: 'এই কোর্সের ক্লাসগুলো রেকর্ডেড থাকবে?', answer: 'হ্যাঁ, প্রতিটি লাইভ ক্লাসের রেকর্ডিং আপনার ড্যাশবোর্ডে পাওয়া যাবে।' }
-    ]
+    ],
+    communityUrl: 'https://www.facebook.com/groups/rdc.community.medical',
   },
   {
     id: '3',
