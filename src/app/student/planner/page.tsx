@@ -9,7 +9,7 @@ import { PlusCircle, BookMarked, Video, FileText, BrainCircuit, CheckCircle } fr
 import { mockStudyPlan, StudyPlanEvent, courses } from '@/lib/mock-data';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
