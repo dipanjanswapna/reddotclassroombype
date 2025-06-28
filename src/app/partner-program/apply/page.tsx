@@ -48,10 +48,10 @@ export default function PartnerApplicationPage() {
                 <Input id="logo-url" placeholder="https://yourcompany.com/logo.png" required />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="subdomain">Preferred Subdomain</Label>
+                <Label htmlFor="subdomain">Preferred Site Path</Label>
                 <div className="flex items-center">
-                    <Input id="subdomain" placeholder="your-company" className="rounded-r-none" required />
-                    <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-input bg-secondary text-sm text-muted-foreground">.rdc.com</span>
+                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">rdc.com/sites/</span>
+                    <Input id="subdomain" placeholder="your-company-name" className="rounded-l-none" required />
                 </div>
                 <p className="text-xs text-muted-foreground">This will be your dedicated portal address.</p>
             </div>

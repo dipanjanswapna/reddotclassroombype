@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { organizations } from '@/lib/mock-data';
 
 export const config = {
   matcher: [
@@ -14,34 +13,10 @@ export const config = {
   ],
 };
 
+// This middleware is now a pass-through.
+// The path-based multi-tenancy is handled by the file system routing (`/sites/[site]`).
+// This file is kept to avoid breaking changes if it was previously used,
+// but it no longer contains active logic.
 export default async function middleware(req: NextRequest) {
-  const url = req.nextUrl;
-  const hostname = req.headers.get('host') || 'www.rdc.com';
-
-  // NOTE: This is for local development. In production, you'd use your actual domain.
-  const mainDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost';
-
-  // Extract hostname and potential port
-  const [currentHost, ] = hostname.split(':');
-
-  if (!currentHost.endsWith(mainDomain)) {
-    // If it's a completely different domain, do nothing.
-     return NextResponse.next();
-  }
-
-  const subdomain = currentHost.endsWith(`.${mainDomain}`) 
-    ? currentHost.replace(`.${mainDomain}`, '') 
-    : null;
-
-  if (subdomain && subdomain !== 'www') {
-    const partner = organizations.find((org) => org.subdomain === subdomain);
-    
-    if (partner) {
-      // Rewrite to the partner site route group
-      const newPath = `/(sites)/${partner.subdomain}${url.pathname}`;
-      return NextResponse.rewrite(new URL(newPath, req.url));
-    }
-  }
-
   return NextResponse.next();
 }

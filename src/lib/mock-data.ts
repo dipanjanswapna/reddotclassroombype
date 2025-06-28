@@ -121,9 +121,9 @@ export type PromoCode = {
 }
 
 export const organizations: Organization[] = [
-  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 6% 90%' },
-  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 92%' },
-  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending', subdomain: 'jobprep', primaryColor: '25 95% 53%', secondaryColor: '25 15% 94%' },
+  { id: 'org_medishark', name: 'MediShark', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'medishark', primaryColor: '211 100% 50%', secondaryColor: '210 40% 98%' },
+  { id: 'org_acs', name: 'ACS Group', logoUrl: 'https://placehold.co/100x100.png', status: 'approved', subdomain: 'acs', primaryColor: '142 76% 36%', secondaryColor: '142 10% 95%' },
+  { id: 'org_jobprep', name: 'Job Prep Inc.', logoUrl: 'https://placehold.co/100x100.png', status: 'pending', subdomain: 'jobprep', primaryColor: '45 95% 51%', secondaryColor: '45 100% 95%' },
 ];
 
 

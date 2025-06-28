@@ -27,20 +27,11 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
 
   const getPartnerUrl = (item: CollaborationItem) => {
     const partner = organizations.find(org => org.name === item.name);
-    if (!partner || !partner.subdomain) {
-      return item.cta.href; // Fallback to the href from data if no partner match
+    if (partner?.subdomain) {
+      return `/sites/${partner.subdomain}`;
     }
-
-    // This logic works for both localhost (e.g., localhost:9002) and production domains (e.g., rdc.com or www.rdc.com)
-    if (typeof window !== 'undefined') {
-      const { protocol, host } = window.location;
-      // Replace the initial part of the host (www or nothing) with the subdomain
-      const mainDomain = host.replace(/^(www\.)?/, '');
-      return `${protocol}//${partner.subdomain}.${mainDomain}`;
-    }
-    
-    // Fallback for SSR, though this component is client-side.
-    return `https://${partner.subdomain}.rdc.com`; 
+    // Fallback if no partner is found or subdomain is not set
+    return item.cta.href;
   };
 
 
@@ -89,7 +80,7 @@ export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }
                     )}
                   </div>
                   <Button asChild variant="outline" className="w-full">
-                    <Link href={getPartnerUrl(item)} target="_blank" rel="noopener noreferrer">
+                    <Link href={getPartnerUrl(item)}>
                       <ExternalLink className="mr-2 h-4 w-4" />
                       {typeof item.cta.text === 'object' ? item.cta.text[language] : item.cta.text}
                     </Link>
