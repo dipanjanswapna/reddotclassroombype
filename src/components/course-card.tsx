@@ -1,4 +1,5 @@
 
+'use client';
 
 import Image from "next/image";
 import Link from "next/link";
@@ -6,13 +7,17 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Course, organizations } from "@/lib/mock-data";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import { Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
 };
 
 export function CourseCard(props: CourseCardProps) {
-  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain } = props;
+  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain, isWishlisted: initialIsWishlisted } = props;
+  const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted || false);
 
   if (!id || !title || !imageUrl) {
     return null;
@@ -38,6 +43,18 @@ export function CourseCard(props: CourseCardProps) {
             data-ai-hint={dataAiHint}
           />
         </Link>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 bg-white/70 hover:bg-white rounded-full h-8 w-8 z-10"
+            onClick={(e) => {
+                e.preventDefault();
+                setIsWishlisted(!isWishlisted)
+            }}
+        >
+            <Heart className={cn("w-4 h-4", isWishlisted ? "text-destructive fill-destructive" : "text-muted-foreground")} />
+            <span className="sr-only">Add to wishlist</span>
+        </Button>
         {isPrebookingActive && <Badge className="absolute top-2 left-2" variant="warning">Pre-booking</Badge>}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
@@ -76,3 +93,5 @@ export function CourseCard(props: CourseCardProps) {
     </Card>
   );
 }
+
+    

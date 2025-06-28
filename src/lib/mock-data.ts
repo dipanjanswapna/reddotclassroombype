@@ -142,6 +142,7 @@ export type Course = {
   quizzes?: Quiz[];
   assignments?: Assignment[];
   announcements?: Announcement[];
+  isWishlisted?: boolean;
 };
 
 
@@ -689,6 +690,7 @@ export const courses: Course[] = [
     title: 'Graphic Design Fundamentals',
     description: 'Learn the basics of graphic design including Photoshop, Illustrator, and Figma. Build a strong portfolio to start your design career.',
     status: 'Published',
+    isWishlisted: true,
     instructors: [
        getInst('ins-si'),
     ],
@@ -829,6 +831,7 @@ export const courses: Course[] = [
     title: 'BCS Preliminary Course',
     description: 'Prepare for the BCS preliminary exam with our comprehensive course covering all subjects.',
     status: 'Published',
+    isWishlisted: true,
     instructors: [
        getInst('ins-rc'),
     ],
@@ -1209,3 +1212,5 @@ export const mockGrades = [
     date: '2024-06-05',
   },
 ];
+
+    

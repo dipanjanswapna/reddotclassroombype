@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   description: 'Your saved courses on Red Dot Classroom. Enroll when you are ready.',
 };
 
-const wishlistedCourses = courses.slice(5, 9);
-
 export default function WishlistPage() {
+  const wishlistedCourses = courses.filter(course => course.isWishlisted);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
@@ -31,10 +31,13 @@ export default function WishlistPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
+        <div className="text-center py-16 bg-muted rounded-lg">
+          <Heart className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground">Your wishlist is empty. Browse courses and save them for later!</p>
         </div>
       )}
     </div>
   );
 }
+
+    

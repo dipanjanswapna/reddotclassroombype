@@ -9,6 +9,7 @@ import {
   PlayCircle,
   Star,
   BookOpen,
+  Heart,
 } from 'lucide-react';
 import {
   Accordion,
@@ -33,6 +34,8 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const getCourseById = (id: string) => {
   return courses.find((course) => course.id === id);
@@ -50,6 +53,8 @@ export default function CourseDetailPage({
   if (!course) {
     notFound();
   }
+  
+  const [isWishlisted, setIsWishlisted] = useState(course.isWishlisted || false);
 
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
@@ -104,11 +109,17 @@ export default function CourseDetailPage({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
-                    <Link href={isPrebookingActive ? `/pre-book/${course.id}` : `/checkout/${course.id}`}>
-                        {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
-                    </Link>
-                  </Button>
+                  <div className="flex w-full items-center gap-2">
+                    <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+                        <Link href={isPrebookingActive ? `/pre-book/${course.id}` : `/checkout/${course.id}`}>
+                            {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
+                        </Link>
+                    </Button>
+                    <Button size="lg" variant="outline" className="px-3" onClick={() => setIsWishlisted(!isWishlisted)}>
+                        <Heart className={cn("w-5 h-5", isWishlisted && "fill-destructive text-destructive")} />
+                        <span className="sr-only">Add to wishlist</span>
+                    </Button>
+                  </div>
                   <div className="mt-6">
                     <h3 className="font-headline font-semibold mb-3">
                       এই কোর্সে যা যা থাকছে
@@ -322,3 +333,5 @@ export default function CourseDetailPage({
     </div>
   );
 }
+
+    
