@@ -1,4 +1,5 @@
 
+
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * This file contains a central dictionary of translations for the application.
@@ -49,6 +50,8 @@ export const t = {
   teacher: { en: 'Teacher', bn: 'শিক্ষক' },
   guardian: { en: 'Guardian', bn: 'অভিভাবক' },
   admin: { en: 'Admin', bn: 'অ্যাডমিন' },
+  affiliate: { en: 'Affiliate', bn: 'অ্যাফিলিয়েট' },
+  moderator: { en: 'Moderator', bn: 'মডারেটর' },
   or_continue_with: { en: 'Or continue with', bn: 'অথবা ادامه দিন' },
   login_with_google: { en: 'Login with Google', bn: 'Google দিয়ে লগইন করুন' },
   no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },

@@ -22,7 +22,7 @@ import {
 import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
 import { organizations, allInstructors, mockUsers } from "@/lib/mock-data";
 
-type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'partner' | 'unknown';
+type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'partner' | 'affiliate' | 'moderator' | 'unknown';
 
 const getUserDetails = (pathname: string) => {
   if (pathname.startsWith('/student')) {
@@ -88,6 +88,32 @@ const getUserDetails = (pathname: string) => {
       dashboardLink: "/partner/dashboard",
       profileLink: "/partner/settings",
       aiHint: "company logo"
+    };
+  }
+  if (pathname.startsWith('/affiliate')) {
+    const user = mockUsers.find(u => u.role === 'Affiliate');
+    return {
+      role: 'affiliate' as UserRole,
+      name: user?.name || "Affiliate User",
+      email: user?.email || "affiliate@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "AU",
+      dashboardLink: "/affiliate/dashboard",
+      profileLink: "/affiliate/profile",
+      aiHint: "marketing person"
+    };
+  }
+  if (pathname.startsWith('/moderator')) {
+    const user = mockUsers.find(u => u.role === 'Moderator');
+    return {
+      role: 'moderator' as UserRole,
+      name: user?.name || "Moderator User",
+      email: user?.email || "moderator@rdc.com",
+      avatar: "https://placehold.co/100x100.png",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "MU",
+      dashboardLink: "/moderator/dashboard",
+      profileLink: "/moderator/profile",
+      aiHint: "support person"
     };
   }
   // Default fallback

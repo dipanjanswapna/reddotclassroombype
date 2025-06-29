@@ -1,0 +1,85 @@
+
+'use client';
+
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useToast } from '@/components/ui/use-toast';
+import { courses } from '@/lib/mock-data';
+import { Copy, Check, Link2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+
+export default function AffiliateLinksPage() {
+  const { toast } = useToast();
+  const [copiedLink, setCopiedLink] = useState('');
+
+  const affiliateId = 'aff_123xyz'; // Mock affiliate ID
+
+  const handleGenerateAndCopy = (courseId: string) => {
+    const link = `https://rdc.com/courses/${courseId}?ref=${affiliateId}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLink(link);
+    toast({
+      title: "Link Copied!",
+      description: "Your unique referral link has been copied to the clipboard.",
+    });
+    setTimeout(() => setCopiedLink(''), 2000);
+  };
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-bold tracking-tight">
+          Referral Links
+        </h1>
+        <p className="mt-1 text-lg text-muted-foreground">
+          Generate unique referral links for any course to share with your audience.
+        </p>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Course List</CardTitle>
+          <CardDescription>Click to generate and copy a referral link for a course.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Course Title</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-right">Generate Link</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {courses.filter(c => c.status === 'Published' && !c.isArchived).map((course) => {
+                const generatedLink = `https://rdc.com/courses/${course.id}?ref=${affiliateId}`;
+                const isCopied = copiedLink === generatedLink;
+
+                return (
+                  <TableRow key={course.id}>
+                    <TableCell className="font-medium">{course.title}</TableCell>
+                    <TableCell>{course.category}</TableCell>
+                    <TableCell className="text-right">
+                      <Button onClick={() => handleGenerateAndCopy(course.id)} size="sm" variant={isCopied ? "accent" : "outline"}>
+                        {isCopied ? <Check className="mr-2" /> : <Copy className="mr-2" />}
+                        {isCopied ? 'Copied' : 'Copy Link'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

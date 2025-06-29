@@ -1,4 +1,5 @@
 
+
 /**
  * @fileOverview Mock Database for the RDC Application.
  *
@@ -218,7 +219,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin';
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator';
   status: 'Active' | 'Suspended';
   joined: string;
   className?: string; // Add class for student
@@ -302,6 +303,8 @@ export const mockUsers: User[] = [
   { id: 'usr_guar_003', name: 'Guardian Name', email: 'guardian@rdc.com', role: 'Guardian', status: 'Active', joined: '2024-05-21', linkedStudentId: 'usr_stud_001' },
   { id: 'usr_admn_004', name: 'Admin Name', email: 'admin@rdc.com', role: 'Admin', status: 'Active', joined: '2024-01-01' },
   { id: 'usr_stud_005', name: 'Suspended Student', email: 'suspended@rdc.com', role: 'Student', status: 'Suspended', joined: '2024-04-15', className: 'Class 11' },
+  { id: 'usr_aff_006', name: 'Affiliate User', email: 'affiliate@rdc.com', role: 'Affiliate', status: 'Active', joined: '2024-06-01' },
+  { id: 'usr_mod_007', name: 'Moderator User', email: 'moderator@rdc.com', role: 'Moderator', status: 'Active', joined: '2024-02-15' },
 ];
 
 export const mockStudents = [

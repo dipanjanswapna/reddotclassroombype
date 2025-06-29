@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from 'next/link';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { GraduationCap, Handshake, Shield, UserCog, UserSquare } from 'lucide-react';
+import { GraduationCap, Handshake, Shield, UserCog, UserSquare, UserCheck, UserX } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import {
@@ -100,22 +101,34 @@ export default function LoginPage() {
                     <span>{t.student[language]}</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                 <DropdownMenuItem asChild>
                   <Link href="/teacher/dashboard" className="flex items-center w-full">
                     <UserSquare className="mr-2 h-4 w-4" />
                     <span>{t.teacher[language]}</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                 <DropdownMenuItem asChild>
                   <Link href="/partner/dashboard" className="flex items-center w-full">
                     <Handshake className="mr-2 h-4 w-4" />
                     <span>Partner</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                 <DropdownMenuItem asChild>
                   <Link href="/guardian/dashboard" className="flex items-center w-full">
                     <Shield className="mr-2 h-4 w-4" />
                     <span>{t.guardian[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/affiliate/dashboard" className="flex items-center w-full">
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    <span>{t.affiliate[language]}</span>
+                  </Link>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <Link href="/moderator/dashboard" className="flex items-center w-full">
+                    <UserX className="mr-2 h-4 w-4" />
+                    <span>{t.moderator[language]}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
