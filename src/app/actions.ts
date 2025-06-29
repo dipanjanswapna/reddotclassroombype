@@ -10,6 +10,7 @@ import {
     addUser,
     updateUser,
     deleteUser,
+    addInstructor,
     updateInstructor,
     addOrganization,
     updateOrganization,
@@ -86,6 +87,21 @@ export async function deleteUserAction(id: string) {
         await deleteUser(id);
         revalidatePath('/admin/users');
         return { success: true, message: 'User deleted successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function createInstructorAction(data: Partial<Instructor>) {
+    try {
+        const newInstructor = {
+            ...data,
+            status: 'Pending Approval',
+        };
+        await addInstructor(newInstructor);
+        revalidatePath('/auth/teacher-signup');
+        revalidatePath('/admin/teachers');
+        return { success: true, message: 'Application submitted successfully! Our team will review it and get back to you shortly.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }

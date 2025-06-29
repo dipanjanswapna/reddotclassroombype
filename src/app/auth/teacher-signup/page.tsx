@@ -11,21 +11,54 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
+import { useState } from 'react';
+import { createInstructorAction } from '@/app/actions';
+import { Loader2 } from 'lucide-react';
 
 export default function TeacherSignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const { language } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real app, you would send the form data to the server here.
-    toast({
-      title: "Application Submitted!",
-      description: "Thank you for your application. It is now under review by our admin team.",
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('full-name') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirm-password') as string;
+    const title = formData.get('expertise') as string;
+    const bio = formData.get('bio') as string;
+
+    if (password !== confirmPassword) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const result = await createInstructorAction({
+        name,
+        email, // Note: email is not on Instructor model, but good to collect
+        title,
+        bio,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        avatarUrl: `https://placehold.co/100x100.png?text=${name.split(' ').map(n=>n[0]).join('')}`,
+        dataAiHint: 'person teacher'
     });
-    // Redirect the user after submission
-    router.push('/');
+    
+    if (result.success) {
+        toast({
+            title: "Application Submitted!",
+            description: "Thank you for your application. It is now under review by our admin team.",
+        });
+        router.push('/');
+    } else {
+        toast({ title: "Error", description: result.message, variant: "destructive"});
+    }
+    
+    setIsSubmitting(false);
   }
 
   return (
@@ -40,33 +73,34 @@ export default function TeacherSignupPage() {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="grid gap-2">
                     <Label htmlFor="full-name">{t.full_name[language]}</Label>
-                    <Input id="full-name" placeholder="Jubayer Ahmed" required />
+                    <Input id="full-name" name="full-name" placeholder="Jubayer Ahmed" required />
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="email">{t.email[language]}</Label>
-                    <Input id="email" type="email" placeholder="m@example.com" required />
+                    <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                 </div>
              </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="grid gap-2">
                     <Label htmlFor="password">{t.password[language]}</Label>
-                    <Input id="password" type="password" required />
+                    <Input id="password" name="password" type="password" required />
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="confirm-password">{t.confirm_password[language]}</Label>
-                    <Input id="confirm-password" type="password" required />
+                    <Input id="confirm-password" name="confirm-password" type="password" required />
                 </div>
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="expertise">{t.expertise_title[language]}</Label>
-                <Input id="expertise" placeholder="e.g., Physics Expert, IELTS Trainer" required />
+                <Input id="expertise" name="expertise" placeholder="e.g., Physics Expert, IELTS Trainer" required />
             </div>
              <div className="grid gap-2">
                 <Label htmlFor="bio">{t.your_bio[language]}</Label>
-                <Textarea id="bio" placeholder="Tell us about your teaching experience, qualifications, and passion..." rows={4} required/>
+                <Textarea id="bio" name="bio" placeholder="Tell us about your teaching experience, qualifications, and passion..." rows={4} required/>
             </div>
 
-            <Button type="submit" className="w-full font-bold">
+            <Button type="submit" className="w-full font-bold" disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
               {t.submit_application[language]}
             </Button>
           </form>

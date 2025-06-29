@@ -1,30 +1,65 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { courses as initialCourses, Course } from '@/lib/mock-data';
-import { CalendarPlus, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Course } from '@/lib/types';
+import { getCourses } from '@/lib/firebase/firestore';
+import { saveCourseAction } from '@/app/actions';
+import { Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
-
-const allPrebookingCourses = initialCourses.filter(c => c.isPrebooking);
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function AdminPrebookingPage() {
     const { toast } = useToast();
-    const [courses, setCourses] = useState(allPrebookingCourses);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleTogglePrebooking = (courseId: string) => {
-        setCourses(prev => prev.map(c => c.id === courseId ? {...c, isPrebooking: !c.isPrebooking} : c));
+    useEffect(() => {
+        async function fetchCourses() {
+            try {
+                const allCourses = await getCourses();
+                const prebookingCourses = allCourses.filter(c => c.isPrebooking);
+                setCourses(prebookingCourses);
+            } catch (error) {
+                console.error("Failed to fetch pre-booking courses:", error);
+                toast({ title: "Error", description: "Could not fetch pre-booking data.", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchCourses();
+    }, [toast]);
+
+    const handleTogglePrebooking = async (courseId: string) => {
         const course = courses.find(c => c.id === courseId);
-        toast({
-            title: `Pre-booking ${course?.isPrebooking ? 'Disabled' : 'Enabled'}`,
-            description: `Pre-booking for "${course?.title}" has been updated.`
-        });
+        if (!course) return;
+
+        const newStatus = !course.isPrebooking;
+        const result = await saveCourseAction({ id: courseId, isPrebooking: newStatus });
+
+        if (result.success) {
+            setCourses(prev => prev.map(c => c.id === courseId ? {...c, isPrebooking: newStatus} : c));
+            toast({
+                title: `Pre-booking ${newStatus ? 'Enabled' : 'Disabled'}`,
+                description: `Pre-booking for "${course.title}" has been updated.`
+            });
+        } else {
+            toast({ title: "Error", description: result.message, variant: "destructive" });
+        }
+    }
+    
+    if (loading) {
+        return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        );
     }
 
     return (
@@ -72,7 +107,7 @@ export default function AdminPrebookingPage() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex gap-2 justify-end">
-                                                <Button variant="outline" size="sm" onClick={() => handleTogglePrebooking(course.id)}>
+                                                <Button variant="outline" size="sm" onClick={() => handleTogglePrebooking(course.id!)}>
                                                     {course.isPrebooking ? <ToggleRight className="mr-2 h-4 w-4"/> : <ToggleLeft className="mr-2 h-4 w-4"/>}
                                                     {course.isPrebooking ? 'Disable' : 'Enable'}
                                                 </Button>
