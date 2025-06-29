@@ -390,7 +390,7 @@ export const courses: Course[] = [
         { title: 'ডেইলি এক্সাম', description: 'দৈনিক অগ্রগতি যাচাই' },
         { title: 'সাপ্তাহিক পরীক্ষা', description: 'সাপ্তাহিক পরীক্ষার মাধ্যমে প্রস্তুতি' },
         { title: 'প্রশ্ন-উত্তর সেশন', description: 'সরাসরি প্রশ্ন করার সুযোগ' },
-        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ান্ত পরীক্ষার প্রস্তুতি' },
+        { title: 'ফাইনাল মডেল টেস্ট', description: ' চূড়ানত পরীক্ষার প্রস্তুতি' },
     ],
     imageTitle: 'PCMB',
     classRoutine: [
@@ -1378,4 +1378,27 @@ export const mockStudyPlan: StudyPlanEvent[] = [
     }
 ];
 
+export const mockFinancialSummary = {
+  totalRevenue: 'BDT 1,250,000',
+  monthlyProfit: 'BDT 150,000',
+  pendingPayouts: 'BDT 75,000',
+  totalTransactions: 1234,
+};
+
+export const mockRevenueOverTime = [
+  { month: 'Jan', revenue: 85000 },
+  { month: 'Feb', revenue: 95000 },
+  { month: 'Mar', revenue: 110000 },
+  { month: 'Apr', revenue: 125000 },
+  { month: 'May', revenue: 140000 },
+  { month: 'Jun', revenue: 150000 },
+];
+
+export const mockRecentTransactions = [
+  { id: 'txn_001', course: 'HSC 2025 Crash Course', student: 'Rahim Sheikh', amount: 'BDT 4500', date: '2024-07-20', status: 'Success' },
+  { id: 'txn_002', course: 'IELTS Preparation Course', student: 'Fatima Akter', amount: 'BDT 3000', date: '2024-07-19', status: 'Success' },
+  { id: 'txn_003', course: 'Data Science with Python', student: 'John Doe', amount: 'BDT 5500', date: '2024-07-18', status: 'Success' },
+  { id: 'txn_004', course: 'Engineering Admission', student: 'Jane Smith', amount: 'BDT 5000', date: '2024-07-18', status: 'Failed' },
+  { id: 'txn_005', course: 'Admission Test Prep (Medical)', student: 'Karim Rahman', amount: 'BDT 5000', date: '2024-07-17', status: 'Success' },
+];
     
