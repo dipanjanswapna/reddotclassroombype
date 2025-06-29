@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   PlusCircle,
@@ -15,13 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { courses } from '@/lib/mock-data';
 import type { VariantProps } from 'class-variance-authority';
+import { getCourses } from '@/lib/firebase/firestore';
+import { Course } from '@/lib/types';
+import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-// For demo, we'll just show courses by 'Jubayer Ahmed'
-const teacherCourses = courses.filter(course => 
-  course.instructors.some(instructor => instructor.name === 'Jubayer Ahmed')
-);
+// For demo, we'll use a hardcoded teacher ID. In a real app, this would come from the auth state.
+const teacherId = 'ins-ja'; 
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -39,6 +43,36 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 };
 
 export default function TeacherCoursesPage() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchTeacherCourses() {
+      try {
+        const allCourses = await getCourses();
+        const teacherCourses = allCourses.filter(course => 
+          course.instructors?.some(instructor => instructor.id === teacherId)
+        );
+        setCourses(teacherCourses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+        toast({ title: 'Error', description: 'Could not fetch your courses.', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTeacherCourses();
+  }, [toast]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-8">
@@ -74,13 +108,13 @@ export default function TeacherCoursesPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {teacherCourses.map((course) => (
+                        {courses.length > 0 ? courses.map((course) => (
                             <TableRow key={course.id}>
                                 <TableCell className="font-medium">{course.title}</TableCell>
                                 <TableCell>{course.price}</TableCell>
-                                <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell>
+                                <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell> {/* Mock student count */}
                                 <TableCell>
-                                    <Badge variant={getStatusBadgeVariant(course.status)}>
+                                    <Badge variant={getStatusBadgeVariant(course.status as Status)}>
                                         {course.status}
                                     </Badge>
                                 </TableCell>
@@ -93,7 +127,13 @@ export default function TeacherCoursesPage() {
                                     </Button>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                           <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center">
+                                    You have not created any courses yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
