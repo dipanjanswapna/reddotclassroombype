@@ -9,6 +9,7 @@ import {
   query,
   where,
   documentId,
+  deleteDoc,
 } from 'firebase/firestore';
 import { Course, Instructor, Organization, User, HomepageConfig } from '../types';
 
@@ -40,6 +41,7 @@ export const getCoursesByIds = async (ids: string[]): Promise<Course[]> => {
 }
 export const addCourse = (course: Partial<Course>) => addDoc(collection(db, 'courses'), course);
 export const updateCourse = (id: string, course: Partial<Course>) => updateDoc(doc(db, 'courses', id), course);
+export const deleteCourse = (id: string) => deleteDoc(doc(db, 'courses', id));
 
 // Instructors
 export const getInstructors = () => getCollection<Instructor>('instructors');
@@ -51,11 +53,16 @@ export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> 
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Instructor));
 }
+export const updateInstructor = (id: string, instructor: Partial<Instructor>) => updateDoc(doc(db, 'instructors', id), instructor);
 
 
 // Users
 export const getUsers = () => getCollection<User>('users');
 export const getUser = (id: string) => getDocument<User>('users', id);
+export const addUser = (user: Partial<User>) => addDoc(collection(db, 'users'), user);
+export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(db, 'users', id), user);
+export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));
+
 
 // Organizations
 export const getOrganizations = () => getCollection<Organization>('organizations');
@@ -69,6 +76,7 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
     }
     return null;
 }
+export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
 
 // Categories
 export const getCategories = async (): Promise<string[]> => {

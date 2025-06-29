@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +36,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockUsers, User } from '@/lib/mock-data';
+import { User } from '@/lib/types';
+import { getUsers } from '@/lib/firebase/firestore';
+import { saveUserAction, deleteUserAction } from '@/app/actions';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
@@ -44,6 +47,9 @@ const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Teacher: <UserCog className="h-4 w-4" />,
   Guardian: <Shield className="h-4 w-4" />,
   Admin: <UserCog className="h-4 w-4" />,
+  Affiliate: <UserCheck className="h-4 w-4" />,
+  Moderator: <UserX className="h-4 w-4" />,
+  Partner: <Handshake className="h-4 w-4" />,
 };
 
 const roleColors: { [key in User['role']]: string } = {
@@ -51,10 +57,15 @@ const roleColors: { [key in User['role']]: string } = {
   Teacher: 'border-green-300 bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700',
   Guardian: 'border-purple-300 bg-purple-50 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 dark:border-purple-700',
   Admin: 'border-primary/30 bg-primary/10 text-primary',
+  Affiliate: 'border-yellow-300 bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
+  Moderator: 'border-orange-300 bg-orange-50 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700',
+  Partner: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
 };
 
 export default function UserManagementPage() {
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const { toast } = useToast();
   
@@ -65,6 +76,20 @@ export default function UserManagementPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<User['role']>('Student');
+
+  useEffect(() => {
+    async function fetchData() {
+        try {
+            const fetchedUsers = await getUsers();
+            setUsers(fetchedUsers);
+        } catch(e) {
+            toast({ title: 'Error', description: 'Could not fetch users', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchData();
+  }, [toast]);
 
   const handleOpenDialog = (user: User | null) => {
     setEditingUser(user);
@@ -81,54 +106,63 @@ export default function UserManagementPage() {
     setIsDialogOpen(true);
   };
   
-  const handleSaveUser = () => {
+  const handleSaveUser = async () => {
     if (!name || !email) {
       toast({ title: "Missing Information", description: "Please fill out all fields.", variant: "destructive" });
       return;
     }
-    if (editingUser) {
-        // Update user
-        setUsers(users.map(u => u.id === editingUser.id ? { ...u, name, email, role } : u));
-        toast({ title: "User Updated", description: `Details for ${name} have been updated.` });
+    setIsSaving(true);
+    const result = await saveUserAction({ id: editingUser?.id, name, email, role, joined: editingUser?.joined || new Date().toISOString().split('T')[0], status: editingUser?.status || 'Active' });
+    if(result.success) {
+        toast({ title: editingUser ? 'User Updated' : 'User Created', description: result.message });
+        const fetchedUsers = await getUsers(); // re-fetch to get the latest data
+        setUsers(fetchedUsers);
     } else {
-        // Create new user
-        const newUser: User = {
-            id: `usr_new_${Date.now()}`,
-            name,
-            email,
-            role,
-            status: 'Active',
-            joined: new Date().toISOString().split('T')[0]
-        };
-        setUsers([newUser, ...users]);
-        toast({ title: "User Created", description: `${name} has been added to the system.` });
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
+    setIsSaving(false);
     setIsDialogOpen(false);
   };
 
 
-  const handleDeleteUser = () => {
-    if (!userToDelete) return;
-    setUsers(users.filter(user => user.id !== userToDelete.id));
-    toast({
-      title: "User Deleted",
-      description: `User "${userToDelete.name}" has been permanently deleted.`,
-      variant: 'destructive',
-    });
+  const handleDeleteUser = async () => {
+    if (!userToDelete || !userToDelete.id) return;
+    const result = await deleteUserAction(userToDelete.id);
+    if(result.success) {
+      toast({ title: "User Deleted", description: `User "${userToDelete.name}" has been permanently deleted.` });
+      setUsers(users.filter(user => user.id !== userToDelete.id));
+    } else {
+       toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
     setUserToDelete(null); // Close the dialog
   };
   
-  const handleSuspendUser = (userToSuspend: User) => {
-    setUsers(users.map(user => 
-        user.id === userToSuspend.id 
-        ? { ...user, status: user.status === 'Active' ? 'Suspended' : 'Active' } 
-        : user
-    ));
-    toast({
-        title: "User Status Updated",
-        description: `User "${userToSuspend.name}" has been ${userToSuspend.status === 'Active' ? 'suspended' : 'activated'}.`,
-    });
+  const handleSuspendUser = async (userToSuspend: User) => {
+    if(!userToSuspend.id) return;
+    const newStatus = userToSuspend.status === 'Active' ? 'Suspended' : 'Active';
+    const result = await saveUserAction({ id: userToSuspend.id, status: newStatus });
+    if(result.success) {
+        setUsers(users.map(user => 
+            user.id === userToSuspend.id 
+            ? { ...user, status: newStatus } 
+            : user
+        ));
+        toast({
+            title: "User Status Updated",
+            description: `User "${userToSuspend.name}" has been ${newStatus.toLowerCase()}.`,
+        });
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -167,7 +201,7 @@ export default function UserManagementPage() {
                     <div className="text-sm text-muted-foreground">{user.email}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{user.id}</Badge>
+                    <Badge variant="secondary" className="max-w-[100px] truncate">{user.id}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>
@@ -178,7 +212,7 @@ export default function UserManagementPage() {
                   <TableCell>
                     <Badge variant={user.status === 'Active' ? 'accent' : 'warning'}>{user.status}</Badge>
                   </TableCell>
-                  <TableCell>{user.joined}</TableCell>
+                  <TableCell>{user.joined?.toString().split('T')[0]}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -188,9 +222,7 @@ export default function UserManagementPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem><Eye className="mr-2" />View Profile</DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
-                        <DropdownMenuItem><AreaChart className="mr-2" />View Activity</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleSuspendUser(user)}>
                             {user.status === 'Active' ? 'Suspend User' : 'Activate User'}
                         </DropdownMenuItem>
@@ -254,13 +286,19 @@ export default function UserManagementPage() {
                     <SelectItem value="Teacher">Teacher</SelectItem>
                     <SelectItem value="Guardian">Guardian</SelectItem>
                     <SelectItem value="Admin">Admin</SelectItem>
+                    <SelectItem value="Affiliate">Affiliate</SelectItem>
+                    <SelectItem value="Moderator">Moderator</SelectItem>
+                    <SelectItem value="Partner">Partner</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button onClick={handleSaveUser}>Save User</Button>
+              <Button onClick={handleSaveUser} disabled={isSaving}>
+                {isSaving && <Loader2 className="mr-2 animate-spin"/>}
+                Save User
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

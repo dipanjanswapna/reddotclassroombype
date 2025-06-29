@@ -70,21 +70,23 @@ export type Instructor = {
 }
 
 export type QuizQuestion = {
-    id: string;
-    text: string;
-    options: string[];
-    correctAnswer: number; // index of the correct option
+  id: string;
+  text: string;
+  options: { id: string; text: string }[];
+  correctAnswerId: string;
 };
 
 export type Quiz = {
   id: string;
   title: string;
   topic: string;
-  totalQuestions: number;
-  duration: number; // in minutes
-  status: 'Completed' | 'Not Started' | 'In Progress';
-  score?: number;
   questions: QuizQuestion[];
+  // These were from mock-data, but are not set in the builder.
+  // The consuming components should handle their absence.
+  totalQuestions?: number;
+  duration?: number; // in minutes
+  status?: 'Completed' | 'Not Started' | 'In Progress';
+  score?: number;
 };
 
 export type Assignment = {
@@ -205,7 +207,7 @@ export type User = {
   id?: string;
   name: string;
   email: string;
-  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator';
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Partner';
   status: 'Active' | 'Suspended';
   joined: string | Timestamp;
   className?: string; // Add class for student

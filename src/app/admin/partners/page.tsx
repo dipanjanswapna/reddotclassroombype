@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusCircle, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { organizations as initialOrgs, Organization } from '@/lib/mock-data';
+import { Organization } from '@/lib/types';
+import { getOrganizations } from '@/lib/firebase/firestore';
+import { updateOrganizationStatusAction } from '@/app/actions';
 import Image from 'next/image';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Organization['status']) => {
   switch (status) {
@@ -33,17 +36,45 @@ const getStatusBadgeVariant = (status: Organization['status']) => {
 
 export default function AdminPartnerManagementPage() {
   const { toast } = useToast();
-  const [organizations, setOrganizations] = useState<Organization[]>(initialOrgs);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleStatusChange = (id: string, newStatus: 'approved' | 'rejected') => {
-    setOrganizations(organizations.map(org =>
-      org.id === id ? { ...org, status: newStatus } : org
-    ));
-    toast({
-      title: "Partner Status Updated",
-      description: `The organization has been ${newStatus}.`,
-    });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const fetchedOrgs = await getOrganizations();
+        setOrganizations(fetchedOrgs);
+      } catch(e) {
+        toast({ title: 'Error', description: 'Could not fetch organizations', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [toast]);
+
+  const handleStatusChange = async (id: string, newStatus: 'approved' | 'rejected') => {
+    const result = await updateOrganizationStatusAction(id, newStatus);
+    if (result.success) {
+      setOrganizations(organizations.map(org =>
+        org.id === id ? { ...org, status: newStatus } : org
+      ));
+      toast({
+        title: "Partner Status Updated",
+        description: `The organization has been ${newStatus}.`,
+      });
+    } else {
+      toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -92,11 +123,11 @@ export default function AdminPartnerManagementPage() {
                     <div className="flex gap-2 justify-end">
                       {org.status === 'pending' && (
                         <>
-                          <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(org.id, 'approved')}>
+                          <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(org.id!, 'approved')}>
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Approve
                           </Button>
-                          <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(org.id, 'rejected')}>
+                          <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(org.id!, 'rejected')}>
                             <XCircle className="mr-2 h-4 w-4" />
                             Reject
                           </Button>

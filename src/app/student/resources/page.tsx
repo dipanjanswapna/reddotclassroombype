@@ -1,59 +1,81 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, Download, Search, Library } from 'lucide-react';
-import { courses } from '@/lib/mock-data';
-import Link from 'next/link';
-
-// In a real app, this would be based on the logged-in user's enrollments.
-const enrolledCourseIds = ['1', '3', '4'];
-const enrolledCourses = courses.filter(course => enrolledCourseIds.includes(course.id));
+import { getCourses } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 type Resource = {
   id: string;
   title: string;
-  type: 'Lecture Sheet' | 'Notes' | 'eBook'; // Example types
+  type: 'Lecture Sheet' | 'Notes' | 'eBook';
   url: string;
   courseTitle: string;
   courseId: string;
 };
 
-// Flatten resources from enrolled courses
-const getAllResources = (): Resource[] => {
-  const resources: Resource[] = [];
-  enrolledCourses.forEach(course => {
-    course.syllabus?.forEach(module => {
-      module.lessons.forEach(lesson => {
-        if (lesson.lectureSheetUrl) {
-          resources.push({
-            id: `${course.id}-${lesson.id}`,
-            title: lesson.title,
-            type: 'Lecture Sheet',
-            url: lesson.lectureSheetUrl,
-            courseTitle: course.title,
-            courseId: course.id,
-          });
-        }
-      });
-    });
-  });
-  return resources;
-};
-
 export default function ResourcesPage() {
-  const [allResources] = useState(getAllResources());
+  const [allResources, setAllResources] = useState<Resource[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourse, setSelectedCourse] = useState('all');
+
+  useEffect(() => {
+    async function fetchResources() {
+      try {
+        // In a real app, this would be based on the logged-in user's actual enrollments.
+        const enrolledCourseIds = ['1', '3', '4']; // Still mocking enrollment for now
+        const allCourses = await getCourses();
+        const studentCourses = allCourses.filter(course => course.id && enrolledCourseIds.includes(course.id));
+        setEnrolledCourses(studentCourses);
+
+        const resources: Resource[] = [];
+        studentCourses.forEach(course => {
+          course.syllabus?.forEach(module => {
+            module.lessons.forEach(lesson => {
+              if (lesson.lectureSheetUrl) {
+                resources.push({
+                  id: `${course.id}-${lesson.id}`,
+                  title: lesson.title,
+                  type: 'Lecture Sheet',
+                  url: lesson.lectureSheetUrl,
+                  courseTitle: course.title,
+                  courseId: course.id!,
+                });
+              }
+            });
+          });
+        });
+        setAllResources(resources);
+      } catch (error) {
+        console.error("Failed to fetch resources:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchResources();
+  }, []);
 
   const filteredResources = allResources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) || resource.courseTitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse = selectedCourse === 'all' || resource.courseId === selectedCourse;
     return matchesSearch && matchesCourse;
   });
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -88,7 +110,7 @@ export default function ResourcesPage() {
                 <SelectContent>
                   <SelectItem value="all">All Courses</SelectItem>
                   {enrolledCourses.map(course => (
-                    <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                    <SelectItem key={course.id} value={course.id!}>{course.title}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

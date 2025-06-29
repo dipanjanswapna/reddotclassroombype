@@ -1,4 +1,8 @@
+'use client';
 
+import { useState, useEffect } from 'react';
+import { getCourses } from '@/lib/firebase/firestore';
+import type { Assignment } from '@/lib/types';
 import {
   Table,
   TableBody,
@@ -9,16 +13,66 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockGrades } from "@/lib/mock-data";
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { format } from 'date-fns';
+
+type GradedAssignment = Assignment & {
+    courseName: string;
+};
 
 function getGradeColor(grade: string) {
+    if (!grade) return 'bg-gray-500 text-white';
     if (grade.startsWith('A')) return 'bg-green-500 text-white';
     if (grade.startsWith('B')) return 'bg-yellow-500 text-white';
     if (grade.startsWith('C')) return 'bg-orange-500 text-white';
     return 'bg-red-500 text-white';
 }
 
+// Mock current student ID
+const currentStudentId = 'usr_stud_001';
+
 export default function GradesPage() {
+  const [gradedAssignments, setGradedAssignments] = useState<GradedAssignment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGrades() {
+        try {
+            const allCourses = await getCourses();
+            const assignments: GradedAssignment[] = [];
+
+            allCourses.forEach(course => {
+                if(course.assignments) {
+                    course.assignments.forEach(assignment => {
+                        // For demo, we'll check status and a mock studentId
+                        if (assignment.status === 'Graded' && assignment.studentId === currentStudentId) {
+                            assignments.push({
+                                ...assignment,
+                                courseName: course.title,
+                            });
+                        }
+                    });
+                }
+            });
+            setGradedAssignments(assignments.sort((a,b) => new Date(b.submissionDate as string).getTime() - new Date(a.submissionDate as string).getTime()));
+        } catch (error) {
+            console.error("Failed to fetch grades", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchGrades();
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
@@ -39,23 +93,30 @@ export default function GradesPage() {
               <TableRow>
                 <TableHead>Course</TableHead>
                 <TableHead>Assignment/Quiz</TableHead>
-                <TableHead className="text-center">Score</TableHead>
                 <TableHead className="text-center">Grade</TableHead>
-                <TableHead className="text-right">Date</TableHead>
+                <TableHead className="text-right">Graded On</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockGrades.map((item) => (
+              {gradedAssignments.length > 0 ? gradedAssignments.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.courseName}</TableCell>
-                  <TableCell>{item.assignmentName}</TableCell>
-                  <TableCell className="text-center">{item.score}%</TableCell>
+                  <TableCell>{item.title}</TableCell>
                   <TableCell className="text-center">
-                    <Badge className={getGradeColor(item.grade)}>{item.grade}</Badge>
+                    <Badge className={getGradeColor(item.grade || '')}>{item.grade || 'N/A'}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">{item.date}</TableCell>
+                  <TableCell className="text-right">
+                    {/* Assuming submissionDate is when it was graded for this demo */}
+                    {item.submissionDate && typeof item.submissionDate === 'string' ? format(new Date(item.submissionDate), 'PPP') : 'N/A'}
+                  </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                 <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No graded assignments yet.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

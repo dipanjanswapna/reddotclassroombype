@@ -1,6 +1,10 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course, Quiz } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -8,8 +12,11 @@ import { Badge, badgeVariants } from '@/components/ui/badge';
 import { HelpCircle, PlayCircle } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const getStatusBadgeVariant = (status: 'Completed' | 'Not Started' | 'In Progress'): VariantProps<typeof badgeVariants>['variant'] => {
+
+const getStatusBadgeVariant = (status: Quiz['status']): VariantProps<typeof badgeVariants>['variant'] => {
+  if (!status) return 'secondary';
   switch (status) {
     case 'Completed':
       return 'accent';
@@ -21,7 +28,32 @@ const getStatusBadgeVariant = (status: 'Completed' | 'Not Started' | 'In Progres
 };
 
 export default function QuizzesPage({ params }: { params: { courseId: string } }) {
-  const course = courses.find((c) => c.id === params.courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCourseData() {
+        try {
+            const courseData = await getCourse(params.courseId);
+            if (courseData) {
+                setCourse(courseData);
+            }
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCourseData();
+  }, [params.courseId]);
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   if (!course) {
     notFound();
@@ -49,7 +81,6 @@ export default function QuizzesPage({ params }: { params: { courseId: string } }
                   <TableHead>Quiz</TableHead>
                   <TableHead>Topic</TableHead>
                   <TableHead>Questions</TableHead>
-                  <TableHead>Duration</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
@@ -59,11 +90,10 @@ export default function QuizzesPage({ params }: { params: { courseId: string } }
                   <TableRow key={quiz.id}>
                     <TableCell className="font-medium">{quiz.title}</TableCell>
                     <TableCell>{quiz.topic}</TableCell>
-                    <TableCell>{quiz.totalQuestions}</TableCell>
-                    <TableCell>{quiz.duration} mins</TableCell>
+                    <TableCell>{quiz.questions.length}</TableCell>
                     <TableCell>
                         <Badge variant={getStatusBadgeVariant(quiz.status)}>
-                            {quiz.status} {quiz.status === 'Completed' && quiz.score && `(${quiz.score}%)`}
+                            {quiz.status || 'Not Started'} {quiz.status === 'Completed' && quiz.score && `(${quiz.score}%)`}
                         </Badge>
                     </TableCell>
                     <TableCell className="text-right">

@@ -1,4 +1,6 @@
 
+'use client'; // Make it a client component to fetch data
+
 import {
   Users,
   BookOpen,
@@ -6,9 +8,42 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { courses, mockUsers } from '@/lib/mock-data';
+import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import { useEffect, useState } from 'react';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { Course, User } from '@/lib/types';
 
 export default function AdminDashboardPage() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [fetchedCourses, fetchedUsers] = await Promise.all([
+          getCourses(),
+          getUsers()
+        ]);
+        setCourses(fetchedCourses);
+        setUsers(fetchedUsers);
+      } catch(e) {
+        console.error("Failed to fetch dashboard data", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
@@ -28,7 +63,7 @@ export default function AdminDashboardPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{mockUsers.length}</div>
+                <div className="text-2xl font-bold">{users.length}</div>
                 <p className="text-xs text-muted-foreground">
                 +5% from last month
                 </p>
