@@ -60,7 +60,7 @@ export default function StudentLayout({
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
         {children}
       </main>
@@ -83,6 +83,6 @@ export default function StudentLayout({
           ))}
         </div>
       </nav>
-    </div>
+    </>
   );
 }

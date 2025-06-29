@@ -31,8 +31,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   }
   
   // An array of path prefixes for internal dashboard pages.
-  // These pages get the main Header, but not the main Footer,
-  // as they typically have their own sidebar-based navigation and layout.
   const isDashboardPage = 
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
@@ -40,12 +38,21 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/partner');
 
+  if (isDashboardPage) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header />
+        {children}
+      </div>
+    );
+  }
+
   // Default layout for all other pages (e.g., home, about, contact).
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-grow flex flex-col">{children}</main>
-      {!isDashboardPage && <Footer />}
+      <Footer />
     </div>
   );
 }
