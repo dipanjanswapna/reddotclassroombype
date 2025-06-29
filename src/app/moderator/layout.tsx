@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Header } from '@/components/header';
 
 export default function ModeratorLayout({
   children,
@@ -39,8 +38,7 @@ export default function ModeratorLayout({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
+    <>
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
         {children}
       </main>
@@ -63,6 +61,6 @@ export default function ModeratorLayout({
           ))}
         </div>
       </nav>
-    </div>
+    </>
   );
 }
