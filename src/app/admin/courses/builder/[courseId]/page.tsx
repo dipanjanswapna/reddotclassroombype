@@ -23,6 +23,7 @@ import {
   Megaphone,
   ClipboardEdit,
   Loader2,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +64,16 @@ import { Course, SyllabusModule, Instructor } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 
 type LessonData = {
     id: string;
@@ -255,6 +266,10 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignments, setAssignments] = useState<AssignmentData[]>([]);
+
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -413,7 +428,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -504,7 +519,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     if (result.success) {
         toast({ title: 'Success', description: result.message });
         if (!isNewCourse) {
-          revalidatePath(`/admin/courses/builder/${params.courseId}`);
+          // No revalidatePath needed on client side for this action as it's handled server-side
         } else if (result.courseId) {
           router.push(`/admin/courses/builder/${result.courseId}`);
         }
@@ -514,6 +529,42 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setIsSaving(false);
   };
   
+  const handleGenerateCourse = async () => {
+    setIsGenerating(true);
+    try {
+      const result = await generateCourseContent(aiTopic);
+      
+      setCourseTitle(result.title);
+      setDescription(result.description);
+      setWhatYouWillLearn(result.outcomes);
+      setFaqs(result.faqs.map(faq => ({ ...faq, id: Math.random().toString() })));
+
+      const newSyllabus: SyllabusItem[] = [];
+      result.syllabus.forEach(module => {
+        newSyllabus.push({ id: Math.random().toString(), type: 'module', title: module.title });
+        module.lessons.forEach(lesson => {
+          newSyllabus.push({
+            id: Math.random().toString(),
+            type: 'video',
+            title: lesson.title,
+            duration: '10 min',
+            videoId: '',
+            lectureSheetUrl: '',
+          });
+        });
+      });
+      setSyllabus(newSyllabus);
+
+      toast({ title: 'Success', description: 'AI has generated the course content.' });
+      setIsAiDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Error', description: 'Failed to generate content with AI.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
@@ -549,11 +600,14 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
+                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                    <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
+                </Button>
                 <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Save className="mr-2"/>} Save Draft
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
                 </Button>
                 <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Send className="mr-2"/>} Submit for Approval
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
                 </Button>
             </div>
         </div>
@@ -926,8 +980,35 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                     </div>
                 </CardContent>
             )}
-
         </Card>
+        <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Generate Course with AI</DialogTitle>
+                    <DialogDescription>
+                        Enter a topic, and the AI will generate a draft for your course title, description, syllabus, and more.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-2">
+                    <Label htmlFor="ai-topic">Course Topic</Label>
+                    <Input 
+                        id="ai-topic" 
+                        value={aiTopic}
+                        onChange={(e) => setAiTopic(e.target.value)}
+                        placeholder="e.g., Introduction to Rocket Science" 
+                    />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
+                        {isGenerating ? <Loader2 className="mr-2 animate-spin"/> : <Wand2 className="mr-2"/>}
+                        Generate
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }
