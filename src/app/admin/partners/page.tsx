@@ -103,6 +103,8 @@ export default function AdminPartnerManagementPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Organization</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Subdomain</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -114,6 +116,8 @@ export default function AdminPartnerManagementPage() {
                     <Image src={org.logoUrl} alt={org.name} width={40} height={40} className="rounded-full bg-muted" />
                     <span className="font-medium">{org.name}</span>
                   </TableCell>
+                  <TableCell>{org.contactEmail || 'N/A'}</TableCell>
+                  <TableCell>{org.subdomain || 'N/A'}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(org.status)} className="capitalize">
                       {org.status}

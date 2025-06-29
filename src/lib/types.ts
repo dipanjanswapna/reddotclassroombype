@@ -50,6 +50,8 @@ export type Organization = {
     imageUrl: string;
     dataAiHint?: string;
   };
+  contactEmail?: string;
+  description?: string;
 };
 
 export type Instructor = {
