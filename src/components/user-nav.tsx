@@ -20,52 +20,60 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
-import { organizations } from "@/lib/mock-data";
+import { organizations, allInstructors, mockUsers } from "@/lib/mock-data";
 
 type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'partner' | 'unknown';
 
 const getUserDetails = (pathname: string) => {
   if (pathname.startsWith('/student')) {
+    const user = mockUsers.find(u => u.role === 'Student');
     return {
       role: 'student' as UserRole,
-      name: "Student Name",
-      email: "student@rdc.com",
+      name: user?.name || "Student Name",
+      email: user?.email || "student@rdc.com",
       avatar: "https://placehold.co/100x100.png",
-      initials: "SN",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "SN",
       dashboardLink: "/student/dashboard",
+      profileLink: "/student/profile",
       aiHint: "male student"
     };
   }
   if (pathname.startsWith('/teacher')) {
+     const user = allInstructors.find(i => i.id === 'ins-ja');
     return {
       role: 'teacher' as UserRole,
-      name: "Teacher Name",
+      name: user?.name || "Teacher Name",
       email: "teacher@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: "TN",
+      avatar: user?.avatarUrl || "https://placehold.co/100x100.png",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "TN",
       dashboardLink: "/teacher/dashboard",
+      profileLink: "/teacher/settings",
       aiHint: "male teacher"
     };
   }
    if (pathname.startsWith('/guardian')) {
+    const user = mockUsers.find(u => u.role === 'Guardian');
     return {
       role: 'guardian' as UserRole,
-      name: "Guardian Name",
-      email: "guardian@rdc.com",
+      name: user?.name || "Guardian Name",
+      email: user?.email || "guardian@rdc.com",
       avatar: "https://placehold.co/100x100.png",
-      initials: "GN",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "GN",
       dashboardLink: "/guardian/dashboard",
+      profileLink: "/guardian/profile",
       aiHint: "parent"
     };
   }
    if (pathname.startsWith('/admin')) {
+    const user = mockUsers.find(u => u.role === 'Admin');
     return {
       role: 'admin' as UserRole,
-      name: "Admin Name",
-      email: "admin@rdc.com",
+      name: user?.name || "Admin Name",
+      email: user?.email || "admin@rdc.com",
       avatar: "https://placehold.co/100x100.png",
-      initials: "AN",
+      initials: user?.name.split(' ').map(n => n[0]).join('') || "AN",
       dashboardLink: "/admin/dashboard",
+      profileLink: "/admin/settings",
       aiHint: "administrator"
     };
   }
@@ -78,6 +86,7 @@ const getUserDetails = (pathname: string) => {
       avatar: partner.logoUrl,
       initials: partner.name.substring(0,2),
       dashboardLink: "/partner/dashboard",
+      profileLink: "/partner/settings",
       aiHint: "company logo"
     };
   }
@@ -89,6 +98,7 @@ const getUserDetails = (pathname: string) => {
       avatar: "https://placehold.co/100x100.png",
       initials: "U",
       dashboardLink: "/",
+      profileLink: "/",
       aiHint: "person"
   };
 };
@@ -121,16 +131,17 @@ export function UserNav() {
           <DropdownMenuItem asChild>
             <Link href={user.dashboardLink}><LayoutDashboard className="mr-2" />My Dashboard</Link>
           </DropdownMenuItem>
+          
+          <DropdownMenuItem asChild>
+              <Link href={user.profileLink}><User className="mr-2" />Profile & Settings</Link>
+          </DropdownMenuItem>
+          
           {user.role === 'student' && (
-            <>
-              <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild>
                 <Link href="/student/my-courses"><BookOpen className="mr-2" />My Courses</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                 <Link href="/student/profile"><User className="mr-2" />Profile & Settings</Link>
-              </DropdownMenuItem>
-            </>
+            </DropdownMenuItem>
           )}
+
            <DropdownMenuItem asChild>
              <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>
           </DropdownMenuItem>

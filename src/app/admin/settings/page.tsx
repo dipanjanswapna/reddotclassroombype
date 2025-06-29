@@ -21,20 +21,24 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { allInstructors } from "@/lib/mock-data";
 
 
 // Mock user data for demonstration
-const currentTeacher = allInstructors.find(i => i.id === 'ins-ja');
+const currentUser = {
+    id: 'usr_admn_004',
+    fullName: "Admin Name",
+    email: "admin@rdc.com",
+    avatarUrl: "https://placehold.co/100x100.png",
+};
 
 
-export default function TeacherSettingsPage() {
+export default function AdminSettingsPage() {
     const { toast } = useToast();
 
     // State for personal information
-    const [fullName, setFullName] = useState(currentTeacher?.name || "Teacher Name");
-    const [email, setEmail] = useState("teacher@rdc.com");
-    const [avatarUrl, setAvatarUrl] = useState(currentTeacher?.avatarUrl || "https://placehold.co/100x100.png");
+    const [fullName, setFullName] = useState(currentUser.fullName);
+    const [email, setEmail] = useState(currentUser.email);
+    const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
 
     const handleInfoSave = () => {
         toast({
@@ -53,11 +57,12 @@ export default function TeacherSettingsPage() {
     const handleDeleteAccount = () => {
         toast({
             title: "Account Deletion Requested",
-            description: "Your account is scheduled for deletion. This action cannot be undone.",
+            description: "This is a dummy action. Admin accounts cannot be deleted this way.",
             variant: "destructive"
         });
     };
     
+    // A dummy function to simulate file upload
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -77,8 +82,8 @@ export default function TeacherSettingsPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Profile & Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and personal information.</p>
+        <h1 className="font-headline text-3xl font-bold tracking-tight">Admin Profile & Settings</h1>
+        <p className="text-muted-foreground">Manage your account settings and platform-wide configurations.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -108,8 +113,8 @@ export default function TeacherSettingsPage() {
                   </div>
                 </div>
               <div className="space-y-2">
-                <Label htmlFor="userId">Teacher ID</Label>
-                <Input id="userId" value={currentTeacher?.id || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+                <Label htmlFor="userId">Admin ID</Label>
+                <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
@@ -153,58 +158,29 @@ export default function TeacherSettingsPage() {
         <div className="md:col-span-1 space-y-8">
            <Card>
              <CardHeader>
-              <CardTitle>Account Management</CardTitle>
+              <CardTitle>Platform Settings</CardTitle>
+              <CardDescription>Global settings for the entire platform.</CardDescription>
             </CardHeader>
-             <CardContent>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="w-full">Delete Account</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action is permanent and cannot be undone. This will permanently delete your account and all associated data from our servers.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteAccount}>
-                                Yes, delete my account
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-                <p className="text-xs text-muted-foreground mt-2">
-                    Permanently delete your account and all associated data. This action cannot be undone.
-                </p>
-             </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>Manage how you receive notifications.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+             <CardContent className="space-y-4">
                 <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5">
-                        <Label htmlFor="email-notifications">Email Notifications</Label>
-                        <p className="text-[0.8rem] text-muted-foreground">
-                            Receive emails about new submissions and student questions.
-                        </p>
-                    </div>
-                    <Switch id="email-notifications" defaultChecked />
-                </div>
-                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                        <Label htmlFor="push-notifications">Push Notifications</Label>
+                        <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
                          <p className="text-[0.8rem] text-muted-foreground">
-                            Get push notifications on your devices for important updates.
+                            Temporarily disable access for non-admins.
                         </p>
                     </div>
-                    <Switch id="push-notifications" />
+                    <Switch id="maintenance-mode" />
                 </div>
-            </CardContent>
+                 <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <Label htmlFor="new-registrations">New Registrations</Label>
+                         <p className="text-[0.8rem] text-muted-foreground">
+                           Allow or disallow new user sign-ups.
+                        </p>
+                    </div>
+                    <Switch id="new-registrations" defaultChecked/>
+                </div>
+             </CardContent>
           </Card>
         </div>
       </div>
