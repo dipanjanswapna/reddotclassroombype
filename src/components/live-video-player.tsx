@@ -4,9 +4,9 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import { LiveClass } from '@/lib/mock-data';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { LiveClass } from '@/lib/types';
 
 
 // Make sure FB object is available on window

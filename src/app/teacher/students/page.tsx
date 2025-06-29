@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Table,
@@ -14,9 +14,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { courses, mockStudents } from '@/lib/mock-data';
+import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import type { User, Course } from '@/lib/types';
 
-type Student = {
+
+type StudentDisplayInfo = {
   id: string;
   name: string;
   email: string;
@@ -27,61 +30,80 @@ type Student = {
 
 // Mocking students enrolled in courses by 'Jubayer Ahmed'
 const teacherId = 'ins-ja';
-const teacherCourses = courses.filter(c => c.instructors.some(i => i.id === teacherId));
-const teacherCourseIds = teacherCourses.map(c => c.id);
-
-// This is a more complex data derivation just for the demo
-// In a real app, you'd fetch students for the teacher's courses
-const getTeacherStudents = () => {
-    const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
-
-    // Correlate students to courses they are enrolled in that this teacher teaches
-    courses.forEach(course => {
-        if (teacherCourseIds.includes(course.id)) {
-            course.assignments?.forEach(assignment => {
-                if (!studentCourseMap.has(assignment.studentId)) {
-                    studentCourseMap.set(assignment.studentId, []);
-                }
-                const studentCourses = studentCourseMap.get(assignment.studentId)!;
-                if (!studentCourses.some(c => c.courseTitle === course.title)) {
-                    studentCourses.push({
-                        courseTitle: course.title,
-                        progress: Math.floor(Math.random() * 80) + 20 // Mock progress
-                    });
-                }
-            });
-        }
-    });
-
-    const teacherStudents: Student[] = [];
-    studentCourseMap.forEach((courseData, studentId) => {
-        const studentInfo = mockStudents.find(s => s.id === studentId);
-        if (studentInfo) {
-            courseData.forEach(cd => {
-                teacherStudents.push({
-                    id: `${studentInfo.id}-${cd.courseTitle.replace(/\s/g, '-')}`,
-                    name: studentInfo.name,
-                    email: studentInfo.email,
-                    avatar: studentInfo.avatar,
-                    enrolledCourse: cd.courseTitle,
-                    progress: cd.progress
-                });
-            });
-        }
-    });
-    return teacherStudents;
-};
 
 
 export default function TeacherStudentsPage() {
-  const [students] = useState<Student[]>(getTeacherStudents());
+  const [students, setStudents] = useState<StudentDisplayInfo[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const getTeacherStudents = async () => {
+        try {
+            const [allCourses, allUsers] = await Promise.all([
+                getCourses(),
+                getUsers()
+            ]);
+
+            const teacherCourses = allCourses.filter(c => c.instructors.some(i => i.id === teacherId));
+            const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
+
+            teacherCourses.forEach(course => {
+                course.assignments?.forEach(assignment => {
+                    if (!studentCourseMap.has(assignment.studentId)) {
+                        studentCourseMap.set(assignment.studentId, []);
+                    }
+                    const studentCourses = studentCourseMap.get(assignment.studentId)!;
+                    if (!studentCourses.some(c => c.courseTitle === course.title)) {
+                        studentCourses.push({
+                            courseTitle: course.title,
+                            progress: Math.floor(Math.random() * 80) + 20 // Mock progress
+                        });
+                    }
+                });
+            });
+
+            const teacherStudents: StudentDisplayInfo[] = [];
+            studentCourseMap.forEach((courseData, studentId) => {
+                const studentInfo = allUsers.find(s => s.id === studentId);
+                if (studentInfo) {
+                    courseData.forEach(cd => {
+                        teacherStudents.push({
+                            id: `${studentInfo.id}-${cd.courseTitle.replace(/\s/g, '-')}`,
+                            name: studentInfo.name,
+                            email: studentInfo.email,
+                            avatar: 'https://placehold.co/100x100.png',
+                            enrolledCourse: cd.courseTitle,
+                            progress: cd.progress
+                        });
+                    });
+                }
+            });
+            setStudents(teacherStudents);
+
+        } catch (error) {
+            console.error("Failed to fetch students:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    getTeacherStudents();
+  }, []);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.enrolledCourse.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  if (loading) {
+      return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+              <LoadingSpinner className="w-12 h-12" />
+          </div>
+      );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">

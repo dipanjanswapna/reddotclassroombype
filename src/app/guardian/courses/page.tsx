@@ -1,29 +1,63 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { courses, mockUsers } from '@/lib/mock-data';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: "Child's Courses",
-  description: "View all the courses your child is enrolled in at Red Dot Classroom.",
-};
+import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import type { Course, User } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 // Mock current guardian
 const currentGuardianId = 'usr_guar_003';
 
 export default function GuardianCoursesPage() {
-    const guardian = mockUsers.find(u => u.id === currentGuardianId);
-    const student = mockUsers.find(u => u.id === guardian?.linkedStudentId);
+    const [guardian, setGuardian] = useState<User | null>(null);
+    const [student, setStudent] = useState<User | null>(null);
+    const [childsCourses, setChildsCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Get courses the linked student is enrolled in (mock logic)
-    const childsCourses = student ? courses.filter(c => c.assignments?.some(a => a.studentId === student.id)).map((course, index) => ({
-        ...course,
-        progress: [70, 45, 90][index], // Still mock progress for simplicity
-    })) : [];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [allUsers, allCourses] = await Promise.all([
+                    getUsers(),
+                    getCourses()
+                ]);
 
+                const currentGuardian = allUsers.find(u => u.id === currentGuardianId);
+                const linkedStudent = currentGuardian ? allUsers.find(u => u.id === currentGuardian.linkedStudentId) : null;
+                
+                setGuardian(currentGuardian || null);
+                setStudent(linkedStudent || null);
 
+                if (linkedStudent) {
+                    const enrolledCourses = allCourses.filter(c => 
+                        c.assignments?.some(a => a.studentId === linkedStudent.id)
+                    ).map((course, index) => ({
+                        ...course,
+                        progress: [70, 45, 90][index % 3], // Still mock progress for simplicity
+                    }));
+                    setChildsCourses(enrolledCourses);
+                }
+
+            } catch (error) {
+                console.error("Failed to fetch guardian data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
+    
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div>

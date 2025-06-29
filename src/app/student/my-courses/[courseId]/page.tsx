@@ -1,7 +1,11 @@
 
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { courses } from '@/lib/mock-data';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import {
   Accordion,
   AccordionContent,
@@ -10,15 +14,42 @@ import {
 } from '@/components/ui/accordion';
 import { CheckCircle, PlayCircle, FileText, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-export default async function CourseHomePage({
-  params,
-}: {
-  params: { courseId: string };
-}) {
-  const course = courses.find((c) => c.id === params.courseId);
+
+export default function CourseHomePage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!courseId) return;
+      try {
+        const data = await getCourse(courseId);
+        if (data) {
+          setCourse(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+  }, [courseId]);
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   if (!course || !course.syllabus) {
     notFound();
@@ -35,7 +66,7 @@ export default async function CourseHomePage({
     return (Math.abs(hash) % 75) + 20; // Progress between 20 and 95
   };
 
-  const courseProgress = getMockProgress(course.id); 
+  const courseProgress = getMockProgress(course.id!); 
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -82,7 +113,7 @@ export default async function CourseHomePage({
                     </span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="p-0">
                 <ul className="space-y-1 border-t">
                   {module.lessons.map((lesson, index) => (
                     <li key={lesson.id}>

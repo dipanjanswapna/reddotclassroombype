@@ -1,33 +1,57 @@
 
-import { notFound } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
+import { getCourse } from '@/lib/firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, MessageSquare, MonitorPlay } from 'lucide-react';
 import FacebookComments from '@/components/facebook-comments';
 import { LiveVideoPlayer } from '@/components/live-video-player';
+import { useState, useEffect } from 'react';
+import type { Course, LiveClass } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const getLiveClassData = (courseId: string, liveClassId: string) => {
-  const course = courses.find((c) => c.id === courseId);
-  if (!course || !course.liveClasses) return null;
+export default function LiveClassViewerPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const liveClassId = params.liveClassId as string;
 
-  const liveClass = course.liveClasses.find((lc) => lc.id === liveClassId);
-  if (!liveClass) return null;
+  const [course, setCourse] = useState<Course | null>(null);
+  const [liveClass, setLiveClass] = useState<LiveClass | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      const fetchLiveClassData = async () => {
+          if (!courseId) return;
+          try {
+              const courseData = await getCourse(courseId);
+              if (courseData) {
+                  setCourse(courseData);
+                  const classData = courseData.liveClasses?.find((lc) => lc.id === liveClassId);
+                  if (classData) {
+                      setLiveClass(classData);
+                  }
+              }
+          } catch(e) {
+              console.error(e);
+          } finally {
+              setLoading(false);
+          }
+      };
+      fetchLiveClassData();
+  }, [courseId, liveClassId]);
   
-  return { course, liveClass };
-};
-
-export default function LiveClassViewerPage({
-  params,
-}: {
-  params: { courseId: string; liveClassId: string };
-}) {
-  const data = getLiveClassData(params.courseId, params.liveClassId);
-  
-  if (!data) {
-    notFound();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
   }
 
-  const { course, liveClass } = data;
+  if (!course || !liveClass) {
+    notFound();
+  }
 
   return (
     <div className="space-y-8">
@@ -61,5 +85,3 @@ export default function LiveClassViewerPage({
     </div>
   );
 }
-
-    

@@ -32,11 +32,14 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       await updateCourse(courseData.id, courseData);
       revalidatePath('/admin/courses');
       revalidatePath(`/admin/courses/builder/${courseData.id}`);
-       revalidatePath(`/courses/${courseData.id}`);
+      revalidatePath('/teacher/courses');
+      revalidatePath(`/teacher/courses/builder/${courseData.id}`);
+      revalidatePath(`/courses/${courseData.id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
       const newCourseRef = await addCourse(courseData);
       revalidatePath('/admin/courses');
+      revalidatePath('/teacher/courses');
       return { success: true, message: 'Course created successfully.', courseId: newCourseRef.id };
     }
   } catch (error: any) {

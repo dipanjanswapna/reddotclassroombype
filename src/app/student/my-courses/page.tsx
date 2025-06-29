@@ -1,31 +1,58 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { courses, Course } from '@/lib/mock-data';
+import { getCourses } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, ListFilter } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'My Courses',
-  description: 'Manage and track your enrolled courses at Red Dot Classroom.',
-};
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function MyCoursesPage() {
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      async function fetchCoursesData() {
+          try {
+              // In a real app, you would fetch courses the user is actually enrolled in.
+              // For now, we'll fetch all and categorize them based on mock logic.
+              const courses = await getCourses();
+              setAllCourses(courses);
+          } catch(e) {
+              console.error("Failed to fetch courses", e);
+          } finally {
+              setLoading(false);
+          }
+      }
+      fetchCoursesData();
+  }, []);
+
+
   // Mocking enrolled courses with progress for demonstration
-  const inProgressCourses = courses.slice(0, 3).map((course, index) => ({
+  const inProgressCourses = allCourses.slice(0, 3).map((course, index) => ({
     ...course,
-    progress: [70, 45, 90, 25][index],
-    lastViewed: ['Today', '2 days ago', 'Yesterday', '1 week ago'][index],
+    progress: [70, 45, 90, 25][index % 4],
+    lastViewed: ['Today', '2 days ago', 'Yesterday', '1 week ago'][index % 4],
   }));
 
-  const completedCourses = courses.slice(3, 5).map((course, index) => ({
+  const completedCourses = allCourses.slice(3, 5).map((course, index) => ({
       ...course,
       progress: 100,
-      completedDate: ['2024-05-15', '2024-06-01'][index],
+      completedDate: ['2024-05-15', '2024-06-01'][index % 2],
   }));
   
-  const wishlistedCourses = courses.filter(course => course.isWishlisted);
+  const wishlistedCourses = allCourses.filter(course => course.isWishlisted);
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">

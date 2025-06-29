@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Course } from "@/lib/mock-data";
+import { Course } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Star, Trash2 } from "lucide-react";
 

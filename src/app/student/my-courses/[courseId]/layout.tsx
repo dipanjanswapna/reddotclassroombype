@@ -14,9 +14,11 @@ import {
   Video,
   Archive,
 } from 'lucide-react';
-import { courses } from '@/lib/mock-data';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function CourseLayout({
   children,
@@ -26,7 +28,30 @@ export default function CourseLayout({
   params: { courseId: string };
 }) {
   const pathname = usePathname();
-  const course = courses.find((c) => c.id === params.courseId);
+  const [course, setCourse] = React.useState<Course | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+   React.useEffect(() => {
+    const fetchCourseData = async () => {
+      try {
+        const data = await getCourse(params.courseId);
+        setCourse(data);
+      } catch (error) {
+        console.error("Failed to fetch course for layout", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+  }, [params.courseId]);
+
+  if (loading) {
+    return (
+       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   if (!course) {
     notFound();

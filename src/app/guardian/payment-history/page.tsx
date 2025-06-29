@@ -16,30 +16,8 @@ export const metadata: Metadata = {
   description: "View your child's transaction history at Red Dot Classroom.",
 };
 
-// Same mock data as student page for now
-const paymentHistory = [
-  {
-    id: 'inv-001',
-    courseName: 'HSC 2025 Crash Course - Science',
-    amount: 'BDT 4500',
-    date: '2024-06-01',
-    status: 'Completed',
-  },
-  {
-    id: 'inv-002',
-    courseName: 'IELTS Preparation Course',
-    amount: 'BDT 3000',
-    date: '2024-05-15',
-    status: 'Completed',
-  },
-  {
-    id: 'inv-003',
-    courseName: 'Data Science with Python',
-    amount: 'BDT 5500',
-    date: '2024-04-20',
-    status: 'Completed',
-  },
-];
+// In a real app, this data would be fetched from a payment service
+const paymentHistory: any[] = [];
 
 export default function GuardianPaymentsPage() {
   return (
@@ -68,7 +46,7 @@ export default function GuardianPaymentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paymentHistory.map((invoice) => (
+              {paymentHistory.length > 0 ? paymentHistory.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{invoice.courseName}</TableCell>
@@ -78,7 +56,13 @@ export default function GuardianPaymentsPage() {
                     <Badge className="bg-green-500 text-white">{invoice.status}</Badge>
                   </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                        No payment history found.
+                    </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

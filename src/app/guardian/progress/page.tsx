@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, CheckCircle, Percent } from 'lucide-react';
@@ -10,12 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { mockGrades } from '@/lib/mock-data';
-import type { Metadata } from 'next';
+import { getCourses } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { Assignment } from '@/lib/types';
+import { format, parseISO } from 'date-fns';
 
-export const metadata: Metadata = {
-  title: "Child's Progress Report",
-  description: "Detailed reports on your child's course progress, grades, and activity.",
+type GradedAssignment = Assignment & {
+    courseName: string;
 };
 
 function getGradeColor(grade: string) {
@@ -25,7 +29,47 @@ function getGradeColor(grade: string) {
     return 'bg-red-500 text-white';
 }
 
+const currentStudentId = 'usr_stud_001'; // Mock guardian's linked student
+
 export default function GuardianProgressPage() {
+  const [gradedAssignments, setGradedAssignments] = useState<GradedAssignment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGrades() {
+        try {
+            const allCourses = await getCourses();
+            const assignments: GradedAssignment[] = [];
+            allCourses.forEach(course => {
+                if(course.assignments) {
+                    course.assignments.forEach(assignment => {
+                        if (assignment.status === 'Graded' && assignment.studentId === currentStudentId) {
+                            assignments.push({
+                                ...assignment,
+                                courseName: course.title,
+                            });
+                        }
+                    });
+                }
+            });
+            setGradedAssignments(assignments.sort((a,b) => new Date(b.submissionDate as string).getTime() - new Date(a.submissionDate as string).getTime()));
+        } catch (error) {
+            console.error("Failed to fetch grades", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchGrades();
+  }, []);
+
+  if (loading) {
+      return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+              <LoadingSpinner className="w-12 h-12" />
+          </div>
+      );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div>
@@ -77,23 +121,30 @@ export default function GuardianProgressPage() {
               <TableRow>
                 <TableHead>Course</TableHead>
                 <TableHead>Assignment/Quiz</TableHead>
-                <TableHead className="text-center">Score</TableHead>
                 <TableHead className="text-center">Grade</TableHead>
                 <TableHead className="text-right">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockGrades.map((item) => (
+              {gradedAssignments.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.courseName}</TableCell>
-                  <TableCell>{item.assignmentName}</TableCell>
-                  <TableCell className="text-center">{item.score}%</TableCell>
+                  <TableCell>{item.title}</TableCell>
                   <TableCell className="text-center">
-                    <Badge className={getGradeColor(item.grade)}>{item.grade}</Badge>
+                    <Badge className={getGradeColor(item.grade || '')}>{item.grade}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">{item.date}</TableCell>
+                  <TableCell className="text-right">
+                    {item.submissionDate && format(parseISO(item.submissionDate as string), 'PPP')}
+                  </TableCell>
                 </TableRow>
               ))}
+              {gradedAssignments.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No graded assignments found.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

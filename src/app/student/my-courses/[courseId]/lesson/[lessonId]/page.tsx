@@ -1,45 +1,64 @@
+
 'use client'; // This directive is needed for useEffect and useState
 
-import { notFound } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+import { notFound, useParams } from 'next/navigation';
+import { getCourse } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Download, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import FacebookComments from '@/components/facebook-comments';
 import { useEffect, useState } from 'react';
+import type { Course, Lesson } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const getLessonData = (courseId: string, lessonId: string) => {
-  const course = courses.find((c) => c.id === courseId);
-  if (!course || !course.syllabus) return null;
-
-  for (const module of course.syllabus) {
-    const lesson = module.lessons.find((l) => l.id === lessonId);
-    if (lesson) {
-      return { course, lesson };
-    }
-  }
-  return null;
-};
-
-export default function LessonPage({
-  params,
-}: {
-  params: { courseId: string; lessonId: string };
-}) {
-  const data = getLessonData(params.courseId, params.lessonId);
+export default function LessonPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const lessonId = params.lessonId as string;
+  
+  const [course, setCourse] = useState<Course | null>(null);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [loading, setLoading] = useState(true);
   const [pageUrl, setPageUrl] = useState('');
 
   useEffect(() => {
-    // This runs only on the client-side after the component mounts,
-    // so `window` is safely available.
     setPageUrl(window.location.href);
-  }, []);
 
-  if (!data) {
-    notFound();
+    const fetchLessonData = async () => {
+      if (!courseId) return;
+      try {
+        const courseData = await getCourse(courseId);
+        if (courseData) {
+          setCourse(courseData);
+          for (const module of courseData.syllabus || []) {
+            const lessonData = module.lessons.find((l) => l.id === lessonId);
+            if (lessonData) {
+              setLesson(lessonData);
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch lesson data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessonData();
+  }, [courseId, lessonId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
   }
 
-  const { course, lesson } = data;
+  if (!course || !lesson) {
+    notFound();
+  }
 
   return (
     <div className="space-y-8">

@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import {
   Book,
   FileText,
@@ -22,6 +22,8 @@ import {
   Archive,
   Megaphone,
   ClipboardEdit,
+  Loader2,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { courses, Course } from '@/lib/mock-data';
 import {
   DndContext,
   closestCenter,
@@ -59,11 +60,20 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { format } from 'date-fns';
-
-
-const allCategories = [...new Set(courses.map(course => course.category))];
-const archivedCourses = courses.filter(c => c.isArchived);
+import { Course, SyllabusModule, Instructor } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
+import { saveCourseAction } from '@/app/actions';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 
 type LessonData = {
     id: string;
@@ -210,16 +220,16 @@ function SortableSyllabusItem({
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
-                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
+                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor={`duration-${item.id}`}>Lesson Duration</Label>
-                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
+                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
                         </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet URL</Label>
-                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
+                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                     </div>
                 </div>
             </CollapsibleContent>
@@ -228,30 +238,43 @@ function SortableSyllabusItem({
 }
 
 export default function CourseBuilderPage({ params }: { params: { courseId: string } }) {
+  const router = useRouter();
   const isNewCourse = params.courseId === 'new';
-  const courseToEdit = isNewCourse ? null : courses.find(c => c.id === params.courseId);
 
-  if (!isNewCourse && !courseToEdit) {
-    notFound();
-  }
-    
   const { toast } = useToast();
+  const [loading, setLoading] = useState(!isNewCourse);
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
 
-  const [title, setTitle] = useState(courseToEdit?.title || '');
-  const [description, setDescription] = useState(courseToEdit?.description || '');
-  const [category, setCategory] = useState(courseToEdit?.category || allCategories[0] || '');
-  const [price, setPrice] = useState(courseToEdit?.price?.replace(/[^0-9.]/g, '') || '');
-  const [thumbnailUrl, setThumbnailUrl] = useState(courseToEdit?.imageUrl || 'https://placehold.co/600x400.png');
+  const [courseTitle, setCourseTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [price, setPrice] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
-  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
-  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>(courseToEdit?.includedArchivedCourseIds || []);
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
+  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
+  const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
+  const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [instructors, setInstructors] = useState<InstructorItem[]>([]);
+  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
+  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  const [quizzes, setQuizzes] = useState<QuizData[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentData[]>([]);
 
-  const getSyllabusItems = (): SyllabusItem[] => {
-    if (!courseToEdit?.syllabus) return [];
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  const getSyllabusItems = (course: Course): SyllabusItem[] => {
+    if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
-    courseToEdit.syllabus.forEach(module => {
+    course.syllabus.forEach(module => {
         items.push({ id: module.id, type: 'module', title: module.title });
         module.lessons.forEach(lesson => {
             items.push({ ...lesson });
@@ -260,33 +283,45 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     return items;
   }
 
-  const [syllabus, setSyllabus] = useState<SyllabusItem[]>(getSyllabusItems());
+  useEffect(() => {
+    async function fetchInitialData() {
+        try {
+            const [ fetchedCategories, allCourses ] = await Promise.all([
+                getCategories(),
+                getCourses()
+            ]);
+            setAllCategories(fetchedCategories);
+            setArchivedCourses(allCourses.filter(c => c.isArchived));
 
-  const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-  const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
-  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
-  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(courseToEdit?.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
-  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
-  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
-  
-  const [quizzes, setQuizzes] = useState<QuizData[]>(courseToEdit?.quizzes?.map(q => ({
-    id: q.id,
-    title: q.title,
-    topic: q.topic,
-    questions: q.questions.map(qq => ({
-        id: qq.id,
-        text: qq.text,
-        options: qq.options.map((opt, i) => ({ id: `${qq.id}-opt-${i}`, text: opt })),
-        correctAnswerId: `${qq.id}-opt-${qq.correctAnswer}`
-    }))
-  })) || []);
-
-  const [assignments, setAssignments] = useState<AssignmentData[]>(courseToEdit?.assignments?.map(a => ({
-      id: a.id,
-      title: a.title,
-      topic: a.topic,
-      deadline: new Date(a.deadline)
-  })) || []);
+            if (!isNewCourse) {
+                const courseData = await getCourse(params.courseId);
+                if (courseData) {
+                    setCourseTitle(courseData.title || '');
+                    setDescription(courseData.description || '');
+                    setCategory(courseData.category || '');
+                    setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
+                    setThumbnailUrl(courseData.imageUrl || 'https://placehold.co/600x400.png');
+                    setIntroVideoUrl(courseData.videoUrl || '');
+                    setWhatYouWillLearn(courseData.whatYouWillLearn || []);
+                    setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
+                    setSyllabus(getSyllabusItems(courseData));
+                    setFaqs(courseData.faqs?.map(f => ({...f, id: f.id || Math.random().toString()})) || []);
+                    setInstructors(courseData.instructors?.map(i => ({...i, id: i.id || Math.random().toString()})) || []);
+                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: cr.id || Math.random().toString()})) || []);
+                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: a.id || Math.random().toString()})) || []);
+                } else {
+                    notFound();
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            toast({ title: 'Error loading data', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchInitialData();
+  }, [params.courseId, isNewCourse, toast]);
 
 
   const sensors = useSensors(
@@ -298,7 +333,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
 
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
-
     if (over && active.id !== over.id) {
       setSyllabus((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id);
@@ -313,7 +347,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
       ? { id: Date.now().toString(), type, title: 'New Module' }
       : { id: Date.now().toString(), type: 'video', title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
     
-    // Logic to add a lesson under the last module if one exists
     if (type === 'lesson') {
         let lastModuleIndex = -1;
         for (let i = syllabus.length - 1; i >= 0; i--) {
@@ -395,7 +428,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -438,22 +471,100 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setAnnouncements(prev => prev.filter(a => a.id !== id));
   };
 
-  const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
-    toast({
-      title: "Draft Saved!",
-      description: "Your course has been saved as a draft.",
+  const handleSave = async (status: 'Draft' | 'Pending Approval') => {
+    setIsSaving(true);
+    
+    const reconstructedSyllabus: SyllabusModule[] = [];
+    let currentModule: SyllabusModule | null = null;
+    syllabus.forEach(item => {
+        if (item.type === 'module') {
+            if (currentModule) {
+                reconstructedSyllabus.push(currentModule);
+            }
+            currentModule = { id: item.id, title: item.title, lessons: [] };
+        } else if (currentModule && item.type !== 'module') {
+            currentModule.lessons.push({
+                id: item.id,
+                type: item.type as 'video' | 'quiz' | 'document',
+                title: item.title,
+                duration: item.duration || '',
+                videoId: item.videoId || '',
+                lectureSheetUrl: item.lectureSheetUrl || '',
+            });
+        }
     });
-  };
+    if (currentModule) {
+        reconstructedSyllabus.push(currentModule);
+    }
 
-  const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
-    toast({
-      title: "Submitted for Approval",
-      description: "Your course has been submitted and is pending review.",
-    });
+    const courseData: Partial<Course> = {
+        id: isNewCourse ? undefined : params.courseId,
+        title: courseTitle,
+        description,
+        category,
+        price: `BDT ${price}`,
+        imageUrl: thumbnailUrl,
+        videoUrl: introVideoUrl,
+        whatYouWillLearn,
+        syllabus: reconstructedSyllabus,
+        faqs: faqs.map(({ id, ...rest }) => rest), // Remove temp id
+        instructors: instructors.map(({ id, ...rest }) => rest) as Instructor[],
+        classRoutine: classRoutine.map(({ id, ...rest }) => rest),
+        includedArchivedCourseIds,
+        announcements: announcements.map(({ id, ...rest }) => rest),
+        status,
+    };
+    
+    const result = await saveCourseAction(courseData);
+    if (result.success) {
+        toast({ title: 'Success', description: result.message });
+        if (!isNewCourse) {
+          // No revalidatePath needed on client side for this action as it's handled server-side
+        } else if (result.courseId) {
+          router.push(`/teacher/courses/builder/${result.courseId}`);
+        }
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
   };
   
+  const handleGenerateCourse = async () => {
+    setIsGenerating(true);
+    try {
+      const result = await generateCourseContent(aiTopic);
+      
+      setCourseTitle(result.title);
+      setDescription(result.description);
+      setWhatYouWillLearn(result.outcomes);
+      setFaqs(result.faqs.map(faq => ({ ...faq, id: Math.random().toString() })));
+
+      const newSyllabus: SyllabusItem[] = [];
+      result.syllabus.forEach(module => {
+        newSyllabus.push({ id: Math.random().toString(), type: 'module', title: module.title });
+        module.lessons.forEach(lesson => {
+          newSyllabus.push({
+            id: Math.random().toString(),
+            type: 'video',
+            title: lesson.title,
+            duration: '10 min',
+            videoId: '',
+            lectureSheetUrl: '',
+          });
+        });
+      });
+      setSyllabus(newSyllabus);
+
+      toast({ title: 'Success', description: 'AI has generated the course content.' });
+      setIsAiDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Error', description: 'Failed to generate content with AI.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
@@ -469,20 +580,35 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
 
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+        </div>
+      );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    {isNewCourse ? 'Create New Course' : `Edit: ${courseToEdit?.title}`}
+                    {isNewCourse ? 'Create New Course' : `Edit: ${courseTitle}`}
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
                    {isNewCourse ? 'Create a new course from scratch.' : 'Manage your course content with ease.'}
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={handleSaveDraft}><Save className="mr-2"/> Save Draft</Button>
-                <Button variant="accent" onClick={handleSubmitForApproval}><Send className="mr-2"/> Submit for Approval</Button>
+                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                    <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
+                </Button>
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
+                </Button>
+                <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
+                </Button>
             </div>
         </div>
         
@@ -510,7 +636,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">Course Title</Label>
-                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={title} onChange={e => setTitle(e.target.value)} />
+                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Course Description</Label>
@@ -840,8 +966,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                             <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
                                 <Checkbox
                                     id={`bundle-${course.id}`}
-                                    checked={includedCourseIds.includes(course.id)}
-                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id, !!checked)}
+                                    checked={includedCourseIds.includes(course.id!)}
+                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id!, !!checked)}
                                 />
                                 <Label htmlFor={`bundle-${course.id}`} className="cursor-pointer">
                                     {course.title} <span className="text-muted-foreground text-xs">({course.category})</span>
@@ -854,9 +980,35 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                     </div>
                 </CardContent>
             )}
-
         </Card>
-
+        <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Generate Course with AI</DialogTitle>
+                    <DialogDescription>
+                        Enter a topic, and the AI will generate a draft for your course title, description, syllabus, and more.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-2">
+                    <Label htmlFor="ai-topic">Course Topic</Label>
+                    <Input 
+                        id="ai-topic" 
+                        value={aiTopic}
+                        onChange={(e) => setAiTopic(e.target.value)}
+                        placeholder="e.g., Introduction to Rocket Science" 
+                    />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
+                        {isGenerating ? <Loader2 className="mr-2 animate-spin"/> : <Wand2 className="mr-2"/>}
+                        Generate
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { PlusCircle, Edit, Trash2, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +15,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { allPromoCodes as initialPromoCodes, PromoCode, courses } from '@/lib/mock-data';
+import { getCourses, getPromoCodes } from '@/lib/firebase/firestore';
+import { savePromoCodeAction, deletePromoCodeAction } from '@/app/actions';
+import { PromoCode, Course } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -34,78 +36,113 @@ import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function AdminPromoCodePage() {
   const { toast } = useToast();
-  const [promoCodes, setPromoCodes] = useState<PromoCode[]>(initialPromoCodes);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
   
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingPromo, setEditingPromo] = useState<PromoCode | null>(null);
+
   // Form State
   const [code, setCode] = useState('');
   const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState<number>(0);
   const [expiresAt, setExpiresAt] = useState<Date | undefined>(new Date());
-  const [usageLimit, setUsageLimit] = useState(100);
+  const [usageLimit, setUsageLimit] = useState<number>(100);
   const [applicableCourseIds, setApplicableCourseIds] = useState<string[]>(['all']);
 
-  const handleCourseSelection = (courseId: string) => {
-    setApplicableCourseIds(prev => {
-        const isAllSelected = prev.includes('all');
-        // If 'all' is currently selected, a new selection should start with just the clicked course.
-        if (isAllSelected) {
-            return [courseId];
-        }
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [fetchedCodes, fetchedCourses] = await Promise.all([
+          getPromoCodes(),
+          getCourses()
+        ]);
+        setPromoCodes(fetchedCodes);
+        setAllCourses(fetchedCourses);
+      } catch (error) {
+        console.error(error);
+        toast({ title: 'Error', description: 'Could not fetch data.', variant: 'destructive'});
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [toast]);
 
-        const newSelection = new Set(prev);
-        if (newSelection.has(courseId)) {
-            newSelection.delete(courseId);
-        } else {
-            newSelection.add(courseId);
-        }
 
-        const newIds = Array.from(newSelection);
-        // If selection becomes empty, default back to 'all'.
-        return newIds.length > 0 ? newIds : ['all'];
-    });
+  const handleOpenDialog = (promo: PromoCode | null) => {
+    setEditingPromo(promo);
+    if (promo) {
+      setCode(promo.code);
+      setType(promo.type);
+      setValue(promo.value);
+      setExpiresAt(promo.expiresAt ? new Date(promo.expiresAt) : undefined);
+      setUsageLimit(promo.usageLimit);
+      setApplicableCourseIds(promo.applicableCourseIds);
+    } else {
+      // Reset form
+      setCode('');
+      setType('percentage');
+      setValue(0);
+      setExpiresAt(new Date());
+      setUsageLimit(100);
+      setApplicableCourseIds(['all']);
+    }
+    setIsDialogOpen(true);
   };
 
-  const handleCreateCode = () => {
-    // In a real app, this would be a server action.
-    const newCode: PromoCode = {
-      id: `promo_${Date.now()}`,
-      code: code || `RDC${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+
+  const handleSaveCode = async () => {
+    setIsSaving(true);
+    const result = await savePromoCodeAction({
+      id: editingPromo?.id,
+      code,
       type,
       value,
-      usageCount: 0,
-      usageLimit,
       expiresAt: expiresAt ? format(expiresAt, 'yyyy-MM-dd') : '',
-      isActive: true,
-      applicableCourseIds: applicableCourseIds,
-      createdBy: 'admin'
-    };
+      usageLimit,
+      applicableCourseIds,
+      usageCount: editingPromo?.usageCount || 0,
+      isActive: editingPromo?.isActive ?? true,
+      createdBy: 'admin',
+    });
 
-    setPromoCodes(prev => [...prev, newCode]);
-    toast({ title: 'Promo Code Created', description: `Code "${newCode.code}" has been successfully created.` });
-    setIsDialogOpen(false);
-    // Reset form
-    setCode('');
-    setType('percentage');
-    setValue(0);
-    setExpiresAt(new Date());
-    setUsageLimit(100);
-    setApplicableCourseIds(['all']);
+    if (result.success) {
+      const updatedCodes = await getPromoCodes();
+      setPromoCodes(updatedCodes);
+      toast({ title: editingPromo ? 'Promo Code Updated' : 'Promo Code Created' });
+      setIsDialogOpen(false);
+    } else {
+      toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
   };
 
-  const handleDelete = (id: string) => {
-    setPromoCodes(prev => prev.filter(p => p.id !== id));
-    toast({ title: 'Promo Code Deleted', variant: 'destructive' });
+  const handleDelete = async (id: string) => {
+    const result = await deletePromoCodeAction(id);
+    if (result.success) {
+      setPromoCodes(prev => prev.filter(p => p.id !== id));
+      toast({ title: 'Promo Code Deleted', variant: 'destructive' });
+    } else {
+      toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
   }
 
   const getCourseTitles = (ids: string[]) => {
     if (ids.includes('all')) return 'All Courses';
     if (ids.length === 0) return 'No Courses';
     if (ids.length > 2) return `${ids.length} courses`;
-    return ids.map(id => courses.find(c => c.id === id)?.title || 'Unknown').join(', ');
+    return ids.map(id => allCourses.find(c => c.id === id)?.title || 'Unknown').join(', ');
+  }
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner /></div>;
   }
 
   return (
@@ -117,14 +154,49 @@ export default function AdminPromoCodePage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button><PlusCircle className="mr-2" /> Create New Code</Button>
+            <Button onClick={() => handleOpenDialog(null)}><PlusCircle className="mr-2" /> Create New Code</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Promo Code</DialogTitle>
+              <DialogTitle>{editingPromo ? 'Edit Promo Code' : 'Create New Promo Code'}</DialogTitle>
               <DialogDescription>Fill in the details for the new promotional code.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Courses</Label>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="col-span-3 justify-start truncate">
+                            {getCourseTitles(applicableCourseIds)}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-64" align="start">
+                        <ScrollArea className="h-48">
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setApplicableCourseIds(['all']); }}>
+                                <Checkbox checked={applicableCourseIds.includes('all')} readOnly className="mr-2"/>
+                                All Courses
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {allCourses.map(course => (
+                                <DropdownMenuItem key={course.id} onSelect={(e) => {
+                                    e.preventDefault();
+                                    setApplicableCourseIds(prev => {
+                                        const isAll = prev.includes('all');
+                                        const newSet = isAll ? new Set<string>() : new Set(prev);
+                                        if (newSet.has(course.id!)) newSet.delete(course.id!);
+                                        else newSet.add(course.id!);
+                                        const newArr = Array.from(newSet);
+                                        return newArr.length > 0 ? newArr : ['all'];
+                                    });
+                                }}>
+                                    <Checkbox checked={applicableCourseIds.includes(course.id!)} readOnly className="mr-2"/>
+                                    <span className="truncate">{course.title}</span>
+                                </DropdownMenuItem>
+                            ))}
+                        </ScrollArea>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="code" className="text-right">Code</Label>
                 <Input id="code" value={code} onChange={e => setCode(e.target.value)} placeholder="Leave blank to auto-generate" className="col-span-3" />
@@ -153,42 +225,13 @@ export default function AdminPromoCodePage() {
                 <Label htmlFor="date" className="text-right">Expires At</Label>
                 <DatePicker date={expiresAt} setDate={setExpiresAt} className="col-span-3" />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Courses</Label>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="col-span-3 justify-start truncate">
-                            {getCourseTitles(applicableCourseIds)}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-64" align="start">
-                        <ScrollArea className="h-48">
-                            <DropdownMenuItem
-                                onSelect={(e) => e.preventDefault()}
-                                onClick={() => setApplicableCourseIds(['all'])}
-                            >
-                                <Checkbox checked={applicableCourseIds.includes('all')} readOnly className="mr-2"/>
-                                All Courses
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {courses.map(course => (
-                                <DropdownMenuItem 
-                                    key={course.id} 
-                                    onSelect={(e) => e.preventDefault()}
-                                    onClick={() => handleCourseSelection(course.id)}
-                                >
-                                    <Checkbox checked={applicableCourseIds.includes(course.id)} readOnly className="mr-2"/>
-                                    <span className="truncate">{course.title}</span>
-                                </DropdownMenuItem>
-                            ))}
-                        </ScrollArea>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button onClick={handleCreateCode}>Create Code</Button>
+              <Button onClick={handleSaveCode} disabled={isSaving}>
+                {isSaving && <Loader2 className="animate-spin mr-2"/>}
+                Save Code
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -231,8 +274,8 @@ export default function AdminPromoCodePage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex gap-2 justify-end">
-                      <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4"/> Edit</Button>
-                      <Button variant="destructive" size="sm" onClick={() => handleDelete(promo.id)}><Trash2 className="mr-2 h-4 w-4"/> Delete</Button>
+                      <Button variant="outline" size="sm" onClick={() => handleOpenDialog(promo)}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDelete(promo.id!)}><Trash2 className="mr-2 h-4 w-4"/> Delete</Button>
                     </div>
                   </TableCell>
                 </TableRow>

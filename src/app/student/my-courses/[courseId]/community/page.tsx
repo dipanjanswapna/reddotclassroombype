@@ -1,23 +1,54 @@
 
 'use client';
 
-import { useState } from 'react';
-import { notFound } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Copy, Check, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
+import { LoadingSpinner } from '@/components/loading-spinner';
+
 
 // In a real app, this would come from the logged-in user's data.
 const mockStudentId = 'usr_stud_001'; 
 const accessCode = `RDC-STU-${mockStudentId.split('_')[2].toUpperCase()}-A9B8`;
 
-export default function CourseCommunityPage({ params }: { params: { courseId: string } }) {
-  const course = courses.find((c) => c.id === params.courseId);
+export default function CourseCommunityPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+      const fetchCourseData = async () => {
+          if (!courseId) return;
+          try {
+              const data = await getCourse(courseId);
+              setCourse(data);
+          } catch(e) {
+              console.error(e);
+          } finally {
+              setLoading(false);
+          }
+      };
+      fetchCourseData();
+  }, [courseId]);
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   if (!course) {
     notFound();

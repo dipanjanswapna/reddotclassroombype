@@ -5,29 +5,57 @@
 // It could have more complex logic, like partial payments.
 // For now, it redirects to the main checkout page which handles pre-booking pricing.
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { notFound, useRouter, useParams } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function PreBookRedirectPage() {
   const router = useRouter();
   const params = useParams();
   const courseId = params.courseId as string;
-  
-  const course = courses.find(c => c.id === courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (course) {
-        if (course.isPrebooking) {
-            router.replace(`/checkout/${courseId}`);
-        } else {
-            // If not a prebooking course, just go to the normal course page
-            router.replace(`/courses/${courseId}`);
+    if (!courseId) return;
+
+    const fetchAndRedirect = async () => {
+        try {
+            const courseData = await getCourse(courseId);
+            if (courseData) {
+                setCourse(courseData);
+                if (courseData.isPrebooking) {
+                    router.replace(`/checkout/${courseId}`);
+                } else {
+                    router.replace(`/courses/${courseId}`);
+                }
+            } else {
+                setLoading(false);
+                notFound();
+            }
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+            notFound();
         }
-    }
-  }, [course, courseId, router]);
-  
+    };
+
+    fetchAndRedirect();
+  }, [courseId, router]);
+
+  if (loading) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+            <LoadingSpinner />
+            <p className="text-muted-foreground">Loading course information...</p>
+        </div>
+      );
+  }
+
+  // This part will likely not be visible due to the quick redirect,
+  // but it's good practice for handling the state.
   if (!course) {
     notFound();
   }

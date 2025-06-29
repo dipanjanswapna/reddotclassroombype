@@ -1,14 +1,15 @@
 
 'use client';
 
-import { useState } from 'react';
-import { notFound } from 'next/navigation';
-import { courses, Assignment } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { getCourse } from '@/lib/firebase/firestore';
+import type { Course, Assignment } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge, badgeVariants } from '@/components/ui/badge';
-import { FileText, Upload, CheckCircle, MessageSquare, Edit } from 'lucide-react';
+import { FileText, Upload, CheckCircle, MessageSquare } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -22,7 +23,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Assignment['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
@@ -37,17 +38,34 @@ const getStatusBadgeVariant = (status: Assignment['status']): VariantProps<typeo
   }
 };
 
-export default function AssignmentsPage({ params }: { params: { courseId: string } }) {
+export default function AssignmentsPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
   const { toast } = useToast();
-  const course = courses.find((c) => c.id === params.courseId);
   
-  const [assignments, setAssignments] = useState(course?.assignments || []);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  if (!course) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!courseId) return;
+      try {
+        const data = await getCourse(courseId);
+        setCourse(data);
+        if (data && data.assignments) {
+          setAssignments(data.assignments);
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+  }, [courseId]);
   
   const handleOpenDialog = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
@@ -56,9 +74,7 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
 
   const handleSubmission = () => {
     if (!selectedAssignment) return;
-
-    // In a real app, this would involve file uploads and a server request.
-    // Here, we just mock the state change.
+    // In a real app, this would involve file uploads and a server action.
     setAssignments(prev => 
       prev.map(a => 
         a.id === selectedAssignment.id 
@@ -66,12 +82,10 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
           : a
       )
     );
-    
     toast({
       title: 'Assignment Submitted!',
       description: `Your submission for "${selectedAssignment.title}" was successful.`,
     });
-    
     setIsDialogOpen(false);
   };
 
@@ -86,6 +100,18 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
       default:
         return <Button size="sm" onClick={() => handleOpenDialog(assignment)}><Upload className="mr-2 h-4 w-4"/>Submit</Button>;
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    notFound();
   }
 
   return (
@@ -118,7 +144,7 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
                     <TableRow key={assignment.id}>
                       <TableCell className="font-medium">{assignment.title}</TableCell>
                       <TableCell>{assignment.topic}</TableCell>
-                      <TableCell>{assignment.deadline}</TableCell>
+                      <TableCell>{assignment.deadline as string}</TableCell>
                       <TableCell>
                           <Badge variant={getStatusBadgeVariant(assignment.status)}>
                               {assignment.status} {assignment.status === 'Graded' && assignment.grade && `(${assignment.grade})`}
@@ -146,7 +172,7 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
               <DialogHeader>
                   <DialogTitle>{selectedAssignment?.title}</DialogTitle>
                   <DialogDescription>
-                      Topic: {selectedAssignment?.topic} | Deadline: {selectedAssignment?.deadline}
+                      Topic: {selectedAssignment?.topic} | Deadline: {selectedAssignment?.deadline as string}
                   </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-6">
@@ -173,7 +199,7 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
                         <CardTitle className="text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300"><MessageSquare /> Your Submission</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>You submitted this assignment on {selectedAssignment.submissionDate}.</p>
+                        <p>You submitted this assignment on {selectedAssignment.submissionDate as string}.</p>
                         <p className="text-muted-foreground mt-2">Waiting for instructor's feedback.</p>
                       </CardContent>
                     </Card>

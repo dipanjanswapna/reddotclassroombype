@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PlusCircle, Video } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -35,24 +35,25 @@ import {
 } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/components/ui/use-toast';
-import { courses, LiveClass } from '@/lib/mock-data';
+import { getCourses } from '@/lib/firebase/firestore';
+import type { Course, LiveClass } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
+
 
 // Mock data: find all classes assigned to a specific teacher
-const teacherName = 'Jubayer Ahmed'; // Example teacher
-const initialTeacherLiveClasses = courses.flatMap(course => 
-    (course.liveClasses || [])
-        // A class is assigned to this teacher if their name is found in the course's general instructors list
-        .filter(() => (course.instructors || []).some(ins => ins.name === teacherName)) 
-        .map(lc => ({...lc, courseTitle: course.title, courseId: course.id}))
-);
+const teacherId = 'ins-ja'; // Example teacher ID
 
-const teacherCourses = courses.filter(c => c.instructors.some(i => i.name === teacherName));
-
+type LiveClassWithCourse = LiveClass & {
+  courseTitle: string;
+  courseId: string;
+}
 
 export default function TeacherLiveClassesPage() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [liveClasses, setLiveClasses] = useState(initialTeacherLiveClasses);
+  const [liveClasses, setLiveClasses] = useState<LiveClassWithCourse[]>([]);
+  const [teacherCourses, setTeacherCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Form state
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -62,15 +63,38 @@ export default function TeacherLiveClassesPage() {
   const [platform, setPlatform] = useState<LiveClass['platform']>('Zoom');
   const [joinUrl, setJoinUrl] = useState('');
 
+  useEffect(() => {
+    const fetchClassData = async () => {
+        try {
+            const allCourses = await getCourses();
+            const filteredTeacherCourses = allCourses.filter(c => c.instructors.some(i => i.id === teacherId));
+            setTeacherCourses(filteredTeacherCourses);
+
+            const allClasses = filteredTeacherCourses.flatMap(course => 
+                (course.liveClasses || []).map(lc => ({...lc, courseTitle: course.title, courseId: course.id!}))
+            );
+            setLiveClasses(allClasses);
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+            toast({ title: 'Error', description: 'Could not fetch live class data', variant: 'destructive'});
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchClassData();
+  }, [toast]);
+
+
   const handleScheduleClass = () => {
     if (!selectedCourse || !topic || !date || !time || !platform || !joinUrl) {
         toast({ title: 'Error', description: 'Please fill out all fields.', variant: 'destructive' });
         return;
     }
+    
+    // In a real app, this would be a server action to update the course document
+    const courseDetails = teacherCourses.find(c => c.id === selectedCourse);
 
-    const courseDetails = courses.find(c => c.id === selectedCourse);
-
-    const newClass = {
+    const newClass: LiveClassWithCourse = {
         id: `lc-new-${Date.now()}`,
         courseId: selectedCourse,
         courseTitle: courseDetails?.title || 'Unknown Course',
@@ -93,6 +117,13 @@ export default function TeacherLiveClassesPage() {
     setJoinUrl('');
   };
 
+  if(loading) {
+      return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+      );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -128,7 +159,7 @@ export default function TeacherLiveClassesPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {teacherCourses.map(course => (
-                                        <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                                        <SelectItem key={course.id} value={course.id!}>{course.title}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -217,4 +248,3 @@ export default function TeacherLiveClassesPage() {
     </div>
   );
 }
-    

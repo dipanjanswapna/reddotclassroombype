@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
-import { notFound } from 'next/navigation';
-import { courses } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { getCourse } from '@/lib/firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -12,17 +12,34 @@ import { Star } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import type { Course } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-export default function ReviewsPage({ params }: { params: { courseId: string } }) {
-  const course = courses.find((c) => c.id === params.courseId);
+export default function ReviewsPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const { toast } = useToast();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
 
-  if (!course) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      if (!courseId) return;
+      try {
+        const data = await getCourse(courseId);
+        setCourse(data);
+      } catch (error) {
+        console.error("Failed to fetch course data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+  }, [courseId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +51,7 @@ export default function ReviewsPage({ params }: { params: { courseId: string } }
         });
         return;
     }
+    // In a real app, this would be a server action to save the review
     console.log({ rating, comment });
     toast({
       title: 'Review Submitted!',
@@ -42,6 +60,18 @@ export default function ReviewsPage({ params }: { params: { courseId: string } }
     setRating(0);
     setComment('');
   };
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    notFound();
+  }
 
   return (
     <div className="space-y-8">

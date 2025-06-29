@@ -1,23 +1,20 @@
 
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { organizations } from '@/lib/mock-data';
 import { PartnerHeader } from '@/components/partner-header';
 import { PartnerFooter } from '@/components/partner-footer';
 import { LanguageProvider } from '@/context/language-context';
+import { getPartnerBySubdomain } from '@/lib/firebase/firestore';
+import { Organization } from '@/lib/types';
 
-const getPartner = (slug: string) => {
-  return organizations.find(org => org.subdomain === slug);
-};
-
-export default function PartnerSiteLayout({
+export default async function PartnerSiteLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: { site: string };
 }) {
-  const partner = getPartner(params.site);
+  const partner: Organization | null = await getPartnerBySubdomain(params.site);
 
   if (!partner) {
     notFound();
