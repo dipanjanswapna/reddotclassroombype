@@ -1401,4 +1401,38 @@ export const mockRecentTransactions = [
   { id: 'txn_004', course: 'Engineering Admission', student: 'Jane Smith', amount: 'BDT 5000', date: '2024-07-18', status: 'Failed' },
   { id: 'txn_005', course: 'Admission Test Prep (Medical)', student: 'Karim Rahman', amount: 'BDT 5000', date: '2024-07-17', status: 'Success' },
 ];
+
+export const mockUserGrowth = [
+  { month: 'Jan', users: 150 },
+  { month: 'Feb', users: 200 },
+  { month: 'Mar', users: 278 },
+  { month: 'Apr', users: 189 },
+  { month: 'May', users: 239 },
+  { month: 'Jun', users: 349 },
+];
+
+export const mockEnrollmentByCategory = [
+  { category: 'HSC', enrollments: 4000 },
+  { category: 'SSC', enrollments: 3000 },
+  { category: 'Admission', enrollments: 2000 },
+  { category: 'Skills', enrollments: 2780 },
+  { category: 'Language', enrollments: 1890 },
+];
+
+export const mockStudentRoleDistribution = [
+  { name: 'Student', value: 85, fill: 'hsl(var(--chart-1))' },
+  { name: 'Teacher', value: 5, fill: 'hsl(var(--chart-2))' },
+  { name: 'Guardian', value: 10, fill: 'hsl(var(--chart-3))' },
+];
+
+export const mockRevenuePayouts = [
+  { month: 'Jan', revenue: 85000, payouts: 60000 },
+  { month: 'Feb', revenue: 95000, payouts: 65000 },
+  { month: 'Mar', revenue: 110000, payouts: 75000 },
+  { month: 'Apr', revenue: 125000, payouts: 85000 },
+  { month: 'May', revenue: 140000, payouts: 95000 },
+  { month: 'Jun', revenue: 150000, payouts: 105000 },
+];
+    
+
     
