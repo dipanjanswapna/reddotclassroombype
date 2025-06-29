@@ -1,14 +1,11 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { blogPosts } from '@/lib/mock-data';
+import { getBlogPostBySlug } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
-
-const getPostBySlug = (slug: string) => {
-  return blogPosts.find((post) => post.slug === slug);
-};
+import { BlogPost } from '@/lib/types';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = getPostBySlug(params.slug);
+  const post: BlogPost | null = await getBlogPostBySlug(params.slug);
 
   if (!post) {
     return {
@@ -35,7 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
+  const post = await getBlogPostBySlug(params.slug);
 
   if (!post) {
     notFound();

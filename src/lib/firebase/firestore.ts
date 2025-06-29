@@ -12,7 +12,7 @@ import {
   deleteDoc,
   setDoc,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -195,6 +195,17 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
 };
 
+// Blog Posts
+export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+    const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as BlogPost;
+};
 
 // Homepage Config
 export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {

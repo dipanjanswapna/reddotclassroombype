@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { blogPosts } from "@/lib/mock-data";
+import { getBlogPosts } from "@/lib/firebase/firestore";
+import { BlogPost } from "@/lib/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
   description: 'Articles, tips, and resources from Red Dot Classroom to help you on your learning journey.',
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts: BlogPost[] = await getBlogPosts();
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center">
