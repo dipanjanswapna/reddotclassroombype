@@ -7,39 +7,95 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Palette, Link as LinkIcon, ExternalLink } from "lucide-react";
+import { Palette, Link as LinkIcon, ExternalLink, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from 'next/link';
-import { organizations } from "@/lib/mock-data";
+import { getOrganization } from "@/lib/firebase/firestore";
+import { savePartnerBrandingAction } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import type { Organization } from "@/lib/types";
 
 // Mock data - in a real app, this would come from auth context
-const currentPartner = organizations.find(org => org.id === 'org_medishark')!;
+const currentPartnerId = 'org_medishark';
 
 export default function PartnerBrandingPage() {
     const { toast } = useToast();
-
-    const [name, setName] = useState(currentPartner.name);
-    const [logoUrl, setLogoUrl] = useState(currentPartner.logoUrl);
-    const [primaryColor, setPrimaryColor] = useState(currentPartner.primaryColor);
-    const [secondaryColor, setSecondaryColor] = useState(currentPartner.secondaryColor);
-    const [heroTitle, setHeroTitle] = useState(currentPartner.hero?.title || '');
-    const [heroSubtitle, setHeroSubtitle] = useState(currentPartner.hero?.subtitle || '');
-    const [heroImageUrl, setHeroImageUrl] = useState(currentPartner.hero?.imageUrl || '');
+    const [partner, setPartner] = useState<Organization | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    
+    // Form state
+    const [name, setName] = useState('');
+    const [logoUrl, setLogoUrl] = useState('');
+    const [primaryColor, setPrimaryColor] = useState('');
+    const [secondaryColor, setSecondaryColor] = useState('');
+    const [heroTitle, setHeroTitle] = useState('');
+    const [heroSubtitle, setHeroSubtitle] = useState('');
+    const [heroImageUrl, setHeroImageUrl] = useState('');
     const [siteUrl, setSiteUrl] = useState('');
 
-     useEffect(() => {
-        setSiteUrl(`${window.location.origin}/sites/${currentPartner.subdomain}`);
-    }, []);
+    useEffect(() => {
+        const fetchPartner = async () => {
+            try {
+                const partnerData = await getOrganization(currentPartnerId);
+                if (partnerData) {
+                    setPartner(partnerData);
+                    setName(partnerData.name);
+                    setLogoUrl(partnerData.logoUrl);
+                    setPrimaryColor(partnerData.primaryColor);
+                    setSecondaryColor(partnerData.secondaryColor);
+                    setHeroTitle(partnerData.hero?.title || '');
+                    setHeroSubtitle(partnerData.hero?.subtitle || '');
+                    setHeroImageUrl(partnerData.hero?.imageUrl || '');
+                    setSiteUrl(`${window.location.origin}/sites/${partnerData.subdomain}`);
+                }
+            } catch (err) {
+                console.error(err);
+                toast({ title: "Error", description: "Failed to load partner data.", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPartner();
+    }, [toast]);
 
 
-    const handleSave = () => {
-        toast({
-            title: "Branding Settings Saved",
-            description: "Your organization's branding has been updated.",
-        });
-        console.log({ name, logoUrl, primaryColor, secondaryColor, heroTitle, heroSubtitle, heroImageUrl });
+    const handleSave = async () => {
+        if (!partner) return;
+        setIsSaving(true);
+        const dataToSave: Partial<Organization> = {
+            name,
+            logoUrl,
+            primaryColor,
+            secondaryColor,
+            hero: {
+                title: heroTitle,
+                subtitle: heroSubtitle,
+                imageUrl: heroImageUrl
+            }
+        };
+
+        const result = await savePartnerBrandingAction(partner.id!, dataToSave);
+
+        if(result.success) {
+             toast({
+                title: "Branding Settings Saved",
+                description: "Your organization's branding has been updated.",
+            });
+        } else {
+            toast({ title: "Error", description: result.message, variant: "destructive" });
+        }
+        setIsSaving(false);
     };
+
+    if (loading) {
+        return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        );
+    }
     
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -152,7 +208,10 @@ export default function PartnerBrandingPage() {
                     </div>
                 </CardContent>
                 <div className="p-6 pt-0 flex justify-end">
-                    <Button onClick={handleSave}>Save All Changes</Button>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        {isSaving && <Loader2 className="animate-spin mr-2"/>}
+                        Save All Changes
+                    </Button>
                 </div>
             </Card>
         </div>

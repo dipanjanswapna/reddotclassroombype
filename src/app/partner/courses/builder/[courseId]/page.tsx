@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import {
   Book,
   FileText,
@@ -20,12 +20,16 @@ import {
   Users,
   Calendar,
   Archive,
+  Megaphone,
+  ClipboardEdit,
+  Loader2,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -33,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { courses, Course } from '@/lib/mock-data';
 import {
   DndContext,
   closestCenter,
@@ -55,10 +58,22 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
-
-
-const allCategories = [...new Set(courses.map(course => course.category))];
-const archivedCourses = courses.filter(c => c.isArchived);
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Course, SyllabusModule, Instructor } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
+import { saveCourseAction } from '@/app/actions';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 
 type LessonData = {
     id: string;
@@ -99,6 +114,34 @@ type ClassRoutineItem = {
   time: string;
   instructorName?: string;
 }
+
+type AnnouncementItem = {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+}
+
+type QuizQuestionData = {
+  id: string;
+  text: string;
+  options: { id: string; text: string }[];
+  correctAnswerId: string;
+};
+
+type QuizData = {
+  id: string;
+  title: string;
+  topic: string;
+  questions: QuizQuestionData[];
+};
+
+type AssignmentData = {
+  id: string;
+  title: string;
+  topic: string;
+  deadline?: Date;
+};
 
 function SortableSyllabusItem({ 
     item,
@@ -177,16 +220,16 @@ function SortableSyllabusItem({
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
-                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
+                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor={`duration-${item.id}`}>Lesson Duration</Label>
-                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
+                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
                         </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet URL</Label>
-                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
+                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                     </div>
                 </div>
             </CollapsibleContent>
@@ -195,30 +238,43 @@ function SortableSyllabusItem({
 }
 
 export default function CourseBuilderPage({ params }: { params: { courseId: string } }) {
+  const router = useRouter();
   const isNewCourse = params.courseId === 'new';
-  const courseToEdit = isNewCourse ? null : courses.find(c => c.id === params.courseId);
 
-  if (!isNewCourse && !courseToEdit) {
-    notFound();
-  }
-    
   const { toast } = useToast();
+  const [loading, setLoading] = useState(!isNewCourse);
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
 
-  const [title, setTitle] = useState(courseToEdit?.title || '');
-  const [description, setDescription] = useState(courseToEdit?.description || '');
-  const [category, setCategory] = useState(courseToEdit?.category || allCategories[0] || '');
-  const [price, setPrice] = useState(courseToEdit?.price?.replace(/[^0-9.]/g, '') || '');
-  const [thumbnailUrl, setThumbnailUrl] = useState(courseToEdit?.imageUrl || 'https://placehold.co/600x400.png');
+  const [courseTitle, setCourseTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [price, setPrice] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
-  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
-  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>(courseToEdit?.includedArchivedCourseIds || []);
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
+  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
+  const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
+  const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [instructors, setInstructors] = useState<InstructorItem[]>([]);
+  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
+  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  const [quizzes, setQuizzes] = useState<QuizData[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentData[]>([]);
 
-  const getSyllabusItems = (): SyllabusItem[] => {
-    if (!courseToEdit?.syllabus) return [];
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  const getSyllabusItems = (course: Course): SyllabusItem[] => {
+    if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
-    courseToEdit.syllabus.forEach(module => {
+    course.syllabus.forEach(module => {
         items.push({ id: module.id, type: 'module', title: module.title });
         module.lessons.forEach(lesson => {
             items.push({ ...lesson });
@@ -227,11 +283,46 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     return items;
   }
 
-  const [syllabus, setSyllabus] = useState<SyllabusItem[]>(getSyllabusItems());
+  useEffect(() => {
+    async function fetchInitialData() {
+        try {
+            const [ fetchedCategories, allCourses ] = await Promise.all([
+                getCategories(),
+                getCourses()
+            ]);
+            setAllCategories(fetchedCategories);
+            setArchivedCourses(allCourses.filter(c => c.isArchived));
 
-  const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-  const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
-  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+            if (!isNewCourse) {
+                const courseData = await getCourse(params.courseId);
+                if (courseData) {
+                    setCourseTitle(courseData.title || '');
+                    setDescription(courseData.description || '');
+                    setCategory(courseData.category || '');
+                    setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
+                    setThumbnailUrl(courseData.imageUrl || 'https://placehold.co/600x400.png');
+                    setIntroVideoUrl(courseData.videoUrl || '');
+                    setWhatYouWillLearn(courseData.whatYouWillLearn || []);
+                    setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
+                    setSyllabus(getSyllabusItems(courseData));
+                    setFaqs(courseData.faqs?.map(f => ({...f, id: f.id || Math.random().toString()})) || []);
+                    setInstructors(courseData.instructors?.map(i => ({...i, id: i.id || Math.random().toString()})) || []);
+                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: cr.id || Math.random().toString()})) || []);
+                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: a.id || Math.random().toString()})) || []);
+                } else {
+                    notFound();
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            toast({ title: 'Error loading data', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchInitialData();
+  }, [params.courseId, isNewCourse, toast]);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -242,7 +333,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
 
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
-
     if (over && active.id !== over.id) {
       setSyllabus((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id);
@@ -257,7 +347,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
       ? { id: Date.now().toString(), type, title: 'New Module' }
       : { id: Date.now().toString(), type: 'video', title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
     
-    // Logic to add a lesson under the last module if one exists
     if (type === 'lesson') {
         let lastModuleIndex = -1;
         for (let i = syllabus.length - 1; i >= 0; i--) {
@@ -311,6 +400,46 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
+  const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
+  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
+  const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
+    setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
+  };
+  const addQuestion = (quizId: string) => {
+    setQuizzes(prev => prev.map(q => {
+      if (q.id === quizId) {
+        const newQuestionId = Date.now().toString();
+        const newOptionId = `${newQuestionId}-opt-0`;
+        return { ...q, questions: [...q.questions, { id: newQuestionId, text: '', options: [{id: newOptionId, text: ''}], correctAnswerId: newOptionId }] };
+      }
+      return q;
+    }));
+  };
+  const removeQuestion = (quizId: string, questionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.filter(qu => qu.id !== questionId) } : q));
+  };
+  const updateQuestionText = (quizId: string, questionId: string, text: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, text } : qu) } : q));
+  };
+  const addOption = (quizId: string, questionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : qu) } : q));
+  };
+  const removeOption = (quizId: string, questionId: string, optionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
+  };
+  const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
+  };
+  const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
+  };
+
+  const addAssignment = () => setAssignments(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date() }]);
+  const removeAssignment = (id: string) => setAssignments(prev => prev.filter(a => a.id !== id));
+  const updateAssignment = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
+    setAssignments(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+  };
+
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
     setIncludedCourseIds(prev => {
         if (isChecked) {
@@ -321,48 +450,166 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     });
   };
 
-  const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
-    toast({
-      title: "Draft Saved!",
-      description: "Your course has been saved as a draft.",
-    });
+  const handlePostAnnouncement = () => {
+    if (!newAnnouncementTitle || !newAnnouncementContent) {
+      toast({ title: 'Error', description: 'Title and content cannot be empty.', variant: 'destructive' });
+      return;
+    }
+    const newAnnouncement: AnnouncementItem = {
+      id: Date.now().toString(),
+      title: newAnnouncementTitle,
+      content: newAnnouncementContent,
+      date: new Date().toISOString().split('T')[0],
+    };
+    setAnnouncements(prev => [newAnnouncement, ...prev]);
+    setNewAnnouncementTitle('');
+    setNewAnnouncementContent('');
+    toast({ title: 'Success', description: 'Announcement posted.' });
   };
 
-  const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds });
-    toast({
-      title: "Submitted for Approval",
-      description: "Your course has been submitted and is pending review.",
+  const removeAnnouncement = (id: string) => {
+    setAnnouncements(prev => prev.filter(a => a.id !== id));
+  };
+
+  const handleSave = async (status: 'Draft' | 'Pending Approval') => {
+    setIsSaving(true);
+    
+    const reconstructedSyllabus: SyllabusModule[] = [];
+    let currentModule: SyllabusModule | null = null;
+    syllabus.forEach(item => {
+        if (item.type === 'module') {
+            if (currentModule) {
+                reconstructedSyllabus.push(currentModule);
+            }
+            currentModule = { id: item.id, title: item.title, lessons: [] };
+        } else if (currentModule && item.type !== 'module') {
+            currentModule.lessons.push({
+                id: item.id,
+                type: item.type as 'video' | 'quiz' | 'document',
+                title: item.title,
+                duration: item.duration || '',
+                videoId: item.videoId || '',
+                lectureSheetUrl: item.lectureSheetUrl || '',
+            });
+        }
     });
+    if (currentModule) {
+        reconstructedSyllabus.push(currentModule);
+    }
+
+    const courseData: Partial<Course> = {
+        id: isNewCourse ? undefined : params.courseId,
+        title: courseTitle,
+        description,
+        category,
+        price: `BDT ${price}`,
+        imageUrl: thumbnailUrl,
+        videoUrl: introVideoUrl,
+        whatYouWillLearn,
+        syllabus: reconstructedSyllabus,
+        faqs: faqs.map(({ id, ...rest }) => rest), // Remove temp id
+        instructors: instructors.map(({ id, ...rest }) => rest) as Instructor[],
+        classRoutine: classRoutine.map(({ id, ...rest }) => rest),
+        includedArchivedCourseIds,
+        announcements: announcements.map(({ id, ...rest }) => rest),
+        status,
+        organizationId: 'org_medishark' // Mock partner ID
+    };
+    
+    const result = await saveCourseAction(courseData);
+    if (result.success) {
+        toast({ title: 'Success', description: result.message });
+        if (!isNewCourse) {
+          // No revalidatePath needed on client side for this action as it's handled server-side
+        } else if (result.courseId) {
+          router.push(`/partner/courses/builder/${result.courseId}`);
+        }
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
   };
   
+  const handleGenerateCourse = async () => {
+    setIsGenerating(true);
+    try {
+      const result = await generateCourseContent(aiTopic);
+      
+      setCourseTitle(result.title);
+      setDescription(result.description);
+      setWhatYouWillLearn(result.outcomes);
+      setFaqs(result.faqs.map(faq => ({ ...faq, id: Math.random().toString() })));
+
+      const newSyllabus: SyllabusItem[] = [];
+      result.syllabus.forEach(module => {
+        newSyllabus.push({ id: Math.random().toString(), type: 'module', title: module.title });
+        module.lessons.forEach(lesson => {
+          newSyllabus.push({
+            id: Math.random().toString(),
+            type: 'video',
+            title: lesson.title,
+            duration: '10 min',
+            videoId: '',
+            lectureSheetUrl: '',
+          });
+        });
+      });
+      setSyllabus(newSyllabus);
+
+      toast({ title: 'Success', description: 'AI has generated the course content.' });
+      setIsAiDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Error', description: 'Failed to generate content with AI.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
+    { id: 'quizzes', label: 'Quizzes', icon: HelpCircle },
+    { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'media', label: 'Media', icon: CloudUpload },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+        </div>
+      );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    {isNewCourse ? 'Create New Course' : `Edit: ${courseToEdit?.title}`}
+                    {isNewCourse ? 'Create New Course' : `Edit: ${courseTitle}`}
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
                    {isNewCourse ? 'Create a new course from scratch.' : 'Manage your course content with ease.'}
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={handleSaveDraft}><Save className="mr-2"/> Save Draft</Button>
-                <Button variant="accent" onClick={handleSubmitForApproval}><Send className="mr-2"/> Submit for Approval</Button>
+                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                    <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
+                </Button>
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
+                </Button>
+                <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
+                </Button>
             </div>
         </div>
         
@@ -390,7 +637,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">Course Title</Label>
-                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={title} onChange={e => setTitle(e.target.value)} />
+                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Course Description</Label>
@@ -447,7 +694,85 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 </div>
               </CardContent>
             )}
-            
+
+            {activeTab === 'quizzes' && (
+                <CardContent className="pt-6 space-y-4">
+                    <CardDescription>Create and manage quizzes for this course.</CardDescription>
+                    {quizzes.map((quiz) => (
+                      <Card key={quiz.id} className="bg-muted/50">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-xl">Quiz: {quiz.title}</CardTitle>
+                                <Button variant="ghost" size="icon" onClick={() => removeQuiz(quiz.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <Input value={quiz.title} onChange={e => updateQuiz(quiz.id, 'title', e.target.value)} placeholder="Quiz Title" />
+                                <Input value={quiz.topic} onChange={e => updateQuiz(quiz.id, 'topic', e.target.value)} placeholder="Quiz Topic" />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {quiz.questions.map((q, qIndex) => (
+                                <Collapsible key={q.id} className="p-4 border rounded-md bg-background">
+                                    <div className="flex items-center justify-between">
+                                      <p className="font-semibold">Question {qIndex + 1}</p>
+                                      <div>
+                                        <Button variant="ghost" size="icon" onClick={() => removeQuestion(quiz.id, q.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                        <CollapsibleTrigger asChild>
+                                            <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" /></Button>
+                                        </CollapsibleTrigger>
+                                      </div>
+                                    </div>
+                                    <CollapsibleContent className="mt-4 space-y-2">
+                                        <Label>Question Text</Label>
+                                        <Textarea value={q.text} onChange={e => updateQuestionText(quiz.id, q.id, e.target.value)} />
+                                        <Label>Options (select the correct one)</Label>
+                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectAnswer(quiz.id, q.id, value)}>
+                                            {q.options.map((opt) => (
+                                                <div key={opt.id} className="flex items-center gap-2">
+                                                    <RadioGroupItem value={opt.id} id={opt.id} />
+                                                    <Input value={opt.text} onChange={e => updateOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
+                                                    <Button variant="ghost" size="icon" onClick={() => removeOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                        <Button variant="outline" size="sm" onClick={() => addOption(quiz.id, q.id)}>Add Option</Button>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            ))}
+                            <Button variant="outline" className="w-full border-dashed" onClick={() => addQuestion(quiz.id)}><PlusCircle className="mr-2"/>Add Question</Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addQuiz}><PlusCircle className="mr-2"/>Add New Quiz</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'assignments' && (
+                <CardContent className="pt-6 space-y-4">
+                    <CardDescription>Create and manage assignments for this course.</CardDescription>
+                     {assignments.map(assignment => (
+                        <div key={assignment.id} className="flex items-end gap-2 p-4 border rounded-md">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-title-${assignment.id}`}>Assignment Title</Label>
+                                    <Input id={`as-title-${assignment.id}`} value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-topic-${assignment.id}`}>Topic</Label>
+                                    <Input id={`as-topic-${assignment.id}`} value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
+                                    <DatePicker date={assignment.deadline} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} />
+                                </div>
+                            </div>
+                             <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
+                        </div>
+                     ))}
+                    <Button variant="outline" className="w-full" onClick={addAssignment}><PlusCircle className="mr-2"/>Add New Assignment</Button>
+                </CardContent>
+            )}
+
             {activeTab === 'outcomes' && (
                 <CardContent className="pt-6">
                     <CardDescription className="mb-4">List the key skills and knowledge students will gain from this course.</CardDescription>
@@ -550,6 +875,56 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 </CardContent>
             )}
             
+            {activeTab === 'announcements' && (
+                <CardContent className="pt-6 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Post a New Announcement</CardTitle>
+                            <CardDescription>This will be visible to all students enrolled in this course.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="ann-title">Title</Label>
+                                <Input id="ann-title" value={newAnnouncementTitle} onChange={e => setNewAnnouncementTitle(e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="ann-content">Content</Label>
+                                <Textarea id="ann-content" value={newAnnouncementContent} onChange={e => setNewAnnouncementContent(e.target.value)} rows={4} />
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={handlePostAnnouncement}>Post Announcement</Button>
+                        </CardFooter>
+                    </Card>
+
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold">Posted Announcements</h3>
+                        {announcements.length > 0 ? (
+                            announcements.map(ann => (
+                                <Card key={ann.id} className="bg-muted/50">
+                                    <CardHeader>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle className="text-lg">{ann.title}</CardTitle>
+                                                <CardDescription>Posted on {ann.date}</CardDescription>
+                                            </div>
+                                            <Button variant="ghost" size="icon" onClick={() => removeAnnouncement(ann.id)}>
+                                                <X className="text-destructive h-4 w-4"/>
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="whitespace-pre-wrap">{ann.content}</p>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No announcements posted yet.</p>
+                        )}
+                    </div>
+                </CardContent>
+            )}
+
             {activeTab === 'faq' && (
                  <CardContent className="pt-6">
                     <CardDescription className="mb-4">Add frequently asked questions to help students.</CardDescription>
@@ -592,8 +967,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                             <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
                                 <Checkbox
                                     id={`bundle-${course.id}`}
-                                    checked={includedCourseIds.includes(course.id)}
-                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id, !!checked)}
+                                    checked={includedCourseIds.includes(course.id!)}
+                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id!, !!checked)}
                                 />
                                 <Label htmlFor={`bundle-${course.id}`} className="cursor-pointer">
                                     {course.title} <span className="text-muted-foreground text-xs">({course.category})</span>
@@ -606,9 +981,35 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                     </div>
                 </CardContent>
             )}
-
         </Card>
-
+        <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Generate Course with AI</DialogTitle>
+                    <DialogDescription>
+                        Enter a topic, and the AI will generate a draft for your course title, description, syllabus, and more.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-2">
+                    <Label htmlFor="ai-topic">Course Topic</Label>
+                    <Input 
+                        id="ai-topic" 
+                        value={aiTopic}
+                        onChange={(e) => setAiTopic(e.target.value)}
+                        placeholder="e.g., Introduction to Rocket Science" 
+                    />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
+                        {isGenerating ? <Loader2 className="mr-2 animate-spin"/> : <Wand2 className="mr-2"/>}
+                        Generate
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }

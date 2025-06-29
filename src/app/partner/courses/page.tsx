@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,12 +27,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/components/ui/use-toast';
-import { courses as allCourses, Course } from '@/lib/mock-data';
+import { getCourses } from '@/lib/firebase/firestore';
+import { deleteCourseAction } from '@/app/actions';
+import { Course } from '@/lib/types';
 import { badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const partnerId = 'org_medishark'; // Mock partner ID
-const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -51,17 +53,46 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 
 export default function PartnerCourseManagementPage() {
   const { toast } = useToast();
-  const [courses, setCourses] = useState<Course[]>(partnerCourses);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDeleteCourse = (id: string) => {
-    setCourses(courses.filter(course => course.id !== id));
-     toast({
-      title: "Course Deleted",
-      description: "The course has been permanently deleted.",
-      variant: 'destructive',
-    });
+  useEffect(() => {
+      async function fetchPartnerCourses() {
+          try {
+              const allCourses = await getCourses();
+              const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
+              setCourses(partnerCourses);
+          } catch(err) {
+              console.error(err);
+              toast({ title: 'Error', description: 'Could not fetch courses.', variant: 'destructive'});
+          } finally {
+              setLoading(false);
+          }
+      }
+      fetchPartnerCourses();
+  }, [toast]);
+
+  const handleDeleteCourse = async (id: string) => {
+    const result = await deleteCourseAction(id);
+    if(result.success) {
+      setCourses(courses.filter(course => course.id !== id));
+       toast({
+        title: "Course Deleted",
+        description: "The course has been permanently deleted.",
+      });
+    } else {
+       toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
   };
   
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div className="flex items-center justify-between">
@@ -102,7 +133,7 @@ export default function PartnerCourseManagementPage() {
                   <TableCell className="font-medium">{course.title}</TableCell>
                   <TableCell>{course.price}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(course.status)}>
+                    <Badge variant={getStatusBadgeVariant(course.status as Status)}>
                       {course.status}
                     </Badge>
                   </TableCell>
@@ -130,7 +161,7 @@ export default function PartnerCourseManagementPage() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteCourse(course.id)}>Continue</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDeleteCourse(course.id!)}>Continue</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

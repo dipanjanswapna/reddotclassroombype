@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import {
   Users,
   BookOpen,
@@ -6,13 +9,41 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { courses } from '@/lib/mock-data';
+import { getCourses } from '@/lib/firebase/firestore';
+import { Course } from '@/lib/types';
+import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-// Mock partner ID for demonstration
 const partnerId = 'org_medishark';
 
 export default function PartnerDashboardPage() {
-  const partnerCourses = courses.filter(c => c.organizationId === partnerId);
+    const { toast } = useToast();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchPartnerData() {
+            try {
+                const allCourses = await getCourses();
+                const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
+                setCourses(partnerCourses);
+            } catch(err) {
+                console.error(err);
+                toast({ title: 'Error', description: 'Could not fetch dashboard data.', variant: 'destructive'});
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchPartnerData();
+    }, [toast]);
+    
+    if (loading) {
+        return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        );
+    }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -47,7 +78,7 @@ export default function PartnerDashboardPage() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{partnerCourses.length}</div>
+                <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
                 +2 new this month
                 </p>

@@ -22,6 +22,8 @@ import {
     addPromoCode,
     updatePromoCode,
     deletePromoCode,
+    getUser,
+    getUsers,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
@@ -34,12 +36,15 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       revalidatePath(`/admin/courses/builder/${courseData.id}`);
       revalidatePath('/teacher/courses');
       revalidatePath(`/teacher/courses/builder/${courseData.id}`);
+      revalidatePath('/partner/courses');
+      revalidatePath(`/partner/courses/builder/${courseData.id}`);
       revalidatePath(`/courses/${courseData.id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
       const newCourseRef = await addCourse(courseData);
       revalidatePath('/admin/courses');
       revalidatePath('/teacher/courses');
+      revalidatePath('/partner/courses');
       return { success: true, message: 'Course created successfully.', courseId: newCourseRef.id };
     }
   } catch (error: any) {
@@ -51,6 +56,8 @@ export async function deleteCourseAction(id: string) {
     try {
         await deleteCourse(id);
         revalidatePath('/admin/courses');
+        revalidatePath('/teacher/courses');
+        revalidatePath('/partner/courses');
         return { success: true, message: 'Course deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -139,6 +146,85 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
         revalidatePath('/admin/partners');
         return { success: true, message: 'Organization status updated.' };
     } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function savePartnerBrandingAction(id: string, data: Partial<Organization>) {
+    try {
+        await updateOrganization(id, data);
+        revalidatePath(`/partner/branding`);
+        if (data.subdomain) {
+            revalidatePath(`/sites/${data.subdomain}`);
+        }
+        return { success: true, message: 'Branding updated successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function inviteInstructorAction(data: Partial<Instructor>) {
+    try {
+        const newInstructor = {
+            ...data,
+            status: 'Pending Approval',
+        };
+        await addInstructor(newInstructor);
+        revalidatePath('/partner/teachers');
+        return { success: true, message: 'Invitation sent successfully!' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function removeInstructorFromOrgAction(id: string) {
+    try {
+        await updateInstructor(id, { organizationId: '' });
+        revalidatePath('/partner/teachers');
+        return { success: true, message: 'Instructor removed from organization.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function linkGuardianAction(studentId: string, guardianEmail: string) {
+    try {
+        const allUsers = await getUsers();
+        let guardian = allUsers.find(u => u.email === guardianEmail && u.role === 'Guardian');
+
+        if (!guardian) {
+            const newGuardianData: Partial<User> = {
+                name: "Guardian",
+                email: guardianEmail,
+                role: 'Guardian',
+                status: 'Active',
+                joined: Timestamp.now(),
+                linkedStudentId: studentId
+            };
+            const newGuardianRef = await addUser(newGuardianData);
+            guardian = { id: newGuardianRef.id, ...newGuardianData } as User;
+        } else {
+            await updateUser(guardian.id!, { linkedStudentId: studentId });
+        }
+
+        await updateUser(studentId, { linkedGuardianId: guardian.id });
+
+        revalidatePath('/student/guardian');
+        return { success: true, message: `Successfully linked with guardian ${guardianEmail}.` };
+
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function unlinkGuardianAction(studentId: string, guardianId: string) {
+     try {
+        await updateUser(studentId, { linkedGuardianId: '' });
+        await updateUser(guardianId, { linkedStudentId: '' });
+        
+        revalidatePath('/student/guardian');
+        return { success: true, message: 'Guardian has been unlinked.' };
+     } catch (error: any) {
         return { success: false, message: error.message };
     }
 }

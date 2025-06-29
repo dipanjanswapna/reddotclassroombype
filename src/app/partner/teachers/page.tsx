@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,62 +13,91 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { allInstructors, Instructor, organizations } from '@/lib/mock-data';
+import { getInstructors } from '@/lib/firebase/firestore';
+import { inviteInstructorAction, removeInstructorFromOrgAction } from '@/app/actions';
+import type { Instructor } from '@/lib/types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { PlusCircle, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, MoreVertical, Trash2, Edit, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const partnerId = 'org_medishark'; // Mock partner ID
-const partnerInstructors = allInstructors.filter(inst => inst.organizationId === partnerId);
-
+const partnerId = 'org_medishark';
 
 export default function PartnerTeacherManagementPage() {
   const { toast } = useToast();
-  const [instructors, setInstructors] = useState<Instructor[]>(partnerInstructors);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   
-  // Form state for invite dialog
   const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteTitle, setInviteTitle] = useState('');
-
-  const handleRemoveTeacher = (id: string) => {
-    setInstructors(instructors.filter(inst => inst.id !== id));
-     toast({
-      title: "Teacher Removed",
-      description: "The teacher has been removed from your organization.",
-      variant: 'destructive',
-    });
+  
+  const fetchInstructors = async () => {
+      try {
+          const allInstructors = await getInstructors();
+          setInstructors(allInstructors.filter(inst => inst.organizationId === partnerId));
+      } catch (error) {
+          console.error("Failed to fetch instructors:", error);
+          toast({ title: 'Error', description: 'Could not fetch instructors.', variant: 'destructive'});
+      } finally {
+          setLoading(false);
+      }
   };
 
-  const handleInviteTeacher = () => {
+  useEffect(() => {
+    fetchInstructors();
+  }, []);
+
+  const handleRemoveTeacher = async (id: string) => {
+    const result = await removeInstructorFromOrgAction(id);
+    if (result.success) {
+      fetchInstructors();
+      toast({ title: "Teacher Removed", description: "The teacher has been removed from your organization.", variant: 'destructive'});
+    } else {
+      toast({ title: "Error", description: result.message, variant: "destructive" });
+    }
+  };
+
+  const handleInviteTeacher = async () => {
     if (!inviteName || !inviteEmail || !inviteTitle) {
       toast({ title: "Missing Information", description: "Please fill out all fields.", variant: "destructive" });
       return;
     }
-    const newInstructor: Instructor = {
-      id: `ins-new-${Date.now()}`,
-      name: inviteName,
-      title: inviteTitle,
-      avatarUrl: 'https://placehold.co/100x100.png',
-      dataAiHint: 'person',
-      slug: inviteName.toLowerCase().replace(/\s+/g, '-'),
-      status: 'Pending Approval',
-      bio: 'This instructor was invited and has not yet filled out their bio.',
-      organizationId: partnerId,
-    };
-    setInstructors(prev => [newInstructor, ...prev]);
-    toast({ title: 'Invitation Sent!', description: `${inviteName} has been invited to join your organization.` });
-    setIsInviteOpen(false);
-    // Reset form
-    setInviteName('');
-    setInviteEmail('');
-    setInviteTitle('');
-  };
+    setIsSaving(true);
+    const result = await inviteInstructorAction({
+        name: inviteName,
+        title: inviteTitle,
+        avatarUrl: 'https://placehold.co/100x100.png',
+        dataAiHint: 'person teacher',
+        slug: inviteName.toLowerCase().replace(/\s+/g, '-'),
+        organizationId: partnerId,
+    });
 
+    if (result.success) {
+      await fetchInstructors();
+      toast({ title: 'Invitation Sent!', description: `${inviteName} has been invited to join your organization.` });
+      setIsInviteOpen(false);
+      setInviteName('');
+      setInviteEmail('');
+      setInviteTitle('');
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
+  };
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -109,7 +138,10 @@ export default function PartnerTeacherManagementPage() {
                 </div>
                 <DialogFooter>
                     <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                    <Button onClick={handleInviteTeacher}>Send Invitation</Button>
+                    <Button onClick={handleInviteTeacher} disabled={isSaving}>
+                        {isSaving && <Loader2 className="animate-spin mr-2"/>}
+                        Send Invitation
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -151,7 +183,7 @@ export default function PartnerTeacherManagementPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem><Edit className="mr-2 h-4 w-4"/> Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive" onClick={() => handleRemoveTeacher(inst.id)}>
+                            <DropdownMenuItem className="text-destructive" onClick={() => handleRemoveTeacher(inst.id!)}>
                                 <Trash2 className="mr-2 h-4 w-4"/> Remove
                             </DropdownMenuItem>
                         </DropdownMenuContent>
