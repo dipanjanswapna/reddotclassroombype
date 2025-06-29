@@ -10,10 +10,10 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const AiCourseCreatorInputSchema = z.string().describe('The topic for the course to be generated.');
+const AiCourseCreatorInputSchema = z.string().describe('The topic for the course to be generated.');
 export type AiCourseCreatorInput = z.infer<typeof AiCourseCreatorInputSchema>;
 
-export const AiCourseCreatorOutputSchema = z.object({
+const AiCourseCreatorOutputSchema = z.object({
   title: z.string().describe('A catchy and descriptive title for the course.'),
   description: z.string().describe('A detailed and engaging description of the course.'),
   outcomes: z.array(z.string()).describe('A list of 5-7 key learning outcomes for the students.'),
