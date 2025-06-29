@@ -161,6 +161,7 @@ export type Course = {
   announcements?: Announcement[];
   isWishlisted?: boolean;
   communityUrl?: string;
+  videoUrl?: string;
 };
 
 
@@ -239,6 +240,7 @@ export type CollaborationItem = {
 };
 
 export type HomepageConfig = {
+  id?: string;
   heroBanners: {
     id: number;
     href: string;
@@ -309,14 +311,14 @@ export type HomepageConfig = {
     channels: {
       id: number;
       platform: string;
-      name: { [key: string]: string };
+      name: { [key: string]: string } | string;
       handle: string;
       stat1_value: string;
-      stat1_label: { [key: string]: string };
+      stat1_label: { [key: string]: string } | string;
       stat2_value: string;
-      stat2_label: { [key: string]: string };
-      description: { [key: string]: string };
-      ctaText: { [key: string]: string };
+      stat2_label: { [key: string]: string } | string;
+      description: { [key: string]: string } | string;
+      ctaText: { [key: string]: string } | string;
       ctaUrl: string;
     }[];
   };

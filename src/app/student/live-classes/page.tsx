@@ -1,32 +1,20 @@
 
-import { courses } from '@/lib/mock-data';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getCourses } from '@/lib/firebase/firestore';
+import { LiveClass as LiveClassType } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Video } from 'lucide-react';
 import Link from 'next/link';
-import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-export const metadata: Metadata = {
-  title: 'My Live Classes',
-  description: 'A central hub for all your upcoming live classes across all enrolled courses.',
-};
-
-// In a real app, this would be fetched based on the logged-in user.
-// For now, we'll mock the student's enrolled courses.
-const enrolledCourseIds = ['1', '3', '4'];
-const getStudentLiveClasses = () => {
-    return courses
-        .filter(course => enrolledCourseIds.includes(course.id))
-        .flatMap(course => 
-            (course.liveClasses || []).map(liveClass => ({
-            ...liveClass,
-            courseId: course.id,
-            courseTitle: course.title,
-            }))
-        )
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+type LiveClassWithCourse = LiveClassType & {
+  courseTitle: string;
+  courseId: string;
 };
 
 function getPlatformBadgeColor(platform: string) {
@@ -45,7 +33,48 @@ function getPlatformBadgeColor(platform: string) {
 }
 
 export default function AllLiveClassesPage() {
-  const studentLiveClasses = getStudentLiveClasses();
+  const [liveClasses, setLiveClasses] = useState<LiveClassWithCourse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLiveClasses() {
+      try {
+        // In a real app, this would be fetched based on the logged-in user.
+        // For now, we'll mock the student's enrolled courses.
+        const enrolledCourseIds = ['1', '3', '4'];
+        
+        const allCourses = await getCourses();
+
+        const studentLiveClasses = allCourses
+          .filter(course => course.id && enrolledCourseIds.includes(course.id))
+          .flatMap(course => 
+              (course.liveClasses || []).map(liveClass => ({
+                ...liveClass,
+                courseId: course.id!,
+                courseTitle: course.title,
+              }))
+          )
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        setLiveClasses(studentLiveClasses);
+      } catch (error) {
+        console.error("Failed to fetch live classes:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLiveClasses();
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
+
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -60,7 +89,7 @@ export default function AllLiveClassesPage() {
           <CardDescription>This list includes upcoming live classes from all the courses you are currently enrolled in.</CardDescription>
         </CardHeader>
         <CardContent>
-          {studentLiveClasses.length > 0 ? (
+          {liveClasses.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -72,7 +101,7 @@ export default function AllLiveClassesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {studentLiveClasses.map((liveClass) => (
+                {liveClasses.map((liveClass) => (
                   <TableRow key={`${liveClass.courseId}-${liveClass.id}`}>
                     <TableCell className="font-medium">{liveClass.courseTitle}</TableCell>
                     <TableCell>{liveClass.topic}</TableCell>
