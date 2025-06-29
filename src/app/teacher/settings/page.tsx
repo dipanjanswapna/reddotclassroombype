@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,20 +21,44 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { allInstructors } from "@/lib/mock-data";
+import { getInstructor } from "@/lib/firebase/firestore";
+import { Instructor } from "@/lib/types";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 
-// Mock user data for demonstration
-const currentTeacher = allInstructors.find(i => i.id === 'ins-ja');
+// Mock current teacher ID for demonstration
+const currentTeacherId = 'ins-ja';
 
 
 export default function TeacherSettingsPage() {
     const { toast } = useToast();
+    const [teacher, setTeacher] = useState<Instructor | null>(null);
+    const [loading, setLoading] = useState(true);
 
     // State for personal information
-    const [fullName, setFullName] = useState(currentTeacher?.name || "Teacher Name");
-    const [email, setEmail] = useState("teacher@rdc.com");
-    const [avatarUrl, setAvatarUrl] = useState(currentTeacher?.avatarUrl || "https://placehold.co/100x100.png");
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("teacher@rdc.com"); // Email is not in instructor model, so keeping it static for demo
+    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
+
+     useEffect(() => {
+        async function fetchTeacherData() {
+            try {
+                const fetchedTeacher = await getInstructor(currentTeacherId);
+                if (fetchedTeacher) {
+                    setTeacher(fetchedTeacher);
+                    setFullName(fetchedTeacher.name);
+                    setAvatarUrl(fetchedTeacher.avatarUrl);
+                }
+            } catch (error) {
+                console.error("Error fetching teacher settings:", error);
+                toast({ title: "Error", description: "Could not load teacher data.", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchTeacherData();
+    }, [toast]);
+
 
     const handleInfoSave = () => {
         toast({
@@ -72,6 +96,18 @@ export default function TeacherSettingsPage() {
             reader.readAsDataURL(file);
         }
     };
+    
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
+    
+    if (!teacher) {
+        return <div className="p-8">Could not load teacher information.</div>
+    }
 
 
   return (
@@ -109,7 +145,7 @@ export default function TeacherSettingsPage() {
                 </div>
               <div className="space-y-2">
                 <Label htmlFor="userId">Teacher ID</Label>
-                <Input id="userId" value={currentTeacher?.id || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+                <Input id="userId" value={teacher.id || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>

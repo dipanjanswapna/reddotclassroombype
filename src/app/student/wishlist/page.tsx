@@ -1,6 +1,6 @@
 
 import { Heart } from 'lucide-react';
-import { courses } from '@/lib/mock-data';
+import { getCourses } from '@/lib/firebase/firestore';
 import { CourseCard } from '@/components/course-card';
 import type { Metadata } from 'next';
 
@@ -9,8 +9,11 @@ export const metadata: Metadata = {
   description: 'Your saved courses on Red Dot Classroom. Enroll when you are ready.',
 };
 
-export default function WishlistPage() {
-  const wishlistedCourses = courses.filter(course => course.isWishlisted);
+export default async function WishlistPage() {
+  // In a real app, this would be a user-specific query.
+  // For now, we filter all courses by the isWishlisted flag.
+  const allCourses = await getCourses();
+  const wishlistedCourses = allCourses.filter(course => course.isWishlisted);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

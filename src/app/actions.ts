@@ -91,6 +91,19 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
     }
 }
 
+export async function saveInstructorProfileAction(id: string, data: Partial<Instructor>) {
+    try {
+        await updateInstructor(id, data);
+        revalidatePath(`/teacher/profile`);
+        if (data.slug) {
+            revalidatePath(`/teachers/${data.slug}`);
+        }
+        return { success: true, message: 'Profile updated successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
 export async function updateOrganizationStatusAction(id: string, status: Organization['status']) {
     try {
         await updateOrganization(id, { status });
