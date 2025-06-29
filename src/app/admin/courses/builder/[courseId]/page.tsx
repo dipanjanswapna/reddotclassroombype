@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import {
   Book,
   FileText,
@@ -22,6 +22,7 @@ import {
   Archive,
   Megaphone,
   ClipboardEdit,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { courses, Course } from '@/lib/mock-data';
 import {
   DndContext,
   closestCenter,
@@ -59,21 +59,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { format } from 'date-fns';
-
-/**
- * @fileOverview Course Builder Page.
- * This is a comprehensive, multi-tabbed interface for creating and editing courses.
- * It allows admins/teachers to manage everything from basic details and syllabus
- * to media, pricing, and advanced features like quizzes and assignments.
- * It features a drag-and-drop syllabus editor using dnd-kit.
- */
-
-// Constants derived from mock data
-const allCategories = [...new Set(courses.map(course => course.category))];
-const archivedCourses = courses.filter(c => c.isArchived);
-
-// --- Type Definitions for various data structures used in the component ---
+import { Course, SyllabusModule, Instructor } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
+import { saveCourseAction } from '@/app/actions';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 type LessonData = {
     id: string;
@@ -91,7 +80,6 @@ type ModuleData = {
     lessons: LessonData[];
 };
 
-// A flattened union type for syllabus items to work with dnd-kit
 type SyllabusItem = ModuleData['lessons'][0] | Omit<ModuleData, 'lessons'>;
 
 type FaqItem = {
@@ -144,10 +132,6 @@ type AssignmentData = {
   deadline?: Date;
 };
 
-/**
- * A sortable component representing a single item in the syllabus (either a module or a lesson).
- * It uses `useSortable` from dnd-kit to enable drag-and-drop functionality.
- */
 function SortableSyllabusItem({ 
     item,
     updateItem,
@@ -170,7 +154,6 @@ function SortableSyllabusItem({
         transition,
     };
 
-    // Render a module item
     if (item.type === 'module') {
         return (
              <div ref={setNodeRef} style={style} className="flex items-center gap-2 p-2 bg-muted rounded-md border">
@@ -195,7 +178,6 @@ function SortableSyllabusItem({
         )
     }
 
-    // Render a lesson item (collapsible)
     return (
         <Collapsible ref={setNodeRef} style={style} className="bg-background rounded-md border ml-6">
             <div className="flex items-center gap-2 p-2">
@@ -227,16 +209,16 @@ function SortableSyllabusItem({
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
-                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
+                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor={`duration-${item.id}`}>Lesson Duration</Label>
-                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
+                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
                         </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet URL</Label>
-                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
+                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                     </div>
                 </div>
             </CollapsibleContent>
@@ -245,39 +227,39 @@ function SortableSyllabusItem({
 }
 
 export default function CourseBuilderPage({ params }: { params: { courseId: string } }) {
+  const router = useRouter();
   const isNewCourse = params.courseId === 'new';
-  const courseToEdit = isNewCourse ? null : courses.find(c => c.id === params.courseId);
 
-  if (!isNewCourse && !courseToEdit) {
-    notFound();
-  }
-    
   const { toast } = useToast();
-  // State for managing the active tab in the course builder UI
+  const [loading, setLoading] = useState(!isNewCourse);
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
 
-  // --- Core Course Details State ---
-  const [title, setTitle] = useState(courseToEdit?.title || '');
-  const [description, setDescription] = useState(courseToEdit?.description || '');
-  const [category, setCategory] = useState(courseToEdit?.category || allCategories[0] || '');
-  const [price, setPrice] = useState(courseToEdit?.price?.replace(/[^0-9.]/g, '') || '');
-  const [thumbnailUrl, setThumbnailUrl] = useState(courseToEdit?.imageUrl || 'https://placehold.co/600x400.png');
+  const [courseTitle, setCourseTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [price, setPrice] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   
-  // --- Learning Outcomes State ---
-  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>(courseToEdit?.whatYouWillLearn || []);
+  const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
+  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
+  const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
+  const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [instructors, setInstructors] = useState<InstructorItem[]>([]);
+  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
+  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  const [quizzes, setQuizzes] = useState<QuizData[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentData[]>([]);
   
-  // --- Bundled Courses State ---
-  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>(courseToEdit?.includedArchivedCourseIds || []);
-
-  /**
-   * Helper function to convert the nested syllabus structure from mock data
-   * into a flattened array suitable for the drag-and-drop interface.
-   */
-  const getSyllabusItems = (): SyllabusItem[] => {
-    if (!courseToEdit?.syllabus) return [];
+  const getSyllabusItems = (course: Course): SyllabusItem[] => {
+    if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
-    courseToEdit.syllabus.forEach(module => {
+    course.syllabus.forEach(module => {
         items.push({ id: module.id, type: 'module', title: module.title });
         module.lessons.forEach(lesson => {
             items.push({ ...lesson });
@@ -286,46 +268,47 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     return items;
   }
 
-  // --- Syllabus Management State ---
-  // The syllabus is a flattened array of modules and lessons for easier drag-and-drop reordering.
-  const [syllabus, setSyllabus] = useState<SyllabusItem[]>(getSyllabusItems());
+  useEffect(() => {
+    async function fetchInitialData() {
+        try {
+            const [ fetchedCategories, allCourses ] = await Promise.all([
+                getCategories(),
+                getCourses()
+            ]);
+            setAllCategories(fetchedCategories);
+            setArchivedCourses(allCourses.filter(c => c.isArchived));
 
-  // --- FAQ Management State ---
-  const [faqs, setFaqs] = useState<FaqItem[]>(courseToEdit?.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-  
-  // --- Instructor Management State ---
-  const [instructors, setInstructors] = useState<InstructorItem[]>(courseToEdit?.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
-  
-  // --- Class Routine State ---
-  const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>(courseToEdit?.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+            if (!isNewCourse) {
+                const courseData = await getCourse(params.courseId);
+                if (courseData) {
+                    setCourseTitle(courseData.title || '');
+                    setDescription(courseData.description || '');
+                    setCategory(courseData.category || '');
+                    setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
+                    setThumbnailUrl(courseData.imageUrl || 'https://placehold.co/600x400.png');
+                    setIntroVideoUrl(courseData.videoUrl || '');
+                    setWhatYouWillLearn(courseData.whatYouWillLearn || []);
+                    setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
+                    setSyllabus(getSyllabusItems(courseData));
+                    setFaqs(courseData.faqs?.map(f => ({...f, id: f.id || Math.random().toString()})) || []);
+                    setInstructors(courseData.instructors?.map(i => ({...i, id: i.id || Math.random().toString()})) || []);
+                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: cr.id || Math.random().toString()})) || []);
+                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: a.id || Math.random().toString()})) || []);
+                } else {
+                    notFound();
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            toast({ title: 'Error loading data', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchInitialData();
+  }, [params.courseId, isNewCourse, toast]);
 
-  // --- Announcements State ---
-  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(courseToEdit?.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
-  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
-  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
-  
-  // --- Quizzes State ---
-  const [quizzes, setQuizzes] = useState<QuizData[]>(courseToEdit?.quizzes?.map(q => ({
-    id: q.id,
-    title: q.title,
-    topic: q.topic,
-    questions: q.questions.map(qq => ({
-        id: qq.id,
-        text: qq.text,
-        options: qq.options.map((opt, i) => ({ id: `${qq.id}-opt-${i}`, text: opt })),
-        correctAnswerId: `${qq.id}-opt-${qq.correctAnswer}`
-    }))
-  })) || []);
 
-  // --- Assignments State ---
-  const [assignments, setAssignments] = useState<AssignmentData[]>(courseToEdit?.assignments?.map(a => ({
-      id: a.id,
-      title: a.title,
-      topic: a.topic,
-      deadline: new Date(a.deadline)
-  })) || []);
-
-  // dnd-kit sensors setup for pointer and keyboard interactions.
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -333,14 +316,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     })
   );
 
-  /**
-   * Handles the end of a drag-and-drop operation for the syllabus.
-   * Uses `dnd-kit` to reorder the items in the `syllabus` state array.
-   * @param {DragEndEvent} event - The drag end event from dnd-kit.
-   */
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
-
     if (over && active.id !== over.id) {
       setSyllabus((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id);
@@ -350,19 +327,11 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     }
   }
 
-  // --- Handler functions for managing course content ---
-
-  /**
-   * Adds a new item (module or lesson) to the syllabus.
-   * Inserts lessons intelligently after the last module.
-   * @param {'module' | 'lesson'} type - The type of item to add.
-   */
   const addSyllabusItem = (type: 'module' | 'lesson') => {
     const newItem: SyllabusItem = type === 'module' 
       ? { id: Date.now().toString(), type, title: 'New Module' }
       : { id: Date.now().toString(), type: 'video', title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
     
-    // Logic to add a lesson under the last module if one exists
     if (type === 'lesson') {
         let lastModuleIndex = -1;
         for (let i = syllabus.length - 1; i >= 0; i--) {
@@ -390,7 +359,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setSyllabus(prev => prev.filter(item => item.id !== id));
   };
   
-  // CRUD operations for "What you will learn" outcomes.
   const addOutcome = () => setWhatYouWillLearn(prev => [...prev, '']);
   const updateOutcome = (index: number, value: string) => {
       const newOutcomes = [...whatYouWillLearn];
@@ -399,28 +367,24 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   };
   const removeOutcome = (index: number) => setWhatYouWillLearn(prev => prev.filter((_, i) => i !== index));
 
-  // CRUD operations for FAQs.
   const addFaq = () => setFaqs(prev => [...prev, { id: Date.now().toString(), question: '', answer: '' }]);
   const updateFaq = (id: string, field: 'question' | 'answer', value: string) => {
       setFaqs(prev => prev.map(faq => faq.id === id ? { ...faq, [field]: value } : faq));
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
-  // CRUD operations for instructors.
   const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person' }]);
   const updateInstructor = (id: string, field: keyof Omit<InstructorItem, 'id'>, value: string) => {
       setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
 
-  // CRUD operations for class routine.
   const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '', instructorName: '' }]);
   const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
       setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
-  // CRUD operations for Quizzes and their questions/options.
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
   const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
@@ -455,7 +419,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
   };
 
-  // CRUD operations for assignments.
   const addAssignment = () => setAssignments(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date() }]);
   const removeAssignment = (id: string) => setAssignments(prev => prev.filter(a => a.id !== id));
   const updateAssignment = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
@@ -493,24 +456,64 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setAnnouncements(prev => prev.filter(a => a.id !== id));
   };
 
-  // Main submission handlers
-  const handleSaveDraft = () => {
-    console.log("Saving Draft:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
-    toast({
-      title: "Draft Saved!",
-      description: "Your course has been saved as a draft.",
+  const handleSave = async (status: 'Draft' | 'Pending Approval') => {
+    setIsSaving(true);
+    
+    const reconstructedSyllabus: SyllabusModule[] = [];
+    let currentModule: SyllabusModule | null = null;
+    syllabus.forEach(item => {
+        if (item.type === 'module') {
+            if (currentModule) {
+                reconstructedSyllabus.push(currentModule);
+            }
+            currentModule = { id: item.id, title: item.title, lessons: [] };
+        } else if (currentModule && item.type !== 'module') {
+            currentModule.lessons.push({
+                id: item.id,
+                type: item.type as 'video' | 'quiz' | 'document',
+                title: item.title,
+                duration: item.duration || '',
+                videoId: item.videoId || '',
+                lectureSheetUrl: item.lectureSheetUrl || '',
+            });
+        }
     });
-  };
+    if (currentModule) {
+        reconstructedSyllabus.push(currentModule);
+    }
 
-  const handleSubmitForApproval = () => {
-    console.log("Submitting for Approval:", { title, description, category, price, thumbnailUrl, introVideoUrl, syllabus, whatYouWillLearn, faqs, instructors, classRoutine, includedCourseIds, announcements, quizzes, assignments });
-    toast({
-      title: "Submitted for Approval",
-      description: "Your course has been submitted and is pending review.",
-    });
+    const courseData: Partial<Course> = {
+        id: isNewCourse ? undefined : params.courseId,
+        title: courseTitle,
+        description,
+        category,
+        price: `BDT ${price}`,
+        imageUrl: thumbnailUrl,
+        videoUrl: introVideoUrl,
+        whatYouWillLearn,
+        syllabus: reconstructedSyllabus,
+        faqs: faqs.map(({ id, ...rest }) => rest), // Remove temp id
+        instructors: instructors.map(({ id, ...rest }) => rest) as Instructor[],
+        classRoutine: classRoutine.map(({ id, ...rest }) => rest),
+        includedArchivedCourseIds,
+        announcements: announcements.map(({ id, ...rest }) => rest),
+        status,
+    };
+    
+    const result = await saveCourseAction(courseData);
+    if (result.success) {
+        toast({ title: 'Success', description: result.message });
+        if (!isNewCourse) {
+          revalidatePath(`/admin/courses/builder/${params.courseId}`);
+        } else if (result.courseId) {
+          router.push(`/admin/courses/builder/${result.courseId}`);
+        }
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
   };
   
-  // Configuration for the tabbed navigation
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
@@ -526,20 +529,32 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
 
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+        </div>
+      );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    {isNewCourse ? 'Create New Course' : `Edit: ${courseToEdit?.title}`}
+                    {isNewCourse ? 'Create New Course' : `Edit: ${courseTitle}`}
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
                    {isNewCourse ? 'Create a new course from scratch.' : 'Manage your course content with ease.'}
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={handleSaveDraft}><Save className="mr-2"/> Save Draft</Button>
-                <Button variant="accent" onClick={handleSubmitForApproval}><Send className="mr-2"/> Submit for Approval</Button>
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Save className="mr-2"/>} Save Draft
+                </Button>
+                <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Send className="mr-2"/>} Submit for Approval
+                </Button>
             </div>
         </div>
         
@@ -567,7 +582,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">Course Title</Label>
-                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={title} onChange={e => setTitle(e.target.value)} />
+                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Course Description</Label>
@@ -897,8 +912,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                             <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
                                 <Checkbox
                                     id={`bundle-${course.id}`}
-                                    checked={includedCourseIds.includes(course.id)}
-                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id, !!checked)}
+                                    checked={includedCourseIds.includes(course.id!)}
+                                    onCheckedChange={(checked) => handleBundledCourseChange(course.id!, !!checked)}
                                 />
                                 <Label htmlFor={`bundle-${course.id}`} className="cursor-pointer">
                                     {course.title} <span className="text-muted-foreground text-xs">({course.category})</span>
@@ -913,7 +928,6 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
             )}
 
         </Card>
-
     </div>
   );
 }

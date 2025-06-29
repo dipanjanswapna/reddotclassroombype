@@ -1,79 +1,96 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { homepageConfig as initialConfig } from '@/lib/homepage-data';
-import { PlusCircle, Save, X } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { HomepageConfig } from '@/lib/types';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { saveHomepageConfigAction } from '@/app/actions';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-type HomepageConfig = typeof initialConfig;
+type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
-type SocialChannel = typeof initialConfig.socialMediaSection.channels[0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
-  const [config, setConfig] = useState(initialConfig);
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    // In a real app, this would send the `config` object to the backend.
-    console.log('Saving homepage config:', config);
-    toast({
-      title: 'Homepage Updated',
-      description: 'Your changes have been saved successfully.',
-    });
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const fetchedConfig = await getHomepageConfig();
+        if (fetchedConfig) {
+          setConfig(fetchedConfig);
+        }
+      } catch (error) {
+        console.error("Error fetching homepage config:", error);
+        toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchConfig();
+  }, [toast]);
+
+  const handleSave = async () => {
+    if (!config) return;
+    setIsSaving(true);
+    const result = await saveHomepageConfigAction(config);
+    if (result.success) {
+        toast({
+            title: 'Homepage Updated',
+            description: 'Your changes have been saved successfully.',
+        });
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive'});
+    }
+    setIsSaving(false);
   };
 
   const handleInputChange = (section: keyof HomepageConfig, key: string, value: any, index?: number, subKey?: string) => {
-      setConfig(prevConfig => {
-        const newConfig = { ...prevConfig };
-        const sectionData = newConfig[section] as any;
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
+      const sectionData = newConfig[section] as any;
 
-        if (Array.isArray(sectionData) && index !== undefined) {
-            const newArray = [...sectionData];
-            const itemToUpdate = { ...newArray[index] };
-            if (subKey) {
-                 itemToUpdate[key] = { ...itemToUpdate[key], [subKey]: value };
-            } else {
-                (itemToUpdate as any)[key] = value;
-            }
-            newArray[index] = itemToUpdate;
-            (newConfig as any)[section] = newArray;
-        } else if (typeof sectionData === 'object' && !Array.isArray(sectionData) && sectionData !== null) {
-             if (key === 'items' && Array.isArray(sectionData.items)) {
-                 const newItems = [...sectionData.items];
-                 const itemToUpdate = { ...newItems[index!] };
-                 if (subKey) {
-                    itemToUpdate[subKey!] = { ...itemToUpdate[subKey!], [key]: value};
-                 } else {
-                    (itemToUpdate as any)[key] = value;
-                 }
-                 newItems[index!] = itemToUpdate;
-                 sectionData.items = newItems;
-             } else {
-                const newSectionData = { ...sectionData, [key]: value };
-                (newConfig as any)[section] = newSectionData;
-             }
+      if (Array.isArray(sectionData) && index !== undefined && sectionData[index]) {
+        if (subKey) {
+          sectionData[index][key] = { ...sectionData[index][key], [subKey]: value };
+        } else {
+          sectionData[index][key] = value;
         }
-
-        return newConfig;
+      } else if (typeof sectionData === 'object' && !Array.isArray(sectionData) && sectionData !== null) {
+        if (key === 'items' && Array.isArray(sectionData.items) && sectionData.items[index!]) {
+          if (subKey) {
+            sectionData.items[index!][subKey] = value;
+          }
+        } else {
+          newConfig[section][key] = value;
+        }
+      }
+      return newConfig;
     });
   };
 
    const handleCollaborationChange = (id: number, field: string, value: string, subField?: string) => {
     setConfig(prev => {
+        if (!prev) return null;
         const newCollaborations = { ...prev.collaborations };
         newCollaborations.items = newCollaborations.items.map(item => {
             if (item.id === id) {
                 const updatedItem = { ...item };
                 if (subField === 'cta' || subField === 'socials') {
-                    (updatedItem as any)[subField] = { ...(updatedItem as any)[subField], [field]: value };
+                    (updatedItem as any)[subField][field] = value;
                 } else {
                     (updatedItem as any)[field] = value;
                 }
@@ -83,66 +100,62 @@ export default function AdminHomepageManagementPage() {
         });
         return { ...prev, collaborations: newCollaborations };
     });
-};
-
+  };
 
   const handleStringArrayChange = (section: CourseIdSections, value: string) => {
     const ids = value.split(',').map(id => id.trim()).filter(Boolean);
-    setConfig(prev => ({ ...prev, [section]: ids }));
+    setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
   };
   
   const handleNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, key: string, value: string, index: number) => {
     setConfig(prevConfig => {
-        const newConfig = { ...prevConfig };
+        if (!prevConfig) return null;
+        const newConfig = JSON.parse(JSON.stringify(prevConfig));
         const sectionData = newConfig[section] as any;
         const subSectionData = sectionData[subSectionKey];
 
-        if (Array.isArray(subSectionData) && index !== undefined) {
-            const newArray = [...subSectionData];
-            const itemToUpdate = { ...newArray[index] };
-            (itemToUpdate as any)[key] = value;
-            newArray[index] = itemToUpdate;
-            (newConfig as any)[section][subSectionKey] = newArray;
+        if (Array.isArray(subSectionData) && index !== undefined && subSectionData[index]) {
+            subSectionData[index][key] = value;
+            newConfig[section][subSectionKey] = subSectionData;
         }
-
         return newConfig;
     });
   };
 
   const addHeroBanner = () => {
-    setConfig(prev => ({
+    setConfig(prev => prev ? ({
       ...prev,
       heroBanners: [
         ...prev.heroBanners,
         { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
       ]
-    }));
+    }) : null);
   };
   const removeHeroBanner = (id: number) => {
-    setConfig(prev => ({
+    setConfig(prev => prev ? ({
       ...prev,
       heroBanners: prev.heroBanners.filter(banner => banner.id !== id)
-    }));
+    }) : null);
   };
 
   const addStat = () => {
-      setConfig(prev => ({
+      setConfig(prev => prev ? ({
           ...prev,
           stats: [
               ...prev.stats,
-              { value: '', label: ''}
+              { value: '', label: {en: '', bn: ''} }
           ]
-      }))
+      }) : null)
   };
   const removeStat = (index: number) => {
-      setConfig(prev => ({
+      setConfig(prev => prev ? ({
           ...prev,
           stats: prev.stats.filter((_, i) => i !== index)
-      }));
+      }) : null);
   };
   
   const addCollaboration = () => {
-    setConfig(prev => ({
+    setConfig(prev => prev ? ({
       ...prev,
       collaborations: {
         ...prev.collaborations,
@@ -154,37 +167,38 @@ export default function AdminHomepageManagementPage() {
             type: 'organization',
             logoUrl: 'https://placehold.co/150x150.png',
             dataAiHint: 'logo',
-            description: '',
-            cta: { text: 'View Website', href: '#' },
+            description: {en: '', bn: ''},
+            cta: { text: {en: 'View Website', bn: 'ওয়েবসাইট দেখুন'}, href: '#' },
             socials: { facebook: '', youtube: '' }
           }
         ]
       }
-    }));
+    }) : null);
   };
 
   const removeCollaboration = (id: number) => {
-    setConfig(prev => ({
+    setConfig(prev => prev ? ({
       ...prev,
       collaborations: {
         ...prev.collaborations,
         items: prev.collaborations.items.filter(item => item.id !== id)
       }
-    }));
+    }) : null);
   };
 
-  const handleSocialSectionChange = (field: 'title' | 'description', value: string) => {
-    setConfig(prev => ({
+  const handleSocialSectionChange = (field: 'title' | 'description', value: string, lang: 'en' | 'bn') => {
+    setConfig(prev => prev ? ({
       ...prev,
       socialMediaSection: {
         ...prev.socialMediaSection,
-        [field]: value
+        [field]: { ...prev.socialMediaSection[field], [lang]: value }
       }
-    }));
+    }) : null);
   };
   
   const handleSocialChannelChange = (index: number, field: keyof SocialChannel, value: string) => {
     setConfig(prev => {
+      if (!prev) return null;
       const newChannels = [...prev.socialMediaSection.channels];
       const channelToUpdate = { ...newChannels[index], [field]: value };
       newChannels[index] = channelToUpdate;
@@ -199,7 +213,7 @@ export default function AdminHomepageManagementPage() {
   };
   
   const addSocialChannel = () => {
-      setConfig(prev => ({
+      setConfig(prev => prev ? ({
           ...prev,
           socialMediaSection: {
               ...prev.socialMediaSection,
@@ -220,18 +234,26 @@ export default function AdminHomepageManagementPage() {
                   } as SocialChannel
               ]
           }
-      }));
+      }) : null);
   };
   
   const removeSocialChannel = (id: number) => {
-      setConfig(prev => ({
+      setConfig(prev => prev ? ({
           ...prev,
           socialMediaSection: {
               ...prev.socialMediaSection,
               channels: prev.socialMediaSection.channels.filter(c => c.id !== id)
           }
-      }));
+      }) : null);
   };
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
+  }
+  
+  if (!config) {
+     return <div className="flex h-screen items-center justify-center"><p>Could not load homepage configuration.</p></div>;
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -240,7 +262,10 @@ export default function AdminHomepageManagementPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight">Homepage Management</h1>
           <p className="mt-1 text-lg text-muted-foreground">Control the content displayed on your homepage.</p>
         </div>
-        <Button onClick={handleSave}><Save className="mr-2"/>Save Changes</Button>
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Save className="mr-2"/>}
+          Save Changes
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -297,150 +322,7 @@ export default function AdminHomepageManagementPage() {
                   </div>
               </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Collaborations Section</CardTitle>
-              <CardDescription>Manage the collaboration partners carousel.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Section Title</Label>
-                <Input value={config.collaborations.title} onChange={(e) => setConfig(prev => ({...prev, collaborations: {...prev.collaborations, title: e.target.value}}))} />
-              </div>
-              {config.collaborations.items.map((item, index) => (
-                <div key={item.id} className="p-4 border rounded-lg space-y-4 relative">
-                   <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeCollaboration(item.id)}><X className="text-destructive h-4 w-4"/></Button>
-                  <h4 className="font-semibold">Partner {index + 1}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <Label>Name</Label>
-                        <Input value={item.name} onChange={(e) => handleCollaborationChange(item.id, 'name', e.target.value)} />
-                      </div>
-                      <div className="space-y-1">
-                        <Label>Logo/Image URL</Label>
-                        <Input value={item.logoUrl} onChange={(e) => handleCollaborationChange(item.id, 'logoUrl', e.target.value)} />
-                      </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label>Description</Label>
-                    <Textarea value={item.description} onChange={(e) => handleCollaborationChange(item.id, 'description', e.target.value)} />
-                  </div>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <Label>CTA Text</Label>
-                        <Input value={item.cta.text} onChange={(e) => handleCollaborationChange(item.id, 'text', e.target.value, 'cta')} />
-                      </div>
-                      <div className="space-y-1">
-                        <Label>CTA Link</Label>
-                        <Input value={item.cta.href} onChange={(e) => handleCollaborationChange(item.id, 'href', e.target.value, 'cta')} />
-                      </div>
-                  </div>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <Label>Facebook URL</Label>
-                        <Input value={item.socials.facebook} onChange={(e) => handleCollaborationChange(item.id, 'facebook', e.target.value, 'socials')} />
-                      </div>
-                      <div className="space-y-1">
-                        <Label>YouTube URL</Label>
-                        <Input value={item.socials.youtube} onChange={(e) => handleCollaborationChange(item.id, 'youtube', e.target.value, 'socials')} />
-                      </div>
-                  </div>
-                </div>
-              ))}
-               <Button variant="outline" className="w-full border-dashed" onClick={addCollaboration}><PlusCircle className="mr-2"/>Add Partner</Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Social Media Section</CardTitle>
-              <CardDescription>Manage the social media links on the homepage.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Section Title</Label>
-                <Input value={config.socialMediaSection.title} onChange={(e) => handleSocialSectionChange('title', e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Section Description</Label>
-                <Textarea value={config.socialMediaSection.description} onChange={(e) => handleSocialSectionChange('description', e.target.value)} />
-              </div>
-              <hr/>
-              {config.socialMediaSection.channels.map((channel, index) => (
-                <div key={channel.id} className="p-4 border rounded-lg space-y-4 relative">
-                  <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeSocialChannel(channel.id)}><X className="text-destructive h-4 w-4"/></Button>
-                  <h4 className="font-semibold">Channel {index + 1}</h4>
-                  
-                  <div className="space-y-1">
-                    <Label>Platform</Label>
-                    <Select value={channel.platform} onValueChange={(value) => handleSocialChannelChange(index, 'platform', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="YouTube">YouTube</SelectItem>
-                        <SelectItem value="Facebook Group">Facebook Group</SelectItem>
-                        <SelectItem value="Facebook Page">Facebook Page</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label>Name</Label>
-                      <Input value={channel.name} onChange={(e) => handleSocialChannelChange(index, 'name', e.target.value)} />
-                    </div>
-                     <div className="space-y-1">
-                      <Label>Handle (for YouTube)</Label>
-                      <Input value={channel.handle} onChange={(e) => handleSocialChannelChange(index, 'handle', e.target.value)} />
-                    </div>
-                  </div>
-
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                          <Label>Stat 1 Value</Label>
-                          <Input value={channel.stat1_value} onChange={e => handleSocialChannelChange(index, 'stat1_value', e.target.value)} />
-                      </div>
-                      <div className="space-y-1">
-                          <Label>Stat 1 Label</Label>
-                          <Input value={channel.stat1_label} onChange={e => handleSocialChannelChange(index, 'stat1_label', e.target.value)} />
-                      </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                          <Label>Stat 2 Value</Label>
-                          <Input value={channel.stat2_value} onChange={e => handleSocialChannelChange(index, 'stat2_value', e.target.value)} />
-                      </div>
-                      <div className="space-y-1">
-                          <Label>Stat 2 Label</Label>
-                          <Input value={channel.stat2_label} onChange={e => handleSocialChannelChange(index, 'stat2_label', e.target.value)} />
-                      </div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                      <Label>Description</Label>
-                      <Textarea value={channel.description} onChange={e => handleSocialChannelChange(index, 'description', e.target.value)} />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label>CTA Text</Label>
-                      <Input value={channel.ctaText} onChange={e => handleSocialChannelChange(index, 'ctaText', e.target.value)} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label>CTA URL</Label>
-                      <Input value={channel.ctaUrl} onChange={e => handleSocialChannelChange(index, 'ctaUrl', e.target.value)} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full border-dashed" onClick={addSocialChannel}><PlusCircle className="mr-2"/>Add Channel</Button>
-            </CardContent>
-          </Card>
-
-
+          
           <Card>
             <CardHeader>
               <CardTitle>Video Section</CardTitle>
@@ -472,37 +354,16 @@ export default function AdminHomepageManagementPage() {
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label>Title</Label>
-                <Input value={config.appPromo.title} onChange={(e) => handleInputChange('appPromo', 'title', e.target.value)} />
+                <Input value={config.appPromo.title.bn} onChange={(e) => handleInputChange('appPromo', 'title', { ...config.appPromo.title, bn: e.target.value })} />
               </div>
               <div className="space-y-1">
                 <Label>Description</Label>
-                <Textarea value={config.appPromo.description} onChange={(e) => handleInputChange('appPromo', 'description', e.target.value)} />
+                <Textarea value={config.appPromo.description.bn} onChange={(e) => handleInputChange('appPromo', 'description', { ...config.appPromo.description, bn: e.target.value })} />
               </div>
               <div className="space-y-1">
                 <Label>App Screenshot Image URL</Label>
-                <Input value={config.appPromo.imageUrl} onChange={(e) => handleInputChange('appPromo', 'imageUrl', e.target.value)} />
+                <Input value={config.appPromo.imageUrl} onChange={(e) => handleInputChange('appPromo', 'imageUrl', e.target.value )} />
               </div>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader>
-              <CardTitle>Stats Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {config.stats.map((stat, index) => (
-                <div key={index} className="p-4 border rounded-lg space-y-2 relative">
-                    <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeStat(index)}><X className="text-destructive h-4 w-4"/></Button>
-                    <div className="space-y-1">
-                      <Label>Value</Label>
-                      <Input value={stat.value} onChange={(e) => handleInputChange('stats', 'value', e.target.value, index)} />
-                    </div>
-                     <div className="space-y-1">
-                      <Label>Label</Label>
-                      <Input value={stat.label} onChange={(e) => handleInputChange('stats', 'label', e.target.value, index)} />
-                    </div>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full border-dashed" onClick={addStat}><PlusCircle className="mr-2"/>Add Stat</Button>
             </CardContent>
           </Card>
         </div>

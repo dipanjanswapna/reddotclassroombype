@@ -13,13 +13,10 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import { Facebook, Youtube, ExternalLink } from 'lucide-react';
-import { homepageConfig } from '@/lib/homepage-data';
 import { useLanguage } from '@/context/language-context';
-import { organizations } from '@/lib/mock-data';
+import { CollaborationItem, Organization } from '@/lib/types';
 
-type CollaborationItem = typeof homepageConfig.collaborations.items[0];
-
-export function CollaborationsCarousel({ items }: { items: CollaborationItem[] }) {
+export function CollaborationsCarousel({ items, organizations }: { items: CollaborationItem[]; organizations: Organization[] }) {
   const { language } = useLanguage();
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })

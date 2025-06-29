@@ -20,118 +20,160 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, LogOut, Settings, User, BookOpen, HelpCircle } from "lucide-react";
-import { organizations, allInstructors, mockUsers } from "@/lib/mock-data";
+import { getOrganizations, getInstructors, getUsers } from "@/lib/firebase/firestore";
+import { useState, useEffect } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 type UserRole = 'student' | 'teacher' | 'guardian' | 'admin' | 'partner' | 'affiliate' | 'moderator' | 'unknown';
 
-const getUserDetails = (pathname: string) => {
-  if (pathname.startsWith('/student')) {
-    const user = mockUsers.find(u => u.role === 'Student');
-    return {
-      role: 'student' as UserRole,
-      name: user?.name || "Student Name",
-      email: user?.email || "student@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "SN",
-      dashboardLink: "/student/dashboard",
-      profileLink: "/student/profile",
-      aiHint: "male student"
-    };
-  }
-  if (pathname.startsWith('/teacher')) {
-     const user = allInstructors.find(i => i.id === 'ins-ja');
-    return {
-      role: 'teacher' as UserRole,
-      name: user?.name || "Teacher Name",
-      email: "teacher@rdc.com",
-      avatar: user?.avatarUrl || "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "TN",
-      dashboardLink: "/teacher/dashboard",
-      profileLink: "/teacher/settings",
-      aiHint: "male teacher"
-    };
-  }
-   if (pathname.startsWith('/guardian')) {
-    const user = mockUsers.find(u => u.role === 'Guardian');
-    return {
-      role: 'guardian' as UserRole,
-      name: user?.name || "Guardian Name",
-      email: user?.email || "guardian@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "GN",
-      dashboardLink: "/guardian/dashboard",
-      profileLink: "/guardian/profile",
-      aiHint: "parent"
-    };
-  }
-   if (pathname.startsWith('/admin')) {
-    const user = mockUsers.find(u => u.role === 'Admin');
-    return {
-      role: 'admin' as UserRole,
-      name: user?.name || "Admin Name",
-      email: user?.email || "admin@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "AN",
-      dashboardLink: "/admin/dashboard",
-      profileLink: "/admin/settings",
-      aiHint: "administrator"
-    };
-  }
-   if (pathname.startsWith('/partner')) {
-    const partner = organizations[0];
-    return {
-      role: 'partner' as UserRole,
-      name: partner.name,
-      email: "partner@rdc.com",
-      avatar: partner.logoUrl,
-      initials: partner.name.substring(0,2),
-      dashboardLink: "/partner/dashboard",
-      profileLink: "/partner/settings",
-      aiHint: "company logo"
-    };
-  }
-  if (pathname.startsWith('/affiliate')) {
-    const user = mockUsers.find(u => u.role === 'Affiliate');
-    return {
-      role: 'affiliate' as UserRole,
-      name: user?.name || "Affiliate User",
-      email: user?.email || "affiliate@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "AU",
-      dashboardLink: "/affiliate/dashboard",
-      profileLink: "/affiliate/profile",
-      aiHint: "marketing person"
-    };
-  }
-  if (pathname.startsWith('/moderator')) {
-    const user = mockUsers.find(u => u.role === 'Moderator');
-    return {
-      role: 'moderator' as UserRole,
-      name: user?.name || "Moderator User",
-      email: user?.email || "moderator@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: user?.name.split(' ').map(n => n[0]).join('') || "MU",
-      dashboardLink: "/moderator/dashboard",
-      profileLink: "/moderator/profile",
-      aiHint: "support person"
-    };
-  }
-  // Default fallback
-  return {
-      role: 'unknown' as UserRole,
-      name: "User",
-      email: "user@rdc.com",
-      avatar: "https://placehold.co/100x100.png",
-      initials: "U",
-      dashboardLink: "/",
-      profileLink: "/",
-      aiHint: "person"
-  };
+type UserDetails = {
+    role: UserRole;
+    name: string;
+    email: string;
+    avatar: string;
+    initials: string;
+    dashboardLink: string;
+    profileLink: string;
+    aiHint: string;
 };
 
 export function UserNav() {
   const pathname = usePathname();
-  const user = getUserDetails(pathname);
+  const [user, setUser] = useState<UserDetails | null>(null);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+        let userDetails: UserDetails | null = null;
+        
+        try {
+            if (pathname.startsWith('/student')) {
+                const users = await getUsers();
+                const studentUser = users.find(u => u.role === 'Student');
+                userDetails = {
+                    role: 'student',
+                    name: studentUser?.name || "Student Name",
+                    email: studentUser?.email || "student@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: studentUser?.name.split(' ').map(n => n[0]).join('') || "SN",
+                    dashboardLink: "/student/dashboard",
+                    profileLink: "/student/profile",
+                    aiHint: "male student"
+                };
+            } else if (pathname.startsWith('/teacher')) {
+                const instructors = await getInstructors();
+                const user = instructors.find(i => i.id === 'ins-ja'); // mock logic
+                userDetails = {
+                    role: 'teacher',
+                    name: user?.name || "Teacher Name",
+                    email: "teacher@rdc.com",
+                    avatar: user?.avatarUrl || "https://placehold.co/100x100.png",
+                    initials: user?.name.split(' ').map(n => n[0]).join('') || "TN",
+                    dashboardLink: "/teacher/dashboard",
+                    profileLink: "/teacher/settings",
+                    aiHint: "male teacher"
+                };
+            } else if (pathname.startsWith('/guardian')) {
+                const users = await getUsers();
+                const user = users.find(u => u.role === 'Guardian');
+                userDetails = {
+                    role: 'guardian',
+                    name: user?.name || "Guardian Name",
+                    email: user?.email || "guardian@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: user?.name.split(' ').map(n => n[0]).join('') || "GN",
+                    dashboardLink: "/guardian/dashboard",
+                    profileLink: "/guardian/profile",
+                    aiHint: "parent"
+                };
+            } else if (pathname.startsWith('/admin')) {
+                const users = await getUsers();
+                const user = users.find(u => u.role === 'Admin');
+                userDetails = {
+                    role: 'admin',
+                    name: user?.name || "Admin Name",
+                    email: user?.email || "admin@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: user?.name.split(' ').map(n => n[0]).join('') || "AN",
+                    dashboardLink: "/admin/dashboard",
+                    profileLink: "/admin/settings",
+                    aiHint: "administrator"
+                };
+            } else if (pathname.startsWith('/partner')) {
+                const organizations = await getOrganizations();
+                const partner = organizations.length > 0 ? organizations[0] : null;
+                userDetails = {
+                    role: 'partner',
+                    name: partner?.name || "Partner",
+                    email: "partner@rdc.com",
+                    avatar: partner?.logoUrl || "https://placehold.co/100x100.png",
+                    initials: partner?.name.substring(0,2) || 'P',
+                    dashboardLink: "/partner/dashboard",
+                    profileLink: "/partner/settings",
+                    aiHint: "company logo"
+                };
+            } else if (pathname.startsWith('/affiliate')) {
+                 const users = await getUsers();
+                const user = users.find(u => u.role === 'Affiliate');
+                userDetails = {
+                    role: 'affiliate',
+                    name: user?.name || "Affiliate User",
+                    email: user?.email || "affiliate@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: user?.name.split(' ').map(n => n[0]).join('') || "AU",
+                    dashboardLink: "/affiliate/dashboard",
+                    profileLink: "/affiliate/profile",
+                    aiHint: "marketing person"
+                };
+            } else if (pathname.startsWith('/moderator')) {
+                const users = await getUsers();
+                const user = users.find(u => u.role === 'Moderator');
+                userDetails = {
+                    role: 'moderator',
+                    name: user?.name || "Moderator User",
+                    email: user?.email || "moderator@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: user?.name.split(' ').map(n => n[0]).join('') || "MU",
+                    dashboardLink: "/moderator/dashboard",
+                    profileLink: "/moderator/profile",
+                    aiHint: "support person"
+                };
+            } else {
+                 userDetails = {
+                    role: 'unknown',
+                    name: "User",
+                    email: "user@rdc.com",
+                    avatar: "https://placehold.co/100x100.png",
+                    initials: "U",
+                    dashboardLink: "/",
+                    profileLink: "/",
+                    aiHint: "person"
+                };
+            }
+        } catch (error) {
+            console.error("Failed to fetch user details for nav:", error);
+            // Set a default user so the UI doesn't break
+             userDetails = {
+                role: 'unknown',
+                name: "User",
+                email: "user@rdc.com",
+                avatar: "https://placehold.co/100x100.png",
+                initials: "U",
+                dashboardLink: "/",
+                profileLink: "/",
+                aiHint: "person"
+            };
+        }
+        setUser(userDetails);
+    };
+
+    fetchUserDetails();
+  }, [pathname]);
+
+  if (!user) {
+    return (
+        <Skeleton className="h-9 w-9 rounded-full" />
+    );
+  }
 
   return (
     <DropdownMenu>

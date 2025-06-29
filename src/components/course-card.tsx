@@ -5,9 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Course, organizations } from "@/lib/mock-data";
+import type { Course, Organization } from "@/lib/types";
+import { getOrganizations } from "@/lib/firebase/firestore";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,13 @@ type CourseCardProps = Partial<Course> & {
 export function CourseCard(props: CourseCardProps) {
   const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain, isWishlisted: initialIsWishlisted } = props;
   const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted || false);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+
+  useEffect(() => {
+    if (organizationId) {
+      getOrganizations().then(setOrganizations).catch(console.error);
+    }
+  }, [organizationId]);
 
   if (!id || !title || !imageUrl) {
     return null;

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PlusCircle, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -28,10 +28,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { courses as initialCourses, Course } from '@/lib/mock-data';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
+import { Course } from '@/lib/types';
+import { getCourses, getCategories, updateCourse } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
+
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -51,21 +54,46 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 
 export default function AdminCourseManagementPage() {
   const { toast } = useToast();
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
-  const [categories, setCategories] = useState<string[]>([...new Set(initialCourses.map(c => c.category))]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const handleStatusChange = (id: string, status: Status) => {
-    setCourses(courses.map(course =>
-      course.id === id ? { ...course, status } : course
-    ));
-    toast({
-      title: "Course Status Updated",
-      description: `The course has been ${status.toLowerCase()}.`,
-    });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const fetchedCourses = await getCourses();
+        const fetchedCategories = await getCategories();
+        setCourses(fetchedCourses);
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({ title: 'Error', description: 'Could not fetch data.', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [toast]);
+
+
+  const handleStatusChange = async (id: string, status: Status) => {
+    try {
+      await updateCourse(id, { status });
+      setCourses(courses.map(course =>
+        course.id === id ? { ...course, status } : course
+      ));
+      toast({
+        title: "Course Status Updated",
+        description: `The course has been ${status.toLowerCase()}.`,
+      });
+    } catch(error) {
+       toast({ title: 'Error', description: 'Could not update course status.', variant: 'destructive' });
+    }
   };
 
   const handleDeleteCourse = (id: string) => {
+    // In a real app, you would call a delete function here.
     setCourses(courses.filter(course => course.id !== id));
      toast({
       title: "Course Deleted",
@@ -76,6 +104,7 @@ export default function AdminCourseManagementPage() {
 
   const handleAddCategory = () => {
     if (newCategory.trim() && !categories.includes(newCategory.trim())) {
+      // In a real app, you would call a function to add the category to the database.
       setCategories([...categories, newCategory.trim()]);
       setNewCategory('');
       toast({
@@ -86,6 +115,7 @@ export default function AdminCourseManagementPage() {
   };
 
   const handleDeleteCategory = (categoryToDelete: string) => {
+    // In a real app, you would call a function to delete the category from the database.
      setCategories(categories.filter(c => c !== categoryToDelete));
       toast({
       title: "Category Deleted",
@@ -94,6 +124,14 @@ export default function AdminCourseManagementPage() {
     });
   };
   
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex items-center justify-between">
@@ -138,7 +176,7 @@ export default function AdminCourseManagementPage() {
                                         <TableCell>{course.instructors?.[0]?.name || 'N/A'}</TableCell>
                                         <TableCell>{course.price}</TableCell>
                                         <TableCell>
-                                            <Badge variant={getStatusBadgeVariant(course.status)}>
+                                            <Badge variant={getStatusBadgeVariant(course.status as Status)}>
                                                 {course.status}
                                             </Badge>
                                         </TableCell>
@@ -146,11 +184,11 @@ export default function AdminCourseManagementPage() {
                                             <div className="flex gap-2 justify-end">
                                                 {course.status === 'Pending Approval' && (
                                                     <>
-                                                        <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(course.id, 'Published')}>
+                                                        <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(course.id!, 'Published')}>
                                                             <CheckCircle className="mr-2 h-4 w-4" />
                                                             Approve
                                                         </Button>
-                                                        <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(course.id, 'Rejected')}>
+                                                        <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(course.id!, 'Rejected')}>
                                                             <XCircle className="mr-2 h-4 w-4" />
                                                             Reject
                                                         </Button>
@@ -178,7 +216,7 @@ export default function AdminCourseManagementPage() {
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDeleteCourse(course.id)}>Continue</AlertDialogAction>
+                                                        <AlertDialogAction onClick={() => handleDeleteCourse(course.id!)}>Continue</AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
                                                 </AlertDialog>

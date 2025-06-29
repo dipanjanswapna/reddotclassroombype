@@ -1,0 +1,341 @@
+import { Timestamp } from "firebase/firestore";
+
+export type LiveClass = {
+  id: string;
+  topic: string;
+  date: string;
+  time: string;
+  platform: 'Zoom' | 'Google Meet' | 'Facebook Live' | 'YouTube Live';
+  joinUrl: string;
+};
+
+export type Lesson = {
+  id: string;
+  title: string;
+  type: 'video' | 'quiz' | 'document';
+  duration: string;
+  videoId?: string;
+  lectureSheetUrl?: string;
+};
+
+export type SyllabusModule = {
+  id: string;
+  title: string;
+  lessons: Lesson[];
+};
+
+export type Review = {
+  id: string;
+  user: {
+    name: string;
+    avatarUrl: string;
+    dataAiHint: string;
+  };
+  rating: number;
+  comment: string;
+  date: string;
+};
+
+export type Organization = {
+  id?: string;
+  name: string;
+  logoUrl: string;
+  status: 'approved' | 'pending' | 'rejected';
+  subdomain: string;
+  primaryColor: string;
+  secondaryColor: string;
+  hero?: {
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+    dataAiHint?: string;
+  };
+};
+
+export type Instructor = {
+  id?: string;
+  name: string;
+  title: string;
+  avatarUrl: string;
+  dataAiHint: string;
+  slug: string;
+  status: 'Approved' | 'Pending Approval' | 'Rejected';
+  bio: string;
+  socials?: {
+    linkedin?: string;
+    facebook?: string;
+    twitter?: string;
+  }
+  organizationId?: string;
+}
+
+export type QuizQuestion = {
+    id: string;
+    text: string;
+    options: string[];
+    correctAnswer: number; // index of the correct option
+};
+
+export type Quiz = {
+  id: string;
+  title: string;
+  topic: string;
+  totalQuestions: number;
+  duration: number; // in minutes
+  status: 'Completed' | 'Not Started' | 'In Progress';
+  score?: number;
+  questions: QuizQuestion[];
+};
+
+export type Assignment = {
+  id: string;
+  title: string;
+  topic: string;
+  deadline: string | Timestamp;
+  status: 'Submitted' | 'Pending' | 'Graded' | 'Late';
+  grade?: string;
+  feedback?: string;
+  submissionDate?: string | Timestamp;
+  studentId: string;
+  studentName: string;
+  submissionText?: string;
+};
+
+export type Announcement = {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+};
+
+export type Achievement = {
+  id: string;
+  title: string;
+  description: string;
+  icon: 'Medal' | 'Trophy' | 'Zap' | 'BrainCircuit' | 'BookOpenCheck';
+  date: string;
+};
+
+export type LeaderboardEntry = {
+  id: string;
+  rank: number;
+  name: string;
+  email: string;
+  avatar: string;
+  points: number;
+};
+
+export type Course = {
+  id?: string;
+  title: string;
+  description: string;
+  instructors: Instructor[]; 
+  imageUrl: string;
+  dataAiHint: string;
+  category: string;
+  subCategory?: string;
+  price: string;
+  status: 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
+  rating?: number;
+  reviews?: number;
+  whatYouWillLearn?: string[];
+  syllabus?: SyllabusModule[];
+  features?: string[];
+  features_detailed?: { title: string; description: string }[];
+  imageTitle?: string;
+  classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
+  faqs?: { question: string; answer: string; id?: string; }[];
+  reviewsData?: Review[];
+  liveClasses?: LiveClass[];
+  isArchived?: boolean;
+  includedArchivedCourseIds?: string[];
+  isPrebooking?: boolean;
+  prebookingPrice?: string;
+  prebookingEndDate?: string;
+  prebookingCount?: number;
+  prebookingTarget?: number;
+  organizationId?: string;
+  organizationName?: string;
+  quizzes?: Quiz[];
+  assignments?: Assignment[];
+  announcements?: Announcement[];
+  isWishlisted?: boolean;
+  communityUrl?: string;
+};
+
+
+export type BlogPost = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  imageUrl: string;
+  dataAiHint: string;
+  content: string;
+};
+
+export type PromoCode = {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  usageCount: number;
+  usageLimit: number;
+  expiresAt: string;
+  isActive: boolean;
+  applicableCourseIds: string[]; // 'all' for all courses
+  createdBy: 'admin' | string; // admin or teacherId
+}
+
+export type SupportTicket = {
+  id: string;
+  subject: string;
+  description: string;
+  status: 'Open' | 'In Progress' | 'Closed';
+  createdAt: string;
+  updatedAt: string;
+  replies: {
+    author: 'Student' | 'Support';
+    message: string;
+    date: string;
+  }[];
+};
+
+export type User = {
+  id?: string;
+  name: string;
+  email: string;
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator';
+  status: 'Active' | 'Suspended';
+  joined: string | Timestamp;
+  className?: string; // Add class for student
+  linkedStudentId?: string; // For guardians
+  linkedGuardianId?: string; // For students
+};
+
+export type StudyPlanEvent = {
+  id: string;
+  date: Date | Timestamp;
+  title: string;
+  type: 'live-class' | 'assignment' | 'study-session' | 'exam';
+  courseId?: string;
+  courseTitle?: string;
+};
+
+export type CollaborationItem = {
+    id: number;
+    name: string;
+    type: string;
+    logoUrl: string;
+    dataAiHint: string;
+    description: { [key: string]: string };
+    cta: {
+        text: { [key: string]: string };
+        href: string;
+    };
+    socials: {
+        facebook: string;
+        youtube: string;
+    };
+};
+
+export type HomepageConfig = {
+  heroBanners: {
+    id: number;
+    href: string;
+    imageUrl: string;
+    alt: string;
+    dataAiHint: string;
+  }[];
+  journeySection: {
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    courseTitle: { [key: string]: string };
+  };
+  liveCoursesIds: string[];
+  teachersSection: {
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    buttonText: { [key: string]: string };
+    instructorIds: string[];
+  };
+  videoSection: {
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    buttonText: { [key: string]: string };
+    videos: {
+      imageUrl: string;
+      videoUrl: string;
+      alt: string;
+      dataAiHint: string;
+    }[];
+  };
+  sscHscSection: {
+    badge: { [key: string]: string };
+    title: { [key: string]: string };
+  };
+  sscHscCourseIds: string[];
+  masterclassSection: {
+    title: { [key: string]: string };
+    buttonText: { [key: string]: string };
+  };
+  masterClassesIds: string[];
+  admissionSection: {
+    badge: { [key: string]: string };
+    title: { [key: string]: string };
+    buttonText: { [key: string]: string };
+  };
+  admissionCoursesIds: string[];
+  jobPrepSection: {
+    badge: { [key: string]: string };
+    title: { [key: string]: string };
+    buttonText: { [key: string]: string };
+  };
+  jobCoursesIds: string[];
+  whyChooseUs: {
+    title: { [key: string]: string };
+    features: {
+      icon: string;
+      title: { [key: string]: string };
+      description: { [key: string]: string };
+    }[];
+  };
+  collaborations: {
+    title: { [key: string]: string };
+    items: CollaborationItem[];
+  };
+  socialMediaSection: {
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    channels: {
+      id: number;
+      platform: string;
+      name: { [key: string]: string };
+      handle: string;
+      stat1_value: string;
+      stat1_label: { [key: string]: string };
+      stat2_value: string;
+      stat2_label: { [key: string]: string };
+      description: { [key: string]: string };
+      ctaText: { [key: string]: string };
+      ctaUrl: string;
+    }[];
+  };
+  notesBanner: {
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    buttonText: { [key: string]: string };
+  };
+  statsSectionTitle: { [key: string]: string };
+  stats: {
+    value: string;
+    label: { [key: string]: string };
+  }[];
+  appPromo: {
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    googlePlayUrl: string;
+    appStoreUrl: string;
+    imageUrl: string;
+    dataAiHint: string;
+  };
+};

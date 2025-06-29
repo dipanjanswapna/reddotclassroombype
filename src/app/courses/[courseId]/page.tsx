@@ -1,9 +1,5 @@
-
 'use client';
-
-import type { Metadata } from 'next';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
 import {
   CheckCircle,
   PlayCircle,
@@ -20,7 +16,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { courses } from '@/lib/mock-data';
 import { CourseTabs } from '@/components/course-tabs';
 import { CourseCard } from '@/components/course-card';
 import {
@@ -34,33 +29,66 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-
-const getCourseById = (id: string) => {
-  return courses.find((course) => course.id === id);
-};
+import { Course } from '@/lib/types';
+import { getCourse, getCourses } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { notFound } from 'next/navigation';
 
 export default function CourseDetailPage({
   params,
 }: {
   params: { courseId: string };
 }) {
-  const course = getCourseById(params.courseId);
-  const relatedCourses = courses.filter((c) => c.id !== course?.id).slice(0, 4);
-  const includedCourses = courses.filter(c => course?.includedArchivedCourseIds?.includes(c.id));
+  const [course, setCourse] = useState<Course | null>(null);
+  const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
+  const [includedCourses, setIncludedCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    async function fetchCourseData() {
+      try {
+        const courseData = await getCourse(params.courseId);
+        if (courseData) {
+          setCourse(courseData);
+          setIsWishlisted(courseData.isWishlisted || false);
+          
+          const allCourses = await getCourses();
+          const related = allCourses.filter(c => c.id !== courseData.id).slice(0, 4);
+          setRelatedCourses(related);
+          
+          if (courseData.includedArchivedCourseIds) {
+            const included = allCourses.filter(c => courseData.includedArchivedCourseIds?.includes(c.id!));
+            setIncludedCourses(included);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCourseData();
+  }, [params.courseId]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   if (!course) {
     notFound();
   }
   
-  const [isWishlisted, setIsWishlisted] = useState(course.isWishlisted || false);
-
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
   return (
     <div className="bg-background">
-      {/* Hero Section */}
       <section className="bg-secondary/50 pt-12 pb-12">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">

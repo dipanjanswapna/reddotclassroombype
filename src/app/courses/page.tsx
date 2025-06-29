@@ -2,16 +2,18 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
-import { courses, Course, organizations } from '@/lib/mock-data';
+import { Course, Organization } from '@/lib/types';
+import { getCourses, getCategories, getOrganizations } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
 import { useSearchParams } from 'next/navigation';
 
-// Helper to group courses by category
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {
   return courses.reduce((acc, course) => {
     const category = course.category;
@@ -23,7 +25,6 @@ const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } 
   }, {} as { [key: string]: Course[] });
 };
 
-// Define a preferred order for categories to ensure a logical layout
 const categoryOrder = [
     'HSC',
     'SSC',
@@ -40,9 +41,32 @@ const categoryOrder = [
 export default function CoursesPage() {
   const { language } = useLanguage();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [allProviders, setAllProviders] = useState<Organization[]>([]);
 
-  // Separate all published courses into active and archived
-  const allPublishedCourses = courses.filter(course => course.status === 'Published');
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [courses, categories, providers] = await Promise.all([
+          getCourses(),
+          getCategories(),
+          getOrganizations(),
+        ]);
+        setAllCourses(courses);
+        setAllCategories(categories.sort());
+        setAllProviders(providers.filter(p => p.status === 'approved'));
+      } catch (error) {
+        console.error("Failed to fetch courses data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const allPublishedCourses = allCourses.filter(course => course.status === 'Published');
   const activeCourses = allPublishedCourses.filter(course => !course.isArchived);
   const archivedCourses = allPublishedCourses.filter(course => course.isArchived);
 
@@ -80,9 +104,7 @@ export default function CoursesPage() {
     return indexA - indexB;
   });
   
-  const allCategories = [...new Set(activeCourses.map(course => course.category))].sort();
   const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
-  const allProviders = organizations.filter(org => org.status === 'approved');
 
   return (
     <div className="bg-background">
@@ -113,7 +135,11 @@ export default function CoursesPage() {
       </div>
 
       <main className="container mx-auto px-4 py-16">
-        {hasFilters ? (
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        ) : hasFilters ? (
             <section className='py-0'>
               <h2 className="font-headline mb-6 text-3xl font-bold">
                 {language === 'bn' ? `ফিল্টার ফলাফল (${filteredCourses.length})` : `Filtered Results (${filteredCourses.length})`}

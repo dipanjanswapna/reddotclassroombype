@@ -1,6 +1,3 @@
-
-"use client";
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -23,13 +20,11 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
-import { courses, allInstructors } from '@/lib/mock-data';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { homepageConfig } from '@/lib/homepage-data';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useLanguage } from '@/context/language-context';
+import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
   const Icon = icon;
@@ -54,29 +49,32 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   }
 };
 
-/**
- * @fileOverview The main landing page for the Red Dot Classroom application.
- * This component dynamically renders various sections like the hero carousel,
- * featured courses, teacher showcases, and promotional content.
- * The content is primarily driven by the `homepageConfig` object, making it
- * easy to update without modifying the component's structure.
- */
-export default function Home() {
-  const { language } = useLanguage();
+export default async function Home() {
+  const homepageConfig = await getHomepageConfig();
+  if (!homepageConfig) {
+    return <div>Homepage configuration not found.</div>;
+  }
+  const language = 'bn'; // Default language
 
-  // --- Dynamic Homepage Content ---
-  // The content for this homepage is fetched from a centralized configuration object (`homepageConfig`).
-  // This allows for easy updates to featured courses and other content without changing the component's code.
-  // In a real application, this data would likely come from a CMS or a dedicated API endpoint.
-
-  // Filter courses and instructors based on IDs defined in the homepage configuration
-  const liveCourses = courses.filter(c => homepageConfig.liveCoursesIds.includes(c.id));
-  const featuredInstructors = allInstructors.filter(i => homepageConfig.teachersSection.instructorIds.includes(i.id) && i.status === 'Approved');
-  const sscHscCourses = courses.filter(c => homepageConfig.sscHscCourseIds.includes(c.id));
-  const masterClasses = courses.filter(c => homepageConfig.masterClassesIds.includes(c.id));
-  const admissionCourses = courses.filter(c => homepageConfig.admissionCoursesIds.includes(c.id));
-  const jobCourses = courses.filter(c => homepageConfig.jobCoursesIds.includes(c.id));
-
+  // Fetch all required courses and instructors in parallel
+  const [
+    liveCourses,
+    featuredInstructors,
+    sscHscCourses,
+    masterClasses,
+    admissionCourses,
+    jobCourses,
+    organizations
+  ] = await Promise.all([
+    getCoursesByIds(homepageConfig.liveCoursesIds || []),
+    getInstructorsByIds(homepageConfig.teachersSection.instructorIds || []),
+    getCoursesByIds(homepageConfig.sscHscCourseIds || []),
+    getCoursesByIds(homepageConfig.masterClassesIds || []),
+    getCoursesByIds(homepageConfig.admissionCoursesIds || []),
+    getCoursesByIds(homepageConfig.jobCoursesIds || []),
+    getOrganizations()
+  ]);
+  
   return (
     <div className="flex flex-col bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} />
@@ -246,7 +244,7 @@ export default function Home() {
           <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
             {homepageConfig.collaborations.title[language]}
           </h2>
-          <CollaborationsCarousel items={homepageConfig.collaborations.items} />
+          <CollaborationsCarousel items={homepageConfig.collaborations.items} organizations={organizations} />
         </div>
       </section>
 
