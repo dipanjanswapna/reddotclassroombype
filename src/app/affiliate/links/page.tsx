@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,15 +13,37 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { courses } from '@/lib/mock-data';
-import { Copy, Check, Link2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { getCourses } from '@/lib/firebase/firestore';
+import { Course } from '@/lib/types';
+import { Copy, Check } from 'lucide-react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function AffiliateLinksPage() {
   const { toast } = useToast();
   const [copiedLink, setCopiedLink] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const affiliateId = 'aff_123xyz'; // Mock affiliate ID
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const fetchedCourses = await getCourses();
+        setCourses(fetchedCourses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+        toast({
+          title: "Error",
+          description: "Could not fetch courses.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCourses();
+  }, [toast]);
 
   const handleGenerateAndCopy = (courseId: string) => {
     const link = `https://rdc.com/courses/${courseId}?ref=${affiliateId}`;
@@ -50,34 +72,40 @@ export default function AffiliateLinksPage() {
           <CardDescription>Click to generate and copy a referral link for a course.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Course Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Generate Link</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {courses.filter(c => c.status === 'Published' && !c.isArchived).map((course) => {
-                const generatedLink = `https://rdc.com/courses/${course.id}?ref=${affiliateId}`;
-                const isCopied = copiedLink === generatedLink;
+          {loading ? (
+            <div className="flex justify-center items-center h-48">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Course Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead className="text-right">Generate Link</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {courses.filter(c => c.status === 'Published' && !c.isArchived).map((course) => {
+                  const generatedLink = `https://rdc.com/courses/${course.id}?ref=${affiliateId}`;
+                  const isCopied = copiedLink === generatedLink;
 
-                return (
-                  <TableRow key={course.id}>
-                    <TableCell className="font-medium">{course.title}</TableCell>
-                    <TableCell>{course.category}</TableCell>
-                    <TableCell className="text-right">
-                      <Button onClick={() => handleGenerateAndCopy(course.id)} size="sm" variant={isCopied ? "accent" : "outline"}>
-                        {isCopied ? <Check className="mr-2" /> : <Copy className="mr-2" />}
-                        {isCopied ? 'Copied' : 'Copy Link'}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+                  return (
+                    <TableRow key={course.id}>
+                      <TableCell className="font-medium">{course.title}</TableCell>
+                      <TableCell>{course.category}</TableCell>
+                      <TableCell className="text-right">
+                        <Button onClick={() => handleGenerateAndCopy(course.id!)} size="sm" variant={isCopied ? "accent" : "outline"}>
+                          {isCopied ? <Check className="mr-2" /> : <Copy className="mr-2" />}
+                          {isCopied ? 'Copied' : 'Copy Link'}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

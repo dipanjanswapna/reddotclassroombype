@@ -190,16 +190,18 @@ export type PromoCode = {
 }
 
 export type SupportTicket = {
-  id: string;
+  id?: string;
   subject: string;
   description: string;
   status: 'Open' | 'In Progress' | 'Closed';
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  userId: string;
+  userName: string;
   replies: {
     author: 'Student' | 'Support';
     message: string;
-    date: string;
+    date: Timestamp;
   }[];
 };
 

@@ -1,8 +1,7 @@
-
 'use client';
 
-import { useState } from 'react';
-import { PlusCircle, MessageSquare } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +27,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { mockSupportTickets, SupportTicket } from '@/lib/mock-data';
+import { getSupportTickets } from '@/lib/firebase/firestore';
+import { createSupportTicketAction } from '@/app/actions';
+import type { SupportTicket } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { format } from 'date-fns';
+import { Loader2 } from 'lucide-react';
+
+const currentStudentId = 'usr_stud_001';
+const currentStudentName = 'Student Name';
 
 const getStatusBadgeVariant = (status: SupportTicket['status']) => {
   switch (status) {
@@ -41,33 +48,65 @@ const getStatusBadgeVariant = (status: SupportTicket['status']) => {
 
 export default function SupportTicketsPage() {
   const { toast } = useToast();
-  const [tickets, setTickets] = useState<SupportTicket[]>(mockSupportTickets);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleCreateTicket = () => {
+  const fetchUserTickets = async () => {
+     try {
+        const allTickets = await getSupportTickets();
+        const userTickets = allTickets
+            .filter(t => t.userId === currentStudentId)
+            .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+        setTickets(userTickets);
+      } catch (error) {
+        console.error(error);
+        toast({ title: 'Error', description: 'Could not fetch your tickets.', variant: 'destructive'});
+      } finally {
+        setLoading(false);
+      }
+  }
+
+  useEffect(() => {
+    fetchUserTickets();
+  }, [toast]);
+
+  const handleCreateTicket = async () => {
     if (!subject || !description) {
       toast({ title: "Error", description: "Subject and description cannot be empty.", variant: "destructive" });
       return;
     }
+    setIsCreating(true);
 
-    const newTicket: SupportTicket = {
-      id: `ticket-${Date.now()}`,
-      subject,
-      description,
-      status: 'Open',
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
-      replies: [],
-    };
+    const result = await createSupportTicketAction({ 
+        subject, 
+        description, 
+        userId: currentStudentId, 
+        userName: currentStudentName
+    });
 
-    setTickets(prev => [newTicket, ...prev]);
-    toast({ title: 'Ticket Submitted!', description: 'Our support team will get back to you shortly.' });
-    setIsDialogOpen(false);
-    setSubject('');
-    setDescription('');
+    if (result.success) {
+      toast({ title: 'Ticket Submitted!', description: 'Our support team will get back to you shortly.' });
+      await fetchUserTickets();
+      setIsDialogOpen(false);
+      setSubject('');
+      setDescription('');
+    } else {
+      toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsCreating(false);
   };
+  
+   if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -99,7 +138,10 @@ export default function SupportTicketsPage() {
             </div>
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button onClick={handleCreateTicket}>Submit Ticket</Button>
+              <Button onClick={handleCreateTicket} disabled={isCreating}>
+                  {isCreating && <Loader2 className="mr-2 animate-spin" />}
+                  Submit Ticket
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -128,7 +170,7 @@ export default function SupportTicketsPage() {
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(ticket.status)}>{ticket.status}</Badge>
                   </TableCell>
-                  <TableCell>{ticket.updatedAt}</TableCell>
+                  <TableCell>{format(ticket.updatedAt.toDate(), 'PPP')}</TableCell>
                 </TableRow>
               )) : (
                 <TableRow>

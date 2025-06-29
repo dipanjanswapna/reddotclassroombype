@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +22,13 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { mockSupportTickets, SupportTicket } from '@/lib/mock-data';
+import { getSupportTickets } from '@/lib/firebase/firestore';
+import { replyToSupportTicketAction, closeSupportTicketAction } from '@/app/actions';
+import type { SupportTicket } from '@/lib/types';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { format } from 'date-fns';
 
 const getStatusBadgeVariant = (status: SupportTicket['status']) => {
   switch (status) {
@@ -37,35 +41,73 @@ const getStatusBadgeVariant = (status: SupportTicket['status']) => {
 
 export default function ModeratorSupportTicketsPage() {
   const { toast } = useToast();
-  const [tickets, setTickets] = useState<SupportTicket[]>(mockSupportTickets);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isReplying, setIsReplying] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reply, setReply] = useState('');
 
+  useEffect(() => {
+      async function fetchTickets() {
+          try {
+              const fetchedTickets = await getSupportTickets();
+              const sortedTickets = fetchedTickets.sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis());
+              setTickets(sortedTickets);
+          } catch (error) {
+              console.error("Failed to fetch tickets:", error);
+              toast({ title: 'Error', description: 'Could not fetch support tickets.', variant: 'destructive' });
+          } finally {
+              setLoading(false);
+          }
+      }
+      fetchTickets();
+  }, [toast]);
+
   const handleOpenDialog = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
     setIsDialogOpen(true);
-  };
-  
-  const handleReply = () => {
-    if (!reply || !selectedTicket) return;
-
-    const newReply = {
-      author: 'Support' as const,
-      message: reply,
-      date: new Date().toISOString().split('T')[0],
-    };
-
-    setTickets(prev => prev.map(t => 
-        t.id === selectedTicket.id 
-        ? { ...t, status: 'In Progress' as const, replies: [...t.replies, newReply], updatedAt: newReply.date } 
-        : t
-    ));
-
-    toast({ title: 'Reply Sent!', description: 'Your reply has been sent to the user.' });
-    setIsDialogOpen(false);
     setReply('');
   };
+  
+  const handleReply = async () => {
+    if (!reply || !selectedTicket?.id) return;
+    setIsReplying(true);
+
+    const result = await replyToSupportTicketAction(selectedTicket.id, reply);
+
+    if (result.success) {
+        const updatedTickets = await getSupportTickets();
+        setTickets(updatedTickets.sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis()));
+        toast({ title: 'Reply Sent!', description: 'Your reply has been sent to the user.' });
+        setIsDialogOpen(false);
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsReplying(false);
+  };
+  
+  const handleCloseTicket = async () => {
+      if (!selectedTicket?.id) return;
+      setIsReplying(true); // Reuse loading state
+      const result = await closeSupportTicketAction(selectedTicket.id);
+      if (result.success) {
+          setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, status: 'Closed' } : t).sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis()));
+          toast({ title: 'Ticket Closed', description: 'The support ticket has been marked as closed.' });
+          setIsDialogOpen(false);
+      } else {
+          toast({ title: 'Error', description: result.message, variant: 'destructive' });
+      }
+      setIsReplying(false);
+  };
+
+   if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -85,7 +127,7 @@ export default function ModeratorSupportTicketsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Ticket ID</TableHead>
+                <TableHead>User</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Last Updated</TableHead>
@@ -95,12 +137,12 @@ export default function ModeratorSupportTicketsPage() {
             <TableBody>
               {tickets.length > 0 ? tickets.map((ticket) => (
                 <TableRow key={ticket.id}>
-                  <TableCell className="font-mono">{ticket.id}</TableCell>
-                  <TableCell className="font-medium">{ticket.subject}</TableCell>
+                  <TableCell className="font-medium">{ticket.userName}</TableCell>
+                  <TableCell>{ticket.subject}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(ticket.status)}>{ticket.status}</Badge>
                   </TableCell>
-                  <TableCell>{ticket.updatedAt}</TableCell>
+                  <TableCell>{format(ticket.updatedAt.toDate(), 'PPP p')}</TableCell>
                   <TableCell className="text-right">
                       <Button variant="outline" size="sm" onClick={() => handleOpenDialog(ticket)}>View & Reply</Button>
                   </TableCell>
@@ -120,9 +162,9 @@ export default function ModeratorSupportTicketsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
-                  <DialogTitle>Ticket: {selectedTicket?.subject}</DialogTitle>
+                  <DialogTitle>Ticket from {selectedTicket?.userName}: {selectedTicket?.subject}</DialogTitle>
                   <DialogDescription>
-                      Created on {selectedTicket?.createdAt} | Last updated {selectedTicket?.updatedAt}
+                      Created on {selectedTicket && format(selectedTicket.createdAt.toDate(), 'PPP p')}
                   </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
@@ -132,18 +174,27 @@ export default function ModeratorSupportTicketsPage() {
                 </div>
                  {selectedTicket?.replies.map((r, index) => (
                     <div key={index} className="space-y-2">
-                        <p className="font-semibold">{r.author}'s Reply ({r.date}):</p>
-                        <p className="p-3 border rounded-md bg-muted/50 text-sm">{r.message}</p>
+                        <p className="font-semibold">{r.author}'s Reply ({format(r.date.toDate(), 'PPP p')}):</p>
+                        <p className={`p-3 border rounded-md text-sm ${r.author === 'Support' ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-muted'}`}>{r.message}</p>
                     </div>
                  ))}
-                 <div className="space-y-2 pt-4">
-                    <Label htmlFor="reply">Your Reply</Label>
-                    <Textarea id="reply" value={reply} onChange={e => setReply(e.target.value)} rows={4}/>
-                 </div>
+                 {selectedTicket?.status !== 'Closed' && (
+                     <div className="space-y-2 pt-4">
+                        <Label htmlFor="reply">Your Reply</Label>
+                        <Textarea id="reply" value={reply} onChange={e => setReply(e.target.value)} rows={4}/>
+                    </div>
+                 )}
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Close</Button>
-                <Button onClick={handleReply}>Send Reply</Button>
+              <DialogFooter className="sm:justify-between">
+                {selectedTicket?.status !== 'Closed' ? (
+                     <Button variant="secondary" onClick={handleCloseTicket} disabled={isReplying}>Close Ticket</Button>
+                ) : <div />}
+                <div>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="mr-2">Cancel</Button>
+                  {selectedTicket?.status !== 'Closed' && <Button onClick={handleReply} disabled={isReplying || !reply}>
+                      {isReplying && <Loader2 className="mr-2 animate-spin" />} Send Reply
+                  </Button>}
+                </div>
               </DialogFooter>
           </DialogContent>
       </Dialog>

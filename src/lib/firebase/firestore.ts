@@ -11,7 +11,7 @@ import {
   documentId,
   deleteDoc,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -77,6 +77,12 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
     return null;
 }
 export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
+
+// Support Tickets
+export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
+export const getSupportTicket = (id: string) => getDocument<SupportTicket>('support_tickets', id);
+export const addSupportTicket = (ticket: Partial<SupportTicket>) => addDoc(collection(db, 'support_tickets'), ticket);
+export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) => updateDoc(doc(db, 'support_tickets', id), ticket);
 
 // Categories
 export const getCategories = async (): Promise<string[]> => {
