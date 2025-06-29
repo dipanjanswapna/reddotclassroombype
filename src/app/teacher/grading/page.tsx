@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,62 +12,103 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { courses, allInstructors, Assignment, Course } from '@/lib/mock-data';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { getCourses } from '@/lib/firebase/firestore';
+import { gradeAssignmentAction } from '@/app/actions';
+import type { Assignment } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { FileCheck2, Send } from 'lucide-react';
+import { FileCheck2, Send, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const teacherId = 'ins-ja'; // Mock teacher ID
+const teacherId = 'jubayer-ahmed'; // Mock teacher ID by slug
 
-// Flatten assignments from all courses taught by the teacher
-const getInitialAssignments = () => {
-    const teacherCourses = courses.filter(c => 
-        c.instructors.some(i => i.id === teacherId)
-    );
-    return teacherCourses.flatMap(course => 
-        (course.assignments || []).map(assignment => ({
-            ...assignment,
-            courseTitle: course.title,
-            courseId: course.id,
-        }))
-    );
+type AssignmentWithCourseInfo = Assignment & {
+  courseTitle: string;
+  courseId: string;
 };
-
 
 export default function TeacherGradingPage() {
   const { toast } = useToast();
-  const [allAssignments, setAllAssignments] = useState(getInitialAssignments());
-  const [selectedAssignment, setSelectedAssignment] = useState<(Assignment & { courseTitle: string }) | null>(null);
+  const [allAssignments, setAllAssignments] = useState<AssignmentWithCourseInfo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isGrading, setIsGrading] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<AssignmentWithCourseInfo | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Form state for grading dialog
   const [grade, setGrade] = useState('');
   const [feedback, setFeedback] = useState('');
 
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const allCourses = await getCourses();
+        const teacherCourses = allCourses.filter(c => 
+          c.instructors?.some(i => i.slug === teacherId)
+        );
+        const assignmentsToGrade = teacherCourses.flatMap(course => 
+          (course.assignments || []).map(assignment => ({
+            ...assignment,
+            courseTitle: course.title,
+            courseId: course.id!,
+          }))
+        );
+        setAllAssignments(assignmentsToGrade);
+      } catch (error) {
+        console.error("Failed to fetch assignments:", error);
+        toast({ title: 'Error', description: 'Could not fetch assignments.', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignments();
+  }, [toast]);
+
   const pendingAssignments = allAssignments.filter(a => a.status === 'Submitted' || a.status === 'Late');
 
-  const handleOpenDialog = (assignment: Assignment & { courseTitle: string }) => {
+  const handleOpenDialog = (assignment: AssignmentWithCourseInfo) => {
     setSelectedAssignment(assignment);
     setGrade(assignment.grade || '');
     setFeedback(assignment.feedback || '');
     setIsDialogOpen(true);
   };
   
-  const handleGradeSubmit = () => {
+  const handleGradeSubmit = async () => {
     if (!selectedAssignment) return;
+    setIsGrading(true);
 
-    setAllAssignments(prev => prev.map(a => 
-      a.id === selectedAssignment.id ? 
-      { ...a, status: 'Graded', grade, feedback } : a
-    ));
+    const result = await gradeAssignmentAction(
+      selectedAssignment.courseId,
+      selectedAssignment.id,
+      selectedAssignment.studentId,
+      grade,
+      feedback
+    );
 
-    toast({ title: "Grade Submitted!", description: `You have graded ${selectedAssignment.studentName}'s assignment.`});
-    setIsDialogOpen(false);
+    if (result.success) {
+      setAllAssignments(prev => prev.map(a => 
+        (a.id === selectedAssignment.id && a.studentId === selectedAssignment.studentId) ? 
+        { ...a, status: 'Graded', grade, feedback } : a
+      ));
+      toast({ title: "Grade Submitted!", description: `You have graded ${selectedAssignment.studentName}'s assignment.`});
+      setIsDialogOpen(false);
+    } else {
+      toast({ title: "Error", description: result.message, variant: "destructive" });
+    }
+    setIsGrading(false);
   };
+  
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -106,7 +146,7 @@ export default function TeacherGradingPage() {
                   <TableCell>{assignment.courseTitle}</TableCell>
                   <TableCell>{assignment.title}</TableCell>
                   <TableCell>
-                      {assignment.submissionDate}
+                      {assignment.submissionDate?.toString().split('T')[0]}
                       {assignment.status === 'Late' && <Badge variant="destructive" className="ml-2">Late</Badge>}
                   </TableCell>
                   <TableCell className="text-right">
@@ -155,11 +195,13 @@ export default function TeacherGradingPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleGradeSubmit}><Send className="mr-2 h-4 w-4"/>Submit Grade</Button>
+            <Button onClick={handleGradeSubmit} disabled={isGrading}>
+                {isGrading && <Loader2 className="mr-2 animate-spin" />}
+                <Send className="mr-2 h-4 w-4"/>Submit Grade
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

@@ -11,7 +11,7 @@ import {
   documentId,
   deleteDoc,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -90,3 +90,15 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
   return getDocument<HomepageConfig>('config', 'homepage');
 }
 export const updateHomepageConfig = (config: any) => updateDoc(doc(db, 'config', 'homepage'), config);
+
+// Promo Codes
+export const getPromoCodes = () => getCollection<PromoCode>('promo_codes');
+export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null> => {
+    const q = query(collection(db, "promo_codes"), where("code", "==", code));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        const docData = querySnapshot.docs[0];
+        return { id: docData.id, ...docData.data() } as PromoCode;
+    }
+    return null;
+}

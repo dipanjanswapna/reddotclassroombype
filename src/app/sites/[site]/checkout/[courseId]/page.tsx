@@ -1,69 +1,82 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { courses, allPromoCodes, Course, PromoCode } from '@/lib/mock-data';
+import { Course } from '@/lib/types';
+import { getCourse } from '@/lib/firebase/firestore';
+import { applyPromoCodeAction } from '@/app/actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tag } from 'lucide-react';
-import { useLanguage } from '@/context/language-context';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { Loader2 } from 'lucide-react';
 
-export default function CheckoutPage({ params }: { params: { site: string, courseId: string } }) {
+
+export default function PartnerCheckoutPage({ params }: { params: { site: string, courseId: string } }) {
   const { toast } = useToast();
   const router = useRouter();
-  const { language } = useLanguage();
 
-  const course = courses.find(c => c.id === params.courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState('');
 
-  if (!course) {
-    notFound();
+  useEffect(() => {
+    async function fetchCourse() {
+        try {
+            const courseData = await getCourse(params.courseId);
+            if (courseData) {
+                setCourse(courseData);
+            } else {
+                notFound();
+            }
+        } catch(e) {
+            console.error(e);
+            notFound();
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCourse();
+  }, [params.courseId]);
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12"/>
+        </div>
+    );
   }
 
-  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
-  const originalPrice = parseFloat((isPrebooking ? course.prebookingPrice! : course.price).replace(/[^0-9.]/g, ''));
+  if (!course) {
+    return notFound();
+  }
+
+  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
+  const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
   const finalPrice = originalPrice - discount;
 
-  const handleApplyPromo = () => {
+  const handleApplyPromo = async () => {
     setError('');
-    const matchedCode = allPromoCodes.find(p => p.code.toLowerCase() === promoCode.toLowerCase());
+    setPromoLoading(true);
     
-    if (!matchedCode) {
-      setError('Invalid promo code.');
-      return;
-    }
-    if (!matchedCode.isActive || new Date(matchedCode.expiresAt) < new Date()) {
-      setError('This promo code has expired.');
-      return;
-    }
-    if (matchedCode.usageCount >= matchedCode.usageLimit) {
-      setError('This promo code has reached its usage limit.');
-      return;
-    }
-    if (!matchedCode.applicableCourseIds.includes('all') && !matchedCode.applicableCourseIds.includes(course.id)) {
-        setError('This code is not valid for this course.');
-        return;
-    }
+    const result = await applyPromoCodeAction(params.courseId, promoCode);
 
-    let calculatedDiscount = 0;
-    if (matchedCode.type === 'fixed') {
-        calculatedDiscount = matchedCode.value;
-    } else { // percentage
-        calculatedDiscount = (originalPrice * matchedCode.value) / 100;
+    if (result.success) {
+      setDiscount(result.discount!);
+      toast({ title: 'Success!', description: result.message });
+    } else {
+      setError(result.message);
+      setDiscount(0);
     }
-    
-    setDiscount(calculatedDiscount);
-    toast({ title: 'Success!', description: 'Promo code applied successfully.' });
+    setPromoLoading(false);
   };
   
   const handlePayment = () => {
@@ -99,8 +112,11 @@ export default function CheckoutPage({ params }: { params: { site: string, cours
                     placeholder="Enter promo code" 
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
+                    disabled={promoLoading}
                   />
-                  <Button onClick={handleApplyPromo} variant="outline">Apply</Button>
+                  <Button onClick={handleApplyPromo} variant="outline" disabled={promoLoading || !promoCode}>
+                    {promoLoading ? <Loader2 className="animate-spin" /> : 'Apply'}
+                  </Button>
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>

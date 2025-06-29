@@ -1,22 +1,51 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { courses, Course } from '@/lib/mock-data';
-import { CalendarPlus, Eye } from 'lucide-react';
+import { getCourses } from '@/lib/firebase/firestore';
+import { Course } from '@/lib/types';
+import { Eye } from 'lucide-react';
 import { format, isPast } from 'date-fns';
+import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const teacherId = 'ins-ja'; // Mock teacher ID
-const teacherPrebookingCourses = courses.filter(c => 
-    c.isPrebooking && c.instructors.some(i => i.id === teacherId)
-);
 
 export default function TeacherPrebookingPage() {
+    const { toast } = useToast();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchCourses() {
+            try {
+                const allCourses = await getCourses();
+                const teacherPrebookingCourses = allCourses.filter(c => 
+                    c.isPrebooking && c.instructors?.some(i => i.id === teacherId)
+                );
+                setCourses(teacherPrebookingCourses);
+            } catch (error) {
+                console.error("Failed to fetch courses:", error);
+                toast({ title: "Error", description: "Could not fetch pre-booking courses.", variant: "destructive" });
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchCourses();
+    }, [toast]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -43,7 +72,7 @@ export default function TeacherPrebookingPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {teacherPrebookingCourses.map((course) => {
+                            {courses.length > 0 ? courses.map((course) => {
                                 const isEnded = course.prebookingEndDate ? isPast(new Date(course.prebookingEndDate)) : true;
                                 const progress = course.prebookingCount && course.prebookingTarget ? (course.prebookingCount / course.prebookingTarget) * 100 : 0;
                                 return (
@@ -66,7 +95,13 @@ export default function TeacherPrebookingPage() {
                                         </TableCell>
                                     </TableRow>
                                 )
-                            })}
+                            }) : (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-24 text-center">
+                                        You have no active pre-booking campaigns.
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -74,5 +109,3 @@ export default function TeacherPrebookingPage() {
         </div>
     );
 }
-
-    
