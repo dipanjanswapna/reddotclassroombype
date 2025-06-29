@@ -77,6 +77,7 @@ export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));
 // Organizations
 export const getOrganizations = () => getCollection<Organization>('organizations');
 export const getOrganization = (id: string) => getDocument<Organization>('organizations', id);
+export const addOrganization = (org: Partial<Organization>) => addDoc(collection(db, 'organizations'), org);
 export const getPartnerBySubdomain = async (subdomain: string): Promise<Organization | null> => {
     const q = query(collection(db, "organizations"), where("subdomain", "==", subdomain));
     const querySnapshot = await getDocs(q);
@@ -231,3 +232,6 @@ export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null
     }
     return null;
 }
+export const addPromoCode = (promoCode: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), promoCode);
+export const updatePromoCode = (id: string, promoCode: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), promoCode);
+export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));

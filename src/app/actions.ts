@@ -11,14 +11,18 @@ import {
     updateUser,
     deleteUser,
     updateInstructor,
+    addOrganization,
     updateOrganization,
     getCourse,
     getPromoCodeByCode,
     addSupportTicket,
     getSupportTicket,
-    updateSupportTicket
+    updateSupportTicket,
+    addPromoCode,
+    updatePromoCode,
+    deletePromoCode,
 } from '@/lib/firebase/firestore';
-import { Course, User, Instructor, Organization, SupportTicket } from '@/lib/types';
+import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
@@ -123,8 +127,8 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
 
 export async function gradeAssignmentAction(
     courseId: string, 
-    assignmentId: string, 
     studentId: string,
+    assignmentId: string, 
     grade: string,
     feedback: string
 ) {
@@ -253,6 +257,45 @@ export async function closeSupportTicketAction(ticketId: string) {
         revalidatePath('/moderator/support-tickets');
         return { success: true, message: 'Ticket closed.' };
     } catch(error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function savePromoCodeAction(promoData: Partial<PromoCode>) {
+    try {
+      if (promoData.id) {
+        await updatePromoCode(promoData.id, promoData);
+      } else {
+        await addPromoCode(promoData);
+      }
+      revalidatePath('/admin/promo-codes');
+      revalidatePath('/teacher/promo-codes');
+      return { success: true, message: 'Promo code saved successfully.' };
+    } catch (error: any) {
+      return { success: false, message: error.message };
+    }
+}
+
+export async function deletePromoCodeAction(id: string) {
+    try {
+        await deletePromoCode(id);
+        revalidatePath('/admin/promo-codes');
+        revalidatePath('/teacher/promo-codes');
+        return { success: true, message: 'Promo code deleted successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 'status'>) {
+    try {
+        const newPartnerData: Partial<Organization> = {
+            ...data,
+            status: 'pending'
+        };
+        await addOrganization(newPartnerData);
+        return { success: true, message: 'Application submitted successfully! Our team will review it and get back to you shortly.' };
+    } catch (error: any) {
         return { success: false, message: error.message };
     }
 }

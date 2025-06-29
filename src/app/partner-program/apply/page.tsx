@@ -8,20 +8,48 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from 'react';
+import { applyForPartnershipAction } from '@/app/actions';
+import { Loader2 } from 'lucide-react';
 
 export default function PartnerApplicationPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real app, form data would be sent to the backend here.
-    toast({
-      title: "Application Submitted!",
-      description: "Thank you for your application. Our team will review it and get back to you shortly.",
-    });
-    router.push('/');
+    setIsSubmitting(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('company-name') as string,
+      contactEmail: formData.get('contact-email') as string,
+      logoUrl: formData.get('logo-url') as string,
+      subdomain: formData.get('subdomain') as string,
+      description: formData.get('description') as string,
+      // Default values for required fields not in form
+      primaryColor: '346.8 77.2% 49.8%', 
+      secondaryColor: '210 40% 96.1%',
+    };
+
+    const result = await applyForPartnershipAction(data);
+
+    if (result.success) {
+      toast({
+        title: "Application Submitted!",
+        description: result.message,
+      });
+      router.push('/');
+    } else {
+      toast({
+        title: "Error",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
+
+    setIsSubmitting(false);
   }
 
   return (
@@ -36,30 +64,31 @@ export default function PartnerApplicationPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="company-name">Organization Name</Label>
-                <Input id="company-name" placeholder="e.g., MediShark" required />
+                <Input id="company-name" name="company-name" placeholder="e.g., MediShark" required />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="contact-email">Contact Email</Label>
-                <Input id="contact-email" type="email" placeholder="contact@yourcompany.com" required />
+                <Input id="contact-email" name="contact-email" type="email" placeholder="contact@yourcompany.com" required />
               </div>
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="logo-url">Logo URL</Label>
-                <Input id="logo-url" placeholder="https://yourcompany.com/logo.png" required />
+                <Input id="logo-url" name="logo-url" placeholder="https://yourcompany.com/logo.png" required />
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="subdomain">Preferred Site Path</Label>
                 <div className="flex items-center">
                     <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">rdc.com/sites/</span>
-                    <Input id="subdomain" placeholder="your-company-name" className="rounded-l-none" required />
+                    <Input id="subdomain" name="subdomain" placeholder="your-company-name" className="rounded-l-none" required />
                 </div>
                 <p className="text-xs text-muted-foreground">This will be your dedicated portal address.</p>
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="description">Brief Description</Label>
-                <Textarea id="description" placeholder="Tell us about your organization and the courses you offer..." rows={4} required />
+                <Textarea id="description" name="description" placeholder="Tell us about your organization and the courses you offer..." rows={4} required />
             </div>
-            <Button type="submit" className="w-full font-bold">
+            <Button type="submit" className="w-full font-bold" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 animate-spin" />}
               Submit Application
             </Button>
           </form>
