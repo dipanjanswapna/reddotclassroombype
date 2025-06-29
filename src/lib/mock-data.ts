@@ -166,6 +166,8 @@ export type Course = {
   isPrebooking?: boolean;
   prebookingPrice?: string;
   prebookingEndDate?: string;
+  prebookingCount?: number;
+  prebookingTarget?: number;
   organizationId?: string;
   organizationName?: string;
   quizzes?: Quiz[];
@@ -326,6 +328,8 @@ export const courses: Course[] = [
     price: 'BDT 5000',
     prebookingPrice: 'BDT 4500',
     prebookingEndDate: '2024-12-31',
+    prebookingCount: 250,
+    prebookingTarget: 500,
     instructors: [
        getInst('ins-ja'),
        getInst('ins-si'),
@@ -1373,3 +1377,5 @@ export const mockStudyPlan: StudyPlanEvent[] = [
         courseTitle: 'IELTS Preparation Course'
     }
 ];
+
+    
