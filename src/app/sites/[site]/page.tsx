@@ -1,44 +1,54 @@
 
-import { notFound } from 'next/navigation';
-import { courses, organizations } from '@/lib/mock-data';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
+import { getPartnerBySubdomain, getCourses } from '@/lib/firebase/firestore';
 import { CourseCard } from '@/components/course-card';
-import { Metadata } from 'next';
+import type { Organization, Course } from '@/lib/types';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const getPartner = async (slug: string) => {
-  return organizations.find(org => org.subdomain === slug);
-};
 
-export async function generateStaticParams() {
-  return organizations.map((org) => ({
-    site: org.subdomain,
-  }));
-}
+export default function PartnerSitePage() {
+  const params = useParams();
+  const siteSlug = params.site as string;
+  
+  const [partner, setPartner] = useState<Organization | null>(null);
+  const [partnerCourses, setPartnerCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
-  const partner = await getPartner(params.site);
+  useEffect(() => {
+      if (!siteSlug) return;
+      const fetchPartnerData = async () => {
+          try {
+              const partnerData = await getPartnerBySubdomain(siteSlug);
+              if (partnerData) {
+                  setPartner(partnerData);
+                  const allCourses = await getCourses();
+                  const filteredCourses = allCourses.filter(c => c.organizationId === partnerData.id && c.status === 'Published');
+                  setPartnerCourses(filteredCourses);
+              }
+          } catch (error) {
+              console.error("Failed to fetch partner data:", error);
+          } finally {
+              setLoading(false);
+          }
+      };
+      fetchPartnerData();
+  }, [siteSlug]);
 
-  if (!partner) {
-    return {
-      title: 'Partner Not Found',
-    };
+  if (loading) {
+      return (
+          <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+      );
   }
-
-  return {
-    title: `Courses by ${partner.name}`,
-    description: `Explore all courses offered by ${partner.name} on the RDC platform.`,
-  };
-}
-
-
-export default async function PartnerSitePage({ params }: { params: { site: string } }) {
-  const partner = await getPartner(params.site);
 
   if (!partner) {
     notFound();
   }
-
-  const partnerCourses = courses.filter(c => c.organizationId === partner.id && c.status === 'Published');
 
   return (
     <div className="flex flex-col">
@@ -76,7 +86,7 @@ export default async function PartnerSitePage({ params }: { params: { site: stri
         {partnerCourses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {partnerCourses.map((course) => (
-              <CourseCard key={course.id} {...course} partnerSubdomain={params.site} />
+              <CourseCard key={course.id} {...course} partnerSubdomain={siteSlug} />
             ))}
           </div>
         ) : (

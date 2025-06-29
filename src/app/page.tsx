@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -25,6 +27,9 @@ import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
+import { useEffect, useState } from 'react';
+import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
   const Icon = icon;
@@ -49,31 +54,72 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   }
 };
 
-export default async function Home() {
-  const homepageConfig = await getHomepageConfig();
-  if (!homepageConfig) {
-    return <div>Homepage configuration not found.</div>;
-  }
+export default function Home() {
+  const [homepageConfig, setHomepageConfig] = useState<HomepageConfig | null>(null);
+  const [liveCourses, setLiveCourses] = useState<Course[]>([]);
+  const [featuredInstructors, setFeaturedInstructors] = useState<Instructor[]>([]);
+  const [sscHscCourses, setSschscCourses] = useState<Course[]>([]);
+  const [masterClasses, setMasterClasses] = useState<Course[]>([]);
+  const [admissionCourses, setAdmissionCourses] = useState<Course[]>([]);
+  const [jobCourses, setJobCourses] = useState<Course[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const language = 'bn'; // Default language
 
-  // Fetch all required courses and instructors in parallel
-  const [
-    liveCourses,
-    featuredInstructors,
-    sscHscCourses,
-    masterClasses,
-    admissionCourses,
-    jobCourses,
-    organizations
-  ] = await Promise.all([
-    getCoursesByIds(homepageConfig.liveCoursesIds || []),
-    getInstructorsByIds(homepageConfig.teachersSection.instructorIds || []),
-    getCoursesByIds(homepageConfig.sscHscCourseIds || []),
-    getCoursesByIds(homepageConfig.masterClassesIds || []),
-    getCoursesByIds(homepageConfig.admissionCoursesIds || []),
-    getCoursesByIds(homepageConfig.jobCoursesIds || []),
-    getOrganizations()
-  ]);
+  useEffect(() => {
+    const fetchHomepageData = async () => {
+      try {
+        const config = await getHomepageConfig();
+        if (config) {
+          setHomepageConfig(config);
+          
+          const [
+            live,
+            instructors,
+            sscHsc,
+            master,
+            admission,
+            job,
+            orgs
+          ] = await Promise.all([
+            getCoursesByIds(config.liveCoursesIds || []),
+            getInstructorsByIds(config.teachersSection.instructorIds || []),
+            getCoursesByIds(config.sscHscCourseIds || []),
+            getCoursesByIds(config.masterClassesIds || []),
+            getCoursesByIds(config.admissionCoursesIds || []),
+            getCoursesByIds(config.jobCoursesIds || []),
+            getOrganizations()
+          ]);
+
+          setLiveCourses(live);
+          setFeaturedInstructors(instructors);
+          setSschscCourses(sscHsc);
+          setMasterClasses(master);
+          setAdmissionCourses(admission);
+          setJobCourses(job);
+          setOrganizations(orgs);
+        }
+      } catch (err) {
+        console.error("Failed to load homepage data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHomepageData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <LoadingSpinner className="h-12 w-12" />
+      </div>
+    );
+  }
+
+  if (!homepageConfig) {
+    return <div className="container mx-auto p-4">Homepage configuration not found. Please set it up in the admin panel.</div>;
+  }
   
   return (
     <div className="flex flex-col bg-background">

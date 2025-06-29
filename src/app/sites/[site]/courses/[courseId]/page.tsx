@@ -2,7 +2,7 @@
 'use client';
 
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import {
   CheckCircle,
   PlayCircle,
@@ -18,7 +18,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { courses } from '@/lib/mock-data';
 import { CourseTabs } from '@/components/course-tabs';
 import { CourseCard } from '@/components/course-card';
 import {
@@ -32,32 +31,61 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { getCourse, getCourses } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const getCourseById = (id: string) => {
-  return courses.find((course) => course.id === id);
-};
+export default function PartnerCourseDetailPage() {
+  const params = useParams();
+  const site = params.site as string;
+  const courseId = params.courseId as string;
 
-// This page doesn't need generateMetadata because it's a client component.
-// The layout will handle the partner-specific theming.
+  const [course, setCourse] = useState<Course | null>(null);
+  const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
+  const [includedCourses, setIncludedCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function PartnerCourseDetailPage({
-  params,
-}: {
-  params: { site: string, courseId: string };
-}) {
-  const course = getCourseById(params.courseId);
-  
+  useEffect(() => {
+    if (!courseId) return;
+    const fetchCourseData = async () => {
+      try {
+        const courseData = await getCourse(courseId);
+        if (courseData) {
+          setCourse(courseData);
+          const allCourses = await getCourses();
+          const related = allCourses.filter(c => c.organizationId === courseData.organizationId && c.id !== courseData.id).slice(0, 4);
+          setRelatedCourses(related);
+          if (courseData.includedArchivedCourseIds) {
+            const included = allCourses.filter(c => courseData.includedArchivedCourseIds?.includes(c.id!));
+            setIncludedCourses(included);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+  }, [courseId]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   if (!course) {
     notFound();
   }
-
-  const relatedCourses = courses.filter((c) => c.organizationId === course?.organizationId && c.id !== course.id).slice(0, 4);
-  const includedCourses = courses.filter(c => course?.includedArchivedCourseIds?.includes(c.id));
-
+  
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
-  const checkoutUrl = `/sites/${params.site}/checkout/${course.id}`;
-  const prebookUrl = `/sites/${params.site}/pre-book/${course.id}`;
+  const checkoutUrl = `/sites/${site}/checkout/${course.id}`;
+  const prebookUrl = `/sites/${site}/pre-book/${course.id}`;
 
   return (
     <div className="bg-background">
@@ -310,7 +338,7 @@ export default function PartnerCourseDetailPage({
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {includedCourses.map(includedCourse => (
-                <CourseCard key={includedCourse.id} {...includedCourse} partnerSubdomain={params.site} />
+                <CourseCard key={includedCourse.id} {...includedCourse} partnerSubdomain={site} />
               ))}
             </div>
           </section>
@@ -320,7 +348,7 @@ export default function PartnerCourseDetailPage({
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {relatedCourses.map(course => (
-                    <CourseCard key={course.id} {...course} partnerSubdomain={params.site} />
+                    <CourseCard key={course.id} {...course} partnerSubdomain={site} />
                 ))}
             </div>
          </section>

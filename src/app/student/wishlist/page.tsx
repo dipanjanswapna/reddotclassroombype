@@ -1,19 +1,39 @@
 
+'use client';
+
 import { Heart } from 'lucide-react';
 import { getCourses } from '@/lib/firebase/firestore';
 import { CourseCard } from '@/components/course-card';
-import type { Metadata } from 'next';
+import { useState, useEffect } from 'react';
+import { Course } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-export const metadata: Metadata = {
-  title: 'My Wishlist',
-  description: 'Your saved courses on Red Dot Classroom. Enroll when you are ready.',
-};
+export default function WishlistPage() {
+  const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function WishlistPage() {
-  // In a real app, this would be a user-specific query.
-  // For now, we filter all courses by the isWishlisted flag.
-  const allCourses = await getCourses();
-  const wishlistedCourses = allCourses.filter(course => course.isWishlisted);
+  useEffect(() => {
+    async function fetchWishlist() {
+      try {
+        const allCourses = await getCourses();
+        const filtered = allCourses.filter(course => course.isWishlisted);
+        setWishlistedCourses(filtered);
+      } catch (error) {
+        console.error("Failed to fetch wishlist:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWishlist();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-grow items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

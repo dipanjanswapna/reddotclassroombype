@@ -46,6 +46,15 @@ export const deleteCourse = (id: string) => deleteDoc(doc(db, 'courses', id));
 // Instructors
 export const getInstructors = () => getCollection<Instructor>('instructors');
 export const getInstructor = (id: string) => getDocument<Instructor>('instructors', id);
+export const getInstructorBySlug = async (slug: string): Promise<Instructor | null> => {
+    const q = query(collection(db, "instructors"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as Instructor;
+}
 export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> => {
     if (!ids || ids.length === 0) return [];
     const instructorsRef = collection(db, 'instructors');
