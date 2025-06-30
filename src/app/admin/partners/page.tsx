@@ -18,7 +18,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { Organization } from '@/lib/types';
 import { getOrganizations } from '@/lib/firebase/firestore';
 import { updateOrganizationStatusAction } from '@/app/actions';
-import Image from 'next/image';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Organization['status']) => {
@@ -113,7 +112,8 @@ export default function AdminPartnerManagementPage() {
               {organizations.map((org) => (
                 <TableRow key={org.id}>
                   <TableCell className="flex items-center gap-3">
-                    <Image src={org.logoUrl} alt={org.name} width={40} height={40} className="rounded-full bg-muted" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={org.logoUrl} alt={org.name} width={40} height={40} className="rounded-full bg-muted object-cover" />
                     <span className="font-medium">{org.name}</span>
                   </TableCell>
                   <TableCell>{org.contactEmail || 'N/A'}</TableCell>
