@@ -3,25 +3,25 @@ import React from 'react';
 export function RdcLogo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="0 0 250 80"
+      viewBox="0 0 200 100"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Red Dot Classroom Logo"
       {...props}
     >
+      {/* "r" shape */}
       <path
-        d="M10 70C10 30 50 10 90 10V70C50 70 10 70 10 70Z"
-        fill="#2979FF"
+        d="M20,80 V30 A30,30 0 0,1 50,30 V80"
+        fill="#007AFF"
       />
-      <circle
-        cx="140"
-        cy="40"
-        r="30"
-        fill="#FFD600"
-      />
+
+      {/* "d" shape */}
+      <rect x="70" y="30" width="20" height="50" fill="#007AFF" />
+      <circle cx="90" cy="55" r="25" fill="#FFC700" />
+
+      {/* "c" shape */}
       <path
-        d="M200 10C240 10 240 70 200 70C160 70 160 10 200 10Z"
-        fill="#FF3D00"
+        d="M160,30 A25,25 0 1,0 160,80"
+        fill="#FF3B30"
       />
     </svg>
   );
