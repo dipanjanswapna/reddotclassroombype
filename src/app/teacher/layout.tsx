@@ -14,10 +14,12 @@ import {
   CalendarPlus,
   FileCheck2,
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function TeacherLayout({
   children,
@@ -25,6 +27,24 @@ export default function TeacherLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, userInfo, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || userInfo?.role !== 'Teacher') {
+        router.push('/login');
+      }
+    }
+  }, [user, userInfo, loading, router]);
+  
+  if (loading || !user || userInfo?.role !== 'Teacher') {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   const menuItems = [
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },

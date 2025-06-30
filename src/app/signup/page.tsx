@@ -1,6 +1,8 @@
 
+
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { UserSquare } from 'lucide-react';
+import { UserSquare, AlertTriangle, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
+import { useAuth } from '@/context/auth-context';
+import { User } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 function GoogleIcon() {
   return (
@@ -27,6 +32,29 @@ function GoogleIcon() {
 
 export default function SignupPage() {
   const { language } = useLanguage();
+  const { signup } = useAuth();
+  const router = useRouter();
+
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<User['role']>('Student');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      await signup(email, password, fullName, role);
+      router.push('/login?status=signup_success');
+    } catch (err: any) {
+      setError(err.message || 'Failed to create an account.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
@@ -36,7 +64,14 @@ export default function SignupPage() {
           <CardDescription>{t.signup_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
+          <form className="grid gap-4" onSubmit={handleSignup}>
+              {error && (
+                  <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertTitle>Signup Failed</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+              )}
               <Alert className="bg-primary/5 border-primary/20">
                 <UserSquare className="h-4 w-4 !text-primary" />
                 <AlertTitle className="text-primary font-semibold">{t.want_to_be_teacher[language]}</AlertTitle>
@@ -47,21 +82,21 @@ export default function SignupPage() {
             </Alert>
             <div className="grid gap-2">
               <Label htmlFor="full-name">{t.full_name[language]}</Label>
-              <Input id="full-name" placeholder="Jubayer Ahmed" required />
+              <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">{t.email[language]}</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">{t.password[language]}</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
             </div>
             <div className="grid gap-2">
                 <Label>{t.registering_as[language]}</Label>
-                <RadioGroup defaultValue="student" className="grid grid-cols-2 gap-2">
+                <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-2">
                     <div>
-                        <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
+                        <RadioGroupItem value="Student" id="role-student" className="peer sr-only" />
                         <Label
                             htmlFor="role-student"
                             className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -70,7 +105,7 @@ export default function SignupPage() {
                         </Label>
                     </div>
                     <div>
-                        <RadioGroupItem value="guardian" id="role-guardian" className="peer sr-only" />
+                        <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" />
                         <Label
                             htmlFor="role-guardian"
                             className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -95,7 +130,8 @@ export default function SignupPage() {
                     </p>
                 </div>
             </div>
-            <Button type="submit" className="w-full font-bold">
+            <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
               {t.create_account[language]}
             </Button>
             <div className="relative">
@@ -108,7 +144,7 @@ export default function SignupPage() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" disabled>
               <GoogleIcon />
               <span className="ml-2">{t.signup_with_google[language]}</span>
             </Button>

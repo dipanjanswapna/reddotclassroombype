@@ -2,21 +2,19 @@
 
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { GraduationCap, Handshake, Shield, UserCog, UserSquare, UserCheck, UserX } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 
 function GoogleIcon() {
   return (
@@ -31,6 +29,40 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const { language } = useLanguage();
+  const { login, loginWithGoogle } = useAuth();
+  const router = useRouter();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      await login(email, password);
+      // The redirect will be handled by the protected layout components
+    } catch (err: any) {
+      setError(err.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await loginWithGoogle();
+      // Redirect will be handled by protected layouts
+    } catch (err: any) {
+       setError(err.message || 'Failed to log in with Google.');
+    } finally {
+       setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
@@ -40,14 +72,21 @@ export default function LoginPage() {
           <CardDescription>{t.login_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
+          <form className="grid gap-4" onSubmit={handleLogin}>
+            {error && (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Login Failed</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
             <div className="grid gap-2">
               <Label htmlFor="email">{t.email[language]}</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">{t.password[language]}</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -58,11 +97,13 @@ export default function LoginPage() {
                 {t.forgot_password[language]}
               </Link>
             </div>
-            <Button type="submit" className="w-full font-bold">
-              {t.login[language]}
+            <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                {t.login[language]}
             </Button>
-            
-            <div className="relative pt-2">
+          </form>
+
+            <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -72,75 +113,11 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
               <GoogleIcon />
               <span className="ml-2">{t.login_with_google[language]}</span>
             </Button>
 
-            <div className="relative pt-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  {t.or_demo[language]}
-                </span>
-              </div>
-            </div>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  Login as a Demo User
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link href="/student/dashboard" className="flex items-center w-full">
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    <span>{t.student[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/teacher/dashboard" className="flex items-center w-full">
-                    <UserSquare className="mr-2 h-4 w-4" />
-                    <span>{t.teacher[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/partner/dashboard" className="flex items-center w-full">
-                    <Handshake className="mr-2 h-4 w-4" />
-                    <span>Partner</span>
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/guardian/dashboard" className="flex items-center w-full">
-                    <Shield className="mr-2 h-4 w-4" />
-                    <span>{t.guardian[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/affiliate/dashboard" className="flex items-center w-full">
-                    <UserCheck className="mr-2 h-4 w-4" />
-                    <span>{t.affiliate[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/moderator/dashboard" className="flex items-center w-full">
-                    <UserX className="mr-2 h-4 w-4" />
-                    <span>{t.moderator[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/admin/dashboard" className="flex items-center w-full">
-                    <UserCog className="mr-2 h-4 w-4" />
-                    <span>{t.admin[language]}</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-          </form>
           <div className="mt-6 text-center text-sm">
             {t.no_account[language]}{' '}
             <Link href="/signup" className="font-semibold text-primary hover:underline">

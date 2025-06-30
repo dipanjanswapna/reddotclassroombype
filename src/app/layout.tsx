@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { LanguageProvider } from '@/context/language-context';
 import { Inter, Poppins } from 'next/font/google'
+import { AuthProvider } from '@/context/auth-context';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -34,10 +35,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased min-h-screen bg-background', fontInter.variable, fontPoppins.variable)}>
-        <LanguageProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
-          <Toaster />
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+            <Toaster />
+          </LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   );

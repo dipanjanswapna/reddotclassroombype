@@ -230,6 +230,7 @@ export type SupportTicket = {
 
 export type User = {
   id?: string;
+  uid: string; // Firebase Auth UID
   name: string;
   email: string;
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Partner';

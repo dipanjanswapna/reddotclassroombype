@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Settings,
   LogOut,
@@ -13,8 +13,10 @@ import {
   Banknote,
   LayoutDashboard
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function PartnerLayout({
   children,
@@ -22,6 +24,24 @@ export default function PartnerLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, userInfo, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || userInfo?.role !== 'Partner') {
+        router.push('/login');
+      }
+    }
+  }, [user, userInfo, loading, router]);
+  
+  if (loading || !user || userInfo?.role !== 'Partner') {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   const menuItems = [
     { href: "/partner/dashboard", icon: LayoutDashboard, label: "Dashboard" },

@@ -1,13 +1,16 @@
 
+
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut
 } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function StudentLayout({
   children,
@@ -15,6 +18,24 @@ export default function StudentLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, userInfo, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || userInfo?.role !== 'Student') {
+        router.push('/login');
+      }
+    }
+  }, [user, userInfo, loading, router]);
+
+  if (loading || !user || userInfo?.role !== 'Student') {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   // Check if the path is a specific course page. Example: /student/my-courses/1, /student/my-courses/1/assignments
   // It should NOT match /student/my-courses

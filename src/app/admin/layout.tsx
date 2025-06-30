@@ -16,9 +16,11 @@ import {
   CalendarPlus,
   Handshake,
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function AdminLayout({
   children,
@@ -26,6 +28,24 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const { user, userInfo, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading) {
+            if (!user || userInfo?.role !== 'Admin') {
+                router.push('/login');
+            }
+        }
+    }, [user, userInfo, loading, router]);
+    
+    if (loading || !user || userInfo?.role !== 'Admin') {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
 
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },

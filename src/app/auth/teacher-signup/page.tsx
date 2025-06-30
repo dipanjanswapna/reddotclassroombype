@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -27,20 +28,12 @@ export default function TeacherSignupPage() {
     const formData = new FormData(e.currentTarget);
     const name = formData.get('full-name') as string;
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirm-password') as string;
     const title = formData.get('expertise') as string;
     const bio = formData.get('bio') as string;
 
-    if (password !== confirmPassword) {
-      toast({ title: "Passwords do not match", variant: "destructive" });
-      setIsSubmitting(false);
-      return;
-    }
-
     const result = await createInstructorAction({
         name,
-        email, // Note: email is not on Instructor model, but good to collect
+        email,
         title,
         bio,
         slug: name.toLowerCase().replace(/\s+/g, '-'),
@@ -80,16 +73,6 @@ export default function TeacherSignupPage() {
                     <Input id="email" name="email" type="email" placeholder="m@example.com" required />
                 </div>
              </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div className="grid gap-2">
-                    <Label htmlFor="password">{t.password[language]}</Label>
-                    <Input id="password" name="password" type="password" required />
-                </div>
-                 <div className="grid gap-2">
-                    <Label htmlFor="confirm-password">{t.confirm_password[language]}</Label>
-                    <Input id="confirm-password" name="confirm-password" type="password" required />
-                </div>
-            </div>
             <div className="grid gap-2">
                 <Label htmlFor="expertise">{t.expertise_title[language]}</Label>
                 <Input id="expertise" name="expertise" placeholder="e.g., Physics Expert, IELTS Trainer" required />

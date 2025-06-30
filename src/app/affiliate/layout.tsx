@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Link2,
@@ -11,8 +11,10 @@ import {
   User,
   LogOut,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function AffiliateLayout({
   children,
@@ -20,6 +22,24 @@ export default function AffiliateLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, userInfo, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || userInfo?.role !== 'Affiliate') {
+        router.push('/login');
+      }
+    }
+  }, [user, userInfo, loading, router]);
+  
+  if (loading || !user || userInfo?.role !== 'Affiliate') {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   const menuItems = [
     { href: "/affiliate/dashboard", icon: LayoutDashboard, label: "Dashboard" },
