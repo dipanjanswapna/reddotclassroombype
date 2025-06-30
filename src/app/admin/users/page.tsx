@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -61,6 +62,13 @@ const roleColors: { [key in User['role']]: string } = {
   Moderator: 'border-orange-300 bg-orange-50 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700',
   Partner: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
 };
+
+const statusColors: { [key in User['status']]: string } = {
+    Active: 'bg-green-100 text-green-800 border-green-200',
+    Suspended: 'bg-red-100 text-red-800 border-red-200',
+    'Pending Approval': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+};
+
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -137,19 +145,18 @@ export default function UserManagementPage() {
     setUserToDelete(null); // Close the dialog
   };
   
-  const handleSuspendUser = async (userToSuspend: User) => {
-    if(!userToSuspend.id) return;
-    const newStatus = userToSuspend.status === 'Active' ? 'Suspended' : 'Active';
-    const result = await saveUserAction({ id: userToSuspend.id, status: newStatus });
+  const handleStatusUpdate = async (userToUpdate: User, newStatus: User['status']) => {
+    if(!userToUpdate.id) return;
+    const result = await saveUserAction({ id: userToUpdate.id, status: newStatus });
     if(result.success) {
         setUsers(users.map(user => 
-            user.id === userToSuspend.id 
+            user.id === userToUpdate.id 
             ? { ...user, status: newStatus } 
             : user
         ));
         toast({
             title: "User Status Updated",
-            description: `User "${userToSuspend.name}" has been ${newStatus.toLowerCase()}.`,
+            description: `User "${userToUpdate.name}" has been ${newStatus === 'Active' ? 'activated' : newStatus.toLowerCase()}.`,
         });
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -210,7 +217,7 @@ export default function UserManagementPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.status === 'Active' ? 'accent' : 'warning'}>{user.status}</Badge>
+                    <Badge variant="outline" className={statusColors[user.status]}>{user.status}</Badge>
                   </TableCell>
                   <TableCell>{user.joined?.toString().split('T')[0]}</TableCell>
                   <TableCell className="text-right">
@@ -223,16 +230,35 @@ export default function UserManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSuspendUser(user)}>
-                            {user.status === 'Active' ? 'Suspend User' : 'Activate User'}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            onSelect={() => setUserToDelete(user)}
-                        >
-                          <Trash2 className="mr-2" />Delete User
-                        </DropdownMenuItem>
+                        {user.status === 'Pending Approval' && (
+                            <>
+                               <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Active')}>
+                                    <UserCheck className="mr-2 text-green-600"/>Approve User
+                                </DropdownMenuItem>
+                               <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Suspended')}>
+                                    <UserX className="mr-2 text-destructive"/>Reject User
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                         {user.status === 'Active' && user.role !== 'Admin' && (
+                           <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Suspended')}>
+                                <UserX className="mr-2 text-destructive"/>Suspend User
+                            </DropdownMenuItem>
+                         )}
+                          {user.status === 'Suspended' && (
+                           <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Active')}>
+                                <UserCheck className="mr-2 text-green-600"/>Re-activate User
+                            </DropdownMenuItem>
+                         )}
+                        {user.role !== 'Admin' && <DropdownMenuSeparator />}
+                        {user.role !== 'Admin' && (
+                            <DropdownMenuItem 
+                                className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                                onSelect={() => setUserToDelete(user)}
+                            >
+                            <Trash2 className="mr-2" />Delete User
+                            </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

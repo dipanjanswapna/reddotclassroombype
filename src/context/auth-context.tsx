@@ -74,11 +74,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (email: string, pass: string, role?: User['role']) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+        
         let fetchedUserInfo = await getUserByUid(userCredential.user.uid);
 
-        // Special handling for the main admin account bootstrap
         if (!fetchedUserInfo && email === 'dipanjanswapnaprangon@gmail.com') {
-            const newUserInfo: Omit<User, 'id'> = {
+             const newUserInfo: Omit<User, 'id'> = {
                 uid: userCredential.user.uid,
                 name: "RDC Admin",
                 email: email,
@@ -88,9 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 joined: serverTimestamp(),
             };
             await setDoc(doc(db, "users", userCredential.user.uid), newUserInfo);
-            
-            // Re-fetch user info after creating it
-            fetchedUserInfo = await getUserByUid(userCredential.user.uid);
+            fetchedUserInfo = { ...newUserInfo, id: userCredential.user.uid } as User;
         }
 
         if (!fetchedUserInfo) {
@@ -111,8 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
         
-        setUserInfo(fetchedUserInfo); // Set user info in context
-        // Redirection will be handled by the useEffect hook
+        setUserInfo(fetchedUserInfo);
         return userCredential;
     };
 

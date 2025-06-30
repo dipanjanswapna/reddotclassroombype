@@ -522,3 +522,4 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
     }
 }
 
+
