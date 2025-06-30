@@ -5,11 +5,22 @@ import { notFound, useParams } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, MessageSquare, MonitorPlay } from 'lucide-react';
-import FacebookComments from '@/components/facebook-comments';
-import { LiveVideoPlayer } from '@/components/live-video-player';
+import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import type { Course, LiveClass } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
+    ssr: false,
+    loading: () => <Skeleton className="h-24 w-full" />,
+});
+
+const LiveVideoPlayer = dynamic(() => import('@/components/live-video-player').then(mod => mod.LiveVideoPlayer), {
+    ssr: false,
+    loading: () => <Skeleton className="w-full aspect-video" />,
+});
+
 
 export default function LiveClassViewerPage() {
   const params = useParams();

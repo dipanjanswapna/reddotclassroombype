@@ -2,14 +2,20 @@
 'use client'; // This directive is needed for useEffect and useState
 
 import { notFound, useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { getCourse } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Download, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import FacebookComments from '@/components/facebook-comments';
 import { useEffect, useState } from 'react';
 import type { Course, Lesson } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
+    ssr: false,
+    loading: () => <Skeleton className="h-24 w-full" />,
+});
 
 export default function LessonPage() {
   const params = useParams();
@@ -103,13 +109,7 @@ export default function LessonPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {pageUrl ? (
-            <FacebookComments href={pageUrl} />
-          ) : (
-            <div className="flex items-center justify-center p-4">
-              <p className="text-muted-foreground">Loading comments...</p>
-            </div>
-          )}
+          <FacebookComments href={pageUrl} />
         </CardContent>
       </Card>
     </div>

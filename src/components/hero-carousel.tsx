@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -66,7 +67,7 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
                     alt={banner.alt}
                     width={800}
                     height={450}
-                    priority={index < 2}
+                    priority={index === 0}
                     className="rounded-xl object-cover"
                     data-ai-hint={banner.dataAiHint}
                   />

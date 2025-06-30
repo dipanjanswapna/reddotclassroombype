@@ -64,7 +64,7 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="Open user menu">
           <Avatar className="h-9 w-9">
             <AvatarImage src={userInfo.avatarUrl} alt={userInfo.name} />
             <AvatarFallback>{userInfo.name?.split(' ').map(n => n[0]).join('') || 'U'}</AvatarFallback>

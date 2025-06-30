@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getInstructorBySlug, getCourses } from '@/lib/firebase/firestore';
@@ -50,7 +51,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                     <div className="grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-1 flex flex-col items-center text-center">
                             <Avatar className="w-48 h-48 border-4 border-primary/20 shadow-lg">
-                                <AvatarImage src={teacher.avatarUrl} alt={teacher.name} data-ai-hint={teacher.dataAiHint} />
+                                <AvatarImage src={teacher.avatarUrl} alt={teacher.name} data-ai-hint={teacher.dataAiHint} priority/>
                                 <AvatarFallback className="text-6xl">{teacher.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <h1 className="font-headline text-3xl font-bold mt-4">{teacher.name}</h1>

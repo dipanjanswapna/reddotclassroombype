@@ -1,3 +1,4 @@
+
 import { getCourses, getCategories, getOrganizations } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
