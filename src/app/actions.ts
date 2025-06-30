@@ -28,9 +28,9 @@ import {
     deleteOrganization,
     deleteInstructor,
     addNotification,
-    getInstructorByUserId,
     getInstructor,
     getOrganization,
+    getUserByUid,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
@@ -133,7 +133,7 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
         if (status === 'Approved') {
             const instructor = await getInstructor(id);
             if(instructor?.userId) {
-                const user = await getUser(instructor.userId);
+                const user = await getUserByUid(instructor.userId);
                 if(user) await updateUser(user.id!, { status: 'Active' });
             }
         }
@@ -165,7 +165,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
         if (status === 'approved') {
             const organization = await getOrganization(id);
             if(organization?.contactUserId) {
-                const user = await getUser(organization.contactUserId);
+                const user = await getUserByUid(organization.contactUserId);
                 if(user) await updateUser(user.id!, { status: 'Active' });
             }
         }
@@ -521,3 +521,4 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
       return { success: false, message: error.message };
     }
 }
+
