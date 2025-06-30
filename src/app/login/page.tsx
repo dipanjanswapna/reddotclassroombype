@@ -8,13 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from '@/components/ui/use-toast';
 
 function GoogleIcon() {
   return (
@@ -27,38 +28,61 @@ function GoogleIcon() {
   );
 }
 
+function FacebookIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48">
+            <path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
+            <path fill="#FFF" d="M34.368,25.708h-6.142v16.292h-7.734V25.708h-4.433v-6.52h4.433v-4.66c0-4.39,2.685-6.78,6.597-6.78c1.88,0,3.504,0.14,3.976,0.205v6.251h-3.692c-2.131,0-2.543,1.011-2.543,2.498v2.965h6.643L34.368,25.708z"></path>
+        </svg>
+    )
+}
+
 export default function LoginPage() {
   const { language } = useLanguage();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
       await login(email, password);
-      // The redirect will be handled by the protected layout components
+      // The redirect will be handled by the protected layout components in AuthContext
     } catch (err: any) {
       setError(err.message || 'Failed to log in. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
   };
+  
+  const handlePhoneLogin = (e: React.FormEvent) => {
+      e.preventDefault();
+      toast({
+          title: "Coming Soon!",
+          description: "Phone number login functionality is currently under development.",
+      });
+  }
 
-  const handleGoogleLogin = async () => {
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     setIsLoading(true);
     setError(null);
     try {
-      await loginWithGoogle();
+      if (provider === 'google') {
+          await loginWithGoogle();
+      } else {
+          await loginWithFacebook();
+      }
       // Redirect will be handled by protected layouts
     } catch (err: any) {
-       setError(err.message || 'Failed to log in with Google.');
+       setError(err.message || `Failed to log in with ${provider}.`);
     } finally {
        setIsLoading(false);
     }
@@ -71,39 +95,19 @@ export default function LoginPage() {
           <CardTitle className="text-2xl font-headline">{t.login_welcome[language]}</CardTitle>
           <CardDescription>{t.login_desc[language]}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form className="grid gap-4" onSubmit={handleLogin}>
-            {error && (
-                <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Login Failed</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                </Alert>
-            )}
-            <div className="grid gap-2">
-              <Label htmlFor="email">{t.email[language]}</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <CardContent className="grid gap-6">
+            <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading}>
+                    <GoogleIcon />
+                    <span className="ml-2">Google</span>
+                </Button>
+                 <Button variant="outline" onClick={() => handleSocialLogin('facebook')} disabled={isLoading}>
+                    <FacebookIcon />
+                    <span className="ml-2">Facebook</span>
+                </Button>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">{t.password[language]}</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember-me" />
-                <Label htmlFor="remember-me" className="text-sm font-medium">{t.remember_me[language]}</Label>
-              </div>
-              <Link href="/password-reset" className="text-sm text-primary hover:underline">
-                {t.forgot_password[language]}
-              </Link>
-            </div>
-            <Button type="submit" className="w-full font-bold" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                {t.login[language]}
-            </Button>
-          </form>
 
-            <div className="relative my-4">
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -113,12 +117,56 @@ export default function LoginPage() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
-              <GoogleIcon />
-              <span className="ml-2">{t.login_with_google[language]}</span>
-            </Button>
 
-          <div className="mt-6 text-center text-sm">
+            {error && (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Login Failed</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+
+            <Tabs defaultValue="email" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="email">{t.email[language]}</TabsTrigger>
+                    <TabsTrigger value="phone">{t.phone_number[language]}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="email">
+                    <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
+                        <div className="grid gap-2">
+                        <Label htmlFor="email">{t.email[language]}</Label>
+                        <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className="grid gap-2">
+                        <Label htmlFor="password">{t.password[language]}</Label>
+                        <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        <div className="flex items-center justify-end">
+                            <Link href="/password-reset" className="text-sm text-primary hover:underline">
+                                {t.forgot_password[language]}
+                            </Link>
+                        </div>
+                        <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                            {t.login[language]}
+                        </Button>
+                    </form>
+                </TabsContent>
+                <TabsContent value="phone">
+                    <form className="grid gap-4 pt-4" onSubmit={handlePhoneLogin}>
+                        <div className="grid gap-2">
+                            <Label htmlFor="phone">{t.phone_number[language]}</Label>
+                            <Input id="phone" type="tel" placeholder="+8801..." required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        </div>
+                        <Button type="submit" className="w-full font-bold">
+                            {t.login_with_phone[language]}
+                        </Button>
+                    </form>
+                </TabsContent>
+            </Tabs>
+            
+
+          <div className="mt-4 text-center text-sm">
             {t.no_account[language]}{' '}
             <Link href="/signup" className="font-semibold text-primary hover:underline">
               {t.signup[language]}

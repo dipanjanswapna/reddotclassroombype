@@ -66,6 +66,13 @@ export function Footer() {
             </ul>
           </div>
           <div>
+            <h3 className="font-headline font-semibold mb-4 text-white">{t.for_teachers[language]}</h3>
+            <ul className="space-y-2">
+              <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
+              <li><Link href="/login" className="hover:text-white">{t.teacher_login[language]}</Link></li>
+            </ul>
+          </div>
+          <div>
             <h3 className="font-headline font-semibold mb-4 text-white">{t.for_partners[language]}</h3>
             <ul className="space-y-2">
               <li><Link href="/partner-program/apply" className="hover:text-white">{t.become_a_partner[language]}</Link></li>

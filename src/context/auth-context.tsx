@@ -10,6 +10,7 @@ import {
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
     GoogleAuthProvider,
+    FacebookAuthProvider,
     signInWithPopup,
     User as FirebaseUser
 } from 'firebase/auth';
@@ -24,6 +25,7 @@ interface AuthContextType {
     loading: boolean;
     login: (email: string, pass: string) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
+    loginWithFacebook: () => Promise<any>;
     signup: (email: string, pass: string, name: string, role: User['role']) => Promise<any>;
     logout: () => void;
     resetPassword: (email: string) => Promise<any>;
@@ -74,26 +76,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return signInWithEmailAndPassword(auth, email, pass);
     };
 
-    const loginWithGoogle = async () => {
-        const provider = new GoogleAuthProvider();
+    const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
-        // Check if user exists in Firestore
         const existingUserInfo = await getUserByUid(user.uid);
         if (!existingUserInfo) {
-            // New user, create a document in Firestore
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
-                name: user.displayName || 'Google User',
+                name: user.displayName || 'New User',
                 email: user.email!,
-                role: 'Student', // Default role for Google sign-in
+                role: 'Student', // Default role for social sign-in
                 status: 'Active',
                 joined: serverTimestamp(),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             setUserInfo({ ...newUserInfo, id: user.uid } as User);
         }
+    }
+    
+    const loginWithGoogle = async () => {
+        const provider = new GoogleAuthProvider();
+        await handleSocialLogin(provider);
+    };
+
+    const loginWithFacebook = async () => {
+        const provider = new FacebookAuthProvider();
+        await handleSocialLogin(provider);
     };
     
     const signup = async (email: string, pass: string, name: string, role: User['role']) => {
@@ -130,6 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         login,
         loginWithGoogle,
+        loginWithFacebook,
         signup,
         logout,
         resetPassword,

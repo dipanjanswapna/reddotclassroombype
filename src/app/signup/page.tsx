@@ -29,10 +29,18 @@ function GoogleIcon() {
   );
 }
 
+function FacebookIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48">
+            <path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
+            <path fill="#FFF" d="M34.368,25.708h-6.142v16.292h-7.734V25.708h-4.433v-6.52h4.433v-4.66c0-4.39,2.685-6.78,6.597-6.78c1.88,0,3.504,0.14,3.976,0.205v6.251h-3.692c-2.131,0-2.543,1.011-2.543,2.498v2.965h6.643L34.368,25.708z"></path>
+        </svg>
+    )
+}
 
 export default function SignupPage() {
   const { language } = useLanguage();
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle, loginWithFacebook } = useAuth();
   const router = useRouter();
 
   const [fullName, setFullName] = useState('');
@@ -55,6 +63,24 @@ export default function SignupPage() {
       setIsLoading(false);
     }
   };
+  
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (provider === 'google') {
+          await loginWithGoogle();
+      } else {
+          await loginWithFacebook();
+      }
+      // Redirect will be handled by protected layouts
+    } catch (err: any) {
+       setError(err.message || `Failed to sign up with ${provider}.`);
+    } finally {
+       setIsLoading(false);
+    }
+  };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
@@ -144,10 +170,16 @@ export default function SignupPage() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" className="w-full" disabled>
-              <GoogleIcon />
-              <span className="ml-2">{t.signup_with_google[language]}</span>
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('google')} disabled={isLoading}>
+                    <GoogleIcon />
+                    <span className="ml-2">Google</span>
+                </Button>
+                 <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('facebook')} disabled={isLoading}>
+                    <FacebookIcon />
+                    <span className="ml-2">Facebook</span>
+                </Button>
+            </div>
           </form>
           <div className="mt-6 text-center text-sm">
             {t.already_have_account[language]}{' '}
