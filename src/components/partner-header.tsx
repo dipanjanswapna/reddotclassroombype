@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { Organization } from "@/lib/mock-data";
+import { Organization } from "@/lib/types";
 import Image from "next/image";
 import { Button } from "./ui/button";
 
