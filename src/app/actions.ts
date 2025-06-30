@@ -24,6 +24,8 @@ import {
     deletePromoCode,
     getUser,
     getUsers,
+    deleteOrganization,
+    deleteInstructor,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
@@ -400,6 +402,58 @@ export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 
         };
         await addOrganization(newPartnerData);
         return { success: true, message: 'Application submitted successfully! Our team will review it and get back to you shortly.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+
+export async function invitePartnerAction(data: Omit<Organization, 'id' | 'status'>) {
+    try {
+        const newPartnerData: Partial<Organization> = {
+            ...data,
+            status: 'approved'
+        };
+        await addOrganization(newPartnerData);
+        revalidatePath('/admin/partners');
+        return { success: true, message: 'Partner invited and approved successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function deleteOrganizationAction(id: string) {
+    try {
+        await deleteOrganization(id);
+        revalidatePath('/admin/partners');
+        return { success: true, message: 'Partner organization deleted successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function adminInviteInstructorAction(data: Partial<Instructor>) {
+    try {
+        const newInstructor = {
+            ...data,
+            status: 'Approved',
+            slug: (data.name || '').toLowerCase().replace(/\s+/g, '-'),
+            avatarUrl: `https://placehold.co/100x100.png?text=${(data.name || '').split(' ').map(n=>n[0]).join('')}`,
+            dataAiHint: 'person teacher'
+        };
+        await addInstructor(newInstructor);
+        revalidatePath('/admin/teachers');
+        return { success: true, message: 'Teacher invited and approved successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function deleteInstructorAction(id: string) {
+    try {
+        await deleteInstructor(id);
+        revalidatePath('/admin/teachers');
+        return { success: true, message: 'Instructor deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }

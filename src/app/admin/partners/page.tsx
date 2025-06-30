@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PlusCircle, CheckCircle, XCircle } from 'lucide-react';
+import { PlusCircle, CheckCircle, XCircle, MoreVertical, Trash2, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,10 +14,39 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogClose,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Organization } from '@/lib/types';
 import { getOrganizations } from '@/lib/firebase/firestore';
-import { updateOrganizationStatusAction } from '@/app/actions';
+import { updateOrganizationStatusAction, invitePartnerAction, deleteOrganizationAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Organization['status']) => {
@@ -37,27 +66,35 @@ export default function AdminPartnerManagementPage() {
   const { toast } = useToast();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [orgToDelete, setOrgToDelete] = useState<Organization | null>(null);
+
+  // Invite form state
+  const [name, setName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [subdomain, setSubdomain] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+
+  const fetchData = async () => {
+    try {
+      const fetchedOrgs = await getOrganizations();
+      setOrganizations(fetchedOrgs);
+    } catch (e) {
+      toast({ title: 'Error', description: 'Could not fetch organizations', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const fetchedOrgs = await getOrganizations();
-        setOrganizations(fetchedOrgs);
-      } catch(e) {
-        toast({ title: 'Error', description: 'Could not fetch organizations', variant: 'destructive' });
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchData();
   }, [toast]);
 
   const handleStatusChange = async (id: string, newStatus: 'approved' | 'rejected') => {
     const result = await updateOrganizationStatusAction(id, newStatus);
     if (result.success) {
-      setOrganizations(organizations.map(org =>
-        org.id === id ? { ...org, status: newStatus } : org
-      ));
+      fetchData(); // Re-fetch to get updated list
       toast({
         title: "Partner Status Updated",
         description: `The organization has been ${newStatus}.`,
@@ -66,6 +103,46 @@ export default function AdminPartnerManagementPage() {
       toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
   };
+  
+  const handleInviteSubmit = async () => {
+    if (!name || !contactEmail || !subdomain) {
+        toast({ title: 'Error', description: 'Please fill all required fields.', variant: 'destructive' });
+        return;
+    }
+    setIsSaving(true);
+    const result = await invitePartnerAction({
+        name,
+        contactEmail,
+        subdomain,
+        logoUrl: logoUrl || `https://placehold.co/100x100.png?text=${name.substring(0,2)}`,
+        primaryColor: '346.8 77.2% 49.8%', 
+        secondaryColor: '210 40% 96.1%',
+    });
+    if (result.success) {
+        fetchData();
+        toast({ title: "Partner Invited", description: result.message });
+        setIsInviteOpen(false);
+        setName('');
+        setContactEmail('');
+        setSubdomain('');
+        setLogoUrl('');
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
+  };
+  
+  const handleDelete = async () => {
+      if (!orgToDelete || !orgToDelete.id) return;
+      const result = await deleteOrganizationAction(orgToDelete.id);
+      if (result.success) {
+          fetchData();
+          toast({ title: 'Partner Deleted', description: result.message, variant: 'destructive' });
+      } else {
+          toast({ title: 'Error', description: result.message, variant: 'destructive' });
+      }
+      setOrgToDelete(null);
+  }
 
   if (loading) {
     return (
@@ -76,80 +153,110 @@ export default function AdminPartnerManagementPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-headline text-3xl font-bold tracking-tight">
-            Partner Management
-          </h1>
-          <p className="mt-1 text-lg text-muted-foreground">
-            Approve, manage, and view all EdTech partners on the platform.
-          </p>
+    <>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">
+              Partner Management
+            </h1>
+            <p className="mt-1 text-lg text-muted-foreground">
+              Approve, manage, and view all EdTech partners on the platform.
+            </p>
+          </div>
+          <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2" />
+                    Invite Partner
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                  <DialogHeader>
+                      <DialogTitle>Invite New Partner</DialogTitle>
+                      <DialogDescription>Fill out the details to invite a new organization to the platform. They will be approved automatically.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4"><Label htmlFor="name" className="text-right">Name</Label><Input id="name" value={name} onChange={e => setName(e.target.value)} className="col-span-3"/></div>
+                      <div className="grid grid-cols-4 items-center gap-4"><Label htmlFor="email" className="text-right">Email</Label><Input id="email" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} className="col-span-3"/></div>
+                      <div className="grid grid-cols-4 items-center gap-4"><Label htmlFor="subdomain" className="text-right">Subdomain</Label><Input id="subdomain" value={subdomain} onChange={e => setSubdomain(e.target.value)} className="col-span-3"/></div>
+                      <div className="grid grid-cols-4 items-center gap-4"><Label htmlFor="logo" className="text-right">Logo URL</Label><Input id="logo" value={logoUrl} onChange={e => setLogoUrl(e.target.value)} className="col-span-3"/></div>
+                  </div>
+                  <DialogFooter>
+                      <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                      <Button onClick={handleInviteSubmit} disabled={isSaving}>
+                          {isSaving && <Loader2 className="animate-spin mr-2"/>} Invite & Approve
+                      </Button>
+                  </DialogFooter>
+              </DialogContent>
+          </Dialog>
         </div>
-        <Button>
-          <PlusCircle className="mr-2" />
-          Invite Partner
-        </Button>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>All Partner Organizations</CardTitle>
+            <CardDescription>A list of all partner organizations in the system, including pending applications.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Organization</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Subdomain</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {organizations.map((org) => (
+                  <TableRow key={org.id}>
+                    <TableCell className="flex items-center gap-3">
+                      <img src={org.logoUrl} alt={org.name} width={40} height={40} className="rounded-full bg-muted object-cover" />
+                      <span className="font-medium">{org.name}</span>
+                    </TableCell>
+                    <TableCell>{org.contactEmail || 'N/A'}</TableCell>
+                    <TableCell>{org.subdomain || 'N/A'}</TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusBadgeVariant(org.status)} className="capitalize">
+                        {org.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {org.status === 'pending' && (
+                                    <>
+                                        <DropdownMenuItem onClick={() => handleStatusChange(org.id!, 'approved')}><CheckCircle className="mr-2"/>Approve</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleStatusChange(org.id!, 'rejected')}><XCircle className="mr-2"/>Reject</DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                    </>
+                                )}
+                                <DropdownMenuItem className="text-destructive" onClick={() => setOrgToDelete(org)}><Trash2 className="mr-2"/>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Partner Organizations</CardTitle>
-          <CardDescription>A list of all partner organizations in the system, including pending applications.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Organization</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Subdomain</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {organizations.map((org) => (
-                <TableRow key={org.id}>
-                  <TableCell className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={org.logoUrl} alt={org.name} width={40} height={40} className="rounded-full bg-muted object-cover" />
-                    <span className="font-medium">{org.name}</span>
-                  </TableCell>
-                  <TableCell>{org.contactEmail || 'N/A'}</TableCell>
-                  <TableCell>{org.subdomain || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadgeVariant(org.status)} className="capitalize">
-                      {org.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex gap-2 justify-end">
-                      {org.status === 'pending' && (
-                        <>
-                          <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(org.id!, 'approved')}>
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Approve
-                          </Button>
-                          <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(org.id!, 'rejected')}>
-                            <XCircle className="mr-2 h-4 w-4" />
-                            Reject
-                          </Button>
-                        </>
-                      )}
-                       {org.status !== 'pending' && (
-                        <Button variant="outline" size="sm">
-                           Manage
-                        </Button>
-                       )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+      <AlertDialog open={!!orgToDelete} onOpenChange={(open) => !open && setOrgToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>This will permanently delete the partner organization <strong>{orgToDelete?.name}</strong>. This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

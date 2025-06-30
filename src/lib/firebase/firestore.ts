@@ -65,6 +65,7 @@ export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> 
 }
 export const addInstructor = (instructor: Partial<Instructor>) => addDoc(collection(db, 'instructors'), instructor);
 export const updateInstructor = (id: string, instructor: Partial<Instructor>) => updateDoc(doc(db, 'instructors', id), instructor);
+export const deleteInstructor = (id: string) => deleteDoc(doc(db, 'instructors', id));
 
 
 // Users
@@ -89,6 +90,7 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
     return null;
 }
 export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
+export const deleteOrganization = (id: string) => deleteDoc(doc(db, 'organizations', id));
 
 // Support Tickets
 export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
