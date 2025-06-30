@@ -36,6 +36,38 @@ import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from
 import { Timestamp, doc, writeBatch, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
+/**
+ * Recursively removes undefined values from an object or array.
+ * Firestore throws an error if you try to save `undefined`.
+ * @param obj The object or array to clean.
+ * @returns The cleaned object or array.
+ */
+function removeUndefinedValues(obj: any): any {
+  if (obj === null || obj === undefined) {
+    return null; // Return null for both null and undefined
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefinedValues);
+  }
+
+  if (typeof obj === 'object' && !(obj instanceof Timestamp)) {
+    const newObj: { [key: string]: any } = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+        if (value !== undefined) {
+          newObj[key] = removeUndefinedValues(value);
+        }
+      }
+    }
+    return newObj;
+  }
+
+  return obj;
+}
+
+
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
@@ -77,15 +109,17 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       communityUrl: data.communityUrl || ''
     };
     
-    // Firestore does not accept 'undefined' values.
-    // Create a clean object by removing any keys that have undefined values.
-    const cleanDataToSave = Object.fromEntries(
-        Object.entries(dataToSave).filter(([_, v]) => v !== undefined)
-    );
+    // Recursively remove any undefined values from the entire object
+    const cleanData = removeUndefinedValues(dataToSave);
+    
+    // Ensure organizationId is not an empty string
+    if (cleanData.organizationId === '') {
+        delete cleanData.organizationId;
+    }
 
     if (id) {
       const courseRef = doc(db, 'courses', id);
-      await updateDoc(courseRef, cleanDataToSave);
+      await updateDoc(courseRef, cleanData);
       revalidatePath('/admin/courses');
       revalidatePath(`/admin/courses/builder/${id}`);
       revalidatePath('/teacher/courses');
@@ -95,7 +129,7 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       revalidatePath(`/courses/${id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
-      const newCourseRef = await addDoc(collection(db, 'courses'), cleanDataToSave);
+      const newCourseRef = await addDoc(collection(db, 'courses'), cleanData);
       revalidatePath('/admin/courses');
       revalidatePath('/teacher/courses');
       revalidatePath('/partner/courses');
