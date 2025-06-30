@@ -1,65 +1,36 @@
 
-
-'use client';
-
-import { useState, useEffect } from 'react';
 import {
   BookOpen,
   Award,
   BarChart3,
   CalendarCheck,
-  Clock,
-  Trophy,
-  ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { getCourses, getUser } from '@/lib/firebase/firestore';
-import { LoadingSpinner } from '@/components/loading-spinner';
 import type { Course, User, Assignment } from '@/lib/types';
 
 
 const currentStudentId = 'usr_stud_001';
 
-export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-  const [upcomingDeadlines, setUpcomingDeadlines] = useState<Assignment[]>([]);
-  const [completedCoursesCount, setCompletedCoursesCount] = useState(0);
+export default async function DashboardPage() {
+  const [user, allCourses] = await Promise.all([
+    getUser(currentStudentId),
+    getCourses()
+  ]);
 
-  useEffect(() => {
-    async function fetchData() {
-        try {
-            const userData = await getUser(currentStudentId);
-            setUser(userData);
+  const enrolledCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
+  
+  const upcomingDeadlines = enrolledCourses
+      .flatMap(c => c.assignments || [])
+      .filter(a => a.studentId === currentStudentId && (a.status === 'Pending' || a.status === 'Late'))
+      .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime())
+      .slice(0, 3);
 
-            const allCourses = await getCourses();
-            
-            const studentCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
-            setEnrolledCourses(studentCourses);
-            
-            const pendingAssignments = studentCourses
-                .flatMap(c => c.assignments || [])
-                .filter(a => a.studentId === currentStudentId && (a.status === 'Pending' || a.status === 'Late'))
-                .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime())
-                .slice(0, 3);
-            setUpcomingDeadlines(pendingAssignments);
-
-            // Mock completion status for demo
-            setCompletedCoursesCount(studentCourses.length > 2 ? 1 : 0);
-
-        } catch (error) {
-            console.error("Failed to fetch dashboard data:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchData();
-  }, []);
+  // Mock completion status for demo
+  const completedCoursesCount = enrolledCourses.length > 2 ? 1 : 0;
   
   const inProgressCourses = enrolledCourses.slice(0, 2).map((course, index) => ({
       ...course,
@@ -69,14 +40,6 @@ export default function DashboardPage() {
   const overallProgress = enrolledCourses.length > 0 
     ? Math.round(inProgressCourses.reduce((acc, c) => acc + (c.progress || 0), 0) / inProgressCourses.length)
     : 0;
-
-   if (loading) {
-    return (
-        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
-            <LoadingSpinner className="w-12 h-12" />
-        </div>
-    );
-  }
 
   return (
       <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -148,7 +111,7 @@ export default function DashboardPage() {
                 <CardTitle>আসন্ন ডেডলাইন</CardTitle>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/student/deadlines">
-                    সব দেখুন <ChevronRight className="h-4 w-4" />
+                    সব দেখুন
                   </Link>
                 </Button>
               </CardHeader>
@@ -174,7 +137,7 @@ export default function DashboardPage() {
                 <CardTitle>সাম্প্রতিক অর্জন</CardTitle>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/student/achievements">
-                    সব দেখুন <ChevronRight className="h-4 w-4" />
+                    সব দেখুন
                   </Link>
                 </Button>
               </CardHeader>

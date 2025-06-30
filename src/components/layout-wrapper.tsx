@@ -5,6 +5,7 @@
 import { usePathname } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
+import { HomepageConfig } from '@/lib/types';
 
 /**
  * @fileOverview LayoutWrapper component.
@@ -14,7 +15,7 @@ import { Header } from '@/components/header';
  * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
  * interfaces, to have distinct layouts.
  */
-export function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
   const pathname = usePathname();
   
   // An array of path prefixes that should have a completely custom layout
@@ -53,7 +54,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-grow flex flex-col">{children}</main>
-      <Footer />
+      <Footer homepageConfig={homepageConfig}/>
     </div>
   );
 }

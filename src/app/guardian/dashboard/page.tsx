@@ -1,7 +1,4 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
 import {
   User,
   BookOpen,
@@ -11,58 +8,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { getCourses, getUsers } from '@/lib/firebase/firestore';
 import type { Course, User as UserType } from '@/lib/types';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
 
 // Mock current guardian
 const currentGuardianId = 'usr_guar_003';
 
-export default function GuardianDashboardPage() {
-    const [guardian, setGuardian] = useState<UserType | null>(null);
-    const [student, setStudent] = useState<UserType | null>(null);
-    const [enrolledCoursesCount, setEnrolledCoursesCount] = useState(0);
-    const [loading, setLoading] = useState(true);
-    
+export default async function GuardianDashboardPage() {
     // This would be calculated from real data in a full app
     const overallProgress = 75;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [allUsers, allCourses] = await Promise.all([
-                    getUsers(),
-                    getCourses()
-                ]);
-
-                const currentGuardian = allUsers.find(u => u.id === currentGuardianId);
-                const linkedStudent = currentGuardian ? allUsers.find(u => u.id === currentGuardian.linkedStudentId) : null;
-                
-                setGuardian(currentGuardian || null);
-                setStudent(linkedStudent || null);
-
-                if (linkedStudent) {
-                    const enrolledCourses = allCourses.filter(c => 
-                        c.assignments?.some(a => a.studentId === linkedStudent.id)
-                    );
-                    setEnrolledCoursesCount(enrolledCourses.length);
-                }
-
-            } catch (error) {
-                console.error("Failed to fetch guardian data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
-                <LoadingSpinner className="w-12 h-12" />
-            </div>
+    const allUsers = await getUsers();
+    const allCourses = await getCourses();
+    
+    const currentGuardian = allUsers.find(u => u.id === currentGuardianId);
+    const student = currentGuardian ? allUsers.find(u => u.id === currentGuardian.linkedStudentId) : null;
+    
+    let enrolledCoursesCount = 0;
+    if (student) {
+        const enrolledCourses = allCourses.filter(c => 
+            c.assignments?.some(a => a.studentId === student.id)
         );
+        enrolledCoursesCount = enrolledCourses.length;
     }
   
     if (!student) {

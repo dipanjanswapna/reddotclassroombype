@@ -7,21 +7,14 @@ import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { RdcLogo } from "./rdc-logo";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
-import { useEffect, useState } from "react";
-import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig } from "@/lib/types";
 
-export function Footer() {
+export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
-  const [config, setConfig] = useState<HomepageConfig | null>(null);
-
-  useEffect(() => {
-    getHomepageConfig().then(setConfig);
-  }, []);
 
   const Logo = ({ className }: { className?: string }) => {
-    if (config?.logoUrl) {
-      return <img src={config.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
+    if (homepageConfig?.logoUrl) {
+      return <img src={homepageConfig.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
     }
     return <RdcLogo className={className} />;
   };

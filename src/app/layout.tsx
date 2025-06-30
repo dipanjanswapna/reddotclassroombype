@@ -6,6 +6,7 @@ import { LayoutWrapper } from '@/components/layout-wrapper';
 import { LanguageProvider } from '@/context/language-context';
 import { Inter, Poppins } from 'next/font/google'
 import { AuthProvider } from '@/context/auth-context';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -26,18 +27,19 @@ export const metadata: Metadata = {
   description: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased min-h-screen bg-background', fontInter.variable, fontPoppins.variable)}>
         <AuthProvider>
           <LanguageProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
             <Toaster />
           </LanguageProvider>
         </AuthProvider>
