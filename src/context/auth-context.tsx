@@ -23,7 +23,7 @@ interface AuthContextType {
     user: FirebaseUser | null;
     userInfo: User | null;
     loading: boolean;
-    login: (email: string, pass: string) => Promise<any>;
+    login: (email: string, pass: string, role?: User['role']) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
     loginWithFacebook: () => Promise<any>;
     signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [userInfo, loading, user, router]);
 
 
-    const login = async (email: string, pass: string) => {
+    const login = async (email: string, pass: string, role?: User['role']) => {
         try {
             // First, sign in with Firebase Auth
             const userCredential = await signInWithEmailAndPassword(auth, email, pass);
@@ -80,6 +80,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Then, check our Firestore database for user info and status
             const loggedInUserInfo = await getUserByUid(userCredential.user.uid);
             
+            if (role && loggedInUserInfo && loggedInUserInfo.role !== role) {
+                await signOut(auth);
+                throw new Error(`Login failed: Your account is a '${loggedInUserInfo.role}' account. Please select the correct role.`);
+            }
+
             if (loggedInUserInfo && loggedInUserInfo.status !== 'Active') {
                 // If user exists but is not active, sign them out and throw an error
                 await signOut(auth);
@@ -96,7 +101,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (error.code === 'auth/invalid-credential' && email === 'dipanjanswapnaprangon@gmail.com') {
                 try {
                     await signup(email, pass, 'Admin User', 'Admin', 'Active');
-                    return await signInWithEmailAndPassword(auth, email, pass);
+                    const newLoginAttempt = await signInWithEmailAndPassword(auth, email, pass);
+                    // Manually set user info here since the listener might be slow
+                    const newInfo = await getUserByUid(newLoginAttempt.user.uid);
+                    setUserInfo(newInfo);
+                    setUser(newLoginAttempt.user);
+                    return newLoginAttempt;
                 } catch (signupError) {
                     // If signup also fails (e.g., weak password), throw original error
                     throw error;

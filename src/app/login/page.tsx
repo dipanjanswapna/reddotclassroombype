@@ -13,8 +13,10 @@ import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User } from '@/lib/types';
 
 function GoogleIcon() {
   return (
@@ -39,11 +41,11 @@ function FacebookIcon() {
 export default function LoginPage() {
   const { language } = useLanguage();
   const { login, loginWithGoogle, loginWithFacebook } = useAuth();
-  const { toast } = useToast();
   const searchParams = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<User['role']>('Admin');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -59,7 +61,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
     try {
-      await login(email, password);
+      await login(email, password, role);
     } catch (err: any) {
       setError(err.message || 'Failed to log in. Please check your credentials.');
     } finally {
@@ -126,6 +128,21 @@ export default function LoginPage() {
                 </TabsContent>
                 <TabsContent value="staff">
                     <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
+                        <div className="grid gap-2">
+                          <Label htmlFor="role">Your Role</Label>
+                          <Select value={role} onValueChange={(value) => setRole(value as User['role'])} required>
+                            <SelectTrigger id="role">
+                              <SelectValue placeholder="Select your role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Admin">Admin</SelectItem>
+                              <SelectItem value="Teacher">Teacher</SelectItem>
+                              <SelectItem value="Partner">Partner</SelectItem>
+                              <SelectItem value="Moderator">Moderator</SelectItem>
+                              <SelectItem value="Affiliate">Affiliate</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <div className="grid gap-2">
                         <Label htmlFor="email">{t.email[language]}</Label>
                         <Input id="email" type="email" placeholder="dipanjanswapnaprangon@gmail.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
