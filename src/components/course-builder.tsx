@@ -255,13 +255,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [instructors, setInstructors] = useState<CourseInstructor[]>([]);
+  const [instructors, setInstructors] = useState<(CourseInstructor & { id: string })[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
-  const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
+  const [assignmentTemplates, setAssignmentTemplates] = useState<(Omit<AssignmentTemplate, 'deadline'> & { id: string; deadline?: Date })[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
@@ -327,7 +327,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-                    setInstructors(courseData.instructors || []);
+                    setInstructors(courseData.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
@@ -414,7 +414,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person', slug: '' }]);
   const updateInstructor = (id: string, field: keyof CourseInstructor, value: string) => {
-      setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
+    setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
 
@@ -461,7 +461,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
   const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
-    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } as any : a));
   };
 
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
@@ -543,19 +543,28 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         whatYouWillLearn,
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest),
-        instructors: instructors.map(({ id, ...rest }) => ({...rest, id, slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-') })),
+        instructors: instructors.map(({ id, ...rest }) => {
+            return {
+                name: rest.name,
+                title: rest.title,
+                avatarUrl: rest.avatarUrl,
+                dataAiHint: rest.dataAiHint,
+                slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-')
+            }
+        }),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
         quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { id, deadline, ...rest } = a;
-            const newAssignment: Partial<AssignmentTemplate> = { ...rest };
-            if (deadline) {
-                const date = new Date(deadline);
-                if (!isNaN(date.getTime())) {
-                    newAssignment.deadline = format(date, 'yyyy-MM-dd');
+            const newAssignment: Partial<Omit<AssignmentTemplate, 'id'>> = { ...rest };
+            if (deadline instanceof Date) {
+                if (!isNaN(deadline.getTime())) {
+                    newAssignment.deadline = format(deadline, 'yyyy-MM-dd');
                 }
+            } else if (typeof deadline === 'string' && deadline) {
+                 newAssignment.deadline = deadline;
             }
             return newAssignment;
         }),
@@ -811,7 +820,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
-                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline as string) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
+                                    <DatePicker date={assignment.deadline} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
                                 </div>
                             </div>
                              <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
