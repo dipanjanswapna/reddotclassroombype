@@ -515,12 +515,15 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     
     const result = await saveCourseAction(courseData);
     if (result.success) {
-        toast({ title: 'Success', description: result.message });
-        if (!isNewCourse) {
-          // No revalidatePath needed on client side for this action as it's handled server-side
-        } else if (result.courseId) {
-          router.push(`/teacher/courses/builder/${result.courseId}`);
-        }
+      toast({ 
+          title: status === 'Pending Approval' ? 'Course Submitted' : 'Draft Saved', 
+          description: result.message 
+      });
+      if (status === 'Pending Approval') {
+        router.push('/teacher/courses');
+      } else if (isNewCourse && result.courseId) {
+        router.push(`/teacher/courses/builder/${result.courseId}`);
+      }
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }

@@ -156,14 +156,30 @@ export default function AdminCourseManagementPage() {
                                     <div className="flex gap-2 justify-end">
                                         {course.status === 'Pending Approval' && (
                                             <>
-                                                <Button variant="outline" size="sm" className="border-green-400 text-green-700 hover:bg-green-100" onClick={() => handleStatusChange(course.id!, 'Published')}>
+                                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-primary-foreground" onClick={() => handleStatusChange(course.id!, 'Published')}>
                                                     <CheckCircle className="mr-2 h-4 w-4" />
                                                     Approve
                                                 </Button>
-                                                <Button variant="outline" size="sm" className="border-red-400 text-red-700 hover:bg-red-100" onClick={() => handleStatusChange(course.id!, 'Rejected')}>
-                                                    <XCircle className="mr-2 h-4 w-4" />
-                                                    Reject
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button size="sm" variant="destructive">
+                                                            <XCircle className="mr-2 h-4 w-4" />
+                                                            Reject
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you sure you want to reject this course?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This will mark the course as 'Rejected'. The creator will be able to edit and resubmit it.
+                                                        </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleStatusChange(course.id!, 'Rejected')} className="bg-destructive hover:bg-destructive/90">Confirm Rejection</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </>
                                         )}
                                         <Button variant="outline" size="sm" asChild>
