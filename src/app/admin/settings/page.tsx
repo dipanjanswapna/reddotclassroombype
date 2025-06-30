@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, KeyRound, Copy, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig, PlatformSettings } from "@/lib/types";
 import { saveHomepageConfigAction } from "@/app/actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 
 // Mock user data for demonstration
@@ -48,6 +49,19 @@ export default function AdminSettingsPage() {
     const [config, setConfig] = useState<HomepageConfig | null>(null);
     const [loadingConfig, setLoadingConfig] = useState(true);
     const [isSavingPlatform, setIsSavingPlatform] = useState(false);
+    
+    // State for API Keys
+    const [firebaseConfig, setFirebaseConfig] = useState({
+        apiKey: '',
+        authDomain: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: ''
+    });
+    const [generatedEnv, setGeneratedEnv] = useState('');
+    const [isCopied, setIsCopied] = useState(false);
+    const envOutputRef = useRef<HTMLPreElement>(null);
 
     useEffect(() => {
         async function fetchConfig() {
@@ -122,6 +136,33 @@ export default function AdminSettingsPage() {
         setIsSavingPlatform(false);
     };
 
+    const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFirebaseConfig(prev => ({ ...prev, [id]: value }));
+    }
+
+    const handleGenerateEnv = () => {
+        const envContent = `NEXT_PUBLIC_FIREBASE_API_KEY=${firebaseConfig.apiKey}
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${firebaseConfig.authDomain}
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=${firebaseConfig.projectId}
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${firebaseConfig.storageBucket}
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${firebaseConfig.messagingSenderId}
+NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
+        setGeneratedEnv(envContent);
+        toast({
+            title: 'Generated .env Content',
+            description: 'Copy the content and paste it into a .env.local file in your project root.'
+        });
+    };
+    
+    const copyToClipboard = () => {
+        if (envOutputRef.current) {
+            navigator.clipboard.writeText(envOutputRef.current.innerText);
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000);
+        }
+    };
+
     const managedRoles: (keyof Omit<PlatformSettings, 'Admin'>)[] = ['Student', 'Guardian', 'Teacher', 'Partner', 'Affiliate', 'Moderator'];
 
 
@@ -134,71 +175,81 @@ export default function AdminSettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your personal details here.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-               <div className="flex items-center gap-4">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src={avatarUrl} alt={fullName} />
-                    <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-grow">
-                    <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
-                    <div className="relative">
-                        <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24" />
-                        <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
-                            <Button asChild variant="outline" className="rounded-l-none -ml-px">
-                                <div><Upload className="mr-2"/>Upload</div>
-                            </Button>
-                        </label>
-                        <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
+            <Card>
+                <CardHeader>
+                    <CardTitle>API & Integrations</CardTitle>
+                    <CardDescription>Manage Firebase API keys for the platform. These keys should be kept secret.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label htmlFor="apiKey">API Key</Label><Input id="apiKey" value={firebaseConfig.apiKey} onChange={handleApiKeyChange}/></div>
+                        <div className="space-y-2"><Label htmlFor="authDomain">Auth Domain</Label><Input id="authDomain" value={firebaseConfig.authDomain} onChange={handleApiKeyChange}/></div>
+                        <div className="space-y-2"><Label htmlFor="projectId">Project ID</Label><Input id="projectId" value={firebaseConfig.projectId} onChange={handleApiKeyChange}/></div>
+                        <div className="space-y-2"><Label htmlFor="storageBucket">Storage Bucket</Label><Input id="storageBucket" value={firebaseConfig.storageBucket} onChange={handleApiKeyChange}/></div>
+                        <div className="space-y-2"><Label htmlFor="messagingSenderId">Messaging Sender ID</Label><Input id="messagingSenderId" value={firebaseConfig.messagingSenderId} onChange={handleApiKeyChange}/></div>
+                        <div className="space-y-2"><Label htmlFor="appId">App ID</Label><Input id="appId" value={firebaseConfig.appId} onChange={handleApiKeyChange}/></div>
                     </div>
-                  </div>
+                    {generatedEnv && (
+                        <Alert className="mt-4">
+                            <KeyRound className="h-4 w-4" />
+                            <AlertTitle>Your Generated .env file</AlertTitle>
+                            <AlertDescription className="mb-2">
+                                For security, this information must be placed in a <code>.env.local</code> file at the root of your project. Then, restart your server for changes to take effect.
+                            </AlertDescription>
+                            <div className="relative p-2 bg-muted rounded-md font-mono text-xs">
+                                <pre ref={envOutputRef}>{generatedEnv}</pre>
+                                <Button size="icon" variant="ghost" className="absolute top-1 right-1 h-7 w-7" onClick={copyToClipboard}>
+                                    {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </Alert>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handleGenerateEnv}><KeyRound className="mr-2"/> Generate & Save</Button>
+                </CardFooter>
+            </Card>
+            <Card>
+                <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+                <CardDescription>Update your personal details here.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20">
+                        <AvatarImage src={avatarUrl} alt={fullName} />
+                        <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-grow">
+                        <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
+                        <div className="relative">
+                            <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24" />
+                            <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
+                                <Button asChild variant="outline" className="rounded-l-none -ml-px">
+                                    <div><Upload className="mr-2"/>Upload</div>
+                                </Button>
+                            </label>
+                            <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
+                        </div>
+                    </div>
+                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="userId">Admin ID</Label>
+                    <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
                 </div>
-              <div className="space-y-2">
-                <Label htmlFor="userId">Admin ID</Label>
-                <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
-              </div>
-            </CardContent>
-            <div className="p-6 pt-0">
-                <Button onClick={handleInfoSave}>Save Changes</Button>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Change Password</CardTitle>
-              <CardDescription>Update your password. Make sure it's a strong one.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-               <div className="space-y-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
-                <Input id="currentPassword" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input id="newPassword" type="password" />
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input id="confirmPassword" type="password" />
-              </div>
-            </CardContent>
-            <div className="p-6 pt-0">
-                <Button onClick={handlePasswordSave}>Update Password</Button>
-            </div>
-          </Card>
+                <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+                </CardContent>
+                <div className="p-6 pt-0">
+                    <Button onClick={handleInfoSave}>Save Changes</Button>
+                </div>
+            </Card>
         </div>
 
         <div className="md:col-span-1 space-y-8">
@@ -240,6 +291,29 @@ export default function AdminSettingsPage() {
                         Save Platform Settings
                     </Button>
                 </CardFooter>
+            </Card>
+            <Card>
+                <CardHeader>
+                <CardTitle>Change Password</CardTitle>
+                <CardDescription>Update your password. Make sure it's a strong one.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input id="currentPassword" type="password" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input id="newPassword" type="password" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input id="confirmPassword" type="password" />
+                </div>
+                </CardContent>
+                <div className="p-6 pt-0">
+                    <Button onClick={handlePasswordSave}>Update Password</Button>
+                </div>
             </Card>
         </div>
       </div>
