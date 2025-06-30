@@ -74,7 +74,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (email: string, pass: string) => {
         try {
-            return await signInWithEmailAndPassword(auth, email, pass);
+            // First, sign in with Firebase Auth
+            const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+            
+            // Then, check our Firestore database for user info and status
+            const loggedInUserInfo = await getUserByUid(userCredential.user.uid);
+            
+            if (loggedInUserInfo && loggedInUserInfo.status !== 'Active') {
+                // If user exists but is not active, sign them out and throw an error
+                await signOut(auth);
+                const statusMessage = loggedInUserInfo.status === 'Pending Approval' 
+                    ? 'Your account is pending approval. Please wait for an administrator to review your application.'
+                    : 'Your account has been suspended. Please contact support.';
+                throw new Error(statusMessage);
+            }
+
+            return userCredential;
+
         } catch (error: any) {
             // Failsafe for dev environment: if admin login fails, create the user and try again.
             if (error.code === 'auth/invalid-credential' && email === 'admin@rdc.com') {
