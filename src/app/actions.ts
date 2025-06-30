@@ -29,6 +29,8 @@ import {
     deleteInstructor,
     addNotification,
     getInstructorByUserId,
+    getInstructor,
+    getOrganization,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
