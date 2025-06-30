@@ -29,8 +29,8 @@ export function Footer() {
   return (
     <footer className="border-t bg-gray-900 text-gray-400">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+          <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
               <span className="font-bold text-xl font-headline text-white">
@@ -60,23 +60,17 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold mb-4 text-white">{t.for_students[language]}</h3>
             <ul className="space-y-2">
-              <li><Link href="/login" className="hover:text-white">{t.login[language]}</Link></li>
               <li><Link href="/signup" className="hover:text-white">{t.register[language]}</Link></li>
+              <li><Link href="/login" className="hover:text-white">{t.student_guardian_login[language]}</Link></li>
               <li><Link href="/student/dashboard" className="hover:text-white">{t.dashboard[language]}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.for_teachers[language]}</h3>
+            <h3 className="font-headline font-semibold mb-4 text-white">{t.join_us[language]}</h3>
             <ul className="space-y-2">
-              <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
-              <li><Link href="/login" className="hover:text-white">{t.teacher_login[language]}</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.for_partners[language]}</h3>
-            <ul className="space-y-2">
+               <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
               <li><Link href="/partner-program/apply" className="hover:text-white">{t.become_a_partner[language]}</Link></li>
-              <li><Link href="/login" className="hover:text-white">{t.partner_login[language]}</Link></li>
+              <li><Link href="/login" className="hover:text-white">{t.teacher_partner_staff_login[language]}</Link></li>
             </ul>
           </div>
           <div>

@@ -40,6 +40,10 @@ export const t = {
   privacy_policy: { en: 'Privacy Policy', bn: 'প্রাইভেসি পলিসি' },
   terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
+  student_guardian_login: { en: 'Student/Guardian Login', bn: 'শিক্ষার্থী/অভিভাবক লগইন' },
+  join_us: { en: 'Join Us', bn: 'আমাদের সাথে যোগ দিন' },
+  teacher_partner_staff_login: { en: 'Teacher/Partner/Staff Login', bn: 'শিক্ষক/পার্টনার/স্টাফ লগইন' },
+
 
   // Login Page
   login_welcome: { en: 'Welcome Back!', bn: 'স্বাগতম!' },
