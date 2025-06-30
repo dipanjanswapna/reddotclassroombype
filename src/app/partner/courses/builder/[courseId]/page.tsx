@@ -446,7 +446,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
 
   const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date().toISOString() }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
-  const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
+  const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
     setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
   };
 
@@ -523,7 +523,16 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
         quizzes,
-        assignmentTemplates: assignmentTemplates.map(a => ({...a, deadline: a.deadline ? format(new Date(a.deadline), 'yyyy-MM-dd') : undefined})),
+        assignmentTemplates: assignmentTemplates.map(a => {
+            let formattedDeadline: string | undefined = undefined;
+            if (a.deadline) {
+                const date = new Date(a.deadline);
+                if (!isNaN(date.getTime())) { // Check for valid date
+                    formattedDeadline = format(date, 'yyyy-MM-dd');
+                }
+            }
+            return {...a, deadline: formattedDeadline};
+        }),
         status,
         organizationId,
     };
@@ -778,7 +787,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
-                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date!)} />
+                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
                                 </div>
                             </div>
                              <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
