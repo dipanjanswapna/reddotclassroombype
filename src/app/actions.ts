@@ -33,8 +33,7 @@ import {
     getUserByUid,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
-import { Timestamp } from 'firebase/firestore';
-import { doc, writeBatch } from 'firebase/firestore';
+import { Timestamp, doc, writeBatch, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
