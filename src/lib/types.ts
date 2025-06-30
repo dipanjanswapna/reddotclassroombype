@@ -130,6 +130,17 @@ export type LeaderboardEntry = {
   points: number;
 };
 
+export type Notification = {
+  id?: string;
+  userId: string;
+  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2';
+  title: string;
+  description: string;
+  date: Timestamp;
+  read: boolean;
+  link?: string;
+};
+
 export type Course = {
   id?: string;
   title: string;

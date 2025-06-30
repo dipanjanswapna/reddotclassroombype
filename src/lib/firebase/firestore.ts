@@ -12,8 +12,9 @@ import {
   documentId,
   deleteDoc,
   setDoc,
+  writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -286,4 +287,19 @@ export const addPromoCode = (promoCode: Partial<PromoCode>) => addDoc(collection
 export const updatePromoCode = (id: string, promoCode: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), promoCode);
 export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
 
+// Notifications
+export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(db, 'notifications'), notification);
+
+export const markAllNotificationsAsRead = async (userId: string) => {
+    const notificationsRef = collection(db, 'notifications');
+    const q = query(notificationsRef, where("userId", "==", userId), where("read", "==", false));
+    const querySnapshot = await getDocs(q);
     
+    if (querySnapshot.empty) return;
+
+    const batch = writeBatch(db);
+    querySnapshot.forEach(docSnap => {
+        batch.update(docSnap.ref, { read: true });
+    });
+    await batch.commit();
+}

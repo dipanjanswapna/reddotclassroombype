@@ -27,6 +27,7 @@ import {
     getUsers,
     deleteOrganization,
     deleteInstructor,
+    addNotification,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
@@ -246,19 +247,35 @@ export async function gradeAssignmentAction(
             throw new Error("Course or assignments not found.");
         }
 
-        const updatedAssignments = course.assignments.map(assignment => {
-            if (assignment.id === assignmentId && assignment.studentId === studentId) {
+        const assignment = course.assignments.find(a => a.id === assignmentId && a.studentId === studentId);
+        if (!assignment) {
+            throw new Error("Assignment not found for this student.");
+        }
+
+        const updatedAssignments = course.assignments.map(a => {
+            if (a.id === assignmentId && a.studentId === studentId) {
                 return {
-                    ...assignment,
+                    ...a,
                     status: 'Graded' as const,
                     grade,
                     feedback
                 };
             }
-            return assignment;
+            return a;
         });
 
         await updateCourse(courseId, { assignments: updatedAssignments });
+
+        await addNotification({
+            userId: studentId,
+            icon: 'Award',
+            title: `Assignment Graded: ${assignment.title}`,
+            description: `You received a grade of ${grade} for your submission in "${course.title}".`,
+            date: Timestamp.now(),
+            read: false,
+            link: `/student/my-courses/${courseId}/assignments`
+        });
+
         revalidatePath(`/teacher/grading`);
         revalidatePath(`/student/my-courses/${courseId}/assignments`);
         return { success: true, message: 'Assignment graded successfully.' };
