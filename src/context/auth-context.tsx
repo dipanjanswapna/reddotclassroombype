@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 uid: user.uid,
                 name: user.displayName || 'New User',
                 email: user.email!,
+                avatarUrl: user.photoURL || '',
                 role: 'Student', // Default role for social sign-in
                 status: 'Active',
                 joined: serverTimestamp(),
@@ -113,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             uid: newUser.uid,
             name: name,
             email: email,
+            avatarUrl: newUser.photoURL || '',
             role: role,
             status: 'Active',
             joined: serverTimestamp(),

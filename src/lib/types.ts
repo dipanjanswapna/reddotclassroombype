@@ -233,6 +233,7 @@ export type User = {
   uid: string; // Firebase Auth UID
   name: string;
   email: string;
+  avatarUrl?: string;
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Partner';
   status: 'Active' | 'Suspended';
   joined: string | Timestamp;

@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import Link from "next/link";
@@ -67,7 +66,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={"https://placehold.co/100x100.png"} alt={userInfo.name} />
+            <AvatarImage src={userInfo.avatarUrl} alt={userInfo.name} />
             <AvatarFallback>{userInfo.name?.split(' ').map(n => n[0]).join('') || 'U'}</AvatarFallback>
           </Avatar>
         </Button>
@@ -88,7 +87,7 @@ export function UserNav() {
           </DropdownMenuItem>
           
           <DropdownMenuItem asChild>
-              <Link href={getProfileLink()}><User className="mr-2" />Profile & Settings</Link>
+              <Link href={getProfileLink()}><User className="mr-2" />Profile &amp; Settings</Link>
           </DropdownMenuItem>
           
           {userInfo.role === 'Student' && (
@@ -98,7 +97,7 @@ export function UserNav() {
           )}
 
            <DropdownMenuItem asChild>
-             <Link href="/faq"><HelpCircle className="mr-2" />Help & Support</Link>
+             <Link href="/faq"><HelpCircle className="mr-2" />Help &amp; Support</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
