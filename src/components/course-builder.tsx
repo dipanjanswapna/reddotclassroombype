@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -59,7 +60,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, Instructor, AssignmentTemplate } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, CourseInstructor } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -458,7 +459,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : qu) } : q));
   };
   const removeOption = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
@@ -467,7 +468,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
   };
 
-  const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date().toISOString() }]);
+  const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
   const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
     setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
@@ -541,7 +542,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         whatYouWillLearn,
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest),
-        instructors: instructors.map(({ id, ...rest }) => ({...rest, slug: rest.name.toLowerCase().replace(/\s+/g, '-') })) as Instructor[],
+        instructors: instructors.map(({ id, ...rest }) => ({...rest, slug: rest.name.toLowerCase().replace(/\s+/g, '-') })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),

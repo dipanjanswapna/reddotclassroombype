@@ -57,6 +57,15 @@ export type Organization = {
   contactUserId?: string;
 };
 
+export type CourseInstructor = {
+  id?: string;
+  name: string;
+  title: string;
+  avatarUrl: string;
+  dataAiHint: string;
+  slug: string;
+}
+
 export type Instructor = {
   id?: string;
   name: string;
@@ -155,7 +164,7 @@ export type Course = {
   id?: string;
   title: string;
   description: string;
-  instructors: Instructor[]; 
+  instructors: CourseInstructor[]; 
   imageUrl: string;
   dataAiHint: string;
   category: string;
