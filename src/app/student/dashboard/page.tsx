@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCourses, getUser } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Course, User } from '@/lib/types';
+import type { Course, User, Assignment } from '@/lib/types';
 
 
 const currentStudentId = 'usr_stud_001';
@@ -28,6 +28,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState<Assignment[]>([]);
   const [completedCoursesCount, setCompletedCoursesCount] = useState(0);
 
   useEffect(() => {
@@ -36,12 +37,18 @@ export default function DashboardPage() {
             const userData = await getUser(currentStudentId);
             setUser(userData);
 
-            // Fetch all courses and determine enrollment based on assignments
-            // This is a mock enrollment logic. A real app would have a proper enrollment collection.
             const allCourses = await getCourses();
+            
             const studentCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
             setEnrolledCourses(studentCourses);
             
+            const pendingAssignments = studentCourses
+                .flatMap(c => c.assignments || [])
+                .filter(a => a.studentId === currentStudentId && (a.status === 'Pending' || a.status === 'Late'))
+                .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime())
+                .slice(0, 3);
+            setUpcomingDeadlines(pendingAssignments);
+
             // Mock completion status for demo
             setCompletedCoursesCount(studentCourses.length > 2 ? 1 : 0);
 
@@ -53,18 +60,6 @@ export default function DashboardPage() {
     }
     fetchData();
   }, []);
-
-  const recentAchievements = [
-    { title: "Course Complete: HSC Physics", icon: Award },
-    { title: "Perfect Score: Math Quiz", icon: Trophy },
-    { title: "5 Day Streak", icon: CalendarCheck },
-  ];
-
-  const upcomingDeadlines = [
-    { title: "Chemistry Assignment 2", course: "HSC 2025 Crash Course", due: "3 days" },
-    { title: "Physics Model Test 1", course: "HSC 2025 Crash Course", due: "5 days" },
-    { title: "Speaking Practice Task", course: "IELTS Preparation", due: "1 week" },
-  ];
   
   const inProgressCourses = enrolledCourses.slice(0, 2).map((course, index) => ({
       ...course,
@@ -159,21 +154,17 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
-                  {upcomingDeadlines.map((deadline, index) => (
+                  {upcomingDeadlines.length > 0 ? upcomingDeadlines.map((deadline, index) => (
                     <li key={index} className="flex items-start gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                         <CalendarCheck className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <div>
                         <p className="font-semibold">{deadline.title}</p>
-                        <p className="text-sm text-muted-foreground">{deadline.course}</p>
-                      </div>
-                      <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-                        <Clock className="h-3 w-3"/>
-                        {deadline.due}
+                        <p className="text-sm text-muted-foreground">Due: {new Date(deadline.deadline as string).toLocaleDateString()}</p>
                       </div>
                     </li>
-                  ))}
+                  )) : <p className="text-sm text-muted-foreground">No upcoming deadlines. You're all caught up!</p>}
                 </ul>
               </CardContent>
             </Card>
@@ -188,14 +179,7 @@ export default function DashboardPage() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-4">
-                  {recentAchievements.map((achievement, index) => (
-                    <Badge key={index} variant="outline" className="flex items-center gap-2 p-2 text-sm border-dashed">
-                      <achievement.icon className="h-4 w-4 text-yellow-500" />
-                      <span>{achievement.title}</span>
-                    </Badge>
-                  ))}
-                </div>
+                <p className="text-sm text-muted-foreground">No recent achievements yet.</p>
               </CardContent>
             </Card>
           </div>

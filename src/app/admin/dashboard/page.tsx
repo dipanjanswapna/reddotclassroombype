@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{users.length}</div>
                 <p className="text-xs text-muted-foreground">
-                +5% from last month
+                All registered users
                 </p>
             </CardContent>
             </Card>
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
-                +10 new this month
+                Across all statuses
                 </p>
             </CardContent>
             </Card>
