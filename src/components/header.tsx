@@ -58,7 +58,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         
         <div className="flex items-center">
-            <div className="md:hidden">
+            <div className="lg:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -143,7 +143,7 @@ export function Header() {
                 </SheetContent>
             </Sheet>
             </div>
-            <div className="hidden md:flex items-center">
+            <div className="hidden lg:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
                     <RdcLogo className="h-8 w-auto" />
                     <span className="font-bold text-lg hidden lg:inline-block">RED DOT CLASSROOM</span>
@@ -177,7 +177,7 @@ export function Header() {
             </div>
         </div>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
             <Link href="/">
                 <RdcLogo className="h-8 w-auto" />
             </Link>
