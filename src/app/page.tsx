@@ -1,6 +1,3 @@
-
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -15,22 +12,16 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
-import { useEffect, useState } from 'react';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
-import { LoadingSpinner } from '@/components/loading-spinner';
+import { LiveCoursesCarousel } from '@/components/live-courses-carousel';
+import { TeachersCarousel } from '@/components/teachers-carousel';
+import { MasterclassCarousel } from '@/components/masterclass-carousel';
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
   const Icon = icon;
@@ -55,73 +46,33 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   }
 };
 
-export default function Home() {
-  const [homepageConfig, setHomepageConfig] = useState<HomepageConfig | null>(null);
-  const [liveCourses, setLiveCourses] = useState<Course[]>([]);
-  const [featuredInstructors, setFeaturedInstructors] = useState<Instructor[]>([]);
-  const [sscHscCourses, setSschscCourses] = useState<Course[]>([]);
-  const [masterClasses, setMasterClasses] = useState<Course[]>([]);
-  const [admissionCourses, setAdmissionCourses] = useState<Course[]>([]);
-  const [jobCourses, setJobCourses] = useState<Course[]>([]);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function Home() {
+  const homepageConfig = await getHomepageConfig();
   
-  const language = 'bn'; // Default language
-
-  useEffect(() => {
-    const fetchHomepageData = async () => {
-      try {
-        const config = await getHomepageConfig();
-        if (config) {
-          setHomepageConfig(config);
-          
-          const [
-            live,
-            instructors,
-            sscHsc,
-            master,
-            admission,
-            job,
-            orgs
-          ] = await Promise.all([
-            getCoursesByIds(config.liveCoursesIds || []),
-            getInstructorsByIds(config.teachersSection.instructorIds || []),
-            getCoursesByIds(config.sscHscCourseIds || []),
-            getCoursesByIds(config.masterClassesIds || []),
-            getCoursesByIds(config.admissionCoursesIds || []),
-            getCoursesByIds(config.jobCoursesIds || []),
-            getOrganizations()
-          ]);
-
-          setLiveCourses(live);
-          setFeaturedInstructors(instructors);
-          setSschscCourses(sscHsc);
-          setMasterClasses(master);
-          setAdmissionCourses(admission);
-          setJobCourses(job);
-          setOrganizations(orgs);
-        }
-      } catch (err) {
-        console.error("Failed to load homepage data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHomepageData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <LoadingSpinner className="h-12 w-12" />
-      </div>
-    );
-  }
-
   if (!homepageConfig) {
     return <div className="container mx-auto p-4">Homepage configuration not found. Please set it up in the admin panel.</div>;
   }
   
+  const [
+    liveCourses,
+    featuredInstructors,
+    sscHscCourses,
+    masterClasses,
+    admissionCourses,
+    jobCourses,
+    organizations
+  ] = await Promise.all([
+    getCoursesByIds(homepageConfig.liveCoursesIds || []),
+    getInstructorsByIds(homepageConfig.teachersSection.instructorIds || []),
+    getCoursesByIds(homepageConfig.sscHscCourseIds || []),
+    getCoursesByIds(homepageConfig.masterClassesIds || []),
+    getCoursesByIds(homepageConfig.admissionCoursesIds || []),
+    getCoursesByIds(homepageConfig.jobCoursesIds || []),
+    getOrganizations()
+  ]);
+  
+  const language = 'bn'; // Default language
+
   return (
     <div className="flex flex-col bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} />
@@ -133,19 +84,7 @@ export default function Home() {
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
             <div>
               <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
-              <Carousel opts={{ align: 'start', loop: true }}>
-                  <CarouselContent>
-                    {liveCourses.map((course) => (
-                      <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
-                        <div className="p-1">
-                          <CourseCard {...course} />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
-                  <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
-              </Carousel>
+              <LiveCoursesCarousel courses={liveCourses} />
             </div>
           </div>
         </section>
@@ -163,32 +102,7 @@ export default function Home() {
                     <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
                 </Button>
             </div>
-            <Carousel opts={{ align: 'start' }} className="w-full">
-              <CarouselContent className="-ml-4">
-                {featuredInstructors.map((instructor) => (
-                  <CarouselItem key={instructor.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
-                    <Link href={`/teachers/${instructor.slug}`} className="block group text-center">
-                      <div className="relative overflow-hidden rounded-lg">
-                        <Image
-                          src={instructor.avatarUrl}
-                          alt={instructor.name}
-                          width={250}
-                          height={300}
-                          className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
-                          data-ai-hint={instructor.dataAiHint}
-                        />
-                        <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
-                          <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
-                          <p className="text-xs opacity-80 truncate">{instructor.title}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="text-foreground -left-4 hidden sm:flex" />
-              <CarouselNext className="text-foreground -right-4 hidden sm:flex" />
-            </Carousel>
+            <TeachersCarousel instructors={featuredInstructors} />
           </div>
         </section>
       )}
@@ -231,19 +145,7 @@ export default function Home() {
         <section aria-labelledby="masterclass-heading">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
-                <Carousel opts={{ align: 'start', loop: true }}>
-                  <CarouselContent>
-                    {masterClasses.map((course) => (
-                      <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
-                        <div className="p-1">
-                          <CourseCard {...course} />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
-                  <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
-                </Carousel>
+                <MasterclassCarousel courses={masterClasses} />
                 <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                   <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
                 </Button>
@@ -421,5 +323,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
