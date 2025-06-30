@@ -61,7 +61,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Course, SyllabusModule, Instructor, AssignmentTemplate } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getCategories, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -75,6 +75,7 @@ import {
 } from '@/components/ui/dialog';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/auth-context';
 
 type LessonData = {
     id: string;
@@ -236,6 +237,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const isNewCourse = params.courseId === 'new';
 
   const { toast } = useToast();
+  const { userInfo } = useAuth();
+
   const [loading, setLoading] = useState(!isNewCourse);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
@@ -260,6 +263,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
+  const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
@@ -276,6 +280,16 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     });
     return items;
   }
+
+  useEffect(() => {
+    if (userInfo) {
+        getOrganizationByUserId(userInfo.uid).then(org => {
+            if (org?.id) {
+                setOrganizationId(org.id);
+            }
+        });
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -511,7 +525,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
         quizzes,
         assignmentTemplates: assignmentTemplates.map(a => ({...a, deadline: a.deadline ? format(new Date(a.deadline), 'yyyy-MM-dd') : undefined})),
         status,
-        organizationId: 'org_medishark' // Mock partner ID
+        organizationId,
     };
     
     const result = await saveCourseAction(courseData);

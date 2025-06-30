@@ -59,6 +59,15 @@ export const getInstructorBySlug = async (slug: string): Promise<Instructor | nu
     const docSnap = querySnapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Instructor;
 }
+export const getInstructorByUid = async (uid: string): Promise<Instructor | null> => {
+    const q = query(collection(db, "instructors"), where("userId", "==", uid));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Instructor;
+}
 export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> => {
     if (!ids || ids.length === 0) return [];
     const instructorsRef = collection(db, 'instructors');
