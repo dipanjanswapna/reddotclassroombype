@@ -35,6 +35,11 @@ import { Course } from '@/lib/types';
 import { getCourse, getCourses } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { notFound } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+import { toggleWishlistAction } from '@/app/actions';
+
+
+const currentUserId = 'usr_stud_001'; // Mock user ID for demo
 
 export default function CourseDetailPage({
   params,
@@ -46,6 +51,7 @@ export default function CourseDetailPage({
   const [includedCourses, setIncludedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchCourseData() {
@@ -72,6 +78,25 @@ export default function CourseDetailPage({
     }
     fetchCourseData();
   }, [params.courseId]);
+  
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!currentUserId || !course?.id) return;
+    
+    const originalWishlistStatus = isWishlisted;
+    setIsWishlisted(!originalWishlistStatus);
+
+    const result = await toggleWishlistAction(currentUserId, course.id);
+
+    if (!result.success) {
+      setIsWishlisted(originalWishlistStatus);
+      toast({
+        title: "Error",
+        description: "Could not update wishlist. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -143,7 +168,7 @@ export default function CourseDetailPage({
                             {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
                         </Link>
                     </Button>
-                    <Button size="lg" variant="outline" className="px-3" onClick={() => setIsWishlisted(!isWishlisted)}>
+                    <Button size="lg" variant="outline" className="px-3" onClick={handleWishlistToggle}>
                         <Heart className={cn("w-5 h-5", isWishlisted && "fill-destructive text-destructive")} />
                         <span className="sr-only">Add to wishlist</span>
                     </Button>
