@@ -3,22 +3,28 @@ import React from 'react';
 export function RdcLogo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="0 0 120 50"
+      viewBox="0 0 130 50"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-label="Red Dot Classroom Logo"
       {...props}
     >
+      <defs>
+        <clipPath id="rdc-clip-c">
+          <rect x="105" y="0" width="25" height="50" />
+        </clipPath>
+      </defs>
       <g>
         {/* r */}
-        <path d="M0 50V0H35C35 13.8 24.7 25 12 25V50H0Z" fill="#333333"/>
+        <path d="M0 0 H18 V50 H0 Z" fill="#2196F3"/>
+        <path d="M18 0 H33 C42.389 0 50 7.837 50 17.5 S42.389 35 33 35 H18 V0Z" fill="#2196F3"/>
         
         {/* d */}
-        <circle cx="65" cy="25" r="25" fill="#333333"/>
-        <rect x="78" y="0" width="12" height="50" fill="#333333"/>
+        <rect x="55" y="0" width="18" height="50" fill="#2196F3"/>
+        <circle cx="80" cy="25" r="22" fill="#FFC107"/>
         
         {/* c */}
-        <path d="M120 0C106.193 0 95 11.1929 95 25C95 38.8071 106.193 50 120 50V0Z" fill="#8B1538"/>
+        <circle cx="105" cy="25" r="25" fill="#F44336" clipPath="url(#rdc-clip-c)"/>
       </g>
     </svg>
   );
