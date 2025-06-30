@@ -74,46 +74,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (email: string, pass: string, role?: User['role']) => {
         try {
-            // First, sign in with Firebase Auth
             const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-            
-            // Then, check our Firestore database for user info and status
-            const loggedInUserInfo = await getUserByUid(userCredential.user.uid);
-            
-            if (role && loggedInUserInfo && loggedInUserInfo.role !== role) {
+            const fetchedUserInfo = await getUserByUid(userCredential.user.uid);
+    
+            if (!fetchedUserInfo) {
                 await signOut(auth);
-                throw new Error(`Login failed: Your account is a '${loggedInUserInfo.role}' account. Please select the correct role.`);
+                throw new Error("Your user profile could not be found. Please contact support.");
             }
-
-            if (loggedInUserInfo && loggedInUserInfo.status !== 'Active') {
-                // If user exists but is not active, sign them out and throw an error
+    
+            if (role && fetchedUserInfo.role !== role) {
                 await signOut(auth);
-                const statusMessage = loggedInUserInfo.status === 'Pending Approval' 
-                    ? 'Your account is pending approval. Please wait for an administrator to review your application.'
-                    : 'Your account has been suspended. Please contact support.';
+                throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role.`);
+            }
+    
+            if (fetchedUserInfo.status !== 'Active') {
+                await signOut(auth);
+                const statusMessage = fetchedUserInfo.status === 'Pending Approval'
+                    ? 'Your account is pending approval.'
+                    : 'Your account has been suspended.';
                 throw new Error(statusMessage);
             }
-
+            
             return userCredential;
-
         } catch (error: any) {
-            // Failsafe for dev environment: if admin user does not exist, create it.
+            // Failsafe: If admin user doesn't exist, create it on first login attempt.
             if (error.code === 'auth/user-not-found' && email === 'dipanjanswapnaprangon@gmail.com') {
-                 try {
-                    await signup(email, '#Dipanjanpragon123#', 'RDC Admin', 'Admin', 'Active');
-                    const newLoginAttempt = await signInWithEmailAndPassword(auth, email, '#Dipanjanpragon123#');
-                    // Manually set user info here since the listener might be slow
-                    const newInfo = await getUserByUid(newLoginAttempt.user.uid);
-                    setUserInfo(newInfo);
-                    setUser(newLoginAttempt.user);
-                    return newLoginAttempt;
+                try {
+                    const adminCredential = await signup(email, '#Dipanjanpragon123#', 'RDC Admin', 'Admin', 'Active');
+                    return adminCredential;
                 } catch (signupError: any) {
-                    // If signup fails for some reason (e.g., email already exists but login failed with different error), just throw the original error
-                    console.error("Failsafe admin creation failed:", signupError);
-                    throw error;
+                    throw new Error("Failed to create the initial admin account. This might happen if the email is already registered.");
                 }
             }
-            // For all other errors or users, re-throw the original error
+            // For any other error (like wrong password), re-throw it to be displayed on the UI.
             throw error;
         }
     };
