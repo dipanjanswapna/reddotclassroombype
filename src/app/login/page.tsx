@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -45,7 +44,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -69,14 +67,6 @@ export default function LoginPage() {
     }
   };
   
-  const handlePhoneLogin = (e: React.FormEvent) => {
-      e.preventDefault();
-      toast({
-          title: "Coming Soon!",
-          description: "Phone number login functionality is currently under development.",
-      });
-  }
-
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     setIsLoading(true);
     setError(null);
@@ -87,7 +77,13 @@ export default function LoginPage() {
           await loginWithFacebook();
       }
     } catch (err: any) {
-       setError(err.message || `Failed to log in with ${provider}.`);
+       if (err.code === 'auth/popup-closed-by-user') {
+         // This is a user-cancellable action, not a true error.
+         // Silently ignore it to avoid confusing the user with a "Login Failed" message.
+         console.log('Firebase auth popup closed by user.');
+       } else {
+         setError(err.message || `Failed to log in with ${provider}.`);
+       }
     } finally {
        setIsLoading(false);
     }
