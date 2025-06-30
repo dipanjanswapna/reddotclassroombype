@@ -38,9 +38,12 @@ export function NotificationBell() {
   useEffect(() => {
     if (!currentUserId) return;
 
+    const twentyFourHoursAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+
     const q = query(
         collection(db, "notifications"), 
         where("userId", "==", currentUserId),
+        where("date", ">=", twentyFourHoursAgo),
         orderBy("date", "desc")
     );
 
@@ -119,7 +122,7 @@ export function NotificationBell() {
                         )
                     })
                 ) : (
-                    <p className="text-sm text-center text-muted-foreground p-4">No notifications yet.</p>
+                    <p className="text-sm text-center text-muted-foreground p-4">No recent notifications.</p>
                 )}
             </DropdownMenuGroup>
         </ScrollArea>
