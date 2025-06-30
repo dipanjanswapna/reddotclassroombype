@@ -6,9 +6,25 @@ import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { RdcLogo } from "./rdc-logo";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
+import { useEffect, useState } from "react";
+import { getHomepageConfig } from "@/lib/firebase/firestore";
+import { HomepageConfig } from "@/lib/types";
 
 export function Footer() {
   const { language } = useLanguage();
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+
+  useEffect(() => {
+    getHomepageConfig().then(setConfig);
+  }, []);
+
+  const Logo = ({ className }: { className?: string }) => {
+    if (config?.logoUrl) {
+      return <img src={config.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
+    }
+    return <RdcLogo className={className} />;
+  };
+
 
   return (
     <footer className="border-t bg-gray-900 text-gray-400">
@@ -16,7 +32,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div>
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <RdcLogo className="h-10 w-auto" />
+              <Logo className="h-10 w-auto" />
               <span className="font-bold text-xl font-headline text-white">
                 RED DOT CLASSROOM
               </span>

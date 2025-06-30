@@ -269,6 +269,7 @@ export type CollaborationItem = {
 
 export type HomepageConfig = {
   id?: string;
+  logoUrl?: string;
   heroBanners: {
     id: number;
     href: string;

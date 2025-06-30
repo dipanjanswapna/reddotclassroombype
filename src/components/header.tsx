@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from 'next/navigation';
 import { Menu, Search, X, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,19 @@ import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
 import { NotificationBell } from "./notification-bell";
+import { getHomepageConfig } from "@/lib/firebase/firestore";
+import { HomepageConfig } from "@/lib/types";
+
 
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const { language } = useLanguage();
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+
+  useEffect(() => {
+    getHomepageConfig().then(setConfig);
+  }, []);
 
   const isLoggedIn = 
     pathname.startsWith('/student') ||
@@ -53,6 +61,14 @@ export function Header() {
     { href: "/contact", label: t.nav_contact[language] },
   ];
 
+  const Logo = ({ className }: { className?: string }) => {
+    if (config?.logoUrl) {
+      // Using <img> to allow any image URL without next.config.js modification
+      return <img src={config.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
+    }
+    return <RdcLogo className={className} />;
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -73,7 +89,7 @@ export function Header() {
                         className="flex items-center space-x-2"
                         onClick={() => setMenuOpen(false)}
                     >
-                        <RdcLogo className="h-8 w-auto" />
+                        <Logo className="h-8 w-auto" />
                         <span className="font-bold text-lg">RED DOT CLASSROOM</span>
                     </Link>
                     </div>
@@ -145,7 +161,7 @@ export function Header() {
             </div>
             <div className="hidden lg:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
-                    <RdcLogo className="h-8 w-auto" />
+                    <Logo className="h-8 w-auto" />
                     <span className="font-bold text-lg hidden lg:inline-block">RED DOT CLASSROOM</span>
                 </Link>
                 <nav className="flex items-center space-x-1 text-sm font-medium">
@@ -179,7 +195,7 @@ export function Header() {
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
             <Link href="/">
-                <RdcLogo className="h-8 w-auto" />
+                <Logo className="h-8 w-auto" />
             </Link>
         </div>
         

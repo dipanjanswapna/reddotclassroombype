@@ -240,6 +240,24 @@ export default function AdminHomepageManagementPage() {
         <div className="lg:col-span-1 space-y-8">
            <Card>
                 <CardHeader>
+                    <CardTitle>Site Branding</CardTitle>
+                    <CardDescription>Manage the main logo for the entire site.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2">
+                        <Label htmlFor="logoUrl">Site Logo URL</Label>
+                        <Input 
+                            id="logoUrl"
+                            value={config.logoUrl || ''} 
+                            onChange={(e) => setConfig(prev => prev ? ({ ...prev, logoUrl: e.target.value }) : null)}
+                            placeholder="https://example.com/logo.png"
+                        />
+                        <p className="text-xs text-muted-foreground">If a URL is provided, it will replace the default logo across the site.</p>
+                    </div>
+                </CardContent>
+            </Card>
+           <Card>
+                <CardHeader>
                 <CardTitle>Section Visibility</CardTitle>
                 <CardDescription>Toggle the visibility of sections on the homepage.</CardDescription>
                 </CardHeader>
@@ -283,5 +301,3 @@ export default function AdminHomepageManagementPage() {
     </div>
   );
 }
-
-    

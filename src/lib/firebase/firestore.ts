@@ -108,6 +108,7 @@ export const getCategories = async (): Promise<string[]> => {
 }
 
 const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
+  logoUrl: "",
   heroBanners: [
     { id: 1, href: "/courses/1", imageUrl: "https://placehold.co/800x450.png", alt: "HSC 25 Batch", dataAiHint: "students classroom" },
     { id: 2, href: "/courses/2", imageUrl: "https://placehold.co/800x450.png", alt: "Medical Admission", dataAiHint: "doctor medical" },
