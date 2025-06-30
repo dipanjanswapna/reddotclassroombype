@@ -8,11 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { applyForPartnershipAction } from '@/app/actions';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { HomepageConfig } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import Link from 'next/link';
 
 export default function PartnerApplicationPage() {
   const { toast } = useToast();
@@ -20,6 +24,15 @@ export default function PartnerApplicationPage() {
   const { signup } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    getHomepageConfig().then(c => {
+        setConfig(c);
+        setLoadingConfig(false);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,6 +83,32 @@ export default function PartnerApplicationPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  const signupDisabled = !config?.platformSettings.Partner.signupEnabled;
+
+  if (loadingConfig) {
+      return <div className="flex items-center justify-center h-screen"><LoadingSpinner /></div>
+  }
+
+  if (signupDisabled) {
+      return (
+          <div className="flex items-center justify-center py-12 px-4 bg-gray-50 min-h-screen">
+              <Card className="w-full max-w-lg shadow-lg">
+                  <CardHeader className="text-center">
+                      <CardTitle className="text-2xl font-headline">Partner Registration Closed</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <p className="text-center text-muted-foreground">We are not accepting new partner applications at this time. Please check back later.</p>
+                      <div className="mt-6 text-center text-sm">
+                          <Link href="/" className="font-semibold text-primary hover:underline">
+                              &larr; Back to Home
+                          </Link>
+                      </div>
+                  </CardContent>
+              </Card>
+          </div>
+      );
   }
 
   return (

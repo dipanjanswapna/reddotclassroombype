@@ -11,11 +11,14 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createInstructorAction } from '@/app/actions';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { HomepageConfig } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function TeacherSignupPage() {
   const { toast } = useToast();
@@ -24,6 +27,15 @@ export default function TeacherSignupPage() {
   const { signup } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    getHomepageConfig().then(c => {
+        setConfig(c);
+        setLoadingConfig(false);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,6 +87,32 @@ export default function TeacherSignupPage() {
     } finally {
         setIsSubmitting(false);
     }
+  }
+
+  const signupDisabled = !config?.platformSettings.Teacher.signupEnabled;
+
+  if (loadingConfig) {
+      return <div className="flex items-center justify-center h-screen"><LoadingSpinner /></div>
+  }
+
+  if (signupDisabled) {
+      return (
+          <div className="flex items-center justify-center py-12 px-4 bg-gray-50 min-h-screen">
+              <Card className="w-full max-w-lg shadow-lg">
+                  <CardHeader className="text-center">
+                      <CardTitle className="text-2xl font-headline">Teacher Registration Closed</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <p className="text-center text-muted-foreground">We are not accepting new teacher applications at this time. Please check back later.</p>
+                      <div className="mt-6 text-center text-sm">
+                          <Link href="/" className="font-semibold text-primary hover:underline">
+                              &larr; Back to Home
+                          </Link>
+                      </div>
+                  </CardContent>
+              </Card>
+          </div>
+      );
   }
 
   return (

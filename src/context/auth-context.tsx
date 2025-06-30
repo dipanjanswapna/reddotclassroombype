@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -15,7 +16,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { getUserByUid } from '@/lib/firebase/firestore';
+import { getUserByUid, getHomepageConfig } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { User } from '@/lib/types';
 
@@ -73,6 +74,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
     const login = async (email: string, pass: string, role?: User['role']) => {
+        const config = await getHomepageConfig();
+        if (!config) {
+            throw new Error("Platform configuration is not available. Please try again later.");
+        }
+        
+        if (role && role !== 'Admin' && !config.platformSettings[role]?.loginEnabled) {
+            throw new Error(`Logins for the '${role}' role are temporarily disabled by the administrator.`);
+        }
+
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
         
         let fetchedUserInfo = await getUserByUid(userCredential.user.uid);
@@ -96,6 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
 
+        if (fetchedUserInfo.role !== 'Admin' && !config.platformSettings[fetchedUserInfo.role]?.loginEnabled) {
+            await signOut(auth);
+            throw new Error(`Logins for your role ('${fetchedUserInfo.role}') are temporarily disabled.`);
+        }
+
         if (role && fetchedUserInfo.role !== role) {
             await signOut(auth);
             throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role or tab.`);
@@ -114,11 +129,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
+        const config = await getHomepageConfig();
+        if (!config) {
+            throw new Error("Platform configuration is not available. Please try again later.");
+        }
+    
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
-        const existingUserInfo = await getUserByUid(user.uid);
-        if (!existingUserInfo) {
+        let existingUserInfo = await getUserByUid(user.uid);
+        
+        if (existingUserInfo) {
+            // This is a login
+            if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
+                await signOut(auth);
+                throw new Error(`Logins for your role ('${existingUserInfo.role}') are temporarily disabled.`);
+            }
+             if (existingUserInfo.status !== 'Active') {
+                await signOut(auth);
+                throw new Error("Your account is not active. Please contact support.");
+            }
+        } else {
+            // This is a signup
+            if (!config.platformSettings['Student']?.signupEnabled) {
+                await signOut(auth);
+                throw new Error("Student registrations are temporarily disabled.");
+            }
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
                 name: user.displayName || 'New User',
@@ -129,8 +165,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 joined: serverTimestamp(),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
-            setUserInfo({ ...newUserInfo, id: user.uid } as User);
+            existingUserInfo = { ...newUserInfo, id: user.uid } as User;
         }
+
+        setUserInfo(existingUserInfo);
     }
     
     const loginWithGoogle = async () => {
@@ -156,6 +194,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     
     const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
+        const config = await getHomepageConfig();
+        if (!config) {
+            throw new Error("Platform configuration is not available. Please try again later.");
+        }
+        if (role !== 'Admin' && !config.platformSettings[role]?.signupEnabled) {
+            throw new Error(`Registrations for the '${role}' role are temporarily disabled.`);
+        }
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
 

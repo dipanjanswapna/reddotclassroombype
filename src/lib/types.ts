@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 
 export type LiveClass = {
@@ -272,6 +273,21 @@ export type CollaborationItem = {
     };
 };
 
+export type PlatformRoleSettings = {
+  signupEnabled: boolean;
+  loginEnabled: boolean;
+};
+
+export type PlatformSettings = {
+  Student: PlatformRoleSettings;
+  Teacher: PlatformRoleSettings;
+  Guardian: PlatformRoleSettings;
+  Admin: PlatformRoleSettings;
+  Partner: PlatformRoleSettings;
+  Affiliate: PlatformRoleSettings;
+  Moderator: PlatformRoleSettings;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -389,4 +405,5 @@ export type HomepageConfig = {
     imageUrl: string;
     dataAiHint: string;
   };
+  platformSettings: PlatformSettings;
 };

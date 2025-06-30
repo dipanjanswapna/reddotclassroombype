@@ -8,12 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { HomepageConfig } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export default function ModeratorSignupPage() {
   const { toast } = useToast();
@@ -22,6 +25,15 @@ export default function ModeratorSignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { language } = useLanguage();
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    getHomepageConfig().then(c => {
+        setConfig(c);
+        setLoadingConfig(false);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,6 +63,32 @@ export default function ModeratorSignupPage() {
     } finally {
         setIsSubmitting(false);
     }
+  }
+
+  const signupDisabled = !config?.platformSettings.Moderator.signupEnabled;
+
+  if (loadingConfig) {
+      return <div className="flex items-center justify-center h-screen"><LoadingSpinner /></div>
+  }
+
+  if (signupDisabled) {
+      return (
+          <div className="flex items-center justify-center py-12 px-4 bg-gray-50 min-h-screen">
+              <Card className="w-full max-w-lg shadow-lg">
+                  <CardHeader className="text-center">
+                      <CardTitle className="text-2xl font-headline">Moderator Registration Closed</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <p className="text-center text-muted-foreground">We are not accepting new moderator applications at this time. Please check back later.</p>
+                      <div className="mt-6 text-center text-sm">
+                          <Link href="/" className="font-semibold text-primary hover:underline">
+                              &larr; Back to Home
+                          </Link>
+                      </div>
+                  </CardContent>
+              </Card>
+          </div>
+      );
   }
 
   return (

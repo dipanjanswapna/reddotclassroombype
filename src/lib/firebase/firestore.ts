@@ -1,4 +1,5 @@
 
+
 import { db } from './config';
 import {
   collection,
@@ -14,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -126,6 +127,16 @@ export const getCategories = async (): Promise<string[]> => {
     return Array.from(categories);
 }
 
+const defaultPlatformSettings: PlatformSettings = {
+    Student: { signupEnabled: true, loginEnabled: true },
+    Teacher: { signupEnabled: true, loginEnabled: true },
+    Guardian: { signupEnabled: true, loginEnabled: true },
+    Admin: { signupEnabled: true, loginEnabled: true },
+    Partner: { signupEnabled: true, loginEnabled: true },
+    Affiliate: { signupEnabled: true, loginEnabled: true },
+    Moderator: { signupEnabled: true, loginEnabled: true },
+};
+
 const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   logoUrl: "",
   heroBanners: [
@@ -233,6 +244,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     imageUrl: "https://i.imgur.com/Ujein2v.png",
     dataAiHint: "mobile app screenshot",
   },
+  platformSettings: defaultPlatformSettings,
 };
 
 // Blog Posts
@@ -258,7 +270,6 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
     const mergedConfig = {
         ...defaultHomepageConfig,
         ...data,
-        // Deep merge for nested objects if necessary
         journeySection: { ...defaultHomepageConfig.journeySection, ...data.journeySection },
         teachersSection: { ...defaultHomepageConfig.teachersSection, ...data.teachersSection },
         videoSection: { ...defaultHomepageConfig.videoSection, ...data.videoSection },
@@ -272,6 +283,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         notesBanner: { ...defaultHomepageConfig.notesBanner, ...data.notesBanner },
         statsSection: { ...defaultHomepageConfig.statsSection, ...data.statsSection },
         appPromo: { ...defaultHomepageConfig.appPromo, ...data.appPromo },
+        platformSettings: { ...defaultHomepageConfig.platformSettings, ...data.platformSettings },
     };
     return { id: docSnap.id, ...mergedConfig } as HomepageConfig;
   }

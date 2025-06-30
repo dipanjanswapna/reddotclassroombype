@@ -17,7 +17,8 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User } from '@/lib/types';
+import { User, HomepageConfig } from '@/lib/types';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 function GoogleIcon() {
   return (
@@ -49,6 +50,7 @@ export default function LoginPage() {
   const [role, setRole] = useState<User['role']>('Admin');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [config, setConfig] = useState<HomepageConfig | null>(null);
   
   const [activeTab, setActiveTab] = useState(searchParams.get('type') === 'staff' ? 'staff' : 'student');
 
@@ -56,6 +58,10 @@ export default function LoginPage() {
     const type = searchParams.get('type');
     setActiveTab(type === 'staff' ? 'staff' : 'student');
   }, [searchParams]);
+
+  useEffect(() => {
+    getHomepageConfig().then(setConfig);
+  }, []);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,8 +87,6 @@ export default function LoginPage() {
       }
     } catch (err: any) {
        if (err.code === 'auth/popup-closed-by-user') {
-         // This is a user-cancellable action, not a true error.
-         // Silently ignore it to avoid confusing the user with a "Login Failed" message.
          console.log('Firebase auth popup closed by user.');
        } else {
          setError(err.message || `Failed to log in with ${provider}.`);
@@ -91,6 +95,9 @@ export default function LoginPage() {
        setIsLoading(false);
     }
   };
+
+  const socialLoginDisabled = !config?.platformSettings.Student.loginEnabled;
+  const roleLoginDisabled = role && config && role !== 'Admin' && !config.platformSettings[role]?.loginEnabled;
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
@@ -117,14 +124,15 @@ export default function LoginPage() {
                 <TabsContent value="student">
                     <div className="pt-4 grid gap-4">
                         <p className="text-center text-sm text-muted-foreground">The easiest way to login or create an account.</p>
-                        <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading} className="w-full">
+                        <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading || socialLoginDisabled} className="w-full">
                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
                             <span className="ml-2">Continue with Google</span>
                         </Button>
-                        <Button variant="outline" onClick={() => handleSocialLogin('facebook')} disabled={isLoading} className="w-full">
+                        <Button variant="outline" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full">
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FacebookIcon />}
                             <span className="ml-2">Continue with Facebook</span>
                         </Button>
+                        {socialLoginDisabled && <p className="text-xs text-center text-destructive">Student & Guardian login is temporarily disabled.</p>}
                     </div>
                 </TabsContent>
                 <TabsContent value="staff">
@@ -152,12 +160,17 @@ export default function LoginPage() {
                         <Label htmlFor="password">{t.password[language]}</Label>
                         <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
+                        {roleLoginDisabled && (
+                            <Alert variant="destructive" className="p-2 text-xs">
+                                <AlertDescription>Login for the '{role}' role is temporarily disabled.</AlertDescription>
+                            </Alert>
+                        )}
                         <div className="flex items-center justify-end">
                             <Link href="/password-reset" className="text-sm text-primary hover:underline">
                                 {t.forgot_password[language]}
                             </Link>
                         </div>
-                        <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                        <Button type="submit" className="w-full font-bold" disabled={isLoading || !!roleLoginDisabled}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                             {t.login[language]}
                         </Button>

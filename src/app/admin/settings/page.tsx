@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -19,8 +19,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { getHomepageConfig } from "@/lib/firebase/firestore";
+import { HomepageConfig, PlatformSettings } from "@/lib/types";
+import { saveHomepageConfigAction } from "@/app/actions";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 
 // Mock user data for demonstration
@@ -39,6 +43,26 @@ export default function AdminSettingsPage() {
     const [fullName, setFullName] = useState(currentUser.fullName);
     const [email, setEmail] = useState(currentUser.email);
     const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
+
+    // State for platform settings
+    const [config, setConfig] = useState<HomepageConfig | null>(null);
+    const [loadingConfig, setLoadingConfig] = useState(true);
+    const [isSavingPlatform, setIsSavingPlatform] = useState(false);
+
+    useEffect(() => {
+        async function fetchConfig() {
+            try {
+                const fetchedConfig = await getHomepageConfig();
+                setConfig(fetchedConfig);
+            } catch (error) {
+                console.error("Error fetching settings:", error);
+                toast({ title: "Error", description: "Could not load platform settings.", variant: "destructive" });
+            } finally {
+                setLoadingConfig(false);
+            }
+        }
+        fetchConfig();
+    }, [toast]);
 
     const handleInfoSave = () => {
         toast({
@@ -62,7 +86,6 @@ export default function AdminSettingsPage() {
         });
     };
     
-    // A dummy function to simulate file upload
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -77,6 +100,29 @@ export default function AdminSettingsPage() {
             reader.readAsDataURL(file);
         }
     };
+
+    const handleSettingChange = (role: keyof PlatformSettings, type: 'signupEnabled' | 'loginEnabled', value: boolean) => {
+        setConfig(prevConfig => {
+            if (!prevConfig) return null;
+            const newSettings = { ...prevConfig.platformSettings };
+            newSettings[role] = { ...newSettings[role], [type]: value };
+            return { ...prevConfig, platformSettings: newSettings };
+        });
+    };
+
+    const handlePlatformSave = async () => {
+        if (!config) return;
+        setIsSavingPlatform(true);
+        const result = await saveHomepageConfigAction(config);
+        if (result.success) {
+            toast({ title: 'Platform Settings Updated' });
+        } else {
+            toast({ title: 'Error', description: result.message, variant: 'destructive' });
+        }
+        setIsSavingPlatform(false);
+    };
+
+    const managedRoles: (keyof Omit<PlatformSettings, 'Admin'>)[] = ['Student', 'Guardian', 'Teacher', 'Partner', 'Affiliate', 'Moderator'];
 
 
   return (
@@ -157,31 +203,44 @@ export default function AdminSettingsPage() {
 
         <div className="md:col-span-1 space-y-8">
            <Card>
-             <CardHeader>
-              <CardTitle>Platform Settings</CardTitle>
-              <CardDescription>Global settings for the entire platform.</CardDescription>
-            </CardHeader>
-             <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                        <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
-                         <p className="text-[0.8rem] text-muted-foreground">
-                            Temporarily disable access for non-admins.
-                        </p>
-                    </div>
-                    <Switch id="maintenance-mode" />
-                </div>
-                 <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                        <Label htmlFor="new-registrations">New Registrations</Label>
-                         <p className="text-[0.8rem] text-muted-foreground">
-                           Allow or disallow new user sign-ups.
-                        </p>
-                    </div>
-                    <Switch id="new-registrations" defaultChecked/>
-                </div>
-             </CardContent>
-          </Card>
+                <CardHeader>
+                    <CardTitle>Registration & Login Control</CardTitle>
+                    <CardDescription>Enable or disable sign-ups and logins for different user roles.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {loadingConfig ? <div className="flex justify-center"><LoadingSpinner/></div> : managedRoles.map(role => (
+                        <div key={role} className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                                <Label htmlFor={`${role}-signup`} className="text-base">{role}</Label>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        id={`${role}-signup`}
+                                        checked={config?.platformSettings[role]?.signupEnabled ?? false}
+                                        onCheckedChange={(value) => handleSettingChange(role, 'signupEnabled', value)}
+                                    />
+                                    <Label htmlFor={`${role}-signup`} className="text-sm">Sign-up</Label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        id={`${role}-login`}
+                                        checked={config?.platformSettings[role]?.loginEnabled ?? false}
+                                        onCheckedChange={(value) => handleSettingChange(role, 'loginEnabled', value)}
+                                    />
+                                    <Label htmlFor={`${role}-login`} className="text-sm">Login</Label>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handlePlatformSave} disabled={isSavingPlatform || loadingConfig} className="w-full">
+                        {isSavingPlatform && <Loader2 className="mr-2 animate-spin" />}
+                        Save Platform Settings
+                    </Button>
+                </CardFooter>
+            </Card>
         </div>
       </div>
     </div>
