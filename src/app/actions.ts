@@ -36,85 +36,18 @@ import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from
 import { Timestamp, doc, writeBatch, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
-/**
- * Recursively removes undefined values from an object or array.
- * Firestore throws an error if you try to save `undefined`.
- * @param obj The object or array to clean.
- * @returns The cleaned object or array.
- */
-function removeUndefinedValues(obj: any): any {
-  if (obj === null || obj === undefined) {
-    return null; // Return null for both null and undefined
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(removeUndefinedValues);
-  }
-
-  if (typeof obj === 'object' && !(obj instanceof Timestamp)) {
-    const newObj: { [key: string]: any } = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const value = obj[key];
-        if (value !== undefined) {
-          newObj[key] = removeUndefinedValues(value);
-        }
-      }
-    }
-    return newObj;
-  }
-
-  return obj;
-}
-
-
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
 
-    // Explicitly build the object to save, ensuring no undefined values are sent to Firestore
-    const dataToSave: Omit<Course, 'id' | 'assignments'> = {
-      title: data.title || '',
-      description: data.description || '',
-      category: data.category || 'Uncategorized',
-      price: data.price || 'BDT 0',
-      imageUrl: data.imageUrl || 'https://placehold.co/600x400.png',
-      videoUrl: data.videoUrl || '',
-      dataAiHint: data.dataAiHint || 'course placeholder',
-      whatYouWillLearn: data.whatYouWillLearn || [],
-      syllabus: data.syllabus || [],
-      faqs: data.faqs || [],
-      instructors: data.instructors || [],
-      classRoutine: data.classRoutine || [],
-      includedArchivedCourseIds: data.includedArchivedCourseIds || [],
-      announcements: data.announcements || [],
-      quizzes: data.quizzes || [],
-      assignmentTemplates: data.assignmentTemplates || [],
-      status: data.status || 'Draft',
-      organizationId: data.organizationId || undefined,
-      subCategory: data.subCategory || '',
-      rating: data.rating || 0,
-      reviews: data.reviews || 0,
-      features: data.features || [],
-      features_detailed: data.features_detailed || [],
-      imageTitle: data.imageTitle || '',
-      isArchived: data.isArchived || false,
-      isPrebooking: data.isPrebooking || false,
-      prebookingPrice: data.prebookingPrice || '',
-      prebookingEndDate: data.prebookingEndDate || '',
-      prebookingCount: data.prebookingCount || 0,
-      prebookingTarget: data.prebookingTarget || 0,
-      organizationName: data.organizationName || '',
-      isWishlisted: data.isWishlisted || false,
-      communityUrl: data.communityUrl || ''
-    };
+    // The data is now pre-cleaned on the client-side before being sent.
+    // The `removeUndefinedValues` utility is used in `course-builder.tsx`.
+    // This ensures that the payload to the Server Action is always valid.
+    const cleanData = data;
     
-    // Recursively remove any undefined values from the entire object
-    const cleanData = removeUndefinedValues(dataToSave);
-    
-    // Ensure organizationId is not an empty string
+    // Ensure organizationId is not an empty string if it exists
     if (cleanData.organizationId === '') {
-        delete cleanData.organizationId;
+        delete (cleanData as any).organizationId;
     }
 
     if (id) {

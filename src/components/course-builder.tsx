@@ -76,6 +76,7 @@ import {
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
+import { removeUndefinedValues } from '@/lib/utils';
 
 type LessonData = {
     id: string;
@@ -543,15 +544,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         whatYouWillLearn,
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest),
-        instructors: instructors.map(({ id, ...rest }) => {
-            return {
-                name: rest.name,
-                title: rest.title,
-                avatarUrl: rest.avatarUrl,
-                dataAiHint: rest.dataAiHint,
-                slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-')
-            }
-        }),
+        instructors: instructors.map(({ id, ...rest }) => ({
+            name: rest.name,
+            title: rest.title,
+            avatarUrl: rest.avatarUrl,
+            dataAiHint: rest.dataAiHint,
+            slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-')
+        })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
@@ -559,12 +558,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         assignmentTemplates: assignmentTemplates.map(a => {
             const { id, deadline, ...rest } = a;
             const newAssignment: Partial<Omit<AssignmentTemplate, 'id'>> = { ...rest };
-            if (deadline instanceof Date) {
-                if (!isNaN(deadline.getTime())) {
-                    newAssignment.deadline = format(deadline, 'yyyy-MM-dd');
-                }
-            } else if (typeof deadline === 'string' && deadline) {
-                 newAssignment.deadline = deadline;
+            if (deadline instanceof Date && !isNaN(deadline.getTime())) {
+                newAssignment.deadline = format(deadline, 'yyyy-MM-dd');
             }
             return newAssignment;
         }),
@@ -572,7 +567,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         organizationId,
     };
     
-    const result = await saveCourseAction(courseData);
+    // Clean the data before sending it to the server action
+    const cleanCourseData = removeUndefinedValues(courseData);
+    
+    const result = await saveCourseAction(cleanCourseData);
     if (result.success) {
       toast({ 
           title: status === 'Pending Approval' ? 'Course Submitted' : 'Draft Saved', 
