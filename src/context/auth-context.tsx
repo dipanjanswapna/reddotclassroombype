@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error: any) {
             // Failsafe for dev environment: if admin login fails, create the user and try again.
-            if (error.code === 'auth/invalid-credential' && email === 'admin@rdc.com') {
+            if (error.code === 'auth/invalid-credential' && email === 'dipanjanswapnaprangon@gmail.com') {
                 try {
                     await signup(email, pass, 'Admin User', 'Admin', 'Active');
                     return await signInWithEmailAndPassword(auth, email, pass);

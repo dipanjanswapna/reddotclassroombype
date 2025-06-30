@@ -128,7 +128,7 @@ export default function LoginPage() {
                     <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
                         <div className="grid gap-2">
                         <Label htmlFor="email">{t.email[language]}</Label>
-                        <Input id="email" type="email" placeholder="staff@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Input id="email" type="email" placeholder="dipanjanswapnaprangon@gmail.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                         <Label htmlFor="password">{t.password[language]}</Label>
