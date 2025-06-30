@@ -141,6 +141,13 @@ export type Notification = {
   link?: string;
 };
 
+export type AssignmentTemplate = {
+  id: string;
+  title: string;
+  topic: string;
+  deadline?: string | Timestamp;
+};
+
 export type Course = {
   id?: string;
   title: string;
@@ -174,6 +181,7 @@ export type Course = {
   organizationName?: string;
   quizzes?: Quiz[];
   assignments?: Assignment[];
+  assignmentTemplates?: AssignmentTemplate[];
   announcements?: Announcement[];
   isWishlisted?: boolean;
   communityUrl?: string;

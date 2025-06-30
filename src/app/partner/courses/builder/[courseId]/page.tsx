@@ -60,7 +60,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, Instructor } from '@/lib/types';
+import { Course, SyllabusModule, Instructor, AssignmentTemplate } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -74,6 +74,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
+import { format } from 'date-fns';
 
 type LessonData = {
     id: string;
@@ -134,13 +135,6 @@ type QuizData = {
   title: string;
   topic: string;
   questions: QuizQuestionData[];
-};
-
-type AssignmentData = {
-  id: string;
-  title: string;
-  topic: string;
-  deadline?: Date;
 };
 
 function SortableSyllabusItem({ 
@@ -265,7 +259,7 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
-  const [assignments, setAssignments] = useState<AssignmentData[]>([]);
+  const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
@@ -309,6 +303,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
                     setInstructors(courseData.instructors?.map(i => ({...i, id: i.id || Math.random().toString()})) || []);
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: cr.id || Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a, id: a.id || Math.random().toString()})) || []);
+                    setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
+                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                 } else {
                     notFound();
                 }
@@ -434,10 +430,10 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
   };
 
-  const addAssignment = () => setAssignments(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date() }]);
-  const removeAssignment = (id: string) => setAssignments(prev => prev.filter(a => a.id !== id));
-  const updateAssignment = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
-    setAssignments(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+  const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', deadline: new Date().toISOString() }]);
+  const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
+  const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date) => {
+    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
   };
 
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
@@ -512,6 +508,8 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
+        quizzes,
+        assignmentTemplates: assignmentTemplates.map(a => ({...a, deadline: a.deadline ? format(new Date(a.deadline), 'yyyy-MM-dd') : undefined})),
         status,
         organizationId: 'org_medishark' // Mock partner ID
     };
@@ -750,26 +748,26 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
             {activeTab === 'assignments' && (
                 <CardContent className="pt-6 space-y-4">
                     <CardDescription>Create and manage assignments for this course.</CardDescription>
-                     {assignments.map(assignment => (
+                     {assignmentTemplates.map(assignment => (
                         <div key={assignment.id} className="flex items-end gap-2 p-4 border rounded-md">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-title-${assignment.id}`}>Assignment Title</Label>
-                                    <Input id={`as-title-${assignment.id}`} value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} />
+                                    <Input id={`as-title-${assignment.id}`} value={assignment.title} onChange={e => updateAssignmentTemplate(assignment.id, 'title', e.target.value)} />
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-topic-${assignment.id}`}>Topic</Label>
-                                    <Input id={`as-topic-${assignment.id}`} value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} />
+                                    <Input id={`as-topic-${assignment.id}`} value={assignment.topic} onChange={e => updateAssignmentTemplate(assignment.id, 'topic', e.target.value)} />
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
-                                    <DatePicker date={assignment.deadline} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} />
+                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date!)} />
                                 </div>
                             </div>
-                             <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
+                             <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
                         </div>
                      ))}
-                    <Button variant="outline" className="w-full" onClick={addAssignment}><PlusCircle className="mr-2"/>Add New Assignment</Button>
+                    <Button variant="outline" className="w-full" onClick={addAssignmentTemplate}><PlusCircle className="mr-2"/>Add New Assignment</Button>
                 </CardContent>
             )}
 
