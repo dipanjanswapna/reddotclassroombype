@@ -20,6 +20,7 @@ const fontPoppins = Poppins({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rdc-final.app'),
   title: {
     default: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM',
     template: '%s | RED DOT CLASSROOM (RDC)',

@@ -1,11 +1,11 @@
-'use client';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import {
   CheckCircle,
   PlayCircle,
   Star,
   BookOpen,
-  Heart,
 } from 'lucide-react';
 import {
   Accordion,
@@ -29,87 +29,47 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
 import { Course } from '@/lib/types';
 import { getCourse, getCourses } from '@/lib/firebase/firestore';
-import { LoadingSpinner } from '@/components/loading-spinner';
-import { notFound } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
-import { toggleWishlistAction } from '@/app/actions';
+import { WishlistButton } from '@/components/wishlist-button';
 
+export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
+  const course = await getCourse(params.courseId);
 
-const currentUserId = 'usr_stud_001'; // Mock user ID for demo
+  if (!course) {
+    return {
+      title: 'Course Not Found',
+    }
+  }
 
-export default function CourseDetailPage({
+  return {
+    title: course.title,
+    description: course.description,
+    openGraph: {
+      title: course.title,
+      description: course.description,
+      images: [course.imageUrl],
+    },
+  }
+}
+
+export default async function CourseDetailPage({
   params,
 }: {
   params: { courseId: string };
 }) {
-  const [course, setCourse] = useState<Course | null>(null);
-  const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
-  const [includedCourses, setIncludedCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    async function fetchCourseData() {
-      try {
-        const courseData = await getCourse(params.courseId);
-        if (courseData) {
-          setCourse(courseData);
-          setIsWishlisted(courseData.isWishlisted || false);
-          
-          const allCourses = await getCourses();
-          const related = allCourses.filter(c => c.id !== courseData.id).slice(0, 4);
-          setRelatedCourses(related);
-          
-          if (courseData.includedArchivedCourseIds) {
-            const included = allCourses.filter(c => courseData.includedArchivedCourseIds?.includes(c.id!));
-            setIncludedCourses(included);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch course data", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCourseData();
-  }, [params.courseId]);
-  
-  const handleWishlistToggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!currentUserId || !course?.id) return;
-    
-    const originalWishlistStatus = isWishlisted;
-    setIsWishlisted(!originalWishlistStatus);
-
-    const result = await toggleWishlistAction(currentUserId, course.id);
-
-    if (!result.success) {
-      setIsWishlisted(originalWishlistStatus);
-      toast({
-        title: "Error",
-        description: "Could not update wishlist. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-        <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
-  }
+  const course = await getCourse(params.courseId);
 
   if (!course) {
     notFound();
   }
-  
+
+  const allCourses = await getCourses();
+  const relatedCourses = allCourses.filter(c => c.id !== course.id).slice(0, 4);
+  const includedCourses = course.includedArchivedCourseIds
+    ? allCourses.filter(c => course.includedArchivedCourseIds?.includes(c.id!))
+    : [];
+
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
   return (
@@ -130,6 +90,7 @@ export default function CourseDetailPage({
                   src={course.imageUrl}
                   alt={course.title}
                   fill
+                  priority
                   className="object-cover"
                   data-ai-hint={course.dataAiHint}
                 />
@@ -168,10 +129,7 @@ export default function CourseDetailPage({
                             {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
                         </Link>
                     </Button>
-                    <Button size="lg" variant="outline" className="px-3" onClick={handleWishlistToggle}>
-                        <Heart className={cn("w-5 h-5", isWishlisted && "fill-destructive text-destructive")} />
-                        <span className="sr-only">Add to wishlist</span>
-                    </Button>
+                    <WishlistButton courseId={course.id!} initialIsWishlisted={course.isWishlisted || false} />
                   </div>
                   <div className="mt-6">
                     <h3 className="font-headline font-semibold mb-3">

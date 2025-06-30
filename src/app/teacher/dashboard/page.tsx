@@ -1,4 +1,3 @@
-
 import {
   BookCopy,
   Users,
@@ -8,7 +7,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCourses } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+    title: 'Teacher Dashboard',
+    description: 'Manage your courses, students, and content.',
+};
 
 // Mock teacher ID
 const teacherId = 'ins-ja'; 

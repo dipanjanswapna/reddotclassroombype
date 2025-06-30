@@ -66,7 +66,7 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
                     alt={banner.alt}
                     width={800}
                     height={450}
-                    priority={index <= 2}
+                    priority={index < 2}
                     className="rounded-xl object-cover"
                     data-ai-hint={banner.dataAiHint}
                   />
@@ -80,6 +80,7 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
           variant="ghost"
           size="icon"
           className="hero-carousel-arrow hero-carousel-prev"
+          aria-label="Previous slide"
         >
           <ChevronLeft className="w-8 h-8" />
         </Button>
@@ -88,6 +89,7 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
           variant="ghost"
           size="icon"
           className="hero-carousel-arrow hero-carousel-next"
+          aria-label="Next slide"
         >
           <ChevronRight className="w-8 h-8" />
         </Button>

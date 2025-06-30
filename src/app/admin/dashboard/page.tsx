@@ -1,4 +1,3 @@
-
 import {
   Users,
   BookOpen,
@@ -8,6 +7,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCourses, getUsers } from '@/lib/firebase/firestore';
 import { Course, User } from '@/lib/types';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Admin Dashboard',
+    description: 'Platform-wide overview and management tools.',
+};
 
 export default async function AdminDashboardPage() {
   const [courses, users]: [Course[], User[]] = await Promise.all([

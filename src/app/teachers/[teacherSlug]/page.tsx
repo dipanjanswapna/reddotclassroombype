@@ -1,7 +1,4 @@
-
-'use client';
-
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getInstructorBySlug, getCourses } from '@/lib/firebase/firestore';
 import type { Course, Instructor } from '@/lib/types';
@@ -10,52 +7,40 @@ import { Badge } from '@/components/ui/badge';
 import { Linkedin, Facebook, Twitter, CheckCircle, Star, Users } from 'lucide-react';
 import { CourseCard } from '@/components/course-card';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { LoadingSpinner } from '@/components/loading-spinner';
+import { Metadata } from 'next';
 
-export default function TeacherProfilePage() {
-    const params = useParams();
-    const teacherSlug = params.teacherSlug as string;
+export async function generateMetadata({ params }: { params: { teacherSlug: string } }): Promise<Metadata> {
+  const teacher = await getInstructorBySlug(params.teacherSlug);
 
-    const [teacher, setTeacher] = useState<Instructor | null>(null);
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!teacherSlug) return;
-        
-        const fetchTeacherData = async () => {
-            try {
-                const teacherData = await getInstructorBySlug(teacherSlug);
-                if (teacherData && teacherData.status === 'Approved') {
-                    setTeacher(teacherData);
-                    const allCourses = await getCourses();
-                    const teacherCourses = allCourses.filter(c => 
-                        c.status === 'Published' && c.instructors?.some(i => i.slug === teacherSlug)
-                    );
-                    setCourses(teacherCourses);
-                }
-            } catch (error) {
-                console.error("Failed to fetch teacher data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTeacherData();
-    }, [teacherSlug]);
-
-    if (loading) {
-        return (
-            <div className="flex flex-grow items-center justify-center h-[calc(100vh-10rem)] w-full p-8">
-                <LoadingSpinner className="w-12 h-12" />
-            </div>
-        );
+  if (!teacher) {
+    return {
+      title: 'Teacher Not Found',
     }
+  }
 
-    if (!teacher) {
+  return {
+    title: `${teacher.name} - ${teacher.title}`,
+    description: teacher.bio,
+    openGraph: {
+      title: `${teacher.name} - ${teacher.title}`,
+      description: teacher.bio,
+      images: [teacher.avatarUrl],
+    },
+  }
+}
+
+
+export default async function TeacherProfilePage({ params }: { params: { teacherSlug: string } }) {
+    const teacher = await getInstructorBySlug(params.teacherSlug);
+
+    if (!teacher || teacher.status !== 'Approved') {
         notFound();
     }
+
+    const allCourses = await getCourses();
+    const courses = allCourses.filter(c => 
+        c.status === 'Published' && c.instructors?.some(i => i.slug === params.teacherSlug)
+    );
 
     return (
         <div className="bg-background">

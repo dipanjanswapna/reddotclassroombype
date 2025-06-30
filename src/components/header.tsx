@@ -71,9 +71,8 @@ export function Header() {
             <div className="lg:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="Toggle Menu">
                     <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
                 </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col">
@@ -196,9 +195,8 @@ export function Header() {
         <div className="flex items-center justify-end space-x-2">
           {user ? (
             <>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Search">
                 <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
               </Button>
               <NotificationBell />
               <UserNav />
