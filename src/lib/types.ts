@@ -58,7 +58,6 @@ export type Organization = {
 };
 
 export type CourseInstructor = {
-  id?: string;
   name: string;
   title: string;
   avatarUrl: string;
@@ -157,7 +156,7 @@ export type AssignmentTemplate = {
   id: string;
   title: string;
   topic: string;
-  deadline?: string | Timestamp;
+  deadline?: string | Timestamp | Date;
 };
 
 export type Course = {
@@ -193,7 +192,7 @@ export type Course = {
   organizationName?: string;
   quizzes?: Quiz[];
   assignments?: Assignment[];
-  assignmentTemplates?: AssignmentTemplate[];
+  assignmentTemplates?: Omit<AssignmentTemplate, 'id'>[];
   announcements?: Announcement[];
   isWishlisted?: boolean;
   communityUrl?: string;
@@ -416,3 +415,5 @@ export type HomepageConfig = {
   };
   platformSettings: PlatformSettings;
 };
+
+    

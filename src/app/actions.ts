@@ -37,25 +37,70 @@ import { Timestamp } from 'firebase/firestore';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
-    if (courseData.id) {
-      await updateCourse(courseData.id, courseData);
+    const { id, ...data } = courseData;
+
+    // Explicitly build the object to save, ensuring no undefined values are sent to Firestore
+    const dataToSave: Omit<Course, 'id' | 'assignments'> = {
+      title: data.title || '',
+      description: data.description || '',
+      category: data.category || 'Uncategorized',
+      price: data.price || 'BDT 0',
+      imageUrl: data.imageUrl || 'https://placehold.co/600x400.png',
+      videoUrl: data.videoUrl || '',
+      dataAiHint: data.dataAiHint || 'course placeholder',
+      whatYouWillLearn: data.whatYouWillLearn || [],
+      syllabus: data.syllabus || [],
+      faqs: data.faqs || [],
+      instructors: data.instructors || [],
+      classRoutine: data.classRoutine || [],
+      includedArchivedCourseIds: data.includedArchivedCourseIds || [],
+      announcements: data.announcements || [],
+      quizzes: data.quizzes || [],
+      assignmentTemplates: data.assignmentTemplates || [],
+      status: data.status || 'Draft',
+      organizationId: data.organizationId || undefined,
+      subCategory: data.subCategory || '',
+      rating: data.rating || 0,
+      reviews: data.reviews || 0,
+      features: data.features || [],
+      features_detailed: data.features_detailed || [],
+      imageTitle: data.imageTitle || '',
+      isArchived: data.isArchived || false,
+      isPrebooking: data.isPrebooking || false,
+      prebookingPrice: data.prebookingPrice || '',
+      prebookingEndDate: data.prebookingEndDate || '',
+      prebookingCount: data.prebookingCount || 0,
+      prebookingTarget: data.prebookingTarget || 0,
+      organizationName: data.organizationName || '',
+      isWishlisted: data.isWishlisted || false,
+      communityUrl: data.communityUrl || ''
+    };
+    
+    // Firestore does not accept 'undefined' values, so we remove the key if it's not set.
+    if (dataToSave.organizationId === undefined) {
+      delete (dataToSave as Partial<typeof dataToSave>).organizationId;
+    }
+
+    if (id) {
+      await updateCourse(id, dataToSave);
       revalidatePath('/admin/courses');
-      revalidatePath(`/admin/courses/builder/${courseData.id}`);
+      revalidatePath(`/admin/courses/builder/${id}`);
       revalidatePath('/teacher/courses');
-      revalidatePath(`/teacher/courses/builder/${courseData.id}`);
+      revalidatePath(`/teacher/courses/builder/${id}`);
       revalidatePath('/partner/courses');
-      revalidatePath(`/partner/courses/builder/${courseData.id}`);
-      revalidatePath(`/courses/${courseData.id}`);
+      revalidatePath(`/partner/courses/builder/${id}`);
+      revalidatePath(`/courses/${id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
-      const newCourseRef = await addCourse(courseData);
+      const newCourseRef = await addCourse(dataToSave);
       revalidatePath('/admin/courses');
       revalidatePath('/teacher/courses');
       revalidatePath('/partner/courses');
       return { success: true, message: 'Course created successfully.', courseId: newCourseRef.id };
     }
   } catch (error: any) {
-    return { success: false, message: error.message };
+    console.error("saveCourseAction Error:", error);
+    return { success: false, message: error.message || 'An unexpected server error occurred.' };
   }
 }
 
@@ -523,3 +568,6 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
 }
 
 
+
+
+    

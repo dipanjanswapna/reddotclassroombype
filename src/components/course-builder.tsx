@@ -506,6 +506,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   };
 
   const handleSave = async (status: 'Draft' | 'Pending Approval') => {
+    if (!courseTitle) {
+      toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
+      setActiveTab('details');
+      return;
+    }
+    if (instructors.some(inst => !inst.name || !inst.title)) {
+        toast({ title: 'Validation Error', description: 'All instructors must have a name and title.', variant: 'destructive' });
+        setActiveTab('instructors');
+        return;
+    }
+
     setIsSaving(true);
     
     const reconstructedSyllabus: SyllabusModule[] = [];
@@ -536,19 +547,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         title: courseTitle,
         description,
         category,
-        price: `BDT ${price}`,
+        price: `BDT ${price || 0}`,
         imageUrl: thumbnailUrl,
         videoUrl: introVideoUrl,
         whatYouWillLearn,
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest),
-        instructors: instructors.map(({ id, ...rest }) => ({...rest, slug: rest.name.toLowerCase().replace(/\s+/g, '-') })),
+        instructors: instructors.map(({ id, slug, ...rest }) => ({...rest, slug: slug || rest.name.toLowerCase().replace(/\s+/g, '-') })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
         quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
-            const { deadline, ...rest } = a;
+            const { id, deadline, ...rest } = a;
             const newAssignment: Partial<AssignmentTemplate> = { ...rest };
             if (deadline) {
                 const date = new Date(deadline);
@@ -568,10 +579,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           title: status === 'Pending Approval' ? 'Course Submitted' : 'Draft Saved', 
           description: result.message 
       });
-      if (status === 'Pending Approval') {
-        router.push(redirectPath);
-      } else if (isNewCourse && result.courseId) {
-        router.push(redirectPath.replace('new', result.courseId));
+      if (status === 'Pending Approval' || (isNewCourse && result.courseId)) {
+        router.push(redirectPath.replace('/new', ''));
       }
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -812,7 +821,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
-                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
+                                    <DatePicker date={assignment.deadline ? new Date(assignment.deadline as string) : undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
                                 </div>
                             </div>
                              <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
@@ -1062,3 +1071,5 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     </div>
   );
 }
+
+    
