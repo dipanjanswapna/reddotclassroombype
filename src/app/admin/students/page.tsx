@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -70,8 +69,8 @@ const statusColors: { [key in User['status']]: string } = {
 };
 
 
-export default function UserManagementPage() {
-  const [staffUsers, setStaffUsers] = useState<User[]>([]);
+export default function StudentUserManagementPage() {
+  const [studentUsers, setStudentUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -83,14 +82,14 @@ export default function UserManagementPage() {
   // Form state for the dialog
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<User['role']>('Teacher');
+  const [role, setRole] = useState<User['role']>('Student');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
         const fetchedUsers = await getUsers();
-        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Partner'];
-        setStaffUsers(fetchedUsers.filter(user => staffRoles.includes(user.role)));
+        const studentRoles: User['role'][] = ['Student', 'Guardian'];
+        setStudentUsers(fetchedUsers.filter(user => studentRoles.includes(user.role)));
     } catch(e) {
         toast({ title: 'Error', description: 'Could not fetch users', variant: 'destructive' });
     } finally {
@@ -112,7 +111,7 @@ export default function UserManagementPage() {
       // Reset for new user
       setName('');
       setEmail('');
-      setRole('Teacher');
+      setRole('Student');
     }
     setIsDialogOpen(true);
   };
@@ -144,7 +143,7 @@ export default function UserManagementPage() {
     } else {
        toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
-    setUserToDelete(null); // Close the dialog
+    setUserToDelete(null);
   };
   
   const handleStatusUpdate = async (userToUpdate: User, newStatus: User['status']) => {
@@ -173,18 +172,18 @@ export default function UserManagementPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-3xl font-bold tracking-tight">Staff User Management</h1>
-          <p className="mt-1 text-lg text-muted-foreground">View and manage all staff accounts on the platform.</p>
+          <h1 className="font-headline text-3xl font-bold tracking-tight">Student & Guardian Management</h1>
+          <p className="mt-1 text-lg text-muted-foreground">View and manage all student and guardian accounts.</p>
         </div>
         <Button onClick={() => handleOpenDialog(null)}>
           <PlusCircle className="mr-2" />
-          Create Staff User
+          Create User
         </Button>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>All Staff Users</CardTitle>
-          <CardDescription>A list of all registered staff members.</CardDescription>
+          <CardTitle>All Student & Guardian Users</CardTitle>
+          <CardDescription>A list of all registered students and guardians.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -199,7 +198,7 @@ export default function UserManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {staffUsers.map((user) => (
+              {studentUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="font-medium">{user.name}</div>
@@ -228,17 +227,7 @@ export default function UserManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
-                        {user.status === 'Pending Approval' && (
-                            <>
-                               <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Active')}>
-                                    <UserCheck className="mr-2 text-green-600"/>Approve User
-                                </DropdownMenuItem>
-                               <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Suspended')}>
-                                    <UserX className="mr-2 text-destructive"/>Reject User
-                                </DropdownMenuItem>
-                            </>
-                        )}
-                         {user.status === 'Active' && user.role !== 'Admin' && (
+                        {user.status === 'Active' && user.role !== 'Admin' && (
                            <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Suspended')}>
                                 <UserX className="mr-2 text-destructive"/>Suspend User
                             </DropdownMenuItem>
@@ -285,9 +274,9 @@ export default function UserManagementPage() {
        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingUser ? 'Edit Staff User' : 'Create New Staff User'}</DialogTitle>
+              <DialogTitle>{editingUser ? 'Edit User' : 'Create New User'}</DialogTitle>
               <DialogDescription>
-                {editingUser ? 'Update the details for this staff member.' : 'Fill in the details for the new staff member.'}
+                {editingUser ? 'Update the details for this user.' : 'Fill in the details for the new user.'}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -306,11 +295,8 @@ export default function UserManagementPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Teacher">Teacher</SelectItem>
-                    <SelectItem value="Partner">Partner</SelectItem>
-                    <SelectItem value="Moderator">Moderator</SelectItem>
-                    <SelectItem value="Affiliate">Affiliate</SelectItem>
+                    <SelectItem value="Student">Student</SelectItem>
+                    <SelectItem value="Guardian">Guardian</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

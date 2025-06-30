@@ -50,7 +50,8 @@ export default function AdminLayout({
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
-        { href: "/admin/users", icon: Users, label: "Users" },
+        { href: "/admin/users", icon: UserCog, label: "Staff Users" },
+        { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/partners", icon: Handshake, label: "Partners" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
