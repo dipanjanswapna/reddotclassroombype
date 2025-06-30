@@ -97,22 +97,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return userCredential;
 
         } catch (error: any) {
-            // Failsafe for dev environment: if admin login fails, create the user and try again.
-            if (error.code === 'auth/invalid-credential' && email === 'dipanjanswapnaprangon@gmail.com') {
-                try {
-                    await signup(email, '#Dipanjanpragon#', 'RDC Admin', 'Admin', 'Active');
-                    const newLoginAttempt = await signInWithEmailAndPassword(auth, email, '#Dipanjanpragon#');
+            // Failsafe for dev environment: if admin user does not exist, create it.
+            if (error.code === 'auth/user-not-found' && email === 'dipanjanswapnaprangon@gmail.com') {
+                 try {
+                    await signup(email, '#Dipanjanpragon123#', 'RDC Admin', 'Admin', 'Active');
+                    const newLoginAttempt = await signInWithEmailAndPassword(auth, email, '#Dipanjanpragon123#');
                     // Manually set user info here since the listener might be slow
                     const newInfo = await getUserByUid(newLoginAttempt.user.uid);
                     setUserInfo(newInfo);
                     setUser(newLoginAttempt.user);
                     return newLoginAttempt;
                 } catch (signupError: any) {
-                    if (signupError.code === 'auth/email-already-in-use') {
-                        // This is the most likely case: user exists, password was wrong.
-                        throw new Error("Admin account exists, but the password provided is incorrect.");
-                    }
-                    // For other signup errors (like weak password), re-throw the original login error.
+                    // If signup fails for some reason (e.g., email already exists but login failed with different error), just throw the original error
+                    console.error("Failsafe admin creation failed:", signupError);
                     throw error;
                 }
             }
