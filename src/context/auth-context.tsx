@@ -73,42 +73,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
     const login = async (email: string, pass: string, role?: User['role']) => {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-            const fetchedUserInfo = await getUserByUid(userCredential.user.uid);
-    
-            if (!fetchedUserInfo) {
-                await signOut(auth);
-                throw new Error("Your user profile could not be found. Please contact support.");
-            }
-    
-            if (role && fetchedUserInfo.role !== role) {
-                await signOut(auth);
-                throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role.`);
-            }
-    
-            if (fetchedUserInfo.status !== 'Active') {
-                await signOut(auth);
-                const statusMessage = fetchedUserInfo.status === 'Pending Approval'
-                    ? 'Your account is pending approval.'
-                    : 'Your account has been suspended.';
-                throw new Error(statusMessage);
-            }
+        const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+        let fetchedUserInfo = await getUserByUid(userCredential.user.uid);
+
+        // Special handling for the main admin account bootstrap
+        if (!fetchedUserInfo && email === 'dipanjanswapnaprangon@gmail.com') {
+            const newUserInfo: Omit<User, 'id'> = {
+                uid: userCredential.user.uid,
+                name: "RDC Admin",
+                email: email,
+                avatarUrl: `https://placehold.co/100x100.png?text=RA`,
+                role: 'Admin',
+                status: 'Active',
+                joined: serverTimestamp(),
+            };
+            await setDoc(doc(db, "users", userCredential.user.uid), newUserInfo);
             
-            return userCredential;
-        } catch (error: any) {
-            // Failsafe: If admin user doesn't exist, create it on first login attempt.
-            if (error.code === 'auth/user-not-found' && email === 'dipanjanswapnaprangon@gmail.com') {
-                try {
-                    const adminCredential = await signup(email, '#Dipanjanpragon123#', 'RDC Admin', 'Admin', 'Active');
-                    return adminCredential;
-                } catch (signupError: any) {
-                    throw new Error("Failed to create the initial admin account. This might happen if the email is already registered.");
-                }
-            }
-            // For any other error (like wrong password), re-throw it to be displayed on the UI.
-            throw error;
+            // Re-fetch user info after creating it
+            fetchedUserInfo = await getUserByUid(userCredential.user.uid);
         }
+
+        if (!fetchedUserInfo) {
+            await signOut(auth);
+            throw new Error("Your user profile could not be found. Please contact support.");
+        }
+
+        if (role && fetchedUserInfo.role !== role) {
+            await signOut(auth);
+            throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role or tab.`);
+        }
+
+        if (fetchedUserInfo.status !== 'Active') {
+            await signOut(auth);
+            const statusMessage = fetchedUserInfo.status === 'Pending Approval'
+                ? "Your account is pending admin approval. You will be notified once it's reviewed."
+                : 'Your account has been suspended.';
+            throw new Error(statusMessage);
+        }
+        
+        setUserInfo(fetchedUserInfo); // Set user info in context
+        // Redirection will be handled by the useEffect hook
+        return userCredential;
     };
 
     const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
