@@ -34,6 +34,8 @@ import {
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
+import { doc, writeBatch } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
@@ -76,13 +78,15 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       communityUrl: data.communityUrl || ''
     };
     
-    // Firestore does not accept 'undefined' values, so we remove the key if it's not set.
-    if (dataToSave.organizationId === undefined) {
-      delete (dataToSave as Partial<typeof dataToSave>).organizationId;
-    }
+    // Firestore does not accept 'undefined' values.
+    // Create a clean object by removing any keys that have undefined values.
+    const cleanDataToSave = Object.fromEntries(
+        Object.entries(dataToSave).filter(([_, v]) => v !== undefined)
+    );
 
     if (id) {
-      await updateCourse(id, dataToSave);
+      const courseRef = doc(db, 'courses', id);
+      await updateDoc(courseRef, cleanDataToSave);
       revalidatePath('/admin/courses');
       revalidatePath(`/admin/courses/builder/${id}`);
       revalidatePath('/teacher/courses');
@@ -92,7 +96,7 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       revalidatePath(`/courses/${id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
-      const newCourseRef = await addCourse(dataToSave);
+      const newCourseRef = await addDoc(collection(db, 'courses'), cleanDataToSave);
       revalidatePath('/admin/courses');
       revalidatePath('/teacher/courses');
       revalidatePath('/partner/courses');

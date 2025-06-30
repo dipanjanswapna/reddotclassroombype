@@ -101,15 +101,6 @@ type FaqItem = {
   answer: string;
 }
 
-type InstructorItem = {
-  id: string;
-  name: string;
-  title: string;
-  avatarUrl: string;
-  dataAiHint: string;
-  slug?: string;
-}
-
 type ClassRoutineItem = {
   id: string;
   day: string;
@@ -264,7 +255,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [instructors, setInstructors] = useState<InstructorItem[]>([]);
+  const [instructors, setInstructors] = useState<CourseInstructor[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
@@ -290,18 +281,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   }
   
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo && isNewCourse) {
         if (userRole === 'Partner') {
             getOrganizationByUserId(userInfo.uid).then(org => {
                 if (org?.id) setOrganizationId(org.id);
             });
         } else if (userRole === 'Teacher') {
             getInstructorByUid(userInfo.uid).then(inst => {
-                if (inst?.organizationId) setOrganizationId(inst.organizationId);
-                // If it's a new course, auto-add this teacher
-                if (isNewCourse && inst) {
+                if (inst) {
+                    if (inst.organizationId) setOrganizationId(inst.organizationId);
                     setInstructors([{
-                        id: inst.id || Date.now().toString(),
+                        id: inst.id!,
                         name: inst.name,
                         title: inst.title,
                         avatarUrl: inst.avatarUrl,
@@ -336,12 +326,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
                     setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
-                    setFaqs(courseData.faqs?.map(f => ({...f, id: f.id || Math.random().toString()})) || []);
-                    setInstructors(courseData.instructors?.map(i => ({...i, id: i.id || Math.random().toString()})) || []);
-                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: cr.id || Math.random().toString()})) || []);
-                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: a.id || Math.random().toString()})) || []);
+                    setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
+                    setInstructors(courseData.instructors || []);
+                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
-                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
+                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
                 } else {
                     notFound();
@@ -422,8 +412,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
-  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person' }]);
-  const updateInstructor = (id: string, field: keyof Omit<InstructorItem, 'id' | 'slug'>, value: string) => {
+  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person', slug: '' }]);
+  const updateInstructor = (id: string, field: keyof CourseInstructor, value: string) => {
       setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
@@ -456,7 +446,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, text } : qu) } : q));
   };
   const addOption = (quizId: string, questionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : q) } : q));
   };
   const removeOption = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
@@ -553,7 +543,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         whatYouWillLearn,
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest),
-        instructors: instructors.map(({ id, slug, ...rest }) => ({...rest, slug: slug || rest.name.toLowerCase().replace(/\s+/g, '-') })),
+        instructors: instructors.map(({ id, ...rest }) => ({...rest, id, slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-') })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest),
         includedArchivedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
@@ -580,7 +570,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           description: result.message 
       });
       if (status === 'Pending Approval' || (isNewCourse && result.courseId)) {
-        router.push(redirectPath.replace('/new', ''));
+        router.push(redirectPath);
       }
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -1071,5 +1061,3 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     </div>
   );
 }
-
-    
