@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, X } from 'lucide-react';
 import React from 'react';
-import { Organization } from '@/lib/mock-data';
+import { Organization } from '@/lib/types';
 
 type CourseFilterBarProps = {
   categories: string[];
@@ -92,7 +92,7 @@ export function CourseFilterBar({ categories, subCategories, providers }: Course
           <DropdownMenuContent align="start">
             <DropdownMenuItem onSelect={() => handleSelect('provider', 'all')}>All Providers</DropdownMenuItem>
             {providers.map((provider) => (
-              <DropdownMenuItem key={provider.id} onSelect={() => handleSelect('provider', provider.id)}>
+              <DropdownMenuItem key={provider.id} onSelect={() => handleSelect('provider', provider.id!)}>
                 {provider.name}
               </DropdownMenuItem>
             ))}
