@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -125,272 +126,300 @@ export default function Home() {
     <div className="flex flex-col bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} />
       
-      <section className="bg-secondary/50" aria-labelledby="hero-heading">
-        <div className="container mx-auto px-4">
-          <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection.title[language]}</h2>
-          <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
-           <div>
-            <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
-             <Carousel opts={{ align: 'start', loop: true }}>
-                <CarouselContent>
-                  {liveCourses.map((course) => (
-                    <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
-                      <div className="p-1">
-                        <CourseCard {...course} />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
-                <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
-            </Carousel>
-           </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="teachers-heading">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-              <div>
-                  <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection.title[language]}</h2>
-                  <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection.subtitle[language]}</p>
-              </div>
-              <Button asChild variant="outline">
-                  <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
-              </Button>
-          </div>
-          <Carousel opts={{ align: 'start' }} className="w-full">
-            <CarouselContent className="-ml-4">
-              {featuredInstructors.map((instructor) => (
-                <CarouselItem key={instructor.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
-                   <Link href={`/teachers/${instructor.slug}`} className="block group text-center">
-                    <div className="relative overflow-hidden rounded-lg">
-                      <Image
-                        src={instructor.avatarUrl}
-                        alt={instructor.name}
-                        width={250}
-                        height={300}
-                        className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint={instructor.dataAiHint}
-                      />
-                      <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
-                        <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
-                        <p className="text-xs opacity-80 truncate">{instructor.title}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="text-foreground -left-4 hidden sm:flex" />
-            <CarouselNext className="text-foreground -right-4 hidden sm:flex" />
-          </Carousel>
-        </div>
-      </section>
-
-      <section aria-labelledby="video-section-heading">
-        <div className="container mx-auto px-4 text-center">
-            <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description[language]}</p>
-            <div className="grid md:grid-cols-2 gap-8">
-                {homepageConfig.videoSection.videos.map((video, index) => (
-                  <div key={index} className="relative rounded-lg overflow-hidden group shadow-lg">
-                      <Image src={video.imageUrl} alt={video.alt} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" data-ai-hint={video.dataAiHint}/>
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                          <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
-                      </div>
-                  </div>
-                ))}
-            </div>
-            <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-              <Link href="/courses">{homepageConfig.videoSection.buttonText[language]}</Link>
-            </Button>
-        </div>
-      </section>
-
-      <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
-          <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection.badge[language]}</Badge>
-              <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection.title[language]}</h2>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
-              </div>
-          </div>
-      </section>
-
-      <section aria-labelledby="masterclass-heading">
-          <div className="container mx-auto px-4 text-center">
-              <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
-               <Carousel opts={{ align: 'start', loop: true }}>
-                <CarouselContent>
-                  {masterClasses.map((course) => (
-                    <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
-                      <div className="p-1">
-                        <CourseCard {...course} />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
-                <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
+      {homepageConfig.journeySection.display && (
+        <section className="bg-secondary/50" aria-labelledby="hero-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection.title[language]}</h2>
+            <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
+            <div>
+              <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
+              <Carousel opts={{ align: 'start', loop: true }}>
+                  <CarouselContent>
+                    {liveCourses.map((course) => (
+                      <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
+                        <div className="p-1">
+                          <CourseCard {...course} />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
+                  <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
               </Carousel>
-              <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
-              </Button>
-          </div>
-      </section>
-
-      <section className="bg-secondary/50" aria-labelledby="admission-heading">
-          <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection.badge[language]}</Badge>
-              <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection.title[language]}</h2>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
-              </div>
-               <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=Admission">{homepageConfig.admissionSection.buttonText[language]}</Link>
-               </Button>
-          </div>
-      </section>
-      
-      <section aria-labelledby="job-prep-heading">
-          <div className="container mx-auto px-4 text-center">
-              <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection.badge[language]}</Badge>
-              <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection.title[language]}</h2>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
-              </div>
-               <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection.buttonText[language]}</Link>
-              </Button>
-          </div>
-      </section>
-
-      <section className="bg-secondary/50" aria-labelledby="why-choose-us-heading">
-        <div className="container mx-auto px-4">
-          <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
-            {homepageConfig.whyChooseUs.title[language]}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            {homepageConfig.whyChooseUs.features.map((feature, index) => (
-              <div key={index} className="flex flex-col items-center p-6 bg-card rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10">
-                  <WhyChooseUsIcon icon={iconMap[feature.icon] || Trophy} />
-                </div>
-                <h3 className="font-headline text-xl font-semibold mb-2">{feature.title[language]}</h3>
-                <p className="text-muted-foreground">{feature.description[language]}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="collaborations-heading">
-        <div className="container mx-auto px-4">
-          <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
-            {homepageConfig.collaborations.title[language]}
-          </h2>
-          <CollaborationsCarousel items={homepageConfig.collaborations.items} organizations={organizations} />
-        </div>
-      </section>
-
-      <section className="bg-secondary/30" aria-labelledby="social-media-heading">
-        <div className="container mx-auto px-4 text-center">
-          <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
-            {homepageConfig.socialMediaSection.title[language]}
-          </h2>
-          <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
-            {homepageConfig.socialMediaSection.description[language]}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {homepageConfig.socialMediaSection.channels.map((channel) => (
-              <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-card">
-                <CardHeader className="p-0">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
-                      <SocialIcon platform={channel.platform} />
-                    </div>
-                    <CardTitle className="text-lg">{typeof channel.name === 'object' ? channel.name[language] : channel.name}</CardTitle>
-                  </div>
-                  <CardDescription>{channel.handle}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow space-y-4 pt-4">
-                  <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-                    {channel.stat1_value && (
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        <span>{channel.stat1_value} {typeof channel.stat1_label === 'object' ? channel.stat1_label[language] : channel.stat1_label}</span>
-                      </div>
-                    )}
-                    {channel.stat2_value && (
-                       <div className="flex items-center gap-1">
-                        {channel.platform === 'YouTube' ? <Video className="w-4 h-4" /> : <ThumbsUp className="w-4 h-4" />}
-                        <span>{channel.stat2_value} {typeof channel.stat2_label === 'object' ? channel.stat2_label[language] : channel.stat2_label}</span>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
-                </CardContent>
-                <CardFooter className="p-0 w-full">
-                  <Button asChild className="w-full" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
-                    <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
-                      <span className="ml-2">{typeof channel.ctaText === 'object' ? channel.ctaText[language] : channel.ctaText}</span>
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary/50" aria-labelledby="notes-banner-heading">
-        <div className="container mx-auto px-4">
-          <Card className="shadow-lg">
-            <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className='text-center md:text-left'>
-                    <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner.title[language]}</h3>
-                    <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner.description[language]}</p>
-                </div>
-                <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner.buttonText[language]}</Button>
             </div>
-          </Card>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
-        <div className="container mx-auto px-4 text-center">
-            <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSectionTitle[language]}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {homepageConfig.stats.map((stat, index) => (
-                    <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                        <p className="font-headline text-5xl font-bold">{stat.value}</p>
-                        <p className="mt-2 text-lg opacity-90">{stat.label[language]}</p>
-                    </div>
+      {homepageConfig.teachersSection.display && (
+        <section aria-labelledby="teachers-heading">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection.title[language]}</h2>
+                    <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection.subtitle[language]}</p>
+                </div>
+                <Button asChild variant="outline">
+                    <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
+                </Button>
+            </div>
+            <Carousel opts={{ align: 'start' }} className="w-full">
+              <CarouselContent className="-ml-4">
+                {featuredInstructors.map((instructor) => (
+                  <CarouselItem key={instructor.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
+                    <Link href={`/teachers/${instructor.slug}`} className="block group text-center">
+                      <div className="relative overflow-hidden rounded-lg">
+                        <Image
+                          src={instructor.avatarUrl}
+                          alt={instructor.name}
+                          width={250}
+                          height={300}
+                          className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
+                          data-ai-hint={instructor.dataAiHint}
+                        />
+                        <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
+                          <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
+                          <p className="text-xs opacity-80 truncate">{instructor.title}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  </CarouselItem>
                 ))}
-            </div>
-        </div>
-      </section>
+              </CarouselContent>
+              <CarouselPrevious className="text-foreground -left-4 hidden sm:flex" />
+              <CarouselNext className="text-foreground -right-4 hidden sm:flex" />
+            </Carousel>
+          </div>
+        </section>
+      )}
 
-      <section aria-labelledby="app-promo-heading">
-          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-              <div className="text-center md:text-left">
-                <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">{homepageConfig.appPromo.title[language]}</h2>
-                <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo.description[language]}</p>
-                <div className="flex justify-center md:justify-start gap-4 mt-8">
-                    <Link href={homepageConfig.appPromo.googlePlayUrl}>
-                        <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
-                    </Link>
-                    <Link href={homepageConfig.appPromo.appStoreUrl}>
-                        <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
-                    </Link>
-                </div>
+      {homepageConfig.videoSection.display && (
+        <section aria-labelledby="video-section-heading">
+          <div className="container mx-auto px-4 text-center">
+              <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
+              <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description[language]}</p>
+              <div className="grid md:grid-cols-2 gap-8">
+                  {homepageConfig.videoSection.videos.map((video, index) => (
+                    <div key={index} className="relative rounded-lg overflow-hidden group shadow-lg">
+                        <Image src={video.imageUrl} alt={video.alt} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" data-ai-hint={video.dataAiHint}/>
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                        </div>
+                    </div>
+                  ))}
               </div>
-              <div className="flex justify-center">
-                  <Image src={homepageConfig.appPromo.imageUrl} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint="mobile app screenshot"/>
+              <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                <Link href="/courses">{homepageConfig.videoSection.buttonText[language]}</Link>
+              </Button>
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.sscHscSection.display && (
+        <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
+            <div className="container mx-auto px-4 text-center">
+                <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection.badge[language]}</Badge>
+                <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection.title[language]}</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                </div>
+            </div>
+        </section>
+      )}
+
+      {homepageConfig.masterclassSection.display && (
+        <section aria-labelledby="masterclass-heading">
+            <div className="container mx-auto px-4 text-center">
+                <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
+                <Carousel opts={{ align: 'start', loop: true }}>
+                  <CarouselContent>
+                    {masterClasses.map((course) => (
+                      <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
+                        <div className="p-1">
+                          <CourseCard {...course} />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
+                  <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
+                </Carousel>
+                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
+                </Button>
+            </div>
+        </section>
+      )}
+
+      {homepageConfig.admissionSection.display && (
+        <section className="bg-secondary/50" aria-labelledby="admission-heading">
+            <div className="container mx-auto px-4 text-center">
+                <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection.badge[language]}</Badge>
+                <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection.title[language]}</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                </div>
+                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Link href="/courses?category=Admission">{homepageConfig.admissionSection.buttonText[language]}</Link>
+                </Button>
+            </div>
+        </section>
+      )}
+      
+      {homepageConfig.jobPrepSection.display && (
+        <section aria-labelledby="job-prep-heading">
+            <div className="container mx-auto px-4 text-center">
+                <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection.badge[language]}</Badge>
+                <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection.title[language]}</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                </div>
+                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection.buttonText[language]}</Link>
+                </Button>
+            </div>
+        </section>
+      )}
+
+      {homepageConfig.whyChooseUs.display && (
+        <section className="bg-secondary/50" aria-labelledby="why-choose-us-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              {homepageConfig.whyChooseUs.title[language]}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              {homepageConfig.whyChooseUs.features.map((feature, index) => (
+                <div key={index} className="flex flex-col items-center p-6 bg-card rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10">
+                    <WhyChooseUsIcon icon={iconMap[feature.icon] || Trophy} />
+                  </div>
+                  <h3 className="font-headline text-xl font-semibold mb-2">{feature.title[language]}</h3>
+                  <p className="text-muted-foreground">{feature.description[language]}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.collaborations.display && (
+        <section aria-labelledby="collaborations-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              {homepageConfig.collaborations.title[language]}
+            </h2>
+            <CollaborationsCarousel items={homepageConfig.collaborations.items} organizations={organizations} />
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.socialMediaSection.display && (
+        <section className="bg-secondary/30" aria-labelledby="social-media-heading">
+          <div className="container mx-auto px-4 text-center">
+            <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
+              {homepageConfig.socialMediaSection.title[language]}
+            </h2>
+            <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
+              {homepageConfig.socialMediaSection.description[language]}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {homepageConfig.socialMediaSection.channels.map((channel) => (
+                <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-card">
+                  <CardHeader className="p-0">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
+                        <SocialIcon platform={channel.platform} />
+                      </div>
+                      <CardTitle className="text-lg">{typeof channel.name === 'object' ? channel.name[language] : channel.name}</CardTitle>
+                    </div>
+                    <CardDescription>{channel.handle}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow space-y-4 pt-4">
+                    <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+                      {channel.stat1_value && (
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>{channel.stat1_value} {typeof channel.stat1_label === 'object' ? channel.stat1_label[language] : channel.stat1_label}</span>
+                        </div>
+                      )}
+                      {channel.stat2_value && (
+                        <div className="flex items-center gap-1">
+                          {channel.platform === 'YouTube' ? <Video className="w-4 h-4" /> : <ThumbsUp className="w-4 h-4" />}
+                          <span>{channel.stat2_value} {typeof channel.stat2_label === 'object' ? channel.stat2_label[language] : channel.stat2_label}</span>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
+                  </CardContent>
+                  <CardFooter className="p-0 w-full">
+                    <Button asChild className="w-full" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
+                      <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
+                        <span className="ml-2">{typeof channel.ctaText === 'object' ? channel.ctaText[language] : channel.ctaText}</span>
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.notesBanner.display && (
+        <section className="bg-secondary/50" aria-labelledby="notes-banner-heading">
+          <div className="container mx-auto px-4">
+            <Card className="shadow-lg">
+              <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className='text-center md:text-left'>
+                      <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner.title[language]}</h3>
+                      <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner.description[language]}</p>
+                  </div>
+                  <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner.buttonText[language]}</Button>
+              </div>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.statsSection.display && (
+        <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
+          <div className="container mx-auto px-4 text-center">
+              <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection.title[language]}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {homepageConfig.statsSection.stats.map((stat, index) => (
+                      <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
+                          <p className="font-headline text-5xl font-bold">{stat.value}</p>
+                          <p className="mt-2 text-lg opacity-90">{stat.label[language]}</p>
+                      </div>
+                  ))}
               </div>
           </div>
-      </section>
+        </section>
+      )}
+
+      {homepageConfig.appPromo.display && (
+        <section aria-labelledby="app-promo-heading">
+            <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+                <div className="text-center md:text-left">
+                  <h2 id="app-promo-heading" className="font-headline text-4xl font-bold">{homepageConfig.appPromo.title[language]}</h2>
+                  <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo.description[language]}</p>
+                  <div className="flex justify-center md:justify-start gap-4 mt-8">
+                      <Link href={homepageConfig.appPromo.googlePlayUrl}>
+                          <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                      </Link>
+                      <Link href={homepageConfig.appPromo.appStoreUrl}>
+                          <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                      </Link>
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                    <Image src={homepageConfig.appPromo.imageUrl} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint="mobile app screenshot"/>
+                </div>
+            </div>
+        </section>
+      )}
     </div>
   );
 }
+
+    

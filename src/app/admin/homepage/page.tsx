@@ -15,6 +15,8 @@ import { HomepageConfig } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -29,9 +31,7 @@ export default function AdminHomepageManagementPage() {
     async function fetchConfig() {
       try {
         const fetchedConfig = await getHomepageConfig();
-        if (fetchedConfig) {
-          setConfig(fetchedConfig);
-        }
+        setConfig(fetchedConfig);
       } catch (error) {
         console.error("Error fetching homepage config:", error);
         toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
@@ -55,51 +55,6 @@ export default function AdminHomepageManagementPage() {
         toast({ title: 'Error', description: result.message, variant: 'destructive'});
     }
     setIsSaving(false);
-  };
-
-  const handleInputChange = (section: keyof HomepageConfig, key: string, value: any, index?: number, subKey?: string) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
-      const sectionData = newConfig[section] as any;
-
-      if (Array.isArray(sectionData) && index !== undefined && sectionData[index]) {
-        if (subKey) {
-          sectionData[index][key] = { ...sectionData[index][key], [subKey]: value };
-        } else {
-          sectionData[index][key] = value;
-        }
-      } else if (typeof sectionData === 'object' && !Array.isArray(sectionData) && sectionData !== null) {
-        if (key === 'items' && Array.isArray(sectionData.items) && sectionData.items[index!]) {
-          if (subKey) {
-            sectionData.items[index!][subKey] = value;
-          }
-        } else {
-          newConfig[section][key] = value;
-        }
-      }
-      return newConfig;
-    });
-  };
-
-   const handleCollaborationChange = (id: number, field: string, value: string, subField?: string) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const newCollaborations = { ...prev.collaborations };
-        newCollaborations.items = newCollaborations.items.map(item => {
-            if (item.id === id) {
-                const updatedItem = { ...item };
-                if (subField === 'cta' || subField === 'socials') {
-                    (updatedItem as any)[subField][field] = value;
-                } else {
-                    (updatedItem as any)[field] = value;
-                }
-                return updatedItem;
-            }
-            return item;
-        });
-        return { ...prev, collaborations: newCollaborations };
-    });
   };
 
   const handleStringArrayChange = (section: CourseIdSections, value: string) => {
@@ -131,120 +86,56 @@ export default function AdminHomepageManagementPage() {
       ]
     }) : null);
   };
+
   const removeHeroBanner = (id: number) => {
     setConfig(prev => prev ? ({
       ...prev,
       heroBanners: prev.heroBanners.filter(banner => banner.id !== id)
     }) : null);
   };
-
-  const addStat = () => {
-      setConfig(prev => prev ? ({
-          ...prev,
-          stats: [
-              ...prev.stats,
-              { value: '', label: {en: '', bn: ''} }
-          ]
-      }) : null)
-  };
-  const removeStat = (index: number) => {
-      setConfig(prev => prev ? ({
-          ...prev,
-          stats: prev.stats.filter((_, i) => i !== index)
-      }) : null);
-  };
   
-  const addCollaboration = () => {
-    setConfig(prev => prev ? ({
-      ...prev,
-      collaborations: {
-        ...prev.collaborations,
-        items: [
-          ...prev.collaborations.items,
-          {
-            id: Date.now(),
-            name: 'New Partner',
-            type: 'organization',
-            logoUrl: 'https://placehold.co/150x150.png',
-            dataAiHint: 'logo',
-            description: {en: '', bn: ''},
-            cta: { text: {en: 'View Website', bn: 'ওয়েবসাইট দেখুন'}, href: '#' },
-            socials: { facebook: '', youtube: '' }
-          }
-        ]
-      }
-    }) : null);
-  };
-
-  const removeCollaboration = (id: number) => {
-    setConfig(prev => prev ? ({
-      ...prev,
-      collaborations: {
-        ...prev.collaborations,
-        items: prev.collaborations.items.filter(item => item.id !== id)
-      }
-    }) : null);
-  };
-
-  const handleSocialSectionChange = (field: 'title' | 'description', value: string, lang: 'en' | 'bn') => {
-    setConfig(prev => prev ? ({
-      ...prev,
-      socialMediaSection: {
-        ...prev.socialMediaSection,
-        [field]: { ...prev.socialMediaSection[field], [lang]: value }
-      }
-    }) : null);
-  };
-  
-  const handleSocialChannelChange = (index: number, field: keyof SocialChannel, value: string) => {
+  const handleHeroBannerChange = (index: number, field: 'imageUrl' | 'href', value: string) => {
     setConfig(prev => {
-      if (!prev) return null;
-      const newChannels = [...prev.socialMediaSection.channels];
-      const channelToUpdate = { ...newChannels[index], [field]: value };
-      newChannels[index] = channelToUpdate;
-      return {
-        ...prev,
-        socialMediaSection: {
-          ...prev.socialMediaSection,
-          channels: newChannels
-        }
-      };
+        if (!prev) return null;
+        const newBanners = [...prev.heroBanners];
+        const bannerToUpdate = { ...newBanners[index], [field]: value };
+        newBanners[index] = bannerToUpdate;
+        return { ...prev, heroBanners: newBanners };
     });
   };
   
-  const addSocialChannel = () => {
-      setConfig(prev => prev ? ({
-          ...prev,
-          socialMediaSection: {
-              ...prev.socialMediaSection,
-              channels: [
-                  ...prev.socialMediaSection.channels,
-                  {
-                    id: Date.now(),
-                    platform: 'Facebook Page',
-                    name: 'New Page',
-                    handle: '',
-                    stat1_value: '0',
-                    stat1_label: 'likes',
-                    stat2_value: '0',
-                    stat2_label: 'followers',
-                    description: 'New description',
-                    ctaText: 'Follow Page',
-                    ctaUrl: '#',
-                  } as SocialChannel
-              ]
-          }
-      }) : null);
+  const handleAppPromoChange = (key: keyof HomepageConfig['appPromo'], value: any) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        return { ...prev, appPromo: { ...prev.appPromo, [key]: value } };
+    });
   };
-  
-  const removeSocialChannel = (id: number) => {
-      setConfig(prev => prev ? ({
-          ...prev,
-          socialMediaSection: {
-              ...prev.socialMediaSection,
-              channels: prev.socialMediaSection.channels.filter(c => c.id !== id)
-          }
-      }) : null);
+
+  const sections = [
+    { key: 'journeySection', label: 'Journey Section (Live Courses)' },
+    { key: 'teachersSection', label: 'Teachers Section' },
+    { key: 'videoSection', label: 'Video Section' },
+    { key: 'sscHscSection', label: 'SSC & HSC Section' },
+    { key: 'masterclassSection', label: 'Masterclass Section' },
+    { key: 'admissionSection', label: 'Admission Section' },
+    { key: 'jobPrepSection', label: 'Job Prep Section' },
+    { key: 'whyChooseUs', label: 'Why Choose Us Section' },
+    { key: 'collaborations', label: 'Collaborations Section' },
+    { key: 'socialMediaSection', label: 'Social Media Section' },
+    { key: 'notesBanner', label: 'Notes Banner' },
+    { key: 'statsSection', label: 'Stats Section' },
+    { key: 'appPromo', label: 'App Promo Section' },
+  ] as const;
+
+  const handleSectionToggle = (sectionKey: typeof sections[number]['key'], value: boolean) => {
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = { ...prevConfig };
+      if (newConfig[sectionKey]) {
+        (newConfig[sectionKey] as any).display = value;
+      }
+      return newConfig;
+    });
   };
 
   if (loading) {
@@ -282,11 +173,11 @@ export default function AdminHomepageManagementPage() {
                   <h4 className="font-semibold">Banner {index + 1}</h4>
                    <div className="space-y-1">
                       <Label>Image URL</Label>
-                      <Input value={banner.imageUrl} onChange={(e) => handleInputChange('heroBanners', 'imageUrl', e.target.value, index)} />
+                      <Input value={banner.imageUrl} onChange={(e) => handleHeroBannerChange(index, 'imageUrl', e.target.value)} />
                     </div>
                      <div className="space-y-1">
                       <Label>Link URL (e.g., /courses/1)</Label>
-                      <Input value={banner.href} onChange={(e) => handleInputChange('heroBanners', 'href', e.target.value, index)} />
+                      <Input value={banner.href} onChange={(e) => handleHeroBannerChange(index, 'href', e.target.value)} />
                     </div>
                 </div>
               ))}
@@ -347,22 +238,43 @@ export default function AdminHomepageManagementPage() {
         </div>
 
         <div className="lg:col-span-1 space-y-8">
+           <Card>
+                <CardHeader>
+                <CardTitle>Section Visibility</CardTitle>
+                <CardDescription>Toggle the visibility of sections on the homepage.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                {sections.map(section => (
+                    <div key={section.key} className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <Label htmlFor={section.key} className="text-sm">{section.label}</Label>
+                    </div>
+                    <Switch
+                        id={section.key}
+                        checked={(config as any)[section.key]?.display ?? true}
+                        onCheckedChange={(value) => handleSectionToggle(section.key, value)}
+                    />
+                    </div>
+                ))}
+                </CardContent>
+            </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>App Promo Section</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="space-y-1">
-                <Label>Title</Label>
-                <Input value={config.appPromo.title.bn} onChange={(e) => handleInputChange('appPromo', 'title', { ...config.appPromo.title, bn: e.target.value })} />
+                <Label>Title (Bangla)</Label>
+                <Input value={config.appPromo.title.bn} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo.title, bn: e.target.value })} />
               </div>
               <div className="space-y-1">
-                <Label>Description</Label>
-                <Textarea value={config.appPromo.description.bn} onChange={(e) => handleInputChange('appPromo', 'description', { ...config.appPromo.description, bn: e.target.value })} />
+                <Label>Description (Bangla)</Label>
+                <Textarea value={config.appPromo.description.bn} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo.description, bn: e.target.value })} />
               </div>
               <div className="space-y-1">
                 <Label>App Screenshot Image URL</Label>
-                <Input value={config.appPromo.imageUrl} onChange={(e) => handleInputChange('appPromo', 'imageUrl', e.target.value )} />
+                <Input value={config.appPromo.imageUrl} onChange={(e) => handleAppPromoChange('imageUrl', e.target.value )} />
               </div>
             </CardContent>
           </Card>
@@ -371,3 +283,5 @@ export default function AdminHomepageManagementPage() {
     </div>
   );
 }
+
+    

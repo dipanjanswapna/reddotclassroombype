@@ -1,3 +1,4 @@
+
 import { db } from './config';
 import {
   collection,
@@ -112,18 +113,21 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     { id: 3, href: "/courses/3", imageUrl: "https://placehold.co/800x450.png", alt: "IELTS Course", dataAiHint: "travel language" },
   ],
   journeySection: {
+    display: true,
     title: { bn: "আপনার শেখার যাত্রা শুরু করুন", en: "Start Your Learning Journey" },
     subtitle: { bn: "আমাদের লাইভ কোর্সগুলোতে জয়েন করে আপনার একাডেমিক ও স্কিল ডেভেলপমেন্টের পথে এগিয়ে যান।", en: "Join our live courses to advance your academic and skill development path." },
     courseTitle: { bn: "লাইভ কোর্সসমূহ", en: "Live Courses" },
   },
   liveCoursesIds: ["1", "3", "4"],
   teachersSection: {
+    display: true,
     title: { bn: "আমাদের অভিজ্ঞ শিক্ষকগণ", en: "Our Experienced Teachers" },
     subtitle: { bn: "দেশের সেরা শিক্ষকদের সাথে আপনার প্রস্তুতিকে নিয়ে যান এক নতুন মাত্রায়।", en: "Take your preparation to a new level with the best teachers in the country." },
     buttonText: { bn: "সকল শিক্ষক", en: "All Teachers" },
     instructorIds: ["ins-ja", "ins-fa", "ins-ms", "ins-nh", "ins-si"],
   },
   videoSection: {
+    display: true,
     title: { bn: "কেন হাজারো শিক্ষার্থী RDC-কে বেছে নিয়েছে?", en: "Why have thousands of students chosen RDC?" },
     description: { bn: "আমাদের শিক্ষার্থীদের সফলতার গল্পগুলো দেখুন এবং জানুন কীভাবে RDC তাদের স্বপ্ন পূরণে সহায়তা করেছে।", en: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams." },
     buttonText: { bn: "সকল কোর্স দেখুন", en: "View All Courses" },
@@ -133,28 +137,33 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     ],
   },
   sscHscSection: {
+    display: true,
     badge: { bn: "SSC ও HSC", en: "SSC & HSC" },
     title: { bn: "SSC ও HSC প্রস্তুতি", en: "SSC & HSC Preparation" },
   },
   sscHscCourseIds: ["1", "4"],
   masterclassSection: {
+    display: true,
     title: { bn: "ফ্রি মাস্টারক্লাস", en: "Free Masterclasses" },
     buttonText: { bn: "সকল মাস্টারক্লাস দেখুন", en: "View All Masterclasses" },
   },
   masterClassesIds: [],
   admissionSection: {
+    display: true,
     badge: { bn: "ভর্তি পরীক্ষা", en: "Admission Test" },
     title: { bn: "অ্যাডমিশন টেস্ট প্রস্তুতি", en: "Admission Test Preparation" },
     buttonText: { bn: "সকল অ্যাডমিশন কোর্স", en: "All Admission Courses" },
   },
   admissionCoursesIds: ["2"],
   jobPrepSection: {
+    display: true,
     badge: { bn: "জব প্রস্তুতি", en: "Job Prep" },
     title: { bn: "চাকরির প্রস্তুতি", en: "Job Preparation" },
     buttonText: { bn: "সকল জব কোর্স", en: "All Job Courses" },
   },
   jobCoursesIds: [],
   whyChooseUs: {
+    display: true,
     title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
     features: [
       { icon: "Trophy", title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" }, description: { bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education." } },
@@ -163,12 +172,14 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     ],
   },
   collaborations: {
+    display: true,
     title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
     items: [
       { id: 1, name: "MediShark", type: "organization", logoUrl: "https://i.imgur.com/v1sB0L7.png", dataAiHint: "shark logo", description: { bn: "মেডিকেল ভর্তি প্রস্তুতির সেরা ঠিকানা।", en: "The best place for medical admission preparation." }, cta: { text: { bn: "ওয়েবসাইট দেখুন", en: "View Website" }, href: "#" }, socials: { facebook: "#", youtube: "#" } }
     ],
   },
   socialMediaSection: {
+    display: true,
     title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
     description: { bn: "আমাদের সোশ্যাল মিডিয়া প্ল্যাটফর্মগুলোতে যোগ দিয়ে প্রতিদিন নতুন কিছু শিখুন এবং আপডেটেড থাকুন।", en: "Join our social media platforms to learn something new every day and stay updated." },
     channels: [
@@ -178,17 +189,22 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     ],
   },
   notesBanner: {
+    display: true,
     title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes & Lecture Sheets" },
     description: { bn: "আমাদের ওয়েবসাইটে থাকা ফ্রি রিসোর্সগুলো আপনার প্রস্তুতিকে আরও সহজ করে তুলবে।", en: "The free resources on our website will make your preparation easier." },
     buttonText: { bn: "নোটস দেখুন", en: "View Notes" },
   },
-  statsSectionTitle: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
-  stats: [
-    { value: "10M+", label: { bn: "শিক্ষার্থী", en: "Students" } },
-    { value: "5k+", label: { bn: "ভিডিও লেকচার", en: "Video Lectures" } },
-    { value: "2k+", label: { bn: "কুইজ ও মডেল টেস্ট", en: "Quizzes & Model Tests" } },
-  ],
+  statsSection: {
+    display: true,
+    title: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
+    stats: [
+      { value: "10M+", label: { bn: "শিক্ষার্থী", en: "Students" } },
+      { value: "5k+", label: { bn: "ভিডিও লেকচার", en: "Video Lectures" } },
+      { value: "2k+", label: { bn: "কুইজ ও মডেল টেস্ট", en: "Quizzes & Model Tests" } },
+    ],
+  },
   appPromo: {
+    display: true,
     title: { bn: "ডাউনলোড করুন RDC অ্যাপ", en: "Download the RDC App" },
     description: { bn: "যেকোনো জায়গা থেকে, যেকোনো সময়ে পড়াশোনা করুন আমাদের অ্যাপের মাধ্যমে। সেরা সব ফিচার আপনার শেখার অভিজ্ঞতাকে করবে আরও সহজ ও আনন্দদায়ক।", en: "Study from anywhere, anytime with our app. The best features will make your learning experience easier and more enjoyable." },
     googlePlayUrl: "#",
@@ -216,7 +232,27 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return { id: docSnap.id, ...docSnap.data() } as HomepageConfig;
+    const data = docSnap.data();
+    // Merge with default to ensure all keys exist
+    const mergedConfig = {
+        ...defaultHomepageConfig,
+        ...data,
+        // Deep merge for nested objects if necessary
+        journeySection: { ...defaultHomepageConfig.journeySection, ...data.journeySection },
+        teachersSection: { ...defaultHomepageConfig.teachersSection, ...data.teachersSection },
+        videoSection: { ...defaultHomepageConfig.videoSection, ...data.videoSection },
+        sscHscSection: { ...defaultHomepageConfig.sscHscSection, ...data.sscHscSection },
+        masterclassSection: { ...defaultHomepageConfig.masterclassSection, ...data.masterclassSection },
+        admissionSection: { ...defaultHomepageConfig.admissionSection, ...data.admissionSection },
+        jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
+        whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
+        collaborations: { ...defaultHomepageConfig.collaborations, ...data.collaborations },
+        socialMediaSection: { ...defaultHomepageConfig.socialMediaSection, ...data.socialMediaSection },
+        notesBanner: { ...defaultHomepageConfig.notesBanner, ...data.notesBanner },
+        statsSection: { ...defaultHomepageConfig.statsSection, ...data.statsSection },
+        appPromo: { ...defaultHomepageConfig.appPromo, ...data.appPromo },
+    };
+    return { id: docSnap.id, ...mergedConfig } as HomepageConfig;
   }
   
   // If document doesn't exist, create it with default values
@@ -249,3 +285,5 @@ export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null
 export const addPromoCode = (promoCode: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), promoCode);
 export const updatePromoCode = (id: string, promoCode: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), promoCode);
 export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
+
+    

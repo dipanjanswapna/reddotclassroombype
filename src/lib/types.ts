@@ -1,3 +1,4 @@
+
 import { Timestamp } from "firebase/firestore";
 
 export type LiveClass = {
@@ -256,18 +257,21 @@ export type HomepageConfig = {
     dataAiHint: string;
   }[];
   journeySection: {
+    display: boolean;
     title: { [key: string]: string };
     subtitle: { [key: string]: string };
     courseTitle: { [key: string]: string };
   };
   liveCoursesIds: string[];
   teachersSection: {
+    display: boolean;
     title: { [key: string]: string };
     subtitle: { [key: string]: string };
     buttonText: { [key: string]: string };
     instructorIds: string[];
   };
   videoSection: {
+    display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     buttonText: { [key: string]: string };
@@ -279,28 +283,33 @@ export type HomepageConfig = {
     }[];
   };
   sscHscSection: {
+    display: boolean;
     badge: { [key: string]: string };
     title: { [key: string]: string };
   };
   sscHscCourseIds: string[];
   masterclassSection: {
+    display: boolean;
     title: { [key: string]: string };
     buttonText: { [key: string]: string };
   };
   masterClassesIds: string[];
   admissionSection: {
+    display: boolean;
     badge: { [key: string]: string };
     title: { [key: string]: string };
     buttonText: { [key: string]: string };
   };
   admissionCoursesIds: string[];
   jobPrepSection: {
+    display: boolean;
     badge: { [key: string]: string };
     title: { [key: string]: string };
     buttonText: { [key: string]: string };
   };
   jobCoursesIds: string[];
   whyChooseUs: {
+    display: boolean;
     title: { [key: string]: string };
     features: {
       icon: string;
@@ -309,10 +318,12 @@ export type HomepageConfig = {
     }[];
   };
   collaborations: {
+    display: boolean;
     title: { [key: string]: string };
     items: CollaborationItem[];
   };
   socialMediaSection: {
+    display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     channels: {
@@ -330,16 +341,21 @@ export type HomepageConfig = {
     }[];
   };
   notesBanner: {
+    display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     buttonText: { [key: string]: string };
   };
-  statsSectionTitle: { [key: string]: string };
-  stats: {
-    value: string;
-    label: { [key: string]: string };
-  }[];
+  statsSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    stats: {
+      value: string;
+      label: { [key: string]: string };
+    }[];
+  };
   appPromo: {
+    display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     googlePlayUrl: string;
@@ -348,3 +364,5 @@ export type HomepageConfig = {
     dataAiHint: string;
   };
 };
+
+    
