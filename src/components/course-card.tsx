@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -11,13 +12,19 @@ import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toggleWishlistAction } from "@/app/actions";
+import { useToast } from "./ui/use-toast";
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
 };
 
+// Mock user ID for demo purposes. In a real app, this would come from an auth context.
+const currentUserId = 'usr_stud_001';
+
 export function CourseCard(props: CourseCardProps) {
   const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain, isWishlisted: initialIsWishlisted } = props;
+  const { toast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted || false);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
 
@@ -26,10 +33,36 @@ export function CourseCard(props: CourseCardProps) {
       getOrganizations().then(setOrganizations).catch(console.error);
     }
   }, [organizationId]);
+  
+  // Sync with prop changes
+  useEffect(() => {
+    setIsWishlisted(initialIsWishlisted || false);
+  }, [initialIsWishlisted]);
+
 
   if (!id || !title || !imageUrl) {
     return null;
   }
+  
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!currentUserId) return;
+
+    // Optimistically update UI
+    setIsWishlisted(!isWishlisted);
+
+    const result = await toggleWishlistAction(currentUserId, id);
+
+    if (!result.success) {
+      // Revert UI on failure
+      setIsWishlisted(isWishlisted);
+      toast({
+        title: "Error",
+        description: "Could not update wishlist. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
   
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
   const provider = organizations.find(o => o.id === organizationId);
@@ -55,10 +88,7 @@ export function CourseCard(props: CourseCardProps) {
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-white/70 hover:bg-white rounded-full h-8 w-8 z-10"
-            onClick={(e) => {
-                e.preventDefault();
-                setIsWishlisted(!isWishlisted)
-            }}
+            onClick={handleWishlistToggle}
         >
             <Heart className={cn("w-4 h-4", isWishlisted ? "text-destructive fill-destructive" : "text-muted-foreground")} />
             <span className="sr-only">Add to wishlist</span>

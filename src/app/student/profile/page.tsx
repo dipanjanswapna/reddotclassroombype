@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,32 +20,59 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { getUser, updateUser } from "@/lib/firebase/firestore";
+import { User } from "@/lib/types";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
-
-// Mock user data for demonstration
-const currentUser = {
-    id: 'usr_stud_001',
-    fullName: "Student Name",
-    email: "student@rdc.com",
-    avatarUrl: "https://placehold.co/100x100.png",
-};
-
+const currentStudentId = 'usr_stud_001';
 
 export default function ProfilePage() {
     const { toast } = useToast();
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     // State for personal information
-    const [fullName, setFullName] = useState(currentUser.fullName);
-    const [email, setEmail] = useState(currentUser.email);
-    const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
 
-    const handleInfoSave = () => {
-        toast({
-            title: "Profile Updated",
-            description: "Your personal information has been saved.",
-        });
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const userData = await getUser(currentStudentId);
+                if (userData) {
+                    setUser(userData);
+                    setFullName(userData.name);
+                    setEmail(userData.email);
+                    // setAvatarUrl(userData.avatarUrl); // Assuming avatarUrl is on the user model
+                }
+            } catch (error) {
+                console.error(error);
+                toast({ title: 'Error', description: 'Failed to load user data.', variant: 'destructive'});
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchUser();
+    }, [toast]);
+
+    const handleInfoSave = async () => {
+        if (!user) return;
+        setIsSaving(true);
+        try {
+            await updateUser(user.id!, { name: fullName, email });
+            toast({
+                title: "Profile Updated",
+                description: "Your personal information has been saved.",
+            });
+        } catch (error) {
+            toast({ title: 'Error', description: 'Failed to update profile.', variant: 'destructive'});
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handlePasswordSave = () => {
@@ -62,7 +90,6 @@ export default function ProfilePage() {
         });
     };
     
-    // A dummy function to simulate file upload
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -78,6 +105,17 @@ export default function ProfilePage() {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
+    
+    if (!user) {
+        return <p>User not found.</p>
+    }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -114,7 +152,7 @@ export default function ProfilePage() {
                 </div>
               <div className="space-y-2">
                 <Label htmlFor="userId">User ID</Label>
-                <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
+                <Input id="userId" value={user.id} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
@@ -126,7 +164,10 @@ export default function ProfilePage() {
               </div>
             </CardContent>
             <div className="p-6 pt-0">
-                <Button onClick={handleInfoSave}>Save Changes</Button>
+                <Button onClick={handleInfoSave} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 animate-spin"/> : null}
+                    Save Changes
+                </Button>
             </div>
           </Card>
 

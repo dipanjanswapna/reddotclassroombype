@@ -1,29 +1,62 @@
 
+
 'use client';
 
 import { Award, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { courses, organizations } from '@/lib/mock-data';
-import type { Metadata } from 'next';
+import { getCourses, getOrganizations } from '@/lib/firebase/firestore';
+import type { Course, Organization } from '@/lib/types';
 import Image from 'next/image';
 import { RdcLogo } from '@/components/rdc-logo';
+import { useState, useEffect } from 'react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-// Metadata can be defined in client components but it's often better in layout or server components.
-// For simplicity, we define it here but acknowledge it won't be applied on the server.
-const metadata: Metadata = {
-  title: 'My Certificates',
-  description: 'Download your course completion certificates from Red Dot Classroom.',
-};
-
-
-// Mock completed courses for demonstration. In a real app, this would be fetched based on user data.
-const completedCourses = courses.slice(3, 5).map((course, index) => ({
-    ...course,
-    studentName: 'Jubayer Ahmed', // Mock student name
-    completedDate: ['May 15, 2024', 'June 01, 2024'][index],
-}));
+// Mock student ID
+const currentStudentId = 'usr_stud_001';
 
 export default function CertificatesPage() {
+  const [completedCourses, setCompletedCourses] = useState<Course[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCompletedCourses() {
+        try {
+            const [allCourses, allOrgs] = await Promise.all([
+                getCourses(),
+                getOrganizations()
+            ]);
+            setOrganizations(allOrgs);
+
+            // Mock logic: assume a student has completed a course if they have a graded assignment with an 'A'
+            const studentCompletedCourses = allCourses.filter(c => 
+                c.assignments?.some(a => 
+                    a.studentId === currentStudentId && a.status === 'Graded' && a.grade?.startsWith('A')
+                )
+            ).map((course, index) => ({
+                ...course,
+                studentName: 'Jubayer Ahmed', // Mock student name
+                completedDate: ['May 15, 2024', 'June 01, 2024'][index % 2],
+            }));
+            
+            setCompletedCourses(studentCompletedCourses);
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCompletedCourses();
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
@@ -37,13 +70,12 @@ export default function CertificatesPage() {
       </div>
 
        <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
-        {completedCourses.map((course) => {
+        {completedCourses.map((course: any) => {
             const partner = organizations.find(org => org.id === course.organizationId);
 
             return (
               <div key={course.id} className="p-1 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <div className="bg-card border-2 border-foreground/10 rounded-md p-6 relative aspect-[4/3] flex flex-col justify-between">
-                    {/* Decorative background elements */}
                     <div className="absolute top-0 left-0 w-24 h-24 bg-primary/5 rounded-tl-md rounded-br-full opacity-50"></div>
                     <div className="absolute bottom-0 right-0 w-24 h-24 bg-accent/5 rounded-br-md rounded-tl-full opacity-50"></div>
                     
@@ -74,7 +106,6 @@ export default function CertificatesPage() {
                             <p className="font-semibold">{course.completedDate}</p>
                         </div>
                         <div className="text-center">
-                            {/* Mock Signature - using a standard font */}
                             <p className="font-semibold text-lg -mb-2">{course.instructors[0].name}</p>
                             <hr />
                             <p className="text-xs text-muted-foreground">Lead Instructor</p>

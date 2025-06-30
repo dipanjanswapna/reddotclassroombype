@@ -1,4 +1,5 @@
 
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -7,19 +8,54 @@ import { Progress } from "@/components/ui/progress";
 import { Course } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Star, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toggleWishlistAction } from "@/app/actions";
+import { useToast } from "./ui/use-toast";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
   status: 'in-progress' | 'completed' | 'wishlisted' | 'archived';
 };
 
+// Mock user ID for demo purposes. In a real app, this would come from an auth context.
+const currentUserId = 'usr_stud_001';
+
 export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) {
+  const { toast } = useToast();
+  const [isWishlisted, setIsWishlisted] = useState(course.isWishlisted || false);
   
   const courseLink = (status === 'in-progress' || status === 'archived') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
+  
+  const handleRemoveFromWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!currentUserId || !course.id) return;
+    
+    // Optimistic UI update, assumes removal is successful
+    // A more robust solution might handle this in a parent component
+    const cardElement = (e.currentTarget as HTMLElement).closest('.enrolled-course-card');
+    if (cardElement) {
+        cardElement.remove();
+    }
+    
+    const result = await toggleWishlistAction(currentUserId, course.id);
+
+    if (result.success) {
+      toast({
+        title: "Removed from Wishlist",
+        description: `"${course.title}" has been removed from your wishlist.`
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to remove from wishlist. Please refresh and try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
+    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group enrolled-course-card">
       <CardHeader className="p-0 relative">
         <Link href={courseLink}>
           <Image
@@ -74,19 +110,19 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
         {status === 'completed' && (
            <div className="w-full flex flex-col gap-2">
              <Button asChild className="w-full font-bold" variant="accent">
-                    <Link href="#">সার্টিফিকেট দেখুন</Link>
+                    <Link href="/student/certificates">সার্টিফিকেট দেখুন</Link>
              </Button>
              <Button asChild className="w-full" variant="outline">
-                    <Link href="#"><Star className="mr-2 h-4 w-4"/>রিভিউ দিন</Link>
+                    <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>রিভিউ দিন</Link>
              </Button>
            </div>
         )}
          {status === 'wishlisted' && (
            <div className="w-full flex items-center gap-2">
              <Button asChild className="w-full font-bold">
-                    <Link href={`/courses/${course.id}`}>এখনই এনরোল করুন</Link>
+                    <Link href={`/checkout/${course.id}`}>এখনই এনরোল করুন</Link>
              </Button>
-             <Button variant="outline" size="icon" aria-label="Remove from wishlist">
+             <Button variant="outline" size="icon" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
                 <Trash2 className="h-4 w-4" />
              </Button>
            </div>

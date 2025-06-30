@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,6 +20,9 @@ type Resource = {
   courseId: string;
 };
 
+// Mock student ID for demonstration
+const currentStudentId = 'usr_stud_001';
+
 export default function ResourcesPage() {
   const [allResources, setAllResources] = useState<Resource[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
@@ -29,10 +33,11 @@ export default function ResourcesPage() {
   useEffect(() => {
     async function fetchResources() {
       try {
-        // In a real app, this would be based on the logged-in user's actual enrollments.
-        const enrolledCourseIds = ['1', '3', '4']; // Still mocking enrollment for now
+        // Fetch all courses and determine enrollment based on assignment data
         const allCourses = await getCourses();
-        const studentCourses = allCourses.filter(course => course.id && enrolledCourseIds.includes(course.id));
+        const studentCourses = allCourses.filter(course => 
+            course.assignments?.some(a => a.studentId === currentStudentId)
+        );
         setEnrolledCourses(studentCourses);
 
         const resources: Resource[] = [];

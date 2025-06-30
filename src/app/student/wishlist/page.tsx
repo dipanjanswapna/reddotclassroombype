@@ -1,23 +1,32 @@
 
+
 'use client';
 
 import { Heart } from 'lucide-react';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getUser } from '@/lib/firebase/firestore';
 import { CourseCard } from '@/components/course-card';
 import { useState, useEffect } from 'react';
-import { Course } from '@/lib/types';
+import { Course, User } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+// Mock current student ID
+const currentStudentId = 'usr_stud_001';
+
 export default function WishlistPage() {
+  const [user, setUser] = useState<User | null>(null);
   const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchWishlist() {
       try {
-        const allCourses = await getCourses();
-        const filtered = allCourses.filter(course => course.isWishlisted);
-        setWishlistedCourses(filtered);
+        const userData = await getUser(currentStudentId);
+        setUser(userData);
+        if (userData?.wishlist && userData.wishlist.length > 0) {
+            const allCourses = await getCourses();
+            const filtered = allCourses.filter(course => userData.wishlist!.includes(course.id!));
+            setWishlistedCourses(filtered);
+        }
       } catch (error) {
         console.error("Failed to fetch wishlist:", error);
       } finally {
@@ -50,7 +59,7 @@ export default function WishlistPage() {
       {wishlistedCourses.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {wishlistedCourses.map((course) => (
-            <CourseCard key={course.id} {...course} />
+            <CourseCard key={course.id} {...course} isWishlisted={true} />
           ))}
         </div>
       ) : (

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -456,5 +457,28 @@ export async function deleteInstructorAction(id: string) {
         return { success: true, message: 'Instructor deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
+    }
+}
+
+export async function toggleWishlistAction(userId: string, courseId: string) {
+    try {
+      const user = await getUser(userId);
+      if (!user) throw new Error("User not found.");
+
+      const currentWishlist = user.wishlist || [];
+      const isInWishlist = currentWishlist.includes(courseId);
+      
+      const newWishlist = isInWishlist
+        ? currentWishlist.filter(id => id !== courseId)
+        : [...currentWishlist, courseId];
+
+      await updateUser(userId, { wishlist: newWishlist });
+
+      revalidatePath('/student/wishlist');
+      revalidatePath('/courses');
+      // Revalidate other pages where CourseCard might be used if necessary
+      return { success: true, isInWishlist: !isInWishlist };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
 }

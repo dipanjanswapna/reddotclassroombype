@@ -1,4 +1,8 @@
 
+
+'use client';
+
+import { useState, useEffect } from 'react';
 import {
   BookOpen,
   Award,
@@ -13,8 +17,43 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getCourses, getUser } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Course, User } from '@/lib/types';
+
+
+const currentStudentId = 'usr_stud_001';
 
 export default function DashboardPage() {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [completedCoursesCount, setCompletedCoursesCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+        try {
+            const userData = await getUser(currentStudentId);
+            setUser(userData);
+
+            // Fetch all courses and determine enrollment based on assignments
+            // This is a mock enrollment logic. A real app would have a proper enrollment collection.
+            const allCourses = await getCourses();
+            const studentCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
+            setEnrolledCourses(studentCourses);
+            
+            // Mock completion status for demo
+            setCompletedCoursesCount(studentCourses.length > 2 ? 1 : 0);
+
+        } catch (error) {
+            console.error("Failed to fetch dashboard data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchData();
+  }, []);
+
   const recentAchievements = [
     { title: "Course Complete: HSC Physics", icon: Award },
     { title: "Perfect Score: Math Quiz", icon: Trophy },
@@ -26,11 +65,28 @@ export default function DashboardPage() {
     { title: "Physics Model Test 1", course: "HSC 2025 Crash Course", due: "5 days" },
     { title: "Speaking Practice Task", course: "IELTS Preparation", due: "1 week" },
   ];
+  
+  const inProgressCourses = enrolledCourses.slice(0, 2).map((course, index) => ({
+      ...course,
+      progress: [70, 45, 90, 25][index % 4],
+  }));
+
+  const overallProgress = enrolledCourses.length > 0 
+    ? Math.round(inProgressCourses.reduce((acc, c) => acc + (c.progress || 0), 0) / inProgressCourses.length)
+    : 0;
+
+   if (loading) {
+    return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+        </div>
+    );
+  }
 
   return (
       <div className="p-4 sm:p-6 lg:p-8 space-y-8">
           <div className="mb-6">
-              <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, Student Name!</h1>
+              <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {user?.name || 'Student'}!</h1>
               <p className="text-muted-foreground">আপনার পরবর্তী ক্লাস আজ সন্ধ্যা ৭টায়। শুরু করার জন্য প্রস্তুত হন!</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -40,7 +96,7 @@ export default function DashboardPage() {
                       <BookOpen className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                      <div className="text-2xl font-bold">3</div>
+                      <div className="text-2xl font-bold">{enrolledCourses.length}</div>
                       <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
                   </CardContent>
               </Card>
@@ -50,8 +106,8 @@ export default function DashboardPage() {
                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                      <div className="text-2xl font-bold">68%</div>
-                      <Progress value={68} className="mt-2 h-2 [&>div]:bg-accent" />
+                      <div className="text-2xl font-bold">{overallProgress}%</div>
+                      <Progress value={overallProgress} className="mt-2 h-2 [&>div]:bg-accent" />
                   </CardContent>
               </Card>
               <Card>
@@ -60,7 +116,7 @@ export default function DashboardPage() {
                       <Award className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                      <div className="text-2xl font-bold">1</div>
+                      <div className="text-2xl font-bold">{completedCoursesCount}</div>
                       <p className="text-xs text-muted-foreground">আপনি সম্প্রতি একটি কোর্স সম্পন্ন করেছেন।</p>
                   </CardContent>
               </Card>
@@ -69,36 +125,25 @@ export default function DashboardPage() {
           <div>
             <h2 className="font-headline text-2xl font-bold mb-4">আপনার শেখা চালিয়ে যান</h2>
              <div className="grid gap-6 md:grid-cols-2">
-                <Card className="flex flex-col">
-                    <CardHeader>
-                        <CardTitle>HSC 2025 ক্র্যাশ কোর্স - বিজ্ঞান</CardTitle>
-                        <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: ভৌত বিজ্ঞান প্রথম পত্র</p>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <Progress value={80} className="mb-2 h-2 [&>div]:bg-accent" />
-                        <p className="text-sm font-medium">80% সম্পন্ন</p>
-                    </CardContent>
-                    <div className="p-6 pt-0">
-                      <Button asChild className="w-full">
-                        <Link href="/student/my-courses/1">কোর্স চালিয়ে যান</Link>
-                      </Button>
-                    </div>
-                </Card>
-                <Card className="flex flex-col">
-                    <CardHeader>
-                        <CardTitle>IELTS Preparation Course</CardTitle>
-                        <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: Speaking Test Practice</p>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <Progress value={55} className="mb-2 h-2 [&>div]:bg-accent" />
-                        <p className="text-sm font-medium">55% সম্পন্ন</p>
-                    </CardContent>
-                     <div className="p-6 pt-0">
-                      <Button asChild className="w-full">
-                        <Link href="/student/my-courses/3">কোর্স চালিয়ে যান</Link>
-                      </Button>
-                    </div>
-                </Card>
+                {inProgressCourses.length > 0 ? inProgressCourses.map(course => (
+                    <Card key={course.id} className="flex flex-col">
+                        <CardHeader>
+                            <CardTitle>{course.title}</CardTitle>
+                            <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: ভৌত বিজ্ঞান প্রথম পত্র</p>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                            <Progress value={course.progress} className="mb-2 h-2 [&>div]:bg-accent" />
+                            <p className="text-sm font-medium">{course.progress}% সম্পন্ন</p>
+                        </CardContent>
+                        <div className="p-6 pt-0">
+                          <Button asChild className="w-full">
+                            <Link href={`/student/my-courses/${course.id}`}>কোর্স চালিয়ে যান</Link>
+                          </Button>
+                        </div>
+                    </Card>
+                )) : (
+                    <p className="text-muted-foreground col-span-2 text-center py-8">You are not enrolled in any courses yet.</p>
+                )}
              </div>
           </div>
 
@@ -154,7 +199,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-
       </div>
   );
 }

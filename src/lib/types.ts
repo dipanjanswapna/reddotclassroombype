@@ -219,6 +219,7 @@ export type User = {
   className?: string; // Add class for student
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students
+  wishlist?: string[];
 };
 
 export type StudyPlanEvent = {
@@ -364,5 +365,3 @@ export type HomepageConfig = {
     dataAiHint: string;
   };
 };
-
-    
