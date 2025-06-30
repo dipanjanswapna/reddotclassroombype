@@ -23,7 +23,7 @@ export function CollaborationsCarousel({ items, organizations }: { items: Collab
   );
 
   const getPartnerUrl = (item: CollaborationItem) => {
-    const partner = organizations.find(org => org.name === item.name);
+    const partner = organizations.find(org => org.id === item.organizationId);
     if (partner?.subdomain) {
       return `/sites/${partner.subdomain}`;
     }

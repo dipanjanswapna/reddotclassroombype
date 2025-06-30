@@ -196,7 +196,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
     items: [
-      { id: 1, name: "MediShark", type: "organization", logoUrl: "https://i.imgur.com/v1sB0L7.png", dataAiHint: "shark logo", description: { bn: "মেডিকেল ভর্তি প্রস্তুতির সেরা ঠিকানা।", en: "The best place for medical admission preparation." }, cta: { text: { bn: "ওয়েবসাইট দেখুন", en: "View Website" }, href: "#" }, socials: { facebook: "#", youtube: "#" } }
+      { id: 1, name: "MediShark", organizationId: "org_medishark", type: "organization", logoUrl: "https://i.imgur.com/v1sB0L7.png", dataAiHint: "shark logo", description: { bn: "মেডিকেল ভর্তি প্রস্তুতির সেরা ঠিকানা।", en: "The best place for medical admission preparation." }, cta: { text: { bn: "ওয়েবসাইট দেখুন", en: "View Website" }, href: "#" }, socials: { facebook: "#", youtube: "#" } }
     ],
   },
   socialMediaSection: {

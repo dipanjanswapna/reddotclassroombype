@@ -257,6 +257,7 @@ export type StudyPlanEvent = {
 export type CollaborationItem = {
     id: number;
     name: string;
+    organizationId: string;
     type: string;
     logoUrl: string;
     dataAiHint: string;
