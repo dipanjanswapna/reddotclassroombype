@@ -42,7 +42,7 @@ export const t = {
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
   student_guardian_login: { en: 'Student/Guardian Login', bn: 'শিক্ষার্থী/অভিভাবক লগইন' },
   join_us: { en: 'Join Us', bn: 'আমাদের সাথে যোগ দিন' },
-  teacher_partner_staff_login: { en: 'Teacher/Partner/Staff Login', bn: 'শিক্ষক/পার্টনার/স্টাফ লগইন' },
+  teacher_partner_staff_login: { en: 'Staff/Partner Login', bn: 'স্টাফ/পার্টনার লগইন' },
 
 
   // Login Page
@@ -79,6 +79,7 @@ export const t = {
   already_have_account: { en: 'Already have an account?', bn: 'ইতিমধ্যে একটি অ্যাকাউন্ট আছে?' },
   
   // Teacher Signup
+  teacher_signup_desc: { en: "Apply to become an instructor on our platform.", bn: "আমাদের প্ল্যাটফর্মে একজন প্রশিক্ষক হতে আবেদন করুন।" },
   confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
   expertise_title: { en: 'Expertise / Title', bn: 'দক্ষতা / পদবি' },
   your_bio: { en: 'Your Bio', bn: 'আপনার বায়ো' },

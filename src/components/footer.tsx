@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -70,7 +71,7 @@ export function Footer() {
             <ul className="space-y-2">
                <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
               <li><Link href="/partner-program/apply" className="hover:text-white">{t.become_a_partner[language]}</Link></li>
-              <li><Link href="/login" className="hover:text-white">{t.teacher_partner_staff_login[language]}</Link></li>
+              <li><Link href="/login?type=staff" className="hover:text-white">{t.teacher_partner_staff_login[language]}</Link></li>
             </ul>
           </div>
           <div>

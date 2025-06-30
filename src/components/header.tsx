@@ -1,9 +1,9 @@
 
+
 "use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from 'next/navigation';
 import { Menu, Search, X, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -28,24 +28,18 @@ import { LanguageToggle } from "./language-toggle";
 import { NotificationBell } from "./notification-bell";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig } from "@/lib/types";
+import { useAuth } from "@/context/auth-context";
 
 
 export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
   const { language } = useLanguage();
   const [config, setConfig] = useState<HomepageConfig | null>(null);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     getHomepageConfig().then(setConfig);
   }, []);
-
-  const isLoggedIn = 
-    pathname.startsWith('/student') ||
-    pathname.startsWith('/teacher') ||
-    pathname.startsWith('/guardian') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/partner');
 
   const mainNavLinks = [
     { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
@@ -134,7 +128,7 @@ export function Header() {
                     <div className="p-4 flex flex-col gap-2">
                     <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 16910</Button>
                     <Separator />
-                    {isLoggedIn ? (
+                    {user ? (
                         <div className="w-full mt-2">
                            <UserNav />
                         </div>
@@ -200,7 +194,7 @@ export function Header() {
         </div>
         
         <div className="flex items-center justify-end space-x-2">
-          {isLoggedIn ? (
+          {user ? (
             <>
               <Button variant="ghost" size="icon">
                 <Search className="h-5 w-5" />

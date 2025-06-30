@@ -73,7 +73,6 @@ export default function SignupPage() {
       } else {
           await loginWithFacebook();
       }
-      // Redirect will be handled by protected layouts
     } catch (err: any) {
        setError(err.message || `Failed to sign up with ${provider}.`);
     } finally {
@@ -90,7 +89,7 @@ export default function SignupPage() {
           <CardDescription>{t.signup_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4" onSubmit={handleSignup}>
+          <div className="grid gap-4">
               {error && (
                   <Alert variant="destructive">
                       <AlertTriangle className="h-4 w-4" />
@@ -98,79 +97,8 @@ export default function SignupPage() {
                       <AlertDescription>{error}</AlertDescription>
                   </Alert>
               )}
-              <Alert className="bg-primary/5 border-primary/20">
-                <UserSquare className="h-4 w-4 !text-primary" />
-                <AlertTitle className="text-primary font-semibold">{t.want_to_be_teacher[language]}</AlertTitle>
-                <AlertDescription>
-                    {t.apply_to_be_instructor[language]}{' '}
-                    <Link href="/auth/teacher-signup" className="font-bold underline">{t.click_here[language]}</Link>
-                </AlertDescription>
-            </Alert>
-            <div className="grid gap-2">
-              <Label htmlFor="full-name">{t.full_name[language]}</Label>
-              <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">{t.email[language]}</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">{t.password[language]}</Label>
-              <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-                <Label>{t.registering_as[language]}</Label>
-                <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-2">
-                    <div>
-                        <RadioGroupItem value="Student" id="role-student" className="peer sr-only" />
-                        <Label
-                            htmlFor="role-student"
-                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                        >
-                            {t.student[language]}
-                        </Label>
-                    </div>
-                    <div>
-                        <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" />
-                        <Label
-                            htmlFor="role-guardian"
-                            className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                        >
-                            {t.guardian[language]}
-                        </Label>
-                    </div>
-                </RadioGroup>
-            </div>
-             <div className="flex items-start space-x-2">
-                <Checkbox id="terms" required/>
-                <div className="grid gap-1.5 leading-none">
-                    <Label
-                    htmlFor="terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                    {t.accept_terms[language]}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                    {t.you_agree_to[language]}{' '}
-                    <Link href="/terms" className="text-primary hover:underline">{t.terms_of_service[language]}</Link> {t.and[language]} <Link href="/privacy" className='text-primary hover:underline'>{t.privacy_policy[language]}</Link>.
-                    </p>
-                </div>
-            </div>
-            <Button type="submit" className="w-full font-bold" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-              {t.create_account[language]}
-            </Button>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  {t.or_continue_with[language]}
-                </span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+            
+              <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('google')} disabled={isLoading}>
                     <GoogleIcon />
                     <span className="ml-2">Google</span>
@@ -180,12 +108,87 @@ export default function SignupPage() {
                     <span className="ml-2">Facebook</span>
                 </Button>
             </div>
-          </form>
-          <div className="mt-6 text-center text-sm">
-            {t.already_have_account[language]}{' '}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
-              {t.login[language]}
-            </Link>
+            
+             <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  {t.or_continue_with[language]}
+                </span>
+              </div>
+            </div>
+
+            <form className="grid gap-4" onSubmit={handleSignup}>
+                <div className="grid gap-2">
+                <Label htmlFor="full-name">{t.full_name[language]}</Label>
+                <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                <Label htmlFor="email">{t.email[language]}</Label>
+                <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                <Label htmlFor="password">{t.password[language]}</Label>
+                <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                    <Label>{t.registering_as[language]}</Label>
+                    <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-2">
+                        <div>
+                            <RadioGroupItem value="Student" id="role-student" className="peer sr-only" />
+                            <Label
+                                htmlFor="role-student"
+                                className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                                {t.student[language]}
+                            </Label>
+                        </div>
+                        <div>
+                            <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" />
+                            <Label
+                                htmlFor="role-guardian"
+                                className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                                {t.guardian[language]}
+                            </Label>
+                        </div>
+                    </RadioGroup>
+                </div>
+                <div className="flex items-start space-x-2">
+                    <Checkbox id="terms" required/>
+                    <div className="grid gap-1.5 leading-none">
+                        <Label
+                        htmlFor="terms"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                        {t.accept_terms[language]}
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                        {t.you_agree_to[language]}{' '}
+                        <Link href="/terms" className="text-primary hover:underline">{t.terms_of_service[language]}</Link> {t.and[language]} <Link href="/privacy" className='text-primary hover:underline'>{t.privacy_policy[language]}</Link>.
+                        </p>
+                    </div>
+                </div>
+                <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                {t.create_account[language]}
+                </Button>
+            </form>
+           
+            <div className="mt-4 text-center text-sm">
+                {t.already_have_account[language]}{' '}
+                <Link href="/login" className="font-semibold text-primary hover:underline">
+                {t.login[language]}
+                </Link>
+            </div>
+             <div className="mt-2 text-center text-sm">
+                <span>Want to be a Teacher or Partner?</span><br/>
+                <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>
+                 <span className="mx-2">or</span>
+                 <Link href="/partner-program/apply" className="font-semibold text-primary hover:underline">Apply as Partner</Link>
+            </div>
           </div>
         </CardContent>
       </Card>

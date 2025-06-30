@@ -89,7 +89,7 @@ export default function TeacherSignupPage() {
           </form>
           <div className="mt-6 text-center text-sm">
             {t.already_have_account[language]}{' '}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
+            <Link href="/login?type=staff" className="font-semibold text-primary hover:underline">
               {t.login[language]}
             </Link>
           </div>
