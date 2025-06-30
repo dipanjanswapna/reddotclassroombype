@@ -28,6 +28,7 @@ import {
     deleteOrganization,
     deleteInstructor,
     addNotification,
+    getInstructorByUserId,
 } from '@/lib/firebase/firestore';
 import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
@@ -106,13 +107,15 @@ export async function deleteUserAction(id: string) {
     }
 }
 
-export async function createInstructorAction(data: Partial<Instructor>) {
+export async function createInstructorAction(data: Partial<Omit<Instructor, 'status'>> & { uid: string }) {
     try {
+        const { uid, ...instructorData } = data;
         const newInstructor = {
-            ...data,
+            ...instructorData,
+            userId: uid, // Link to user
             status: 'Pending Approval',
         };
-        await addInstructor(newInstructor);
+        await addInstructor(newInstructor as Instructor);
         revalidatePath('/auth/teacher-signup');
         revalidatePath('/admin/teachers');
         return { success: true, message: 'Application submitted successfully! Our team will review it and get back to you shortly.' };
@@ -124,6 +127,15 @@ export async function createInstructorAction(data: Partial<Instructor>) {
 export async function updateInstructorStatusAction(id: string, status: Instructor['status']) {
     try {
         await updateInstructor(id, { status });
+        
+        if (status === 'Approved') {
+            const instructor = await getInstructor(id);
+            if(instructor?.userId) {
+                const user = await getUser(instructor.userId);
+                if(user) await updateUser(user.id!, { status: 'Active' });
+            }
+        }
+
         revalidatePath('/admin/teachers');
         return { success: true, message: 'Instructor status updated.' };
     } catch (error: any) {
@@ -147,6 +159,14 @@ export async function saveInstructorProfileAction(id: string, data: Partial<Inst
 export async function updateOrganizationStatusAction(id: string, status: Organization['status']) {
     try {
         await updateOrganization(id, { status });
+
+        if (status === 'approved') {
+            const organization = await getOrganization(id);
+            if(organization?.contactUserId) {
+                const user = await getUser(organization.contactUserId);
+                if(user) await updateUser(user.id!, { status: 'Active' });
+            }
+        }
         revalidatePath('/admin/partners');
         return { success: true, message: 'Organization status updated.' };
     } catch (error: any) {
@@ -173,7 +193,7 @@ export async function inviteInstructorAction(data: Partial<Instructor>) {
             ...data,
             status: 'Pending Approval',
         };
-        await addInstructor(newInstructor);
+        await addInstructor(newInstructor as Instructor);
         revalidatePath('/partner/teachers');
         return { success: true, message: 'Invitation sent successfully!' };
     } catch (error: any) {
@@ -412,7 +432,7 @@ export async function deletePromoCodeAction(id: string) {
     }
 }
 
-export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 'status'>) {
+export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 'status'> & { contactUserId: string }) {
     try {
         const newPartnerData: Partial<Organization> = {
             ...data,
@@ -459,7 +479,7 @@ export async function adminInviteInstructorAction(data: Partial<Instructor>) {
             avatarUrl: `https://placehold.co/100x100.png?text=${(data.name || '').split(' ').map(n=>n[0]).join('')}`,
             dataAiHint: 'person teacher'
         };
-        await addInstructor(newInstructor);
+        await addInstructor(newInstructor as Instructor);
         revalidatePath('/admin/teachers');
         return { success: true, message: 'Teacher invited and approved successfully.' };
     } catch (error: any) {

@@ -53,6 +53,7 @@ export type Organization = {
   };
   contactEmail?: string;
   description?: string;
+  contactUserId?: string;
 };
 
 export type Instructor = {
@@ -70,6 +71,7 @@ export type Instructor = {
     twitter?: string;
   }
   organizationId?: string;
+  userId?: string;
 }
 
 export type QuizQuestion = {
@@ -233,9 +235,9 @@ export type User = {
   uid: string; // Firebase Auth UID
   name: string;
   email: string;
-  avatarUrl?: string;
+  avatarUrl: string;
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Partner';
-  status: 'Active' | 'Suspended';
+  status: 'Active' | 'Suspended' | 'Pending Approval';
   joined: string | Timestamp;
   className?: string; // Add class for student
   linkedStudentId?: string; // For guardians

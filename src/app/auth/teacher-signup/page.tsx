@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -14,44 +13,68 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useState } from 'react';
 import { createInstructorAction } from '@/app/actions';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function TeacherSignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const { language } = useLanguage();
+  const { signup } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     const formData = new FormData(e.currentTarget);
     const name = formData.get('full-name') as string;
     const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirm-password') as string;
     const title = formData.get('expertise') as string;
     const bio = formData.get('bio') as string;
 
-    const result = await createInstructorAction({
-        name,
-        email,
-        title,
-        bio,
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        avatarUrl: `https://placehold.co/100x100.png?text=${name.split(' ').map(n=>n[0]).join('')}`,
-        dataAiHint: 'person teacher'
-    });
-    
-    if (result.success) {
-        toast({
-            title: "Application Submitted!",
-            description: "Thank you for your application. It is now under review by our admin team.",
-        });
-        router.push('/');
-    } else {
-        toast({ title: "Error", description: result.message, variant: "destructive"});
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsSubmitting(false);
+      return;
     }
-    
-    setIsSubmitting(false);
+
+    try {
+      // Step 1: Create the Firebase Auth user and the User document in Firestore
+      const userCredential = await signup(email, password, name, 'Teacher', 'Pending Approval');
+      
+      // Step 2: Create the Instructor profile document
+      const result = await createInstructorAction({
+          uid: userCredential.user.uid,
+          name,
+          email,
+          title,
+          bio,
+          slug: name.toLowerCase().replace(/\s+/g, '-'),
+          avatarUrl: `https://placehold.co/100x100.png?text=${name.split(' ').map(n=>n[0]).join('')}`,
+          dataAiHint: 'person teacher'
+      });
+      
+      if (result.success) {
+          toast({
+              title: "Application Submitted!",
+              description: "Thank you! Your account has been created and is now under review. We'll notify you upon approval.",
+          });
+          router.push('/login?status=application_submitted');
+      } else {
+          // This case is tricky: auth user exists but instructor profile failed.
+          // For now, show an error. A robust solution might delete the auth user or flag for admin review.
+          setError(result.message);
+      }
+    } catch (authError: any) {
+        setError(authError.message || "An unexpected error occurred during signup.");
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   return (
@@ -62,6 +85,13 @@ export default function TeacherSignupPage() {
           <CardDescription>{t.teacher_signup_desc[language]}</CardDescription>
         </CardHeader>
         <CardContent>
+           {error && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Application Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
           <form className="grid gap-4" onSubmit={handleSubmit}>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="grid gap-2">
@@ -71,6 +101,16 @@ export default function TeacherSignupPage() {
                  <div className="grid gap-2">
                     <Label htmlFor="email">{t.email[language]}</Label>
                     <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                </div>
+             </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid gap-2">
+                    <Label htmlFor="password">{t.password[language]}</Label>
+                    <Input id="password" name="password" type="password" required />
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="confirm-password">{t.confirm_password[language]}</Label>
+                    <Input id="confirm-password" name="confirm-password" type="password" required />
                 </div>
              </div>
             <div className="grid gap-2">

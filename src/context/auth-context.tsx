@@ -26,7 +26,7 @@ interface AuthContextType {
     login: (email: string, pass: string) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
     loginWithFacebook: () => Promise<any>;
-    signup: (email: string, pass: string, name: string, role: User['role']) => Promise<any>;
+    signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
     logout: () => void;
     resetPassword: (email: string) => Promise<any>;
 }
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
     
     useEffect(() => {
-        if (!loading && user && userInfo) {
+        if (!loading && user && userInfo && userInfo.status === 'Active') {
             router.push(roleRedirects[userInfo.role] || '/');
         }
     }, [userInfo, loading, user, router]);
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 uid: user.uid,
                 name: user.displayName || 'New User',
                 email: user.email!,
-                avatarUrl: user.photoURL || '',
+                avatarUrl: user.photoURL || `https://placehold.co/100x100.png?text=${(user.displayName || 'U').split(' ').map(n=>n[0]).join('')}`,
                 role: 'Student', // Default role for social sign-in
                 status: 'Active',
                 joined: serverTimestamp(),
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await handleSocialLogin(provider);
     };
     
-    const signup = async (email: string, pass: string, name: string, role: User['role']) => {
+    const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
 
@@ -114,9 +114,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             uid: newUser.uid,
             name: name,
             email: email,
-            avatarUrl: newUser.photoURL || '',
+            avatarUrl: newUser.photoURL || `https://placehold.co/100x100.png?text=${name.split(' ').map(n=>n[0]).join('')}`,
             role: role,
-            status: 'Active',
+            status: status,
             joined: serverTimestamp(),
         };
 

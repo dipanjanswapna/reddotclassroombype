@@ -10,46 +10,66 @@ import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { applyForPartnershipAction } from '@/app/actions';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function PartnerApplicationPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const { signup } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get('company-name') as string,
-      contactEmail: formData.get('contact-email') as string,
-      logoUrl: formData.get('logo-url') as string,
-      subdomain: formData.get('subdomain') as string,
-      description: formData.get('description') as string,
-      // Default values for required fields not in form
-      primaryColor: '346.8 77.2% 49.8%', 
-      secondaryColor: '210 40% 96.1%',
-    };
-
-    const result = await applyForPartnershipAction(data);
-
-    if (result.success) {
-      toast({
-        title: "Application Submitted!",
-        description: result.message,
-      });
-      router.push('/');
-    } else {
-      toast({
-        title: "Error",
-        description: result.message,
-        variant: "destructive",
-      });
+    const name = formData.get('company-name') as string;
+    const contactEmail = formData.get('contact-email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirm-password') as string;
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsSubmitting(false);
+      return;
     }
 
-    setIsSubmitting(false);
+    try {
+      // Step 1: Create the Firebase Auth user and the User document for the primary contact
+      const userCredential = await signup(contactEmail, password, name, 'Partner', 'Pending Approval');
+      
+      // Step 2: Create the Organization document
+      const orgData = {
+        name,
+        contactEmail,
+        logoUrl: formData.get('logo-url') as string,
+        subdomain: formData.get('subdomain') as string,
+        description: formData.get('description') as string,
+        primaryColor: '346.8 77.2% 49.8%', 
+        secondaryColor: '210 40% 96.1%',
+        contactUserId: userCredential.user.uid,
+      };
+
+      const result = await applyForPartnershipAction(orgData);
+
+      if (result.success) {
+        toast({
+          title: "Application Submitted!",
+          description: result.message,
+        });
+        router.push('/login?type=staff');
+      } else {
+        setError(result.message);
+      }
+    } catch(authError: any) {
+        setError(authError.message || "An unexpected error occurred during signup.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -60,6 +80,13 @@ export default function PartnerApplicationPage() {
           <CardDescription>Join our platform and reach thousands of students across the country. Fill out the form below to apply.</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Application Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form className="grid gap-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -71,6 +98,16 @@ export default function PartnerApplicationPage() {
                 <Input id="contact-email" name="contact-email" type="email" placeholder="contact@yourcompany.com" required />
               </div>
             </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid gap-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" name="password" type="password" required />
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input id="confirm-password" name="confirm-password" type="password" required />
+                </div>
+             </div>
             <div className="grid gap-2">
                 <Label htmlFor="logo-url">Logo URL</Label>
                 <Input id="logo-url" name="logo-url" placeholder="https://yourcompany.com/logo.png" required />
