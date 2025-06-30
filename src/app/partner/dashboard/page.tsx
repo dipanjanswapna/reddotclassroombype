@@ -9,24 +9,31 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const partnerId = 'org_medishark';
+import { useAuth } from '@/context/auth-context';
 
 export default function PartnerDashboardPage() {
     const { toast } = useToast();
+    const { userInfo } = useAuth();
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!userInfo) return;
+
         async function fetchPartnerData() {
             try {
-                const allCourses = await getCourses();
-                const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
-                setCourses(partnerCourses);
+                const organization = await getOrganizationByUserId(userInfo.uid);
+                if (organization) {
+                    const allCourses = await getCourses();
+                    const partnerCourses = allCourses.filter(c => c.organizationId === organization.id);
+                    setCourses(partnerCourses);
+                } else {
+                     toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive'});
+                }
             } catch(err) {
                 console.error(err);
                 toast({ title: 'Error', description: 'Could not fetch dashboard data.', variant: 'destructive'});
@@ -35,7 +42,7 @@ export default function PartnerDashboardPage() {
             }
         }
         fetchPartnerData();
-    }, [toast]);
+    }, [userInfo, toast]);
     
     if (loading) {
         return (

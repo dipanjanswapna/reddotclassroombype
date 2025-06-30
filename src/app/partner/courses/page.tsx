@@ -27,14 +27,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/components/ui/use-toast';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { deleteCourseAction } from '@/app/actions';
 import { Course } from '@/lib/types';
 import { badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const partnerId = 'org_medishark'; // Mock partner ID
+import { useAuth } from '@/context/auth-context';
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -53,24 +52,32 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 
 export default function PartnerCourseManagementPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-      async function fetchPartnerCourses() {
-          try {
-              const allCourses = await getCourses();
-              const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
-              setCourses(partnerCourses);
-          } catch(err) {
-              console.error(err);
-              toast({ title: 'Error', description: 'Could not fetch courses.', variant: 'destructive'});
-          } finally {
-              setLoading(false);
-          }
-      }
-      fetchPartnerCourses();
-  }, [toast]);
+    if (!userInfo) return;
+
+    async function fetchPartnerCourses() {
+        try {
+            const organization = await getOrganizationByUserId(userInfo.uid);
+            if (organization) {
+                const allCourses = await getCourses();
+                const partnerCourses = allCourses.filter(c => c.organizationId === organization.id);
+                setCourses(partnerCourses);
+            } else {
+                toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive'});
+            }
+        } catch(err) {
+            console.error(err);
+            toast({ title: 'Error', description: 'Could not fetch courses.', variant: 'destructive'});
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchPartnerCourses();
+  }, [userInfo, toast]);
 
   const handleDeleteCourse = async (id: string) => {
     const result = await deleteCourseAction(id);

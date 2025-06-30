@@ -102,6 +102,16 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
 }
 export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
 export const deleteOrganization = (id: string) => deleteDoc(doc(db, 'organizations', id));
+export const getOrganizationByUserId = async (userId: string): Promise<Organization | null> => {
+    const q = query(collection(db, 'organizations'), where('contactUserId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Organization;
+}
+
 
 // Support Tickets
 export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
