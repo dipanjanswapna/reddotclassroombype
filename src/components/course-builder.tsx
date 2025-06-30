@@ -76,6 +76,8 @@ import {
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
+import { removeUndefinedValues } from '@/lib/utils';
+
 
 type LessonData = {
     id: string;
@@ -266,7 +268,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
-  const [isGenerating, setIsGenerating = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -533,55 +535,46 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         reconstructedSyllabus.push(currentModule);
     }
     
-    // Construct a clean courseData object, ensuring no undefined values are passed.
+    // Construct a clean courseData object
     const courseData: Partial<Course> = {
         title: courseTitle,
-        description: description || '',
-        category: category || '',
+        description: description,
+        category: category,
         price: `BDT ${price || 0}`,
-        imageUrl: thumbnailUrl || 'https://placehold.co/600x400.png',
-        videoUrl: introVideoUrl || '',
-        whatYouWillLearn: whatYouWillLearn || [],
+        imageUrl: thumbnailUrl,
+        videoUrl: introVideoUrl,
+        whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
-        faqs: faqs.map(({ id, ...rest }) => ({ question: rest.question || '', answer: rest.answer || '' })),
+        faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
         instructors: instructors.map(({ id, ...rest }) => ({
-            name: rest.name || '',
-            title: rest.title || '',
-            avatarUrl: rest.avatarUrl || 'https://placehold.co/100x100.png',
-            dataAiHint: rest.dataAiHint || 'person',
-            slug: rest.slug || (rest.name || '').toLowerCase().replace(/\s+/g, '-')
-        })),
-        classRoutine: classRoutine.map(({ id, ...rest }) => ({
-          day: rest.day || '',
-          subject: rest.subject || '',
-          time: rest.time || '',
-          instructorName: rest.instructorName || ''
-        })),
-        includedArchivedCourseIds: includedCourseIds || [],
+            name: rest.name,
+            title: rest.title,
+            avatarUrl: rest.avatarUrl,
+            dataAiHint: rest.dataAiHint,
+            slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-'),
+        })).filter(i => i.name && i.title),
+        classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
+        includedArchivedCourseIds: includedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
-        quizzes: quizzes || [],
+        quizzes: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { id, deadline, ...rest } = a;
-            const template: Partial<Omit<AssignmentTemplate, 'id'>> = { ...rest };
-            if (deadline instanceof Date && !isNaN(deadline.getTime())) {
-                template.deadline = format(deadline, 'yyyy-MM-dd');
-            } else {
-                template.deadline = '';
-            }
-            return template;
-        }),
+            return {
+                ...rest,
+                deadline: deadline instanceof Date && !isNaN(deadline.getTime()) ? format(deadline, 'yyyy-MM-dd') : '',
+            };
+        }).filter(a => a.title),
         status,
+        organizationId: organizationId,
     };
 
     if (!isNewCourse) {
         courseData.id = courseId;
     }
+
+    const cleanCourseData = removeUndefinedValues(courseData);
     
-    if (organizationId) {
-        courseData.organizationId = organizationId;
-    }
-    
-    const result = await saveCourseAction(courseData);
+    const result = await saveCourseAction(cleanCourseData);
 
     if (result.success) {
       toast({ 
@@ -1080,5 +1073,3 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     </div>
   );
 }
-
-    
