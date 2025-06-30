@@ -42,10 +42,10 @@ export function Footer() {
               {t.footer_tagline[language]}
             </p>
              <div className="flex space-x-4 mt-4">
-              <Link href="#" className="text-gray-400 hover:text-white"><Facebook /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white"><Twitter /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white"><Youtube /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white"><Linkedin /></Link>
+              <Link href="#" className="text-gray-400 hover:text-white" aria-label="Facebook"><Facebook /></Link>
+              <Link href="#" className="text-gray-400 hover:text-white" aria-label="Twitter"><Twitter /></Link>
+              <Link href="#" className="text-gray-400 hover:text-white" aria-label="YouTube"><Youtube /></Link>
+              <Link href="#" className="text-gray-400 hover:text-white" aria-label="LinkedIn"><Linkedin /></Link>
             </div>
           </div>
           <div>
