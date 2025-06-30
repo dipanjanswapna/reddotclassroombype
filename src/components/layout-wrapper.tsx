@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -21,7 +22,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isFullPageLayout =
     pathname.startsWith('/sites/') ||
     pathname.startsWith('/login') ||
-    pathname.startsWith('/auth/teacher-signup') ||
+    pathname.startsWith('/auth/') ||
     pathname.startsWith('/signup') ||
     pathname.startsWith('/partner-program/apply') ||
     pathname.startsWith('/password-reset');

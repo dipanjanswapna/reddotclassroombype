@@ -183,11 +183,14 @@ export default function SignupPage() {
                 {t.login[language]}
                 </Link>
             </div>
-             <div className="mt-2 text-center text-sm">
-                <span>Want to be a Teacher or Partner?</span><br/>
-                <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>
-                 <span className="mx-2">or</span>
-                 <Link href="/partner-program/apply" className="font-semibold text-primary hover:underline">Apply as Partner</Link>
+             <div className="mt-4 text-center text-sm space-y-2">
+                <p className="text-muted-foreground">Want to join our team?</p>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                    <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>
+                    <Link href="/partner-program/apply" className="font-semibold text-primary hover:underline">Apply as Partner</Link>
+                    <Link href="/auth/affiliate-signup" className="font-semibold text-primary hover:underline">Join as Affiliate</Link>
+                    <Link href="/auth/moderator-signup" className="font-semibold text-primary hover:underline">Join as Moderator</Link>
+                </div>
             </div>
           </div>
         </CardContent>

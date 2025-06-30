@@ -43,7 +43,8 @@ export const t = {
   student_guardian_login: { en: 'Student/Guardian Login', bn: 'শিক্ষার্থী/অভিভাবক লগইন' },
   join_us: { en: 'Join Us', bn: 'আমাদের সাথে যোগ দিন' },
   teacher_partner_staff_login: { en: 'Staff/Partner Login', bn: 'স্টাফ/পার্টনার লগইন' },
-
+  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হন' },
+  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হন' },
 
   // Login Page
   login_welcome: { en: 'Welcome Back!', bn: 'স্বাগতম!' },
@@ -85,6 +86,10 @@ export const t = {
   your_bio: { en: 'Your Bio', bn: 'আপনার বায়ো' },
   submit_application: { en: 'Submit Application', bn: 'আবেদন জমা দিন' },
   
+  // Affiliate & Moderator Signup
+  affiliate_signup_desc: { en: 'Apply to join our affiliate program and earn by promoting RDC.', bn: 'আমাদের অ্যাফিলিয়েট প্রোগ্রামে যোগ দিতে আবেদন করুন এবং RDC প্রচার করে উপার্জন করুন।' },
+  moderator_signup_desc: { en: 'Apply to become a moderator and help maintain our community.', bn: 'মডারেটর হতে আবেদন করুন এবং আমাদের কমিউনিটি পরিচালনায় সহায়তা করুন।' },
+
   // Password Reset
   forgot_password_q: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
   password_reset_desc: { en: "No worries, we'll send you reset instructions.", bn: 'চিন্তার কারণ নেই, আমরা আপনাকে রিসেট করার নির্দেশনা পাঠাবো।' },
