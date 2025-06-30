@@ -415,7 +415,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
   const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person', slug: '' }]);
-  const updateInstructor = (id: string, field: keyof CourseInstructor, value: string) => {
+  const updateInstructor = (id: string, field: keyof Omit<CourseInstructor, 'id'>, value: string) => {
     setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
@@ -427,7 +427,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
-  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
+  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== q.id));
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
     setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
   };
