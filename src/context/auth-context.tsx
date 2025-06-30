@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Failsafe for dev environment: if admin login fails, create the user and try again.
             if (error.code === 'auth/invalid-credential' && email === 'dipanjanswapnaprangon@gmail.com') {
                 try {
-                    await signup(email, pass, 'Admin User', 'Admin', 'Active');
+                    await signup(email, pass, 'RDC Admin', 'Admin', 'Active');
                     const newLoginAttempt = await signInWithEmailAndPassword(auth, email, pass);
                     // Manually set user info here since the listener might be slow
                     const newInfo = await getUserByUid(newLoginAttempt.user.uid);
@@ -139,12 +139,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     const loginWithGoogle = async () => {
         const provider = new GoogleAuthProvider();
-        await handleSocialLogin(provider);
+        try {
+            await handleSocialLogin(provider);
+        } catch (err: any) {
+             if (err.code !== 'auth/popup-closed-by-user') {
+                throw err;
+            }
+        }
     };
 
     const loginWithFacebook = async () => {
         const provider = new FacebookAuthProvider();
-        await handleSocialLogin(provider);
+        try {
+            await handleSocialLogin(provider);
+        } catch (err: any) {
+             if (err.code !== 'auth/popup-closed-by-user') {
+                throw err;
+            }
+        }
     };
     
     const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
