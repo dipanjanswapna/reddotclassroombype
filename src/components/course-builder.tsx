@@ -76,7 +76,6 @@ import {
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
-import { removeUndefinedValues } from '@/lib/utils';
 
 type LessonData = {
     id: string;
@@ -267,7 +266,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating = useState(false);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -510,6 +509,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
     setIsSaving(true);
     
+    // Reconstruct syllabus
     const reconstructedSyllabus: SyllabusModule[] = [];
     let currentModule: SyllabusModule | null = null;
     syllabus.forEach(item => {
@@ -532,45 +532,57 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     if (currentModule) {
         reconstructedSyllabus.push(currentModule);
     }
-
+    
+    // Construct a clean courseData object, ensuring no undefined values are passed.
     const courseData: Partial<Course> = {
-        id: isNewCourse ? undefined : courseId,
         title: courseTitle,
-        description,
-        category,
+        description: description || '',
+        category: category || '',
         price: `BDT ${price || 0}`,
-        imageUrl: thumbnailUrl,
-        videoUrl: introVideoUrl,
-        whatYouWillLearn,
+        imageUrl: thumbnailUrl || 'https://placehold.co/600x400.png',
+        videoUrl: introVideoUrl || '',
+        whatYouWillLearn: whatYouWillLearn || [],
         syllabus: reconstructedSyllabus,
-        faqs: faqs.map(({ id, ...rest }) => rest),
+        faqs: faqs.map(({ id, ...rest }) => ({ question: rest.question || '', answer: rest.answer || '' })),
         instructors: instructors.map(({ id, ...rest }) => ({
-            name: rest.name,
-            title: rest.title,
-            avatarUrl: rest.avatarUrl,
-            dataAiHint: rest.dataAiHint,
-            slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-')
+            name: rest.name || '',
+            title: rest.title || '',
+            avatarUrl: rest.avatarUrl || 'https://placehold.co/100x100.png',
+            dataAiHint: rest.dataAiHint || 'person',
+            slug: rest.slug || (rest.name || '').toLowerCase().replace(/\s+/g, '-')
         })),
-        classRoutine: classRoutine.map(({ id, ...rest }) => rest),
-        includedArchivedCourseIds,
+        classRoutine: classRoutine.map(({ id, ...rest }) => ({
+          day: rest.day || '',
+          subject: rest.subject || '',
+          time: rest.time || '',
+          instructorName: rest.instructorName || ''
+        })),
+        includedArchivedCourseIds: includedCourseIds || [],
         announcements: announcements.map(({ id, ...rest }) => rest),
-        quizzes,
+        quizzes: quizzes || [],
         assignmentTemplates: assignmentTemplates.map(a => {
             const { id, deadline, ...rest } = a;
-            const newAssignment: Partial<Omit<AssignmentTemplate, 'id'>> = { ...rest };
+            const template: Partial<Omit<AssignmentTemplate, 'id'>> = { ...rest };
             if (deadline instanceof Date && !isNaN(deadline.getTime())) {
-                newAssignment.deadline = format(deadline, 'yyyy-MM-dd');
+                template.deadline = format(deadline, 'yyyy-MM-dd');
+            } else {
+                template.deadline = '';
             }
-            return newAssignment;
+            return template;
         }),
         status,
-        organizationId,
     };
+
+    if (!isNewCourse) {
+        courseData.id = courseId;
+    }
     
-    // Clean the data before sending it to the server action
-    const cleanCourseData = removeUndefinedValues(courseData);
+    if (organizationId) {
+        courseData.organizationId = organizationId;
+    }
     
-    const result = await saveCourseAction(cleanCourseData);
+    const result = await saveCourseAction(courseData);
+
     if (result.success) {
       toast({ 
           title: status === 'Pending Approval' ? 'Course Submitted' : 'Draft Saved', 
@@ -1068,3 +1080,5 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     </div>
   );
 }
+
+    
