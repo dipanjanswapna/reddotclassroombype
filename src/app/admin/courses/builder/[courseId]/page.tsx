@@ -510,14 +510,15 @@ export default function CourseBuilderPage({ params }: { params: { courseId: stri
         announcements: announcements.map(({ id, ...rest }) => rest),
         quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
-            let formattedDeadline: string | undefined = undefined;
-            if (a.deadline) {
-                const date = new Date(a.deadline);
-                if (!isNaN(date.getTime())) { // Check for valid date
-                    formattedDeadline = format(date, 'yyyy-MM-dd');
+            const { deadline, ...rest } = a;
+            const newAssignment: Partial<AssignmentTemplate> = { ...rest };
+            if (deadline) {
+                const date = new Date(deadline);
+                if (!isNaN(date.getTime())) {
+                    newAssignment.deadline = format(date, 'yyyy-MM-dd');
                 }
             }
-            return {...a, deadline: formattedDeadline};
+            return newAssignment;
         }),
         status,
     };
