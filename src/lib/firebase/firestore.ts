@@ -346,6 +346,11 @@ export const updatePromoCode = (id: string, promoCode: Partial<PromoCode>) => up
 export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
 
 // Notifications
+export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
+    const q = query(collection(db, "notifications"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+}
 export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(db, 'notifications'), notification);
 
 export const markAllNotificationsAsRead = async (userId: string) => {
