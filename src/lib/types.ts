@@ -254,6 +254,15 @@ export type User = {
   wishlist?: string[];
 };
 
+export type Enrollment = {
+  id?: string;
+  userId: string;
+  courseId: string;
+  enrollmentDate: Timestamp;
+  progress: number;
+  status: 'in-progress' | 'completed';
+};
+
 export type StudyPlanEvent = {
   id: string;
   date: Date | Timestamp;

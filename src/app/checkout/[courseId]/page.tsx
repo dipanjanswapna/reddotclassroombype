@@ -6,7 +6,7 @@ import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Course } from '@/lib/types';
 import { getCourse } from '@/lib/firebase/firestore';
-import { applyPromoCodeAction } from '@/app/actions';
+import { applyPromoCodeAction, enrollInCourseAction } from '@/app/actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,15 +14,18 @@ import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
   const router = useRouter();
+  const { userInfo } = useAuth();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [promoLoading, setPromoLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -79,13 +82,35 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     setPromoLoading(false);
   };
   
-  const handlePayment = () => {
-      // In a real app, this would trigger the payment gateway integration
-      toast({
-          title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
-          description: `You have successfully enrolled in "${course.title}".`
-      });
-      router.push('/student/courses');
+  const handlePayment = async () => {
+    if (!userInfo) {
+        toast({
+            title: 'Not logged in',
+            description: 'You must be logged in to enroll in a course.',
+            variant: 'destructive',
+        });
+        router.push('/login');
+        return;
+    }
+    
+    setIsProcessing(true);
+    
+    const result = await enrollInCourseAction(course.id!, userInfo.uid);
+
+    if (result.success) {
+        toast({
+            title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
+            description: `You have successfully enrolled in "${course.title}".`
+        });
+        router.push('/student/my-courses');
+    } else {
+        toast({
+            title: 'Enrollment Failed',
+            description: result.message,
+            variant: 'destructive'
+        });
+    }
+    setIsProcessing(false);
   };
 
   return (
@@ -144,7 +169,8 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
               </div>
             </CardContent>
             <div className='p-6 pt-0'>
-                <Button onClick={handlePayment} className="w-full" size="lg">
+                <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing}>
+                    {isProcessing ? <Loader2 className="animate-spin mr-2" /> : null}
                     {isPrebooking ? 'Pay Pre-booking Fee' : 'Proceed to Payment'}
                 </Button>
             </div>

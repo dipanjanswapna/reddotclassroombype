@@ -31,8 +31,9 @@ import {
     getInstructor,
     getOrganization,
     getUserByUid,
+    addEnrollment,
 } from '@/lib/firebase/firestore';
-import { Course, User, Instructor, Organization, SupportTicket, PromoCode } from '@/lib/types';
+import { Course, User, Instructor, Organization, SupportTicket, PromoCode, Enrollment } from '@/lib/types';
 import { Timestamp, doc, writeBatch, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
@@ -40,14 +41,13 @@ export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
 
-    // The data is now pre-cleaned on the client-side before being sent.
-    // The `removeUndefinedValues` utility is used in `course-builder.tsx`.
-    // This ensures that the payload to the Server Action is always valid.
-    const cleanData = data;
+    // The data is now pre-cleaned on the client-side, but as a safeguard,
+    // we can still handle specific edge cases here.
+    const cleanData = data as any;
     
     // Ensure organizationId is not an empty string if it exists
     if (cleanData.organizationId === '') {
-        delete (cleanData as any).organizationId;
+        delete cleanData.organizationId;
     }
 
     if (id) {
@@ -57,15 +57,15 @@ export async function saveCourseAction(courseData: Partial<Course>) {
       revalidatePath(`/admin/courses/builder/${id}`);
       revalidatePath('/teacher/courses');
       revalidatePath(`/teacher/courses/builder/${id}`);
-      revalidatePath('/partner/courses');
-      revalidatePath(`/partner/courses/builder/${id}`);
+      revalidatePath('/seller/courses');
+      revalidatePath(`/seller/courses/builder/${id}`);
       revalidatePath(`/courses/${id}`);
       return { success: true, message: 'Course updated successfully.' };
     } else {
       const newCourseRef = await addDoc(collection(db, 'courses'), cleanData);
       revalidatePath('/admin/courses');
       revalidatePath('/teacher/courses');
-      revalidatePath('/partner/courses');
+      revalidatePath('/seller/courses');
       return { success: true, message: 'Course created successfully.', courseId: newCourseRef.id };
     }
   } catch (error: any) {
@@ -79,7 +79,7 @@ export async function deleteCourseAction(id: string) {
         await deleteCourse(id);
         revalidatePath('/admin/courses');
         revalidatePath('/teacher/courses');
-        revalidatePath('/partner/courses');
+        revalidatePath('/seller/courses');
         return { success: true, message: 'Course deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -185,7 +185,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
             }
         }
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Organization status updated.' };
+        return { success: true, message: 'Seller status updated.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -194,7 +194,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
 export async function savePartnerBrandingAction(id: string, data: Partial<Organization>) {
     try {
         await updateOrganization(id, data);
-        revalidatePath(`/partner/branding`);
+        revalidatePath(`/seller/branding`);
         if (data.subdomain) {
             revalidatePath(`/sites/${data.subdomain}`);
         }
@@ -211,7 +211,7 @@ export async function inviteInstructorAction(data: Partial<Instructor>) {
             status: 'Pending Approval',
         };
         await addInstructor(newInstructor as Instructor);
-        revalidatePath('/partner/teachers');
+        revalidatePath('/seller/teachers');
         return { success: true, message: 'Invitation sent successfully!' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -221,7 +221,7 @@ export async function inviteInstructorAction(data: Partial<Instructor>) {
 export async function removeInstructorFromOrgAction(id: string) {
     try {
         await updateInstructor(id, { organizationId: '' });
-        revalidatePath('/partner/teachers');
+        revalidatePath('/seller/teachers');
         return { success: true, message: 'Instructor removed from organization.' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -471,7 +471,7 @@ export async function invitePartnerAction(data: Omit<Organization, 'id' | 'statu
         };
         await addOrganization(newPartnerData);
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Partner invited and approved successfully.' };
+        return { success: true, message: 'Seller invited and approved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -481,7 +481,7 @@ export async function deleteOrganizationAction(id: string) {
     try {
         await deleteOrganization(id);
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Partner organization deleted successfully.' };
+        return { success: true, message: 'Seller organization deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -537,7 +537,40 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
     }
 }
 
+export async function enrollInCourseAction(courseId: string, userId: string) {
+    try {
+        const enrollmentData: Omit<Enrollment, 'id'> = {
+            userId,
+            courseId,
+            enrollmentDate: Timestamp.now(),
+            progress: 0,
+            status: 'in-progress'
+        };
+        await addEnrollment(enrollmentData);
+
+        // Also increment the prebookingCount if it's a pre-booking
+        const course = await getCourse(courseId);
+        if (course?.isPrebooking) {
+            const currentCount = course.prebookingCount || 0;
+            await updateCourse(courseId, { prebookingCount: currentCount + 1 });
+        }
+
+        revalidatePath('/student/my-courses');
+        revalidatePath('/student/dashboard');
+        revalidatePath(`/checkout/${courseId}`);
+        if(course?.isPrebooking) {
+            revalidatePath('/admin/pre-bookings');
+            revalidatePath('/teacher/pre-bookings');
+        }
+
+        return { success: true, message: 'Successfully enrolled in the course.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
 
 
 
     
+

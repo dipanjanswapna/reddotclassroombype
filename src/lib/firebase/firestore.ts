@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -135,6 +135,15 @@ export const getCategories = async (): Promise<string[]> => {
     const categories = new Set(courses.map(c => c.category));
     return Array.from(categories);
 }
+
+// Enrollments
+export const getEnrollmentsByUserId = async (userId: string): Promise<Enrollment[]> => {
+    const q = query(collection(db, "enrollments"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
+}
+export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(db, 'enrollments'), enrollment);
+
 
 const defaultPlatformSettings: PlatformSettings = {
     Student: { signupEnabled: true, loginEnabled: true },
