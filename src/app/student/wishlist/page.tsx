@@ -3,40 +3,44 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { getCourses, getUser } from '@/lib/firebase/firestore';
+import { getCourses, getOrganizations } from '@/lib/firebase/firestore';
 import { CourseCard } from '@/components/course-card';
 import { useState, useEffect } from 'react';
-import { Course, User } from '@/lib/types';
+import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-// Mock current student ID
-const currentStudentId = 'usr_stud_001';
+import { useAuth } from '@/context/auth-context';
 
 export default function WishlistPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { userInfo, loading: authLoading } = useAuth();
   const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchWishlist() {
-      try {
-        const userData = await getUser(currentStudentId);
-        setUser(userData);
-        if (userData?.wishlist && userData.wishlist.length > 0) {
-            const allCourses = await getCourses();
-            const filtered = allCourses.filter(course => userData.wishlist!.includes(course.id!));
-            setWishlistedCourses(filtered);
-        }
-      } catch (error) {
-        console.error("Failed to fetch wishlist:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWishlist();
-  }, []);
+    if (authLoading) return;
 
-  if (loading) {
+    async function fetchWishlist() {
+      if (userInfo?.wishlist && userInfo.wishlist.length > 0) {
+        try {
+          const [allCourses, allOrgs] = await Promise.all([
+            getCourses(),
+            getOrganizations()
+          ]);
+          const filtered = allCourses.filter(course => userInfo.wishlist!.includes(course.id!));
+          setWishlistedCourses(filtered);
+          setOrganizations(allOrgs);
+        } catch (error) {
+          console.error("Failed to fetch wishlist:", error);
+        }
+      } else {
+          setWishlistedCourses([]);
+      }
+      setLoading(false);
+    }
+    fetchWishlist();
+  }, [userInfo, authLoading]);
+
+  if (loading || authLoading) {
     return (
       <div className="flex flex-grow items-center justify-center h-[calc(100vh-8rem)]">
         <LoadingSpinner className="w-12 h-12" />
@@ -58,9 +62,10 @@ export default function WishlistPage() {
 
       {wishlistedCourses.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {wishlistedCourses.map((course) => (
-            <CourseCard key={course.id} {...course} isWishlisted={true} />
-          ))}
+          {wishlistedCourses.map((course) => {
+            const provider = organizations.find(p => p.id === course.organizationId);
+            return <CourseCard key={course.id} {...course} provider={provider} />;
+          })}
         </div>
       ) : (
         <div className="text-center py-16 bg-muted rounded-lg">

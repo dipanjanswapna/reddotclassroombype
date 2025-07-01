@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
     onAuthStateChanged, 
@@ -29,6 +30,7 @@ interface AuthContextType {
     signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
     logout: () => void;
     resetPassword: (email: string) => Promise<any>;
+    refreshUserInfo: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,27 +51,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setUser(user);
-                const fetchedUserInfo = await getUserByUid(user.uid);
-                setUserInfo(fetchedUserInfo);
-            } else {
-                setUser(null);
-                setUserInfo(null);
-            }
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
+    const fetchAndSetUser = useCallback(async (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+            setUser(firebaseUser);
+            const fetchedUserInfo = await getUserByUid(firebaseUser.uid);
+            setUserInfo(fetchedUserInfo);
+        } else {
+            setUser(null);
+            setUserInfo(null);
+        }
+        setLoading(false);
     }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, fetchAndSetUser);
+        return () => unsubscribe();
+    }, [fetchAndSetUser]);
     
     useEffect(() => {
         if (!loading && user && userInfo && userInfo.status === 'Active') {
-            router.push(roleRedirects[userInfo.role] || '/');
+            const path = roleRedirects[userInfo.role] || '/';
+            // Only redirect if not already on a page within that role's portal
+            if (!window.location.pathname.startsWith(path.split('/')[1])) {
+                // router.push(path);
+            }
         }
     }, [userInfo, loading, user, router]);
+
+    const refreshUserInfo = useCallback(async () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setLoading(true);
+            await fetchAndSetUser(currentUser);
+        }
+    }, [fetchAndSetUser]);
 
 
     const login = async (email: string, pass: string, role?: User['role']) => {
@@ -239,6 +254,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signup,
         logout,
         resetPassword,
+        refreshUserInfo,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

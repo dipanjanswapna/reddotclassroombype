@@ -1,45 +1,55 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toggleWishlistAction } from '@/app/actions';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
 
-// In a real app, this would come from an auth context
-const currentUserId = 'usr_stud_001'; 
-
-type WishlistButtonProps = {
-  courseId: string;
-  initialIsWishlisted: boolean;
-};
-
-export function WishlistButton({ courseId, initialIsWishlisted }: WishlistButtonProps) {
-  const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted);
+export function WishlistButton({ courseId }: { courseId: string }) {
+  const { userInfo, loading, refreshUserInfo } = useAuth();
+  const router = useRouter();
   const { toast } = useToast();
   
-  useEffect(() => {
-    setIsWishlisted(initialIsWishlisted);
-  }, [initialIsWishlisted]);
+  const isWishlisted = !!userInfo?.wishlist?.includes(courseId);
 
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!currentUserId) return;
+    if (!userInfo) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to add courses to your wishlist.",
+        variant: "destructive",
+        action: <Button onClick={() => router.push('/login')}>Login</Button>
+      });
+      return;
+    }
     
-    setIsWishlisted(!isWishlisted);
+    const result = await toggleWishlistAction(userInfo.id!, courseId);
 
-    const result = await toggleWishlistAction(currentUserId, courseId);
-
-    if (!result.success) {
-      setIsWishlisted(isWishlisted); // Revert on failure
+    if (result.success) {
+      await refreshUserInfo();
+      toast({
+        title: result.isInWishlist ? "Added to Wishlist" : "Removed from Wishlist",
+      });
+    } else {
       toast({
         title: "Error",
-        description: "Could not update wishlist. Please try again.",
+        description: result.message,
         variant: "destructive"
       });
     }
   };
+
+  if (loading) {
+    return <Button size="lg" variant="outline" className="px-3" disabled><Heart className="w-5 h-5 animate-pulse" /></Button>
+  }
+  
+  if (!userInfo || userInfo.role !== 'Student') {
+    return null;
+  }
 
   return (
     <Button size="lg" variant="outline" className="px-3" onClick={handleWishlistToggle} aria-label="Toggle Wishlist">

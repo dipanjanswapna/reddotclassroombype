@@ -8,39 +8,30 @@ import { Progress } from "@/components/ui/progress";
 import { Course } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Star, Trash2 } from "lucide-react";
-import { useState } from "react";
 import { toggleWishlistAction } from "@/app/actions";
 import { useToast } from "./ui/use-toast";
+import { useAuth } from "@/context/auth-context";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
   status: 'in-progress' | 'completed' | 'wishlisted' | 'archived';
 };
 
-// Mock user ID for demo purposes. In a real app, this would come from an auth context.
-const currentUserId = 'usr_stud_001';
-
 export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) {
   const { toast } = useToast();
-  const [isWishlisted, setIsWishlisted] = useState(course.isWishlisted || false);
+  const { userInfo, refreshUserInfo } = useAuth();
   
   const courseLink = (status === 'in-progress' || status === 'archived') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
   
   const handleRemoveFromWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!currentUserId || !course.id) return;
+    if (!userInfo || !course.id) return;
     
-    // Optimistic UI update, assumes removal is successful
-    // A more robust solution might handle this in a parent component
-    const cardElement = (e.currentTarget as HTMLElement).closest('.enrolled-course-card');
-    if (cardElement) {
-        cardElement.remove();
-    }
-    
-    const result = await toggleWishlistAction(currentUserId, course.id);
+    const result = await toggleWishlistAction(userInfo.id!, course.id);
 
     if (result.success) {
+      await refreshUserInfo();
       toast({
         title: "Removed from Wishlist",
         description: `"${course.title}" has been removed from your wishlist.`

@@ -1,37 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toggleWishlistAction } from '@/app/actions';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
 
-const currentUserId = 'usr_stud_001'; 
-
-type CourseCardWishlistButtonProps = {
-  courseId: string;
-  initialIsWishlisted: boolean;
-};
-
-export function CourseCardWishlistButton({ courseId, initialIsWishlisted }: CourseCardWishlistButtonProps) {
-  const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted);
+export function CourseCardWishlistButton({ courseId }: { courseId: string }) {
+  const { userInfo, refreshUserInfo } = useAuth();
+  const router = useRouter();
   const { toast } = useToast();
   
-  useEffect(() => {
-    setIsWishlisted(initialIsWishlisted);
-  }, [initialIsWishlisted]);
+  const isWishlisted = !!userInfo?.wishlist?.includes(courseId);
 
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!currentUserId) return;
+    if (!userInfo) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to add courses to your wishlist.",
+        variant: "destructive",
+        action: <Button onClick={() => router.push('/login')}>Login</Button>
+      });
+      return;
+    }
     
-    setIsWishlisted(!isWishlisted);
+    const result = await toggleWishlistAction(userInfo.id!, courseId); 
 
-    const result = await toggleWishlistAction(currentUserId, courseId);
-
-    if (!result.success) {
-      setIsWishlisted(isWishlisted); // Revert
+    if (result.success) {
+        await refreshUserInfo();
+        toast({
+            title: result.isInWishlist ? "Added to Wishlist" : "Removed from Wishlist",
+        });
+    } else {
       toast({
         title: "Error",
         description: result.message,
@@ -39,6 +42,10 @@ export function CourseCardWishlistButton({ courseId, initialIsWishlisted }: Cour
       });
     }
   };
+  
+  if (!userInfo || userInfo.role !== 'Student') {
+      return null;
+  }
 
   return (
       <Button

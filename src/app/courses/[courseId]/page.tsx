@@ -145,7 +145,7 @@ export default async function CourseDetailPage({
                             {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
                         </Link>
                     </Button>
-                    <WishlistButton courseId={course.id!} initialIsWishlisted={course.isWishlisted || false} />
+                    <WishlistButton courseId={course.id!} />
                   </div>
                   <div className="mt-6">
                     <h3 className="font-headline font-semibold mb-3">

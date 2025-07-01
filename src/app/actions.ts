@@ -529,6 +529,7 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
       await updateUser(userId, { wishlist: newWishlist });
 
       revalidatePath('/student/wishlist');
+      revalidatePath('/student/my-courses');
       revalidatePath('/courses');
       // Revalidate other pages where CourseCard might be used if necessary
       return { success: true, isInWishlist: !isInWishlist };
@@ -573,4 +574,3 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
 
 
     
-
