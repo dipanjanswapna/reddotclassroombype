@@ -76,6 +76,7 @@ import {
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
+import { postAnnouncementAction } from '@/app/actions/announcement.actions';
 
 
 type LessonData = {
@@ -268,6 +269,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -475,21 +477,27 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     });
   };
 
-  const handlePostAnnouncement = () => {
+  const handlePostAnnouncement = async () => {
     if (!newAnnouncementTitle || !newAnnouncementContent) {
       toast({ title: 'Error', description: 'Title and content cannot be empty.', variant: 'destructive' });
       return;
     }
-    const newAnnouncement: AnnouncementItem = {
-      id: Date.now().toString(),
-      title: newAnnouncementTitle,
-      content: newAnnouncementContent,
-      date: new Date().toISOString().split('T')[0],
-    };
-    setAnnouncements(prev => [newAnnouncement, ...prev]);
-    setNewAnnouncementTitle('');
-    setNewAnnouncementContent('');
-    toast({ title: 'Success', description: 'Announcement posted.' });
+    if (isNewCourse) {
+      toast({ title: 'Save Course First', description: 'You must save the course as a draft before posting announcements.', variant: 'destructive' });
+      return;
+    }
+    setIsPostingAnnouncement(true);
+    const result = await postAnnouncementAction(courseId, newAnnouncementTitle, newAnnouncementContent);
+    
+    if (result.success && result.newAnnouncement) {
+        setAnnouncements(prev => [result.newAnnouncement!, ...prev]);
+        setNewAnnouncementTitle('');
+        setNewAnnouncementContent('');
+        toast({ title: 'Success', description: 'Announcement posted and notifications sent.' });
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsPostingAnnouncement(false);
   };
 
   const removeAnnouncement = (id: string) => {
@@ -952,7 +960,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={handlePostAnnouncement}>Post Announcement</Button>
+                            <Button onClick={handlePostAnnouncement} disabled={isPostingAnnouncement}>
+                                {isPostingAnnouncement ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                                Post Announcement
+                            </Button>
                         </CardFooter>
                     </Card>
 

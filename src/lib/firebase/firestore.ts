@@ -142,6 +142,13 @@ export const getEnrollmentsByUserId = async (userId: string): Promise<Enrollment
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
 }
+
+export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enrollment[]> => {
+    const q = query(collection(db, "enrollments"), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
+}
+
 export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(db, 'enrollments'), enrollment);
 
 
