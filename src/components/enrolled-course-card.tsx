@@ -1,4 +1,5 @@
 
+'use client';
 
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Course } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Star, Trash2 } from "lucide-react";
-import { toggleWishlistAction } from "@/app/actions";
+import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 
