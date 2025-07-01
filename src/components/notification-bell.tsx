@@ -43,8 +43,7 @@ export function NotificationBell() {
     const q = query(
         collection(db, "notifications"), 
         where("userId", "==", currentUserId),
-        where("date", ">=", twentyFourHoursAgo),
-        orderBy("date", "desc")
+        where("date", ">=", twentyFourHoursAgo)
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -52,7 +51,11 @@ export function NotificationBell() {
       querySnapshot.forEach((doc) => {
         fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
       });
+      // Sort client-side to avoid needing a composite index
+      fetchedNotifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
       setNotifications(fetchedNotifications);
+    }, (error) => {
+      console.error("Error fetching notifications:", error);
     });
 
     // Cleanup subscription on unmount
