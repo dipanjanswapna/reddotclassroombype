@@ -1,11 +1,34 @@
+import { FinancialsClient } from "./financials-client";
+import { getEnrollments, getCourses, getUsers } from "@/lib/firebase/firestore";
+import type { Metadata } from 'next';
 
-import { PlaceholderPage } from "@/components/placeholder-page";
+export const metadata: Metadata = {
+    title: 'Financials',
+    description: 'Detailed financial reports, revenue charts, and transaction logs.',
+};
 
-export default function FinancialsPage() {
+export default async function FinancialsPage() {
+  const [enrollments, courses, users] = await Promise.all([
+    getEnrollments(),
+    getCourses(),
+    getUsers()
+  ]);
+
   return (
-    <PlaceholderPage 
-        title="Financial Overview"
-        description="This page will contain detailed financial reports, revenue charts, and transaction logs. This feature is coming soon."
-    />
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">
+                Financials
+            </h1>
+            <p className="mt-1 text-lg text-muted-foreground">
+                Detailed financial reports, revenue charts, and transaction logs.
+            </p>
+        </div>
+        <FinancialsClient 
+            initialEnrollments={enrollments}
+            initialCourses={courses}
+            initialUsers={users}
+        />
+    </div>
   );
 }
