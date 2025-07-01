@@ -19,6 +19,7 @@ export default function PartnerDashboardPage() {
     const { toast } = useToast();
     const { userInfo } = useAuth();
     const [courses, setCourses] = useState<Course[]>([]);
+    const [studentCount, setStudentCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,6 +32,15 @@ export default function PartnerDashboardPage() {
                     const allCourses = await getCourses();
                     const partnerCourses = allCourses.filter(c => c.organizationId === organization.id);
                     setCourses(partnerCourses);
+
+                    // Calculate student count
+                    const studentIds = new Set<string>();
+                    partnerCourses.forEach(course => {
+                        course.assignments?.forEach(assignment => {
+                            studentIds.add(assignment.studentId);
+                        });
+                    });
+                    setStudentCount(studentIds.size);
                 } else {
                      toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive'});
                 }
@@ -71,9 +81,9 @@ export default function PartnerDashboardPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">2,150</div>
+                <div className="text-2xl font-bold">{studentCount}</div>
                 <p className="text-xs text-muted-foreground">
-                +12% from last month
+                Unique students in your courses
                 </p>
             </CardContent>
             </Card>
@@ -87,7 +97,7 @@ export default function PartnerDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
-                +2 new this month
+                Published courses
                 </p>
             </CardContent>
             </Card>
