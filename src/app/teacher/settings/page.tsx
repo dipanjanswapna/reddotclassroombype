@@ -21,33 +21,31 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { getInstructor } from "@/lib/firebase/firestore";
+import { getInstructorByUid } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
 import { LoadingSpinner } from "@/components/loading-spinner";
-
-
-// Mock current teacher ID for demonstration
-const currentTeacherId = 'ins-ja';
-
+import { useAuth } from "@/context/auth-context";
 
 export default function TeacherSettingsPage() {
     const { toast } = useToast();
+    const { userInfo } = useAuth();
     const [teacher, setTeacher] = useState<Instructor | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // State for personal information
     const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("teacher@rdc.com"); // Email is not in instructor model, so keeping it static for demo
+    const [email, setEmail] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
 
      useEffect(() => {
+        if (!userInfo) return;
         async function fetchTeacherData() {
             try {
-                const fetchedTeacher = await getInstructor(currentTeacherId);
+                const fetchedTeacher = await getInstructorByUid(userInfo.uid);
                 if (fetchedTeacher) {
                     setTeacher(fetchedTeacher);
                     setFullName(fetchedTeacher.name);
                     setAvatarUrl(fetchedTeacher.avatarUrl);
+                    setEmail(userInfo.email || '');
                 }
             } catch (error) {
                 console.error("Error fetching teacher settings:", error);
@@ -57,7 +55,7 @@ export default function TeacherSettingsPage() {
             }
         }
         fetchTeacherData();
-    }, [toast]);
+    }, [userInfo, toast]);
 
 
     const handleInfoSave = () => {

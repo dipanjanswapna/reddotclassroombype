@@ -14,10 +14,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import { getCourses, getUsers, getInstructorByUid } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import type { User, Course } from '@/lib/types';
-
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 type StudentDisplayInfo = {
   id: string;
@@ -28,24 +29,31 @@ type StudentDisplayInfo = {
   progress: number;
 };
 
-// Mocking students enrolled in courses by 'Jubayer Ahmed'
-const teacherId = 'ins-ja';
-
-
 export default function TeacherStudentsPage() {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
   const [students, setStudents] = useState<StudentDisplayInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    if (!userInfo) return;
+
     const getTeacherStudents = async () => {
         try {
+            const instructor = await getInstructorByUid(userInfo.uid);
+            if (!instructor) {
+                toast({ title: "Error", description: "Could not find your instructor profile.", variant: "destructive" });
+                setLoading(false);
+                return;
+            }
+
             const [allCourses, allUsers] = await Promise.all([
                 getCourses(),
                 getUsers()
             ]);
 
-            const teacherCourses = allCourses.filter(c => c.instructors.some(i => i.id === teacherId));
+            const teacherCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
             const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
 
             teacherCourses.forEach(course => {
@@ -83,13 +91,14 @@ export default function TeacherStudentsPage() {
 
         } catch (error) {
             console.error("Failed to fetch students:", error);
+            toast({ title: "Error", description: "Could not fetch student data.", variant: "destructive" });
         } finally {
             setLoading(false);
         }
     };
 
     getTeacherStudents();
-  }, []);
+  }, [userInfo, toast]);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

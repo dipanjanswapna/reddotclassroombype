@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState, useEffect } from 'react';
 import {
   BookCopy,
   Users,
@@ -5,37 +9,85 @@ import {
   BarChart,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getCourses } from '@/lib/firebase/firestore';
-import type { Course } from '@/lib/types';
-import { Metadata } from 'next';
+import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { useToast } from '@/components/ui/use-toast';
 
-export const metadata: Metadata = {
-    title: 'Teacher Dashboard',
-    description: 'Manage your courses, students, and content.',
-};
+export default function TeacherDashboardPage() {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
+  const [stats, setStats] = useState({
+    courseCount: 0,
+    studentCount: 0,
+    pendingGradingCount: 0,
+    averageRating: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
-// Mock teacher ID
-const teacherId = 'ins-ja'; 
+  useEffect(() => {
+    if (!userInfo) return;
 
-export default async function TeacherDashboardPage() {
-    const allCourses = await getCourses();
-    const teacherCourses = allCourses.filter(course => 
-        course.instructors?.some(instructor => instructor.id === teacherId)
-    );
+    const fetchDashboardData = async () => {
+      try {
+        const instructor = await getInstructorByUid(userInfo.uid);
+        if (!instructor?.id) {
+          toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+          setLoading(false);
+          return;
+        }
+        
+        const allCourses = await getCourses();
+        const teacherCourses = allCourses.filter(course => 
+          course.instructors?.some(i => i.slug === instructor.slug)
+        );
 
-    const studentIds = new Set<string>();
-    let pendingGradingCount = 0;
+        const studentIds = new Set<string>();
+        let pendingGradingCount = 0;
+        let totalRating = 0;
+        let ratedCourses = 0;
 
-    teacherCourses.forEach(course => {
-        (course.assignments || []).forEach(assignment => {
+        teacherCourses.forEach(course => {
+          (course.assignments || []).forEach(assignment => {
             studentIds.add(assignment.studentId);
             if (assignment.status === 'Submitted' || assignment.status === 'Late') {
-                pendingGradingCount++;
+              pendingGradingCount++;
             }
+          });
+          if (course.rating) {
+            totalRating += course.rating;
+            ratedCourses++;
+          }
         });
-    });
 
-    const studentCount = studentIds.size;
+        const studentCount = studentIds.size;
+        const averageRating = ratedCourses > 0 ? (totalRating / ratedCourses) : 0;
+
+        setStats({
+          courseCount: teacherCourses.length,
+          studentCount,
+          pendingGradingCount,
+          averageRating: parseFloat(averageRating.toFixed(1)),
+        });
+
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+        toast({ title: "Error", description: "Could not load dashboard data.", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [userInfo, toast]);
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -56,7 +108,7 @@ export default async function TeacherDashboardPage() {
                 <BookCopy className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{teacherCourses.length}</div>
+                <div className="text-2xl font-bold">{stats.courseCount}</div>
                 <p className="text-xs text-muted-foreground">
                 Active courses
                 </p>
@@ -70,7 +122,7 @@ export default async function TeacherDashboardPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{studentCount}</div>
+                <div className="text-2xl font-bold">{stats.studentCount}</div>
                 <p className="text-xs text-muted-foreground">
                 Across all courses
                 </p>
@@ -84,7 +136,7 @@ export default async function TeacherDashboardPage() {
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{pendingGradingCount}</div>
+                <div className="text-2xl font-bold">{stats.pendingGradingCount}</div>
                 <p className="text-xs text-muted-foreground">
                 Assignments to review
                 </p>
@@ -98,7 +150,7 @@ export default async function TeacherDashboardPage() {
                 <BarChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">4.8</div>
+                <div className="text-2xl font-bold">{stats.averageRating}</div>
                 <p className="text-xs text-muted-foreground">
                 From student reviews
                 </p>

@@ -10,16 +10,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload, Linkedin, Facebook, Twitter, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { getInstructor } from "@/lib/firebase/firestore";
+import { getInstructorByUid } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
 import { saveInstructorProfileAction } from "@/app/actions/instructor.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
-
-// Mock current teacher ID for demonstration
-const currentTeacherId = 'ins-ja';
+import { useAuth } from "@/context/auth-context";
 
 export default function TeacherProfilePage() {
     const { toast } = useToast();
+    const { userInfo } = useAuth();
     const [instructor, setInstructor] = useState<Instructor | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -34,9 +33,10 @@ export default function TeacherProfilePage() {
     const [twitter, setTwitter] = useState('');
 
     useEffect(() => {
+        if (!userInfo) return;
         const fetchInstructorData = async () => {
             try {
-                const data = await getInstructor(currentTeacherId);
+                const data = await getInstructorByUid(userInfo.uid);
                 if (data) {
                     setInstructor(data);
                     setName(data.name || '');
@@ -46,6 +46,8 @@ export default function TeacherProfilePage() {
                     setLinkedin(data.socials?.linkedin || '');
                     setFacebook(data.socials?.facebook || '');
                     setTwitter(data.socials?.twitter || '');
+                } else {
+                    toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
                 }
             } catch (error) {
                 console.error(error);
@@ -55,7 +57,7 @@ export default function TeacherProfilePage() {
             }
         };
         fetchInstructorData();
-    }, [toast]);
+    }, [userInfo, toast]);
     
     const handleProfileSave = async () => {
         if (!instructor?.id) return;

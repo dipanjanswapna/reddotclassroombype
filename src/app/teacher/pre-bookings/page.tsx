@@ -7,26 +7,35 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { Eye } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const teacherId = 'ins-ja'; // Mock teacher ID
+import { useAuth } from '@/context/auth-context';
 
 export default function TeacherPrebookingPage() {
     const { toast } = useToast();
+    const { userInfo } = useAuth();
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!userInfo) return;
+
         async function fetchCourses() {
             try {
+                const instructor = await getInstructorByUid(userInfo.uid);
+                if (!instructor) {
+                     toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+                     setLoading(false);
+                     return;
+                }
+
                 const allCourses = await getCourses();
                 const teacherPrebookingCourses = allCourses.filter(c => 
-                    c.isPrebooking && c.instructors?.some(i => i.id === teacherId)
+                    c.isPrebooking && c.instructors?.some(i => i.slug === instructor.slug)
                 );
                 setCourses(teacherPrebookingCourses);
             } catch (error) {
@@ -37,7 +46,7 @@ export default function TeacherPrebookingPage() {
             }
         }
         fetchCourses();
-    }, [toast]);
+    }, [userInfo, toast]);
 
     if (loading) {
         return (

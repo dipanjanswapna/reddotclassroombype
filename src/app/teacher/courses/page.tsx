@@ -19,13 +19,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { VariantProps } from 'class-variance-authority';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-// For demo, we'll use a hardcoded teacher ID. In a real app, this would come from the auth state.
-const teacherId = 'ins-ja'; 
+import { useAuth } from '@/context/auth-context';
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 
@@ -46,13 +44,22 @@ export default function TeacherCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { userInfo } = useAuth();
 
   useEffect(() => {
     async function fetchTeacherCourses() {
+      if (!userInfo) return;
       try {
+        const instructor = await getInstructorByUid(userInfo.uid);
+        if (!instructor?.id) {
+          toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+          setLoading(false);
+          return;
+        }
+
         const allCourses = await getCourses();
         const teacherCourses = allCourses.filter(course => 
-          course.instructors?.some(instructor => instructor.id === teacherId)
+          course.instructors?.some(i => i.slug === instructor.slug)
         );
         setCourses(teacherCourses);
       } catch (error) {
@@ -63,7 +70,7 @@ export default function TeacherCoursesPage() {
       }
     }
     fetchTeacherCourses();
-  }, [toast]);
+  }, [userInfo, toast]);
 
   if (loading) {
     return (

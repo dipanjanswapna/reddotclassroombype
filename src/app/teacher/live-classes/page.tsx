@@ -35,13 +35,10 @@ import {
 } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/components/ui/use-toast';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import type { Course, LiveClass } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-
-// Mock data: find all classes assigned to a specific teacher
-const teacherId = 'ins-ja'; // Example teacher ID
+import { useAuth } from '@/context/auth-context';
 
 type LiveClassWithCourse = LiveClass & {
   courseTitle: string;
@@ -50,6 +47,7 @@ type LiveClassWithCourse = LiveClass & {
 
 export default function TeacherLiveClassesPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [liveClasses, setLiveClasses] = useState<LiveClassWithCourse[]>([]);
   const [teacherCourses, setTeacherCourses] = useState<Course[]>([]);
@@ -64,10 +62,18 @@ export default function TeacherLiveClassesPage() {
   const [joinUrl, setJoinUrl] = useState('');
 
   useEffect(() => {
+    if (!userInfo) return;
     const fetchClassData = async () => {
         try {
+            const instructor = await getInstructorByUid(userInfo.uid);
+            if (!instructor) {
+                toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+                setLoading(false);
+                return;
+            }
+
             const allCourses = await getCourses();
-            const filteredTeacherCourses = allCourses.filter(c => c.instructors.some(i => i.id === teacherId));
+            const filteredTeacherCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
             setTeacherCourses(filteredTeacherCourses);
 
             const allClasses = filteredTeacherCourses.flatMap(course => 
@@ -82,7 +88,7 @@ export default function TeacherLiveClassesPage() {
         }
     };
     fetchClassData();
-  }, [toast]);
+  }, [userInfo, toast]);
 
 
   const handleScheduleClass = () => {

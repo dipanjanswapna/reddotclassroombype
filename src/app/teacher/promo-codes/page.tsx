@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { getCourses, getPromoCodes } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid, getPromoCodes } from '@/lib/firebase/firestore';
 import { savePromoCodeAction, deletePromoCodeAction } from '@/app/actions/promo.actions';
 import { PromoCode, Course } from '@/lib/types';
 import {
@@ -25,7 +25,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -37,14 +36,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuIte
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const teacherId = 'ins-ja'; // Mock teacher ID
+import { useAuth } from '@/context/auth-context';
 
 export default function TeacherPromoCodePage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [allPromoCodes, setAllPromoCodes] = useState<PromoCode[]>([]);
   const [teacherCourses, setTeacherCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [teacherId, setTeacherId] = useState<string | null>(null);
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,15 +59,25 @@ export default function TeacherPromoCodePage() {
   const [applicableCourseIds, setApplicableCourseIds] = useState<string[]>(['all']);
 
   useEffect(() => {
+    if (!userInfo) return;
+
     async function fetchData() {
       try {
+        const instructor = await getInstructorByUid(userInfo!.uid);
+        if (!instructor?.id) {
+          toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+          setLoading(false);
+          return;
+        }
+        setTeacherId(instructor.id);
+
         const [fetchedCodes, allCourses] = await Promise.all([
           getPromoCodes(),
           getCourses()
         ]);
         
-        const filteredCourses = allCourses.filter(c => c.instructors.some(i => i.id === teacherId));
-        const filteredCodes = fetchedCodes.filter(p => p.createdBy === teacherId);
+        const filteredCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
+        const filteredCodes = fetchedCodes.filter(p => p.createdBy === instructor.id);
 
         setTeacherCourses(filteredCourses);
         setAllPromoCodes(filteredCodes);
@@ -79,7 +89,7 @@ export default function TeacherPromoCodePage() {
       }
     }
     fetchData();
-  }, [toast]);
+  }, [userInfo, toast]);
 
 
   const handleOpenDialog = (promo: PromoCode | null) => {
@@ -104,6 +114,7 @@ export default function TeacherPromoCodePage() {
 
 
   const handleSaveCode = async () => {
+    if (!teacherId) return;
     setIsSaving(true);
     const result = await savePromoCodeAction({
       id: editingPromo?.id,
@@ -234,7 +245,7 @@ export default function TeacherPromoCodePage() {
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
               <Button onClick={handleSaveCode} disabled={isSaving}>
-                {isSaving && <Loader2 className="animate-spin mr-2"/>}
+                {isSaving && <Loader2 className="mr-2 animate-spin"/>}
                 Save Code
               </Button>
             </DialogFooter>

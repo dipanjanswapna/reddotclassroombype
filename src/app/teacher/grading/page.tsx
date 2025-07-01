@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import { gradeAssignmentAction } from '@/app/actions/grading.actions';
 import type { Assignment } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -23,8 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FileCheck2, Send, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const teacherId = 'jubayer-ahmed'; // Mock teacher ID by slug
+import { useAuth } from '@/context/auth-context';
 
 type AssignmentWithCourseInfo = Assignment & {
   courseTitle: string;
@@ -33,22 +32,30 @@ type AssignmentWithCourseInfo = Assignment & {
 
 export default function TeacherGradingPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [allAssignments, setAllAssignments] = useState<AssignmentWithCourseInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGrading, setIsGrading] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<AssignmentWithCourseInfo | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
-  // Form state for grading dialog
   const [grade, setGrade] = useState('');
   const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
+    if (!userInfo) return;
     const fetchAssignments = async () => {
       try {
+        const instructor = await getInstructorByUid(userInfo.uid);
+        if (!instructor) {
+            toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+            setLoading(false);
+            return;
+        }
+
         const allCourses = await getCourses();
         const teacherCourses = allCourses.filter(c => 
-          c.instructors?.some(i => i.slug === teacherId)
+          c.instructors?.some(i => i.slug === instructor.slug)
         );
         const assignmentsToGrade = teacherCourses.flatMap(course => 
           (course.assignments || []).map(assignment => ({
@@ -67,7 +74,7 @@ export default function TeacherGradingPage() {
     };
 
     fetchAssignments();
-  }, [toast]);
+  }, [userInfo, toast]);
 
   const pendingAssignments = allAssignments.filter(a => a.status === 'Submitted' || a.status === 'Late');
 
@@ -84,8 +91,8 @@ export default function TeacherGradingPage() {
 
     const result = await gradeAssignmentAction(
       selectedAssignment.courseId,
-      selectedAssignment.studentId, // This seems to be used as assignmentId in the action
-      selectedAssignment.id, // And this as studentId
+      selectedAssignment.studentId,
+      selectedAssignment.id,
       grade,
       feedback
     );
