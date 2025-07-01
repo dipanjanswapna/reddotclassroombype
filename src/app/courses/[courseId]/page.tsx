@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -31,7 +32,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Course } from '@/lib/types';
-import { getCourse, getCourses } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -64,8 +65,12 @@ export default async function CourseDetailPage({
   if (!course) {
     notFound();
   }
+  
+  const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
 
   const allCourses = await getCourses();
+  const allOrgs = await getOrganizations();
+  
   const relatedCourses = allCourses.filter(c => c.id !== course.id).slice(0, 4);
   const includedCourses = course.includedArchivedCourseIds
     ? allCourses.filter(c => course.includedArchivedCourseIds?.includes(c.id!))
@@ -80,6 +85,16 @@ export default async function CourseDetailPage({
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
+              
+              {organization && (
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src={organization.logoUrl} alt={organization.name} width={24} height={24} className="rounded-full bg-muted object-contain"/>
+                  <p className="text-sm font-semibold text-muted-foreground">
+                    Sold by <Link href={`/sites/${organization.subdomain}`} className="text-primary hover:underline">{organization.name}</Link>
+                  </p>
+                </div>
+              )}
+              
               <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
                 {course.title}
               </h1>
@@ -326,9 +341,10 @@ export default async function CourseDetailPage({
           <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {includedCourses.map(includedCourse => (
-                <CourseCard key={includedCourse.id} {...includedCourse} />
-              ))}
+              {includedCourses.map(includedCourse => {
+                const provider = allOrgs.find(p => p.id === includedCourse.organizationId);
+                return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} />;
+              })}
             </div>
           </section>
         )}
@@ -336,9 +352,10 @@ export default async function CourseDetailPage({
          <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {relatedCourses.map(course => (
-                    <CourseCard key={course.id} {...course} />
-                ))}
+                {relatedCourses.map(course => {
+                    const provider = allOrgs.find(p => p.id === course.organizationId);
+                    return <CourseCard key={course.id} {...course} provider={provider} />;
+                })}
             </div>
          </section>
       </main>

@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from 'react';
@@ -129,9 +130,10 @@ export function CoursesPageClient({
               </h2>
               {filteredCourses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {filteredCourses.map((course) => (
-                    <CourseCard key={course.id} {...course} />
-                  ))}
+                  {filteredCourses.map((course) => {
+                    const provider = allProviders.find(p => p.id === course.organizationId);
+                    return <CourseCard key={course.id} {...course} provider={provider} />;
+                  })}
                 </div>
               ) : (
                 <p className="text-muted-foreground">{language === 'bn' ? 'আপনার মানদণ্ডের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টারগুলো মুছে ফেলার চেষ্টা করুন।' : 'No courses found matching your criteria. Try clearing the filters.'}</p>
@@ -145,9 +147,10 @@ export function CoursesPageClient({
                     {category}
                   </h2>
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {coursesByCategory[category].map((course) => (
-                      <CourseCard key={course.id} {...course} />
-                    ))}
+                    {coursesByCategory[category].map((course) => {
+                       const provider = allProviders.find(p => p.id === course.organizationId);
+                       return <CourseCard key={course.id} {...course} provider={provider} />;
+                    })}
                   </div>
                 </section>
               ))}
@@ -158,9 +161,10 @@ export function CoursesPageClient({
                         OLD IS GOLD
                     </h2>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {archivedCourses.map((course) => (
-                        <CourseCard key={course.id} {...course} />
-                        ))}
+                        {archivedCourses.map((course) => {
+                            const provider = allProviders.find(p => p.id === course.organizationId);
+                            return <CourseCard key={course.id} {...course} provider={provider} />;
+                        })}
                     </div>
                 </section>
               )}

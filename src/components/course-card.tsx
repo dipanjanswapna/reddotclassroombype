@@ -7,31 +7,22 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
-import { getOrganizations } from "@/lib/firebase/firestore";
 import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
+  provider?: Organization | null;
 };
 
 export function CourseCard(props: CourseCardProps) {
-  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, organizationId, partnerSubdomain, isWishlisted: initialIsWishlisted } = props;
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-
-  useEffect(() => {
-    if (organizationId) {
-      getOrganizations().then(setOrganizations).catch(console.error);
-    }
-  }, [organizationId]);
+  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, isWishlisted: initialIsWishlisted } = props;
   
   if (!id || !title || !imageUrl) {
     return null;
   }
   
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
-  const provider = organizations.find(o => o.id === organizationId);
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   const prebookUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/pre-book/${id}` : `/pre-book/${id}`;
