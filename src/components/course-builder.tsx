@@ -77,6 +77,7 @@ import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { postAnnouncementAction } from '@/app/actions/announcement.actions';
+import { removeUndefinedValues } from '@/lib/utils';
 
 
 type LessonData = {
@@ -581,7 +582,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         courseData.id = courseId;
     }
     
-    const result = await saveCourseAction(courseData);
+    // Clean data before sending to the server action
+    const cleanCourseData = removeUndefinedValues(courseData);
+    
+    const result = await saveCourseAction(cleanCourseData);
 
     if (result.success) {
       toast({ 

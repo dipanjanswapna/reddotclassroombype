@@ -5,19 +5,14 @@ import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { deleteCourse } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { db } from '@/lib/firebase/config';
+import { removeUndefinedValues } from '@/lib/utils';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
 
-    // The data is now pre-cleaned on the client-side, but as a safeguard,
-    // we can still handle specific edge cases here.
-    const cleanData = data as any;
-    
-    // Ensure organizationId is not an empty string if it exists
-    if (cleanData.organizationId === '') {
-        delete cleanData.organizationId;
-    }
+    // Clean the object of any undefined values before sending to Firestore
+    const cleanData = removeUndefinedValues(data);
 
     if (id) {
       const courseRef = doc(db, 'courses', id);
