@@ -60,7 +60,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, CourseInstructor } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, CourseInstructor, Instructor } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -227,7 +227,7 @@ function SortableSyllabusItem({
 }
 
 type CourseBuilderProps = {
-    userRole: 'Admin' | 'Partner' | 'Teacher';
+    userRole: 'Admin' | 'Seller' | 'Teacher';
     redirectPath: string;
 }
 
@@ -284,7 +284,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
   useEffect(() => {
     if (userInfo && isNewCourse) {
-        if (userRole === 'Partner') {
+        if (userRole === 'Seller') {
             getOrganizationByUserId(userInfo.uid).then(org => {
                 if (org?.id) setOrganizationId(org.id);
             });
@@ -415,7 +415,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
   const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person', slug: '' }]);
-  const updateInstructor = (id: string, field: keyof Omit<CourseInstructor, 'id'>, value: string) => {
+  const updateInstructor = (id: string, field: keyof Omit<Instructor, 'id'>, value: string) => {
     setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
   };
   const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
@@ -535,14 +535,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         reconstructedSyllabus.push(currentModule);
     }
     
-    // Construct a clean courseData object
     const courseData: Partial<Course> = {
-        title: courseTitle,
-        description: description,
-        category: category,
+        title: courseTitle || '',
+        description: description || '',
+        category: category || '',
         price: `BDT ${price || 0}`,
-        imageUrl: thumbnailUrl,
-        videoUrl: introVideoUrl,
+        imageUrl: thumbnailUrl || 'https://placehold.co/600x400.png',
+        videoUrl: introVideoUrl || '',
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
@@ -559,13 +558,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         quizzes: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { id, deadline, ...rest } = a;
+            const formattedDeadline = deadline instanceof Date && !isNaN(deadline.getTime())
+                ? format(deadline, 'yyyy-MM-dd')
+                : deadline?.toString() || '';
             return {
                 ...rest,
-                deadline: deadline instanceof Date && !isNaN(deadline.getTime()) ? format(deadline, 'yyyy-MM-dd') : '',
+                deadline: formattedDeadline,
             };
         }).filter(a => a.title),
         status,
-        organizationId: organizationId,
+        organizationId: organizationId || '',
     };
 
     if (!isNewCourse) {
