@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -39,7 +38,7 @@ const roleRedirects: Record<User['role'], string> = {
     Teacher: '/teacher/dashboard',
     Guardian: '/guardian/dashboard',
     Admin: '/admin/dashboard',
-    Partner: '/partner/dashboard',
+    Partner: '/seller/dashboard',
     Affiliate: '/affiliate/dashboard',
     Moderator: '/moderator/dashboard',
 };

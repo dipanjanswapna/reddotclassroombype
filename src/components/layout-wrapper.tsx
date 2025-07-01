@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -38,7 +37,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     pathname.startsWith('/teacher') ||
     pathname.startsWith('/guardian') ||
     pathname.startsWith('/admin') ||
-    pathname.startsWith('/partner');
+    pathname.startsWith('/seller');
 
   if (isDashboardPage) {
     return (

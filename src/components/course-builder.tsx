@@ -76,7 +76,6 @@ import {
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
-import { removeUndefinedValues } from '@/lib/utils';
 
 
 type LessonData = {
@@ -257,7 +256,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [instructors, setInstructors] = useState<(CourseInstructor & { id: string })[]>([]);
+  const [instructors, setInstructors] = useState<(Omit<CourseInstructor, 'id'> & { id: string; })[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
@@ -451,7 +450,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : q) } : q));
   };
   const removeOption = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.filter(qu => qu.id !== questionId) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
@@ -536,12 +535,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     }
     
     const courseData: Partial<Course> = {
-        title: courseTitle || '',
-        description: description || '',
-        category: category || '',
+        title: courseTitle,
+        description: description,
+        category: category,
         price: `BDT ${price || 0}`,
-        imageUrl: thumbnailUrl || 'https://placehold.co/600x400.png',
-        videoUrl: introVideoUrl || '',
+        imageUrl: thumbnailUrl,
+        videoUrl: introVideoUrl,
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
@@ -567,16 +566,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             };
         }).filter(a => a.title),
         status,
-        organizationId: organizationId || '',
+        organizationId: organizationId,
     };
 
     if (!isNewCourse) {
         courseData.id = courseId;
     }
-
-    const cleanCourseData = removeUndefinedValues(courseData);
     
-    const result = await saveCourseAction(cleanCourseData);
+    const result = await saveCourseAction(courseData);
 
     if (result.success) {
       toast({ 

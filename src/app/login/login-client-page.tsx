@@ -119,7 +119,7 @@ export default function LoginPageClient() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="student">Student / Guardian</TabsTrigger>
-                    <TabsTrigger value="staff">Staff / Partner</TabsTrigger>
+                    <TabsTrigger value="staff">Staff / Seller</TabsTrigger>
                 </TabsList>
                 <TabsContent value="student">
                     <div className="pt-4 grid gap-4">
@@ -146,7 +146,7 @@ export default function LoginPageClient() {
                             <SelectContent>
                               <SelectItem value="Admin">Admin</SelectItem>
                               <SelectItem value="Teacher">Teacher</SelectItem>
-                              <SelectItem value="Partner">Partner</SelectItem>
+                              <SelectItem value="Partner">Seller</SelectItem>
                               <SelectItem value="Moderator">Moderator</SelectItem>
                               <SelectItem value="Affiliate">Affiliate</SelectItem>
                             </SelectContent>

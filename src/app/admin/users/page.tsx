@@ -211,7 +211,7 @@ export default function UserManagementPage() {
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>
                       {roleIcons[user.role]}
-                      {user.role}
+                      {user.role === 'Partner' ? 'Seller' : user.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -308,7 +308,7 @@ export default function UserManagementPage() {
                   <SelectContent>
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Teacher">Teacher</SelectItem>
-                    <SelectItem value="Partner">Partner</SelectItem>
+                    <SelectItem value="Partner">Seller</SelectItem>
                     <SelectItem value="Moderator">Moderator</SelectItem>
                     <SelectItem value="Affiliate">Affiliate</SelectItem>
                   </SelectContent>
