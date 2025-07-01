@@ -13,9 +13,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { getInstructors } from '@/lib/firebase/firestore';
+import { getInstructors, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import { inviteInstructorAction, removeInstructorFromOrgAction } from '@/app/actions';
-import type { Instructor } from '@/lib/types';
+import type { Instructor, Organization } from '@/lib/types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { PlusCircle, MoreVertical, Trash2, Edit, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -23,11 +23,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
 
-const partnerId = 'org_medishark';
 
 export default function PartnerTeacherManagementPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,26 +39,44 @@ export default function PartnerTeacherManagementPage() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteTitle, setInviteTitle] = useState('');
   
-  const fetchInstructors = async () => {
+  const fetchInstructors = async (orgId: string) => {
       try {
           const allInstructors = await getInstructors();
-          setInstructors(allInstructors.filter(inst => inst.organizationId === partnerId));
+          setInstructors(allInstructors.filter(inst => inst.organizationId === orgId));
       } catch (error) {
           console.error("Failed to fetch instructors:", error);
           toast({ title: 'Error', description: 'Could not fetch instructors.', variant: 'destructive'});
-      } finally {
-          setLoading(false);
       }
   };
 
   useEffect(() => {
-    fetchInstructors();
-  }, []);
+    if (!userInfo) return;
+    
+    const fetchInitialData = async () => {
+        setLoading(true);
+        try {
+            const org = await getOrganizationByUserId(userInfo.uid);
+            if (org) {
+                setOrganization(org);
+                await fetchInstructors(org.id!);
+            } else {
+                 toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive'});
+            }
+        } catch (error) {
+            console.error("Failed to fetch initial data:", error);
+            toast({ title: 'Error', description: 'An error occurred while loading your data.', variant: 'destructive'});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchInitialData();
+  }, [userInfo, toast]);
 
   const handleRemoveTeacher = async (id: string) => {
     const result = await removeInstructorFromOrgAction(id);
-    if (result.success) {
-      fetchInstructors();
+    if (result.success && organization) {
+      fetchInstructors(organization.id!);
       toast({ title: "Instructor Removed", description: "The instructor has been removed from your organization.", variant: 'destructive'});
     } else {
       toast({ title: "Error", description: result.message, variant: "destructive" });
@@ -64,7 +84,7 @@ export default function PartnerTeacherManagementPage() {
   };
 
   const handleInviteTeacher = async () => {
-    if (!inviteName || !inviteEmail || !inviteTitle) {
+    if (!inviteName || !inviteEmail || !inviteTitle || !organization) {
       toast({ title: "Missing Information", description: "Please fill out all fields.", variant: "destructive" });
       return;
     }
@@ -75,11 +95,11 @@ export default function PartnerTeacherManagementPage() {
         avatarUrl: 'https://placehold.co/100x100.png',
         dataAiHint: 'person teacher',
         slug: inviteName.toLowerCase().replace(/\s+/g, '-'),
-        organizationId: partnerId,
+        organizationId: organization.id,
     });
 
     if (result.success) {
-      await fetchInstructors();
+      await fetchInstructors(organization.id!);
       toast({ title: 'Invitation Sent!', description: `${inviteName} has been invited to join your organization.` });
       setIsInviteOpen(false);
       setInviteName('');
@@ -162,7 +182,7 @@ export default function PartnerTeacherManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {instructors.map((inst) => (
+              {instructors.length > 0 ? instructors.map((inst) => (
                 <TableRow key={inst.id}>
                   <TableCell className="flex items-center gap-3">
                      <Avatar className="h-9 w-9">
@@ -190,7 +210,13 @@ export default function PartnerTeacherManagementPage() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="h-24 text-center">
+                    No instructors found for your organization.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -198,3 +224,4 @@ export default function PartnerTeacherManagementPage() {
     </div>
   );
 }
+
