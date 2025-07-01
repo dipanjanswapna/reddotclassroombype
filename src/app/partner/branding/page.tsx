@@ -33,6 +33,7 @@ export default function PartnerBrandingPage() {
     const [heroTitle, setHeroTitle] = useState('');
     const [heroSubtitle, setHeroSubtitle] = useState('');
     const [heroImageUrl, setHeroImageUrl] = useState('');
+    const [heroDataAiHint, setHeroDataAiHint] = useState('');
     const [siteUrl, setSiteUrl] = useState('');
 
     useEffect(() => {
@@ -48,11 +49,12 @@ export default function PartnerBrandingPage() {
                     setHeroTitle(partnerData.hero?.title || '');
                     setHeroSubtitle(partnerData.hero?.subtitle || '');
                     setHeroImageUrl(partnerData.hero?.imageUrl || '');
+                    setHeroDataAiHint(partnerData.hero?.dataAiHint || '');
                     setSiteUrl(`${window.location.origin}/sites/${partnerData.subdomain}`);
                 }
             } catch (err) {
                 console.error(err);
-                toast({ title: "Error", description: "Failed to load partner data.", variant: "destructive" });
+                toast({ title: "Error", description: "Failed to load seller data.", variant: "destructive" });
             } finally {
                 setLoading(false);
             }
@@ -72,7 +74,8 @@ export default function PartnerBrandingPage() {
             hero: {
                 title: heroTitle,
                 subtitle: heroSubtitle,
-                imageUrl: heroImageUrl
+                imageUrl: heroImageUrl,
+                dataAiHint: heroDataAiHint,
             }
         };
 
@@ -146,9 +149,15 @@ export default function PartnerBrandingPage() {
                         <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
                         <Textarea id="heroSubtitle" value={heroSubtitle} onChange={e => setHeroSubtitle(e.target.value)} placeholder="e.g., Your gateway to excellence." />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="heroImage">Hero Background Image URL</Label>
-                        <Input id="heroImage" value={heroImageUrl} onChange={e => setHeroImageUrl(e.target.value)} placeholder="https://placehold.co/1200x400.png" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="heroImage">Hero Background Image URL</Label>
+                            <Input id="heroImage" value={heroImageUrl} onChange={e => setHeroImageUrl(e.target.value)} placeholder="https://placehold.co/1200x400.png" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="heroDataAiHint">Hero Image AI Hint</Label>
+                            <Input id="heroDataAiHint" value={heroDataAiHint} onChange={e => setHeroDataAiHint(e.target.value)} placeholder="e.g., students classroom" />
+                        </div>
                     </div>
                 </CardContent>
             </Card>

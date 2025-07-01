@@ -30,7 +30,7 @@ export default function PartnerSitePage() {
                   setPartnerCourses(filteredCourses);
               }
           } catch (error) {
-              console.error("Failed to fetch partner data:", error);
+              console.error("Failed to fetch seller data:", error);
           } finally {
               setLoading(false);
           }
@@ -91,7 +91,7 @@ export default function PartnerSitePage() {
           </div>
         ) : (
           <div className="text-center py-16 bg-muted rounded-lg">
-            <p className="text-muted-foreground">No courses available from this provider yet.</p>
+            <p className="text-muted-foreground">No courses available from this seller yet.</p>
           </div>
         )}
       </div>
