@@ -245,7 +245,7 @@ export type User = {
   name: string;
   email: string;
   avatarUrl: string;
-  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Partner';
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller';
   status: 'Active' | 'Suspended' | 'Pending Approval';
   joined: string | Timestamp;
   className?: string; // Add class for student
@@ -300,7 +300,7 @@ export type PlatformSettings = {
   Teacher: PlatformRoleSettings;
   Guardian: PlatformRoleSettings;
   Admin: PlatformRoleSettings;
-  Partner: PlatformRoleSettings;
+  Seller: PlatformRoleSettings;
   Affiliate: PlatformRoleSettings;
   Moderator: PlatformRoleSettings;
 };

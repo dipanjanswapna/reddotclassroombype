@@ -146,7 +146,7 @@ export default function LoginPageClient() {
                             <SelectContent>
                               <SelectItem value="Admin">Admin</SelectItem>
                               <SelectItem value="Teacher">Teacher</SelectItem>
-                              <SelectItem value="Partner">Seller</SelectItem>
+                              <SelectItem value="Seller">Seller</SelectItem>
                               <SelectItem value="Moderator">Moderator</SelectItem>
                               <SelectItem value="Affiliate">Affiliate</SelectItem>
                             </SelectContent>

@@ -192,7 +192,7 @@ export default function SignupPageClient() {
                 <p className="text-muted-foreground">Want to join our team?</p>
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
                     {config?.platformSettings.Teacher.signupEnabled && <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>}
-                    {config?.platformSettings.Partner.signupEnabled && <Link href="/partner-program/apply" className="font-semibold text-primary hover:underline">Apply as Seller</Link>}
+                    {config?.platformSettings.Seller.signupEnabled && <Link href="/seller-program/apply" className="font-semibold text-primary hover:underline">Apply as Seller</Link>}
                     {config?.platformSettings.Affiliate.signupEnabled && <Link href="/auth/affiliate-signup" className="font-semibold text-primary hover:underline">Join as Affiliate</Link>}
                     {config?.platformSettings.Moderator.signupEnabled && <Link href="/auth/moderator-signup" className="font-semibold text-primary hover:underline">Join as Moderator</Link>}
                 </div>

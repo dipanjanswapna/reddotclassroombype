@@ -63,7 +63,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
             <h3 className="font-headline font-semibold mb-4 text-white">{t.join_us[language]}</h3>
             <ul className="space-y-2">
                <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
-              <li><Link href="/partner-program/apply" className="hover:text-white">{t.become_a_seller[language]}</Link></li>
+              <li><Link href="/seller-program/apply" className="hover:text-white">{t.become_a_seller[language]}</Link></li>
               <li><Link href="/auth/affiliate-signup" className="hover:text-white">{t.become_an_affiliate[language]}</Link></li>
               <li><Link href="/auth/moderator-signup" className="hover:text-white">{t.become_a_moderator[language]}</Link></li>
               <li><Link href="/login?type=staff" className="hover:text-white">{t.teacher_seller_staff_login[language]}</Link></li>

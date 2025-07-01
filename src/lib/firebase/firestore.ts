@@ -158,7 +158,7 @@ const defaultPlatformSettings: PlatformSettings = {
     Teacher: { signupEnabled: true, loginEnabled: true },
     Guardian: { signupEnabled: true, loginEnabled: true },
     Admin: { signupEnabled: true, loginEnabled: true },
-    Partner: { signupEnabled: true, loginEnabled: true },
+    Seller: { signupEnabled: true, loginEnabled: true },
     Affiliate: { signupEnabled: true, loginEnabled: true },
     Moderator: { signupEnabled: true, loginEnabled: true },
 };

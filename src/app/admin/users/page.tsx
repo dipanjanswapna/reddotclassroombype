@@ -50,7 +50,7 @@ const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Admin: <UserCog className="h-4 w-4" />,
   Affiliate: <UserCheck className="h-4 w-4" />,
   Moderator: <UserX className="h-4 w-4" />,
-  Partner: <Handshake className="h-4 w-4" />,
+  Seller: <Handshake className="h-4 w-4" />,
 };
 
 const roleColors: { [key in User['role']]: string } = {
@@ -60,7 +60,7 @@ const roleColors: { [key in User['role']]: string } = {
   Admin: 'border-primary/30 bg-primary/10 text-primary',
   Affiliate: 'border-yellow-300 bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
   Moderator: 'border-orange-300 bg-orange-50 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700',
-  Partner: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
+  Seller: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
 };
 
 const statusColors: { [key in User['status']]: string } = {
@@ -89,7 +89,7 @@ export default function UserManagementPage() {
     setLoading(true);
     try {
         const fetchedUsers = await getUsers();
-        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Partner'];
+        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Seller'];
         setStaffUsers(fetchedUsers.filter(user => staffRoles.includes(user.role)));
     } catch(e) {
         toast({ title: 'Error', description: 'Could not fetch users', variant: 'destructive' });
@@ -211,7 +211,7 @@ export default function UserManagementPage() {
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>
                       {roleIcons[user.role]}
-                      {user.role === 'Partner' ? 'Seller' : user.role}
+                      {user.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -308,7 +308,7 @@ export default function UserManagementPage() {
                   <SelectContent>
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Teacher">Teacher</SelectItem>
-                    <SelectItem value="Partner">Seller</SelectItem>
+                    <SelectItem value="Seller">Seller</SelectItem>
                     <SelectItem value="Moderator">Moderator</SelectItem>
                     <SelectItem value="Affiliate">Affiliate</SelectItem>
                   </SelectContent>

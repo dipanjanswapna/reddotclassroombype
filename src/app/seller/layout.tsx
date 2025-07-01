@@ -29,13 +29,13 @@ export default function SellerLayout({
 
   useEffect(() => {
     if (!loading) {
-      if (!user || userInfo?.role !== 'Partner') {
+      if (!user || userInfo?.role !== 'Seller') {
         router.push('/login');
       }
     }
   }, [user, userInfo, loading, router]);
   
-  if (loading || !user || userInfo?.role !== 'Partner') {
+  if (loading || !user || userInfo?.role !== 'Seller') {
     return (
         <div className="flex items-center justify-center h-screen">
             <LoadingSpinner className="w-12 h-12" />

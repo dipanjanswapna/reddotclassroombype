@@ -15,7 +15,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
                 if(user) await updateUser(user.id!, { status: 'Active' });
             }
         }
-        revalidatePath('/admin/partners');
+        revalidatePath('/admin/sellers');
         return { success: true, message: 'Seller status updated.' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -35,7 +35,7 @@ export async function savePartnerBrandingAction(id: string, data: Partial<Organi
     }
 }
 
-export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 'status'> & { contactUserId: string }) {
+export async function applyAsSellerAction(data: Omit<Organization, 'id' | 'status'> & { contactUserId: string }) {
     try {
         const newPartnerData: Partial<Organization> = {
             ...data,
@@ -48,14 +48,14 @@ export async function applyForPartnershipAction(data: Omit<Organization, 'id' | 
     }
 }
 
-export async function invitePartnerAction(data: Omit<Organization, 'id' | 'status'>) {
+export async function inviteSellerAction(data: Omit<Organization, 'id' | 'status'>) {
     try {
         const newPartnerData: Partial<Organization> = {
             ...data,
             status: 'approved'
         };
         await addOrganization(newPartnerData);
-        revalidatePath('/admin/partners');
+        revalidatePath('/admin/sellers');
         return { success: true, message: 'Seller invited and approved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
@@ -65,7 +65,7 @@ export async function invitePartnerAction(data: Omit<Organization, 'id' | 'statu
 export async function deleteOrganizationAction(id: string) {
     try {
         await deleteOrganization(id);
-        revalidatePath('/admin/partners');
+        revalidatePath('/admin/sellers');
         return { success: true, message: 'Seller organization deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
