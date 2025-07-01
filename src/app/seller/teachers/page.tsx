@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import { getInstructors, getOrganizationByUserId } from '@/lib/firebase/firestore';
-import { inviteInstructorAction, removeInstructorFromOrgAction } from '@/app/actions';
+import { inviteInstructorAction, removeInstructorFromOrgAction } from '@/app/actions/instructor.actions';
 import type { Instructor, Organization } from '@/lib/types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { PlusCircle, MoreVertical, Trash2, Edit, Loader2 } from 'lucide-react';

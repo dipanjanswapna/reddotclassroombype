@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { applyForPartnershipAction } from '@/app/actions';
+import { applyForPartnershipAction } from '@/app/actions/organization.actions';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';

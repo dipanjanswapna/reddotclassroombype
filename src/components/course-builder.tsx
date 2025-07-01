@@ -62,7 +62,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Course, SyllabusModule, AssignmentTemplate, CourseInstructor, Instructor } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId } from '@/lib/firebase/firestore';
-import { saveCourseAction } from '@/app/actions';
+import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
   Dialog,

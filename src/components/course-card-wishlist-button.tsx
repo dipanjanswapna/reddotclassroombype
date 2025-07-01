@@ -1,9 +1,10 @@
+
 'use client';
 
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { toggleWishlistAction } from '@/app/actions';
+import { toggleWishlistAction } from '@/app/actions/user.actions';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';

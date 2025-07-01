@@ -23,7 +23,7 @@ import { Loader2, Upload, KeyRound, Copy, Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig, PlatformSettings } from "@/lib/types";
-import { saveHomepageConfigAction } from "@/app/actions";
+import { saveHomepageConfigAction } from "@/app/actions/homepage.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 

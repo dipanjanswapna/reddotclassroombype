@@ -28,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { getSupportTickets } from '@/lib/firebase/firestore';
-import { createSupportTicketAction } from '@/app/actions';
+import { createSupportTicketAction } from '@/app/actions/support.actions';
 import type { SupportTicket } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';

@@ -29,7 +29,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import type { VariantProps } from 'class-variance-authority';
 import { Course } from '@/lib/types';
-import { deleteCourseAction, saveCourseAction } from '@/app/actions';
+import { deleteCourseAction, saveCourseAction } from '@/app/actions/course.actions';
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
 

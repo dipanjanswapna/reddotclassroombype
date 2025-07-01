@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import { getCourses, getPromoCodes } from '@/lib/firebase/firestore';
-import { savePromoCodeAction, deletePromoCodeAction } from '@/app/actions';
+import { savePromoCodeAction, deletePromoCodeAction } from '@/app/actions/promo.actions';
 import { PromoCode, Course } from '@/lib/types';
 import {
   Dialog,

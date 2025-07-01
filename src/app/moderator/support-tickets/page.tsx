@@ -23,7 +23,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { getSupportTickets } from '@/lib/firebase/firestore';
-import { replyToSupportTicketAction, closeSupportTicketAction } from '@/app/actions';
+import { replyToSupportTicketAction, closeSupportTicketAction } from '@/app/actions/support.actions';
 import type { SupportTicket } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';

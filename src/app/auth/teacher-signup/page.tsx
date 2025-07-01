@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
-import { createInstructorAction } from '@/app/actions';
+import { createInstructorAction } from '@/app/actions/instructor.actions';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';

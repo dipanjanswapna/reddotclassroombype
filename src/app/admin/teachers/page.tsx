@@ -46,7 +46,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Instructor } from '@/lib/types';
 import { getInstructors } from '@/lib/firebase/firestore';
-import { updateInstructorStatusAction, adminInviteInstructorAction, deleteInstructorAction } from '@/app/actions';
+import { updateInstructorStatusAction, adminInviteInstructorAction, deleteInstructorAction } from '@/app/actions/instructor.actions';
 import type { VariantProps } from 'class-variance-authority';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';

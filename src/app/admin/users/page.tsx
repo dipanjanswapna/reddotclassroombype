@@ -39,7 +39,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User } from '@/lib/types';
 import { getUsers } from '@/lib/firebase/firestore';
-import { saveUserAction, deleteUserAction } from '@/app/actions';
+import { saveUserAction, deleteUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 

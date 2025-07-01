@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Course } from '@/lib/types';
 import { getCourses } from '@/lib/firebase/firestore';
-import { saveCourseAction } from '@/app/actions';
+import { saveCourseAction } from '@/app/actions/course.actions';
 import { Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
@@ -124,5 +124,3 @@ export default function AdminPrebookingPage() {
         </div>
     );
 }
-
-    

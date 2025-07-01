@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import { getCourses } from '@/lib/firebase/firestore';
-import { gradeAssignmentAction } from '@/app/actions';
+import { gradeAssignmentAction } from '@/app/actions/grading.actions';
 import type { Assignment } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -83,8 +83,8 @@ export default function TeacherGradingPage() {
 
     const result = await gradeAssignmentAction(
       selectedAssignment.courseId,
-      selectedAssignment.id,
-      selectedAssignment.studentId,
+      selectedAssignment.studentId, // This seems to be used as assignmentId in the action
+      selectedAssignment.id, // And this as studentId
       grade,
       feedback
     );

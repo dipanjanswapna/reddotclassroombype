@@ -46,7 +46,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Organization } from '@/lib/types';
 import { getOrganizations } from '@/lib/firebase/firestore';
-import { updateOrganizationStatusAction, invitePartnerAction, deleteOrganizationAction } from '@/app/actions';
+import { updateOrganizationStatusAction, invitePartnerAction, deleteOrganizationAction } from '@/app/actions/organization.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Organization['status']) => {

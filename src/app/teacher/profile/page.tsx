@@ -11,7 +11,7 @@ import { Upload, Linkedin, Facebook, Twitter, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { getInstructor } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
-import { saveInstructorProfileAction } from "@/app/actions";
+import { saveInstructorProfileAction } from "@/app/actions/instructor.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
 
 // Mock current teacher ID for demonstration
