@@ -101,16 +101,16 @@ export default function PartnerBrandingPage() {
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    Site Management & Branding
+                    Seller Storefront & Branding
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
-                    Customize the look and feel of your dedicated partner site.
+                    Customize the look and feel of your dedicated seller storefront.
                 </p>
             </div>
             
              <Card>
                 <CardHeader>
-                    <CardTitle>Your Dedicated Site URL</CardTitle>
+                    <CardTitle>Your Seller Storefront URL</CardTitle>
                     <CardDescription>This is the public URL where students can see all of your courses.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -135,7 +135,7 @@ export default function PartnerBrandingPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Hero Section</CardTitle>
-                    <CardDescription>Customize the main banner section of your site's homepage.</CardDescription>
+                    <CardDescription>Customize the main banner section of your storefront homepage.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                      <div className="space-y-2">
@@ -156,7 +156,7 @@ export default function PartnerBrandingPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Brand Settings</CardTitle>
-                    <CardDescription>This information will be used on your dedicated course pages and partner site.</CardDescription>
+                    <CardDescription>This information will be used on your course pages and seller storefront.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">

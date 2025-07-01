@@ -105,7 +105,7 @@ export default function PartnerCourseManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-headline text-3xl font-bold tracking-tight">
-            Course Management
+            My Courses
           </h1>
           <p className="mt-1 text-lg text-muted-foreground">
             Create, edit, and manage all courses for your organization.
@@ -121,7 +121,7 @@ export default function PartnerCourseManagementPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Your Courses</CardTitle>
+          <CardTitle>Seller Courses</CardTitle>
           <CardDescription>A list of all courses published by your organization.</CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -40,7 +39,7 @@ export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
 
-    // Data is now pre-cleaned on the client-side, but as a safeguard,
+    // The data is now pre-cleaned on the client-side, but as a safeguard,
     // we can still handle specific edge cases here.
     const cleanData = data as any;
     
@@ -184,7 +183,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
             }
         }
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Organization status updated.' };
+        return { success: true, message: 'Seller status updated.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -470,7 +469,7 @@ export async function invitePartnerAction(data: Omit<Organization, 'id' | 'statu
         };
         await addOrganization(newPartnerData);
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Partner invited and approved successfully.' };
+        return { success: true, message: 'Seller invited and approved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -480,7 +479,7 @@ export async function deleteOrganizationAction(id: string) {
     try {
         await deleteOrganization(id);
         revalidatePath('/admin/partners');
-        return { success: true, message: 'Partner organization deleted successfully.' };
+        return { success: true, message: 'Seller organization deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
     }
@@ -538,7 +537,5 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
 
 
 
-
-    
 
     

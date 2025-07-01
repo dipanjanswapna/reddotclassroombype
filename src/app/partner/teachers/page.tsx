@@ -57,7 +57,7 @@ export default function PartnerTeacherManagementPage() {
     const result = await removeInstructorFromOrgAction(id);
     if (result.success) {
       fetchInstructors();
-      toast({ title: "Teacher Removed", description: "The teacher has been removed from your organization.", variant: 'destructive'});
+      toast({ title: "Instructor Removed", description: "The instructor has been removed from your organization.", variant: 'destructive'});
     } else {
       toast({ title: "Error", description: result.message, variant: "destructive" });
     }
@@ -104,23 +104,23 @@ export default function PartnerTeacherManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-headline text-3xl font-bold tracking-tight">
-            Teacher Management
+            Instructor Management
           </h1>
           <p className="mt-1 text-lg text-muted-foreground">
-            Manage all teachers associated with your organization.
+            Manage all instructors for your organization.
           </p>
         </div>
          <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
             <DialogTrigger asChild>
                 <Button>
                     <PlusCircle className="mr-2" />
-                    Invite New Teacher
+                    Invite New Instructor
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Invite New Teacher</DialogTitle>
-                    <DialogDescription>Enter the details of the teacher you want to invite to your organization.</DialogDescription>
+                    <DialogTitle>Invite New Instructor</DialogTitle>
+                    <DialogDescription>Enter the details of the instructor you want to invite to your organization.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -149,14 +149,14 @@ export default function PartnerTeacherManagementPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Your Teachers</CardTitle>
-          <CardDescription>A list of all teachers in your organization.</CardDescription>
+          <CardTitle>Your Instructors</CardTitle>
+          <CardDescription>A list of all instructors in your organization.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Teacher</TableHead>
+                <TableHead>Instructor</TableHead>
                 <TableHead>Title/Expertise</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>

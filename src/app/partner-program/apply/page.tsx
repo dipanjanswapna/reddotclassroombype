@@ -96,10 +96,10 @@ export default function PartnerApplicationPage() {
           <div className="flex items-center justify-center py-12 px-4 bg-gray-50 min-h-screen">
               <Card className="w-full max-w-lg shadow-lg">
                   <CardHeader className="text-center">
-                      <CardTitle className="text-2xl font-headline">Partner Registration Closed</CardTitle>
+                      <CardTitle className="text-2xl font-headline">Seller Registration Closed</CardTitle>
                   </CardHeader>
                   <CardContent>
-                      <p className="text-center text-muted-foreground">We are not accepting new partner applications at this time. Please check back later.</p>
+                      <p className="text-center text-muted-foreground">We are not accepting new seller applications at this time. Please check back later.</p>
                       <div className="mt-6 text-center text-sm">
                           <Link href="/" className="font-semibold text-primary hover:underline">
                               &larr; Back to Home
@@ -115,8 +115,8 @@ export default function PartnerApplicationPage() {
     <div className="container mx-auto max-w-2xl py-12">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Become an RDC Partner</CardTitle>
-          <CardDescription>Join our platform and reach thousands of students across the country. Fill out the form below to apply.</CardDescription>
+          <CardTitle className="text-2xl font-headline">Become an RDC Seller</CardTitle>
+          <CardDescription>Sell your courses on our platform and reach thousands of students across the country. Fill out the form below to apply.</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -157,7 +157,7 @@ export default function PartnerApplicationPage() {
                     <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">rdc.com/sites/</span>
                     <Input id="subdomain" name="subdomain" placeholder="your-company-name" className="rounded-l-none" required />
                 </div>
-                <p className="text-xs text-muted-foreground">This will be your dedicated portal address.</p>
+                <p className="text-xs text-muted-foreground">This will be your dedicated storefront address.</p>
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="description">Brief Description</Label>

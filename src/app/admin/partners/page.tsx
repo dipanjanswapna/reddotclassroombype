@@ -96,7 +96,7 @@ export default function AdminPartnerManagementPage() {
     if (result.success) {
       fetchData(); // Re-fetch to get updated list
       toast({
-        title: "Partner Status Updated",
+        title: "Seller Status Updated",
         description: `The organization has been ${newStatus}.`,
       });
     } else {
@@ -120,7 +120,7 @@ export default function AdminPartnerManagementPage() {
     });
     if (result.success) {
         fetchData();
-        toast({ title: "Partner Invited", description: result.message });
+        toast({ title: "Seller Invited", description: result.message });
         setIsInviteOpen(false);
         setName('');
         setContactEmail('');
@@ -137,7 +137,7 @@ export default function AdminPartnerManagementPage() {
       const result = await deleteOrganizationAction(orgToDelete.id);
       if (result.success) {
           fetchData();
-          toast({ title: 'Partner Deleted', description: result.message, variant: 'destructive' });
+          toast({ title: 'Seller Deleted', description: result.message, variant: 'destructive' });
       } else {
           toast({ title: 'Error', description: result.message, variant: 'destructive' });
       }
@@ -158,22 +158,22 @@ export default function AdminPartnerManagementPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-headline text-3xl font-bold tracking-tight">
-              Partner Management
+              Seller Management
             </h1>
             <p className="mt-1 text-lg text-muted-foreground">
-              Approve, manage, and view all EdTech partners on the platform.
+              Approve, manage, and view all 3rd-party sellers on the platform.
             </p>
           </div>
           <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
               <DialogTrigger asChild>
                 <Button>
                     <PlusCircle className="mr-2" />
-                    Invite Partner
+                    Invite Seller
                 </Button>
               </DialogTrigger>
               <DialogContent>
                   <DialogHeader>
-                      <DialogTitle>Invite New Partner</DialogTitle>
+                      <DialogTitle>Invite New Seller</DialogTitle>
                       <DialogDescription>Fill out the details to invite a new organization to the platform. They will be approved automatically.</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
@@ -194,8 +194,8 @@ export default function AdminPartnerManagementPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>All Partner Organizations</CardTitle>
-            <CardDescription>A list of all partner organizations in the system, including pending applications.</CardDescription>
+            <CardTitle>All Seller Organizations</CardTitle>
+            <CardDescription>A list of all seller organizations in the system, including pending applications.</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -249,7 +249,7 @@ export default function AdminPartnerManagementPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>This will permanently delete the partner organization <strong>{orgToDelete?.name}</strong>. This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>This will permanently delete the seller organization <strong>{orgToDelete?.name}</strong>. This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

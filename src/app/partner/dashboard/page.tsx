@@ -56,7 +56,7 @@ export default function PartnerDashboardPage() {
     <div className="p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
             <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Partner Dashboard
+            Seller Dashboard
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
             Here's an overview of your organization's performance.

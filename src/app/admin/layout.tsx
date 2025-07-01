@@ -52,7 +52,7 @@ export default function AdminLayout({
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
-        { href: "/admin/partners", icon: Handshake, label: "Partners" },
+        { href: "/admin/partners", icon: Handshake, label: "Sellers" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },

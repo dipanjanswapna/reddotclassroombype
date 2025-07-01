@@ -108,7 +108,7 @@ export default function PartnerStudentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-headline text-3xl font-bold tracking-tight">
-            Student Management
+            My Students
           </h1>
           <p className="mt-1 text-lg text-muted-foreground">
             View all students enrolled in your organization's courses.
@@ -124,7 +124,7 @@ export default function PartnerStudentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Enrolled Students</CardTitle>
+          <CardTitle>Your Enrolled Students</CardTitle>
           <CardDescription>A list of all students currently enrolled in your courses.</CardDescription>
         </CardHeader>
         <CardContent>
