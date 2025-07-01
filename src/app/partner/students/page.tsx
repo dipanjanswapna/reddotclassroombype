@@ -14,10 +14,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import { getCourses, getUsers, getOrganizationByUserId } from '@/lib/firebase/firestore';
 import type { User, Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
 
 type StudentDisplayInfo = {
   id: string;
@@ -28,26 +29,34 @@ type StudentDisplayInfo = {
   progress: number;
 };
 
-const partnerId = 'org_medishark';
-
 export default function PartnerStudentsPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [students, setStudents] = useState<StudentDisplayInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const getPartnerStudents = async () => {
+    if (!userInfo) return;
+
+    const getSellerStudents = async () => {
         try {
+            const organization = await getOrganizationByUserId(userInfo.uid);
+            if (!organization) {
+                toast({ title: 'Error', description: 'Could not find your seller organization.', variant: 'destructive'});
+                setLoading(false);
+                return;
+            }
+
             const [allCourses, allUsers] = await Promise.all([
                 getCourses(),
                 getUsers()
             ]);
 
-            const partnerCourses = allCourses.filter(c => c.organizationId === partnerId);
+            const sellerCourses = allCourses.filter(c => c.organizationId === organization.id);
             const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
 
-            partnerCourses.forEach(course => {
+            sellerCourses.forEach(course => {
                 course.assignments?.forEach(assignment => {
                     if (!studentCourseMap.has(assignment.studentId)) {
                         studentCourseMap.set(assignment.studentId, []);
@@ -62,12 +71,12 @@ export default function PartnerStudentsPage() {
                 });
             });
 
-            const partnerStudents: StudentDisplayInfo[] = [];
+            const sellerStudents: StudentDisplayInfo[] = [];
             studentCourseMap.forEach((courseData, studentId) => {
                 const studentInfo = allUsers.find(s => s.id === studentId);
                 if (studentInfo) {
                     courseData.forEach(cd => {
-                        partnerStudents.push({
+                        sellerStudents.push({
                             id: `${studentInfo.id}-${cd.courseTitle.replace(/\s/g, '-')}`,
                             name: studentInfo.name,
                             email: studentInfo.email,
@@ -78,7 +87,7 @@ export default function PartnerStudentsPage() {
                     });
                 }
             });
-            setStudents(partnerStudents);
+            setStudents(sellerStudents);
 
         } catch (error) {
             console.error("Failed to fetch students:", error);
@@ -87,8 +96,8 @@ export default function PartnerStudentsPage() {
             setLoading(false);
         }
     };
-    getPartnerStudents();
-  }, [toast]);
+    getSellerStudents();
+  }, [userInfo, toast]);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
