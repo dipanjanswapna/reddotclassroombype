@@ -8,27 +8,48 @@ export const metadata: Metadata = {
   description: 'Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development at Red Dot Classroom. Find the perfect course to advance your learning journey.',
 };
 
-export default async function CoursesPage() {
+export default async function CoursesPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | undefined };
+}) {
   const [courses, categories, providers] = await Promise.all([
     getCourses(),
     getCategories(),
     getOrganizations(),
   ]);
 
-  const activeCourses = courses.filter(course => course.status === 'Published' && !course.isArchived);
+  let activeCourses = courses.filter(course => course.status === 'Published' && !course.isArchived);
   const archivedCourses = courses.filter(course => course.status === 'Published' && course.isArchived);
   const approvedProviders = providers.filter(p => p.status === 'approved');
   
   const sortedCategories = [...categories].sort();
   const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
 
+  // Server-side filtering
+  const selectedCategory = searchParams?.category;
+  const selectedSubCategory = searchParams?.subCategory;
+  const selectedProvider = searchParams?.provider;
+  const hasFilters = !!(selectedCategory || selectedSubCategory || selectedProvider);
+
+  if (selectedCategory) {
+    activeCourses = activeCourses.filter(course => course.category === selectedCategory);
+  }
+  if (selectedSubCategory) {
+    activeCourses = activeCourses.filter(course => course.subCategory === selectedSubCategory);
+  }
+  if (selectedProvider) {
+    activeCourses = activeCourses.filter(course => course.organizationId === selectedProvider);
+  }
+
   return (
     <CoursesPageClient 
-        activeCourses={activeCourses}
+        initialCourses={activeCourses}
         archivedCourses={archivedCourses}
         allCategories={sortedCategories}
         allSubCategories={allSubCategories}
         allProviders={approvedProviders}
+        hasFilters={hasFilters}
     />
   );
 }

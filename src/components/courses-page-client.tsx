@@ -1,9 +1,7 @@
 
-
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
@@ -14,11 +12,12 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
 
 type CoursesPageClientProps = {
-    activeCourses: Course[];
+    initialCourses: Course[];
     archivedCourses: Course[];
     allCategories: string[];
     allSubCategories: string[];
     allProviders: Organization[];
+    hasFilters: boolean;
 };
 
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {
@@ -46,41 +45,18 @@ const categoryOrder = [
 ];
 
 export function CoursesPageClient({
-    activeCourses,
+    initialCourses,
     archivedCourses,
     allCategories,
     allSubCategories,
-    allProviders
+    allProviders,
+    hasFilters
 }: CoursesPageClientProps) {
   const { language } = useLanguage();
-  const searchParams = useSearchParams();
-  const [loading] = useState(false); // Data is pre-fetched, so no client-side loading needed initially
+  // Loading state can be simplified as data is pre-fetched and re-fetched by navigation
+  const [loading] = useState(false); 
 
-  const selectedCategory = searchParams?.get('category');
-  const selectedSubCategory = searchParams?.get('subCategory');
-  const selectedProvider = searchParams?.get('provider');
-
-  let filteredCourses = activeCourses;
-
-  if (selectedCategory) {
-    filteredCourses = filteredCourses.filter(
-      (course) => course.category === selectedCategory
-    );
-  }
-  if (selectedSubCategory) {
-    filteredCourses = filteredCourses.filter(
-      (course) => course.subCategory === selectedSubCategory
-    );
-  }
-   if (selectedProvider) {
-    filteredCourses = filteredCourses.filter(
-      (course) => course.organizationId === selectedProvider
-    );
-  }
-  
-  const hasFilters = selectedCategory || selectedSubCategory || selectedProvider;
-  
-  const coursesByCategory = groupCoursesByCategory(filteredCourses);
+  const coursesByCategory = groupCoursesByCategory(initialCourses);
 
   const sortedCategories = Object.keys(coursesByCategory).sort((a, b) => {
     const indexA = categoryOrder.indexOf(a);
@@ -126,11 +102,11 @@ export function CoursesPageClient({
         ) : hasFilters ? (
             <section className='py-0'>
               <h2 className="font-headline mb-6 text-3xl font-bold">
-                {language === 'bn' ? `ফিল্টার ফলাফল (${filteredCourses.length})` : `Filtered Results (${filteredCourses.length})`}
+                {language === 'bn' ? `ফিল্টার ফলাফল (${initialCourses.length})` : `Filtered Results (${initialCourses.length})`}
               </h2>
-              {filteredCourses.length > 0 ? (
+              {initialCourses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {filteredCourses.map((course) => {
+                  {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
                     return <CourseCard key={course.id} {...course} provider={provider} />;
                   })}
