@@ -46,7 +46,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Organization } from '@/lib/types';
 import { getOrganizations } from '@/lib/firebase/firestore';
-import { updateOrganizationStatusAction, invitePartnerAction, deleteOrganizationAction } from '@/app/actions/organization.actions';
+import { updateOrganizationStatusAction, inviteSellerAction, deleteOrganizationAction } from '@/app/actions/organization.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getStatusBadgeVariant = (status: Organization['status']) => {
@@ -110,7 +110,7 @@ export default function AdminPartnerManagementPage() {
         return;
     }
     setIsSaving(true);
-    const result = await invitePartnerAction({
+    const result = await inviteSellerAction({
         name,
         contactEmail,
         subdomain,
