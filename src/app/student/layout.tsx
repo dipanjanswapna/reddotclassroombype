@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -37,15 +36,6 @@ export default function StudentLayout({
     );
   }
 
-  // Check if the path is a specific course page. Example: /student/my-courses/1, /student/my-courses/1/assignments
-  // It should NOT match /student/my-courses
-  const isCourseSpecificPage = /^\/student\/my-courses\/.+/.test(pathname);
-
-  // If it is a course page, render only the children, allowing the nested course layout to take over.
-  if (isCourseSpecificPage) {
-    return <>{children}</>;
-  }
-
   const navItems = [
     { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
@@ -80,6 +70,12 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
+  // The main student layout should not handle course-specific pages directly.
+  // The new layout at /student/my-courses/[courseId]/layout.tsx will handle that.
+  if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
+      return <>{children}</>;
+  }
+
   return (
     <>
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
