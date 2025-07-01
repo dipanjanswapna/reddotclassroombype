@@ -137,6 +137,7 @@ export const getCategories = async (): Promise<string[]> => {
 }
 
 // Enrollments
+export const getEnrollments = () => getCollection<Enrollment>('enrollments');
 export const getEnrollmentsByUserId = async (userId: string): Promise<Enrollment[]> => {
     const q = query(collection(db, "enrollments"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
