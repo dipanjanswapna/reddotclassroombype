@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/components/ui/use-toast';
 import { getCourses, getOrganizationByUserId } from '@/lib/firebase/firestore';
-import { deleteCourseAction } from '@/app/actions';
+import { deleteCourseAction } from '@/app/actions/course.actions';
 import { Course } from '@/lib/types';
 import { badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';

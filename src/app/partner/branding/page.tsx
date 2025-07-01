@@ -11,7 +11,7 @@ import { Palette, Link as LinkIcon, ExternalLink, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from 'next/link';
 import { getOrganization } from "@/lib/firebase/firestore";
-import { savePartnerBrandingAction } from "@/app/actions";
+import { savePartnerBrandingAction } from "@/app/actions/organization.actions";
 import { Textarea } from "@/components/ui/textarea";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import type { Organization } from "@/lib/types";
