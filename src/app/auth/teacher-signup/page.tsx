@@ -76,7 +76,7 @@ export default function TeacherSignupPage() {
               title: "Application Submitted!",
               description: "Thank you! Your account has been created and is now under review. We'll notify you upon approval.",
           });
-          router.push('/login?status=application_submitted');
+          setTimeout(() => router.push('/'), 2000);
       } else {
           // This case is tricky: auth user exists but instructor profile failed.
           // For now, show an error. A robust solution might delete the auth user or flag for admin review.

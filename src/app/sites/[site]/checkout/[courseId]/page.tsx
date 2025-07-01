@@ -101,9 +101,9 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     if (result.success) {
         toast({
             title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
-            description: `You have successfully enrolled in "${course.title}".`
+            description: `You have successfully enrolled in "${course.title}". Redirecting...`
         });
-        router.push('/student/my-courses');
+        setTimeout(() => router.push('/'), 2000);
     } else {
         toast({
             title: 'Enrollment Failed',

@@ -74,7 +74,7 @@ export default function PartnerApplicationPage() {
           title: "Application Submitted!",
           description: result.message,
         });
-        router.push('/login?type=staff');
+        setTimeout(() => router.push('/'), 2000);
       } else {
         setError(result.message);
       }

@@ -57,7 +57,7 @@ export default function ModeratorSignupPage() {
           title: "Application Submitted!",
           description: "Thank you! Your application to become a moderator is now under review. We'll notify you upon approval.",
       });
-      router.push('/login?status=application_submitted');
+      setTimeout(() => router.push('/'), 2000);
     } catch (authError: any) {
         setError(authError.message || "An unexpected error occurred during signup.");
     } finally {

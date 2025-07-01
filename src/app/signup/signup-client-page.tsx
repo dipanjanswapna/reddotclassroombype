@@ -62,7 +62,6 @@ export default function SignupPageClient() {
     setError(null);
     try {
       await signup(email, password, fullName, role);
-      router.push('/login?status=signup_success');
     } catch (err: any) {
       setError(err.message || 'Failed to create an account.');
     } finally {

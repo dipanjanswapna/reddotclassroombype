@@ -19,6 +19,7 @@ import { auth, db } from '@/lib/firebase/config';
 import { getUserByUid, getHomepageConfig } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { User } from '@/lib/types';
+import { useToast } from '@/components/ui/use-toast';
 
 interface AuthContextType {
     user: FirebaseUser | null;
@@ -35,21 +36,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const roleRedirects: Record<User['role'], string> = {
-    Student: '/student/dashboard',
-    Teacher: '/teacher/dashboard',
-    Guardian: '/guardian/dashboard',
-    Admin: '/admin/dashboard',
-    Partner: '/seller/dashboard',
-    Affiliate: '/affiliate/dashboard',
-    Moderator: '/moderator/dashboard',
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { toast } = useToast();
 
     const fetchAndSetUser = useCallback(async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
@@ -68,16 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => unsubscribe();
     }, [fetchAndSetUser]);
     
-    useEffect(() => {
-        if (!loading && user && userInfo && userInfo.status === 'Active') {
-            const path = roleRedirects[userInfo.role] || '/';
-            // Only redirect if not already on a page within that role's portal
-            if (!window.location.pathname.startsWith(path.split('/')[1])) {
-                // router.push(path);
-            }
-        }
-    }, [userInfo, loading, user, router]);
-
     const refreshUserInfo = useCallback(async () => {
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -86,6 +68,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [fetchAndSetUser]);
 
+    const redirectToHome = (title: string, description: string) => {
+        toast({ title, description });
+        setTimeout(() => router.push('/'), 1500);
+    };
 
     const login = async (email: string, pass: string, role?: User['role']) => {
         const config = await getHomepageConfig();
@@ -139,6 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         
         setUserInfo(fetchedUserInfo);
+        redirectToHome('Login Successful!', `Welcome back, ${fetchedUserInfo.name}. Redirecting...`);
         return userCredential;
     };
 
@@ -183,6 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setUserInfo(existingUserInfo);
+        redirectToHome('Login Successful!', `Welcome back, ${existingUserInfo.name}. Redirecting...`);
     }
     
     const loginWithGoogle = async () => {
@@ -230,6 +218,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
 
         await setDoc(doc(db, "users", newUser.uid), newUserInfo);
+
+        if (status === 'Active') {
+            setUserInfo({ ...newUserInfo, id: newUser.uid } as User);
+            redirectToHome('Account Created!', `Welcome, ${name}. Redirecting...`);
+        }
+
         return userCredential;
     };
 
