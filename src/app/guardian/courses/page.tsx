@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCourses, getUsers } from '@/lib/firebase/firestore';
+import { getCourses, getUsers, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course, User } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
@@ -30,14 +30,19 @@ export default function GuardianCoursesPage() {
                 setGuardian(currentGuardian || null);
                 setStudent(linkedStudent || null);
 
-                if (linkedStudent) {
-                    const enrolledCourses = allCourses.filter(c => 
-                        c.assignments?.some(a => a.studentId === linkedStudent.id)
-                    ).map((course, index) => ({
-                        ...course,
-                        progress: [70, 45, 90][index % 3], // Still mock progress for simplicity
-                    }));
-                    setChildsCourses(enrolledCourses);
+                if (linkedStudent && linkedStudent.id) {
+                    const enrollments = await getEnrollmentsByUserId(linkedStudent.id);
+                    const enrolledCourseIds = enrollments.map(e => e.courseId);
+                    const enrolledCourses = allCourses.filter(c => enrolledCourseIds.includes(c.id!));
+                    
+                    const coursesWithProgress = enrolledCourses.map((course) => {
+                        const enrollment = enrollments.find(e => e.courseId === course.id);
+                        return {
+                            ...course,
+                            progress: enrollment?.progress || 0,
+                        }
+                    });
+                    setChildsCourses(coursesWithProgress);
                 }
 
             } catch (error) {

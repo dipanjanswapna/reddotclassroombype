@@ -6,29 +6,28 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { getCourses, getUsers } from '@/lib/firebase/firestore';
-import type { Course, User as UserType } from '@/lib/types';
+import { getCourses, getEnrollmentsByUserId, getUsers } from '@/lib/firebase/firestore';
+import type { User as UserType } from '@/lib/types';
 
 
 // Mock current guardian
 const currentGuardianId = 'usr_guar_003';
 
 export default async function GuardianDashboardPage() {
-    // This would be calculated from real data in a full app
-    const overallProgress = 75;
-
     const allUsers = await getUsers();
-    const allCourses = await getCourses();
     
     const currentGuardian = allUsers.find(u => u.id === currentGuardianId);
     const student = currentGuardian ? allUsers.find(u => u.id === currentGuardian.linkedStudentId) : null;
     
     let enrolledCoursesCount = 0;
-    if (student) {
-        const enrolledCourses = allCourses.filter(c => 
-            c.assignments?.some(a => a.studentId === student.id)
-        );
-        enrolledCoursesCount = enrolledCourses.length;
+    let overallProgress = 0;
+
+    if (student && student.id) {
+        const enrollments = await getEnrollmentsByUserId(student.id);
+        enrolledCoursesCount = enrollments.length;
+        if (enrollments.length > 0) {
+            overallProgress = Math.round(enrollments.reduce((acc, e) => acc + e.progress, 0) / enrollments.length);
+        }
     }
   
     if (!student) {

@@ -1,11 +1,10 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCourses, getUser } from '@/lib/firebase/firestore';
-import type { Course, User } from '@/lib/types';
+import { getCourses, getUser, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import type { Course, User, Enrollment } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, ListFilter } from 'lucide-react';
@@ -16,29 +15,21 @@ const currentStudentId = 'usr_stud_001';
 
 export default function MyCoursesPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-  const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
       async function fetchCoursesData() {
           try {
-              const [userData, allCourses] = await Promise.all([
+              const [userData, coursesData, enrollmentsData] = await Promise.all([
                 getUser(currentStudentId),
-                getCourses()
+                getCourses(),
+                getEnrollmentsByUserId(currentStudentId)
               ]);
               setUser(userData);
-
-              // Determine enrolled courses based on assignment data (mock logic)
-              const studentEnrolledCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
-              setEnrolledCourses(studentEnrolledCourses);
-
-              // Fetch wishlist courses
-              if (userData?.wishlist && userData.wishlist.length > 0) {
-                const studentWishlistedCourses = allCourses.filter(c => userData.wishlist!.includes(c.id!));
-                setWishlistedCourses(studentWishlistedCourses);
-              }
-
+              setAllCourses(coursesData);
+              setEnrollments(enrollmentsData);
           } catch(e) {
               console.error("Failed to fetch courses", e);
           } finally {
@@ -48,18 +39,28 @@ export default function MyCoursesPage() {
       fetchCoursesData();
   }, []);
 
-  // For demo, we'll divide enrolled courses into "in-progress" and "completed"
-  const inProgressCourses = enrolledCourses.slice(0, 3).map((course, index) => ({
-    ...course,
-    progress: [70, 45, 90, 25][index % 4],
-    lastViewed: ['Today', '2 days ago', 'Yesterday', '1 week ago'][index % 4],
-  }));
+  const getCourseById = (courseId: string) => allCourses.find(c => c.id === courseId);
+  
+  const inProgressCourses = enrollments
+    .filter(e => e.status === 'in-progress')
+    .map(e => {
+        const course = getCourseById(e.courseId);
+        return course ? { ...course, progress: e.progress, lastViewed: 'Today' } : null; // lastViewed is mock
+    })
+    .filter(Boolean) as (Course & { progress: number; lastViewed: string })[];
 
-  const completedCourses = enrolledCourses.length > 3 ? enrolledCourses.slice(3, 5).map((course, index) => ({
-      ...course,
-      progress: 100,
-      completedDate: ['2024-05-15', '2024-06-01'][index % 2],
-  })) : [];
+  const completedCourses = enrollments
+    .filter(e => e.status === 'completed')
+    .map(e => {
+        const course = getCourseById(e.courseId);
+        return course ? { ...course, completedDate: e.enrollmentDate.toDate().toISOString().split('T')[0] } : null;
+    })
+    .filter(Boolean) as (Course & { completedDate: string })[];
+
+
+  const wishlistedCourses = user?.wishlist 
+    ? allCourses.filter(c => user.wishlist!.includes(c.id!))
+    : [];
 
   if (loading) {
     return (

@@ -9,19 +9,21 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { getCourses, getUser } from '@/lib/firebase/firestore';
-import type { Course, User, Assignment } from '@/lib/types';
+import { getCourses, getUser, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import type { Course, User, Assignment, Enrollment } from '@/lib/types';
 
 
 const currentStudentId = 'usr_stud_001';
 
 export default async function DashboardPage() {
-  const [user, allCourses] = await Promise.all([
+  const [user, allCourses, enrollments] = await Promise.all([
     getUser(currentStudentId),
-    getCourses()
+    getCourses(),
+    getEnrollmentsByUserId(currentStudentId)
   ]);
 
-  const enrolledCourses = allCourses.filter(c => c.assignments?.some(a => a.studentId === currentStudentId));
+  const enrolledCourseIds = enrollments.map(e => e.courseId);
+  const enrolledCourses = allCourses.filter(c => enrolledCourseIds.includes(c.id!));
   
   const upcomingDeadlines = enrolledCourses
       .flatMap(c => c.assignments || [])
@@ -29,16 +31,21 @@ export default async function DashboardPage() {
       .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime())
       .slice(0, 3);
 
-  // Mock completion status for demo
-  const completedCoursesCount = enrolledCourses.length > 2 ? 1 : 0;
+  const completedCoursesCount = enrollments.filter(e => e.status === 'completed').length;
   
-  const inProgressCourses = enrolledCourses.slice(0, 2).map((course, index) => ({
-      ...course,
-      progress: [70, 45, 90, 25][index % 4],
-  }));
+  const inProgressCourses = enrolledCourses
+    .filter(c => enrollments.some(e => e.courseId === c.id && e.status === 'in-progress'))
+    .slice(0, 2)
+    .map(course => {
+        const enrollment = enrollments.find(e => e.courseId === course.id);
+        return {
+            ...course,
+            progress: enrollment?.progress || 0,
+        };
+    });
 
-  const overallProgress = enrolledCourses.length > 0 
-    ? Math.round(inProgressCourses.reduce((acc, c) => acc + (c.progress || 0), 0) / inProgressCourses.length)
+  const overallProgress = enrollments.length > 0 
+    ? Math.round(enrollments.reduce((acc, e) => acc + (e.progress || 0), 0) / enrollments.length)
     : 0;
 
   return (
@@ -54,7 +61,7 @@ export default async function DashboardPage() {
                       <BookOpen className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                      <div className="text-2xl font-bold">{enrolledCourses.length}</div>
+                      <div className="text-2xl font-bold">{enrollments.length}</div>
                       <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
                   </CardContent>
               </Card>
