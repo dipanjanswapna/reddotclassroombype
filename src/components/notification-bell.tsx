@@ -38,20 +38,25 @@ export function NotificationBell() {
   useEffect(() => {
     if (!currentUserId) return;
 
-    const twentyFourHoursAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
-
+    // Query only by userId to avoid needing a composite index
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", currentUserId),
-        where("date", ">=", twentyFourHoursAgo)
+        where("userId", "==", currentUserId)
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
       const fetchedNotifications: Notification[] = [];
       querySnapshot.forEach((doc) => {
-        fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
+        const notification = { id: doc.id, ...doc.data() } as Notification;
+        
+        // Filter by date on the client side
+        if (notification.date.toMillis() >= twentyFourHoursAgo) {
+            fetchedNotifications.push(notification);
+        }
       });
-      // Sort client-side to avoid needing a composite index
+      
+      // Sort client-side
       fetchedNotifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
       setNotifications(fetchedNotifications);
     }, (error) => {
