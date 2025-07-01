@@ -43,6 +43,16 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
         c.status === 'Published' && c.instructors?.some(i => i.slug === params.teacherSlug)
     );
 
+    // --- Dynamic Stats Calculation ---
+    const ratedCourses = courses.filter(c => c.rating && c.rating > 0);
+    const totalRatingSum = ratedCourses.reduce((sum, course) => sum + (course.rating || 0), 0);
+    const averageRating = ratedCourses.length > 0 ? (totalRatingSum / ratedCourses.length).toFixed(1) : "N/A";
+    
+    // Simple mock for student count to avoid heavy queries.
+    const totalReviews = courses.reduce((sum, course) => sum + (course.reviews || 0), 0);
+    const studentCount = totalReviews > 0 ? totalReviews * 10 + courses.length * 5 : 0;
+
+
     return (
         <div className="bg-background">
             {/* Hero/About Section */}
@@ -66,8 +76,8 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                             <h2 className="font-headline text-2xl font-bold mb-4">About Me</h2>
                             <p className="text-muted-foreground whitespace-pre-line">{teacher.bio}</p>
                             <div className="flex flex-wrap gap-4 mt-6">
-                                <Badge variant="secondary" className="p-2 gap-2 text-base"><Star className="text-yellow-500" /> 4.8 Average Rating</Badge>
-                                 <Badge variant="secondary" className="p-2 gap-2 text-base"><Users /> 5,000+ Students</Badge>
+                                <Badge variant="secondary" className="p-2 gap-2 text-base"><Star className="text-yellow-500" /> {averageRating} Average Rating</Badge>
+                                 <Badge variant="secondary" className="p-2 gap-2 text-base"><Users /> {studentCount.toLocaleString()}+ Students</Badge>
                                  <Badge variant="secondary" className="p-2 gap-2 text-base"><CheckCircle className="text-green-500" /> RDC Verified</Badge>
                             </div>
                         </div>
