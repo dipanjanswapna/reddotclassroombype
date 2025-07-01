@@ -10,17 +10,17 @@ import { useToast } from "@/components/ui/use-toast";
 import { Palette, Link as LinkIcon, ExternalLink, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from 'next/link';
-import { getOrganization } from "@/lib/firebase/firestore";
+import { getOrganizationByUserId } from "@/lib/firebase/firestore";
 import { savePartnerBrandingAction } from "@/app/actions/organization.actions";
 import { Textarea } from "@/components/ui/textarea";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import type { Organization } from "@/lib/types";
+import { useAuth } from "@/context/auth-context";
 
-// Mock data - in a real app, this would come from auth context
-const currentPartnerId = 'org_medishark';
 
 export default function PartnerBrandingPage() {
     const { toast } = useToast();
+    const { userInfo } = useAuth();
     const [partner, setPartner] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -37,9 +37,11 @@ export default function PartnerBrandingPage() {
     const [siteUrl, setSiteUrl] = useState('');
 
     useEffect(() => {
+        if (!userInfo) return;
+
         const fetchPartner = async () => {
             try {
-                const partnerData = await getOrganization(currentPartnerId);
+                const partnerData = await getOrganizationByUserId(userInfo.uid);
                 if (partnerData) {
                     setPartner(partnerData);
                     setName(partnerData.name);
@@ -51,6 +53,8 @@ export default function PartnerBrandingPage() {
                     setHeroImageUrl(partnerData.hero?.imageUrl || '');
                     setHeroDataAiHint(partnerData.hero?.dataAiHint || '');
                     setSiteUrl(`${window.location.origin}/sites/${partnerData.subdomain}`);
+                } else {
+                    toast({ title: "Error", description: "Could not find your organization details.", variant: "destructive" });
                 }
             } catch (err) {
                 console.error(err);
@@ -60,7 +64,7 @@ export default function PartnerBrandingPage() {
             }
         };
         fetchPartner();
-    }, [toast]);
+    }, [userInfo, toast]);
 
 
     const handleSave = async () => {
