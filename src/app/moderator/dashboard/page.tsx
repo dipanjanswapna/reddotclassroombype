@@ -1,22 +1,70 @@
+'use client';
 
+import { useState, useEffect } from 'react';
 import {
   FileScan,
   Ticket,
   Users,
   MessageSquareWarning,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-const recentActivity = [
-    { id: 'act1', type: 'Report', description: 'User "SpamBot" reported for spam.', date: '5m ago'},
-    { id: 'act2', type: 'Ticket', description: 'New ticket #1024 opened: "Payment Issue".', date: '15m ago'},
-    { id: 'act3', type: 'Report', description: 'User "RudeUser" reported for harassment.', date: '1h ago'},
-];
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { useToast } from '@/components/ui/use-toast';
+import { getSupportTickets, getUsers } from '@/lib/firebase/firestore';
+import { SupportTicket, User } from '@/lib/types';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function ModeratorDashboardPage() {
+    const { toast } = useToast();
+    const [stats, setStats] = useState({
+        pendingReviews: 12, // Placeholder
+        openSupportTickets: 0,
+        totalUsers: 0,
+        newReportsToday: 8, // Placeholder
+    });
+    const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchDashboardData() {
+            try {
+                const [allTickets, allUsers] = await Promise.all([
+                    getSupportTickets(),
+                    getUsers(),
+                ]);
+
+                const openTickets = allTickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
+                const sortedTickets = allTickets.sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                
+                setStats(prev => ({
+                    ...prev,
+                    openSupportTickets: openTickets,
+                    totalUsers: allUsers.length
+                }));
+                setRecentTickets(sortedTickets.slice(0, 5));
+
+            } catch(e) {
+                console.error(e);
+                toast({ title: 'Error', description: 'Failed to load dashboard data.', variant: 'destructive'});
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchDashboardData();
+    }, [toast]);
+    
+    if (loading) {
+        return (
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        );
+    }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="mb-8">
@@ -36,9 +84,9 @@ export default function ModeratorDashboardPage() {
                 <FileScan className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">12</div>
+                <div className="text-2xl font-bold">{stats.pendingReviews}</div>
                 <p className="text-xs text-muted-foreground">
-                User-reported content
+                User-reported content (placeholder)
                 </p>
             </CardContent>
             </Card>
@@ -50,7 +98,7 @@ export default function ModeratorDashboardPage() {
                 <Ticket className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">5</div>
+                <div className="text-2xl font-bold">{stats.openSupportTickets}</div>
                 <p className="text-xs text-muted-foreground">
                 Waiting for a response
                 </p>
@@ -59,14 +107,14 @@ export default function ModeratorDashboardPage() {
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                Active Users
+                Total Users
                 </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">1,250</div>
+                <div className="text-2xl font-bold">{stats.totalUsers}</div>
                 <p className="text-xs text-muted-foreground">
-                Users online in the last hour
+                All registered users
                 </p>
             </CardContent>
             </Card>
@@ -78,9 +126,9 @@ export default function ModeratorDashboardPage() {
                 <MessageSquareWarning className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">+8</div>
+                <div className="text-2xl font-bold">+{stats.newReportsToday}</div>
                 <p className="text-xs text-muted-foreground">
-                Since yesterday
+                Since yesterday (placeholder)
                 </p>
             </CardContent>
             </Card>
@@ -101,13 +149,15 @@ export default function ModeratorDashboardPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {recentActivity.map((act) => (
-                            <TableRow key={act.id}>
-                                <TableCell><Badge variant={act.type === 'Report' ? 'destructive' : 'warning'}>{act.type}</Badge></TableCell>
-                                <TableCell>{act.description}</TableCell>
-                                <TableCell>{act.date}</TableCell>
+                        {recentTickets.map((ticket) => (
+                            <TableRow key={ticket.id}>
+                                <TableCell><Badge variant='warning'>Ticket</Badge></TableCell>
+                                <TableCell>New ticket from {ticket.userName}: "{ticket.subject}"</TableCell>
+                                <TableCell>{formatDistanceToNow(ticket.createdAt.toDate(), { addSuffix: true })}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="outline" size="sm">View</Button>
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href="/moderator/support-tickets">View</Link>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
