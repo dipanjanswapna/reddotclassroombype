@@ -249,6 +249,8 @@ export type User = {
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller';
   status: 'Active' | 'Suspended' | 'Pending Approval';
   joined: string | Timestamp;
+  classRoll?: string;
+  registrationNumber?: string;
   className?: string; // Add class for student
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students

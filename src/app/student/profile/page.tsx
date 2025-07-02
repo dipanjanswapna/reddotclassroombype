@@ -139,9 +139,19 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              <div className="space-y-2">
-                <Label htmlFor="userId">User ID</Label>
-                <Input id="userId" value={userInfo.id} readOnly className="cursor-not-allowed bg-muted" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="userId">Student ID</Label>
+                    <Input id="userId" value={userInfo.uid || ''} readOnly className="cursor-not-allowed bg-muted" />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="classRoll">Class Roll</Label>
+                    <Input id="classRoll" value={userInfo.classRoll || 'Not Assigned'} readOnly className="cursor-not-allowed bg-muted" />
+                </div>
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="regNumber">Registration Number</Label>
+                <Input id="regNumber" value={userInfo.registrationNumber || 'Not Assigned'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>

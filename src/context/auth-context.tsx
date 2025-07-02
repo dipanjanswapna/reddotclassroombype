@@ -36,6 +36,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function generateRollNumber(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function generateRegistrationNumber(): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -164,6 +177,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 role: 'Student', // Default role for social sign-in
                 status: 'Active',
                 joined: serverTimestamp(),
+                classRoll: generateRollNumber(),
+                registrationNumber: generateRegistrationNumber(),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             existingUserInfo = { ...newUserInfo, id: user.uid } as User;
@@ -216,6 +231,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             status: status,
             joined: serverTimestamp(),
         };
+
+        if (role === 'Student') {
+            newUserInfo.classRoll = generateRollNumber();
+            newUserInfo.registrationNumber = generateRegistrationNumber();
+        }
 
         await setDoc(doc(db, "users", newUser.uid), newUserInfo);
 
