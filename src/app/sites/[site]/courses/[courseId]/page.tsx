@@ -94,30 +94,19 @@ export default async function PartnerCourseDetailPage({
                 {course.description}
               </p>
               <div className="relative aspect-video rounded-lg overflow-hidden group mb-2 shadow-lg">
-                <Image
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  priority
-                  className="object-cover"
-                  data-ai-hint={course.dataAiHint}
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <PlayCircle className="w-20 h-20 text-white/80 group-hover:text-white transition-colors cursor-pointer" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Image
-                    key={i}
-                    src={`https://placehold.co/160x90.png`}
-                    alt={`Thumbnail ${i}`}
-                    width={160}
-                    height={90}
-                    className="rounded-md object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                    data-ai-hint="video thumbnail"
-                  />
-                ))}
+                <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full" aria-label={`Watch intro video for ${course.title}`}>
+                    <Image
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      priority
+                      className="object-cover"
+                      data-ai-hint={course.dataAiHint}
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <PlayCircle className="w-20 h-20 text-white/80 group-hover:text-white transition-colors cursor-pointer" />
+                    </div>
+                </Link>
               </div>
             </div>
             <div className="lg:col-span-1">
