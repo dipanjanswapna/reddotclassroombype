@@ -6,6 +6,9 @@ import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { getEnrollmentsByUserId, getCoursesByIds } from "@/lib/firebase/firestore";
+import { Course } from "@/lib/types";
 
 const formatJoinedDate = (joined: any): string => {
     if (!joined) return 'N/A';
@@ -29,7 +32,33 @@ const formatJoinedDate = (joined: any): string => {
 
 
 export default function StudentIdCardPage() {
-    const { userInfo, loading } = useAuth();
+    const { userInfo, loading: authLoading } = useAuth();
+    const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+    const [dataLoading, setDataLoading] = useState(true);
+
+    useEffect(() => {
+        if (!authLoading && userInfo) {
+            const fetchEnrolledCourses = async () => {
+                try {
+                    const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                    const courseIds = enrollments.map(e => e.courseId);
+                    if (courseIds.length > 0) {
+                        const courses = await getCoursesByIds(courseIds);
+                        setEnrolledCourses(courses);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch enrolled courses for ID card:", error);
+                } finally {
+                    setDataLoading(false);
+                }
+            };
+            fetchEnrolledCourses();
+        } else if (!authLoading) {
+            setDataLoading(false);
+        }
+    }, [userInfo, authLoading]);
+
+    const loading = authLoading || dataLoading;
 
     if (loading) {
         return (
@@ -65,6 +94,7 @@ export default function StudentIdCardPage() {
                 nidNumber={userInfo.nidNumber}
                 mobileNumber={userInfo.mobileNumber}
                 address={userInfo.address}
+                enrolledCourses={enrolledCourses}
             />
         </div>
     );
