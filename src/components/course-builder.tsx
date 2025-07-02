@@ -25,6 +25,8 @@ import {
   Loader2,
   Wand2,
   Phone,
+  ChevronsUpDown,
+  Check,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,8 +63,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, CourseInstructor, Instructor } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -74,11 +76,24 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { postAnnouncementAction } from '@/app/actions/announcement.actions';
 import { removeUndefinedValues } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 
 type LessonData = {
@@ -257,10 +272,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
-  const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
+  const [allArchivedCourses, setAllArchivedCourses] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [instructors, setInstructors] = useState<(Omit<CourseInstructor, 'id'> & { id: string; })[]>([]);
+  const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
@@ -287,38 +303,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   }
   
   useEffect(() => {
-    if (userInfo && isNewCourse) {
-        if (userRole === 'Seller') {
-            getOrganizationByUserId(userInfo.uid).then(org => {
-                if (org?.id) setOrganizationId(org.id);
-            });
-        } else if (userRole === 'Teacher') {
-            getInstructorByUid(userInfo.uid).then(inst => {
-                if (inst) {
-                    if (inst.organizationId) setOrganizationId(inst.organizationId);
-                    setInstructors([{
-                        id: inst.id!,
-                        name: inst.name,
-                        title: inst.title,
-                        avatarUrl: inst.avatarUrl,
-                        dataAiHint: inst.dataAiHint,
-                        slug: inst.slug
-                    }]);
-                }
-            });
-        }
-    }
-  }, [userInfo, userRole, isNewCourse]);
-
-  useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCourses ] = await Promise.all([
+            const [ fetchedCategories, allCourses, allInstructorsData ] = await Promise.all([
                 getCategories(),
-                getCourses()
+                getCourses(),
+                getInstructors()
             ]);
             setAllCategories(fetchedCategories);
-            setArchivedCourses(allCourses.filter(c => c.isArchived));
+            setAllArchivedCourses(allCourses.filter(c => c.isArchived));
+            setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -327,20 +321,23 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setDescription(courseData.description || '');
                     setCategory(courseData.category || '');
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
-                    
                     let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
                     if (imageUrl.includes('placehold.c/')) {
-                        imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
+                      imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
                     }
                     setThumbnailUrl(imageUrl);
-                    
                     setIntroVideoUrl(courseData.videoUrl || '');
                     setWhatsappNumber(courseData.whatsappNumber || '');
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
                     setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-                    setInstructors(courseData.instructors?.map(i => ({...i, id: Math.random().toString()})) || []);
+                    
+                    const courseInstructors = courseData.instructors.map(courseInst => {
+                        return allInstructorsData.find(i => i.slug === courseInst.slug);
+                    }).filter((i): i is Instructor => !!i);
+                    setInstructors(courseInstructors);
+
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
@@ -348,6 +345,20 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setOrganizationId(courseData.organizationId);
                 } else {
                     notFound();
+                }
+            } else {
+                // Pre-fill based on user role for new course
+                if (userInfo) {
+                    if (userRole === 'Seller') {
+                        const org = await getOrganizationByUserId(userInfo.uid);
+                        if (org?.id) setOrganizationId(org.id);
+                    } else if (userRole === 'Teacher') {
+                        const inst = await getInstructorByUid(userInfo.uid);
+                        if (inst) {
+                            if (inst.organizationId) setOrganizationId(inst.organizationId);
+                            setInstructors([inst]);
+                        }
+                    }
                 }
             }
         } catch (err) {
@@ -358,7 +369,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         }
     }
     fetchInitialData();
-  }, [courseId, isNewCourse, toast]);
+  }, [courseId, isNewCourse, toast, userInfo, userRole]);
 
 
   const sensors = useSensors(
@@ -425,11 +436,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   };
   const removeFaq = (id: string) => setFaqs(prev => prev.filter(faq => faq.id !== id));
 
-  const addInstructor = () => setInstructors(prev => [...prev, { id: Date.now().toString(), name: '', title: '', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person', slug: '' }]);
-  const updateInstructor = (id: string, field: keyof Omit<Instructor, 'id'>, value: string) => {
-    setInstructors(prev => prev.map(ins => ins.id === id ? { ...ins, [field]: value } : ins));
-  };
-  const removeInstructor = (id: string) => setInstructors(prev => prev.filter(ins => ins.id !== id));
+  const addInstructor = (instructor: Instructor) => setInstructors(prev => [...prev, instructor]);
+  const removeInstructor = (slug: string) => setInstructors(prev => prev.filter(ins => ins.slug !== slug));
 
   const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '', instructorName: '' }]);
   const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
@@ -520,8 +528,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       setActiveTab('details');
       return;
     }
-    if (instructors.some(inst => !inst.name || !inst.title)) {
-        toast({ title: 'Validation Error', description: 'All instructors must have a name and title.', variant: 'destructive' });
+    if (instructors.length === 0) {
+        toast({ title: 'Validation Error', description: 'At least one instructor must be added.', variant: 'destructive' });
         setActiveTab('instructors');
         return;
     }
@@ -563,13 +571,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
-        instructors: instructors.map(({ id, ...rest }) => ({
-            name: rest.name,
-            title: rest.title,
-            avatarUrl: rest.avatarUrl,
-            dataAiHint: rest.dataAiHint,
-            slug: rest.slug || rest.name.toLowerCase().replace(/\s+/g, '-'),
-        })).filter(i => i.name && i.title),
+        instructors: instructors.map(i => ({
+          name: i.name,
+          title: i.title,
+          avatarUrl: i.avatarUrl,
+          dataAiHint: i.dataAiHint,
+          slug: i.slug
+        })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
         includedArchivedCourseIds: includedCourseIds,
         announcements: announcements.map(({ id, ...rest }) => rest),
@@ -727,14 +735,47 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                   </div>
                   <div className="space-y-2">
                       <Label htmlFor="category">Category</Label>
-                      <Select onValueChange={setCategory} value={category}>
-                          <SelectTrigger id="category">
-                              <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                              {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                          </SelectContent>
-                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between"
+                            >
+                            {category || "Select a category..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                            <Command onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !allCategories.includes(e.currentTarget.querySelector('input')?.value || '')) {
+                                   (e.currentTarget.querySelector('input') as HTMLElement)?.blur();
+                                }
+                            }}>
+                            <CommandInput placeholder="Search or create..." onValueChange={setCategory}/>
+                            <CommandEmpty>No category found. Type to create a new one.</CommandEmpty>
+                            <CommandGroup>
+                                {allCategories.map((cat) => (
+                                <CommandItem
+                                    key={cat}
+                                    value={cat}
+                                    onSelect={(currentValue) => {
+                                    setCategory(currentValue === category ? "" : currentValue)
+                                    }}
+                                >
+                                    <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        category === cat ? "opacity-100" : "opacity-0"
+                                    )}
+                                    />
+                                    {cat}
+                                </CommandItem>
+                                ))}
+                            </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                     </Popover>
                   </div>
                 </div>
               </CardContent>
@@ -775,6 +816,52 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     </Button>
                 </div>
               </CardContent>
+            )}
+            
+            {activeTab === 'instructors' && (
+                <CardContent className="pt-6">
+                    <CardDescription className="mb-4">Select the instructors who will be teaching this course.</CardDescription>
+                     <div className="space-y-4">
+                        {instructors.map(instructor => (
+                            <div key={instructor.slug} className="p-2 border rounded-md flex items-center gap-4">
+                                <Avatar>
+                                    <AvatarImage src={instructor.avatarUrl} alt={instructor.name} />
+                                    <AvatarFallback>{instructor.name.substring(0,2)}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-grow">
+                                    <p className="font-semibold">{instructor.name}</p>
+                                    <p className="text-sm text-muted-foreground">{instructor.title}</p>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => removeInstructor(instructor.slug!)}><X className="text-destructive h-4 w-4"/></Button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="mt-4 w-full border-dashed"><PlusCircle className="mr-2"/>Add Instructor</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                            <Command>
+                                <CommandInput placeholder="Search instructor..." />
+                                <CommandEmpty>No instructor found.</CommandEmpty>
+                                <CommandGroup>
+                                    {allInstructors
+                                        .filter(inst => !instructors.some(selected => selected.slug === inst.slug))
+                                        .map(inst => (
+                                        <CommandItem
+                                            key={inst.id}
+                                            value={inst.name}
+                                            onSelect={() => addInstructor(inst)}
+                                        >
+                                           {inst.name} ({inst.title})
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                </CardContent>
             )}
 
             {activeTab === 'quizzes' && (
@@ -867,34 +954,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         ))}
                     </div>
                     <Button variant="outline" className="mt-4" onClick={addOutcome}><PlusCircle className="mr-2"/>Add Outcome</Button>
-                </CardContent>
-            )}
-            
-            {activeTab === 'instructors' && (
-                <CardContent className="pt-6">
-                    <CardDescription className="mb-4">Add and manage instructors for this course.</CardDescription>
-                     <div className="space-y-4">
-                        {instructors.map(instructor => (
-                            <div key={instructor.id} className="p-4 border rounded-md space-y-4 relative">
-                                <Button variant="ghost" size="icon" className="absolute top-1 right-1" onClick={() => removeInstructor(instructor.id)}><X className="text-destructive h-4 w-4"/></Button>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-1">
-                                      <Label htmlFor={`ins-name-${instructor.id}`}>Instructor Name</Label>
-                                      <Input id={`ins-name-${instructor.id}`} value={instructor.name} onChange={e => updateInstructor(instructor.id, 'name', e.target.value)} />
-                                  </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor={`ins-title-${instructor.id}`}>Title/Subject</Label>
-                                      <Input id={`ins-title-${instructor.id}`} value={instructor.title} onChange={e => updateInstructor(instructor.id, 'title', e.target.value)} />
-                                  </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <Label htmlFor={`ins-avatar-${instructor.id}`}>Avatar URL</Label>
-                                    <Input id={`ins-avatar-${instructor.id}`} value={instructor.avatarUrl} onChange={e => updateInstructor(instructor.id, 'avatarUrl', e.target.value)} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <Button variant="outline" className="mt-4" onClick={addInstructor}><PlusCircle className="mr-2"/>Add Instructor</Button>
                 </CardContent>
             )}
 
@@ -1058,7 +1117,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         Students who purchase this course will get free access to the selected archived content.
                     </CardDescription>
                     <div className="space-y-2">
-                        {archivedCourses.map(course => (
+                        {allArchivedCourses.map(course => (
                             <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
                                 <Checkbox
                                     id={`bundle-${course.id}`}
@@ -1070,7 +1129,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </Label>
                             </div>
                         ))}
-                        {archivedCourses.length === 0 && (
+                        {allArchivedCourses.length === 0 && (
                             <p className="text-sm text-muted-foreground p-2">No archived courses available to bundle.</p>
                         )}
                     </div>

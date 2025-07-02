@@ -19,12 +19,6 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Become a Teacher',
-    description: 'Apply to become an instructor on our platform.',
-};
 
 export default function TeacherSignupPage() {
   const { toast } = useToast();
