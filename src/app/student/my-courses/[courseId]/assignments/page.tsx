@@ -214,7 +214,7 @@ export default function AssignmentsPage() {
                     </Card>
                 )}
                 
-                {(selectedAssignment?.status === 'Submitted' || selectedAssignment?.status === 'Late') && (
+                {(selectedAssignment?.status === 'Submitted' || selectedAssignment?.status === 'Late' || selectedAssignment?.status === 'Graded') && (
                      <Card>
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300"><MessageSquare /> Your Submission</CardTitle>
@@ -222,12 +222,12 @@ export default function AssignmentsPage() {
                       <CardContent>
                         <p>You submitted this assignment on {selectedAssignment.submissionDate as string}.</p>
                         <p className="text-muted-foreground mt-2">{submissionText}</p>
-                        <p className="text-muted-foreground mt-2">Waiting for instructor's feedback.</p>
+                        {selectedAssignment.status !== 'Graded' && <p className="text-muted-foreground mt-2">Waiting for instructor's feedback.</p>}
                       </CardContent>
                     </Card>
                 )}
 
-                {(selectedAssignment?.status === 'Pending' || selectedAssignment?.status === 'Late') && (
+                {(selectedAssignment?.status === 'Pending' || (selectedAssignment?.status === 'Late' && selectedAssignment?.grade === undefined)) && (
                   <div className="space-y-4">
                       {selectedAssignment.status === 'Late' && (
                         <p className="text-destructive font-semibold">This assignment is past its deadline. You can still submit it, but it will be marked as late.</p>
@@ -241,7 +241,7 @@ export default function AssignmentsPage() {
               </div>
               <DialogFooter>
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Close</Button>
-                  {(selectedAssignment?.status === 'Pending' || selectedAssignment?.status === 'Late') && (
+                  {(selectedAssignment?.status === 'Pending' || (selectedAssignment?.status === 'Late' && selectedAssignment?.grade === undefined)) && (
                      <Button onClick={handleSubmission}>
                         <Upload className="mr-2 h-4 w-4"/>
                         Submit Assignment
