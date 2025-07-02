@@ -56,31 +56,43 @@ export function IdCardView({
     
     toast({ title: 'Generating PDF...', description: 'Please wait a moment.' });
 
-    const elementToCapture = cardContainerRef.current?.querySelector(
-        isFlipped ? '.id-card-back' : '.id-card-front'
-    ) as HTMLElement | null;
+    const frontElement = cardContainerRef.current?.querySelector('.id-card-front') as HTMLElement | null;
+    const backElement = cardContainerRef.current?.querySelector('.id-card-back') as HTMLElement | null;
     
-    if (!elementToCapture) {
-        toast({ title: 'Error', description: 'Could not find the card content to download.', variant: 'destructive'});
+    if (!frontElement || !backElement) {
+        toast({ title: 'Error', description: 'Could not find card content to download.', variant: 'destructive'});
         return;
     }
 
     try {
-        const canvas = await html2canvas(elementToCapture, { 
-            scale: 3,
+        const canvasOptions = { 
+            scale: 3, // Higher scale for better quality
             useCORS: true,
             allowTaint: true,
             letterRendering: true,
-        });
-        const imgData = canvas.toDataURL('image/png');
+        };
+        
+        const [frontCanvas, backCanvas] = await Promise.all([
+            html2canvas(frontElement, canvasOptions),
+            html2canvas(backElement, canvasOptions)
+        ]);
+        
+        const frontImgData = frontCanvas.toDataURL('image/png');
+        const backImgData = backCanvas.toDataURL('image/png');
         
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: [53.98, 85.6]
+            format: 'a4'
         });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, 53.98, 85.6);
+        const cardWidth = 85.6; // Standard ID card width in mm
+        const cardHeight = 53.98; // Standard ID card height in mm
+        const margin = 15;
+
+        pdf.addImage(frontImgData, 'PNG', margin, margin, cardWidth, cardHeight);
+        pdf.addImage(backImgData, 'PNG', margin, margin + cardHeight + 10, cardWidth, cardHeight);
+        
         pdf.save(`${name.replace(/\s+/g, '_')}_ID_Card.pdf`);
 
     } catch (error) {
@@ -88,6 +100,7 @@ export function IdCardView({
         toast({ title: 'Error', description: 'Could not generate PDF.', variant: 'destructive'});
     }
   };
+
 
   const Barcode = () => (
       <svg width="280" height="50" viewBox="0 0 280 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
@@ -151,7 +164,7 @@ export function IdCardView({
   );
 
   return (
-    <div className={`flex flex-col items-center gap-8 ${className}`}>
+    <div className={`flex flex-col items-center gap-6 ${className}`}>
         <div className="[perspective:1000px]">
             <div 
                 ref={cardContainerRef}
@@ -196,9 +209,9 @@ export function IdCardView({
                 {/* Back Side */}
                 <div className="id-card-back absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col font-sans">
                      <div className="h-10 bg-gray-200 -m-4 mb-2"></div>
-                     <div className="text-xs text-gray-600 space-y-1 text-center mt-2 px-2">
+                     <div className="text-xs text-gray-600 space-y-1.5 text-center mt-2 px-2 leading-tight">
                         <p className="font-bold">গুরুত্বপূর্ণ নির্দেশনা</p>
-                        <p className="leading-tight">এই কার্ডটি Red Dot Classroom (RDC) এর সম্পত্তি। এটি হস্তান্তরযোগ্য নয়। কার্ডটি হারিয়ে গেলে অবিলম্বে কর্তৃপক্ষকে জানান।</p>
+                        <p>এই কার্ডটি Red Dot Classroom (RDC) এর সম্পত্তি। এটি হস্তান্তরযোগ্য নয়। কার্ডটি হারিয়ে গেলে অবিলম্বে কর্তৃপক্ষকে জানান।</p>
                     </div>
                     
                     <div className="flex-grow my-4">
@@ -231,7 +244,7 @@ export function IdCardView({
             </div>
         </div>
         
-        <div className="flex gap-4 mt-8">
+        <div className="flex gap-4">
             <Button onClick={() => setIsFlipped(!isFlipped)}>
                 <RotateCcw className="mr-2 h-4 w-4" />
                 {isFlipped ? 'View Front' : 'View Back'}
