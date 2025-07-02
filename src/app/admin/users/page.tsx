@@ -41,6 +41,8 @@ import { User } from '@/lib/types';
 import { getUsers } from '@/lib/firebase/firestore';
 import { saveUserAction, deleteUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { formatDistanceToNow } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
@@ -123,7 +125,7 @@ export default function UserManagementPage() {
       return;
     }
     setIsSaving(true);
-    const result = await saveUserAction({ id: editingUser?.id, name, email, role, joined: editingUser?.joined || new Date().toISOString().split('T')[0], status: editingUser?.status || 'Active' });
+    const result = await saveUserAction({ id: editingUser?.id, name, email, role, joined: editingUser?.joined, status: editingUser?.status || 'Active' });
     if(result.success) {
         toast({ title: editingUser ? 'User Updated' : 'User Created', description: result.message });
         await fetchData();
@@ -194,7 +196,7 @@ export default function UserManagementPage() {
                 <TableHead>User ID</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Joined Date</TableHead>
+                <TableHead>Joined</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -217,7 +219,7 @@ export default function UserManagementPage() {
                   <TableCell>
                     <Badge variant="outline" className={statusColors[user.status]}>{user.status}</Badge>
                   </TableCell>
-                  <TableCell>{user.joined?.toString().split('T')[0]}</TableCell>
+                   <TableCell>{user.joined ? formatDistanceToNow(safeToDate(user.joined), { addSuffix: true }) : 'N/A'}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

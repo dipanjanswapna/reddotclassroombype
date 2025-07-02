@@ -12,10 +12,14 @@ export async function saveUserAction(userData: Partial<User>) {
             const { id, ...data } = userData;
             await updateUser(id, data);
             revalidatePath('/admin/users');
+            revalidatePath('/admin/students');
+            revalidatePath('/student/profile');
             return { success: true, message: 'User updated successfully.' };
         } else {
-            await addUser(userData);
+            const newUser = { ...userData, joined: Timestamp.now() };
+            await addUser(newUser);
             revalidatePath('/admin/users');
+            revalidatePath('/admin/students');
             return { success: true, message: 'User created successfully.' };
         }
     } catch (error: any) {
@@ -27,6 +31,7 @@ export async function deleteUserAction(id: string) {
     try {
         await deleteUser(id);
         revalidatePath('/admin/users');
+        revalidatePath('/admin/students');
         return { success: true, message: 'User deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };

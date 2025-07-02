@@ -253,10 +253,10 @@ export type User = {
   avatarUrl: string;
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller';
   status: 'Active' | 'Suspended' | 'Pending Approval';
-  joined: string | Timestamp;
+  joined: Timestamp;
+  className?: string;
   classRoll?: string;
   registrationNumber?: string;
-  className?: string; // Add class for student
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students
   wishlist?: string[];
