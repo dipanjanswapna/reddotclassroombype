@@ -14,12 +14,6 @@ import { Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Pre-booking Management',
-    description: 'Monitor and manage all pre-booking campaigns on the platform.',
-};
 
 export default function AdminPrebookingPage() {
     const { toast } = useToast();

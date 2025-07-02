@@ -17,12 +17,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Guardian Settings',
-    description: 'Manage your guardian account security and preferences.',
-};
 
 export default function GuardianSettingsPage() {
     const { toast } = useToast();

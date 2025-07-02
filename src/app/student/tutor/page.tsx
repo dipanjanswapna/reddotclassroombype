@@ -9,12 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { virtualTutorChatbot, VirtualTutorChatbotInput } from "@/ai/flows/virtual-tutor-chatbot";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'AI Virtual Tutor',
-    description: 'Get instant help with your course material.',
-};
 
 export default function VirtualTutorPage() {
   const [courseMaterial, setCourseMaterial] = useState("");

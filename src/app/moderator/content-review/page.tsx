@@ -6,12 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThumbsUp, ThumbsDown, User, MessageSquare, AlertCircle } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Content Review',
-    description: 'Review user-reported content to maintain community standards.',
-};
 
 const mockReportedItems = [
     { id: 'rep_1', type: 'Comment', content: 'This is spam! Buy my stuff at spam.com', user: 'Spammer01', date: '2024-07-21', reason: 'Spam' },

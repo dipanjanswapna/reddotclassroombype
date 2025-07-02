@@ -19,12 +19,6 @@ import { Assignment, Course, Enrollment } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Child\'s Progress Report',
-    description: 'A detailed overview of your child\'s academic performance.',
-};
 
 type GradedAssignment = Assignment & {
     courseName: string;

@@ -19,12 +19,6 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { Wallet } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Payment History',
-    description: 'A record of all your transactions on the platform.',
-};
 
 type Transaction = {
   id: string;

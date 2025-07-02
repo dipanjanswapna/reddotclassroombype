@@ -17,12 +17,6 @@ import { t } from '@/lib/i18n';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Become a Moderator',
-    description: 'Apply to become a moderator and help maintain our community.',
-};
 
 export default function ModeratorSignupPage() {
   const { toast } = useToast();

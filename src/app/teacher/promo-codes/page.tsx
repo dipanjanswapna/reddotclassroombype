@@ -37,12 +37,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'My Promo Codes',
-    description: 'Create and manage promotional codes for your courses.',
-};
 
 export default function TeacherPromoCodePage() {
   const { toast } = useToast();

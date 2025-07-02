@@ -13,12 +13,6 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Banknote, DollarSign, Download, Landmark } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Affiliate Payouts',
-    description: 'Track your affiliate earnings and view your payment history.',
-};
 
 const mockPayouts = [
     { id: 'p_123', date: '2024-07-15', amount: '৳2,500', method: 'bKash', status: 'Paid' },

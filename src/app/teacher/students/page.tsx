@@ -19,13 +19,6 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import type { User, Course, Enrollment } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'My Students',
-    description: 'View all students enrolled in your courses.',
-};
-
 
 type StudentDisplayInfo = {
   id: string;

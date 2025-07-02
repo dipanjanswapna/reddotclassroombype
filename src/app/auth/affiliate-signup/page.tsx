@@ -17,12 +17,6 @@ import { t } from '@/lib/i18n';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Become an Affiliate',
-    description: 'Apply to join our affiliate program and earn by promoting RDC.',
-};
 
 export default function AffiliateSignupPage() {
   const { toast } = useToast();

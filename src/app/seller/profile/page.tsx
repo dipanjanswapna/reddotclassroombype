@@ -12,12 +12,6 @@ import { Loader2, Upload, Banknote, User } from "lucide-react";
 import { saveUserAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Seller Profile',
-    description: 'Manage your seller account and payment information.',
-};
 
 export default function SellerProfilePage() {
     const { toast } = useToast();

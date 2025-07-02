@@ -12,12 +12,6 @@ import { Loader2, Upload } from "lucide-react";
 import { saveUserAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Moderator Profile',
-    description: 'Manage your moderator account details.',
-};
 
 export default function ModeratorProfilePage() {
     const { toast } = useToast();

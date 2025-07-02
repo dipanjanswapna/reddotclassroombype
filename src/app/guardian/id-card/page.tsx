@@ -6,12 +6,6 @@ import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Guardian ID Card',
-    description: 'Your official guardian identification card.',
-};
 
 
 export default function GuardianIdCardPage() {

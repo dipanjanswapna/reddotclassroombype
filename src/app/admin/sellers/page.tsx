@@ -48,12 +48,6 @@ import { Organization } from '@/lib/types';
 import { getOrganizations } from '@/lib/firebase/firestore';
 import { updateOrganizationStatusAction, inviteSellerAction, deleteOrganizationAction } from '@/app/actions/organization.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Seller Management',
-    description: 'Approve, manage, and view all 3rd-party sellers on the platform.',
-};
 
 const getStatusBadgeVariant = (status: Organization['status']) => {
   switch (status) {

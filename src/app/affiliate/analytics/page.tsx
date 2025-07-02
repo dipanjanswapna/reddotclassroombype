@@ -13,12 +13,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
 import { ArrowUpRight, Link2, MousePointerClick, DollarSign, TrendingUp } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Referral Analytics',
-    description: 'Track your affiliate link performance and optimize your strategy.',
-};
 
 const mockChartData = [
     { date: 'Jul 1', Clicks: 150, Signups: 5 },

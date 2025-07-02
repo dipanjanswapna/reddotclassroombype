@@ -12,12 +12,6 @@ import { Loader2, Upload, Copy, Check, Banknote, User, Link2 } from "lucide-reac
 import { saveUserAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Affiliate Profile',
-    description: 'Manage your affiliate account and payment information.',
-};
 
 export default function AffiliateProfilePage() {
     const { toast } = useToast();
