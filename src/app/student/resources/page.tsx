@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, Download, Search, Library } from 'lucide-react';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 type Resource = {
   id: string;
@@ -20,10 +22,9 @@ type Resource = {
   courseId: string;
 };
 
-// Mock student ID for demonstration
-const currentStudentId = 'usr_stud_001';
-
 export default function ResourcesPage() {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
   const [allResources, setAllResources] = useState<Resource[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,13 +32,25 @@ export default function ResourcesPage() {
   const [selectedCourse, setSelectedCourse] = useState('all');
 
   useEffect(() => {
+    if (!userInfo) {
+        setLoading(false);
+        return;
+    };
+    
     async function fetchResources() {
       try {
-        // Fetch all courses and determine enrollment based on assignment data
+        const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+        const enrolledCourseIds = enrollments.map(e => e.courseId);
+
+        if (enrolledCourseIds.length === 0) {
+            setEnrolledCourses([]);
+            setAllResources([]);
+            setLoading(false);
+            return;
+        }
+
         const allCourses = await getCourses();
-        const studentCourses = allCourses.filter(course => 
-            course.assignments?.some(a => a.studentId === currentStudentId)
-        );
+        const studentCourses = allCourses.filter(course => enrolledCourseIds.includes(course.id!));
         setEnrolledCourses(studentCourses);
 
         const resources: Resource[] = [];
@@ -60,13 +73,14 @@ export default function ResourcesPage() {
         setAllResources(resources);
       } catch (error) {
         console.error("Failed to fetch resources:", error);
+        toast({ title: 'Error', description: 'Could not load your resources.', variant: 'destructive'});
       } finally {
         setLoading(false);
       }
     }
 
     fetchResources();
-  }, []);
+  }, [userInfo, toast]);
 
   const filteredResources = allResources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) || resource.courseTitle.toLowerCase().includes(searchTerm.toLowerCase());

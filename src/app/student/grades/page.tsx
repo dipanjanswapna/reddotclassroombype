@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/auth-context';
 
 type GradedAssignment = Assignment & {
     courseName: string;
@@ -29,14 +30,17 @@ function getGradeColor(grade: string) {
     return 'bg-red-500 text-white';
 }
 
-// Mock current student ID
-const currentStudentId = 'usr_stud_001';
-
 export default function GradesPage() {
+  const { userInfo } = useAuth();
   const [gradedAssignments, setGradedAssignments] = useState<GradedAssignment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userInfo) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchGrades() {
         try {
             const allCourses = await getCourses();
@@ -45,8 +49,7 @@ export default function GradesPage() {
             allCourses.forEach(course => {
                 if(course.assignments) {
                     course.assignments.forEach(assignment => {
-                        // For demo, we'll check status and a mock studentId
-                        if (assignment.status === 'Graded' && assignment.studentId === currentStudentId) {
+                        if (assignment.status === 'Graded' && assignment.studentId === userInfo.uid) {
                             assignments.push({
                                 ...assignment,
                                 courseName: course.title,
@@ -63,7 +66,7 @@ export default function GradesPage() {
         }
     }
     fetchGrades();
-  }, []);
+  }, [userInfo]);
 
 
   if (loading) {

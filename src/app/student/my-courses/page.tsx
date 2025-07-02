@@ -3,41 +3,43 @@
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCourses, getUser, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course, User, Enrollment } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, ListFilter } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
 
-// Mock current student ID
-const currentStudentId = 'usr_stud_001';
 
 export default function MyCoursesPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { userInfo, loading: authLoading } = useAuth();
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-      async function fetchCoursesData() {
-          try {
-              const [userData, coursesData, enrollmentsData] = await Promise.all([
-                getUser(currentStudentId),
-                getCourses(),
-                getEnrollmentsByUserId(currentStudentId)
-              ]);
-              setUser(userData);
-              setAllCourses(coursesData);
-              setEnrollments(enrollmentsData);
-          } catch(e) {
-              console.error("Failed to fetch courses", e);
-          } finally {
-              setLoading(false);
-          }
-      }
-      fetchCoursesData();
-  }, []);
+    if (!userInfo) {
+      if (!authLoading) setLoading(false);
+      return;
+    };
+
+    async function fetchCoursesData() {
+        try {
+            const [coursesData, enrollmentsData] = await Promise.all([
+            getCourses(),
+            getEnrollmentsByUserId(userInfo.uid)
+            ]);
+            setAllCourses(coursesData);
+            setEnrollments(enrollmentsData);
+        } catch(e) {
+            console.error("Failed to fetch courses", e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCoursesData();
+  }, [userInfo, authLoading]);
 
   const getCourseById = (courseId: string) => allCourses.find(c => c.id === courseId);
   
@@ -58,11 +60,11 @@ export default function MyCoursesPage() {
     .filter(Boolean) as (Course & { completedDate: string })[];
 
 
-  const wishlistedCourses = user?.wishlist 
-    ? allCourses.filter(c => user.wishlist!.includes(c.id!))
+  const wishlistedCourses = userInfo?.wishlist 
+    ? allCourses.filter(c => userInfo.wishlist!.includes(c.id!))
     : [];
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
         <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
             <LoadingSpinner className="w-12 h-12" />
@@ -74,7 +76,7 @@ export default function MyCoursesPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {user?.name || 'Student'}!</h1>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {userInfo?.name || 'Student'}!</h1>
             <p className="mt-1 text-lg text-muted-foreground">
               আপনার শেখার যাত্রা চালিয়ে যান।
             </p>

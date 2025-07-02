@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { LiveClass as LiveClassType } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +11,8 @@ import { Video } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 type LiveClassWithCourse = LiveClassType & {
   courseTitle: string;
@@ -33,16 +35,27 @@ function getPlatformBadgeColor(platform: string) {
 }
 
 export default function AllLiveClassesPage() {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
   const [liveClasses, setLiveClasses] = useState<LiveClassWithCourse[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userInfo) {
+      setLoading(false);
+      return;
+    };
+
     async function fetchLiveClasses() {
       try {
-        // In a real app, this would be fetched based on the logged-in user.
-        // For now, we'll mock the student's enrolled courses.
-        const enrolledCourseIds = ['1', '3', '4'];
+        const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+        const enrolledCourseIds = enrollments.map(e => e.courseId);
         
+        if (enrolledCourseIds.length === 0) {
+            setLoading(false);
+            return;
+        }
+
         const allCourses = await getCourses();
 
         const studentLiveClasses = allCourses
@@ -59,13 +72,14 @@ export default function AllLiveClassesPage() {
         setLiveClasses(studentLiveClasses);
       } catch (error) {
         console.error("Failed to fetch live classes:", error);
+        toast({ title: "Error", description: "Could not fetch your live classes.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     }
 
     fetchLiveClasses();
-  }, []);
+  }, [userInfo, toast]);
 
   if (loading) {
     return (

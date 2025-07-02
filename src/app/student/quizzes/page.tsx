@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Quiz } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +12,8 @@ import { HelpCircle, PlayCircle } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 
 const getStatusBadgeVariant = (status?: 'Completed' | 'Not Started' | 'In Progress'): VariantProps<typeof badgeVariants>['variant'] => {
@@ -33,15 +35,27 @@ type QuizWithCourse = Quiz & {
 
 
 export default function AllQuizzesPage() {
+    const { userInfo } = useAuth();
+    const { toast } = useToast();
     const [quizzes, setQuizzes] = useState<QuizWithCourse[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!userInfo) {
+            setLoading(false);
+            return;
+        }
         async function fetchQuizzes() {
             try {
-                // In a real app, this would be fetched based on the logged-in user's enrollments.
-                // For now, we'll mock the student's enrolled courses.
-                const enrolledCourseIds = ['1', '3', '4'];
+                const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                const enrolledCourseIds = enrollments.map(e => e.courseId);
+                
+                if (enrolledCourseIds.length === 0) {
+                    setQuizzes([]);
+                    setLoading(false);
+                    return;
+                }
+
                 const allCourses = await getCourses();
                 
                 const studentQuizzes = allCourses
@@ -57,12 +71,13 @@ export default function AllQuizzesPage() {
                 setQuizzes(studentQuizzes);
             } catch (error) {
                 console.error("Failed to fetch quizzes:", error);
+                toast({ title: 'Error', description: 'Could not load your quizzes.', variant: 'destructive'});
             } finally {
                 setLoading(false);
             }
         }
         fetchQuizzes();
-    }, []);
+    }, [userInfo, toast]);
 
     if (loading) {
         return (

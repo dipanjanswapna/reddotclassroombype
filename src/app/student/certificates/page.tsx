@@ -1,55 +1,67 @@
 
-
 'use client';
 
 import { Award, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getCourses, getOrganizations } from '@/lib/firebase/firestore';
-import type { Course, Organization } from '@/lib/types';
+import { getCourses, getEnrollmentsByUserId, getOrganizations } from '@/lib/firebase/firestore';
+import type { Course, Enrollment, Organization } from '@/lib/types';
 import Image from 'next/image';
 import { RdcLogo } from '@/components/rdc-logo';
 import { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
-// Mock student ID
-const currentStudentId = 'usr_stud_001';
+
+type CertificateCourse = Course & {
+    studentName: string;
+    completedDate: string;
+}
 
 export default function CertificatesPage() {
-  const [completedCourses, setCompletedCourses] = useState<Course[]>([]);
+  const { userInfo, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [completedCourses, setCompletedCourses] = useState<CertificateCourse[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading || !userInfo) return;
+
     async function fetchCompletedCourses() {
         try {
-            const [allCourses, allOrgs] = await Promise.all([
+            const [allCourses, allOrgs, enrollments] = await Promise.all([
                 getCourses(),
-                getOrganizations()
+                getOrganizations(),
+                getEnrollmentsByUserId(userInfo!.uid)
             ]);
             setOrganizations(allOrgs);
 
-            // Mock logic: assume a student has completed a course if they have a graded assignment with an 'A'
-            const studentCompletedCourses = allCourses.filter(c => 
-                c.assignments?.some(a => 
-                    a.studentId === currentStudentId && a.status === 'Graded' && a.grade?.startsWith('A')
-                )
-            ).map((course, index) => ({
-                ...course,
-                studentName: 'Jubayer Ahmed', // Mock student name
-                completedDate: ['May 15, 2024', 'June 01, 2024'][index % 2],
-            }));
+            const studentCompletedCourses = enrollments
+                .filter(e => e.status === 'completed')
+                .map(e => {
+                    const course = allCourses.find(c => c.id === e.courseId);
+                    if (!course) return null;
+                    return {
+                        ...course,
+                        studentName: userInfo!.name,
+                        completedDate: e.enrollmentDate.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    }
+                })
+                .filter(Boolean) as CertificateCourse[];
             
             setCompletedCourses(studentCompletedCourses);
         } catch(e) {
             console.error(e);
+            toast({ title: "Error", description: "Could not load certificates."})
         } finally {
             setLoading(false);
         }
     }
     fetchCompletedCourses();
-  }, []);
+  }, [userInfo, authLoading, toast]);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
         <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
             <LoadingSpinner className="w-12 h-12" />
@@ -70,7 +82,7 @@ export default function CertificatesPage() {
       </div>
 
        <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
-        {completedCourses.map((course: any) => {
+        {completedCourses.map((course) => {
             const partner = organizations.find(org => org.id === course.organizationId);
 
             return (

@@ -13,25 +13,22 @@ import type { User } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Trash2, UserPlus, Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const currentStudentId = 'usr_stud_001';
+import { useAuth } from '@/context/auth-context';
 
 export default function GuardianManagementPage() {
     const { toast } = useToast();
-    const [student, setStudent] = useState<User | null>(null);
+    const { userInfo: student, loading: authLoading } = useAuth();
     const [guardian, setGuardian] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
 
     const fetchGuardianData = async () => {
+        if (!student) return;
         try {
-            const allUsers = await getUsers();
-            const currentStudent = allUsers.find(u => u.id === currentStudentId);
-            setStudent(currentStudent || null);
-
-            if (currentStudent?.linkedGuardianId) {
-                const linkedGuardian = allUsers.find(u => u.id === currentStudent.linkedGuardianId);
+            if (student?.linkedGuardianId) {
+                const allUsers = await getUsers();
+                const linkedGuardian = allUsers.find(u => u.id === student.linkedGuardianId);
                 setGuardian(linkedGuardian || null);
             } else {
                 setGuardian(null);
@@ -45,8 +42,10 @@ export default function GuardianManagementPage() {
     }
 
     useEffect(() => {
-        fetchGuardianData();
-    }, []);
+        if (!authLoading) {
+            fetchGuardianData();
+        }
+    }, [student, authLoading]);
 
     const handleSendInvite = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,7 +79,7 @@ export default function GuardianManagementPage() {
         setIsSaving(false);
     };
 
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
                 <LoadingSpinner className="w-12 h-12" />
@@ -107,7 +106,7 @@ export default function GuardianManagementPage() {
                         <div className="flex items-center justify-between p-4 border rounded-lg">
                             <div className="flex items-center gap-4">
                                 <Avatar className="h-12 w-12">
-                                    <AvatarImage src="https://placehold.co/100x100.png" alt={guardian.name} />
+                                    <AvatarImage src={guardian.avatarUrl} alt={guardian.name} />
                                     <AvatarFallback>{guardian.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>

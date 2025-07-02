@@ -34,9 +34,7 @@ import type { SupportTicket } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-
-const currentStudentId = 'usr_stud_001';
-const currentStudentName = 'Student Name';
+import { useAuth } from '@/context/auth-context';
 
 const getStatusBadgeVariant = (status: SupportTicket['status']) => {
   switch (status) {
@@ -49,6 +47,7 @@ const getStatusBadgeVariant = (status: SupportTicket['status']) => {
 
 export default function SupportTicketsPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -57,10 +56,11 @@ export default function SupportTicketsPage() {
   const [description, setDescription] = useState('');
 
   const fetchUserTickets = async () => {
+    if (!userInfo) return;
      try {
         const allTickets = await getSupportTickets();
         const userTickets = allTickets
-            .filter(t => t.userId === currentStudentId)
+            .filter(t => t.userId === userInfo.uid)
             .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         setTickets(userTickets);
       } catch (error) {
@@ -73,11 +73,15 @@ export default function SupportTicketsPage() {
 
   useEffect(() => {
     fetchUserTickets();
-  }, [toast]);
+  }, [userInfo]);
 
   const handleCreateTicket = async () => {
     if (!subject || !description) {
       toast({ title: "Error", description: "Subject and description cannot be empty.", variant: "destructive" });
+      return;
+    }
+    if (!userInfo) {
+      toast({ title: "Error", description: "You must be logged in to create a ticket.", variant: "destructive" });
       return;
     }
     setIsCreating(true);
@@ -85,8 +89,8 @@ export default function SupportTicketsPage() {
     const result = await createSupportTicketAction({ 
         subject, 
         description, 
-        userId: currentStudentId, 
-        userName: currentStudentName
+        userId: userInfo.uid, 
+        userName: userInfo.name
     });
 
     if (result.success) {

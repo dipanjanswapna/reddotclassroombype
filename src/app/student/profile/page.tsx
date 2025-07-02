@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -22,15 +21,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { getUser, updateUser } from "@/lib/firebase/firestore";
-import { User } from "@/lib/types";
+import { updateUser } from "@/lib/firebase/firestore";
 import { LoadingSpinner } from "@/components/loading-spinner";
-
-const currentStudentId = 'usr_stud_001';
+import { useAuth } from "@/context/auth-context";
 
 export default function ProfilePage() {
     const { toast } = useToast();
-    const [user, setUser] = useState<User | null>(null);
+    const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -40,30 +37,22 @@ export default function ProfilePage() {
     const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
 
     useEffect(() => {
-        async function fetchUser() {
-            try {
-                const userData = await getUser(currentStudentId);
-                if (userData) {
-                    setUser(userData);
-                    setFullName(userData.name);
-                    setEmail(userData.email);
-                    // setAvatarUrl(userData.avatarUrl); // Assuming avatarUrl is on the user model
-                }
-            } catch (error) {
-                console.error(error);
-                toast({ title: 'Error', description: 'Failed to load user data.', variant: 'destructive'});
-            } finally {
-                setLoading(false);
-            }
+        if (userInfo) {
+            setFullName(userInfo.name || "");
+            setEmail(userInfo.email || "");
+            setAvatarUrl(userInfo.avatarUrl || "https://placehold.co/100x100.png");
+            setLoading(false);
+        } else if (!authLoading) {
+            setLoading(false);
         }
-        fetchUser();
-    }, [toast]);
+    }, [userInfo, authLoading]);
 
     const handleInfoSave = async () => {
-        if (!user) return;
+        if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await updateUser(user.id!, { name: fullName, email });
+            await updateUser(userInfo.id, { name: fullName, email, avatarUrl });
+            await refreshUserInfo();
             toast({
                 title: "Profile Updated",
                 description: "Your personal information has been saved.",
@@ -98,14 +87,14 @@ export default function ProfilePage() {
                 setAvatarUrl(reader.result as string);
                  toast({
                     title: "Avatar Updated",
-                    description: "Your new profile picture has been set.",
+                    description: "Your new profile picture has been set. Click 'Save Changes' to confirm.",
                 });
             };
             reader.readAsDataURL(file);
         }
     };
 
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
                 <LoadingSpinner className="w-12 h-12" />
@@ -113,8 +102,8 @@ export default function ProfilePage() {
         );
     }
     
-    if (!user) {
-        return <p>User not found.</p>
+    if (!userInfo) {
+        return <p className="p-8">Could not load user profile. Please try logging in again.</p>
     }
 
   return (
@@ -152,7 +141,7 @@ export default function ProfilePage() {
                 </div>
               <div className="space-y-2">
                 <Label htmlFor="userId">User ID</Label>
-                <Input id="userId" value={user.id} readOnly className="cursor-not-allowed bg-muted" />
+                <Input id="userId" value={userInfo.id} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>

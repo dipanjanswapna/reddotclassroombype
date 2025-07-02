@@ -7,14 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Users, Copy, Check } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
-
-// In a real app, this would come from the logged-in user's data.
-const mockStudentId = 'usr_stud_001'; 
-const accessCode = `RDC-STU-${mockStudentId.split('_')[2].toUpperCase()}-A9B8`;
+import { useAuth } from '@/context/auth-context';
 
 export default function StudentCommunityPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [copied, setCopied] = useState(false);
+  
+  const accessCode = `RDC-STU-${userInfo?.uid.slice(-6).toUpperCase()}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(accessCode);
