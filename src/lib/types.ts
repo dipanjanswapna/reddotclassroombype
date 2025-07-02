@@ -197,6 +197,7 @@ export type Course = {
   isWishlisted?: boolean;
   communityUrl?: string;
   videoUrl?: string;
+  whatsappNumber?: string;
 };
 
 

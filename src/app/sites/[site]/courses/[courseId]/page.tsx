@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -8,6 +9,7 @@ import {
   PlayCircle,
   Star,
   BookOpen,
+  Phone,
 } from 'lucide-react';
 import {
   Accordion,
@@ -159,6 +161,14 @@ export default function PartnerCourseDetailPage() {
                   <Button variant="outline" className="w-full mt-4">
                     See Demo Class
                   </Button>
+                  {course.whatsappNumber && (
+                    <Button variant="outline" className="w-full mt-2 bg-green-100 border-green-300 text-green-800 hover:bg-green-200" asChild>
+                        <Link href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank">
+                            <Phone className="mr-2 h-5 w-5"/>
+                            Contact on WhatsApp
+                        </Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>

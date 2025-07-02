@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,6 +25,7 @@ import {
   ClipboardEdit,
   Loader2,
   Wand2,
+  Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -252,6 +254,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [price, setPrice] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
@@ -327,6 +330,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
                     setThumbnailUrl(courseData.imageUrl || 'https://placehold.co/600x400.png');
                     setIntroVideoUrl(courseData.videoUrl || '');
+                    setWhatsappNumber(courseData.whatsappNumber || '');
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
                     setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
@@ -550,6 +554,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         price: `BDT ${price || 0}`,
         imageUrl: thumbnailUrl,
         videoUrl: introVideoUrl,
+        whatsappNumber: whatsappNumber,
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
         faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
@@ -647,6 +652,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'media', label: 'Media', icon: CloudUpload },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'contact', label: 'Contact', icon: Phone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'bundles', label: 'Bundles', icon: Archive },
@@ -995,6 +1001,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         ) : (
                             <p className="text-sm text-muted-foreground">No announcements posted yet.</p>
                         )}
+                    </div>
+                </CardContent>
+            )}
+
+            {activeTab === 'contact' && (
+                <CardContent className="pt-6">
+                    <div className="space-y-2 max-w-sm">
+                        <Label htmlFor="whatsappNumber">WhatsApp Contact Number</Label>
+                        <Input id="whatsappNumber" type="text" placeholder="e.g., 8801712345678" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} />
+                        <CardDescription>Provide a WhatsApp number for students to contact for support. Include country code.</CardDescription>
                     </div>
                 </CardContent>
             )}
