@@ -108,7 +108,7 @@ export function CoursesPageClient({
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                   {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
-                    return <CourseCard key={course.id} {...course} provider={provider} />;
+                    return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain}/>;
                   })}
                 </div>
               ) : (
@@ -125,7 +125,7 @@ export function CoursesPageClient({
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     {coursesByCategory[category].map((course) => {
                        const provider = allProviders.find(p => p.id === course.organizationId);
-                       return <CourseCard key={course.id} {...course} provider={provider} />;
+                       return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
                     })}
                   </div>
                 </section>
@@ -139,7 +139,7 @@ export function CoursesPageClient({
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {archivedCourses.map((course) => {
                             const provider = allProviders.find(p => p.id === course.organizationId);
-                            return <CourseCard key={course.id} {...course} provider={provider} />;
+                            return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
                         })}
                     </div>
                 </section>
