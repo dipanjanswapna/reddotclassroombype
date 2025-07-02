@@ -18,13 +18,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { VariantProps } from 'class-variance-authority';
-import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid, getEnrollments } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 
 type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
+
+type CourseWithStudentCount = Course & { studentCount: number };
 
 const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
@@ -40,7 +42,7 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 };
 
 export default function TeacherCoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseWithStudentCount[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { userInfo } = useAuth();
@@ -49,14 +51,18 @@ export default function TeacherCoursesPage() {
     async function fetchTeacherCourses() {
       if (!userInfo) return;
       try {
-        const instructor = await getInstructorByUid(userInfo.uid);
+        const [instructor, allCourses, allEnrollments] = await Promise.all([
+            getInstructorByUid(userInfo.uid),
+            getCourses(),
+            getEnrollments(),
+        ]);
+
         if (!instructor?.id) {
           toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
           setLoading(false);
           return;
         }
 
-        const allCourses = await getCourses();
         let manageableCourses: Course[] = [];
 
         // If teacher is associated with an organization, they can manage all courses from that org.
@@ -69,7 +75,12 @@ export default function TeacherCoursesPage() {
             );
         }
         
-        setCourses(manageableCourses);
+        const coursesWithCount = manageableCourses.map(course => {
+            const studentCount = allEnrollments.filter(e => e.courseId === course.id).length;
+            return { ...course, studentCount };
+        });
+
+        setCourses(coursesWithCount);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
         toast({ title: 'Error', description: 'Could not fetch your courses.', variant: 'destructive' });
@@ -127,7 +138,7 @@ export default function TeacherCoursesPage() {
                             <TableRow key={course.id}>
                                 <TableCell className="font-medium">{course.title}</TableCell>
                                 <TableCell>{course.price}</TableCell>
-                                <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell>
+                                <TableCell>{course.studentCount}</TableCell>
                                 <TableCell>
                                     <Badge variant={getStatusBadgeVariant(course.status as Status)}>
                                         {course.status}
