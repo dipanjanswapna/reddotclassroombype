@@ -3,6 +3,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { RdcLogo } from "./rdc-logo";
 import { useLanguage } from "@/context/language-context";
@@ -75,6 +76,16 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
               <li><Link href="/privacy" className="hover:text-white">{t.privacy_policy[language]}</Link></li>
               <li><Link href="/terms" className="hover:text-white">{t.terms_of_service[language]}</Link></li>
             </ul>
+             <div className="mt-4">
+                <Image
+                    src="https://mir-s3-cdn-cf.behance.net/projects/max_808/ed1f18226284187.Y3JvcCwxMDI0LDgwMCwwLDM2Nw.png"
+                    alt="DBID Certified"
+                    width={100}
+                    height={50}
+                    className="object-contain"
+                    data-ai-hint="DBID logo"
+                />
+            </div>
           </div>
         </div>
         <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm">
