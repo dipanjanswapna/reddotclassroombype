@@ -429,5 +429,3 @@ export type HomepageConfig = {
   };
   platformSettings: PlatformSettings;
 };
-
-    

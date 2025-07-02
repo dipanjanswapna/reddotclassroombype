@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -42,6 +43,7 @@ export async function applyAsSellerAction(data: Omit<Organization, 'id' | 'statu
             status: 'pending'
         };
         await addOrganization(newPartnerData);
+        revalidatePath('/admin/sellers');
         return { success: true, message: 'Application submitted successfully! Our team will review it and get back to you shortly.' };
     } catch (error: any) {
         return { success: false, message: error.message };

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -29,13 +30,13 @@ export default function PartnerLayout({
 
   useEffect(() => {
     if (!loading) {
-      if (!user || userInfo?.role !== 'Partner') {
+      if (!user || userInfo?.role !== 'Seller') {
         router.push('/login');
       }
     }
   }, [user, userInfo, loading, router]);
   
-  if (loading || !user || userInfo?.role !== 'Partner') {
+  if (loading || !user || userInfo?.role !== 'Seller') {
     return (
         <div className="flex items-center justify-center h-screen">
             <LoadingSpinner className="w-12 h-12" />
@@ -44,25 +45,26 @@ export default function PartnerLayout({
   }
 
   const menuItems = [
-    { href: "/partner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/partner/courses", icon: BookCopy, label: "Courses" },
-    { href: "/partner/teachers", icon: UsersIcon, label: "Teachers" },
-    { href: "/partner/students", icon: UsersIcon, label: "Students" },
-    { href: "/partner/analytics", icon: BarChart3, label: "Analytics" },
-    { href: "/partner/payouts", icon: Banknote, label: "Payouts" },
-    { href: "/partner/branding", icon: Paintbrush, label: "Branding" },
-    { href: "/partner/settings", icon: Settings, label: "Settings" },
+    { href: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/seller/courses", icon: BookCopy, label: "Courses" },
+    { href: "/seller/teachers", icon: UsersIcon, label: "Teachers" },
+    { href: "/seller/students", icon: UsersIcon, label: "Students" },
+    { href: "/seller/analytics", icon: BarChart3, label: "Analytics" },
+    { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
+    { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
+    { href: "/seller/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 
   const getIsActive = (href: string) => {
-    if (href === '/partner/dashboard') {
+    if (href === '/seller/dashboard') {
         return pathname === href;
     }
      // De-dupe / from the end of the href
     const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
     if (newHref === '') return false; // Don't match the root logout button
-    return pathname.startsWith(href);
+    const currentPath = pathname.replace('/partner', '/seller');
+    return currentPath.startsWith(href);
   };
 
 
@@ -73,21 +75,23 @@ export default function PartnerLayout({
       </main>
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
         <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
-                  getIsActive(item.href)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
-              )}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-xs whitespace-nowrap">{item.label}</span>
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const partnerHref = item.href.replace('/seller', '/partner');
+            return (
+              <Link
+                key={partnerHref}
+                href={partnerHref}
+                className={cn(
+                    "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
+                    getIsActive(item.href)
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-xs whitespace-nowrap">{item.label}</span>
+              </Link>
+          )})}
         </div>
       </nav>
     </>
