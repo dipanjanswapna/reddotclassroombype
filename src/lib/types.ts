@@ -238,8 +238,10 @@ export type SupportTicket = {
   updatedAt: Timestamp;
   userId: string;
   userName: string;
+  category?: 'General' | 'Guardian Inquiry';
+  recipient?: string;
   replies: {
-    author: 'Student' | 'Support';
+    author: 'Student' | 'Support' | 'Guardian';
     message: string;
     date: Timestamp;
   }[];

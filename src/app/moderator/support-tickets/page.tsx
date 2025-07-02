@@ -128,6 +128,7 @@ export default function ModeratorSupportTicketsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Category</TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Status</TableHead>
@@ -138,6 +139,11 @@ export default function ModeratorSupportTicketsPage() {
             <TableBody>
               {tickets.length > 0 ? tickets.map((ticket) => (
                 <TableRow key={ticket.id}>
+                  <TableCell>
+                    <Badge variant={ticket.category === 'Guardian Inquiry' ? 'warning' : 'secondary'}>
+                        {ticket.category?.replace(' Inquiry', '') || 'General'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="font-medium">{ticket.userName}</TableCell>
                   <TableCell>{ticket.subject}</TableCell>
                   <TableCell>
@@ -150,7 +156,7 @@ export default function ModeratorSupportTicketsPage() {
                 </TableRow>
               )) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-24 text-center">
                     No support tickets to show.
                   </TableCell>
                 </TableRow>
@@ -163,16 +169,14 @@ export default function ModeratorSupportTicketsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
-                  <DialogTitle>Ticket from {selectedTicket?.userName}: {selectedTicket?.subject}</DialogTitle>
+                  <DialogTitle>Ticket: {selectedTicket?.subject}</DialogTitle>
                   <DialogDescription>
-                      Created on {selectedTicket && format(selectedTicket.createdAt.toDate(), 'PPP p')}
+                    From: {selectedTicket?.userName} |
+                    Created: {selectedTicket && format(selectedTicket.createdAt.toDate(), 'PPP p')}
+                    {selectedTicket?.category === 'Guardian Inquiry' && ` | For: ${selectedTicket.recipient}`}
                   </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
-                <div className="space-y-2">
-                    <p className="font-semibold">User's Message:</p>
-                    <p className="p-3 border rounded-md bg-muted text-sm">{selectedTicket?.description}</p>
-                </div>
                  {selectedTicket?.replies.map((r, index) => (
                     <div key={index} className="space-y-2">
                         <p className="font-semibold">{r.author}'s Reply ({format(r.date.toDate(), 'PPP p')}):</p>

@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { createSupportTicketAction } from '@/app/actions/support.actions';
 
 type TeacherOption = {
     name: string;
@@ -72,20 +73,35 @@ export default function GuardianContactPage() {
         fetchTeachers();
     }, [authLoading, guardian, toast]);
     
-    const handleSendMessage = (e: React.FormEvent) => {
+    const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!selectedTeacher || !subject || !message || !guardian) {
+            toast({ title: 'Error', description: 'Please fill out all fields.', variant: 'destructive' });
+            return;
+        }
         setIsSending(true);
-        // This is a placeholder for a real messaging action
-        setTimeout(() => {
+        
+        const result = await createSupportTicketAction({
+            subject: `Message for Teacher: ${subject}`,
+            description: message,
+            userId: guardian.uid,
+            userName: guardian.name,
+            category: 'Guardian Inquiry',
+            recipient: selectedTeacher,
+        });
+
+        if (result.success) {
             toast({
                 title: "Message Sent!",
-                description: "Your message has been sent to the instructor."
+                description: `Your message regarding ${selectedTeacher} has been sent. Our support team will coordinate.`
             });
             setSelectedTeacher('');
             setSubject('');
             setMessage('');
-            setIsSending(false);
-        }, 1000);
+        } else {
+            toast({ title: "Error", description: result.message, variant: "destructive" });
+        }
+        setIsSending(false);
     };
 
     if (loading || authLoading) {
