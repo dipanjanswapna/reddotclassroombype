@@ -1,15 +1,18 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import { addInstructor, deleteInstructor, getInstructor, getUserByUid, updateInstructor, updateUser } from '@/lib/firebase/firestore';
 import { Instructor } from '@/lib/types';
 
-export async function createInstructorAction(data: Partial<Omit<Instructor, 'status'>> & { uid: string }) {
+export async function createInstructorAction(data: Partial<Omit<Instructor, 'status' | 'slug'>> & { uid: string }) {
     try {
         const { uid, ...instructorData } = data;
+        const slug = `${instructorData.name?.toLowerCase().replace(/\s+/g, '-')}-${uid.substring(0, 6)}`;
         const newInstructor = {
             ...instructorData,
             userId: uid, // Link to user
+            slug: slug,
             status: 'Pending Approval',
         };
         await addInstructor(newInstructor as Instructor);
@@ -79,10 +82,11 @@ export async function removeInstructorFromOrgAction(id: string) {
 
 export async function adminInviteInstructorAction(data: Partial<Instructor>) {
     try {
+        const randomString = Math.random().toString(36).substring(2, 8);
         const newInstructor = {
             ...data,
             status: 'Approved',
-            slug: (data.name || '').toLowerCase().replace(/\s+/g, '-'),
+            slug: `${(data.name || '').toLowerCase().replace(/\s+/g, '-')}-${randomString}`,
             avatarUrl: `https://placehold.co/100x100.png?text=${(data.name || '').split(' ').map(n=>n[0]).join('')}`,
             dataAiHint: 'person teacher'
         };

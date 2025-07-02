@@ -66,7 +66,6 @@ export default function TeacherSignupPage() {
           email,
           title,
           bio,
-          slug: name.toLowerCase().replace(/\s+/g, '-'),
           avatarUrl: `https://placehold.co/100x100.png?text=${name.split(' ').map(n=>n[0]).join('')}`,
           dataAiHint: 'person teacher'
       });
