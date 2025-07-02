@@ -19,7 +19,7 @@ import { HeroCarousel } from '@/components/hero-carousel';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizationsByIds } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { LiveCoursesCarousel } from '@/components/live-courses-carousel';
 import { TeachersCarousel } from '@/components/teachers-carousel';
@@ -54,8 +54,6 @@ export default async function Home() {
   if (!homepageConfig) {
     return <div className="container mx-auto p-4">Homepage configuration not found. Please set it up in the admin panel.</div>;
   }
-  
-  const collaborationOrgIds = homepageConfig.collaborations.items.map(item => item.organizationId).filter(Boolean);
 
   const [
     liveCourses,
@@ -72,8 +70,10 @@ export default async function Home() {
     getCoursesByIds(homepageConfig.masterClassesIds || []),
     getCoursesByIds(homepageConfig.admissionCoursesIds || []),
     getCoursesByIds(homepageConfig.jobCoursesIds || []),
-    getOrganizationsByIds(collaborationOrgIds)
+    getOrganizations()
   ]);
+
+  const approvedCollaborators = organizations.filter(org => org.status === 'approved');
   
   const language = 'bn'; // Default language
 
@@ -208,13 +208,13 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.collaborations.display && (
+      {homepageConfig.collaborations.display && approvedCollaborators.length > 0 && (
         <section aria-labelledby="collaborations-heading">
           <div className="container mx-auto px-4">
             <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
               {homepageConfig.collaborations.title[language]}
             </h2>
-            <CollaborationsCarousel items={homepageConfig.collaborations.items} organizations={organizations} />
+            <CollaborationsCarousel organizations={approvedCollaborators} />
           </div>
         </section>
       )}
