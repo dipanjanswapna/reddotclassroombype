@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,14 +16,16 @@ import { getCourses } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { Copy, Check } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
 
 export default function AffiliateLinksPage() {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [copiedLink, setCopiedLink] = useState('');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const affiliateId = 'aff_123xyz'; // Mock affiliate ID
+  const affiliateId = userInfo?.id || 'default_affiliate_id';
 
   useEffect(() => {
     async function fetchCourses() {

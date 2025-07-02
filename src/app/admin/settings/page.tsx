@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -26,24 +25,17 @@ import { HomepageConfig, PlatformSettings } from "@/lib/types";
 import { saveHomepageConfigAction } from "@/app/actions/homepage.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-
-
-// Mock user data for demonstration
-const currentUser = {
-    id: 'usr_admn_004',
-    fullName: "Admin Name",
-    email: "admin@rdc.com",
-    avatarUrl: "https://placehold.co/100x100.png",
-};
+import { useAuth } from "@/context/auth-context";
 
 
 export default function AdminSettingsPage() {
     const { toast } = useToast();
+    const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
 
     // State for personal information
-    const [fullName, setFullName] = useState(currentUser.fullName);
-    const [email, setEmail] = useState(currentUser.email);
-    const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
 
     // State for platform settings
     const [config, setConfig] = useState<HomepageConfig | null>(null);
@@ -62,6 +54,14 @@ export default function AdminSettingsPage() {
     const [generatedEnv, setGeneratedEnv] = useState('');
     const [isCopied, setIsCopied] = useState(false);
     const envOutputRef = useRef<HTMLPreElement>(null);
+
+    useEffect(() => {
+        if (userInfo) {
+            setFullName(userInfo.name || "");
+            setEmail(userInfo.email || "");
+            setAvatarUrl(userInfo.avatarUrl || "https://placehold.co/100x100.png");
+        }
+    }, [userInfo]);
 
     useEffect(() => {
         async function fetchConfig() {
@@ -163,9 +163,16 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
         }
     };
 
-    const managedRoles: (keyof Omit<PlatformSettings, 'Admin'>)[] = ['Student', 'Guardian', 'Teacher', 'Partner', 'Affiliate', 'Moderator'];
+    const managedRoles: (keyof Omit<PlatformSettings, 'Admin'>)[] = ['Student', 'Guardian', 'Teacher', 'Seller', 'Affiliate', 'Moderator'];
 
 
+    if (authLoading) {
+      return (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <LoadingSpinner className="w-12 h-12" />
+        </div>
+      );
+    }
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div>
@@ -235,7 +242,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
                     </div>
                 <div className="space-y-2">
                     <Label htmlFor="userId">Admin ID</Label>
-                    <Input id="userId" value={currentUser.id} readOnly className="cursor-not-allowed bg-muted" />
+                    <Input id="userId" value={userInfo?.id || ''} readOnly className="cursor-not-allowed bg-muted" />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
