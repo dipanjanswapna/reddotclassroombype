@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { HomepageConfig } from '@/lib/types';
+import { FloatingWhatsAppButton } from './floating-whatsapp-button';
 
 /**
  * @fileOverview LayoutWrapper component.
@@ -54,6 +55,9 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
       <Header />
       <main className="flex-grow flex flex-col">{children}</main>
       <Footer homepageConfig={homepageConfig}/>
+      {homepageConfig?.floatingWhatsApp?.display && (
+        <FloatingWhatsAppButton number={homepageConfig.floatingWhatsApp.number} />
+      )}
     </div>
   );
 }

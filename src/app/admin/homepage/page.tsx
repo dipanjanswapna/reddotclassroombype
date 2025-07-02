@@ -256,6 +256,51 @@ export default function AdminHomepageManagementPage() {
                     </div>
                 </CardContent>
             </Card>
+             <Card>
+                <CardHeader>
+                <CardTitle>Floating WhatsApp Button</CardTitle>
+                <CardDescription>Manage the floating chat button on public pages.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <Label htmlFor="floatingWhatsApp-display" className="font-medium">
+                    Display Button
+                    </Label>
+                    <Switch
+                    id="floatingWhatsApp-display"
+                    checked={config.floatingWhatsApp.display}
+                    onCheckedChange={(checked) =>
+                        setConfig((prev) =>
+                        prev
+                            ? {
+                                ...prev,
+                                floatingWhatsApp: { ...prev.floatingWhatsApp, display: checked },
+                            }
+                            : null
+                        )
+                    }
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="floatingWhatsApp-number">WhatsApp Number</Label>
+                    <Input
+                    id="floatingWhatsApp-number"
+                    value={config.floatingWhatsApp.number}
+                    onChange={(e) =>
+                        setConfig((prev) =>
+                        prev
+                            ? {
+                                ...prev,
+                                floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value },
+                            }
+                            : null
+                        )
+                    }
+                    placeholder="e.g. 8801XXXXXXXXX"
+                    />
+                </div>
+                </CardContent>
+            </Card>
            <Card>
                 <CardHeader>
                 <CardTitle>Section Visibility</CardTitle>

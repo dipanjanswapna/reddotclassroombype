@@ -423,6 +423,10 @@ export type HomepageConfig = {
     imageUrl: string;
     dataAiHint: string;
   };
+  floatingWhatsApp: {
+    display: boolean;
+    number: string;
+  };
   platformSettings: PlatformSettings;
 };
 

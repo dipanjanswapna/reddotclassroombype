@@ -270,6 +270,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     imageUrl: "https://i.imgur.com/Ujein2v.png",
     dataAiHint: "mobile app screenshot",
   },
+  floatingWhatsApp: {
+    display: true,
+    number: "8801700000000",
+  },
   platformSettings: defaultPlatformSettings,
 };
 
@@ -309,6 +313,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         notesBanner: { ...defaultHomepageConfig.notesBanner, ...data.notesBanner },
         statsSection: { ...defaultHomepageConfig.statsSection, ...data.statsSection },
         appPromo: { ...defaultHomepageConfig.appPromo, ...data.appPromo },
+        floatingWhatsApp: { ...defaultHomepageConfig.floatingWhatsApp, ...data.floatingWhatsApp },
         platformSettings: { ...defaultHomepageConfig.platformSettings, ...data.platformSettings },
     };
     return { id: docSnap.id, ...mergedConfig } as HomepageConfig;
