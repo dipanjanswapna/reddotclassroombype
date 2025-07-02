@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,15 +14,114 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Banknote, DollarSign, Download, Landmark } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
+import { getCourses, getInstructorByUid, getEnrollments } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
-const mockTransactions = [
-    { id: 'sale_1', date: '2024-07-21', course: 'HSC 25 Physics Crash Course', amount: '৳250', status: 'Cleared' },
-    { id: 'sale_2', date: '2024-07-20', course: 'HSC 25 Physics Crash Course', amount: '৳250', status: 'Cleared' },
-    { id: 'sale_3', date: '2024-07-19', course: 'Medical Admission Course 2024', amount: '৳150', status: 'Pending' },
-    { id: 'sale_4', date: '2024-07-18', course: 'IELTS Foundation Course', amount: '৳150', status: 'Cleared' },
-];
+type Transaction = {
+  id: string;
+  date: string;
+  course: string;
+  amount: string;
+  status: string;
+};
 
 export default function TeacherEarningsPage() {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    thisMonthRevenue: 0,
+    lastMonthRevenue: 0,
+  });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    if (!userInfo) return;
+
+    async function fetchData() {
+      try {
+        const instructor = await getInstructorByUid(userInfo.uid);
+        if (!instructor) {
+          toast({ title: 'Error', description: 'Could not find instructor profile.', variant: 'destructive' });
+          return;
+        }
+
+        const allCourses = await getCourses();
+        const allEnrollments = await getEnrollments();
+
+        const teacherCourses = allCourses.filter(c =>
+          c.instructors?.some(i => i.slug === instructor.slug)
+        );
+        const teacherCourseIds = teacherCourses.map(c => c.id!);
+
+        const teacherEnrollments = allEnrollments.filter(e =>
+          teacherCourseIds.includes(e.courseId)
+        );
+
+        let totalRevenue = 0;
+        let thisMonthRevenue = 0;
+        let lastMonthRevenue = 0;
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+        const transactionData = teacherEnrollments
+          .map(enrollment => {
+            const course = teacherCourses.find(c => c.id === enrollment.courseId);
+            if (!course) return null;
+
+            const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
+            totalRevenue += price;
+
+            const enrollmentDate = enrollment.enrollmentDate.toDate();
+            if (enrollmentDate >= startOfMonth) {
+              thisMonthRevenue += price;
+            } else if (enrollmentDate >= startOfLastMonth && enrollmentDate <= endOfLastMonth) {
+              lastMonthRevenue += price;
+            }
+
+            return {
+              id: enrollment.id!,
+              date: enrollmentDate.toLocaleDateString(),
+              course: course.title,
+              amount: `৳${price.toFixed(2)}`,
+              status: 'Cleared' // Simplified status for now
+            };
+          })
+          .filter(Boolean) as Transaction[];
+
+        transactionData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setTransactions(transactionData);
+
+        setStats({
+          totalRevenue,
+          thisMonthRevenue,
+          lastMonthRevenue,
+        });
+
+      } catch (error) {
+        console.error("Failed to fetch earnings:", error);
+        toast({ title: "Error", description: "Could not load earnings data.", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [userInfo, toast]);
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div>
@@ -38,7 +138,7 @@ export default function TeacherEarningsPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳1,25,000</div>
+                    <div className="text-2xl font-bold">৳{stats.totalRevenue.toLocaleString()}</div>
                     <p className="text-xs text-muted-foreground">All-time earnings</p>
                 </CardContent>
             </Card>
@@ -48,8 +148,8 @@ export default function TeacherEarningsPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳12,500</div>
-                    <p className="text-xs text-muted-foreground">+5.2% from last month</p>
+                    <div className="text-2xl font-bold">৳{stats.thisMonthRevenue.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">Current month's earnings</p>
                 </CardContent>
             </Card>
             <Card>
@@ -58,8 +158,8 @@ export default function TeacherEarningsPage() {
                     <Landmark className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳8,750.00</div>
-                    <p className="text-xs text-muted-foreground">Next payout: Aug 15</p>
+                    <div className="text-2xl font-bold">৳{stats.thisMonthRevenue.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">Next payout: (TBD)</p>
                 </CardContent>
             </Card>
             <Card>
@@ -68,8 +168,8 @@ export default function TeacherEarningsPage() {
                     <Banknote className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳11,200.00</div>
-                    <p className="text-xs text-muted-foreground">On July 15, 2024</p>
+                    <div className="text-2xl font-bold">৳{stats.lastMonthRevenue.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">Previous month's earnings</p>
                 </CardContent>
             </Card>
         </div>
@@ -77,7 +177,7 @@ export default function TeacherEarningsPage() {
         <Card>
             <CardHeader className="flex items-center justify-between">
                 <div>
-                    <CardTitle>Recent Transactions</CardTitle>
+                    <CardTitle>Recent Sales</CardTitle>
                     <CardDescription>A log of your most recent course sales.</CardDescription>
                 </div>
                 <Button variant="outline"><Download className="mr-2"/> Export History</Button>
@@ -93,7 +193,7 @@ export default function TeacherEarningsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockTransactions.map((transaction) => (
+                        {transactions.map((transaction) => (
                             <TableRow key={transaction.id}>
                                 <TableCell>{transaction.date}</TableCell>
                                 <TableCell className="font-medium">{transaction.course}</TableCell>
@@ -103,6 +203,13 @@ export default function TeacherEarningsPage() {
                                 </TableCell>
                             </TableRow>
                         ))}
+                         {transactions.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">
+                                    No sales transactions yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
