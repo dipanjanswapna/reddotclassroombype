@@ -30,14 +30,14 @@ type IdCardViewProps = {
 
 const getRoleColors = (role: string) => {
     switch (role.toLowerCase()) {
-        case 'student': return 'from-blue-500 to-blue-700';
-        case 'teacher': return 'from-green-500 to-green-700';
-        case 'admin': return 'from-red-500 to-red-700';
-        case 'guardian': return 'from-purple-500 to-purple-700';
-        case 'seller organization': return 'from-indigo-500 to-indigo-700';
-        case 'moderator': return 'from-orange-500 to-orange-700';
-        case 'affiliate': return 'from-yellow-500 to-yellow-700';
-        default: return 'from-gray-500 to-gray-700';
+        case 'student': return 'bg-blue-600';
+        case 'teacher': return 'bg-green-600';
+        case 'admin': return 'bg-red-600';
+        case 'guardian': return 'bg-purple-600';
+        case 'seller organization': return 'bg-indigo-600';
+        case 'moderator': return 'bg-orange-600';
+        case 'affiliate': return 'bg-yellow-500';
+        default: return 'bg-gray-600';
     }
 }
 
@@ -121,7 +121,7 @@ export function IdCardView({
             scale: 3,
             useCORS: true,
             letterRendering: true,
-            backgroundColor: null, // Transparent background
+            backgroundColor: '#e5e7eb', // Tailwind gray-200
         });
         
         const imgData = canvas.toDataURL('image/png');
@@ -167,8 +167,8 @@ export function IdCardView({
         <div ref={printAreaRef} className="space-y-4 bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">
             {/* Front Side */}
             <div className="id-card-front relative w-[330px] h-[525px] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col overflow-hidden font-sans">
-                <div className={`absolute -top-1/4 -left-1/4 w-72 h-72 rounded-full bg-gradient-to-br ${getRoleColors(role)} opacity-20`}></div>
-                <div className={`absolute -bottom-1/4 -right-1/4 w-72 h-72 rounded-full bg-gradient-to-tl ${getRoleColors(role)} opacity-20`}></div>
+                <div className={`absolute -top-1/4 -left-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
+                <div className={`absolute -bottom-1/4 -right-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
                 <header className="flex items-center justify-between z-10">
                     <RdcLogo className="h-10 w-auto" />
                     <div className="text-right">
@@ -181,11 +181,12 @@ export function IdCardView({
                             height={25}
                             className="object-contain ml-auto mt-1"
                             data-ai-hint="DBID logo"
+                            crossOrigin="anonymous"
                         />
                     </div>
                 </header>
                 <main className="flex-grow flex flex-col items-center justify-center text-center z-10">
-                    <div className={`relative w-36 h-36 rounded-full border-4 border-white shadow-lg bg-gradient-to-br ${getRoleColors(role)} p-1`}>
+                    <div className={`relative w-36 h-36 rounded-full border-4 border-white shadow-lg ${getRoleColors(role)} p-1`}>
                         <Image src={imageUrl} alt={name} width={144} height={144} className="rounded-full object-cover" data-ai-hint={dataAiHint} crossOrigin="anonymous"/>
                         <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
                             <Star className={`w-6 h-6 text-yellow-400 fill-current`} />
