@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,12 +18,6 @@ import type { User, Course, Enrollment } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Seller Students',
-    description: 'View all students enrolled in your organization\'s courses.',
-};
 
 type StudentDisplayInfo = {
   id: string;

@@ -24,13 +24,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Instructor Management',
-    description: 'Manage all instructors for your organization.',
-};
-
 
 export default function SellerTeacherManagementPage() {
   const { toast } = useToast();
@@ -165,7 +158,7 @@ export default function SellerTeacherManagementPage() {
                 <DialogFooter>
                     <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                     <Button onClick={handleInviteTeacher} disabled={isSaving}>
-                        {isSaving && <Loader2 className="animate-spin mr-2"/>}
+                        {isSaving && <Loader2 className="mr-2 animate-spin"/>}
                         Send Invitation
                     </Button>
                 </DialogFooter>
