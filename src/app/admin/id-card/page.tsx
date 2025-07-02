@@ -5,6 +5,28 @@ import { IdCardView } from "@/components/id-card-view";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
+import { Timestamp } from "firebase/firestore";
+
+const formatJoinedDate = (joined: any): string => {
+    if (!joined) return 'N/A';
+    if (typeof joined.toDate === 'function') {
+        return format(joined.toDate(), 'PPP');
+    }
+    if (typeof joined.seconds === 'number') {
+        return format(new Timestamp(joined.seconds, joined.nanoseconds || 0).toDate(), 'PPP');
+    }
+    if (typeof joined === 'string') {
+        const date = new Date(joined);
+        if (!isNaN(date.getTime())) {
+            return format(date, 'PPP');
+        }
+    }
+    if (joined instanceof Date) {
+        return format(joined, 'PPP');
+    }
+    return 'Date not available';
+};
+
 
 export default function AdminIdCardPage() {
     const { userInfo, loading } = useAuth();
@@ -33,7 +55,7 @@ export default function AdminIdCardPage() {
                 name={userInfo.name}
                 role={userInfo.role}
                 idNumber={userInfo.uid}
-                joinedDate={typeof userInfo.joined === 'string' ? userInfo.joined : format(userInfo.joined.toDate(), 'PPP')}
+                joinedDate={formatJoinedDate(userInfo.joined)}
                 email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}
                 dataAiHint="professional person"
