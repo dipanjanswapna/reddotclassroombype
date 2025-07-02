@@ -255,6 +255,11 @@ export type User = {
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students
   wishlist?: string[];
+  fathersName?: string;
+  mothersName?: string;
+  nidNumber?: string;
+  mobileNumber?: string;
+  address?: string;
 };
 
 export type Enrollment = {

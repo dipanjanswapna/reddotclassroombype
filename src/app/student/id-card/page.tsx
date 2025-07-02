@@ -33,10 +33,14 @@ export default function StudentIdCardPage() {
                 name={userInfo.name}
                 role={userInfo.role}
                 idNumber={userInfo.registrationNumber || userInfo.uid}
-                joinedDate={typeof userInfo.joined === 'string' ? userInfo.joined : format(userInfo.joined.toDate(), 'PPP')}
-                email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}
                 dataAiHint="student person"
+                classRoll={userInfo.classRoll}
+                fathersName={userInfo.fathersName}
+                mothersName={userInfo.mothersName}
+                nidNumber={userInfo.nidNumber}
+                mobileNumber={userInfo.mobileNumber}
+                address={userInfo.address}
             />
         </div>
     );

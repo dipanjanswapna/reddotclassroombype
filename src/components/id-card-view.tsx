@@ -4,7 +4,7 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/button';
-import { Download, Star, User, Calendar, Hash, Building } from 'lucide-react';
+import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse } from 'lucide-react';
 import { RdcLogo } from './rdc-logo';
 import { useToast } from './ui/use-toast';
 import html2canvas from 'html2canvas';
@@ -14,12 +14,16 @@ type IdCardViewProps = {
   name: string;
   role: string;
   idNumber: string;
-  joinedDate: string;
-  email: string;
   imageUrl: string;
   dataAiHint?: string;
   organization?: string;
   className?: string;
+  classRoll?: string;
+  fathersName?: string;
+  mothersName?: string;
+  nidNumber?: string;
+  mobileNumber?: string;
+  address?: string;
 };
 
 const getRoleColors = (role: string) => {
@@ -35,7 +39,10 @@ const getRoleColors = (role: string) => {
     }
 }
 
-export function IdCardView({ name, role, idNumber, joinedDate, email, imageUrl, organization, dataAiHint, className }: IdCardViewProps) {
+export function IdCardView({ 
+    name, role, idNumber, imageUrl, dataAiHint, organization, className,
+    classRoll, fathersName, mothersName, nidNumber, mobileNumber, address 
+}: IdCardViewProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -91,16 +98,19 @@ export function IdCardView({ name, role, idNumber, joinedDate, email, imageUrl, 
                 <h2 className="text-2xl font-bold mt-4">{name}</h2>
                 <p className="text-primary font-semibold">{role}</p>
 
-                <div className="text-left w-full mt-6 space-y-2 text-sm">
-                    <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500"/><span>{email}</span></div>
-                    {organization && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500"/><span>{organization}</span></div>}
-                    <div className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-500"/><span>ID: {idNumber}</span></div>
-                    <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-gray-500"/><span>Joined: {joinedDate}</span></div>
+                <div className="text-left w-full mt-4 space-y-1 text-xs">
+                    {classRoll && <div className="flex items-center gap-2"><ListCollapse className="w-4 h-4 text-gray-500 shrink-0"/><span>Class Roll: {classRoll}</span></div>}
+                    {idNumber && <div className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-500 shrink-0"/><span>Reg. No: {idNumber}</span></div>}
+                    {fathersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Father's Name: {fathersName}</span></div>}
+                    {mothersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Mother's Name: {mothersName}</span></div>}
+                    {mobileNumber && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500 shrink-0"/><span>Mobile: {mobileNumber}</span></div>}
+                    {nidNumber && <div className="flex items-center gap-2"><CreditCard className="w-4 h-4 text-gray-500 shrink-0"/><span>NID: {nidNumber}</span></div>}
+                    {address && <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gray-500 shrink-0 mt-0.5"/><span>Address: {address}</span></div>}
                 </div>
             </main>
 
             {/* Footer */}
-            <footer className="text-center z-10">
+            <footer className="text-center z-10 pt-2">
                 <Image src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rdc-final.app" width={60} height={60} alt="QR Code" className="mx-auto" data-ai-hint="qr code" crossOrigin="anonymous"/>
                 <p className="text-xs text-gray-400 mt-2">www.rdc-final.app</p>
             </footer>

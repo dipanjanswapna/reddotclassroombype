@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { updateUser } from "@/lib/firebase/firestore";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfilePage() {
     const { toast } = useToast();
@@ -36,12 +37,22 @@ export default function ProfilePage() {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
+    const [fathersName, setFathersName] = useState("");
+    const [mothersName, setMothersName] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
+    const [nidNumber, setNidNumber] = useState("");
+    const [address, setAddress] = useState("");
 
     useEffect(() => {
         if (userInfo) {
             setFullName(userInfo.name || "");
             setEmail(userInfo.email || "");
             setAvatarUrl(userInfo.avatarUrl || "https://placehold.co/100x100.png");
+            setFathersName(userInfo.fathersName || "");
+            setMothersName(userInfo.mothersName || "");
+            setMobileNumber(userInfo.mobileNumber || "");
+            setNidNumber(userInfo.nidNumber || "");
+            setAddress(userInfo.address || "");
             setLoading(false);
         } else if (!authLoading) {
             setLoading(false);
@@ -52,7 +63,15 @@ export default function ProfilePage() {
         if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await updateUser(userInfo.id, { name: fullName, email, avatarUrl });
+            await updateUser(userInfo.id, { 
+                name: fullName, 
+                avatarUrl,
+                fathersName,
+                mothersName,
+                mobileNumber,
+                nidNumber,
+                address,
+            });
             await refreshUserInfo();
             toast({
                 title: "Profile Updated",
@@ -154,14 +173,41 @@ export default function ProfilePage() {
                 <Label htmlFor="regNumber">Registration Number</Label>
                 <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input id="email" type="email" value={email} readOnly disabled/>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="fathersName">Father's Name</Label>
+                    <Input id="fathersName" value={fathersName} onChange={e => setFathersName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="mothersName">Mother's Name</Label>
+                    <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} />
+                </div>
+              </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="mobileNumber">Mobile Number</Label>
+                    <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="nidNumber">NID Number (Optional)</Label>
+                    <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                <Label htmlFor="address">Address</Label>
+                <Textarea id="address" value={address} onChange={e => setAddress(e.target.value)} />
               </div>
+
             </CardContent>
             <div className="p-6 pt-0">
                 <Button onClick={handleInfoSave} disabled={isSaving}>
