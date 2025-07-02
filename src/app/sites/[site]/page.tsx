@@ -1,59 +1,42 @@
-
-'use client';
-
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getPartnerBySubdomain, getCourses } from '@/lib/firebase/firestore';
-import { CourseCard } from '@/components/course-card';
 import type { Organization, Course } from '@/lib/types';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { LoadingSpinner } from '@/components/loading-spinner';
 import type { Metadata } from 'next';
+import { CourseCard } from '@/components/course-card';
 
-export const metadata: Metadata = {
-    title: 'Seller Storefront',
-    description: 'A dedicated storefront for our partner sellers.',
-};
+export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
+  const partner = await getPartnerBySubdomain(params.site);
 
-export default function PartnerSitePage() {
-  const params = useParams();
-  const siteSlug = params.site as string;
-  
-  const [partner, setPartner] = useState<Organization | null>(null);
-  const [partnerCourses, setPartnerCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-      if (!siteSlug) return;
-      const fetchPartnerData = async () => {
-          try {
-              const partnerData = await getPartnerBySubdomain(siteSlug);
-              if (partnerData) {
-                  setPartner(partnerData);
-                  const allCourses = await getCourses();
-                  const filteredCourses = allCourses.filter(c => c.organizationId === partnerData.id && c.status === 'Published');
-                  setPartnerCourses(filteredCourses);
-              }
-          } catch (error) {
-              console.error("Failed to fetch seller data:", error);
-          } finally {
-              setLoading(false);
-          }
-      };
-      fetchPartnerData();
-  }, [siteSlug]);
-
-  if (loading) {
-      return (
-          <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-            <LoadingSpinner className="w-12 h-12" />
-          </div>
-      );
+  if (!partner) {
+    return {
+      title: 'Storefront Not Found',
+    }
   }
+
+  return {
+    title: partner.name,
+    description: partner.description || `The official storefront for ${partner.name} on Red Dot Classroom.`,
+    openGraph: {
+      title: partner.name,
+      description: partner.description,
+      images: [partner.logoUrl],
+    },
+  }
+}
+
+
+export default async function PartnerSitePage({ params }: { params: { site: string } }) {
+  const siteSlug = params.site;
+  
+  const partner = await getPartnerBySubdomain(siteSlug);
 
   if (!partner) {
     notFound();
   }
+
+  const allCourses = await getCourses();
+  const partnerCourses = allCourses.filter(c => c.organizationId === partner.id && c.status === 'Published');
 
   return (
     <div className="flex flex-col">
@@ -81,7 +64,7 @@ export default function PartnerSitePage() {
         {!partner.hero && (
           <div className="text-center mb-12">
             <h1 className="font-headline text-4xl font-bold tracking-tight">Welcome to {partner.name}</h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               Explore our collection of high-quality courses.
             </p>
           </div>
@@ -89,7 +72,7 @@ export default function PartnerSitePage() {
 
         <h2 className="font-headline text-3xl font-bold mb-8">{partner.hero ? 'Our Courses' : 'Courses'}</h2>
         {partnerCourses.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {partnerCourses.map((course) => (
               <CourseCard key={course.id} {...course} partnerSubdomain={siteSlug} />
             ))}
