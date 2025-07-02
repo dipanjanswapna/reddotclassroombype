@@ -25,12 +25,6 @@ import { getInstructorByUid } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Teacher Settings',
-    description: 'Manage your account settings and personal information.',
-};
 
 export default function TeacherSettingsPage() {
     const { toast } = useToast();

@@ -15,12 +15,6 @@ import { Instructor } from "@/lib/types";
 import { saveInstructorProfileAction } from "@/app/actions/instructor.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Teacher Public Profile',
-    description: 'Manage your public-facing teacher profile.',
-};
 
 export default function TeacherProfilePage() {
     const { toast } = useToast();
