@@ -5,31 +5,10 @@ import { IdCardView } from "@/components/id-card-view";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
-import { Timestamp } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { getEnrollmentsByUserId, getCoursesByIds } from "@/lib/firebase/firestore";
 import { Course } from "@/lib/types";
-
-const formatJoinedDate = (joined: any): string => {
-    if (!joined) return 'N/A';
-    if (typeof joined.toDate === 'function') {
-        return format(joined.toDate(), 'PPP');
-    }
-    if (typeof joined.seconds === 'number') {
-        return format(new Timestamp(joined.seconds, joined.nanoseconds || 0).toDate(), 'PPP');
-    }
-    if (typeof joined === 'string') {
-        const date = new Date(joined);
-        if (!isNaN(date.getTime())) {
-            return format(date, 'PPP');
-        }
-    }
-    if (joined instanceof Date) {
-        return format(joined, 'PPP');
-    }
-    return 'Date not available';
-};
-
+import { safeToDate } from "@/lib/utils";
 
 export default function StudentIdCardPage() {
     const { userInfo, loading: authLoading } = useAuth();
@@ -72,6 +51,9 @@ export default function StudentIdCardPage() {
         return <p className="p-8 text-center">Could not load your information. Please log in again.</p>
     }
 
+    const joinedDate = safeToDate(userInfo.joined);
+    const formattedDate = !isNaN(joinedDate.getTime()) ? format(joinedDate, 'PPP') : 'N/A';
+
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div className="text-center">
@@ -84,7 +66,7 @@ export default function StudentIdCardPage() {
                 name={userInfo.name}
                 role={userInfo.role}
                 idNumber={userInfo.registrationNumber || userInfo.uid}
-                joinedDate={formatJoinedDate(userInfo.joined)}
+                joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}
                 dataAiHint="student person"

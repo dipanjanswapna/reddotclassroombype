@@ -120,13 +120,13 @@ export function IdCardView({
         const canvas = await html2canvas(element, { 
             scale: 3,
             useCORS: true,
-            allowTaint: true,
             letterRendering: true,
-            backgroundColor: null,
+            backgroundColor: null, // Transparent background
         });
         
         const imgData = canvas.toDataURL('image/png');
         
+        // A4 size in mm: 210 x 297
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -136,21 +136,17 @@ export function IdCardView({
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
         
-        // The canvas contains both cards stacked vertically.
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const canvasRatio = canvasWidth / canvasHeight;
 
-        // A4 page with some margin
-        const margin = 10;
-        const contentWidth = pdfWidth - margin * 2;
-        const contentHeight = pdfHeight - margin * 2;
+        const contentWidth = pdfWidth - 20; // 10mm margin on each side
         
         let finalImageWidth = contentWidth;
         let finalImageHeight = finalImageWidth / canvasRatio;
 
-        if (finalImageHeight > contentHeight) {
-            finalImageHeight = contentHeight;
+        if (finalImageHeight > (pdfHeight - 20)) {
+            finalImageHeight = pdfHeight - 20;
             finalImageWidth = finalImageHeight * canvasRatio;
         }
 

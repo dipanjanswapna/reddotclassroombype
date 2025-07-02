@@ -2,7 +2,6 @@
 import { getCourses, getUsers, getEnrollments } from '@/lib/firebase/firestore';
 import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
-import { Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { UserGrowthChart } from '@/components/admin/user-growth-chart';
 import { EnrollmentTrendsChart } from '@/components/admin/enrollment-trends-chart';
@@ -15,31 +14,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { AreaChart, BarChart, BookOpen, Users } from 'lucide-react';
+import { safeToDate } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Platform Reports',
     description: 'Detailed visual reports on user growth, course enrollments, and more.',
 };
-
-// Helper function to safely convert 'joined'/'enrollmentDate' to a Date object
-const toDate = (dateField: string | Timestamp | Date): Date => {
-    if (dateField instanceof Date) {
-        return dateField;
-    }
-    if (dateField instanceof Timestamp) {
-      return dateField.toDate();
-    }
-    if (typeof dateField === 'string') {
-      return new Date(dateField);
-    }
-    if (typeof dateField === 'object' && dateField !== null && 'seconds' in dateField && 'nanoseconds' in dateField) {
-        const ts = dateField as Timestamp;
-        return new Timestamp(ts.seconds, ts.nanoseconds).toDate();
-    }
-    // Fallback for unexpected formats, though it might lead to incorrect dates
-    return new Date();
-};
-
 
 // Helper function to process data by month
 const processDataByMonth = (items: (User | Enrollment)[], dateField: 'joined' | 'enrollmentDate') => {
@@ -47,8 +27,12 @@ const processDataByMonth = (items: (User | Enrollment)[], dateField: 'joined' | 
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     items.forEach(item => {
-        if (!item[dateField]) return;
-        const date = toDate(item[dateField] as string | Timestamp);
+        const dateValue = item[dateField as keyof typeof item];
+        if (!dateValue) return;
+
+        const date = safeToDate(dateValue);
+        if (isNaN(date.getTime())) return;
+
         const month = date.getMonth();
         const year = date.getFullYear();
         const key = `${year}-${monthNames[month]}`;

@@ -23,6 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { Timestamp } from 'firebase/firestore';
+import { safeToDate } from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',
@@ -60,8 +61,11 @@ export default async function AdminDashboardPage() {
       if(course) {
           const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
           totalRevenue += price;
-          const month = (enrollment.enrollmentDate as Timestamp).toDate().getMonth();
-          revenueData[month].total += price;
+          const enrollmentDate = safeToDate(enrollment.enrollmentDate);
+          if (!isNaN(enrollmentDate.getTime())) {
+            const month = enrollmentDate.getMonth();
+            revenueData[month].total += price;
+          }
       }
   });
 
@@ -73,33 +77,8 @@ export default async function AdminDashboardPage() {
 
   const userRolesData = Object.entries(roleCounts).map(([name, value]) => ({ name, value }));
 
-  // Helper function to safely convert 'joined' to a Date object
-  const toDate = (joined: string | Timestamp): Date => {
-    // Already a Date object
-    if (joined instanceof Date) {
-        return joined;
-    }
-    // Firestore Timestamp
-    if (joined instanceof Timestamp) {
-      return joined.toDate();
-    }
-    // String representation
-    if (typeof joined === 'string') {
-      return new Date(joined);
-    }
-    // Handle the case where it might be a plain object with seconds/nanoseconds after serialization
-    if (typeof joined === 'object' && 'seconds' in joined && 'nanoseconds' in joined) {
-        // This is a type guard, so we can cast safely.
-        const ts = joined as Timestamp;
-        return new Timestamp(ts.seconds, ts.nanoseconds).toDate();
-    }
-    // Fallback for unexpected formats
-    return new Date();
-  };
-
-
   // Recent Activity
-  const recentSignups = users.sort((a, b) => toDate(b.joined).getTime() - toDate(a.joined).getTime()).slice(0, 5);
+  const recentSignups = users.sort((a, b) => safeToDate(b.joined).getTime() - safeToDate(a.joined).getTime()).slice(0, 5);
   
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -190,13 +169,16 @@ export default async function AdminDashboardPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {recentSignups.map(user => (
-                            <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.name} ({user.email})</TableCell>
-                                <TableCell><Badge variant="outline">{user.role}</Badge></TableCell>
-                                <TableCell>{formatDistanceToNow(toDate(user.joined), { addSuffix: true })}</TableCell>
-                            </TableRow>
-                        ))}
+                        {recentSignups.map(user => {
+                            const joinedDate = safeToDate(user.joined);
+                            return (
+                                <TableRow key={user.id}>
+                                    <TableCell className="font-medium">{user.name} ({user.email})</TableCell>
+                                    <TableCell><Badge variant="outline">{user.role}</Badge></TableCell>
+                                    <TableCell>{!isNaN(joinedDate.getTime()) ? formatDistanceToNow(joinedDate, { addSuffix: true }) : 'N/A'}</TableCell>
+                                </TableRow>
+                            )
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>
