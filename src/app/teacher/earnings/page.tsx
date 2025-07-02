@@ -13,12 +13,6 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Banknote, DollarSign, Download, Landmark } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'My Earnings',
-    description: 'Track your course revenue and view your payment history.',
-};
 
 const mockTransactions = [
     { id: 'sale_1', date: '2024-07-21', course: 'HSC 25 Physics Crash Course', amount: '৳250', status: 'Cleared' },

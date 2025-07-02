@@ -2,13 +2,14 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload, Linkedin, Facebook, Twitter, Loader2 } from "lucide-react";
+import { Upload, Linkedin, Facebook, Twitter, Loader2, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { getInstructorByUid } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
@@ -178,7 +179,13 @@ export default function TeacherProfilePage() {
                 </div>
 
             </CardContent>
-            <div className="p-6 pt-0 flex justify-end">
+            <div className="p-6 pt-0 flex justify-end gap-2">
+                <Button variant="outline" asChild>
+                    <Link href={`/teachers/${instructor.slug}`} target="_blank">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View Public Profile
+                    </Link>
+                </Button>
                 <Button onClick={handleProfileSave} disabled={isSaving}>
                     {isSaving && <Loader2 className="mr-2 animate-spin"/>}
                     Save Profile
