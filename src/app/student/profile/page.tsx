@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -146,12 +147,12 @@ export default function ProfilePage() {
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="classRoll">Class Roll</Label>
-                    <Input id="classRoll" value={userInfo.classRoll || 'Not Assigned'} readOnly className="cursor-not-allowed bg-muted" />
+                    <Input id="classRoll" value={userInfo.classRoll || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
                 </div>
               </div>
                <div className="space-y-2">
                 <Label htmlFor="regNumber">Registration Number</Label>
-                <Input id="regNumber" value={userInfo.registrationNumber || 'Not Assigned'} readOnly className="cursor-not-allowed bg-muted" />
+                <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>

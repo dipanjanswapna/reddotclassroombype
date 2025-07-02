@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -154,7 +155,7 @@ export default function LoginPageClient() {
                         </div>
                         <div className="grid gap-2">
                         <Label htmlFor="email">{t.email[language]}</Label>
-                        <Input id="email" type="email" placeholder="dipanjanswapnaprangon@gmail.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                         <Label htmlFor="password">{t.password[language]}</Label>

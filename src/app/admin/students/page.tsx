@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +49,7 @@ const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Admin: <UserCog className="h-4 w-4" />,
   Affiliate: <UserCheck className="h-4 w-4" />,
   Moderator: <UserX className="h-4 w-4" />,
-  Partner: <Handshake className="h-4 w-4" />,
+  Seller: <Handshake className="h-4 w-4" />,
 };
 
 const roleColors: { [key in User['role']]: string } = {
@@ -59,7 +59,7 @@ const roleColors: { [key in User['role']]: string } = {
   Admin: 'border-primary/30 bg-primary/10 text-primary',
   Affiliate: 'border-yellow-300 bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
   Moderator: 'border-orange-300 bg-orange-50 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700',
-  Partner: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
+  Seller: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
 };
 
 const statusColors: { [key in User['status']]: string } = {
@@ -78,6 +78,9 @@ export default function StudentUserManagementPage() {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Form state for the dialog
   const [name, setName] = useState('');
@@ -159,6 +162,12 @@ export default function StudentUserManagementPage() {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
   };
+  
+  const filteredUsers = studentUsers.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.classRoll && user.classRoll.includes(searchTerm))
+  );
 
   if (loading) {
     return (
@@ -183,29 +192,35 @@ export default function StudentUserManagementPage() {
       <Card>
         <CardHeader>
           <CardTitle>All Student & Guardian Users</CardTitle>
-          <CardDescription>A list of all registered students and guardians.</CardDescription>
+          <CardDescription>A list of all registered students and guardians. You can search by name, email, or class roll.</CardDescription>
+          <div className="relative pt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1.2 h-4 w-4 text-muted-foreground" />
+            <Input
+                placeholder="Search by name, email, or class roll..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>User ID</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Class Roll</TableHead>
+                <TableHead>Reg. Number</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Joined Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {studentUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="font-medium">{user.name}</div>
                     <div className="text-sm text-muted-foreground">{user.email}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="max-w-[100px] truncate">{user.id}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>
@@ -214,9 +229,14 @@ export default function StudentUserManagementPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    <Badge variant="secondary">{user.classRoll || 'N/A'}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="max-w-[120px] truncate">{user.registrationNumber || 'N/A'}</Badge>
+                  </TableCell>
+                  <TableCell>
                     <Badge variant="outline" className={statusColors[user.status]}>{user.status}</Badge>
                   </TableCell>
-                  <TableCell>{user.joined?.toString().split('T')[0]}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
