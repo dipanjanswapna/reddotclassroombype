@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -46,7 +45,7 @@ export default function PlannerPage() {
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [studyPlan, setStudyPlan] = useState<StudyPlanEvent[]>([]);
 
-    const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     
     useEffect(() => {
         if (!userInfo) return;
