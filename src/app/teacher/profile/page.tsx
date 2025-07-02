@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -199,7 +198,7 @@ export default function TeacherProfilePage() {
                 </div>
 
             </CardContent>
-            <div className="p-6 pt-0 flex justify-end gap-2">
+            <CardFooter className="p-6 pt-0 flex justify-end gap-2">
                 <Button variant="outline" asChild>
                     <Link href={`/teachers/${instructor.slug}`} target="_blank">
                         <ExternalLink className="mr-2 h-4 w-4" />
@@ -210,7 +209,7 @@ export default function TeacherProfilePage() {
                     {isSaving && <Loader2 className="mr-2 animate-spin"/>}
                     Save Profile
                 </Button>
-            </div>
+            </CardFooter>
         </Card>
 
         <Card>
