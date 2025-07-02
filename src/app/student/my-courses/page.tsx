@@ -10,13 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Search, ListFilter } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'My Courses',
-    description: 'Your learning journey starts here. Access all your enrolled courses.',
-};
-
 
 export default function MyCoursesPage() {
   const { userInfo, loading: authLoading } = useAuth();
