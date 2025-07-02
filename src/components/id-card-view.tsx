@@ -174,6 +174,14 @@ export function IdCardView({
                     <div className="text-right">
                         <h1 className="font-bold text-lg leading-tight">RED DOT CLASSROOM</h1>
                         <p className="text-xs text-gray-500">PRANGONS ECOSYSTEM</p>
+                        <Image
+                            src="https://mir-s3-cdn-cf.behance.net/projects/max_808/ed1f18226284187.Y3JvcCwxMDI0LDgwMCwwLDM2Nw.png"
+                            alt="DBID Certified"
+                            width={50}
+                            height={25}
+                            className="object-contain ml-auto mt-1"
+                            data-ai-hint="DBID logo"
+                        />
                     </div>
                 </header>
                 <main className="flex-grow flex flex-col items-center justify-center text-center z-10">
