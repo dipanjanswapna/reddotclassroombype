@@ -103,6 +103,7 @@ type LessonData = {
     duration: string;
     videoId?: string;
     lectureSheetUrl?: string;
+    quizId?: string;
 };
 
 type ModuleData = {
@@ -146,10 +147,12 @@ type QuizData = {
 
 function SortableSyllabusItem({ 
     item,
+    quizzes,
     updateItem,
     removeItem 
 }: { 
     item: SyllabusItem,
+    quizzes: QuizData[],
     updateItem: (id: string, field: string, value: string) => void,
     removeItem: (id: string) => void,
 }) {
@@ -218,20 +221,62 @@ function SortableSyllabusItem({
             </div>
             <CollapsibleContent>
                 <div className="p-4 border-t space-y-4 bg-muted/50 rounded-b-md">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
-                            <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor={`duration-${item.id}`}>Lesson Duration</Label>
-                            <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
-                        </div>
-                    </div>
                      <div className="space-y-2">
-                        <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet URL</Label>
-                        <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
-                    </div>
+                        <Label>Lesson Type</Label>
+                        <Select value={item.type} onValueChange={(value) => updateItem(item.id, 'type', value)}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="video">Video Lesson</SelectItem>
+                                <SelectItem value="quiz">Quiz</SelectItem>
+                                <SelectItem value="document">Document / Reading</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     </div>
+
+                    {item.type === 'video' && (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
+                                <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor={`duration-${item.id}`}>Lesson Duration</Label>
+                                <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} />
+                            </div>
+                        </div>
+                    )}
+
+                    {item.type === 'quiz' && (
+                        <div className="space-y-2">
+                            <Label>Select Quiz</Label>
+                            <Select value={item.quizId || ''} onValueChange={(value) => updateItem(item.id, 'quizId', value)}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a quiz to link..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {quizzes.length === 0 ? (
+                                        <div className="p-4 text-sm text-muted-foreground text-center">No quizzes created yet.</div>
+                                    ) : (
+                                        quizzes.map(quiz => (
+                                            <SelectItem key={quiz.id} value={quiz.id}>{quiz.title}</SelectItem>
+                                        ))
+                                    )}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                You can create new quizzes in the "Quizzes" tab.
+                            </p>
+                        </div>
+                    )}
+                     
+                    {(item.type === 'video' || item.type === 'document') && (
+                        <div className="space-y-2">
+                            <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet / Document URL</Label>
+                            <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
+                        </div>
+                    )}
                 </div>
             </CollapsibleContent>
         </Collapsible>
@@ -552,6 +597,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 duration: item.duration || '',
                 videoId: item.videoId || '',
                 lectureSheetUrl: item.lectureSheetUrl || '',
+                quizId: item.quizId || ''
             });
         }
     });
@@ -817,6 +863,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 <SortableSyllabusItem 
                                     key={item.id}
                                     item={item}
+                                    quizzes={quizzes}
                                     updateItem={updateSyllabusItem}
                                     removeItem={removeSyllabusItem}
                                 />

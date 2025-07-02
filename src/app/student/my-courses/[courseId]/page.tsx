@@ -115,26 +115,32 @@ export default function CourseHomePage() {
               </AccordionTrigger>
               <AccordionContent className="p-0">
                 <ul className="space-y-1 border-t">
-                  {module.lessons.map((lesson, index) => (
-                    <li key={lesson.id}>
-                      <Link
-                        href={`/student/my-courses/${course.id}/lesson/${lesson.id}`}
-                        className="flex items-center gap-4 px-6 py-3 hover:bg-muted/50 transition-colors"
-                      >
-                        {getLessonIcon(lesson.type)}
-                        <div className="flex-grow">
-                          <p className="font-medium">{lesson.title}</p>
-                          <p className="text-xs text-muted-foreground">{lesson.duration}</p>
-                        </div>
-                        <CheckCircle
-                          className={cn(
-                            'w-5 h-5 text-green-500',
-                            index > 2 ? 'opacity-20' : '' // Mock completion status
-                          )}
-                        />
-                      </Link>
-                    </li>
-                  ))}
+                  {module.lessons.map((lesson, index) => {
+                    const lessonLink = lesson.type === 'quiz'
+                        ? `/student/my-courses/${course.id}/quizzes/${lesson.quizId}`
+                        : `/student/my-courses/${course.id}/lesson/${lesson.id}`;
+                    
+                    return (
+                        <li key={lesson.id}>
+                        <Link
+                            href={lessonLink}
+                            className="flex items-center gap-4 px-6 py-3 hover:bg-muted/50 transition-colors"
+                        >
+                            {getLessonIcon(lesson.type)}
+                            <div className="flex-grow">
+                            <p className="font-medium">{lesson.title}</p>
+                            <p className="text-xs text-muted-foreground">{lesson.duration}</p>
+                            </div>
+                            <CheckCircle
+                            className={cn(
+                                'w-5 h-5 text-green-500',
+                                index > 2 ? 'opacity-20' : '' // Mock completion status
+                            )}
+                            />
+                        </Link>
+                        </li>
+                    );
+                  })}
                 </ul>
               </AccordionContent>
             </AccordionItem>

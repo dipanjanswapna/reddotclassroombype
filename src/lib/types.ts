@@ -17,6 +17,7 @@ export type Lesson = {
   duration: string;
   videoId?: string;
   lectureSheetUrl?: string;
+  quizId?: string;
 };
 
 export type SyllabusModule = {
