@@ -308,6 +308,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
 
 // Blog Posts
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPost = (id: string) => getDocument<BlogPost>('blog_posts', id);
 export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
     const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
     const querySnapshot = await getDocs(q);
@@ -317,6 +318,10 @@ export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> 
     const docSnap = querySnapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as BlogPost;
 };
+export const addBlogPost = (post: Omit<BlogPost, 'id'>) => addDoc(collection(db, 'blog_posts'), post);
+export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(db, 'blog_posts', id), post);
+export const deleteBlogPost = (id: string) => deleteDoc(doc(db, 'blog_posts', id));
+
 
 // Homepage Config
 export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {

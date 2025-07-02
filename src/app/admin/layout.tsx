@@ -16,6 +16,7 @@ import {
   CalendarPlus,
   Handshake,
   Badge,
+  Notebook,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -55,6 +56,7 @@ export default function AdminLayout({
         { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/sellers", icon: Handshake, label: "Sellers" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
+        { href: "/admin/blog", icon: Notebook, label: "Blog" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
         { href: "/admin/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
