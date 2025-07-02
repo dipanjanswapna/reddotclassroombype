@@ -14,11 +14,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { getCourses, getUsers, getOrganizationByUserId } from '@/lib/firebase/firestore';
-import type { User, Course } from '@/lib/types';
+import { getCourses, getUsers, getOrganizationByUserId, getEnrollments } from '@/lib/firebase/firestore';
+import type { User, Course, Enrollment } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Seller Students',
+    description: 'View all students enrolled in your organization\'s courses.',
+};
 
 type StudentDisplayInfo = {
   id: string;
@@ -48,46 +54,40 @@ export default function SellerStudentsPage() {
                 return;
             }
 
-            const [allCourses, allUsers] = await Promise.all([
+            const [allCourses, allUsers, allEnrollments] = await Promise.all([
                 getCourses(),
-                getUsers()
+                getUsers(),
+                getEnrollments()
             ]);
 
-            const sellerCourses = allCourses.filter(c => c.organizationId === organization.id);
-            const studentCourseMap = new Map<string, { courseTitle: string, progress: number }[]>();
+            const sellerCourseIds = allCourses
+                .filter(c => c.organizationId === organization.id)
+                .map(c => c.id);
 
-            sellerCourses.forEach(course => {
-                course.assignments?.forEach(assignment => {
-                    if (!studentCourseMap.has(assignment.studentId)) {
-                        studentCourseMap.set(assignment.studentId, []);
-                    }
-                    const studentCourses = studentCourseMap.get(assignment.studentId)!;
-                    if (!studentCourses.some(c => c.courseTitle === course.title)) {
-                        studentCourses.push({
-                            courseTitle: course.title,
-                            progress: Math.floor(Math.random() * 80) + 20 // Mock progress
-                        });
-                    }
-                });
-            });
+            const studentEnrollments = allEnrollments.filter(e => sellerCourseIds.includes(e.courseId));
+            
+            const studentMap = new Map<string, StudentDisplayInfo[]>();
+            
+            studentEnrollments.forEach(enrollment => {
+                const studentInfo = allUsers.find(u => u.id === enrollment.userId);
+                const courseInfo = allCourses.find(c => c.id === enrollment.courseId);
 
-            const sellerStudents: StudentDisplayInfo[] = [];
-            studentCourseMap.forEach((courseData, studentId) => {
-                const studentInfo = allUsers.find(s => s.id === studentId);
-                if (studentInfo) {
-                    courseData.forEach(cd => {
-                        sellerStudents.push({
-                            id: `${studentInfo.id}-${cd.courseTitle.replace(/\s/g, '-')}`,
-                            name: studentInfo.name,
-                            email: studentInfo.email,
-                            avatar: 'https://placehold.co/100x100.png',
-                            enrolledCourse: cd.courseTitle,
-                            progress: cd.progress
-                        });
+                if (studentInfo && courseInfo) {
+                    const studentCourses = studentMap.get(studentInfo.id!) || [];
+                    studentCourses.push({
+                        id: `${studentInfo.id}-${courseInfo.id}`,
+                        name: studentInfo.name,
+                        email: studentInfo.email,
+                        avatar: studentInfo.avatarUrl || 'https://placehold.co/100x100.png',
+                        enrolledCourse: courseInfo.title,
+                        progress: enrollment.progress,
                     });
+                    studentMap.set(studentInfo.id!, studentCourses);
                 }
             });
-            setStudents(sellerStudents);
+            
+            const displayList = Array.from(studentMap.values()).flat();
+            setStudents(displayList);
 
         } catch (error) {
             console.error("Failed to fetch students:", error);

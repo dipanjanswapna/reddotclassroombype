@@ -39,6 +39,12 @@ import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import type { Course, LiveClass } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Live Class Management',
+    description: 'Manage your upcoming live classes.',
+};
 
 type LiveClassWithCourse = LiveClass & {
   courseTitle: string;

@@ -36,6 +36,12 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'My Support Tickets',
+    description: 'Create and track your support requests.',
+};
 
 const getStatusBadgeVariant = (status: SupportTicket['status']) => {
   switch (status) {

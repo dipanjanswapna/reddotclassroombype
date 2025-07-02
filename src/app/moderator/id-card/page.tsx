@@ -6,6 +6,12 @@ import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Moderator ID Card',
+    description: 'Your official moderator identification card.',
+};
 
 export default function ModeratorIdCardPage() {
     const { userInfo, loading } = useAuth();

@@ -24,6 +24,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Instructor Management',
+    description: 'Manage all instructors for your organization.',
+};
 
 
 export default function SellerTeacherManagementPage() {

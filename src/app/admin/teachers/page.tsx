@@ -50,6 +50,12 @@ import { updateInstructorStatusAction, adminInviteInstructorAction, deleteInstru
 import type { VariantProps } from 'class-variance-authority';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Teacher Management',
+    description: 'Approve, manage, and view all teacher profiles on the platform.',
+};
 
 const getStatusBadgeVariant = (status: Instructor['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {

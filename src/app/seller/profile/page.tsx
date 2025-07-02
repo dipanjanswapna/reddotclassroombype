@@ -8,18 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Copy, Check, Banknote, User, Link2 } from "lucide-react";
+import { Loader2, Upload, Banknote, User } from "lucide-react";
 import { saveUserAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Affiliate Profile',
-    description: 'Manage your affiliate account and payment information.',
+    title: 'Seller Profile',
+    description: 'Manage your seller account and payment information.',
 };
 
-export default function AffiliateProfilePage() {
+export default function SellerProfilePage() {
     const { toast } = useToast();
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     const [loading, setLoading] = useState(true);
@@ -33,10 +33,6 @@ export default function AffiliateProfilePage() {
     // State for payment info
     const [paymentMethod, setPaymentMethod] = useState("bKash");
     const [paymentNumber, setPaymentNumber] = useState("");
-
-    const [copied, setCopied] = useState(false);
-    const affiliateId = userInfo?.id || '';
-    const affiliateLink = `https://rdc.com/signup?ref=${affiliateId}`;
     
     useEffect(() => {
         if (userInfo) {
@@ -65,13 +61,6 @@ export default function AffiliateProfilePage() {
             setIsSaving(false);
         }
     };
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(affiliateLink);
-        setCopied(true);
-        toast({ title: 'Link Copied!', description: 'Your main referral link has been copied.' });
-        setTimeout(() => setCopied(false), 2000);
-    };
     
     if (loading || authLoading) {
         return (
@@ -82,28 +71,28 @@ export default function AffiliateProfilePage() {
     }
 
     if (!userInfo) {
-        return <p className="p-8">Could not load affiliate profile. Please try logging in again.</p>
+        return <p className="p-8">Could not load seller profile. Please try logging in again.</p>
     }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Affiliate Profile</h1>
+        <h1 className="font-headline text-3xl font-bold tracking-tight">Seller Profile</h1>
         <p className="text-muted-foreground">Manage your account and payment information.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><User /> Personal Information</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><User /> Primary Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="fullName">Full Name</Label>
+                        <Label htmlFor="fullName">Contact Name</Label>
                         <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">Contact Email Address</Label>
                         <Input id="email" type="email" value={email} readOnly disabled/>
                     </div>
                 </CardContent>
@@ -126,20 +115,6 @@ export default function AffiliateProfilePage() {
             </Card>
           </div>
           <div className="md:col-span-1 space-y-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Link2 /> Your Referral Link</CardTitle>
-                    <CardDescription>Share this link to refer new users.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center gap-2 p-2 rounded-md bg-muted border">
-                        <span className="font-mono text-sm truncate">{affiliateLink}</span>
-                        <Button variant="ghost" size="icon" className="shrink-0" onClick={handleCopy}>
-                             {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
              <Button onClick={handleSave} disabled={isSaving} className="w-full">
                 {isSaving ? <Loader2 className="mr-2 animate-spin"/> : null}
                 Save Changes

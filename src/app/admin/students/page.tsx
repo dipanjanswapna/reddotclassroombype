@@ -40,6 +40,12 @@ import { User } from '@/lib/types';
 import { getUsers } from '@/lib/firebase/firestore';
 import { saveUserAction, deleteUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Student & Guardian Management',
+    description: 'View and manage all student and guardian accounts.',
+};
 
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {

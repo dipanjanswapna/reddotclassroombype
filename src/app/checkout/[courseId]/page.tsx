@@ -16,7 +16,12 @@ import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+    title: 'Checkout',
+    description: 'Complete your course purchase.',
+};
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();

@@ -8,6 +8,12 @@ import { useState, useEffect } from 'react';
 import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'My Wishlist',
+    description: 'Courses you\'ve saved for later. Enroll when you\'re ready!',
+};
 
 export default function WishlistPage() {
   const { userInfo, loading: authLoading } = useAuth();

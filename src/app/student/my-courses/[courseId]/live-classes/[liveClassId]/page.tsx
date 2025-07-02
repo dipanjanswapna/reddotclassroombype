@@ -10,6 +10,12 @@ import { useState, useEffect } from 'react';
 import type { Course, LiveClass } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Live Class',
+    description: 'Join your live class session.',
+};
 
 const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
     ssr: false,

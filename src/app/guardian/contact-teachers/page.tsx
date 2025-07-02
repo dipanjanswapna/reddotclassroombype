@@ -14,6 +14,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Contact Teachers',
+    description: 'Send messages directly to your child\'s course instructors.',
+};
 
 type TeacherOption = {
     name: string;

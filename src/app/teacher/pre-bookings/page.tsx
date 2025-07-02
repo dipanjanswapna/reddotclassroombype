@@ -14,6 +14,12 @@ import { format, isPast } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Teacher Pre-booking Management',
+    description: 'Monitor and manage your pre-booking campaigns.',
+};
 
 export default function TeacherPrebookingPage() {
     const { toast } = useToast();

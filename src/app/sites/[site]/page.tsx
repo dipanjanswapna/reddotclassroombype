@@ -8,7 +8,12 @@ import type { Organization, Course } from '@/lib/types';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+    title: 'Seller Storefront',
+    description: 'A dedicated storefront for our partner sellers.',
+};
 
 export default function PartnerSitePage() {
   const params = useParams();

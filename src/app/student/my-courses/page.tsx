@@ -10,6 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Search, ListFilter } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'My Courses',
+    description: 'Your learning journey starts here. Access all your enrolled courses.',
+};
 
 
 export default function MyCoursesPage() {
@@ -17,6 +23,7 @@ export default function MyCoursesPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (!userInfo) {
@@ -43,25 +50,29 @@ export default function MyCoursesPage() {
 
   const getCourseById = (courseId: string) => allCourses.find(c => c.id === courseId);
   
-  const inProgressCourses = enrollments
+  const filterCourses = (courses: (Course & { progress?: number; lastViewed?: string; completedDate?: string })[]) => {
+      return courses.filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  };
+
+  const inProgressCourses = filterCourses(enrollments
     .filter(e => e.status === 'in-progress')
     .map(e => {
         const course = getCourseById(e.courseId);
         return course ? { ...course, progress: e.progress, lastViewed: 'Today' } : null; // lastViewed is mock
     })
-    .filter(Boolean) as (Course & { progress: number; lastViewed: string })[];
+    .filter(Boolean) as (Course & { progress: number; lastViewed: string })[]);
 
-  const completedCourses = enrollments
+  const completedCourses = filterCourses(enrollments
     .filter(e => e.status === 'completed')
     .map(e => {
         const course = getCourseById(e.courseId);
         return course ? { ...course, completedDate: e.enrollmentDate.toDate().toISOString().split('T')[0] } : null;
     })
-    .filter(Boolean) as (Course & { completedDate: string })[];
+    .filter(Boolean) as (Course & { completedDate: string })[]);
 
 
   const wishlistedCourses = userInfo?.wishlist 
-    ? allCourses.filter(c => userInfo.wishlist!.includes(c.id!))
+    ? filterCourses(allCourses.filter(c => userInfo.wishlist!.includes(c.id!)))
     : [];
 
   if (loading || authLoading) {
@@ -84,12 +95,8 @@ export default function MyCoursesPage() {
            <div className="flex items-center gap-2">
               <div className="relative w-full md:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9" />
+                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
-              <Button variant="outline">
-                <ListFilter className="mr-2 h-4 w-4" />
-                ফিল্টার
-              </Button>
             </div>
         </div>
         

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,6 +18,12 @@ import { useToast } from '@/components/ui/use-toast';
 import { getSupportTickets, getUsers } from '@/lib/firebase/firestore';
 import { SupportTicket, User } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Moderator Dashboard',
+    description: 'Overview of community health and pending moderation tasks.',
+};
 
 export default function ModeratorDashboardPage() {
     const { toast } = useToast();

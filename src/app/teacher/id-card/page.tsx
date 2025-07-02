@@ -10,6 +10,12 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { safeToDate } from "@/lib/utils";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Teacher ID Card',
+    description: 'Your official teacher identification card.',
+};
 
 export default function TeacherIdCardPage() {
     const { userInfo, loading: authLoading } = useAuth();

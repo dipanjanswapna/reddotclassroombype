@@ -18,6 +18,12 @@ import { Course, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Guardian Payment History',
+    description: 'A record of all transactions for your child on the platform.',
+};
 
 type Transaction = {
   id: string;

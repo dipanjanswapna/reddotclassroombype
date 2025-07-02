@@ -24,6 +24,12 @@ import { FileCheck2, Send, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Assignment Grading',
+    description: 'Review and grade student submissions.',
+};
 
 type AssignmentWithCourseInfo = Assignment & {
   courseTitle: string;

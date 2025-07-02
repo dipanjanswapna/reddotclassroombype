@@ -14,6 +14,12 @@ import Link from 'next/link';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'My Quizzes',
+    description: 'Test your knowledge across all your courses.',
+};
 
 
 const getStatusBadgeVariant = (status?: 'Completed' | 'Not Started' | 'In Progress'): VariantProps<typeof badgeVariants>['variant'] => {

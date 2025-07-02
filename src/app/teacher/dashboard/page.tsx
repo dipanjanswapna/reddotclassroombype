@@ -9,10 +9,16 @@ import {
   BarChart,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
+import { getCourses, getInstructorByUid, getEnrollments } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Teacher Dashboard',
+    description: 'Manage your courses, students, and content.',
+};
 
 export default function TeacherDashboardPage() {
   const { userInfo } = useAuth();
@@ -37,19 +43,31 @@ export default function TeacherDashboardPage() {
           return;
         }
         
-        const allCourses = await getCourses();
+        const [allCourses, allEnrollments] = await Promise.all([
+          getCourses(),
+          getEnrollments()
+        ]);
+        
         const teacherCourses = allCourses.filter(course => 
           course.instructors?.some(i => i.slug === instructor.slug)
         );
 
+        const teacherCourseIds = teacherCourses.map(c => c.id);
+
         const studentIds = new Set<string>();
+        allEnrollments.forEach(enrollment => {
+          if (teacherCourseIds.includes(enrollment.courseId)) {
+            studentIds.add(enrollment.userId);
+          }
+        });
+
+
         let pendingGradingCount = 0;
         let totalRating = 0;
         let ratedCourses = 0;
 
         teacherCourses.forEach(course => {
           (course.assignments || []).forEach(assignment => {
-            studentIds.add(assignment.studentId);
             if (assignment.status === 'Submitted' || assignment.status === 'Late') {
               pendingGradingCount++;
             }
@@ -60,12 +78,11 @@ export default function TeacherDashboardPage() {
           }
         });
 
-        const studentCount = studentIds.size;
         const averageRating = ratedCourses > 0 ? (totalRating / ratedCourses) : 0;
 
         setStats({
           courseCount: teacherCourses.length,
-          studentCount,
+          studentCount: studentIds.size,
           pendingGradingCount,
           averageRating: parseFloat(averageRating.toFixed(1)),
         });

@@ -12,6 +12,12 @@ import type { Course } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Resources Library',
+    description: 'Find all your course materials in one place.',
+};
 
 type Resource = {
   id: string;

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from 'next/image';
@@ -37,6 +36,12 @@ import { useEffect, useState } from 'react';
 import { getCourse, getCourses } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Course Details',
+    description: 'Detailed information about the course.',
+};
 
 export default function PartnerCourseDetailPage() {
   const params = useParams();

@@ -49,6 +49,7 @@ const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariant
 export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[] }) {
   const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
 
   const handleStatusChange = async (id: string, status: Status) => {
     const result = await saveCourseAction({ id, status });
@@ -65,10 +66,11 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
     }
   };
 
-  const handleDeleteCourse = async (id: string) => {
-    const result = await deleteCourseAction(id);
+  const handleDeleteConfirm = async () => {
+    if (!courseToDelete?.id) return;
+    const result = await deleteCourseAction(courseToDelete.id);
     if(result.success) {
-      setCourses(courses.filter(course => course.id !== id));
+      setCourses(courses.filter(course => course.id !== courseToDelete.id));
        toast({
         title: "Course Deleted",
         description: "The course has been permanently deleted.",
@@ -76,9 +78,11 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
     } else {
        toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
+    setCourseToDelete(null);
   };
   
   return (
+    <>
     <Card>
         <CardHeader>
             <CardTitle>All Courses</CardTitle>
@@ -114,26 +118,10 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
                                                 <CheckCircle className="mr-2 h-4 w-4" />
                                                 Approve
                                             </Button>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button size="sm" variant="destructive">
-                                                        <XCircle className="mr-2 h-4 w-4" />
-                                                        Reject
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you sure you want to reject this course?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This will mark the course as 'Rejected'. The creator will be able to edit and resubmit it.
-                                                    </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleStatusChange(course.id!, 'Rejected')} className="bg-destructive hover:bg-destructive/90">Confirm Rejection</AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
+                                            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(course.id!, 'Rejected')}>
+                                                <XCircle className="mr-2 h-4 w-4" />
+                                                Reject
+                                            </Button>
                                         </>
                                     )}
                                     <Button variant="outline" size="sm" asChild>
@@ -142,26 +130,10 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
                                             Edit
                                         </Link>
                                     </Button>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="destructive" size="sm">
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Delete
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete the course and all its data.
-                                            </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleDeleteCourse(course.id!)}>Continue</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
+                                    <Button variant="destructive" size="sm" onClick={() => setCourseToDelete(course)}>
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
+                                    </Button>
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -170,5 +142,20 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
             </Table>
         </CardContent>
     </Card>
+     <AlertDialog open={!!courseToDelete} onOpenChange={(open) => !open && setCourseToDelete(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the course "{courseToDelete?.title}" and all its associated data.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">Continue</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

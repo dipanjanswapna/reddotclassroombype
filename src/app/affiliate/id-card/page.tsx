@@ -6,6 +6,12 @@ import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Affiliate ID Card',
+    description: 'Your official affiliate identification card.',
+};
 
 export default function AffiliateIdCardPage() {
     const { userInfo, loading } = useAuth();

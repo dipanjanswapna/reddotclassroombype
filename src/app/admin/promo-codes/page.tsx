@@ -45,7 +45,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Promo Code Management',
+    description: 'Create and manage all promotional codes for the platform.',
+};
 
 export default function AdminPromoCodePage() {
   const { toast } = useToast();
@@ -134,12 +140,12 @@ export default function AdminPromoCodePage() {
     setIsSaving(false);
   };
 
-  const handleDelete = async () => {
+  const handleDeleteConfirm = async () => {
     if (!promoToDelete) return;
     const result = await deletePromoCodeAction(promoToDelete.id!);
     if (result.success) {
       setPromoCodes(prev => prev.filter(p => p.id !== promoToDelete.id));
-      toast({ title: 'Promo Code Deleted', variant: 'destructive' });
+      toast({ title: 'Promo Code Deleted', description: 'The promo code has been permanently deleted.', variant: 'destructive' });
     } else {
       toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
@@ -288,23 +294,7 @@ export default function AdminPromoCodePage() {
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Button variant="outline" size="sm" onClick={() => handleOpenDialog(promo)}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4"/> Delete</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the promo code <strong>{promo.code}</strong>.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => deletePromoCodeAction(promo.id!)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <Button variant="destructive" size="sm" onClick={() => setPromoToDelete(promo)}><Trash2 className="mr-2 h-4 w-4"/> Delete</Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -325,7 +315,7 @@ export default function AdminPromoCodePage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

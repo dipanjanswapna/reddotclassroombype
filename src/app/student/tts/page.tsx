@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { textToSpeech } from '@/ai/flows/tts-flow';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Text-to-Speech Tool',
+    description: 'Convert your notes or any text into audible speech to listen on the go.',
+};
 
 export default function TextToSpeechPage() {
   const [text, setText] = useState('');

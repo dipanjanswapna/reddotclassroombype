@@ -1,3 +1,4 @@
+
 'use client';
 
 import { DollarSign, Link2, MousePointerClick, Zap } from 'lucide-react';
@@ -5,6 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Affiliate Dashboard',
+    description: 'Summary of your affiliate performance.',
+};
 
 const mockRecentReferrals = [
     { id: 'ref_1', course: 'HSC 25 Physics Crash Course', date: '2024-07-20', status: 'Converted', commission: '৳250' },

@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-import { Timestamp } from 'firebase/firestore';
 import { safeToDate } from '@/lib/utils';
 
 export const metadata: Metadata = {

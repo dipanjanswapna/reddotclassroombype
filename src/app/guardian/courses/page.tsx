@@ -8,6 +8,12 @@ import type { Course, User, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Child\'s Courses',
+    description: 'An overview of all the courses your child is currently enrolled in.',
+};
 
 export default function GuardianCoursesPage() {
     const { userInfo: guardian, loading: authLoading } = useAuth();

@@ -14,6 +14,12 @@ import type { User as UserType } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Guardian Dashboard',
+    description: 'Monitor your child\'s academic progress.',
+};
 
 export default function GuardianDashboardPage() {
     const { userInfo: guardian, loading: authLoading } = useAuth();
