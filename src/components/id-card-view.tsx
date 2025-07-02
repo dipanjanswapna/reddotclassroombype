@@ -119,11 +119,11 @@ export function IdCardView({
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 3, // Increase scale for better resolution
+            scale: 3,
             useCORS: true,
             allowTaint: true,
             letterRendering: true,
-            backgroundColor: null, // Use transparent background for the capture
+            backgroundColor: null,
         });
         
         const imgData = canvas.toDataURL('image/png');
@@ -136,6 +136,8 @@ export function IdCardView({
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // The canvas contains both cards stacked vertically.
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const canvasRatio = canvasWidth / canvasHeight;
@@ -199,7 +201,6 @@ export function IdCardView({
                     </div>
                 </main>
                 <footer className="text-center z-10 pt-2">
-                    <Barcode />
                     <p className="text-xs text-gray-400 mt-2">www.rdc-final.app</p>
                 </footer>
             </div>
