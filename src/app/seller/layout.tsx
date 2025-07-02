@@ -58,12 +58,10 @@ export default function SellerLayout({
   ];
 
   const getIsActive = (href: string) => {
-    if (href === '/seller/dashboard') {
-        return pathname === href;
-    }
-     // De-dupe / from the end of the href
+    // Use startsWith for all paths except the root logout button.
+    // This correctly handles nested routes and the main dashboard link.
     const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    if (newHref === '') return false; // Don't match the root logout button
+    if (newHref === '') return false;
     return pathname.startsWith(href);
   };
 
