@@ -13,12 +13,6 @@ import { getCourses, getInstructorByUid, getEnrollments } from '@/lib/firebase/f
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Teacher Dashboard',
-    description: 'Manage your courses, students, and content.',
-};
 
 export default function TeacherDashboardPage() {
   const { userInfo } = useAuth();
