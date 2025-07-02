@@ -22,59 +22,59 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
 
 
   return (
-    <footer className="border-t bg-gray-900 text-gray-400">
+    <footer className="border-t bg-background text-foreground">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
-              <span className="font-bold text-xl font-headline text-white">
+              <span className="font-bold text-xl font-headline text-foreground">
                 RED DOT CLASSROOM
               </span>
             </Link>
-            <p className="text-gray-400">
+            <p className="text-muted-foreground">
               {t.footer_tagline[language]}
             </p>
              <div className="flex space-x-4 mt-4">
-              <Link href="#" className="text-gray-400 hover:text-white" aria-label="Facebook"><Facebook /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white" aria-label="Twitter"><Twitter /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white" aria-label="YouTube"><Youtube /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white" aria-label="LinkedIn"><Linkedin /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Facebook"><Facebook /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Twitter"><Twitter /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="YouTube"><Youtube /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="LinkedIn"><Linkedin /></Link>
             </div>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.quick_links[language]}</h3>
+            <h3 className="font-headline font-semibold mb-4 text-primary">{t.quick_links[language]}</h3>
             <ul className="space-y-2">
-              <li><Link href="/courses" className="hover:text-white">{t.rdc_shop[language]}</Link></li>
-              <li><Link href="/blog" className="hover:text-white">{t.nav_blog[language]}</Link></li>
-              <li><Link href="/about" className="hover:text-white">{t.nav_about[language]}</Link></li>
-              <li><Link href="/contact" className="hover:text-white">{t.nav_contact[language]}</Link></li>
-              <li><Link href="/faq" className="hover:text-white">{t.nav_faq[language]}</Link></li>
+              <li><Link href="/courses" className="text-muted-foreground hover:text-primary">{t.rdc_shop[language]}</Link></li>
+              <li><Link href="/blog" className="text-muted-foreground hover:text-primary">{t.nav_blog[language]}</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-primary">{t.nav_about[language]}</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-primary">{t.nav_contact[language]}</Link></li>
+              <li><Link href="/faq" className="text-muted-foreground hover:text-primary">{t.nav_faq[language]}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.for_students[language]}</h3>
+            <h3 className="font-headline font-semibold mb-4 text-primary">{t.for_students[language]}</h3>
             <ul className="space-y-2">
-              <li><Link href="/signup" className="hover:text-white">{t.register[language]}</Link></li>
-              <li><Link href="/login" className="hover:text-white">{t.student_guardian_login[language]}</Link></li>
-              <li><Link href="/student/dashboard" className="hover:text-white">{t.dashboard[language]}</Link></li>
+              <li><Link href="/signup" className="text-muted-foreground hover:text-primary">{t.register[language]}</Link></li>
+              <li><Link href="/login" className="text-muted-foreground hover:text-primary">{t.student_guardian_login[language]}</Link></li>
+              <li><Link href="/student/dashboard" className="text-muted-foreground hover:text-primary">{t.dashboard[language]}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.join_us[language]}</h3>
+            <h3 className="font-headline font-semibold mb-4 text-primary">{t.join_us[language]}</h3>
             <ul className="space-y-2">
-               <li><Link href="/auth/teacher-signup" className="hover:text-white">{t.become_a_teacher[language]}</Link></li>
-              <li><Link href="/seller-program/apply" className="hover:text-white">{t.become_a_seller[language]}</Link></li>
-              <li><Link href="/auth/affiliate-signup" className="hover:text-white">{t.become_an_affiliate[language]}</Link></li>
-              <li><Link href="/auth/moderator-signup" className="hover:text-white">{t.become_a_moderator[language]}</Link></li>
-              <li><Link href="/login?type=staff" className="hover:text-white">{t.teacher_seller_staff_login[language]}</Link></li>
+               <li><Link href="/auth/teacher-signup" className="text-muted-foreground hover:text-primary">{t.become_a_teacher[language]}</Link></li>
+              <li><Link href="/seller-program/apply" className="text-muted-foreground hover:text-primary">{t.become_a_seller[language]}</Link></li>
+              <li><Link href="/auth/affiliate-signup" className="text-muted-foreground hover:text-primary">{t.become_an_affiliate[language]}</Link></li>
+              <li><Link href="/auth/moderator-signup" className="text-muted-foreground hover:text-primary">{t.become_a_moderator[language]}</Link></li>
+              <li><Link href="/login?type=staff" className="text-muted-foreground hover:text-primary">{t.teacher_seller_staff_login[language]}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4 text-white">{t.legal[language]}</h3>
+            <h3 className="font-headline font-semibold mb-4 text-primary">{t.legal[language]}</h3>
             <ul className="space-y-2">
-              <li><Link href="/privacy" className="hover:text-white">{t.privacy_policy[language]}</Link></li>
-              <li><Link href="/terms" className="hover:text-white">{t.terms_of_service[language]}</Link></li>
+              <li><Link href="/privacy" className="text-muted-foreground hover:text-primary">{t.privacy_policy[language]}</Link></li>
+              <li><Link href="/terms" className="text-muted-foreground hover:text-primary">{t.terms_of_service[language]}</Link></li>
             </ul>
              <div className="mt-4">
                 <Image
@@ -88,7 +88,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm">
+        <div className="mt-8 border-t border-border pt-6 text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. {t.copyright[language]}</p>
         </div>
       </div>
