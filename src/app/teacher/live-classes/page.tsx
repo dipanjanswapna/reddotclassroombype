@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { PlusCircle, Video } from 'lucide-react';
+import { PlusCircle, Video, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,10 +39,27 @@ import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import type { Course, LiveClass } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
+import { format } from 'date-fns';
 
 type LiveClassWithCourse = LiveClass & {
   courseTitle: string;
   courseId: string;
+}
+
+function getPlatformBadgeColor(platform: string) {
+    switch (platform.toLowerCase()) {
+        case 'youtube live':
+            return 'bg-red-600 hover:bg-red-700';
+        case 'facebook live':
+            return 'bg-blue-600 hover:bg-blue-700';
+        case 'zoom':
+            return 'bg-sky-500 hover:bg-sky-600';
+        case 'google meet':
+            return 'bg-green-600 hover:bg-green-700';
+        default:
+            return 'bg-gray-500 hover:bg-gray-600';
+    }
 }
 
 export default function TeacherLiveClassesPage() {
@@ -52,6 +69,7 @@ export default function TeacherLiveClassesPage() {
   const [liveClasses, setLiveClasses] = useState<LiveClassWithCourse[]>([]);
   const [teacherCourses, setTeacherCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form state
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -61,73 +79,79 @@ export default function TeacherLiveClassesPage() {
   const [platform, setPlatform] = useState<LiveClass['platform']>('Zoom');
   const [joinUrl, setJoinUrl] = useState('');
 
+  const fetchClassData = async () => {
+    if (!userInfo) return;
+    try {
+        const instructor = await getInstructorByUid(userInfo.uid);
+        if (!instructor) {
+            toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
+            if (loading) setLoading(false);
+            return;
+        }
+
+        const allCourses = await getCourses();
+        let manageableCourses: Course[] = [];
+
+        if (instructor.organizationId) {
+            manageableCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
+        } else {
+            manageableCourses = allCourses.filter(c => c.instructors?.some(i => i.slug === instructor.slug));
+        }
+
+        setTeacherCourses(manageableCourses);
+
+        const allClasses = manageableCourses.flatMap(course => 
+            (course.liveClasses || []).map(lc => ({...lc, courseTitle: course.title, courseId: course.id!}))
+        );
+        setLiveClasses(allClasses.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+    } catch (error) {
+        console.error("Failed to fetch data:", error);
+        toast({ title: 'Error', description: 'Could not fetch live class data', variant: 'destructive'});
+    } finally {
+        if (loading) setLoading(false);
+    }
+  };
+
+
   useEffect(() => {
     if (!userInfo) return;
-    const fetchClassData = async () => {
-        try {
-            const instructor = await getInstructorByUid(userInfo.uid);
-            if (!instructor) {
-                toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
-                setLoading(false);
-                return;
-            }
-
-            const allCourses = await getCourses();
-            let manageableCourses: Course[] = [];
-
-            if (instructor.organizationId) {
-                manageableCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
-            } else {
-                manageableCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
-            }
-
-            setTeacherCourses(manageableCourses);
-
-            const allClasses = manageableCourses.flatMap(course => 
-                (course.liveClasses || []).map(lc => ({...lc, courseTitle: course.title, courseId: course.id!}))
-            );
-            setLiveClasses(allClasses);
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
-            toast({ title: 'Error', description: 'Could not fetch live class data', variant: 'destructive'});
-        } finally {
-            setLoading(false);
-        }
-    };
     fetchClassData();
-  }, [userInfo, toast]);
+  }, [userInfo]);
 
 
-  const handleScheduleClass = () => {
+  const handleScheduleClass = async () => {
     if (!selectedCourse || !topic || !date || !time || !platform || !joinUrl) {
         toast({ title: 'Error', description: 'Please fill out all fields.', variant: 'destructive' });
         return;
     }
     
-    // In a real app, this would be a server action to update the course document
-    const courseDetails = teacherCourses.find(c => c.id === selectedCourse);
+    setIsSaving(true);
 
-    const newClass: LiveClassWithCourse = {
-        id: `lc-new-${Date.now()}`,
-        courseId: selectedCourse,
-        courseTitle: courseDetails?.title || 'Unknown Course',
+    const liveClassData: Omit<LiveClass, 'id'> = {
         topic,
-        date: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        date: format(date, 'yyyy-MM-dd'),
         time,
         platform,
         joinUrl
     };
 
-    setLiveClasses(prev => [...prev, newClass]);
-    toast({ title: 'Success!', description: `Scheduled "${topic}" for ${courseDetails?.title}.` });
-    setIsDialogOpen(false);
-    // Reset form
-    setSelectedCourse('');
-    setTopic('');
-    setDate(new Date());
-    setTime('');
-    setPlatform('Zoom');
-    setJoinUrl('');
+    const result = await scheduleLiveClassAction(selectedCourse, liveClassData);
+    
+    if (result.success) {
+        toast({ title: 'Success!', description: `Scheduled "${topic}" successfully.` });
+        await fetchClassData(); // Re-fetch data
+        setIsDialogOpen(false);
+        // Reset form
+        setSelectedCourse('');
+        setTopic('');
+        setDate(new Date());
+        setTime('');
+        setPlatform('Zoom');
+        setJoinUrl('');
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsSaving(false);
   };
 
   if(loading) {
@@ -212,7 +236,10 @@ export default function TeacherLiveClassesPage() {
                         <DialogClose asChild>
                             <Button type="button" variant="secondary">Cancel</Button>
                         </DialogClose>
-                        <Button type="button" onClick={handleScheduleClass}>Save changes</Button>
+                        <Button type="button" onClick={handleScheduleClass} disabled={isSaving}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save changes
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
