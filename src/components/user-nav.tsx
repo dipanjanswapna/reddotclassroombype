@@ -41,7 +41,7 @@ export function UserNav() {
       case 'Teacher': return '/teacher/dashboard';
       case 'Guardian': return '/guardian/dashboard';
       case 'Admin': return '/admin/dashboard';
-      case 'Partner': return '/partner/dashboard';
+      case 'Seller': return '/seller/dashboard';
       case 'Affiliate': return '/affiliate/dashboard';
       case 'Moderator': return '/moderator/dashboard';
       default: return '/';
@@ -54,7 +54,7 @@ export function UserNav() {
       case 'Teacher': return '/teacher/profile';
       case 'Guardian': return '/guardian/profile';
       case 'Admin': return '/admin/settings';
-      case 'Partner': return '/partner/settings';
+      case 'Seller': return '/seller/profile';
       case 'Affiliate': return '/affiliate/profile';
       case 'Moderator': return '/moderator/profile';
       default: return '/';
