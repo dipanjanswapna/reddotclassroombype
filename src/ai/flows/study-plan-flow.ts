@@ -8,41 +8,15 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {
+    StudyPlanInputSchema,
+    StudyPlanOutputSchema,
+    type StudyPlanInput,
+    type StudyPlanOutput
+} from '@/ai/schemas/study-plan-schemas';
 
-const CourseInfoSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  // A simplified syllabus for the prompt
-  topics: z.array(z.string()).describe('A list of major topics or modules in the course.'),
-});
+export type { StudyPlanInput, StudyPlanOutput } from '@/ai/schemas/study-plan-schemas';
 
-const DeadlineInfoSchema = z.object({
-  courseTitle: z.string(),
-  assignmentTitle: z.string(),
-  deadline: z.string().describe('The due date in YYYY-MM-DD format.'),
-});
-
-export const StudyPlanInputSchema = z.object({
-  courses: z.array(CourseInfoSchema).describe('A list of courses the student is enrolled in.'),
-  deadlines: z.array(DeadlineInfoSchema).describe('A list of upcoming assignment deadlines.'),
-  startDate: z.string().describe('The start date for the study plan in YYYY-MM-DD format.'),
-  endDate: z.string().describe('The end date for the study plan in YYYY-MM-DD format.'),
-});
-export type StudyPlanInput = z.infer<typeof StudyPlanInputSchema>;
-
-export const StudyPlanEventSchema = z.object({
-    date: z.string().describe('The date of the event in YYYY-MM-DD format.'),
-    title: z.string().describe('A concise title for the study event.'),
-    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),
-    courseTitle: z.string().optional().describe('The course this event is related to.'),
-    description: z.string().optional().describe('A brief description of the study session or reminder.'),
-});
-
-export const StudyPlanOutputSchema = z.object({
-    events: z.array(StudyPlanEventSchema).describe('A list of scheduled study events.'),
-});
-export type StudyPlanOutput = z.infer<typeof StudyPlanOutputSchema>;
 
 export async function generateStudyPlan(input: StudyPlanInput): Promise<StudyPlanOutput> {
   return generateStudyPlanFlow(input);
@@ -72,7 +46,7 @@ Please generate a study plan with a mix of the following event types:
 - 'quiz-reminder': A reminder to take a quiz for a specific course/topic.
 - 'exam-prep': General exam preparation sessions.
 
-Spread the study sessions evenly across the planning period. Avoid scheduling too many heavy topics on the same day. Ensure that deadline reminders are placed on the exact due date. For each study session, provide a clear title and a brief, helpful description.
+Spread the study sessions evenly across the planning period. Avoid scheduling too many heavy topics on the same day. Ensure that deadline reminders are placed on the exact due date. For each study session, provide a clear, helpful description.
 
 Generate the full study plan as a JSON object that adheres to the provided output schema.`,
 });

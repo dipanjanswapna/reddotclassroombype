@@ -12,7 +12,8 @@ import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { Course, Enrollment, Assignment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { addDays, format, parseISO, startOfDay } from 'date-fns';
-import { generateStudyPlan, StudyPlanInputSchema, StudyPlanEventSchema } from '@/ai/flows/study-plan-flow';
+import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
+import { StudyPlanEventSchema } from '@/ai/schemas/study-plan-schemas';
 import type { z } from 'genkit';
 import { Badge } from '@/components/ui/badge';
 
