@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -146,8 +147,8 @@ export default function TeacherProfilePage() {
             <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={avatarUrl} alt={name} data-ai-hint={instructor.dataAiHint} />
-                    <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarImage src={avatarUrl} alt={name} data-ai-hint={instructor?.dataAiHint} priority/>
+                    <AvatarFallback>{name ? name.split(' ').map(n => n[0]).join('') : ''}</AvatarFallback>
                 </Avatar>
                 <div className="flex-grow">
                     <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
@@ -199,12 +200,14 @@ export default function TeacherProfilePage() {
 
             </CardContent>
             <CardFooter className="p-6 pt-0 flex justify-end gap-2">
-                <Button variant="outline" asChild>
-                    <Link href={`/teachers/${instructor.slug}`} target="_blank">
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        View Public Profile
-                    </Link>
-                </Button>
+                {instructor?.slug && (
+                    <Button variant="outline" asChild>
+                        <Link href={`/teachers/${instructor.slug}`} target="_blank">
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            View Public Profile
+                        </Link>
+                    </Button>
+                )}
                 <Button onClick={handleProfileSave} disabled={isSaving}>
                     {isSaving && <Loader2 className="mr-2 animate-spin"/>}
                     Save Profile
