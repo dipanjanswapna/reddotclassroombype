@@ -283,7 +283,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
-  const [assignmentTemplates, setAssignmentTemplates] = useState<(Omit<AssignmentTemplate, 'deadline'> & { id: string; deadline?: Date })[]>([]);
+  const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
 
@@ -344,7 +344,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
-                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
+                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
                 } else {
                     notFound();
@@ -475,10 +475,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : q) } : q));
   };
   const removeOption = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
+     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -487,7 +487,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
   const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
-    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } as any : a));
+    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
   };
 
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
@@ -588,7 +588,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         announcements: announcements.map(({ id, ...rest }) => rest),
         quizzes: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
-            const { id, deadline, ...rest } = a;
+            const { deadline, ...rest } = a;
             const formattedDeadline = deadline instanceof Date && !isNaN(deadline.getTime())
                 ? format(deadline, 'yyyy-MM-dd')
                 : deadline?.toString() || '';

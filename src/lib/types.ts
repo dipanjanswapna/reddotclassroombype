@@ -197,7 +197,7 @@ export type Course = {
   organizationName?: string;
   quizzes?: Quiz[];
   assignments?: Assignment[];
-  assignmentTemplates?: Omit<AssignmentTemplate, 'id'>[];
+  assignmentTemplates?: AssignmentTemplate[];
   announcements?: Announcement[];
   isWishlisted?: boolean;
   communityUrl?: string;

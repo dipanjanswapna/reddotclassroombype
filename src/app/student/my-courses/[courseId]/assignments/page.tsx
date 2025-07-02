@@ -22,8 +22,9 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { submitAssignmentAction } from '@/app/actions/assignment.actions';
+import { useAuth } from '@/context/auth-context';
 
 const getStatusBadgeVariant = (status: Assignment['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
@@ -42,21 +43,25 @@ export default function AssignmentsPage() {
   const params = useParams();
   const courseId = params.courseId as string;
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [submissionText, setSubmissionText] = useState('');
 
   useEffect(() => {
     const fetchCourseData = async () => {
-      if (!courseId) return;
+      if (!courseId || !userInfo) return;
       try {
         const data = await getCourse(courseId);
         setCourse(data);
         if (data && data.assignments) {
-          setAssignments(data.assignments);
+          // Filter assignments for the current student
+          const studentAssignments = data.assignments.filter(a => a.studentId === userInfo.uid);
+          setAssignments(studentAssignments);
         }
       } catch (error) {
         console.error("Failed to fetch course data:", error);
@@ -65,28 +70,44 @@ export default function AssignmentsPage() {
       }
     };
     fetchCourseData();
-  }, [courseId]);
+  }, [courseId, userInfo]);
   
   const handleOpenDialog = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
+    setSubmissionText(assignment.submissionText || '');
     setIsDialogOpen(true);
   }
 
-  const handleSubmission = () => {
-    if (!selectedAssignment) return;
-    // In a real app, this would involve file uploads and a server action.
-    setAssignments(prev => 
-      prev.map(a => 
-        a.id === selectedAssignment.id 
-          ? { ...a, status: 'Submitted', submissionDate: new Date().toISOString().split('T')[0] } 
-          : a
-      )
+  const handleSubmission = async () => {
+    if (!selectedAssignment || !userInfo) return;
+
+    const result = await submitAssignmentAction(
+        courseId,
+        selectedAssignment.id,
+        userInfo.uid,
+        submissionText
     );
-    toast({
-      title: 'Assignment Submitted!',
-      description: `Your submission for "${selectedAssignment.title}" was successful.`,
-    });
-    setIsDialogOpen(false);
+
+    if (result.success) {
+        setAssignments(prev => 
+          prev.map(a => 
+            a.id === selectedAssignment.id 
+              ? { ...a, status: new Date() > new Date(a.deadline as string) ? 'Late' : 'Submitted', submissionDate: new Date().toISOString().split('T')[0], submissionText } 
+              : a
+          )
+        );
+        toast({
+          title: 'Assignment Submitted!',
+          description: `Your submission for "${selectedAssignment.title}" was successful.`,
+        });
+        setIsDialogOpen(false);
+    } else {
+        toast({
+            title: 'Submission Failed',
+            description: result.message,
+            variant: 'destructive',
+        });
+    }
   };
 
   const getActionButton = (assignment: Assignment) => {
@@ -193,13 +214,14 @@ export default function AssignmentsPage() {
                     </Card>
                 )}
                 
-                {selectedAssignment?.status === 'Submitted' && (
+                {(selectedAssignment?.status === 'Submitted' || selectedAssignment?.status === 'Late') && (
                      <Card>
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2 text-amber-800 dark:text-amber-300"><MessageSquare /> Your Submission</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <p>You submitted this assignment on {selectedAssignment.submissionDate as string}.</p>
+                        <p className="text-muted-foreground mt-2">{submissionText}</p>
                         <p className="text-muted-foreground mt-2">Waiting for instructor's feedback.</p>
                       </CardContent>
                     </Card>
@@ -211,12 +233,8 @@ export default function AssignmentsPage() {
                         <p className="text-destructive font-semibold">This assignment is past its deadline. You can still submit it, but it will be marked as late.</p>
                       )}
                       <div className="space-y-2">
-                          <Label htmlFor="submission-file">Upload File</Label>
-                          <Input id="submission-file" type="file" />
-                      </div>
-                      <div className="space-y-2">
-                          <Label htmlFor="submission-comments">Comments (Optional)</Label>
-                          <Textarea id="submission-comments" placeholder="Add any comments for your instructor..." />
+                          <Label htmlFor="submission-comments">Your Submission</Label>
+                          <Textarea id="submission-comments" placeholder="Paste your submission text here..." value={submissionText} onChange={e => setSubmissionText(e.target.value)} rows={8} />
                       </div>
                   </div>
                 )}
