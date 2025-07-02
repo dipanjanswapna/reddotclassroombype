@@ -3,7 +3,7 @@
 
 import { Heart } from 'lucide-react';
 import { getCourses, getOrganizations } from '@/lib/firebase/firestore';
-import { CourseCard } from '@/components/course-card';
+import { EnrolledCourseCard } from '@/components/enrolled-course-card';
 import { useState, useEffect } from 'react';
 import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -63,7 +63,7 @@ export default function WishlistPage() {
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {wishlistedCourses.map((course) => {
             const provider = organizations.find(p => p.id === course.organizationId);
-            return <CourseCard key={course.id} {...course} provider={provider} />;
+            return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;
           })}
         </div>
       ) : (

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Course } from "@/lib/types";
+import { Course, Organization } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Star, Trash2 } from "lucide-react";
 import { toggleWishlistAction } from "@/app/actions/user.actions";
@@ -16,9 +16,10 @@ import { useAuth } from "@/context/auth-context";
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
   status: 'in-progress' | 'completed' | 'wishlisted' | 'archived';
+  provider?: Organization | null;
 };
 
-export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) {
+export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseCardProps) {
   const { toast } = useToast();
   const { userInfo, refreshUserInfo } = useAuth();
   
@@ -71,7 +72,14 @@ export function EnrolledCourseCard({ course, status }: EnrolledCourseCardProps) 
         <Link href={courseLink}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
         </Link>
-        <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
+        {provider ? (
+           <div className="flex items-center gap-2 mt-2">
+            <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
+            <p className="text-xs text-muted-foreground">By {provider.name}</p>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
+        )}
 
         {status === 'in-progress' && typeof course.progress === 'number' && (
           <div className="mt-4">
