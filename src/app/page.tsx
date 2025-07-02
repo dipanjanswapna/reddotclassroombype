@@ -78,7 +78,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col bg-background">
-      <HeroCarousel banners={homepageConfig.heroBanners} />
+      <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
       {homepageConfig.journeySection.display && (
         <section className="bg-secondary/50" aria-labelledby="hero-heading">

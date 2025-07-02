@@ -330,6 +330,10 @@ export type HomepageConfig = {
     alt: string;
     dataAiHint: string;
   }[];
+  heroCarousel?: {
+    autoplay: boolean;
+    autoplayDelay: number;
+  };
   journeySection: {
     display: boolean;
     title: { [key: string]: string };

@@ -4,6 +4,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
   CarouselContent,
@@ -22,10 +23,20 @@ type HeroBanner = {
   dataAiHint: string;
 };
 
-export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
+type AutoplaySettings = {
+  autoplay: boolean;
+  autoplayDelay: number;
+};
+
+export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
-  const plugins = [ClassNames()];
+  
+  const autoplayPlugin = React.useRef(
+    Autoplay({ delay: autoplaySettings?.autoplayDelay ?? 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
+
+  const plugins = autoplaySettings?.autoplay ? [ClassNames(), autoplayPlugin.current] : [ClassNames()];
 
   React.useEffect(() => {
     if (!api) return;

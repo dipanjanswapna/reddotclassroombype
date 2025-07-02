@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -100,6 +101,19 @@ export default function AdminHomepageManagementPage() {
         return { ...prev, heroBanners: newBanners };
     });
   };
+
+  const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            heroCarousel: {
+                ...(prev.heroCarousel || { autoplay: true, autoplayDelay: 5000 }),
+                [key]: value
+            }
+        };
+    });
+  };
   
   const handleAppPromoChange = (key: keyof HomepageConfig['appPromo'], value: any) => {
     setConfig(prev => {
@@ -179,6 +193,31 @@ export default function AdminHomepageManagementPage() {
                 </div>
               ))}
                <Button variant="outline" className="w-full border-dashed" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
+            </CardContent>
+             <CardHeader>
+              <CardTitle>Carousel Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <Label htmlFor="autoplay-switch" className="font-medium">
+                    Enable Autoplay
+                    </Label>
+                    <Switch
+                        id="autoplay-switch"
+                        checked={config.heroCarousel?.autoplay ?? true}
+                        onCheckedChange={(checked) => handleCarouselSettingChange('autoplay', checked)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="autoplay-delay">Autoplay Delay (in milliseconds)</Label>
+                    <Input 
+                        id="autoplay-delay"
+                        type="number"
+                        value={config.heroCarousel?.autoplayDelay ?? 5000}
+                        onChange={(e) => handleCarouselSettingChange('autoplayDelay', parseInt(e.target.value))}
+                        disabled={!config.heroCarousel?.autoplay}
+                    />
+                </div>
             </CardContent>
           </Card>
           

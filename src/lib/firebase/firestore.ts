@@ -199,6 +199,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     { id: 2, href: "/courses/2", imageUrl: "https://placehold.co/800x450.png", alt: "Medical Admission", dataAiHint: "doctor medical" },
     { id: 3, href: "/courses/3", imageUrl: "https://placehold.co/800x450.png", alt: "IELTS Course", dataAiHint: "travel language" },
   ],
+  heroCarousel: {
+    autoplay: true,
+    autoplayDelay: 5000,
+  },
   journeySection: {
     display: true,
     title: { bn: "আপনার শেখার যাত্রা শুরু করুন", en: "Start Your Learning Journey" },
@@ -334,6 +338,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
     const mergedConfig = {
         ...defaultHomepageConfig,
         ...data,
+        heroCarousel: { ...defaultHomepageConfig.heroCarousel, ...data.heroCarousel },
         journeySection: { ...defaultHomepageConfig.journeySection, ...data.journeySection },
         teachersSection: { ...defaultHomepageConfig.teachersSection, ...data.teachersSection },
         videoSection: { ...defaultHomepageConfig.videoSection, ...data.videoSection },
