@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { getPartnerBySubdomain, getCourses } from '@/lib/firebase/firestore';
 import type { Organization, Course } from '@/lib/types';
