@@ -115,11 +115,18 @@ export default function TeacherCoursesPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {courses.length > 0 ? courses.map((course) => (
+                        {courses.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center">
+                                    You have not created any courses yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                        {courses.map((course) => (
                             <TableRow key={course.id}>
                                 <TableCell className="font-medium">{course.title}</TableCell>
                                 <TableCell>{course.price}</TableCell>
-                                <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell> {/* Mock student count */}
+                                <TableCell>{(course.reviews || 0) * 10 + 5}</TableCell>
                                 <TableCell>
                                     <Badge variant={getStatusBadgeVariant(course.status as Status)}>
                                         {course.status}
@@ -134,13 +141,7 @@ export default function TeacherCoursesPage() {
                                     </Button>
                                 </TableCell>
                             </TableRow>
-                        )) : (
-                           <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
-                                    You have not created any courses yet.
-                                </TableCell>
-                            </TableRow>
-                        )}
+                        ))}
                     </TableBody>
                 </Table>
             </CardContent>
