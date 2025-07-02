@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -73,10 +72,17 @@ export default function TeacherLiveClassesPage() {
             }
 
             const allCourses = await getCourses();
-            const filteredTeacherCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
-            setTeacherCourses(filteredTeacherCourses);
+            let manageableCourses: Course[] = [];
 
-            const allClasses = filteredTeacherCourses.flatMap(course => 
+            if (instructor.organizationId) {
+                manageableCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
+            } else {
+                manageableCourses = allCourses.filter(c => c.instructors.some(i => i.slug === instructor.slug));
+            }
+
+            setTeacherCourses(manageableCourses);
+
+            const allClasses = manageableCourses.flatMap(course => 
                 (course.liveClasses || []).map(lc => ({...lc, courseTitle: course.title, courseId: course.id!}))
             );
             setLiveClasses(allClasses);

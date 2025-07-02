@@ -1,10 +1,8 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  PlusCircle,
   Pencil,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -58,10 +56,19 @@ export default function TeacherCoursesPage() {
         }
 
         const allCourses = await getCourses();
-        const teacherCourses = allCourses.filter(course => 
-          course.instructors?.some(i => i.slug === instructor.slug)
-        );
-        setCourses(teacherCourses);
+        let manageableCourses: Course[] = [];
+
+        // If teacher is associated with an organization, they can manage all courses from that org.
+        if (instructor.organizationId) {
+            manageableCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
+        } else {
+            // Otherwise, they can only manage courses they are explicitly assigned to (legacy/independent teachers).
+            manageableCourses = allCourses.filter(course => 
+                course.instructors?.some(i => i.slug === instructor.slug)
+            );
+        }
+        
+        setCourses(manageableCourses);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
         toast({ title: 'Error', description: 'Could not fetch your courses.', variant: 'destructive' });
@@ -85,18 +92,12 @@ export default function TeacherCoursesPage() {
         <div className="flex items-center justify-between mb-8">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
-                    My Courses
+                    Manage Courses
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
-                    Manage your created and co-authored courses.
+                    Manage all courses from your associated organization.
                 </p>
             </div>
-            <Button asChild>
-                <Link href="/teacher/courses/builder/new">
-                    <PlusCircle className="mr-2" />
-                    Create New Course
-                </Link>
-            </Button>
         </div>
         <Card>
             <CardHeader>
@@ -115,14 +116,13 @@ export default function TeacherCoursesPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {courses.length === 0 && (
+                        {courses.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={5} className="h-24 text-center">
-                                    You have not created any courses yet.
+                                    You are not assigned to manage any courses yet.
                                 </TableCell>
                             </TableRow>
-                        )}
-                        {courses.map((course) => (
+                        ) : courses.map((course) => (
                             <TableRow key={course.id}>
                                 <TableCell className="font-medium">{course.title}</TableCell>
                                 <TableCell>{course.price}</TableCell>
