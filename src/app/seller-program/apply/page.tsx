@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -18,12 +17,6 @@ import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import Link from 'next/link';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Become an RDC Seller',
-    description: 'Sell your courses on our platform and reach thousands of students across the country.',
-};
 
 export default function SellerApplicationPage() {
   const { toast } = useToast();

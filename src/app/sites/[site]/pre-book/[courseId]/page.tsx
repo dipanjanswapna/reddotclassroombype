@@ -10,12 +10,6 @@ import { notFound, useRouter, useParams } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Pre-booking',
-    description: 'Pre-book your course.',
-};
 
 export default function PreBookRedirectPage() {
   const router = useRouter();

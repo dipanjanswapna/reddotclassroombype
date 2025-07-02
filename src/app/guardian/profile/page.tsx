@@ -12,12 +12,6 @@ import { Loader2, Upload } from "lucide-react";
 import { updateUser } from "@/lib/firebase/firestore";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Guardian Profile',
-    description: 'Manage your guardian account information.',
-};
 
 export default function GuardianProfilePage() {
     const { toast } = useToast();

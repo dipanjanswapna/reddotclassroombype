@@ -1,11 +1,6 @@
 
-import { PlaceholderPage } from "@/components/placeholder-page";
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    title: 'Seller Settings',
-    description: 'Settings for your seller account, integrations, and more.',
-};
+import { PlaceholderPage } from "@/components/placeholder-page";
 
 export default function SellerSettingsPage() {
   return (
