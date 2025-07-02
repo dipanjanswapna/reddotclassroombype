@@ -84,16 +84,23 @@ export default async function PartnerCourseDetailPage({
     <div className="bg-background">
       <section className="bg-secondary/50 pt-12 pb-12">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
-              <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
-                {course.title}
-              </h1>
-              <p className="text-lg text-muted-foreground mb-4">
-                {course.description}
-              </p>
-              <div className="relative aspect-video rounded-lg overflow-hidden group mb-2 shadow-lg">
+          {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
+          <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
+            {course.title}
+          </h1>
+          <p className="text-lg text-muted-foreground mb-4 max-w-4xl">
+            {course.description}
+          </p>
+        </div>
+      </section>
+
+      <CourseTabs />
+
+      <main className="container mx-auto px-4 py-16">
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-12">
+            
+            <div className="relative aspect-video rounded-lg overflow-hidden group shadow-lg">
                 <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full" aria-label={`Watch intro video for ${course.title}`}>
                     <Image
                       src={course.imageUrl}
@@ -107,20 +114,7 @@ export default async function PartnerCourseDetailPage({
                       <PlayCircle className="w-20 h-20 text-white/80 group-hover:text-white transition-colors cursor-pointer" />
                     </div>
                 </Link>
-              </div>
             </div>
-            <div className="lg:col-span-1">
-              {/* This space is intentionally left blank for the main grid layout below */}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CourseTabs />
-
-      <main className="container mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-12">
             
             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-24 py-0">
@@ -136,31 +130,33 @@ export default async function PartnerCourseDetailPage({
                 </section>
             )}
 
-            <section id="instructors" className="scroll-mt-24 py-0">
-              <h2 className="font-headline text-3xl font-bold mb-6">
-                কোর্স ইন্সট্রাক্টর
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {course.instructors?.map((instructor, index) => (
-                  <Link key={instructor.slug || index} href={`/teachers/${instructor.slug}`} className="text-center flex flex-col items-center group">
-                    <Avatar className="w-24 h-24 mx-auto mb-2">
-                      <AvatarImage
-                        src={instructor.avatarUrl}
-                        alt={instructor.name}
-                        data-ai-hint={instructor.dataAiHint}
-                      />
-                      <AvatarFallback>
-                        {instructor.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">{instructor.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {instructor.title}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </section>
+            {course.instructors && course.instructors.length > 0 && (
+              <section id="instructors" className="scroll-mt-24 py-0">
+                <h2 className="font-headline text-3xl font-bold mb-6">
+                  কোর্স ইন্সট্রাক্টর
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {course.instructors?.map((instructor, index) => (
+                    <Link key={instructor.slug || index} href={`/teachers/${instructor.slug}`} className="text-center flex flex-col items-center group">
+                      <Avatar className="w-24 h-24 mx-auto mb-2">
+                        <AvatarImage
+                          src={instructor.avatarUrl}
+                          alt={instructor.name}
+                          data-ai-hint={instructor.dataAiHint}
+                        />
+                        <AvatarFallback>
+                          {instructor.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <h3 className="font-semibold group-hover:text-primary transition-colors">{instructor.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {instructor.title}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
             
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-24 py-0">
@@ -273,10 +269,12 @@ export default async function PartnerCourseDetailPage({
               </section>
             )}
             
-            <section id="payment" className="scroll-mt-24 py-0">
-                <h2 className="font-headline text-3xl font-bold mb-6">পেমেন্ট প্রক্রিয়া</h2>
-                <p className="text-muted-foreground">আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। বিস্তারিত জানতে <Link href="/contact" className="text-primary hover:underline">এখানে ক্লিক করুন</Link>।</p>
-            </section>
+            {course.price &&
+              <section id="payment" className="scroll-mt-24 py-0">
+                  <h2 className="font-headline text-3xl font-bold mb-6">পেমেন্ট প্রক্রিয়া</h2>
+                  <p className="text-muted-foreground">আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। বিস্তারিত জানতে <Link href="/contact" className="text-primary hover:underline">এখানে ক্লিক করুন</Link>।</p>
+              </section>
+            }
           </div>
 
           <div className="lg:col-span-1">
@@ -298,19 +296,21 @@ export default async function PartnerCourseDetailPage({
                     </Button>
                     <WishlistButton courseId={course.id!} />
                   </div>
-                  <div className="mt-6">
-                    <h3 className="font-headline font-semibold mb-3">
-                      এই কোর্সে যা যা থাকছে
-                    </h3>
-                    <ul className="space-y-2 text-sm">
-                      {course.features?.slice(0, 5).map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {course.features && course.features.length > 0 &&
+                    <div className="mt-6">
+                      <h3 className="font-headline font-semibold mb-3">
+                        এই কোর্সে যা যা থাকছে
+                      </h3>
+                      <ul className="space-y-2 text-sm">
+                        {course.features?.slice(0, 5).map((feature, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  }
                   <Button variant="outline" className="w-full mt-4">
                     See Demo Class
                   </Button>
