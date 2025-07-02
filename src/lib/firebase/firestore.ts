@@ -92,6 +92,15 @@ export const getUserByUid = async (uid: string): Promise<User | null> => {
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
+export const getUserByClassRoll = async (classRoll: string): Promise<User | null> => {
+    const q = query(collection(db, 'users'), where('classRoll', '==', classRoll));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as User;
+}
 export const addUser = (user: Partial<User>) => addDoc(collection(db, 'users'), user);
 export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(db, 'users', id), user);
 export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));

@@ -22,6 +22,8 @@ export const t = {
   hotline: { en: 'Hotline', bn: 'হটলাইন' },
   login: { en: 'Login', bn: 'লগইন' },
   signup: { en: 'Sign Up', bn: 'সাইন আপ' },
+  or_login_with_roll: { en: 'Or Login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
+  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
 
   // Footer
   footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },

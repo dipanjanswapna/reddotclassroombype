@@ -16,7 +16,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { getUserByUid, getHomepageConfig } from '@/lib/firebase/firestore';
+import { getUserByUid, getHomepageConfig, getUserByClassRoll } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -26,6 +26,7 @@ interface AuthContextType {
     userInfo: User | null;
     loading: boolean;
     login: (email: string, pass: string, role?: User['role']) => Promise<any>;
+    loginWithClassRoll: (classRoll: string, pass: string) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
     loginWithFacebook: () => Promise<any>;
     signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
@@ -139,6 +140,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         setUserInfo(fetchedUserInfo);
         redirectToHome('Login Successful!', `Welcome back, ${fetchedUserInfo.name}. Redirecting...`);
+        return userCredential;
+    };
+
+    const loginWithClassRoll = async (classRoll: string, pass: string) => {
+        const studentInfo = await getUserByClassRoll(classRoll);
+        if (!studentInfo) {
+            throw new Error("No student found with this class roll.");
+        }
+        if (studentInfo.role !== 'Student') {
+            throw new Error("This login method is for students only.");
+        }
+    
+        // Now use the found email to sign in
+        const userCredential = await signInWithEmailAndPassword(auth, studentInfo.email, pass);
+    
+        // Reuse existing post-login logic
+        if (studentInfo.status !== 'Active') {
+            await signOut(auth);
+            const statusMessage = studentInfo.status === 'Pending Approval'
+                ? "Your account is pending admin approval."
+                : 'Your account has been suspended.';
+            throw new Error(statusMessage);
+        }
+    
+        setUserInfo(studentInfo);
+        redirectToHome('Login Successful!', `Welcome back, ${studentInfo.name}. Redirecting...`);
         return userCredential;
     };
 
@@ -263,6 +290,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userInfo,
         loading,
         login,
+        loginWithClassRoll,
         loginWithGoogle,
         loginWithFacebook,
         signup,

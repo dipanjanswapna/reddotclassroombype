@@ -43,11 +43,13 @@ function FacebookIcon() {
 
 export default function LoginPageClient() {
   const { language } = useLanguage();
-  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll } = useAuth();
   const searchParams = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [classRoll, setClassRoll] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
   const [role, setRole] = useState<User['role']>('Admin');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,6 +79,19 @@ export default function LoginPageClient() {
     }
   };
   
+  const handleClassRollLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+        await loginWithClassRoll(classRoll, studentPassword);
+    } catch (err: any) {
+        setError(err.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     setIsLoading(true);
     setError(null);
@@ -134,6 +149,37 @@ export default function LoginPageClient() {
                             <span className="ml-2">Continue with Facebook</span>
                         </Button>
                         {socialLoginDisabled && <p className="text-xs text-center text-destructive">Student & Guardian login is temporarily disabled.</p>}
+                        
+                        <div className="relative my-2">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                    {t.or_login_with_roll[language]}
+                                </span>
+                            </div>
+                        </div>
+
+                        <form className="grid gap-4" onSubmit={handleClassRollLogin}>
+                            <div className="grid gap-2">
+                                <Label htmlFor="class-roll">{t.class_roll[language]}</Label>
+                                <Input id="class-roll" placeholder="123456" required value={classRoll} onChange={(e) => setClassRoll(e.target.value)} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="student-password">{t.password[language]}</Label>
+                                <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} />
+                            </div>
+                             <div className="flex items-center justify-end">
+                                <Link href="/password-reset" className="text-sm text-primary hover:underline">
+                                    {t.forgot_password[language]}
+                                </Link>
+                            </div>
+                            <Button type="submit" className="w-full font-bold" disabled={isLoading || socialLoginDisabled}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                {t.login[language]}
+                            </Button>
+                        </form>
                     </div>
                 </TabsContent>
                 <TabsContent value="staff">
