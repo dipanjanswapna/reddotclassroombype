@@ -284,6 +284,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<(Omit<AssignmentTemplate, 'deadline'> & { id: string; deadline?: Date })[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
+  const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
@@ -317,6 +318,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
                 if (courseData) {
+                    setInitialStatus(courseData.status);
                     setCourseTitle(courseData.title || '');
                     setDescription(courseData.description || '');
                     setCategory(courseData.category || '');
@@ -522,7 +524,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setAnnouncements(prev => prev.filter(a => a.id !== id));
   };
 
-  const handleSave = async (status: 'Draft' | 'Pending Approval') => {
+  const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
       toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
       setActiveTab('details');
@@ -606,8 +608,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     const result = await saveCourseAction(cleanCourseData);
 
     if (result.success) {
+      let toastTitle = 'Draft Saved';
+      if (status === 'Pending Approval') {
+          toastTitle = 'Course Submitted';
+      } else if (status === 'Published') {
+          toastTitle = 'Course Updated';
+      }
       toast({ 
-          title: status === 'Pending Approval' ? 'Course Submitted' : 'Draft Saved', 
+          title: toastTitle, 
           description: result.message 
       });
       if (status === 'Pending Approval' || (isNewCourse && result.courseId)) {
@@ -691,15 +699,23 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
-                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
                     <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                 </Button>
-                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
-                </Button>
-                <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
-                </Button>
+                {userRole === 'Admin' && !isNewCourse && initialStatus === 'Published' ? (
+                    <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
+                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes
+                    </Button>
+                ) : (
+                    <>
+                        <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
+                        </Button>
+                        <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
+                        </Button>
+                    </>
+                )}
             </div>
         </div>
         

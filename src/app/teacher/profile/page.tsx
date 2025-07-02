@@ -35,10 +35,15 @@ export default function TeacherProfilePage() {
     const [youtubeClasses, setYoutubeClasses] = useState<{ id: string; title: string; youtubeUrl: string }[]>([]);
 
     useEffect(() => {
-        if (!userInfo) return;
+        const currentUid = userInfo?.uid;
+        if (!currentUid) {
+            if (loading) setLoading(false);
+            return;
+        }
+
         const fetchInstructorData = async () => {
             try {
-                const data = await getInstructorByUid(userInfo.uid);
+                const data = await getInstructorByUid(currentUid);
                 if (data) {
                     setInstructor(data);
                     setName(data.name || '');
@@ -60,10 +65,16 @@ export default function TeacherProfilePage() {
             }
         };
         fetchInstructorData();
-    }, [userInfo, toast]);
+    }, [userInfo?.uid, toast]);
     
     const handleProfileSave = async () => {
         if (!instructor?.id) return;
+
+        if (!name.trim()) {
+            toast({ title: 'Validation Error', description: 'Full Name cannot be empty.', variant: 'destructive' });
+            return;
+        }
+
         setIsSaving(true);
         const updatedData: Partial<Instructor> = {
             name,
