@@ -119,6 +119,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             await signOut(auth);
             throw new Error("Your user profile could not be found. Please contact support.");
         }
+        
+        // Normalize 'Partner' role to 'Seller' for backward compatibility
+        if ((fetchedUserInfo.role as any) === 'Partner') {
+            fetchedUserInfo.role = 'Seller';
+        }
 
         if (fetchedUserInfo.role !== 'Admin' && !config.platformSettings[fetchedUserInfo.role]?.loginEnabled) {
             await signOut(auth);

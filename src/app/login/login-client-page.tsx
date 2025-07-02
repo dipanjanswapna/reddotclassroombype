@@ -1,6 +1,6 @@
 
 
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -50,7 +50,7 @@ export default function LoginPageClient() {
   const [password, setPassword] = useState('');
   const [classRoll, setClassRoll] = useState('');
   const [studentPassword, setStudentPassword] = useState('');
-  const [role, setRole] = useState<User['role']>('Admin');
+  const [role, setRole] = useState<User['role']>('Seller');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<HomepageConfig | null>(null);
