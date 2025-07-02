@@ -15,6 +15,7 @@ import {
   TicketPercent,
   CalendarPlus,
   Handshake,
+  Badge,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -60,6 +61,7 @@ export default function AdminLayout({
         { href: "/admin/financials", icon: DollarSign, label: "Financials" },
         { href: "/admin/reports", icon: AreaChart, label: "Reports" },
         { href: "/admin/settings", icon: Settings, label: "Settings" },
+        { href: "/admin/id-card", icon: Badge, label: "ID Card" },
         { href: "/", icon: LogOut, label: "Logout" },
     ];
 

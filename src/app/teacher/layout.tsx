@@ -13,6 +13,7 @@ import {
   TicketPercent,
   CalendarPlus,
   FileCheck2,
+  Badge,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -56,6 +57,7 @@ export default function TeacherLayout({
     { href: "/teacher/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
     { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
     { href: "/teacher/profile", icon: User, label: "Profile" },
+    { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
     { href: "/teacher/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];

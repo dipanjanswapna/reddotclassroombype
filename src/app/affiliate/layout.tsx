@@ -10,6 +10,7 @@ import {
   DollarSign,
   User,
   LogOut,
+  Badge,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,7 @@ export default function AffiliateLayout({
     { href: "/affiliate/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/affiliate/payouts", icon: DollarSign, label: "Payouts" },
     { href: "/affiliate/profile", icon: User, label: "Profile" },
+    { href: "/affiliate/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 

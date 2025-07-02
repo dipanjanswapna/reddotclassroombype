@@ -11,7 +11,8 @@ import {
   BarChart3,
   Paintbrush,
   Banknote,
-  LayoutDashboard
+  LayoutDashboard,
+  Badge,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,7 @@ export default function SellerLayout({
     { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
     { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
     { href: "/seller/settings", icon: Settings, label: "Settings" },
+    { href: "/seller/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 

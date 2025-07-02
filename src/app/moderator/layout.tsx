@@ -9,6 +9,7 @@ import {
   Ticket,
   User,
   LogOut,
+  Badge,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,7 @@ export default function ModeratorLayout({
     { href: "/moderator/content-review", icon: FileScan, label: "Content Review" },
     { href: "/moderator/support-tickets", icon: Ticket, label: "Support Tickets" },
     { href: "/moderator/profile", icon: User, label: "Profile" },
+    { href: "/moderator/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 

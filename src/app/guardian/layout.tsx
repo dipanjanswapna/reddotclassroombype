@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
+  Badge,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,7 @@ export default function GuardianLayout({
     { href: "/guardian/payment-history", icon: Wallet, label: "Payments" },
     { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact" },
     { href: "/guardian/profile", icon: User, label: "Profile" },
+    { href: "/guardian/id-card", icon: Badge, label: "ID Card" },
     { href: "/guardian/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
