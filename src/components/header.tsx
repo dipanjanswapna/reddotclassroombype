@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, Search, X, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { RdcLogo } from "./rdc-logo";
 import {
   DropdownMenu,
@@ -75,6 +82,10 @@ export function Header() {
                 </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Mobile Menu</SheetTitle>
+                        <SheetDescription>Main navigation links for the Red Dot Classroom website.</SheetDescription>
+                    </SheetHeader>
                     <div className="p-4 border-b">
                     <Link
                         href="/"
