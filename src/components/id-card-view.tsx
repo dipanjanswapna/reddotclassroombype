@@ -58,10 +58,11 @@ export function IdCardView({
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 3,
+            scale: 3, // Increase scale for better resolution
             useCORS: true,
             allowTaint: true,
             letterRendering: true,
+            backgroundColor: null, // Use transparent background for the capture
         });
         
         const imgData = canvas.toDataURL('image/png');
@@ -78,16 +79,21 @@ export function IdCardView({
         const canvasHeight = canvas.height;
         const canvasRatio = canvasWidth / canvasHeight;
 
-        let finalImageWidth = pdfWidth - 20; // A4 width with margin
+        // A4 page with some margin
+        const margin = 10;
+        const contentWidth = pdfWidth - margin * 2;
+        const contentHeight = pdfHeight - margin * 2;
+        
+        let finalImageWidth = contentWidth;
         let finalImageHeight = finalImageWidth / canvasRatio;
 
-        if (finalImageHeight > pdfHeight - 20) { // If it's too tall
-            finalImageHeight = pdfHeight - 20;
+        if (finalImageHeight > contentHeight) {
+            finalImageHeight = contentHeight;
             finalImageWidth = finalImageHeight * canvasRatio;
         }
 
         const x = (pdfWidth - finalImageWidth) / 2;
-        const y = 10;
+        const y = (pdfHeight - finalImageHeight) / 2;
         
         pdf.addImage(imgData, 'PNG', x, y, finalImageWidth, finalImageHeight);
         pdf.save(`${name.replace(/\s+/g, '_')}_ID_Card.pdf`);

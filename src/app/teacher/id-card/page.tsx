@@ -13,6 +13,9 @@ import { Timestamp } from "firebase/firestore";
 
 const formatJoinedDate = (joined: any): string => {
     if (!joined) return 'N/A';
+    if (joined instanceof Date) {
+        return format(joined, 'PPP');
+    }
     if (typeof joined.toDate === 'function') {
         return format(joined.toDate(), 'PPP');
     }
@@ -20,13 +23,14 @@ const formatJoinedDate = (joined: any): string => {
         return format(new Timestamp(joined.seconds, joined.nanoseconds || 0).toDate(), 'PPP');
     }
     if (typeof joined === 'string') {
-        const date = new Date(joined);
-        if (!isNaN(date.getTime())) {
-            return format(date, 'PPP');
+        try {
+            const date = new Date(joined);
+            if (!isNaN(date.getTime())) {
+                return format(date, 'PPP');
+            }
+        } catch (e) {
+            // ignore invalid date strings
         }
-    }
-    if (joined instanceof Date) {
-        return format(joined, 'PPP');
     }
     return 'Date not available';
 };
