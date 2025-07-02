@@ -60,3 +60,29 @@ export const safeToDate = (dateField: any): Date => {
   // Fallback for unexpected formats
   return new Date(NaN);
 };
+
+/**
+ * Extracts a YouTube video ID from various URL formats.
+ * @param url The YouTube URL to parse.
+ * @returns The 11-character video ID, or null if not found.
+ */
+export function getYoutubeVideoId(url: string): string | null {
+  if (!url) return null;
+  let videoId = null;
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.hostname === 'youtu.be') {
+      videoId = urlObj.pathname.slice(1);
+    } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
+      videoId = urlObj.searchParams.get('v');
+    }
+  } catch (e) {
+    // regex fallback for invalid urls
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    if (match) {
+      videoId = match[1];
+    }
+  }
+  return videoId;
+}

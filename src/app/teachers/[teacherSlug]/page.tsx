@@ -11,6 +11,7 @@ import { CourseCard } from '@/components/course-card';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { getYoutubeVideoId } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: { teacherSlug: string } }): Promise<Metadata> {
   const teacher = await getInstructorBySlug(params.teacherSlug);
@@ -31,29 +32,6 @@ export async function generateMetadata({ params }: { params: { teacherSlug: stri
     },
   }
 }
-
-// Helper function to extract YouTube video ID from URL
-function getYoutubeVideoId(url: string) {
-  if (!url) return null;
-  let videoId = null;
-  try {
-    const urlObj = new URL(url);
-    if (urlObj.hostname === 'youtu.be') {
-      videoId = urlObj.pathname.slice(1);
-    } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
-      videoId = urlObj.searchParams.get('v');
-    }
-  } catch (e) {
-    // regex fallback for invalid urls
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
-    if (match) {
-      videoId = match[1];
-    }
-  }
-  return videoId;
-}
-
 
 export default async function TeacherProfilePage({ params }: { params: { teacherSlug: string } }) {
     const teacher = await getInstructorBySlug(params.teacherSlug);
@@ -85,7 +63,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                     <div className="grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-1 flex flex-col items-center text-center">
                             <Avatar className="w-48 h-48 border-4 border-primary/20 shadow-lg">
-                                <AvatarImage src={teacher.avatarUrl} alt={teacher.name} data-ai-hint={teacher.dataAiHint} priority/>
+                                <AvatarImage src={teacher.avatarUrl} alt={teacher.name} data-ai-hint={teacher.dataAiHint} />
                                 <AvatarFallback className="text-6xl">{teacher.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <h1 className="font-headline text-3xl font-bold mt-4">{teacher.name}</h1>
