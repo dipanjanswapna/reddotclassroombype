@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -64,7 +63,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -129,12 +128,7 @@ type ClassRoutineItem = {
   instructorName?: string;
 }
 
-type AnnouncementItem = {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-}
+type AnnouncementItem = Announcement;
 
 type QuizQuestionData = {
   id: string;
@@ -342,7 +336,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setInstructors(courseInstructors);
 
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
-                    setAnnouncements(courseData.announcements?.map(a => ({...a, id: Math.random().toString()})) || []);
+                    setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
@@ -478,7 +472,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
+     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -585,7 +579,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
         includedArchivedCourseIds: includedCourseIds,
-        announcements: announcements.map(({ id, ...rest }) => rest),
+        announcements: announcements,
         quizzes: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { deadline, ...rest } = a;
@@ -957,7 +951,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
-                                    <DatePicker date={assignment.deadline} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
+                                    <DatePicker date={assignment.deadline as Date | undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
                                 </div>
                             </div>
                              <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
