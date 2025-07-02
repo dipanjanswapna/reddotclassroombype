@@ -21,21 +21,17 @@ export function CourseTabs() {
 
     const handleScroll = () => {
         const header = document.querySelector('header');
-        const heroSection = document.querySelector('.bg-gray-900');
-        if (header && heroSection) {
-            const heroBottom = heroSection.getBoundingClientRect().bottom;
-            if (heroBottom <= header.offsetHeight) {
-                setSticky(true);
-            } else {
-                setSticky(false);
-            }
+        if (header) {
+            const headerBottom = header.getBoundingClientRect().bottom;
+            // The value '64' corresponds to the height of the header (h-16)
+            setSticky(window.scrollY > headerBottom + 400); // Adjust this value based on hero section height
         }
         
-        // Active tab logic
         let currentTab = '';
+        const offset = (header ? header.offsetHeight : 64) + 60; // Header height + tabs height
         for (const tab of tabs) {
             const section = document.getElementById(tab.id);
-            if (section && section.getBoundingClientRect().top <= (header ? header.offsetHeight + 60 : 120)) {
+            if (section && section.getBoundingClientRect().top <= offset) {
                 currentTab = tab.id;
             }
         }
@@ -45,7 +41,7 @@ export function CourseTabs() {
     };
 
     useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
@@ -55,7 +51,7 @@ export function CourseTabs() {
         const section = document.getElementById(id);
         const header = document.querySelector('header');
         if (section && header) {
-            const topPos = section.offsetTop - header.offsetHeight - 20;
+            const topPos = section.offsetTop - header.offsetHeight - 50; // header height + some margin
             window.scrollTo({
                 top: topPos,
                 behavior: 'smooth'
@@ -64,7 +60,7 @@ export function CourseTabs() {
     };
 
     return (
-        <div className={cn("bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b transition-all", isSticky ? "sticky top-16 z-40 shadow-md" : "relative")}>
+        <div className={cn("bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b transition-all sticky top-16 z-40")}>
             <div className="container mx-auto px-4 overflow-x-auto">
                 <nav className="flex items-center space-x-2 text-sm font-medium">
                     {tabs.map((tab) => (

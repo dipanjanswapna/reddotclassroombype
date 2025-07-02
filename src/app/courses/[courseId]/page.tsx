@@ -130,50 +130,7 @@ export default async function CourseDetailPage({
               </div>
             </div>
             <div className="lg:col-span-1">
-              <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
-                <CardHeader>
-                    {isPrebookingActive && (
-                        <p className="text-muted-foreground line-through">{course.price}</p>
-                    )}
-                  <CardTitle className="text-3xl font-bold text-primary">
-                    {isPrebookingActive ? course.prebookingPrice : course.price}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex w-full items-center gap-2">
-                    <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
-                        <Link href={isPrebookingActive ? `/pre-book/${course.id}` : `/checkout/${course.id}`}>
-                            {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
-                        </Link>
-                    </Button>
-                    <WishlistButton courseId={course.id!} />
-                  </div>
-                  <div className="mt-6">
-                    <h3 className="font-headline font-semibold mb-3">
-                      এই কোর্সে যা যা থাকছে
-                    </h3>
-                    <ul className="space-y-2 text-sm">
-                      {course.features?.slice(0, 5).map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <Button variant="outline" className="w-full mt-4">
-                    See Demo Class
-                  </Button>
-                  {course.whatsappNumber && (
-                    <Button variant="outline" className="w-full mt-2 bg-green-100 border-green-300 text-green-800 hover:bg-green-200" asChild>
-                        <Link href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank">
-                            <Phone className="mr-2 h-5 w-5"/>
-                            Contact on WhatsApp
-                        </Link>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+              {/* This space is intentionally left blank for the main grid layout below */}
             </div>
           </div>
         </div>
@@ -343,6 +300,50 @@ export default async function CourseDetailPage({
           </div>
 
           <div className="lg:col-span-1">
+             <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
+                <CardHeader>
+                    {isPrebookingActive && (
+                        <p className="text-muted-foreground line-through">{course.price}</p>
+                    )}
+                  <CardTitle className="text-3xl font-bold text-primary">
+                    {isPrebookingActive ? course.prebookingPrice : course.price}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex w-full items-center gap-2">
+                    <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+                        <Link href={isPrebookingActive ? `/pre-book/${course.id}` : `/checkout/${course.id}`}>
+                            {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
+                        </Link>
+                    </Button>
+                    <WishlistButton courseId={course.id!} />
+                  </div>
+                  <div className="mt-6">
+                    <h3 className="font-headline font-semibold mb-3">
+                      এই কোর্সে যা যা থাকছে
+                    </h3>
+                    <ul className="space-y-2 text-sm">
+                      {course.features?.slice(0, 5).map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <Button variant="outline" className="w-full mt-4">
+                    See Demo Class
+                  </Button>
+                  {course.whatsappNumber && (
+                    <Button variant="outline" className="w-full mt-2 bg-green-100 border-green-300 text-green-800 hover:bg-green-200" asChild>
+                        <Link href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank">
+                            <Phone className="mr-2 h-5 w-5"/>
+                            Contact on WhatsApp
+                        </Link>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
           </div>
         </div>
 

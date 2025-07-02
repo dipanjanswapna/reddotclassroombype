@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -475,7 +476,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -602,8 +603,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         courseData.id = courseId;
     }
     
-    // If the course is already published, don't change the status unless explicitly told to.
-    if (!isNewCourse && initialStatus === 'Published' && status !== 'Published') {
+    if (initialStatus === 'Published' && status !== 'Published') {
         courseData.status = 'Published';
     }
     
@@ -685,7 +685,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   ];
 
   const isPublished = !isNewCourse && initialStatus === 'Published';
-  const showSingleSaveButton = isPublished && (userRole === 'Admin' || userRole === 'Seller' || userRole === 'Teacher');
 
   if (loading) {
     return (
@@ -710,7 +709,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
                     <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                 </Button>
-                {showSingleSaveButton ? (
+                {isPublished ? (
                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes
                     </Button>
