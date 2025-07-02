@@ -12,7 +12,8 @@ import {
   BarChart3,
   Paintbrush,
   Banknote,
-  LayoutDashboard
+  LayoutDashboard,
+  Badge,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -29,14 +30,20 @@ export default function PartnerLayout({
   const router = useRouter();
 
   useEffect(() => {
+    // Redirect to the new /seller path
+    if (pathname.startsWith('/partner')) {
+        const newPath = pathname.replace('/partner', '/seller');
+        router.replace(newPath);
+    }
+
     if (!loading) {
       if (!user || userInfo?.role !== 'Seller') {
         router.push('/login');
       }
     }
-  }, [user, userInfo, loading, router]);
+  }, [user, userInfo, loading, router, pathname]);
   
-  if (loading || !user || userInfo?.role !== 'Seller') {
+  if (loading || !user || userInfo?.role !== 'Seller' || pathname.startsWith('/partner')) {
     return (
         <div className="flex items-center justify-center h-screen">
             <LoadingSpinner className="w-12 h-12" />
@@ -44,6 +51,9 @@ export default function PartnerLayout({
     );
   }
 
+  // This part of the code is now effectively legacy and will not be rendered
+  // as the useEffect will redirect away from /partner/* routes.
+  // It is kept for reference but could be removed in a future cleanup.
   const menuItems = [
     { href: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/seller/courses", icon: BookCopy, label: "Courses" },
@@ -53,6 +63,7 @@ export default function PartnerLayout({
     { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
     { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
     { href: "/seller/settings", icon: Settings, label: "Settings" },
+    { href: "/seller/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 
@@ -60,9 +71,8 @@ export default function PartnerLayout({
     if (href === '/seller/dashboard') {
         return pathname === href;
     }
-     // De-dupe / from the end of the href
     const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    if (newHref === '') return false; // Don't match the root logout button
+    if (newHref === '') return false;
     const currentPath = pathname.replace('/partner', '/seller');
     return currentPath.startsWith(href);
   };

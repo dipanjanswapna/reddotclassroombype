@@ -82,9 +82,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [fetchAndSetUser]);
 
-    const redirectToHome = (title: string, description: string) => {
-        toast({ title, description });
-        setTimeout(() => router.push('/'), 1500);
+    const getDashboardLink = (role: User['role']) => {
+        switch (role) {
+            case 'Student': return '/student/dashboard';
+            case 'Teacher': return '/teacher/dashboard';
+            case 'Guardian': return '/guardian/dashboard';
+            case 'Admin': return '/admin/dashboard';
+            case 'Seller': return '/seller/dashboard';
+            case 'Affiliate': return '/affiliate/dashboard';
+            case 'Moderator': return '/moderator/dashboard';
+            default: return '/';
+        }
+    };
+    
+    const redirectToDashboard = (userInfo: User, title: string) => {
+        toast({ title, description: `Welcome back, ${userInfo.name}. Redirecting...` });
+        const dashboardUrl = getDashboardLink(userInfo.role);
+        router.push(dashboardUrl);
     };
 
     const login = async (email: string, pass: string, role?: User['role']) => {
@@ -93,6 +107,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Platform configuration is not available. Please try again later.");
         }
         
+        // Normalize 'Partner' role to 'Seller' for backward compatibility
+        if (role && (role as any) === 'Partner') {
+            role = 'Seller';
+        }
+
         if (role && role !== 'Admin' && !config.platformSettings[role]?.loginEnabled) {
             throw new Error(`Logins for the '${role}' role are temporarily disabled by the administrator.`);
         }
@@ -120,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
-        // Normalize 'Partner' role to 'Seller' for backward compatibility
+        // Normalize stored 'Partner' role to 'Seller'
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
         }
@@ -144,7 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         
         setUserInfo(fetchedUserInfo);
-        redirectToHome('Login Successful!', `Welcome back, ${fetchedUserInfo.name}. Redirecting...`);
+        redirectToDashboard(fetchedUserInfo, 'Login Successful!');
         return userCredential;
     };
 
@@ -157,10 +176,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("This login method is for students only.");
         }
     
-        // Now use the found email to sign in
         const userCredential = await signInWithEmailAndPassword(auth, studentInfo.email, pass);
     
-        // Reuse existing post-login logic
         if (studentInfo.status !== 'Active') {
             await signOut(auth);
             const statusMessage = studentInfo.status === 'Pending Approval'
@@ -170,7 +187,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     
         setUserInfo(studentInfo);
-        redirectToHome('Login Successful!', `Welcome back, ${studentInfo.name}. Redirecting...`);
+        redirectToDashboard(studentInfo, 'Login Successful!');
         return userCredential;
     };
 
@@ -186,7 +203,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUserByUid(user.uid);
         
         if (existingUserInfo) {
-            // This is a login
             if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);
                 throw new Error(`Logins for your role ('${existingUserInfo.role}') are temporarily disabled.`);
@@ -196,7 +212,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 throw new Error("Your account is not active. Please contact support.");
             }
         } else {
-            // This is a signup
             if (!config.platformSettings['Student']?.signupEnabled) {
                 await signOut(auth);
                 throw new Error("Student registrations are temporarily disabled.");
@@ -206,7 +221,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 name: user.displayName || 'New User',
                 email: user.email!,
                 avatarUrl: user.photoURL || `https://placehold.co/100x100.png?text=${(user.displayName || 'U').split(' ').map(n=>n[0]).join('')}`,
-                role: 'Student', // Default role for social sign-in
+                role: 'Student',
                 status: 'Active',
                 joined: serverTimestamp(),
                 classRoll: generateRollNumber(),
@@ -217,7 +232,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setUserInfo(existingUserInfo);
-        redirectToHome('Login Successful!', `Welcome back, ${existingUserInfo.name}. Redirecting...`);
+        redirectToDashboard(existingUserInfo, 'Login Successful!');
     }
     
     const loginWithGoogle = async () => {
@@ -272,8 +287,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await setDoc(doc(db, "users", newUser.uid), newUserInfo);
 
         if (status === 'Active') {
-            setUserInfo({ ...newUserInfo, id: newUser.uid } as User);
-            redirectToHome('Account Created!', `Welcome, ${name}. Redirecting...`);
+            const finalUserInfo = { ...newUserInfo, id: newUser.uid } as User;
+            setUserInfo(finalUserInfo);
+            redirectToDashboard(finalUserInfo, 'Account Created!');
         }
 
         return userCredential;
