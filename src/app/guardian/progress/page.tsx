@@ -13,10 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getCourses } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Assignment } from '@/lib/types';
+import { Assignment, Course, Enrollment } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 type GradedAssignment = Assignment & {
     courseName: string;
@@ -29,45 +31,95 @@ function getGradeColor(grade: string) {
     return 'bg-red-500 text-white';
 }
 
-const currentStudentId = 'usr_stud_001'; // Mock guardian's linked student
 
 export default function GuardianProgressPage() {
+  const { userInfo: guardian, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [gradedAssignments, setGradedAssignments] = useState<GradedAssignment[]>([]);
+  const [stats, setStats] = useState({
+      overallCompletion: 0,
+      averageScore: 0,
+      completedCourses: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if(authLoading) return;
     async function fetchGrades() {
+        if (!guardian || !guardian.linkedStudentId) {
+            setLoading(false);
+            return;
+        }
+
         try {
-            const allCourses = await getCourses();
+            const [allCourses, enrollments] = await Promise.all([
+                getCourses(),
+                getEnrollmentsByUserId(guardian.linkedStudentId!)
+            ]);
+
+            const enrolledCourseIds = enrollments.map(e => e.courseId);
+            const enrolledCourses = allCourses.filter(c => enrolledCourseIds.includes(c.id!));
+            
             const assignments: GradedAssignment[] = [];
-            allCourses.forEach(course => {
+            let totalScore = 0;
+            let gradedCount = 0;
+
+            enrolledCourses.forEach(course => {
                 if(course.assignments) {
                     course.assignments.forEach(assignment => {
-                        if (assignment.status === 'Graded' && assignment.studentId === currentStudentId) {
+                        if (assignment.status === 'Graded' && assignment.studentId === guardian.linkedStudentId) {
                             assignments.push({
                                 ...assignment,
                                 courseName: course.title,
                             });
+                            // Simple score conversion for average
+                            if (assignment.grade?.includes('A')) totalScore += 95;
+                            else if (assignment.grade?.includes('B')) totalScore += 85;
+                            else if (assignment.grade?.includes('C')) totalScore += 75;
+                            else if (assignment.grade?.includes('D')) totalScore += 65;
+                            else totalScore += 50;
+                            gradedCount++;
                         }
                     });
                 }
             });
             setGradedAssignments(assignments.sort((a,b) => new Date(b.submissionDate as string).getTime() - new Date(a.submissionDate as string).getTime()));
+
+            // Calculate stats
+            const overallCompletion = enrollments.length > 0 
+                ? Math.round(enrollments.reduce((acc, e) => acc + e.progress, 0) / enrollments.length) 
+                : 0;
+            
+            const averageScore = gradedCount > 0 ? Math.round(totalScore / gradedCount) : 0;
+            const completedCourses = enrollments.filter(e => e.status === 'completed').length;
+            
+            setStats({ overallCompletion, averageScore, completedCourses });
+
         } catch (error) {
             console.error("Failed to fetch grades", error);
+            toast({ title: 'Error', description: 'Could not fetch progress data.', variant: 'destructive'});
         } finally {
             setLoading(false);
         }
     }
     fetchGrades();
-  }, []);
+  }, [authLoading, guardian, toast]);
 
-  if (loading) {
+  if (loading || authLoading) {
       return (
           <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
               <LoadingSpinner className="w-12 h-12" />
           </div>
       );
+  }
+
+  if (!guardian?.linkedStudentId) {
+    return (
+        <div className="p-8 text-center">
+            <h1 className="font-headline text-2xl font-bold">No Student Linked</h1>
+            <p className="text-muted-foreground mt-2">Please ask your child to invite you from their Guardian page.</p>
+        </div>
+    );
   }
 
   return (
@@ -84,7 +136,7 @@ export default function GuardianProgressPage() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">78%</div>
+            <div className="text-2xl font-bold">{stats.overallCompletion}%</div>
             <p className="text-xs text-muted-foreground">Across all enrolled courses</p>
           </CardContent>
         </Card>
@@ -94,7 +146,7 @@ export default function GuardianProgressPage() {
             <Percent className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">88%</div>
+            <div className="text-2xl font-bold">{stats.averageScore}%</div>
             <p className="text-xs text-muted-foreground">In all submitted assignments & quizzes</p>
           </CardContent>
         </Card>
@@ -104,7 +156,7 @@ export default function GuardianProgressPage() {
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{stats.completedCourses}</div>
             <p className="text-xs text-muted-foreground">Finished from start to end</p>
           </CardContent>
         </Card>
