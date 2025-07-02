@@ -1,8 +1,8 @@
 
-'use client';
 
 import Image from 'next/image';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import {
   CheckCircle,
   PlayCircle,
@@ -32,67 +32,53 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
-import { getCourse, getCourses } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getOrganizations } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
-import { LoadingSpinner } from '@/components/loading-spinner';
-import type { Metadata } from 'next';
+import { WishlistButton } from '@/components/wishlist-button';
 
-export const metadata: Metadata = {
-    title: 'Course Details',
-    description: 'Detailed information about the course.',
-};
+export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
+  const course = await getCourse(params.courseId);
 
-export default function PartnerCourseDetailPage() {
-  const params = useParams();
-  const site = params.site as string;
-  const courseId = params.courseId as string;
-
-  const [course, setCourse] = useState<Course | null>(null);
-  const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
-  const [includedCourses, setIncludedCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!courseId) return;
-    const fetchCourseData = async () => {
-      try {
-        const courseData = await getCourse(courseId);
-        if (courseData) {
-          setCourse(courseData);
-          const allCourses = await getCourses();
-          const related = allCourses.filter(c => c.organizationId === courseData.organizationId && c.id !== courseData.id).slice(0, 4);
-          setRelatedCourses(related);
-          if (courseData.includedArchivedCourseIds) {
-            const included = allCourses.filter(c => courseData.includedArchivedCourseIds?.includes(c.id!));
-            setIncludedCourses(included);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch course data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourseData();
-  }, [courseId]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-        <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
+  if (!course) {
+    return {
+      title: 'Course Not Found',
+    }
   }
+
+  return {
+    title: course.title,
+    description: course.description,
+    openGraph: {
+      title: course.title,
+      description: course.description,
+      images: [course.imageUrl],
+    },
+  }
+}
+
+export default async function PartnerCourseDetailPage({
+  params,
+}: {
+  params: { site: string; courseId: string };
+}) {
+  const course = await getCourse(params.courseId);
 
   if (!course) {
     notFound();
   }
+
+  const allCourses = await getCourses();
+  const allOrgs = await getOrganizations();
   
+  const relatedCourses = allCourses.filter(c => c.organizationId === course.organizationId && c.id !== course.id).slice(0, 4);
+  const includedCourses = course.includedArchivedCourseIds
+    ? allCourses.filter(c => course.includedArchivedCourseIds?.includes(c.id!))
+    : [];
+
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
-  const checkoutUrl = `/sites/${site}/checkout/${course.id}`;
-  const prebookUrl = `/sites/${site}/pre-book/${course.id}`;
+  const checkoutUrl = `/sites/${params.site}/checkout/${course.id}`;
+  const prebookUrl = `/sites/${params.site}/pre-book/${course.id}`;
 
   return (
     <div className="bg-background">
@@ -113,6 +99,7 @@ export default function PartnerCourseDetailPage() {
                   src={course.imageUrl}
                   alt={course.title}
                   fill
+                  priority
                   className="object-cover"
                   data-ai-hint={course.dataAiHint}
                 />
@@ -145,11 +132,14 @@ export default function PartnerCourseDetailPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
-                    <Link href={isPrebookingActive ? prebookUrl : checkoutUrl}>
-                        {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
-                    </Link>
-                  </Button>
+                  <div className="flex w-full items-center gap-2">
+                    <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+                      <Link href={isPrebookingActive ? prebookUrl : checkoutUrl}>
+                          {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
+                      </Link>
+                    </Button>
+                    <WishlistButton courseId={course.id!} />
+                  </div>
                   <div className="mt-6">
                     <h3 className="font-headline font-semibold mb-3">
                       এই কোর্সে যা যা থাকছে
@@ -187,7 +177,7 @@ export default function PartnerCourseDetailPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             
-            {course.whatYouWillLearn && (
+            {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -227,7 +217,7 @@ export default function PartnerCourseDetailPage() {
               </div>
             </section>
             
-            {course.classRoutine && (
+            {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">ক্লাস রুটিন</h2>
                     <Card>
@@ -255,7 +245,7 @@ export default function PartnerCourseDetailPage() {
                 </section>
             )}
 
-            {course.syllabus && (
+            {course.syllabus && course.syllabus.length > 0 && (
               <section id="syllabus" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   সিলেবাস
@@ -289,7 +279,7 @@ export default function PartnerCourseDetailPage() {
               </section>
             )}
 
-            {course.reviewsData && (
+            {course.reviewsData && course.reviewsData.length > 0 && (
               <section id="reviews" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">Student Feedback</h2>
                 <Card>
@@ -320,7 +310,7 @@ export default function PartnerCourseDetailPage() {
             )}
 
 
-            {course.faqs && (
+            {course.faqs && course.faqs.length > 0 && (
               <section id="faq" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   Frequently Asked Questions
@@ -352,9 +342,10 @@ export default function PartnerCourseDetailPage() {
           <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {includedCourses.map(includedCourse => (
-                <CourseCard key={includedCourse.id} {...includedCourse} partnerSubdomain={site} />
-              ))}
+              {includedCourses.map(includedCourse => {
+                const provider = allOrgs.find(p => p.id === includedCourse.organizationId);
+                return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} partnerSubdomain={params.site} />;
+              })}
             </div>
           </section>
         )}
@@ -362,9 +353,10 @@ export default function PartnerCourseDetailPage() {
          <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {relatedCourses.map(course => (
-                    <CourseCard key={course.id} {...course} partnerSubdomain={site} />
-                ))}
+                {relatedCourses.map(course => {
+                    const provider = allOrgs.find(p => p.id === course.organizationId);
+                    return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={params.site} />;
+                })}
             </div>
          </section>
       </main>

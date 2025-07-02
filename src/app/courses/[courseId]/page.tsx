@@ -185,7 +185,7 @@ export default async function CourseDetailPage({
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-12">
             
-            {course.whatYouWillLearn && (
+            {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -225,7 +225,7 @@ export default async function CourseDetailPage({
               </div>
             </section>
             
-            {course.classRoutine && (
+            {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6">ক্লাস রুটিন</h2>
                     <Card>
@@ -253,7 +253,7 @@ export default async function CourseDetailPage({
                 </section>
             )}
 
-            {course.syllabus && (
+            {course.syllabus && course.syllabus.length > 0 && (
               <section id="syllabus" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   সিলেবাস
@@ -287,7 +287,7 @@ export default async function CourseDetailPage({
               </section>
             )}
 
-            {course.reviewsData && (
+            {course.reviewsData && course.reviewsData.length > 0 && (
               <section id="reviews" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">Student Feedback</h2>
                 <Card>
@@ -318,7 +318,7 @@ export default async function CourseDetailPage({
             )}
 
 
-            {course.faqs && (
+            {course.faqs && course.faqs.length > 0 && (
               <section id="faq" className="scroll-mt-24 py-0">
                 <h2 className="font-headline text-3xl font-bold mb-6">
                   Frequently Asked Questions
@@ -352,7 +352,7 @@ export default async function CourseDetailPage({
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {includedCourses.map(includedCourse => {
                 const provider = allOrgs.find(p => p.id === includedCourse.organizationId);
-                return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} />;
+                return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} partnerSubdomain={provider?.subdomain} />;
               })}
             </div>
           </section>
@@ -363,7 +363,7 @@ export default async function CourseDetailPage({
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {relatedCourses.map(course => {
                     const provider = allOrgs.find(p => p.id === course.organizationId);
-                    return <CourseCard key={course.id} {...course} provider={provider} />;
+                    return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
                 })}
             </div>
          </section>
