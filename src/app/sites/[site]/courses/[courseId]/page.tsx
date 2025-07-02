@@ -35,6 +35,7 @@ import { format } from 'date-fns';
 import { getCourse, getCourses, getOrganizations } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { WishlistButton } from '@/components/wishlist-button';
+import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -289,11 +290,12 @@ export default async function PartnerCourseDetailPage({
                 </CardHeader>
                 <CardContent>
                   <div className="flex w-full items-center gap-2">
-                    <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
-                      <Link href={isPrebookingActive ? prebookUrl : checkoutUrl}>
-                          {isPrebookingActive ? 'Pre-book Now' : 'Enroll Now'}
-                      </Link>
-                    </Button>
+                    <CourseEnrollmentButton
+                        courseId={course.id!}
+                        isPrebookingActive={isPrebookingActive}
+                        prebookUrl={prebookUrl}
+                        checkoutUrl={checkoutUrl}
+                    />
                     <WishlistButton courseId={course.id!} />
                   </div>
                   {course.features && course.features.length > 0 &&
