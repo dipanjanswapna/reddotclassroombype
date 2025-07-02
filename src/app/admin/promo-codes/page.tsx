@@ -46,12 +46,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Promo Code Management',
-    description: 'Create and manage all promotional codes for the platform.',
-};
 
 export default function AdminPromoCodePage() {
   const { toast } = useToast();

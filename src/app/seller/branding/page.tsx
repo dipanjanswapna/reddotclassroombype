@@ -16,13 +16,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import type { Organization } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Seller Storefront & Branding',
-    description: 'Customize the look and feel of your dedicated seller storefront.',
-};
-
 
 export default function SellerBrandingPage() {
     const { toast } = useToast();

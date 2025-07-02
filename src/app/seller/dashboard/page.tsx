@@ -14,12 +14,6 @@ import { Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-    title: 'Seller Dashboard',
-    description: 'Overview of your organization\'s performance.',
-};
 
 export default function SellerDashboardPage() {
     const { toast } = useToast();
