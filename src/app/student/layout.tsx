@@ -63,11 +63,12 @@ export default function StudentLayout({
   ];
   
   const getIsActive = (href: string) => {
-    // Exact match for dashboard and my-courses main page
-    if (href === '/student/dashboard' || href === '/student/my-courses') {
+    if (href.endsWith('/dashboard')) {
         return pathname === href;
     }
-    // For all other nested pages, a simple `startsWith` check is enough to keep the parent link active.
+    if (href === '/') {
+        return false;
+    }
     return pathname.startsWith(href);
   };
   

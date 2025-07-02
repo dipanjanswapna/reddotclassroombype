@@ -20,6 +20,7 @@ import { db } from '@/lib/firebase/config';
 import { collection, query, where, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
 import { Notification } from '@/lib/types';
 import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
+import { useAuth } from '@/context/auth-context';
 
 const iconMap = {
     Award,
@@ -28,53 +29,57 @@ const iconMap = {
     FileCheck2
 };
 
-// Mock user ID. In a real app, this would come from an auth context.
-const currentUserId = 'usr_stud_001';
-
 export function NotificationBell() {
+  const { userInfo, loading: authLoading } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
-    if (!currentUserId) return;
+    if (!userInfo) {
+        setNotifications([]);
+        return;
+    };
 
-    // Query only by userId to avoid needing a composite index
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", currentUserId)
+        where("userId", "==", userInfo.uid),
+        orderBy("date", "desc")
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
       const fetchedNotifications: Notification[] = [];
       querySnapshot.forEach((doc) => {
-        const notification = { id: doc.id, ...doc.data() } as Notification;
-        
-        // Filter by date on the client side
-        if (notification.date.toMillis() >= twentyFourHoursAgo) {
-            fetchedNotifications.push(notification);
-        }
+        fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
       });
-      
-      // Sort client-side
-      fetchedNotifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
       setNotifications(fetchedNotifications);
     }, (error) => {
       console.error("Error fetching notifications:", error);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [userInfo]);
 
   const handleMarkAllAsRead = async () => {
+    if (!userInfo) return;
     try {
-      await markAllNotificationsAsRead(currentUserId);
+      await markAllNotificationsAsRead(userInfo.uid);
       // The onSnapshot listener will automatically update the UI
     } catch (error) {
       console.error("Error marking notifications as read:", error);
     }
   };
+
+  if (authLoading) {
+      return (
+        <Button variant="ghost" size="icon" className="relative" disabled>
+            <Bell className="h-5 w-5 animate-pulse" />
+        </Button>
+      )
+  }
+  
+  if (!userInfo) {
+      return null;
+  }
 
   return (
     <DropdownMenu>
@@ -105,6 +110,7 @@ export function NotificationBell() {
                         const Icon = iconMap[notification.icon] || Megaphone;
                         const DropdownItemContent = (
                             <div className={`w-full flex items-start gap-3 p-2 h-auto ${!notification.read ? 'bg-accent/50' : ''}`}>
+                                 {!notification.read && <div className="h-2 w-2 rounded-full bg-primary mt-2"></div>}
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 mt-1 shrink-0">
                                     <Icon className="h-4 w-4 text-primary" />
                                 </div>

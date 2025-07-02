@@ -51,12 +51,13 @@ export default function ModeratorLayout({
   ];
 
   const getIsActive = (href: string) => {
-    if (href === '/moderator/dashboard') {
+    if (href.endsWith('/dashboard')) {
         return pathname === href;
     }
-    const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    if (newHref === '') return false;
-    return pathname.startsWith(newHref);
+    if (href === '/') {
+        return false;
+    }
+    return pathname.startsWith(href);
   };
 
   return (

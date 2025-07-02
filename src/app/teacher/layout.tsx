@@ -63,12 +63,12 @@ export default function TeacherLayout({
   ];
   
   const getIsActive = (href: string) => {
-    if (href === '/teacher/dashboard') {
+    if (href.endsWith('/dashboard')) {
         return pathname === href;
     }
-     // De-dupe / from the end of the href
-    const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    if (newHref === '') return false; // Don't match the root logout button
+    if (href === '/') {
+        return false;
+    }
     return pathname.startsWith(href);
   };
 

@@ -27,6 +27,8 @@ const initializeFacebookSDK = () => {
 };
 
 const loadFacebookSDK = () => {
+  if (FACEBOOK_APP_ID === 'YOUR_APP_ID') return;
+
   if (document.getElementById('facebook-jssdk')) {
     initializeFacebookSDK();
     return;
@@ -73,8 +75,6 @@ const YouTubePlayer = ({ url }: { url: string }) => {
 
 const FacebookPlayer = ({ url }: { url:string }) => {
    useEffect(() => {
-    if (FACEBOOK_APP_ID === 'YOUR_APP_ID') return;
-
     if (!document.getElementById('fb-root')) {
       const fbRoot = document.createElement('div');
       fbRoot.id = 'fb-root';

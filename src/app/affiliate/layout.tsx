@@ -53,12 +53,13 @@ export default function AffiliateLayout({
   ];
 
   const getIsActive = (href: string) => {
-    if (href === '/affiliate/dashboard') {
+    if (href.endsWith('/dashboard')) {
         return pathname === href;
     }
-    const newHref = href.endsWith('/') ? href.slice(0, -1) : href;
-    if (newHref === '') return false;
-    return pathname.startsWith(newHref);
+    if (href === '/') {
+        return false;
+    }
+    return pathname.startsWith(href);
   };
 
   return (
