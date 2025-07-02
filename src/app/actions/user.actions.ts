@@ -1,7 +1,8 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addUser, deleteUser, getUser, getUsers, updateUser } from '@/lib/firebase/firestore';
+import { addUser, deleteUser, getUser, getUserByEmailAndRole, updateUser } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
 
@@ -34,8 +35,7 @@ export async function deleteUserAction(id: string) {
 
 export async function linkGuardianAction(studentId: string, guardianEmail: string) {
     try {
-        const allUsers = await getUsers();
-        let guardian = allUsers.find(u => u.email === guardianEmail && u.role === 'Guardian');
+        let guardian = await getUserByEmailAndRole(guardianEmail, 'Guardian');
 
         if (!guardian) {
             const newGuardianData: Partial<User> = {

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { getUsers } from '@/lib/firebase/firestore';
-import { linkGuardianAction, unlinkGuardianAction } from '@/app/actions/user.actions';
+import { getUser, linkGuardianAction, unlinkGuardianAction } from '@/lib/firebase/firestore';
 import type { User } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Trash2, UserPlus, Loader2 } from 'lucide-react';
@@ -25,10 +25,10 @@ export default function GuardianManagementPage() {
 
     const fetchGuardianData = async () => {
         if (!student) return;
+        setLoading(true);
         try {
             if (student?.linkedGuardianId) {
-                const allUsers = await getUsers();
-                const linkedGuardian = allUsers.find(u => u.id === student.linkedGuardianId);
+                const linkedGuardian = await getUser(student.linkedGuardianId);
                 setGuardian(linkedGuardian || null);
             } else {
                 setGuardian(null);

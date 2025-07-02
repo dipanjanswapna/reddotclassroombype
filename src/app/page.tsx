@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -18,7 +19,7 @@ import { HeroCarousel } from '@/components/hero-carousel';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizationsByIds } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { LiveCoursesCarousel } from '@/components/live-courses-carousel';
 import { TeachersCarousel } from '@/components/teachers-carousel';
@@ -54,6 +55,8 @@ export default async function Home() {
     return <div className="container mx-auto p-4">Homepage configuration not found. Please set it up in the admin panel.</div>;
   }
   
+  const collaborationOrgIds = homepageConfig.collaborations.items.map(item => item.organizationId).filter(Boolean);
+
   const [
     liveCourses,
     featuredInstructors,
@@ -69,7 +72,7 @@ export default async function Home() {
     getCoursesByIds(homepageConfig.masterClassesIds || []),
     getCoursesByIds(homepageConfig.admissionCoursesIds || []),
     getCoursesByIds(homepageConfig.jobCoursesIds || []),
-    getOrganizations()
+    getOrganizationsByIds(collaborationOrgIds)
   ]);
   
   const language = 'bn'; // Default language

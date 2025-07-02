@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { getSupportTickets } from '@/lib/firebase/firestore';
+import { getSupportTicketsByUserId } from '@/lib/firebase/firestore';
 import { createSupportTicketAction } from '@/app/actions/support.actions';
 import type { SupportTicket } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -58,10 +59,8 @@ export default function SupportTicketsPage() {
   const fetchUserTickets = async () => {
     if (!userInfo) return;
      try {
-        const allTickets = await getSupportTickets();
-        const userTickets = allTickets
-            .filter(t => t.userId === userInfo.uid)
-            .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+        const userTickets = await getSupportTicketsByUserId(userInfo.uid);
+        userTickets.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         setTickets(userTickets);
       } catch (error) {
         console.error(error);

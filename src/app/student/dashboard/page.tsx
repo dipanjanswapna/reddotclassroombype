@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +13,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course, Assignment } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -33,13 +34,9 @@ export default function DashboardPage() {
 
     const fetchDashboardData = async () => {
       try {
-        const [allCourses, enrollments] = await Promise.all([
-          getCourses(),
-          getEnrollmentsByUserId(userInfo.uid)
-        ]);
-
+        const enrollments = await getEnrollmentsByUserId(userInfo.uid);
         const enrolledCourseIds = enrollments.map(e => e.courseId);
-        const enrolledCourses = allCourses.filter(c => enrolledCourseIds.includes(c.id!));
+        const enrolledCourses = enrolledCourseIds.length > 0 ? await getCoursesByIds(enrolledCourseIds) : [];
 
         const upcomingDeadlines = enrolledCourses
           .flatMap(c => c.assignments || [])

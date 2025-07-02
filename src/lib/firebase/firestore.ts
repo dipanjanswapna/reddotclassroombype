@@ -101,6 +101,15 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
+export const getUserByEmailAndRole = async (email: string, role: User['role']): Promise<User | null> => {
+    const q = query(collection(db, 'users'), where('email', '==', email), where('role', '==', role));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as User;
+}
 export const addUser = (user: Partial<User>) => addDoc(collection(db, 'users'), user);
 export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(db, 'users', id), user);
 export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));
@@ -119,6 +128,13 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
     }
     return null;
 }
+export const getOrganizationsByIds = async (ids: string[]): Promise<Organization[]> => {
+  if (!ids || ids.length === 0) return [];
+  const orgsRef = collection(db, 'organizations');
+  const q = query(orgsRef, where(documentId(), 'in', ids));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Organization));
+}
 export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
 export const deleteOrganization = (id: string) => deleteDoc(doc(db, 'organizations', id));
 export const getOrganizationByUserId = async (userId: string): Promise<Organization | null> => {
@@ -134,6 +150,11 @@ export const getOrganizationByUserId = async (userId: string): Promise<Organizat
 
 // Support Tickets
 export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
+export const getSupportTicketsByUserId = async (userId: string): Promise<SupportTicket[]> => {
+    const q = query(collection(db, "support_tickets"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SupportTicket));
+};
 export const getSupportTicket = (id: string) => getDocument<SupportTicket>('support_tickets', id);
 export const addSupportTicket = (ticket: Partial<SupportTicket>) => addDoc(collection(db, 'support_tickets'), ticket);
 export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) => updateDoc(doc(db, 'support_tickets', id), ticket);
