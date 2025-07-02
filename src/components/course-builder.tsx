@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -328,7 +327,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setDescription(courseData.description || '');
                     setCategory(courseData.category || '');
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
-                    setThumbnailUrl(courseData.imageUrl || 'https://placehold.co/600x400.png');
+                    
+                    let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
+                    if (imageUrl.includes('placehold.c/')) {
+                        imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
+                    }
+                    setThumbnailUrl(imageUrl);
+                    
                     setIntroVideoUrl(courseData.videoUrl || '');
                     setWhatsappNumber(courseData.whatsappNumber || '');
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
