@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload, Linkedin, Facebook, Twitter, Loader2, ExternalLink } from "lucide-react";
+import { Upload, Linkedin, Facebook, Twitter, Loader2, ExternalLink, Youtube, PlusCircle, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { getInstructorByUid } from "@/lib/firebase/firestore";
 import { Instructor } from "@/lib/types";
@@ -32,6 +32,7 @@ export default function TeacherProfilePage() {
     const [linkedin, setLinkedin] = useState('');
     const [facebook, setFacebook] = useState('');
     const [twitter, setTwitter] = useState('');
+    const [youtubeClasses, setYoutubeClasses] = useState<{ id: string; title: string; youtubeUrl: string }[]>([]);
 
     useEffect(() => {
         if (!userInfo) return;
@@ -47,6 +48,7 @@ export default function TeacherProfilePage() {
                     setLinkedin(data.socials?.linkedin || '');
                     setFacebook(data.socials?.facebook || '');
                     setTwitter(data.socials?.twitter || '');
+                    setYoutubeClasses(data.youtubeClasses?.map(yc => ({ ...yc, id: yc.id || `yc_${Date.now()}_${Math.random()}` })) || []);
                 } else {
                     toast({ title: 'Error', description: 'Could not find your instructor profile.', variant: 'destructive' });
                 }
@@ -70,6 +72,7 @@ export default function TeacherProfilePage() {
             avatarUrl,
             slug: name.toLowerCase().replace(/\s+/g, '-'),
             socials: { linkedin, facebook, twitter },
+            youtubeClasses: youtubeClasses.filter(c => c.title && c.youtubeUrl),
         };
         
         const result = await saveInstructorProfileAction(instructor.id, updatedData);
@@ -99,6 +102,12 @@ export default function TeacherProfilePage() {
             reader.readAsDataURL(file);
         }
     };
+
+    const addYoutubeClass = () => setYoutubeClasses(prev => [...prev, { id: `yc_${Date.now()}_${Math.random()}`, title: '', youtubeUrl: '' }]);
+    const updateYoutubeClass = (id: string, field: 'title' | 'youtubeUrl', value: string) => {
+        setYoutubeClasses(prev => prev.map(yc => yc.id === id ? { ...yc, [field]: value } : yc));
+    };
+    const removeYoutubeClass = (id: string) => setYoutubeClasses(prev => prev.filter(yc => yc.id !== id));
 
     if (loading) {
         return (
@@ -192,6 +201,38 @@ export default function TeacherProfilePage() {
                 </Button>
             </div>
         </Card>
+
+        <Card>
+            <CardHeader>
+              <CardTitle>Free YouTube Classes</CardTitle>
+              <CardDescription>Add links to your free classes on YouTube. These will be displayed on your public profile.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {youtubeClasses.map(yc => (
+                    <div key={yc.id} className="flex items-end gap-2 p-4 border rounded-md">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+                            <div className="space-y-1">
+                                <Label htmlFor={`yc-title-${yc.id}`}>Class Title</Label>
+                                <Input id={`yc-title-${yc.id}`} value={yc.title} onChange={e => updateYoutubeClass(yc.id, 'title', e.target.value)} placeholder="e.g., Physics Chapter 5" />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor={`yc-url-${yc.id}`}>YouTube URL</Label>
+                                <Input id={`yc-url-${yc.id}`} value={yc.youtubeUrl} onChange={e => updateYoutubeClass(yc.id, 'youtubeUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+                            </div>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => removeYoutubeClass(yc.id)}><X className="text-destructive h-4 w-4"/></Button>
+                    </div>
+                ))}
+                <Button variant="outline" className="w-full" onClick={addYoutubeClass}><PlusCircle className="mr-2"/>Add YouTube Class</Button>
+            </CardContent>
+             <CardFooter className="p-6 pt-0 flex justify-end">
+                <Button onClick={handleProfileSave} disabled={isSaving}>
+                    {isSaving && <Loader2 className="mr-2 animate-spin"/>}
+                    Save Changes
+                </Button>
+            </CardFooter>
+        </Card>
+
         </div>
     );
 }

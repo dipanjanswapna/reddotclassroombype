@@ -81,6 +81,11 @@ export type Instructor = {
   }
   organizationId?: string;
   userId?: string;
+  youtubeClasses?: {
+    id: string;
+    title: string;
+    youtubeUrl: string;
+  }[];
 }
 
 export type QuizQuestion = {
