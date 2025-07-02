@@ -207,9 +207,9 @@ export function IdCardView({
                 </div>
 
                 {/* Back Side */}
-                <div className="id-card-back absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col font-sans">
+                <div className="id-card-back absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col font-bengali">
                      <div className="h-10 bg-gray-200 -m-4 mb-2"></div>
-                     <div className="text-xs text-gray-600 space-y-1.5 text-center mt-2 px-2 leading-tight">
+                     <div className="text-xs text-gray-600 space-y-1 text-center mt-2 px-2 leading-tight">
                         <p className="font-bold">গুরুত্বপূর্ণ নির্দেশনা</p>
                         <p>এই কার্ডটি Red Dot Classroom (RDC) এর সম্পত্তি। এটি হস্তান্তরযোগ্য নয়। কার্ডটি হারিয়ে গেলে অবিলম্বে কর্তৃপক্ষকে জানান।</p>
                     </div>

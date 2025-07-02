@@ -1,10 +1,11 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { LanguageProvider } from '@/context/language-context';
-import { Inter, Poppins } from 'next/font/google'
+import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { AuthProvider } from '@/context/auth-context';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 
@@ -17,6 +18,12 @@ const fontPoppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '600', '700'],
   variable: '--font-poppins',
+})
+
+const fontHindSiliguri = Hind_Siliguri({
+  subsets: ['bengali', 'latin'],
+  weight: ['400', '700'],
+  variable: '--font-bengali',
 })
 
 export const metadata: Metadata = {
@@ -37,7 +44,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn('font-body antialiased min-h-screen bg-background', fontInter.variable, fontPoppins.variable)}>
+      <body className={cn('font-body antialiased min-h-screen bg-background', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
         <AuthProvider>
           <LanguageProvider>
             <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
