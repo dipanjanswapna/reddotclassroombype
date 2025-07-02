@@ -50,8 +50,6 @@ export async function generateMetadata({ params }: { params: { courseId: string 
     title: course.title,
     description: course.description,
     openGraph: {
-      title: course.title,
-      description: course.description,
       images: [course.imageUrl],
     },
   }
