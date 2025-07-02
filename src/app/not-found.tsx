@@ -32,7 +32,7 @@ export default function NotFound() {
           </div>
           <div className="relative h-96">
             <Image
-              src="https://i.imgur.com/T0J0Uq5.png"
+              src="https://placehold.co/600x400.png"
               alt="Red Dot Classroom 404 Error"
               fill
               className="object-contain"
