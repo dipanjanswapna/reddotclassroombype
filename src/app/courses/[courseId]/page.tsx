@@ -83,23 +83,27 @@ export default async function CourseDetailPage({
     <div className="bg-background">
       <section className="bg-secondary/50 pt-12 pb-12">
         <div className="container mx-auto px-4">
-          {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
-          
-          {organization && (
-            <div className="flex items-center gap-2 mb-2">
-              <Image src={organization.logoUrl} alt={organization.name} width={24} height={24} className="rounded-full bg-muted object-contain"/>
-              <p className="text-sm font-semibold text-muted-foreground">
-                Sold by <Link href={`/sites/${organization.subdomain}`} className="text-primary hover:underline">{organization.name}</Link>
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              {isPrebookingActive && <Badge className="mb-2" variant="warning">Pre-booking Open Until {format(new Date(course.prebookingEndDate!), 'PPP')}</Badge>}
+              
+              {organization && (
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src={organization.logoUrl} alt={organization.name} width={24} height={24} className="rounded-full bg-muted object-contain"/>
+                  <p className="text-sm font-semibold text-muted-foreground">
+                    Sold by <Link href={`/sites/${organization.subdomain}`} className="text-primary hover:underline">{organization.name}</Link>
+                  </p>
+                </div>
+              )}
+              
+              <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
+                {course.title}
+              </h1>
+              <p className="text-lg text-muted-foreground mb-4 max-w-4xl">
+                {course.description}
               </p>
             </div>
-          )}
-          
-          <h1 className="font-headline text-4xl font-bold tracking-tight mb-2">
-            {course.title}
-          </h1>
-          <p className="text-lg text-muted-foreground mb-4 max-w-4xl">
-            {course.description}
-          </p>
+          </div>
         </div>
       </section>
 

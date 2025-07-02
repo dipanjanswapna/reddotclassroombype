@@ -449,7 +449,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
-  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
+  const removeQuiz = (id: string) => {
+    setQuizzes(prev => prev.filter(q => q.id !== id));
+  };
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
     setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
   };
@@ -709,7 +711,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
                     <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                 </Button>
-                {isPublished ? (
+                {isPublished && userRole === 'Admin' ? (
                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes
                     </Button>
