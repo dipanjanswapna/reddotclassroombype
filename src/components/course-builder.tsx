@@ -448,7 +448,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
 
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
-  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== q.id));
+  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
     setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
   };
@@ -472,10 +472,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : q) } : q));
   };
   const removeOption = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.filter(qu => qu.id !== questionId) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : qu) } : q));
   };
   const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
+    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : qu) } : q));
   };
   const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
@@ -602,6 +602,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         courseData.id = courseId;
     }
     
+    // If the course is already published, don't change the status unless explicitly told to.
+    if (!isNewCourse && initialStatus === 'Published' && status !== 'Published') {
+        courseData.status = 'Published';
+    }
+    
     // Clean data before sending to the server action
     const cleanCourseData = removeUndefinedValues(courseData);
     
@@ -679,6 +684,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
 
+  const isPublished = !isNewCourse && initialStatus === 'Published';
+  const showSingleSaveButton = isPublished && (userRole === 'Admin' || userRole === 'Seller' || userRole === 'Teacher');
+
   if (loading) {
     return (
         <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
@@ -702,7 +710,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
                     <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                 </Button>
-                {userRole === 'Admin' && !isNewCourse && initialStatus === 'Published' ? (
+                {showSingleSaveButton ? (
                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes
                     </Button>
