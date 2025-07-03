@@ -18,7 +18,7 @@ import { HeroCarousel } from '@/components/hero-carousel';
 import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { getHomepageConfig, getCoursesByIds, getInstructorsByIds, getOrganizations } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { LiveCoursesCarousel } from '@/components/live-courses-carousel';
 import { TeachersCarousel } from '@/components/teachers-carousel';
@@ -56,7 +56,7 @@ export default async function Home() {
 
   const [
     liveCourses,
-    featuredInstructors,
+    allInstructors,
     sscHscCourses,
     masterClasses,
     admissionCourses,
@@ -64,7 +64,7 @@ export default async function Home() {
     organizations
   ] = await Promise.all([
     getCoursesByIds(homepageConfig.liveCoursesIds || []),
-    getInstructorsByIds(homepageConfig.teachersSection.instructorIds || []),
+    getInstructors(),
     getCoursesByIds(homepageConfig.sscHscCourseIds || []),
     getCoursesByIds(homepageConfig.masterClassesIds || []),
     getCoursesByIds(homepageConfig.admissionCoursesIds || []),
@@ -72,6 +72,7 @@ export default async function Home() {
     getOrganizations()
   ]);
 
+  const featuredInstructors = allInstructors.filter(inst => inst.status === 'Approved');
   const approvedCollaborators = organizations.filter(org => org.status === 'approved');
   
   const language = 'bn'; // Default language
