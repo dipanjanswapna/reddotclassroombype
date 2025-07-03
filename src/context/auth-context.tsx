@@ -17,7 +17,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { getUserByUid, getHomepageConfig, getUserByClassRoll } from '@/lib/firebase/firestore';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -210,6 +210,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
              if (existingUserInfo.status !== 'Active') {
                 await signOut(auth);
                 throw new Error("Your account is not active. Please contact support.");
+            }
+            // Update avatar if it's a placeholder and a new one is available from the social provider
+            if (user.photoURL && (!existingUserInfo.avatarUrl || existingUserInfo.avatarUrl.includes('placehold.co'))) {
+                await updateDoc(doc(db, "users", user.uid), { avatarUrl: user.photoURL });
+                existingUserInfo.avatarUrl = user.photoURL; // Update local state immediately
             }
         } else {
             if (!config.platformSettings['Student']?.signupEnabled) {
