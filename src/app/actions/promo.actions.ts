@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { addPromoCode, deletePromoCode, getCourse, getPromoCodeByCode, updatePromoCode } from '@/lib/firebase/firestore';
 import { PromoCode } from '@/lib/types';
 
-export async function applyPromoCodeAction(courseId: string, promoCode: string) {
+export async function applyPromoCodeAction(courseId: string, promoCode: string, userId?: string) {
     try {
         const course = await getCourse(courseId);
         if (!course) {
@@ -15,6 +15,10 @@ export async function applyPromoCodeAction(courseId: string, promoCode: string) 
         const matchedCode = await getPromoCodeByCode(promoCode);
         if (!matchedCode) {
             return { success: false, message: 'Invalid promo code.' };
+        }
+
+        if (matchedCode.restrictedToUserId && matchedCode.restrictedToUserId !== userId) {
+            return { success: false, message: 'This promo code is not valid for your account.' };
         }
 
         if (!matchedCode.isActive || (matchedCode.expiresAt && new Date(matchedCode.expiresAt) < new Date())) {

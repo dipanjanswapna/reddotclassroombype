@@ -79,7 +79,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     setError('');
     setPromoLoading(true);
     
-    const result = await applyPromoCodeAction(params.courseId, promoCode);
+    const result = await applyPromoCodeAction(params.courseId, promoCode, userInfo?.uid);
 
     if (result.success) {
       setDiscount(result.discount!);

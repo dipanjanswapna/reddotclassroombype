@@ -2,9 +2,41 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addEnrollment, getCourse, updateCourse, getUser } from '@/lib/firebase/firestore';
+import { addEnrollment, getCourse, updateCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
+
+export async function prebookCourseAction(courseId: string, userId: string) {
+    try {
+        const [course, existingPrebooking] = await Promise.all([
+            getCourse(courseId),
+            getPrebookingForUser(courseId, userId)
+        ]);
+        
+        if (!course) throw new Error("Course not found.");
+        if (!course.isPrebooking) throw new Error("This course is not available for pre-booking.");
+        if (existingPrebooking) throw new Error("You have already pre-booked this course.");
+
+        await addPrebooking({
+            courseId,
+            userId,
+            prebookingDate: Timestamp.now(),
+        });
+        
+        await updateCourse(courseId, { prebookingCount: (course.prebookingCount || 0) + 1 });
+        
+        revalidatePath(`/courses/${courseId}`);
+        revalidatePath(`/sites/[site]/courses/${courseId}`);
+        revalidatePath('/admin/pre-bookings');
+
+        return { success: true, message: 'Pre-booking successful! You will be notified when the course launches.' };
+
+    } catch (error: any) {
+        console.error("Pre-booking error:", error);
+        return { success: false, message: error.message };
+    }
+}
+
 
 export async function enrollInCourseAction(courseId: string, userId: string) {
     try {
@@ -51,9 +83,6 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
         }
         
         const updates: Partial<any> = {};
-        if (course.isPrebooking) {
-            updates.prebookingCount = (course.prebookingCount || 0) + 1;
-        }
 
         if (newAssignments.length > 0) {
             updates.assignments = [...(course.assignments || []), ...newAssignments];

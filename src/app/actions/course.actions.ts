@@ -2,11 +2,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion } from 'firebase/firestore';
-import { deleteCourse } from '@/lib/firebase/firestore';
-import { Course, User } from '@/lib/types';
+import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch } from 'firebase/firestore';
+import { deleteCourse, getCourse, getPrebookingsByCourseId, addPromoCode, addNotification } from '@/lib/firebase/firestore';
+import { Course, User, PromoCode } from '@/lib/types';
 import { db } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
+import { Timestamp } from 'firebase/firestore';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
   try {
@@ -50,6 +51,77 @@ export async function deleteCourseAction(id: string) {
         return { success: false, message: error.message };
     }
 }
+
+export async function launchPrebookingCourseAction(courseId: string) {
+    try {
+        const course = await getCourse(courseId);
+        if (!course || !course.isPrebooking) {
+            throw new Error('This is not a pre-booking course or course not found.');
+        }
+
+        const prebookings = await getPrebookingsByCourseId(courseId);
+        if (prebookings.length === 0) {
+            await updateDoc(doc(db, 'courses', courseId), { isPrebooking: false });
+            revalidatePath(`/admin/courses/builder/${courseId}`);
+            return { success: true, message: 'Course launched. No pre-bookings to notify.' };
+        }
+        
+        const finalPrice = parseFloat((course.price || '0').replace(/[^0-9.]/g, ''));
+        const prebookingPrice = parseFloat((course.prebookingPrice || '0').replace(/[^0-9.]/g, ''));
+        const discountAmount = finalPrice - prebookingPrice;
+
+        if (discountAmount <= 0) {
+            throw new Error('Final price must be greater than pre-booking price to create a discount.');
+        }
+
+        const batch = writeBatch(db);
+
+        for (const prebooking of prebookings) {
+            const promoCode: Omit<PromoCode, 'id'> = {
+                code: `PREBOOK-${courseId.slice(0, 4).toUpperCase()}-${prebooking.userId.slice(0, 4)}`,
+                type: 'fixed',
+                value: discountAmount,
+                usageCount: 0,
+                usageLimit: 1,
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+                isActive: true,
+                applicableCourseIds: [courseId],
+                createdBy: 'admin',
+                restrictedToUserId: prebooking.userId,
+            };
+            const promoRef = doc(collection(db, 'promo_codes'));
+            batch.set(promoRef, promoCode);
+
+            const notification = {
+                userId: prebooking.userId,
+                icon: 'Award' as const,
+                title: `"${course.title}" is now live!`,
+                description: `Your pre-booking was successful! Use code ${promoCode.code} to get your special discount.`,
+                date: Timestamp.now(),
+                read: false,
+                link: `/checkout/${courseId}`
+            };
+            const notifRef = doc(collection(db, 'notifications'));
+            batch.set(notifRef, notification);
+        }
+        
+        const courseRef = doc(db, 'courses', courseId);
+        batch.update(courseRef, { isPrebooking: false });
+
+        await batch.commit();
+
+        revalidatePath(`/admin/courses/builder/${courseId}`);
+        revalidatePath(`/teacher/courses/builder/${courseId}`);
+        revalidatePath(`/courses/${courseId}`);
+
+        return { success: true, message: `Course launched! ${prebookings.length} students have been notified with their unique promo codes.` };
+
+    } catch (error: any) {
+        console.error("Error launching prebooking course:", error);
+        return { success: false, message: error.message };
+    }
+}
+
 
 export async function addLessonReactionAction(
   userId: string,

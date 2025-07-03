@@ -224,7 +224,7 @@ export type BlogPost = {
 };
 
 export type PromoCode = {
-  id: string;
+  id?: string;
   code: string;
   type: 'percentage' | 'fixed';
   value: number;
@@ -234,7 +234,15 @@ export type PromoCode = {
   isActive: boolean;
   applicableCourseIds: string[]; // 'all' for all courses
   createdBy: 'admin' | string; // admin or teacherId
+  restrictedToUserId?: string;
 }
+
+export type Prebooking = {
+  id?: string;
+  userId: string;
+  courseId: string;
+  prebookingDate: Timestamp;
+};
 
 export type SupportTicket = {
   id?: string;
