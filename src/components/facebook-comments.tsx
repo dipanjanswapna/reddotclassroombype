@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -12,7 +11,7 @@ declare global {
 }
 
 // IMPORTANT: Replace with your actual Facebook App ID
-const FACEBOOK_APP_ID = 'YOUR_APP_ID';
+const FACEBOOK_APP_ID = '1260770405611208';
 
 const FacebookComments = ({ href }: { href: string }) => {
   useEffect(() => {
