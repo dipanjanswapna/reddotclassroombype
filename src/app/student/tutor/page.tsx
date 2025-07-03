@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,23 +9,59 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { virtualTutorChatbot, VirtualTutorChatbotInput } from "@/ai/flows/virtual-tutor-chatbot";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/context/auth-context";
+import { getEnrollmentsByUserId, getCoursesByIds } from "@/lib/firebase/firestore";
+import { Course } from "@/lib/types";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function VirtualTutorPage() {
-  const [courseMaterial, setCourseMaterial] = useState("");
+  const { userInfo, loading: authLoading } = useAuth();
+  
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [isFetchingCourses, setIsFetchingCourses] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!userInfo) return;
+
+    const fetchCourses = async () => {
+      setIsFetchingCourses(true);
+      try {
+        const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+        if (enrollments.length > 0) {
+          const courseIds = enrollments.map(e => e.courseId);
+          const courses = await getCoursesByIds(courseIds);
+          setEnrolledCourses(courses);
+        }
+      } catch (err) {
+        console.error("Failed to fetch courses", err);
+        setError("Could not load your enrolled courses.");
+      } finally {
+        setIsFetchingCourses(false);
+      }
+    };
+    fetchCourses();
+  }, [userInfo]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedCourseId) {
+      setError("Please select a course first.");
+      return;
+    }
+    
     setIsLoading(true);
     setError(null);
     setAnswer("");
 
     try {
       const input: VirtualTutorChatbotInput = {
-        courseMaterial,
+        courseId: selectedCourseId,
         question,
       };
       const result = await virtualTutorChatbot(input);
@@ -37,6 +73,16 @@ export default function VirtualTutorPage() {
       setIsLoading(false);
     }
   };
+
+  const pageLoading = authLoading || isFetchingCourses;
+
+  if (pageLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <LoadingSpinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -53,22 +99,29 @@ export default function VirtualTutorPage() {
           <CardHeader>
             <CardTitle>Ask a Question</CardTitle>
             <CardDescription>
-              Provide the relevant course material and your question below. The AI tutor will provide an answer based on the context.
+              Select a course and ask a question. The AI will provide an answer based on the course content.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="courseMaterial">Course Material</Label>
-                <Textarea
-                  id="courseMaterial"
-                  placeholder="Paste relevant paragraphs, lecture notes, or concepts here..."
-                  value={courseMaterial}
-                  onChange={(e) => setCourseMaterial(e.target.value)}
-                  rows={8}
-                  required
-                />
+                <Label htmlFor="course">Select a Course</Label>
+                <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
+                  <SelectTrigger id="course">
+                    <SelectValue placeholder="Choose a course..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {enrolledCourses.length > 0 ? (
+                      enrolledCourses.map(course => (
+                        <SelectItem key={course.id} value={course.id!}>{course.title}</SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-sm text-muted-foreground">You are not enrolled in any courses.</div>
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
+              
               <div className="grid gap-2">
                 <Label htmlFor="question">Your Question</Label>
                 <Textarea
@@ -80,7 +133,7 @@ export default function VirtualTutorPage() {
                   required
                 />
               </div>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading || !selectedCourseId || !question}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
