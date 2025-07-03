@@ -4,7 +4,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -44,7 +43,6 @@ function FacebookIcon() {
 export default function LoginPageClient() {
   const { language } = useLanguage();
   const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll } = useAuth();
-  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,12 +53,7 @@ export default function LoginPageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<HomepageConfig | null>(null);
   
-  const [activeTab, setActiveTab] = useState(searchParams.get('type') === 'staff' ? 'staff' : 'student');
-
-  useEffect(() => {
-    const type = searchParams.get('type');
-    setActiveTab(type === 'staff' ? 'staff' : 'student');
-  }, [searchParams]);
+  const [activeTab, setActiveTab] = useState('student');
 
   useEffect(() => {
     getHomepageConfig().then(setConfig);
