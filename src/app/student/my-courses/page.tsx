@@ -3,18 +3,20 @@
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
-import type { Course, User, Enrollment } from '@/lib/types';
-import { Button } from '@/components/ui/button';
+import { getCoursesByIds, getEnrollmentsByUserId, getOrganizations } from '@/lib/firebase/firestore';
+import type { Course, Enrollment, Organization } from '@/lib/types';
 import { Input } from '@/components/ui/input';
-import { Search, ListFilter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function MyCoursesPage() {
   const { userInfo, loading: authLoading } = useAuth();
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const { toast } = useToast();
+  const [enrolledCourses, setEnrolledCourses] = useState<(Course & { progress: number; status: 'in-progress' | 'completed', lastViewed?: string; completedDate?: string })[]>([]);
+  const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -22,51 +24,60 @@ export default function MyCoursesPage() {
     if (!userInfo) {
       if (!authLoading) setLoading(false);
       return;
-    };
+    }
 
     async function fetchCoursesData() {
-        try {
-            const [coursesData, enrollmentsData] = await Promise.all([
-            getCourses(),
-            getEnrollmentsByUserId(userInfo.uid)
-            ]);
-            setAllCourses(coursesData);
-            setEnrollments(enrollmentsData);
-        } catch(e) {
-            console.error("Failed to fetch courses", e);
-        } finally {
+      try {
+        const [enrollmentsData, orgsData] = await Promise.all([
+          getEnrollmentsByUserId(userInfo.uid),
+          getOrganizations()
+        ]);
+        setOrganizations(orgsData);
+
+        const enrolledCourseIds = enrollmentsData.map(e => e.courseId);
+        const wishlistIds = userInfo.wishlist || [];
+        const allNeededIds = [...new Set([...enrolledCourseIds, ...wishlistIds])];
+
+        if (allNeededIds.length === 0) {
             setLoading(false);
+            return;
         }
+        
+        const coursesData = await getCoursesByIds(allNeededIds);
+
+        const studentEnrolledCourses = coursesData.filter(c => enrolledCourseIds.includes(c.id!));
+        const coursesWithProgress = studentEnrolledCourses.map(course => {
+            const enrollment = enrollmentsData.find(e => e.courseId === course.id);
+            return {
+                ...course,
+                progress: enrollment?.progress || 0,
+                status: enrollment?.status || 'in-progress',
+                lastViewed: 'Today', // Mock lastViewed for display
+                completedDate: enrollment?.status === 'completed' ? enrollment.enrollmentDate.toDate().toISOString().split('T')[0] : undefined,
+            };
+        });
+        setEnrolledCourses(coursesWithProgress as any);
+
+        const studentWishlistedCourses = coursesData.filter(c => wishlistIds.includes(c.id!));
+        setWishlistedCourses(studentWishlistedCourses);
+
+      } catch (e) {
+        console.error("Failed to fetch student courses", e);
+        toast({ title: "Error", description: "Could not load your courses.", variant: 'destructive'});
+      } finally {
+        setLoading(false);
+      }
     }
     fetchCoursesData();
-  }, [userInfo, authLoading]);
-
-  const getCourseById = (courseId: string) => allCourses.find(c => c.id === courseId);
+  }, [userInfo, authLoading, toast]);
   
-  const filterCourses = (courses: (Course & { progress?: number; lastViewed?: string; completedDate?: string })[]) => {
+  const filterCourses = (courses: Course[]) => {
       return courses.filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase()));
   };
 
-  const inProgressCourses = filterCourses(enrollments
-    .filter(e => e.status === 'in-progress')
-    .map(e => {
-        const course = getCourseById(e.courseId);
-        return course ? { ...course, progress: e.progress, lastViewed: 'Today' } : null; // lastViewed is mock
-    })
-    .filter(Boolean) as (Course & { progress: number; lastViewed: string })[]);
-
-  const completedCourses = filterCourses(enrollments
-    .filter(e => e.status === 'completed')
-    .map(e => {
-        const course = getCourseById(e.courseId);
-        return course ? { ...course, completedDate: e.enrollmentDate.toDate().toISOString().split('T')[0] } : null;
-    })
-    .filter(Boolean) as (Course & { completedDate: string })[]);
-
-
-  const wishlistedCourses = userInfo?.wishlist 
-    ? filterCourses(allCourses.filter(c => userInfo.wishlist!.includes(c.id!)))
-    : [];
+  const inProgressCourses = filterCourses(enrolledCourses.filter(c => c.status === 'in-progress'));
+  const completedCourses = filterCourses(enrolledCourses.filter(c => c.status === 'completed'));
+  const filteredWishlistedCourses = filterCourses(wishlistedCourses);
 
   if (loading || authLoading) {
     return (
@@ -97,9 +108,10 @@ export default function MyCoursesPage() {
             <h2 className="font-headline text-2xl font-bold mb-4">চলমান কোর্সসমূহ</h2>
             {inProgressCourses.length > 0 ? (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {inProgressCourses.map((course) => (
-                        <EnrolledCourseCard key={course.id} course={course} status="in-progress" />
-                    ))}
+                    {inProgressCourses.map((course) => {
+                        const provider = organizations.find(p => p.id === course.organizationId);
+                        return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
+                    })}
                 </div>
             ) : (
                 <p className="text-muted-foreground">You have no courses in progress.</p>
@@ -110,9 +122,10 @@ export default function MyCoursesPage() {
             <h2 className="font-headline text-2xl font-bold mb-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
             {completedCourses.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {completedCourses.map((course) => (
-                        <EnrolledCourseCard key={course.id} course={course} status="completed" />
-                    ))}
+                    {completedCourses.map((course) => {
+                        const provider = organizations.find(p => p.id === course.organizationId);
+                        return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
+                    })}
                 </div>
             ) : (
                  <p className="text-muted-foreground">You have not completed any courses yet.</p>
@@ -121,11 +134,12 @@ export default function MyCoursesPage() {
 
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4">উইশলিস্টে থাকা কোর্স</h2>
-            {wishlistedCourses.length > 0 ? (
+            {filteredWishlistedCourses.length > 0 ? (
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {wishlistedCourses.map((course) => (
-                        <EnrolledCourseCard key={course.id} course={course} status="wishlisted" />
-                    ))}
+                    {filteredWishlistedCourses.map((course) => {
+                        const provider = organizations.find(p => p.id === course.organizationId);
+                        return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;
+                    })}
                 </div>
             ) : (
                 <p className="text-muted-foreground">Your wishlist is empty.</p>
