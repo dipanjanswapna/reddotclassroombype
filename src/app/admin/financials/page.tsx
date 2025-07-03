@@ -8,11 +8,17 @@ export const metadata: Metadata = {
 };
 
 export default async function FinancialsPage() {
-  const [enrollments, courses, users] = await Promise.all([
+  const [enrollmentsData, courses, users] = await Promise.all([
     getEnrollments(),
     getCourses(),
     getUsers()
   ]);
+
+  // Serialize Timestamps to strings to pass to client component.
+  const serializableEnrollments = enrollmentsData.map(e => ({
+    ...e,
+    enrollmentDate: e.enrollmentDate.toDate().toISOString(),
+  }));
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -25,7 +31,7 @@ export default async function FinancialsPage() {
             </p>
         </div>
         <FinancialsClient 
-            initialEnrollments={enrollments}
+            initialEnrollments={serializableEnrollments as any}
             initialCourses={courses}
             initialUsers={users}
         />

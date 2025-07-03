@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -20,8 +19,13 @@ type Transaction = {
   date: Date;
 };
 
+// A version of Enrollment where the date is a string, suitable for passing from Server to Client
+type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & {
+    enrollmentDate: string;
+}
+
 interface FinancialsClientProps {
-  initialEnrollments: Enrollment[];
+  initialEnrollments: SerializableEnrollment[];
   initialCourses: Course[];
   initialUsers: User[];
 }
@@ -42,7 +46,7 @@ export function FinancialsClient({ initialEnrollments, initialCourses, initialUs
         studentName: user?.name || 'Unknown Student',
         courseName: course?.title || 'Unknown Course',
         amount: parseFloat(priceString?.replace(/[^0-9.]/g, '') || '0'),
-        date: enrollment.enrollmentDate.toDate(),
+        date: new Date(enrollment.enrollmentDate), // Convert string back to Date object
       };
     }).sort((a, b) => b.date.getTime() - a.date.getTime());
   }, [initialEnrollments, initialCourses, initialUsers]);
