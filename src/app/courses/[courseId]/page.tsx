@@ -77,6 +77,8 @@ export default async function CourseDetailPage({
     : [];
 
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
+  const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
+
 
   return (
     <div className="bg-background">
@@ -292,12 +294,19 @@ export default async function CourseDetailPage({
           <div className="lg:col-span-1">
              <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
                 <CardHeader>
-                    {isPrebookingActive && (
-                        <p className="text-muted-foreground line-through">{course.price}</p>
-                    )}
-                  <CardTitle className="text-3xl font-bold text-primary">
-                    {isPrebookingActive ? course.prebookingPrice : course.price}
-                  </CardTitle>
+                  {isPrebookingActive ? (
+                      <>
+                          <p className="text-muted-foreground line-through">{course.price}</p>
+                          <CardTitle className="text-3xl font-bold text-primary">{course.prebookingPrice}</CardTitle>
+                      </>
+                  ) : hasDiscount ? (
+                      <div className="flex items-baseline gap-3">
+                          <CardTitle className="text-3xl font-bold text-primary">{course.discountPrice}</CardTitle>
+                          <p className="text-xl text-muted-foreground line-through">{course.price}</p>
+                      </div>
+                  ) : (
+                      <CardTitle className="text-3xl font-bold text-primary">{course.price}</CardTitle>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="flex w-full items-center gap-2">

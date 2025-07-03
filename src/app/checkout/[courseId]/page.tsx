@@ -63,8 +63,17 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   }
 
   const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
-  const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
-  const finalPrice = originalPrice - discount;
+  const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
+  
+  const listPrice = parseFloat(course.price.replace(/[^0-9.]/g, ''));
+  
+  const effectivePrice = parseFloat(
+      (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!
+      .replace(/[^0-9.]/g, '')
+  );
+
+  const courseDiscount = listPrice - effectivePrice;
+  const finalPrice = effectivePrice - discount;
 
   const handleApplyPromo = async () => {
     setError('');
@@ -156,10 +165,16 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
             <CardContent className="space-y-2">
               <div className="flex justify-between">
                 <span>Original Price</span>
-                <span>৳{originalPrice.toFixed(2)}</span>
+                <span>৳{listPrice.toFixed(2)}</span>
               </div>
+              {courseDiscount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Course Discount</span>
+                  <span>- ৳{courseDiscount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-green-600">
-                <span>Discount</span>
+                <span>Promo Code Discount</span>
                 <span>- ৳{discount.toFixed(2)}</span>
               </div>
               <hr className="my-2"/>

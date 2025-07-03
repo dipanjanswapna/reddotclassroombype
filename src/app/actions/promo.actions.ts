@@ -30,13 +30,19 @@ export async function applyPromoCodeAction(courseId: string, promoCode: string) 
         }
         
         const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
-        const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
+        const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
+        
+        const basePriceString = isPrebooking 
+            ? course.prebookingPrice 
+            : (hasDiscount ? course.discountPrice : course.price);
+
+        const basePrice = parseFloat((basePriceString || '0').replace(/[^0-9.]/g, ''));
 
         let calculatedDiscount = 0;
         if (matchedCode.type === 'fixed') {
             calculatedDiscount = matchedCode.value;
         } else { // percentage
-            calculatedDiscount = (originalPrice * matchedCode.value) / 100;
+            calculatedDiscount = (basePrice * matchedCode.value) / 100;
         }
 
         return { success: true, discount: calculatedDiscount, message: 'Promo code applied successfully.' };

@@ -15,13 +15,14 @@ type CourseCardProps = Partial<Course> & {
 };
 
 export function CourseCard(props: CourseCardProps) {
-  const { id, title, instructors, imageUrl, category, price, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider } = props;
+  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider } = props;
   
   if (!id || !title || !imageUrl) {
     return null;
   }
   
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate) > new Date();
+  const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   const prebookUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/pre-book/${id}` : `/pre-book/${id}`;
@@ -62,6 +63,11 @@ export function CourseCard(props: CourseCardProps) {
           <div className="flex flex-col items-start w-full">
             <p className="text-sm text-muted-foreground line-through">{price}</p>
             <p className="font-headline text-lg font-bold text-primary">{prebookingPrice}</p>
+          </div>
+        ) : hasDiscount ? (
+          <div className="flex items-baseline gap-2">
+            <p className="font-headline text-lg font-bold text-primary">{discountPrice}</p>
+            <p className="text-sm text-muted-foreground line-through">{price}</p>
           </div>
         ) : isArchived ? (
             <Badge variant="outline">Enrollment Closed</Badge>

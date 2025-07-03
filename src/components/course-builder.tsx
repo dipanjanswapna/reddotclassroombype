@@ -94,6 +94,7 @@ import { useAuth } from '@/context/auth-context';
 import { postAnnouncementAction } from '@/app/actions/announcement.actions';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Switch } from './ui/switch';
 
 
 type LessonData = {
@@ -306,6 +307,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [category, setCategory] = useState('');
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [price, setPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -325,6 +327,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
+
+  // Pre-booking states
+  const [isPrebooking, setIsPrebooking] = useState(false);
+  const [prebookingPrice, setPrebookingPrice] = useState('');
+  const [prebookingEndDate, setPrebookingEndDate] = useState<Date | undefined>();
+  const [prebookingTarget, setPrebookingTarget] = useState<number | undefined>();
 
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
@@ -363,6 +371,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setDescription(courseData.description || '');
                     setCategory(courseData.category || '');
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
+                    setDiscountPrice(courseData.discountPrice?.replace(/[^0-9.]/g, '') || '');
+                    setIsPrebooking(courseData.isPrebooking || false);
+                    setPrebookingPrice(courseData.prebookingPrice?.replace(/[^0-9.]/g, '') || '');
+                    setPrebookingEndDate(courseData.prebookingEndDate ? new Date(courseData.prebookingEndDate) : undefined);
+                    setPrebookingTarget(courseData.prebookingTarget || undefined);
                     let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
                     if (imageUrl.includes('placehold.c/')) {
                       imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
@@ -610,6 +623,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         description: description,
         category: category,
         price: `BDT ${price || 0}`,
+        discountPrice: discountPrice ? `BDT ${discountPrice}` : '',
+        isPrebooking,
+        prebookingPrice: isPrebooking ? `BDT ${prebookingPrice || 0}` : '',
+        prebookingEndDate: isPrebooking && prebookingEndDate ? format(prebookingEndDate, 'yyyy-MM-dd') : '',
+        prebookingTarget: isPrebooking ? prebookingTarget || 0 : 0,
         imageUrl: thumbnailUrl,
         videoUrl: introVideoUrl,
         whatsappNumber: whatsappNumber,
@@ -1168,12 +1186,53 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             )}
 
             {activeTab === 'pricing' && (
-                <CardContent className="pt-6">
-                    <div className="space-y-2 max-w-sm">
-                        <Label htmlFor="price">Price (BDT)</Label>
-                        <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
-                    </div>
-                </CardContent>
+              <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Standard Pricing</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="price">Original Price (BDT)</Label>
+                            <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
+                            <CardDescription>The regular price of the course. Will be shown with a strikethrough if a discount is active.</CardDescription>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
+                            <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} />
+                            <CardDescription>Optional. If set, this will be the new price.</CardDescription>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Pre-booking Campaign</CardTitle>
+                        <CardDescription>Run a pre-booking campaign with special pricing and goals.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center space-x-2">
+                            <Switch id="isPrebooking" checked={isPrebooking} onCheckedChange={setIsPrebooking} />
+                            <Label htmlFor="isPrebooking">Enable Pre-booking</Label>
+                        </div>
+                        {isPrebooking && (
+                            <div className="space-y-4 pt-4 border-t">
+                                <div className="space-y-2">
+                                    <Label htmlFor="prebookingPrice">Pre-booking Price (BDT)</Label>
+                                    <Input id="prebookingPrice" type="number" placeholder="e.g., 2500" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="prebookingEndDate">Pre-booking End Date</Label>
+                                    <DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="prebookingTarget">Pre-booking Target (Students)</Label>
+                                    <Input id="prebookingTarget" type="number" placeholder="e.g., 100" value={prebookingTarget || ''} onChange={e => setPrebookingTarget(Number(e.target.value))} />
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+              </CardContent>
             )}
 
             {activeTab === 'bundles' && (

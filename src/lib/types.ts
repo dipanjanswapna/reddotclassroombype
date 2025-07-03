@@ -180,6 +180,7 @@ export type Course = {
   category: string;
   subCategory?: string;
   price: string;
+  discountPrice?: string;
   status: 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
   rating?: number;
   reviews?: number;
