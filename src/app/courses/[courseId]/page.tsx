@@ -313,7 +313,6 @@ export default async function CourseDetailPage({
                     <CourseEnrollmentButton
                         courseId={course.id!}
                         isPrebookingActive={isPrebookingActive}
-                        prebookUrl={`/pre-book/${course.id!}`}
                         checkoutUrl={`/checkout/${course.id!}`}
                     />
                     <WishlistButton courseId={course.id!} />

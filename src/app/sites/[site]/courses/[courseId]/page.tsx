@@ -79,7 +79,6 @@ export default async function PartnerCourseDetailPage({
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
   const checkoutUrl = `/sites/${params.site}/checkout/${course.id}`;
-  const prebookUrl = `/sites/${params.site}/pre-book/${course.id}`;
 
   return (
     <div className="bg-background">
@@ -293,7 +292,6 @@ export default async function PartnerCourseDetailPage({
                     <CourseEnrollmentButton
                         courseId={course.id!}
                         isPrebookingActive={isPrebookingActive}
-                        prebookUrl={prebookUrl}
                         checkoutUrl={checkoutUrl}
                     />
                     <WishlistButton courseId={course.id!} />
