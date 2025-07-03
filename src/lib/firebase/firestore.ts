@@ -404,6 +404,21 @@ export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null
     }
     return null;
 }
+export const getPromoCodeForUserAndCourse = async (userId: string, courseId: string): Promise<PromoCode | null> => {
+    const q = query(
+        collection(db, "promo_codes"), 
+        where("restrictedToUserId", "==", userId),
+        where("applicableCourseIds", "array-contains", courseId),
+        where("isActive", "==", true)
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    // Assuming one unique promo per user per course
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as PromoCode;
+}
 export const addPromoCode = (promoCode: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), promoCode);
 export const updatePromoCode = (id: string, promoCode: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), promoCode);
 export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));

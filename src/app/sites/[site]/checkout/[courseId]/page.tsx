@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Course } from '@/lib/types';
-import { getCourse } from '@/lib/firebase/firestore';
+import { getCourse, getPromoCodeForUserAndCourse } from '@/lib/firebase/firestore';
 import { applyPromoCodeAction } from '@/app/actions/promo.actions';
 import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,37 +50,44 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     fetchCourse();
   }, [params.courseId]);
 
-  if (loading) {
-    return (
-        <div className="flex items-center justify-center h-screen">
-            <LoadingSpinner className="w-12 h-12"/>
-        </div>
-    );
-  }
+  const handleApplyPromo = async (codeToApply?: string) => {
+    const code = codeToApply || promoCode;
+    if (!code) return;
 
-  if (!course) {
-    return notFound();
-  }
-
-  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
-  const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
-  const finalPrice = originalPrice - discount;
-
-  const handleApplyPromo = async () => {
     setError('');
     setPromoLoading(true);
     
-    const result = await applyPromoCodeAction(params.courseId, promoCode);
+    const result = await applyPromoCodeAction(params.courseId, code, userInfo?.uid);
 
     if (result.success) {
       setDiscount(result.discount!);
-      toast({ title: 'Success!', description: result.message });
+      if (!codeToApply) {
+        toast({ title: 'Success!', description: result.message });
+      }
     } else {
       setError(result.message);
       setDiscount(0);
     }
     setPromoLoading(false);
   };
+
+  useEffect(() => {
+    if (userInfo && course) {
+      const checkForPrebookPromo = async () => {
+        const promo = await getPromoCodeForUserAndCourse(userInfo.uid, course.id!);
+        if (promo) {
+          setPromoCode(promo.code);
+          await handleApplyPromo(promo.code);
+          toast({
+              title: 'Pre-booking Discount Applied!',
+              description: `Your special code ${promo.code} has been automatically applied.`,
+          });
+        }
+      }
+      checkForPrebookPromo();
+    }
+  }, [userInfo, course]);
+
   
   const handlePayment = async () => {
      if (!userInfo) {
@@ -113,6 +120,22 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     setIsProcessing(false);
   };
 
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner className="w-12 h-12"/>
+        </div>
+    );
+  }
+
+  if (!course) {
+    return notFound();
+  }
+
+  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
+  const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
+  const finalPrice = originalPrice - discount;
+
   return (
     <div className="container mx-auto max-w-4xl py-12">
       <h1 className="font-headline text-3xl font-bold mb-8">
@@ -139,7 +162,7 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
                     onChange={(e) => setPromoCode(e.target.value)}
                     disabled={promoLoading}
                   />
-                  <Button onClick={handleApplyPromo} variant="outline" disabled={promoLoading || !promoCode}>
+                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode}>
                     {promoLoading ? <Loader2 className="animate-spin" /> : 'Apply'}
                   </Button>
                 </div>
