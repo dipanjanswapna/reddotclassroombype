@@ -17,7 +17,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
 import { db } from '@/lib/firebase/config';
-import { collection, query, where, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { Notification } from '@/lib/types';
 import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
@@ -42,8 +42,7 @@ export function NotificationBell() {
 
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", userInfo.uid),
-        orderBy("date", "desc")
+        where("userId", "==", userInfo.uid)
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -51,6 +50,8 @@ export function NotificationBell() {
       querySnapshot.forEach((doc) => {
         fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
       });
+      // Sort notifications on the client side to avoid needing a composite index
+      fetchedNotifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
       setNotifications(fetchedNotifications);
     }, (error) => {
       console.error("Error fetching notifications:", error);
