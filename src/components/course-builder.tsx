@@ -1002,14 +1002,32 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
             {activeTab === 'assignments' && (
                 <CardContent className="pt-6 space-y-4">
-                    <CardDescription>Create and manage assignments for this course.</CardDescription>
-                     {assignmentTemplates.map(assignment => (
-                        <div key={assignment.id} className="flex items-end gap-2 p-4 border rounded-md">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
-                                <div className="space-y-1">
-                                    <Label htmlFor={`as-title-${assignment.id}`}>Assignment Title</Label>
-                                    <Input id={`as-title-${assignment.id}`} value={assignment.title} onChange={e => updateAssignmentTemplate(assignment.id, 'title', e.target.value)} />
+                    <CardDescription>Create assignment templates for this course. When a student enrolls, a personal copy of each assignment will be generated for them.</CardDescription>
+                    <div className="space-y-2">
+                        {assignmentTemplates.map(assignment => (
+                        <Collapsible key={assignment.id} className="p-4 border rounded-md bg-muted/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 flex-grow">
+                                    <ClipboardEdit className="h-5 w-5 text-muted-foreground" />
+                                    <Input 
+                                        value={assignment.title}
+                                        onChange={e => updateAssignmentTemplate(assignment.id, 'title', e.target.value)}
+                                        placeholder="Assignment Title"
+                                        className="font-semibold bg-transparent border-0 focus-visible:ring-1"
+                                    />
                                 </div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}>
+                                        <X className="text-destructive h-4 w-4"/>
+                                    </Button>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                </div>
+                            </div>
+                            <CollapsibleContent className="pt-4 mt-4 border-t space-y-4">
                                 <div className="space-y-1">
                                     <Label htmlFor={`as-topic-${assignment.id}`}>Topic</Label>
                                     <Input id={`as-topic-${assignment.id}`} value={assignment.topic} onChange={e => updateAssignmentTemplate(assignment.id, 'topic', e.target.value)} />
@@ -1018,11 +1036,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     <Label htmlFor={`as-deadline-${assignment.id}`}>Deadline</Label>
                                     <DatePicker date={assignment.deadline as Date | undefined} setDate={(date) => updateAssignmentTemplate(assignment.id, 'deadline', date)} />
                                 </div>
-                            </div>
-                             <Button variant="ghost" size="icon" onClick={() => removeAssignmentTemplate(assignment.id)}><X className="text-destructive h-4 w-4"/></Button>
-                        </div>
-                     ))}
-                    <Button variant="outline" className="w-full" onClick={addAssignmentTemplate}><PlusCircle className="mr-2"/>Add New Assignment</Button>
+                            </CollapsibleContent>
+                        </Collapsible>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="w-full" onClick={addAssignmentTemplate}><PlusCircle className="mr-2"/>Add Assignment Template</Button>
                 </CardContent>
             )}
 
