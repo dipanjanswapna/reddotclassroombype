@@ -3,17 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { PlusCircle, Video, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { PlusCircle, Video, Loader2, Calendar, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +33,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 type LiveClassWithCourse = LiveClass & {
   courseTitle: string;
@@ -163,8 +156,8 @@ export default function TeacherLiveClassesPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div className="flex items-center justify-between">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
                     Live Class Management
@@ -250,39 +243,37 @@ export default function TeacherLiveClassesPage() {
                 <CardDescription>A list of live classes you are scheduled to take.</CardDescription>
             </CardHeader>
             <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Course</TableHead>
-                            <TableHead>Topic</TableHead>
-                            <TableHead>Date & Time</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {liveClasses.length > 0 ? liveClasses.map((liveClass) => (
-                            <TableRow key={liveClass.id}>
-                                <TableCell className="font-medium">{liveClass.courseTitle}</TableCell>
-                                <TableCell>{liveClass.topic}</TableCell>
-                                <TableCell>{liveClass.date} at {liveClass.time}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button asChild>
+                 {liveClasses.length > 0 ? (
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                         {liveClasses.map((liveClass) => (
+                            <Card key={liveClass.id} className="flex flex-col">
+                                <CardHeader>
+                                     <Badge className={`${getPlatformBadgeColor(liveClass.platform)} text-white w-fit`}>
+                                        {liveClass.platform}
+                                    </Badge>
+                                    <CardTitle className="pt-2">{liveClass.topic}</CardTitle>
+                                    <CardDescription>{liveClass.courseTitle}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-grow space-y-2 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-2"><Calendar className="h-4 w-4"/><span>{liveClass.date}</span></div>
+                                    <div className="flex items-center gap-2"><Clock className="h-4 w-4"/><span>{liveClass.time}</span></div>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button asChild className="w-full">
                                         <Link href={`/student/my-courses/${liveClass.courseId}/live-classes/${liveClass.id}`} target="_blank" rel="noopener noreferrer">
                                             <Video className="mr-2" />
                                             Start Class
                                         </Link>
                                     </Button>
-                                </TableCell>
-                            </TableRow>
-                        )) : (
-                            <TableRow>
-                                <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
-                                    You have no upcoming live classes.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                 ) : (
+                    <div className="text-center py-16 text-muted-foreground">
+                        You have no upcoming live classes.
+                    </div>
+                 )}
             </CardContent>
         </Card>
     </div>
