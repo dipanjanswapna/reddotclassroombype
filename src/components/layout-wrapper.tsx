@@ -38,6 +38,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     pathname.startsWith('/teacher') ||
     pathname.startsWith('/guardian') ||
     pathname.startsWith('/admin') ||
+    pathname.startsWith('/moderator') ||
     pathname.startsWith('/seller');
 
   if (isDashboardPage) {

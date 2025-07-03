@@ -197,7 +197,8 @@ export default function ModeratorSupportTicketsPage() {
                 <div>
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="mr-2">Cancel</Button>
                   {selectedTicket?.status !== 'Closed' && <Button onClick={handleReply} disabled={isReplying || !reply}>
-                      {isReplying && <Loader2 className="mr-2 animate-spin" />} Send Reply
+                      {isReplying && <Loader2 className="mr-2 animate-spin" />}
+                      Send Reply
                   </Button>}
                 </div>
               </DialogFooter>
