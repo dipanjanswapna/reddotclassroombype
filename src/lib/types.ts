@@ -1,5 +1,6 @@
 
 import { Timestamp } from "firebase/firestore";
+import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 export type LiveClass = {
   id: string;
@@ -271,6 +272,7 @@ export type User = {
   socials?: {
     facebook?: string;
   };
+  studyPlan?: StudyPlanEvent[];
 };
 
 export type Enrollment = {
@@ -280,15 +282,6 @@ export type Enrollment = {
   enrollmentDate: Timestamp;
   progress: number;
   status: 'in-progress' | 'completed';
-};
-
-export type StudyPlanEvent = {
-  id: string;
-  date: Date | Timestamp;
-  title: string;
-  type: 'live-class' | 'assignment' | 'study-session' | 'exam';
-  courseId?: string;
-  courseTitle?: string;
 };
 
 export type CollaborationItem = {

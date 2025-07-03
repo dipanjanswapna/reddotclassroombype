@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Calendar, List, Wand2, Loader2, Info } from 'lucide-react';
+import { Calendar, List, Wand2, Loader2, Info, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
@@ -15,6 +16,7 @@ import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { StudyPlanEventSchema } from '@/ai/schemas/study-plan-schemas';
 import type { z } from 'genkit';
 import { Badge } from '@/components/ui/badge';
+import { saveStudyPlanAction } from '@/app/actions/user.actions';
 
 type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema> & {
     id: string;
@@ -37,56 +39,58 @@ const getEventTypeStyles = (type: StudyPlanEvent['type']) => {
 
 export default function PlannerPage() {
     const { toast } = useToast();
-    const { userInfo } = useAuth();
+    const { userInfo, refreshUserInfo } = useAuth();
     const [loading, setLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     
-    const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-    const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [studyPlan, setStudyPlan] = useState<StudyPlanEvent[]>([]);
-
+    const [canGenerate, setCanGenerate] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     
     useEffect(() => {
-        if (!userInfo) return;
+        if (!userInfo) {
+          if (!loading) setLoading(false);
+          return;
+        }
 
-        const fetchInitialData = async () => {
-            try {
-                const [allCourses, enrollments] = await Promise.all([
-                    getCourses(),
-                    getEnrollmentsByUserId(userInfo.uid),
-                ]);
+        if (userInfo.studyPlan) {
+            setStudyPlan(userInfo.studyPlan.map(e => ({...e, id: Math.random().toString()})).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+        } else {
+            setStudyPlan([]);
+        }
 
-                const studentCourses = allCourses.filter(c => enrollments.some(e => e.courseId === c.id));
-                setEnrolledCourses(studentCourses);
-                
-                const studentAssignments = studentCourses.flatMap(c => c.assignments || []).filter(a => a.studentId === userInfo.uid);
-                setAssignments(studentAssignments);
-
-            } catch (error) {
-                console.error("Failed to load planner data:", error);
-                toast({ title: 'Error', description: 'Could not load your course data.', variant: 'destructive' });
-            } finally {
-                setLoading(false);
-            }
+        const checkEnrollments = async () => {
+            const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+            setCanGenerate(enrollments.length > 0);
+            setLoading(false);
         };
+        
+        checkEnrollments();
 
-        fetchInitialData();
-    }, [userInfo, toast]);
+    }, [userInfo]);
     
     const handleGeneratePlan = async () => {
+        if (!userInfo) return;
         setIsGenerating(true);
         try {
-            const courseInfo = enrolledCourses.map(c => ({
+            const [allCourses, enrollments] = await Promise.all([
+                getCourses(),
+                getEnrollmentsByUserId(userInfo.uid),
+            ]);
+
+            const studentCourses = allCourses.filter(c => enrollments.some(e => e.courseId === c.id));
+            const studentAssignments = studentCourses.flatMap(c => c.assignments || []).filter(a => a.studentId === userInfo.uid);
+            
+            const courseInfo = studentCourses.map(c => ({
                 id: c.id!,
                 title: c.title,
                 topics: c.syllabus?.map(s => s.title) || [],
             }));
 
-            const deadlineInfo = assignments
-                .filter(a => new Date(a.deadline as string) >= new Date())
+            const deadlineInfo = studentAssignments
+                .filter(a => a.deadline && new Date(a.deadline as string) >= new Date())
                 .map(a => {
-                    const course = enrolledCourses.find(c => c.assignments?.some(as => as.id === a.id));
+                    const course = studentCourses.find(c => c.assignments?.some(as => as.id === a.id));
                     return {
                         courseTitle: course?.title || 'Unknown Course',
                         assignmentTitle: a.title,
@@ -98,18 +102,35 @@ export default function PlannerPage() {
                 courses: courseInfo,
                 deadlines: deadlineInfo,
                 startDate: format(new Date(), 'yyyy-MM-dd'),
-                endDate: format(addDays(new Date(), 30), 'yyyy-MM-dd'), // Plan for the next 30 days
+                endDate: format(addDays(new Date(), 30), 'yyyy-MM-dd'),
             };
             
             const result = await generateStudyPlan(input);
-            setStudyPlan(result.events.map(e => ({...e, id: Math.random().toString()})).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
-            toast({ title: 'Study Plan Generated!', description: 'Your personalized 30-day study plan is ready.' });
-
-        } catch (error) {
+            const newPlan = result.events;
+            
+            const saveResult = await saveStudyPlanAction(userInfo.id!, newPlan);
+            if (saveResult.success) {
+                await refreshUserInfo();
+                toast({ title: 'Study Plan Generated!', description: 'Your personalized 30-day plan is ready and saved.' });
+            } else {
+                throw new Error(saveResult.message);
+            }
+        } catch (error: any) {
             console.error(error);
-            toast({ title: 'Error', description: 'Failed to generate study plan.', variant: 'destructive' });
+            toast({ title: 'Error', description: error.message || 'Failed to generate study plan.', variant: 'destructive' });
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleClearPlan = async () => {
+        if (!userInfo?.id) return;
+        const result = await saveStudyPlanAction(userInfo.id, []);
+        if (result.success) {
+            await refreshUserInfo();
+            toast({ title: 'Plan Cleared', description: 'Your study plan has been removed.'});
+        } else {
+            toast({ title: 'Error', description: result.message, variant: 'destructive'});
         }
     };
     
@@ -133,10 +154,18 @@ export default function PlannerPage() {
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
                     <p className="mt-1 text-lg text-muted-foreground">Organize your learning and never miss a deadline.</p>
                 </div>
-                <Button onClick={handleGeneratePlan} disabled={isGenerating || enrolledCourses.length === 0}>
-                    {isGenerating ? <Loader2 className="mr-2 animate-spin" /> : <Wand2 className="mr-2"/>}
-                    Generate 30-Day Plan with AI
-                </Button>
+                <div className="flex gap-2">
+                    {studyPlan.length > 0 && (
+                        <Button variant="outline" onClick={handleClearPlan}>
+                            <Trash2 className="mr-2 h-4 w-4"/>
+                            Clear Plan
+                        </Button>
+                    )}
+                    <Button onClick={handleGeneratePlan} disabled={isGenerating || !canGenerate}>
+                        {isGenerating ? <Loader2 className="mr-2 animate-spin" /> : <Wand2 className="mr-2"/>}
+                        {studyPlan.length > 0 ? 'Regenerate Plan' : 'Generate 30-Day Plan'}
+                    </Button>
+                </div>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

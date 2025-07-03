@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache';
 import { addUser, deleteUser, getUser, getUserByEmailAndRole, updateUser } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { removeUndefinedValues } from '@/lib/utils';
 
 export async function saveUserAction(userData: Partial<User>) {
     try {
@@ -100,5 +102,16 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
       return { success: true, isInWishlist: !isInWishlist };
     } catch (error: any) {
       return { success: false, message: error.message };
+    }
+}
+
+
+export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent[]) {
+    try {
+        await updateUser(userId, { studyPlan: removeUndefinedValues(events) });
+        revalidatePath('/student/planner');
+        return { success: true, message: 'Study plan saved successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
     }
 }
