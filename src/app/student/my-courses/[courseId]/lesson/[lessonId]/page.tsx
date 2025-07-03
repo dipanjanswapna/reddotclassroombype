@@ -87,7 +87,7 @@ export default function LessonPage() {
         ></iframe>
       </div>
 
-      <LessonFeedback courseId={courseId} courseTitle={course.title} />
+      <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lesson.id} />
 
       <div>
         {lesson.lectureSheetUrl && (

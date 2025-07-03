@@ -19,6 +19,11 @@ export type Lesson = {
   videoId?: string;
   lectureSheetUrl?: string;
   quizId?: string;
+  reactions?: {
+    likes?: number;
+    loves?: number;
+    helpfuls?: number;
+  };
 };
 
 export type SyllabusModule = {
@@ -263,6 +268,8 @@ export type User = {
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students
   wishlist?: string[];
+  ratedCourses?: string[];
+  reactedLessons?: string[];
   fathersName?: string;
   mothersName?: string;
   nidNumber?: string;

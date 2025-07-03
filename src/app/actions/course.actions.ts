@@ -2,9 +2,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion } from 'firebase/firestore';
 import { deleteCourse } from '@/lib/firebase/firestore';
-import { Course } from '@/lib/types';
+import { Course, User } from '@/lib/types';
 import { db } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 
@@ -49,4 +49,57 @@ export async function deleteCourseAction(id: string) {
     } catch (error: any) {
         return { success: false, message: error.message };
     }
+}
+
+export async function addLessonReactionAction(
+  userId: string,
+  courseId: string,
+  lessonId: string,
+  reactionType: 'likes' | 'loves' | 'helpfuls'
+) {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const courseRef = doc(db, 'courses', courseId);
+
+    await runTransaction(db, async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      const courseDoc = await transaction.get(courseRef);
+
+      if (!userDoc.exists()) throw new Error("User not found.");
+      if (!courseDoc.exists()) throw new Error("Course not found.");
+
+      const userData = userDoc.data() as User;
+      const courseData = courseDoc.data() as Course;
+
+      if (userData.reactedLessons?.includes(lessonId)) {
+        throw new Error("You have already reacted to this lesson.");
+      }
+
+      const updatedSyllabus = courseData.syllabus?.map(module => ({
+        ...module,
+        lessons: module.lessons.map(lesson => {
+          if (lesson.id === lessonId) {
+            const currentReactions = lesson.reactions || { likes: 0, loves: 0, helpfuls: 0 };
+            return {
+              ...lesson,
+              reactions: {
+                ...currentReactions,
+                [reactionType]: (currentReactions[reactionType] || 0) + 1,
+              },
+            };
+          }
+          return lesson;
+        }),
+      }));
+      
+      transaction.update(courseRef, { syllabus: updatedSyllabus });
+      transaction.update(userRef, { reactedLessons: arrayUnion(lessonId) });
+    });
+
+    revalidatePath(`/student/my-courses/${courseId}/lesson/${lessonId}`);
+    return { success: true, message: 'Thank you for your reaction!' };
+  } catch (error: any) {
+    console.error('Error adding reaction:', error);
+    return { success: false, message: error.message || 'An unexpected error occurred.' };
+  }
 }
