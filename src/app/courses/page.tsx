@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 
 export const metadata: Metadata = {
-  title: 'All Courses | RDC SHOP',
-  description: 'Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development at Red Dot Classroom. Find the perfect course to advance your learning journey.',
+  title: 'RDC SHOP - All Courses',
+  description: 'Browse all courses available on the RDC SHOP. Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development at Red Dot Classroom to advance your learning journey.',
 };
 
 export default async function CoursesPage({
