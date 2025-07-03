@@ -14,7 +14,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -180,6 +180,25 @@ export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enroll
 }
 
 export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(db, 'enrollments'), enrollment);
+
+// Pre-bookings
+export const addPrebooking = (prebooking: Omit<Prebooking, 'id'>) => addDoc(collection(db, 'prebookings'), prebooking);
+
+export const getPrebookingForUser = async (courseId: string, userId: string): Promise<Prebooking | null> => {
+    const q = query(collection(db, 'prebookings'), where('courseId', '==', courseId), where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Prebooking;
+};
+
+export const getPrebookingsByCourseId = async (courseId: string): Promise<Prebooking[]> => {
+    const q = query(collection(db, "prebookings"), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
 
 
 const defaultPlatformSettings: PlatformSettings = {
