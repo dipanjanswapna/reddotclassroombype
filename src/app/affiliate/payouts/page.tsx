@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +14,10 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Banknote, DollarSign, Download, Landmark } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { getCourses, getEnrollments, getUsers } from '@/lib/firebase/firestore';
+import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const mockPayouts = [
     { id: 'p_123', date: '2024-07-15', amount: '৳2,500', method: 'bKash', status: 'Paid' },
@@ -20,6 +25,56 @@ const mockPayouts = [
 ];
 
 export default function AffiliatePayoutsPage() {
+    const { userInfo, loading: authLoading } = useAuth();
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({ available: 0, paidOut: 4250 }); // paidOut is mock
+
+    useEffect(() => {
+        if (!userInfo) {
+            if (!authLoading) setLoading(false);
+            return;
+        }
+
+        const fetchEarnings = async () => {
+            try {
+                const [allUsers, allCourses, allEnrollments] = await Promise.all([
+                    getUsers(),
+                    getCourses(),
+                    getEnrollments()
+                ]);
+
+                const referredUsers = allUsers.filter(u => u.referredBy === userInfo.uid);
+                const referredUserIds = referredUsers.map(u => u.id!);
+                const referredEnrollments = allEnrollments.filter(e => referredUserIds.includes(e.userId));
+
+                let totalEarnings = 0;
+                referredEnrollments.forEach(enrollment => {
+                    const course = allCourses.find(c => c.id === enrollment.courseId);
+                    if (course) {
+                        const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
+                        totalEarnings += price * 0.10; // Assume 10% commission
+                    }
+                });
+                
+                // For this demo, assume available = total - paidOut
+                setStats(prev => ({ ...prev, available: totalEarnings - prev.paidOut }));
+
+            } catch (err) {
+                 console.error(err);
+                toast({ title: 'Error', description: 'Could not load earnings data.', variant: 'destructive'});
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEarnings();
+    }, [userInfo, authLoading, toast]);
+    
+    if (loading || authLoading) {
+        return <div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner /></div>;
+    }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div>
@@ -36,7 +91,7 @@ export default function AffiliatePayoutsPage() {
                     <Landmark className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳850.00</div>
+                    <div className="text-2xl font-bold">৳{stats.available.toFixed(2)}</div>
                     <p className="text-xs text-muted-foreground">Minimum payout: ৳1,000</p>
                 </CardContent>
             </Card>
@@ -46,8 +101,8 @@ export default function AffiliatePayoutsPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">৳4,250.00</div>
-                    <p className="text-xs text-muted-foreground">All-time earnings paid</p>
+                    <div className="text-2xl font-bold">৳{stats.paidOut.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">All-time earnings paid (mock data)</p>
                 </CardContent>
             </Card>
         </div>
@@ -56,7 +111,7 @@ export default function AffiliatePayoutsPage() {
             <CardHeader className="flex items-center justify-between">
                 <div>
                     <CardTitle>Payout History</CardTitle>
-                    <CardDescription>A record of all payouts you have received.</CardDescription>
+                    <CardDescription>A record of all payouts you have received (mock data).</CardDescription>
                 </div>
                 <Button variant="outline"><Download className="mr-2"/> Export History</Button>
             </CardHeader>

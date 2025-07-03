@@ -1,21 +1,81 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { DollarSign, Link2, MousePointerClick, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
-
-const mockRecentReferrals = [
-    { id: 'ref_1', course: 'HSC 25 Physics Crash Course', date: '2024-07-20', status: 'Converted', commission: '৳250' },
-    { id: 'ref_2', course: 'Medical Admission Course 2024', date: '2024-07-19', status: 'Clicked', commission: 'N/A' },
-    { id: 'ref_3', course: 'IELTS Foundation Course', date: '2024-07-18', status: 'Converted', commission: '৳150' },
-    { id: 'ref_4', course: 'Spoken English for Professionals', date: '2024-07-18', status: 'Clicked', commission: 'N/A' },
-];
+import { getUsers, getCourses, getEnrollments } from '@/lib/firebase/firestore';
+import { User, Course, Enrollment } from '@/lib/types';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { useToast } from '@/components/ui/use-toast';
+import { formatDistanceToNow } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 export default function AffiliateDashboardPage() {
-    const { userInfo } = useAuth();
+    const { userInfo, loading: authLoading } = useAuth();
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        earnings: 0,
+        referrals: 0,
+        clicks: 1234, // Mock data, as click tracking is complex
+        conversionRate: "2.03%" // Mock data
+    });
+    const [recentReferrals, setRecentReferrals] = useState<User[]>([]);
+
+    useEffect(() => {
+        if (!userInfo) {
+            if (!authLoading) setLoading(false);
+            return;
+        }
+
+        const fetchDashboardData = async () => {
+            try {
+                const [allUsers, allCourses, allEnrollments] = await Promise.all([
+                    getUsers(),
+                    getCourses(),
+                    getEnrollments()
+                ]);
+
+                const referredUsers = allUsers.filter(u => u.referredBy === userInfo.uid);
+                const referredUserIds = referredUsers.map(u => u.id!);
+
+                const referredEnrollments = allEnrollments.filter(e => referredUserIds.includes(e.userId));
+
+                let totalEarnings = 0;
+                referredEnrollments.forEach(enrollment => {
+                    const course = allCourses.find(c => c.id === enrollment.courseId);
+                    if (course) {
+                        const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
+                        totalEarnings += price * 0.10; // Assume 10% commission
+                    }
+                });
+
+                setStats(prev => ({
+                    ...prev,
+                    earnings: totalEarnings,
+                    referrals: referredUsers.length
+                }));
+                
+                setRecentReferrals(referredUsers.sort((a,b) => safeToDate(b.joined).getTime() - safeToDate(a.joined).getTime()).slice(0, 5));
+
+            } catch (err) {
+                console.error(err);
+                toast({ title: 'Error', description: 'Could not load dashboard data.', variant: 'destructive'});
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, [userInfo, authLoading, toast]);
+    
+    if (loading || authLoading) {
+        return <div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner /></div>;
+    }
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -34,7 +94,7 @@ export default function AffiliateDashboardPage() {
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">৳4,250</div>
+                        <div className="text-2xl font-bold">৳{stats.earnings.toLocaleString()}</div>
                         <p className="text-xs text-muted-foreground">All-time earnings</p>
                     </CardContent>
                 </Card>
@@ -44,7 +104,7 @@ export default function AffiliateDashboardPage() {
                         <Link2 className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+25</div>
+                        <div className="text-2xl font-bold">+{stats.referrals}</div>
                         <p className="text-xs text-muted-foreground">Successful sign-ups</p>
                     </CardContent>
                 </Card>
@@ -54,8 +114,8 @@ export default function AffiliateDashboardPage() {
                         <MousePointerClick className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">1,234</div>
-                        <p className="text-xs text-muted-foreground">Clicks on your referral links</p>
+                        <div className="text-2xl font-bold">{stats.clicks.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">(Mock Data)</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -64,37 +124,31 @@ export default function AffiliateDashboardPage() {
                         <Zap className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">2.03%</div>
-                        <p className="text-xs text-muted-foreground">Clicks to successful sign-ups</p>
+                        <div className="text-2xl font-bold">{stats.conversionRate}</div>
+                        <p className="text-xs text-muted-foreground">(Mock Data)</p>
                     </CardContent>
                 </Card>
             </div>
              <Card>
                 <CardHeader>
                     <CardTitle>Recent Referral Activity</CardTitle>
-                    <CardDescription>A log of the most recent activity on your links.</CardDescription>
+                    <CardDescription>A log of the most recent users who signed up using your links.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Referred Course</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Commission</TableHead>
+                                <TableHead>User</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Joined</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {mockRecentReferrals.map(referral => (
+                            {recentReferrals.map(referral => (
                                 <TableRow key={referral.id}>
-                                    <TableCell className="font-medium">{referral.course}</TableCell>
-                                    <TableCell>{referral.date}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={referral.status === 'Converted' ? 'accent' : 'secondary'}>
-                                            {referral.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right font-medium">{referral.commission}</TableCell>
+                                    <TableCell className="font-medium">{referral.name} ({referral.email})</TableCell>
+                                    <TableCell><Badge variant="outline">{referral.role}</Badge></TableCell>
+                                    <TableCell>{formatDistanceToNow(safeToDate(referral.joined), { addSuffix: true })}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

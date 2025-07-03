@@ -216,6 +216,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 await signOut(auth);
                 throw new Error("Student registrations are temporarily disabled.");
             }
+            
+            const searchParams = new URLSearchParams(window.location.search);
+            const ref = searchParams.get('ref');
+
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
                 name: user.displayName || 'New User',
@@ -226,6 +230,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 joined: serverTimestamp(),
                 classRoll: generateRollNumber(),
                 registrationNumber: generateRegistrationNumber(),
+                ...(ref && { referredBy: ref }),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             existingUserInfo = { ...newUserInfo, id: user.uid } as User;
@@ -266,6 +271,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(`Registrations for the '${role}' role are temporarily disabled.`);
         }
 
+        const searchParams = new URLSearchParams(window.location.search);
+        const ref = searchParams.get('ref');
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
 
@@ -277,6 +285,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             role: role,
             status: status,
             joined: serverTimestamp(),
+            ...(ref && { referredBy: ref }),
         };
 
         if (role === 'Student') {

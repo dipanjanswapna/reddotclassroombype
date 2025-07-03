@@ -267,6 +267,7 @@ export type User = {
   nidNumber?: string;
   mobileNumber?: string;
   address?: string;
+  referredBy?: string;
 };
 
 export type Enrollment = {
