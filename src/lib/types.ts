@@ -268,6 +268,9 @@ export type User = {
   mobileNumber?: string;
   address?: string;
   referredBy?: string;
+  socials?: {
+    facebook?: string;
+  };
 };
 
 export type Enrollment = {
