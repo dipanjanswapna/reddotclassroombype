@@ -1,5 +1,5 @@
 
-'use client'; // This directive is needed for useEffect and useState
+'use client'; 
 
 import { notFound, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import type { Course, Lesson } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LessonFeedback } from '@/components/lesson-feedback';
 
 const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
     ssr: false,
@@ -85,6 +86,8 @@ export default function LessonPage() {
           allowFullScreen
         ></iframe>
       </div>
+
+      <LessonFeedback courseId={courseId} courseTitle={course.title} />
 
       <div>
         {lesson.lectureSheetUrl && (
