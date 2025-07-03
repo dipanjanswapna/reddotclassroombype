@@ -1,73 +1,11 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Star } from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
 import type { Course } from '@/lib/types';
-import { LoadingSpinner } from '@/components/loading-spinner';
+import { ReviewsClient } from './reviews-client';
 
-export default function ReviewsPage() {
-  const params = useParams();
-  const courseId = params.courseId as string;
-  const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const { toast } = useToast();
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [comment, setComment] = useState('');
-
-  useEffect(() => {
-    const fetchCourseData = async () => {
-      if (!courseId) return;
-      try {
-        const data = await getCourse(courseId);
-        setCourse(data);
-      } catch (error) {
-        console.error("Failed to fetch course data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourseData();
-  }, [courseId]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (rating === 0) {
-        toast({
-            title: 'Rating required',
-            description: 'Please select a star rating before submitting.',
-            variant: 'destructive'
-        });
-        return;
-    }
-    // In a real app, this would be a server action to save the review
-    console.log({ rating, comment });
-    toast({
-      title: 'Review Submitted!',
-      description: 'Thank you for your feedback.',
-    });
-    setRating(0);
-    setComment('');
-  };
-  
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
-          <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
-  }
+export default async function ReviewsPage({ params }: { params: { courseId: string } }) {
+  const course = await getCourse(params.courseId);
 
   if (!course) {
     notFound();
@@ -80,76 +18,7 @@ export default function ReviewsPage() {
         <p className="mt-1 text-lg text-muted-foreground">See what other students are saying about {course.title}.</p>
       </div>
 
-      <Card>
-        <CardHeader>
-            <CardTitle>Leave a Review</CardTitle>
-            <CardDescription>Share your experience to help other students.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <form onSubmit={handleSubmit} className="grid gap-4">
-                <div>
-                    <Label className="mb-2 block">Your Rating</Label>
-                    <div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
-                        {[1,2,3,4,5].map(star => (
-                            <Star 
-                                key={star} 
-                                className={cn(
-                                    "w-6 h-6 cursor-pointer transition-colors",
-                                    (hoverRating || rating) >= star ? 'text-yellow-400' : 'text-gray-300'
-                                )}
-                                fill={(hoverRating || rating) >= star ? 'currentColor' : 'none'}
-                                onClick={() => setRating(star)}
-                                onMouseEnter={() => setHoverRating(star)}
-                            />
-                        ))}
-                    </div>
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="review-comment">Your Review</Label>
-                    <Textarea 
-                        id="review-comment" 
-                        placeholder="Tell us about your experience..." 
-                        rows={4}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                    />
-                </div>
-                <Button className="w-fit" type="submit">Submit Review</Button>
-            </form>
-        </CardContent>
-      </Card>
-
-       <Card>
-        <CardHeader>
-            <CardTitle>Student Feedback</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {course.reviewsData && course.reviewsData.length > 0 ? (
-            course.reviewsData.map((review) => (
-              <div key={review.id} className="flex items-start gap-4">
-                <Avatar>
-                  <AvatarImage src={review.user.avatarUrl} alt={review.user.name} data-ai-hint={review.user.dataAiHint} />
-                  <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                        <p className="font-semibold">{review.user.name}</p>
-                        <p className="text-xs text-muted-foreground">{review.date}</p>
-                    </div>
-                     <div className="flex items-center gap-0.5 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 text-yellow-400 ${i < review.rating ? 'fill-current' : ''}`} />
-                        ))}
-                    </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-muted-foreground">No reviews yet. Be the first to leave one!</p>
-          )}
-        </CardContent>
-      </Card>
+      <ReviewsClient course={course} />
     </div>
   );
 }

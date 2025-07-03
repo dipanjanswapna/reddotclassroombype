@@ -1,11 +1,7 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCourse } from '@/lib/firebase/firestore';
-import type { Course } from '@/lib/types';
 import {
   Accordion,
   AccordionContent,
@@ -15,41 +11,9 @@ import {
 import { CheckCircle, PlayCircle, FileText, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
-
-export default function CourseHomePage() {
-  const params = useParams();
-  const courseId = params.courseId as string;
-  
-  const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchCourseData = async () => {
-      if (!courseId) return;
-      try {
-        const data = await getCourse(courseId);
-        if (data) {
-          setCourse(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch course data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourseData();
-  }, [courseId]);
-
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
-          <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
-  }
+export default async function CourseHomePage({ params }: { params: { courseId: string } }) {
+  const course = await getCourse(params.courseId);
 
   if (!course || !course.syllabus) {
     notFound();
@@ -105,7 +69,7 @@ export default function CourseHomePage() {
         <Accordion type="multiple" defaultValue={course.syllabus.map(m => m.id)} className="w-full space-y-2">
           {course.syllabus.map((module) => (
             <AccordionItem value={module.id} key={module.id} className="border rounded-lg bg-card overflow-hidden">
-              <AccordionTrigger className="text-lg font-semibold px-6 py-4 hover:no-underline">
+              <AccordionTrigger className="text-lg font-semibold px-6 py-4 hover:no-underline bg-muted/50">
                 <div className="flex flex-col text-left">
                     <span>{module.title}</span>
                     <span className="text-xs font-normal text-muted-foreground mt-1">
@@ -117,8 +81,8 @@ export default function CourseHomePage() {
                 <ul className="space-y-1 border-t">
                   {module.lessons.map((lesson, index) => {
                     const lessonLink = lesson.type === 'quiz'
-                        ? `/student/my-courses/${course.id}/quizzes/${lesson.quizId}`
-                        : `/student/my-courses/${course.id}/lesson/${lesson.id}`;
+                        ? `/student/my-courses/${course!.id}/quizzes/${lesson.quizId}`
+                        : `/student/my-courses/${course!.id}/lesson/${lesson.id}`;
                     
                     return (
                         <li key={lesson.id}>

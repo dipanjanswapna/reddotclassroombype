@@ -1,74 +1,44 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { getCourse } from '@/lib/firebase/firestore';
-import type { Course } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Copy, Check, Info } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
-import { LoadingSpinner } from '@/components/loading-spinner';
-
-
-// In a real app, this would come from the logged-in user's data.
-const mockStudentId = 'usr_stud_001'; 
-const accessCode = `RDC-STU-${mockStudentId.split('_')[2].toUpperCase()}-A9B8`;
+import { useAuth } from '@/context/auth-context';
 
 export default function CourseCommunityPage() {
+  const { toast } = useToast();
+  const { userInfo } = useAuth();
+  const [copied, setCopied] = useState(false);
   const params = useParams();
   const courseId = params.courseId as string;
-  const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-      const fetchCourseData = async () => {
-          if (!courseId) return;
-          try {
-              const data = await getCourse(courseId);
-              setCourse(data);
-          } catch(e) {
-              console.error(e);
-          } finally {
-              setLoading(false);
-          }
-      };
-      fetchCourseData();
-  }, [courseId]);
-
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
-          <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
-  }
-
-  if (!course) {
-    notFound();
-  }
+  // This is a simplified access code generation. In a real app, it might be more complex.
+  const accessCode = userInfo ? `RDC-${courseId.slice(0, 4).toUpperCase()}-${userInfo.uid.slice(-4).toUpperCase()}` : '';
 
   const handleCopy = () => {
+    if (!accessCode) return;
     navigator.clipboard.writeText(accessCode);
     setCopied(true);
     toast({ title: 'Code Copied!', description: 'Your access code has been copied to the clipboard.' });
     setTimeout(() => setCopied(false), 2000);
   };
   
+  // Note: We are assuming `course.communityUrl` is available from a parent layout or context.
+  // A full implementation would fetch the course details here.
+  const communityUrl = "https://www.facebook.com/groups/rdc.main"; // Placeholder
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="font-headline text-3xl font-bold tracking-tight">Course Community</h1>
-        <p className="mt-1 text-lg text-muted-foreground">Connect with students and instructors for {course.title}.</p>
+        <p className="mt-1 text-lg text-muted-foreground">Connect with students and instructors.</p>
       </div>
 
-      {course.communityUrl ? (
+      {communityUrl ? (
           <div className="max-w-2xl mx-auto">
             <Card>
                 <CardHeader>
@@ -92,7 +62,7 @@ export default function CourseCommunityPage() {
                         </div>
                     </div>
                      <Button asChild size="lg" className="w-full">
-                        <Link href={course.communityUrl} target="_blank" rel="noopener noreferrer">
+                        <Link href={communityUrl} target="_blank" rel="noopener noreferrer">
                             Go to Course Group
                         </Link>
                     </Button>

@@ -1,45 +1,13 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Megaphone } from 'lucide-react';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
-export default function AnnouncementsPage() {
-  const params = useParams();
-  const courseId = params.courseId as string;
-  const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
+export default async function AnnouncementsPage({ params }: { params: { courseId: string } }) {
+  const course = await getCourse(params.courseId);
 
-  useEffect(() => {
-    if (!courseId) return;
-
-    const fetchCourse = async () => {
-      try {
-        const courseData = await getCourse(courseId);
-        setCourse(courseData);
-      } catch (error) {
-        console.error("Failed to fetch course announcements:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourse();
-  }, [courseId]);
-
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
-          <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
-  }
-  
   if (!course) {
     notFound();
   }

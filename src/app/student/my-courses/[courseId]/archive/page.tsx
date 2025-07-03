@@ -1,9 +1,7 @@
 
-'use client';
-
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getCourse, getCourses } from '@/lib/firebase/firestore';
+import { getCourse, getCoursesByIds } from '@/lib/firebase/firestore';
 import {
   Accordion,
   AccordionContent,
@@ -13,9 +11,7 @@ import {
 import { PlayCircle, FileText, HelpCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { useState, useEffect } from 'react';
 import type { Course } from '@/lib/types';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
 const getLessonIcon = (type: string) => {
     switch (type) {
@@ -31,43 +27,17 @@ const getLessonIcon = (type: string) => {
   };
 
 
-export default function ArchivedContentPage() {
-  const params = useParams();
-  const courseId = params.courseId as string;
-  const [mainCourse, setMainCourse] = useState<Course | null>(null);
-  const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function ArchivedContentPage({ params }: { params: { courseId: string } }) {
+  const mainCourse = await getCourse(params.courseId);
 
-  useEffect(() => {
-    const fetchArchivedContent = async () => {
-      if (!courseId) return;
-      try {
-        const courseData = await getCourse(courseId);
-        setMainCourse(courseData);
-
-        if (courseData?.includedArchivedCourseIds && courseData.includedArchivedCourseIds.length > 0) {
-          const allCourses = await getCourses();
-          const filteredArchived = allCourses.filter(c => courseData.includedArchivedCourseIds?.includes(c.id!));
-          setArchivedCourses(filteredArchived);
-        }
-      } catch (error) {
-        console.error("Failed to fetch archived content:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchArchivedContent();
-  }, [courseId]);
-  
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
-          <LoadingSpinner className="w-12 h-12" />
-      </div>
-    );
+  if (!mainCourse) {
+    notFound();
   }
 
-  if (!mainCourse || archivedCourses.length === 0) {
+  const archivedCourseIds = mainCourse.includedArchivedCourseIds || [];
+  const archivedCourses = archivedCourseIds.length > 0 ? await getCoursesByIds(archivedCourseIds) : [];
+  
+  if (archivedCourses.length === 0) {
     return (
         <div className="text-center py-16 bg-muted rounded-lg">
             <p className="text-muted-foreground">No archived bonus content found for this course.</p>
