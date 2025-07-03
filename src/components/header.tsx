@@ -135,7 +135,7 @@ export function Header() {
 
                     <Separator />
                     <div className="p-4 flex flex-col gap-2">
-                    <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 16910</Button>
+                    <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
                     <Separator />
                     {user ? (
                         <div className="w-full mt-2">
@@ -214,7 +214,7 @@ export function Header() {
           ) : (
             <div className="hidden sm:flex items-center space-x-2">
               <LanguageToggle />
-              <Button variant="ghost" className="hidden lg:inline-flex"><Phone className="mr-2"/> {t.hotline[language]}: 16910</Button>
+              <Button variant="ghost" className="hidden lg:inline-flex"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
               <Button asChild variant="outline">
                 <Link href="/login">{t.login[language]}</Link>
               </Button>
