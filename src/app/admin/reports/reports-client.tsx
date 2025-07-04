@@ -18,11 +18,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const UserGrowthChart = dynamic(() => import('@/components/admin/user-growth-chart').then(mod => mod.UserGrowthChart), {
     loading: () => <Skeleton className="h-[350px] w-full" />,
-    ssr: false,
 });
 const EnrollmentTrendsChart = dynamic(() => import('@/components/admin/enrollment-trends-chart').then(mod => mod.EnrollmentTrendsChart), {
     loading: () => <Skeleton className="h-[350px] w-full" />,
-    ssr: false,
 });
 
 interface ReportsClientProps {
