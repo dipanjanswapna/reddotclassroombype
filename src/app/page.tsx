@@ -15,14 +15,15 @@ import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { CollaborationsCarousel } from '@/components/collaborations-carousel';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
-import { LiveCoursesCarousel } from '@/components/live-courses-carousel';
-import { TeachersCarousel } from '@/components/teachers-carousel';
-import { MasterclassCarousel } from '@/components/masterclass-carousel';
+import { DynamicLiveCoursesCarousel } from '@/components/dynamic-live-courses-carousel';
+import { DynamicTeachersCarousel } from '@/components/dynamic-teachers-carousel';
+import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
+import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-carousel';
+
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
   const Icon = icon;
@@ -88,7 +89,7 @@ export default async function Home() {
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
             <div>
               <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
-              <LiveCoursesCarousel courses={liveCourses} />
+              <DynamicLiveCoursesCarousel courses={liveCourses} />
             </div>
           </div>
         </section>
@@ -106,7 +107,7 @@ export default async function Home() {
                     <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
                 </Button>
             </div>
-            <TeachersCarousel instructors={featuredInstructors} />
+            <DynamicTeachersCarousel instructors={featuredInstructors} />
           </div>
         </section>
       )}
@@ -149,7 +150,7 @@ export default async function Home() {
         <section aria-labelledby="masterclass-heading">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
-                <MasterclassCarousel courses={masterClasses} />
+                <DynamicMasterclassCarousel courses={masterClasses} />
                 <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                   <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
                 </Button>
@@ -214,7 +215,7 @@ export default async function Home() {
             <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
               {homepageConfig.collaborations.title[language]}
             </h2>
-            <CollaborationsCarousel organizations={approvedCollaborators} />
+            <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
           </div>
         </section>
       )}

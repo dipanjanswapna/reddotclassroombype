@@ -10,8 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { getCourses, getUsers, getEnrollments } from '@/lib/firebase/firestore';
 import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
-import { OverviewChart } from '@/components/admin/overview-chart';
-import { UserRolesChart } from '@/components/admin/user-roles-chart';
 import {
   Table,
   TableBody,
@@ -23,6 +21,17 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const OverviewChart = dynamic(() => import('@/components/admin/overview-chart').then(mod => mod.OverviewChart), {
+  loading: () => <Skeleton className="h-[350px] w-full" />,
+  ssr: false,
+});
+const UserRolesChart = dynamic(() => import('@/components/admin/user-roles-chart').then(mod => mod.UserRolesChart), {
+    loading: () => <Skeleton className="h-[350px] w-full" />,
+    ssr: false,
+});
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',

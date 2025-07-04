@@ -3,8 +3,6 @@ import { getCourses, getUsers, getEnrollments } from '@/lib/firebase/firestore';
 import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { UserGrowthChart } from '@/components/admin/user-growth-chart';
-import { EnrollmentTrendsChart } from '@/components/admin/enrollment-trends-chart';
 import {
   Table,
   TableBody,
@@ -15,6 +13,18 @@ import {
 } from '@/components/ui/table';
 import { AreaChart, BarChart, BookOpen, Users } from 'lucide-react';
 import { safeToDate } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const UserGrowthChart = dynamic(() => import('@/components/admin/user-growth-chart').then(mod => mod.UserGrowthChart), {
+    loading: () => <Skeleton className="h-[350px] w-full" />,
+    ssr: false,
+});
+const EnrollmentTrendsChart = dynamic(() => import('@/components/admin/enrollment-trends-chart').then(mod => mod.EnrollmentTrendsChart), {
+    loading: () => <Skeleton className="h-[350px] w-full" />,
+    ssr: false,
+});
+
 
 export const metadata: Metadata = {
     title: 'Platform Reports',
