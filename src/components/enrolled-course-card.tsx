@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Course, Organization } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star, Trash2 } from "lucide-react";
+import { Clock, Star, Trash2, BookmarkCheck } from "lucide-react";
 import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
-  status: 'in-progress' | 'completed' | 'wishlisted' | 'archived';
+  status: 'in-progress' | 'completed' | 'wishlisted' | 'archived' | 'prebooked';
   provider?: Organization | null;
 };
 
@@ -23,7 +23,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   const { toast } = useToast();
   const { userInfo, refreshUserInfo } = useAuth();
   
-  const courseLink = (status === 'in-progress' || status === 'archived') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
+  const courseLink = (status === 'in-progress' || status === 'archived' || status === 'prebooked') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
   
   const handleRemoveFromWishlist = async (e: React.MouseEvent) => {
@@ -66,6 +66,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
                 Last viewed: {course.lastViewed}
              </Badge>
         )}
+        {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 flex items-center gap-1">Pre-booked</Badge>}
       </CardHeader>
 
       <CardContent className="p-4 flex-grow">
@@ -130,6 +131,12 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         {status === 'archived' && (
            <Button asChild className="w-full" variant="outline">
                 <Link href={courseLink}>View Archived Content</Link>
+           </Button>
+        )}
+        {status === 'prebooked' && (
+           <Button disabled className="w-full font-bold">
+                <BookmarkCheck className="mr-2 h-4 w-4" />
+                Pre-booked
            </Button>
         )}
       </CardFooter>

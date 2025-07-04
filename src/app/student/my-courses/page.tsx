@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCoursesByIds, getEnrollmentsByUserId, getOrganizations } from '@/lib/firebase/firestore';
-import type { Course, Enrollment, Organization } from '@/lib/types';
+import { getCoursesByIds, getEnrollmentsByUserId, getOrganizations, getPrebookingsByUserId } from '@/lib/firebase/firestore';
+import type { Course, Enrollment, Organization, Prebooking } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -16,6 +16,7 @@ export default function MyCoursesPage() {
   const { toast } = useToast();
   const [enrolledCourses, setEnrolledCourses] = useState<(Course & { progress: number; status: 'in-progress' | 'completed', lastViewed?: string; completedDate?: string })[]>([]);
   const [wishlistedCourses, setWishlistedCourses] = useState<Course[]>([]);
+  const [prebookedCourses, setPrebookedCourses] = useState<Course[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,15 +29,18 @@ export default function MyCoursesPage() {
 
     async function fetchCoursesData() {
       try {
-        const [enrollmentsData, orgsData] = await Promise.all([
+        const [enrollmentsData, orgsData, prebookingsData] = await Promise.all([
           getEnrollmentsByUserId(userInfo.uid),
-          getOrganizations()
+          getOrganizations(),
+          getPrebookingsByUserId(userInfo.uid)
         ]);
         setOrganizations(orgsData);
 
         const enrolledCourseIds = enrollmentsData.map(e => e.courseId);
         const wishlistIds = userInfo.wishlist || [];
-        const allNeededIds = [...new Set([...enrolledCourseIds, ...wishlistIds])];
+        const prebookedCourseIds = prebookingsData.map(p => p.courseId);
+        
+        const allNeededIds = [...new Set([...enrolledCourseIds, ...wishlistIds, ...prebookedCourseIds])];
 
         if (allNeededIds.length === 0) {
             setLoading(false);
@@ -61,6 +65,9 @@ export default function MyCoursesPage() {
         const studentWishlistedCourses = coursesData.filter(c => wishlistIds.includes(c.id!));
         setWishlistedCourses(studentWishlistedCourses);
 
+        const studentPrebookedCourses = coursesData.filter(c => prebookedCourseIds.includes(c.id!));
+        setPrebookedCourses(studentPrebookedCourses);
+
       } catch (e) {
         console.error("Failed to fetch student courses", e);
         toast({ title: "Error", description: "Could not load your courses.", variant: 'destructive'});
@@ -78,6 +85,7 @@ export default function MyCoursesPage() {
   const inProgressCourses = filterCourses(enrolledCourses.filter(c => c.status === 'in-progress'));
   const completedCourses = filterCourses(enrolledCourses.filter(c => c.status === 'completed'));
   const filteredWishlistedCourses = filterCourses(wishlistedCourses);
+  const filteredPrebookedCourses = filterCourses(prebookedCourses);
 
   if (loading || authLoading) {
     return (
@@ -117,6 +125,18 @@ export default function MyCoursesPage() {
                 <p className="text-muted-foreground">You have no courses in progress.</p>
             )}
         </section>
+
+        {filteredPrebookedCourses.length > 0 && (
+            <section>
+                <h2 className="font-headline text-2xl font-bold mb-4">প্রি-বুক করা কোর্স</h2>
+                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredPrebookedCourses.map((course) => {
+                        const provider = organizations.find(p => p.id === course.organizationId);
+                        return <EnrolledCourseCard key={course.id} course={course} status="prebooked" provider={provider} />;
+                    })}
+                </div>
+            </section>
+        )}
 
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>

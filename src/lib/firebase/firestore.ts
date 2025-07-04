@@ -200,6 +200,12 @@ export const getPrebookingsByCourseId = async (courseId: string): Promise<Preboo
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
 }
 
+export const getPrebookingsByUserId = async (userId: string): Promise<Prebooking[]> => {
+    const q = query(collection(db, "prebookings"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
+
 
 const defaultPlatformSettings: PlatformSettings = {
     Student: { signupEnabled: true, loginEnabled: true },
