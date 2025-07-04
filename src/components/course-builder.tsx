@@ -89,6 +89,7 @@ import {
     CommandItem,
 } from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
+import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { postAnnouncementAction } from '@/app/actions/announcement.actions';
@@ -150,12 +151,16 @@ function SortableSyllabusItem({
     item,
     quizzes,
     updateItem,
-    removeItem 
+    removeItem,
+    onGenerateQuiz,
+    generatingQuizForLesson,
 }: { 
     item: SyllabusItem,
     quizzes: QuizData[],
-    updateItem: (id: string, field: string, value: string) => void,
+    updateItem: (id: string, field: string, value: any) => void,
     removeItem: (id: string) => void,
+    onGenerateQuiz: (lessonId: string, lessonTitle: string) => void,
+    generatingQuizForLesson: string | null,
 }) {
     const {
         attributes,
@@ -273,10 +278,29 @@ function SortableSyllabusItem({
                     )}
                      
                     {(item.type === 'video' || item.type === 'document') && (
+                        <>
                         <div className="space-y-2">
                             <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet / Document URL</Label>
                             <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                         </div>
+                        {!item.quizId && (
+                            <div className="pt-2">
+                                <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="text-xs h-auto py-1 px-2"
+                                    onClick={() => onGenerateQuiz(item.id, item.title)}
+                                    disabled={generatingQuizForLesson === item.id}
+                                >
+                                    {generatingQuizForLesson === item.id 
+                                        ? <Loader2 className="mr-2 h-3 w-3 animate-spin"/> 
+                                        : <Wand2 className="mr-2 h-3 w-3"/>
+                                    }
+                                    Generate Quiz with AI
+                                </Button>
+                            </div>
+                        )}
+                        </>
                     )}
                 </div>
             </CollapsibleContent>
@@ -338,6 +362,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [aiTopic, setAiTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
+  const [generatingQuizForLesson, setGeneratingQuizForLesson] = useState<string | null>(null);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -468,7 +493,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setSyllabus(prev => [...prev, newItem]);
   };
   
-  const updateSyllabusItem = (id: string, field: string, value: string) => {
+  const updateSyllabusItem = (id: string, field: string, value: any) => {
     setSyllabus(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
 
@@ -727,6 +752,45 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       setIsGenerating(false);
     }
   };
+  
+  const handleGenerateQuiz = async (lessonId: string, lessonTitle: string) => {
+        setGeneratingQuizForLesson(lessonId);
+        try {
+            const result = await generateQuizForLesson({
+                lessonTitle: lessonTitle,
+                courseContext: `Course Title: ${courseTitle}\nDescription: ${description}`
+            });
+            
+            const newQuizId = `quiz_${Date.now()}`;
+            const newQuiz: QuizData = {
+                id: newQuizId,
+                title: result.title,
+                topic: lessonTitle,
+                questions: result.questions.map(q => ({
+                    ...q,
+                    id: `${newQuizId}-${q.id}` // ensure question ids are unique
+                }))
+            };
+
+            // Add the new quiz to the quizzes state
+            setQuizzes(prev => [...prev, newQuiz]);
+
+            // Update the lesson in the syllabus to link to this new quiz
+            updateSyllabusItem(lessonId, 'quizId', newQuizId);
+            updateSyllabusItem(lessonId, 'type', 'quiz');
+
+            toast({
+                title: 'Quiz Generated!',
+                description: `An AI-powered quiz for "${lessonTitle}" has been created and linked.`
+            });
+
+        } catch (err) {
+            console.error(err);
+            toast({ title: "Error", description: "Failed to generate quiz with AI.", variant: "destructive"});
+        } finally {
+            setGeneratingQuizForLesson(null);
+        }
+    };
 
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
@@ -884,6 +948,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     quizzes={quizzes}
                                     updateItem={updateSyllabusItem}
                                     removeItem={removeSyllabusItem}
+                                    onGenerateQuiz={handleGenerateQuiz}
+                                    generatingQuizForLesson={generatingQuizForLesson}
                                 />
                             ))}
                         </div>
