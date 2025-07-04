@@ -10,14 +10,16 @@ import { BookCheck, Loader2, BookmarkPlus } from 'lucide-react';
 import { prebookCourseAction } from '@/app/actions/enrollment.actions';
 import { useToast } from './ui/use-toast';
 import { useRouter } from 'next/navigation';
+import type { ButtonProps } from './ui/button';
 
 interface CourseEnrollmentButtonProps {
     courseId: string;
     isPrebookingActive: boolean;
     checkoutUrl: string;
+    size?: ButtonProps['size'];
 }
 
-export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutUrl }: CourseEnrollmentButtonProps) {
+export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutUrl, size = "lg" }: CourseEnrollmentButtonProps) {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const router = useRouter();
@@ -53,10 +55,11 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         checkStatus();
     }, [userInfo, authLoading, courseId]);
 
-    const handlePrebook = async () => {
+    const handlePrebook = async (e: React.MouseEvent) => {
+        e.preventDefault();
         setLoading(true);
         if (!userInfo) {
-            router.push('/login');
+            router.push(`/login?redirect=/courses/${courseId}`);
             return;
         }
         const result = await prebookCourseAction(courseId, userInfo.uid);
@@ -78,16 +81,33 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
 
     if (authLoading || loading) {
         return (
-            <Button size="lg" className="w-full font-bold" disabled>
+            <Button size={size} className="w-full font-bold" disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Loading...
             </Button>
         );
     }
     
+    // Logic for guests or non-student users
+    if (!userInfo || userInfo.role !== 'Student') {
+        if (isPrebookingActive) {
+             return (
+                <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
+                    Pre-book Now
+                </Button>
+            );
+        }
+        return (
+             <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+                <Link href={checkoutUrl}>Enroll Now</Link>
+            </Button>
+        );
+    }
+
+    // Logged-in student logic
     if (isEnrolled) {
         return (
-            <Button size="lg" asChild className="w-full font-bold bg-secondary text-secondary-foreground hover:bg-secondary/80">
+            <Button size={size} asChild className="w-full font-bold bg-secondary text-secondary-foreground hover:bg-secondary/80">
                 <Link href={`/student/my-courses/${courseId}`}>
                     <BookCheck className="mr-2" />
                     Go to Course
@@ -99,21 +119,21 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
     if (isPrebookingActive) {
         if (isPrebooked) {
              return (
-                <Button size="lg" className="w-full font-bold" disabled>
+                <Button size={size} className="w-full font-bold" disabled>
                     <BookmarkPlus className="mr-2" />
                     Successfully Pre-booked
                 </Button>
             );
         }
         return (
-            <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
+            <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
                 Pre-book Now
             </Button>
         );
     }
 
     return (
-        <Button size="lg" className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
+        <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
             <Link href={checkoutUrl}>
                 Enroll Now
             </Link>

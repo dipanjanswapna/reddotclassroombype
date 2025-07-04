@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
-import { Button } from "./ui/button";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
+import { CourseEnrollmentButton } from "./course-enrollment-button";
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -25,7 +25,6 @@ export function CourseCard(props: CourseCardProps) {
   const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
-  const prebookUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/pre-book/${id}` : `/pre-book/${id}`;
   const checkoutUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/checkout/${id}` : `/checkout/${id}`;
 
   return (
@@ -70,17 +69,22 @@ export function CourseCard(props: CourseCardProps) {
             <p className="text-sm text-muted-foreground line-through">{price}</p>
           </div>
         ) : isArchived ? (
-            <Badge variant="outline">Enrollment Closed</Badge>
+            null
         ) : (
             price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
         )}
       </CardFooter>
       <div className="p-4 pt-0">
-         {isPrebookingActive ? (
-             <Button asChild className="w-full"><Link href={prebookUrl}>Pre-book Now</Link></Button>
-         ) : !isArchived ? (
-             <Button asChild className="w-full"><Link href={checkoutUrl}>Enroll Now</Link></Button>
-         ) : null}
+         {isArchived ? (
+            <Badge variant="outline">Enrollment Closed</Badge>
+         ) : (
+            <CourseEnrollmentButton
+                courseId={id}
+                isPrebookingActive={isPrebookingActive}
+                checkoutUrl={checkoutUrl}
+                size="default"
+            />
+         )}
       </div>
     </Card>
   );
