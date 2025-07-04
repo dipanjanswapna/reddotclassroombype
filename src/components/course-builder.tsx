@@ -27,6 +27,7 @@ import {
   Phone,
   ChevronsUpDown,
   Check,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,7 +64,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -93,6 +94,7 @@ import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { postAnnouncementAction } from '@/app/actions/announcement.actions';
+import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from './ui/switch';
@@ -347,6 +349,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
@@ -363,6 +366,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
   const [generatingQuizForLesson, setGeneratingQuizForLesson] = useState<string | null>(null);
+
+  const [isLiveClassDialogOpen, setIsLiveClassDialogOpen] = useState(false);
+  const [newLiveClassTopic, setNewLiveClassTopic] = useState('');
+  const [newLiveClassDate, setNewLiveClassDate] = useState<Date | undefined>(new Date());
+  const [newLiveClassTime, setNewLiveClassTime] = useState('');
+  const [newLiveClassPlatform, setNewLiveClassPlatform] = useState<LiveClass['platform']>('Zoom');
+  const [newLiveClassJoinUrl, setNewLiveClassJoinUrl] = useState('');
+  const [isScheduling, setIsScheduling] = useState(false);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -420,6 +431,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
+                    setLiveClasses(courseData.liveClasses || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
@@ -524,7 +536,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
   const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
-
+  
+  const removeLiveClass = (id: string) => {
+    setLiveClasses(prev => prev.filter(lc => lc.id !== id));
+  };
+  
   const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
   const removeQuiz = (id: string) => {
     setQuizzes(prev => prev.filter(q => q.id !== id));
@@ -604,6 +620,44 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setAnnouncements(prev => prev.filter(a => a.id !== id));
   };
 
+  const handleScheduleLiveClass = async () => {
+    if (isNewCourse) {
+      toast({ title: 'Save Course First', description: 'You must save the course as a draft before scheduling live classes.', variant: 'destructive' });
+      return;
+    }
+    if (!newLiveClassTopic || !newLiveClassDate || !newLiveClassTime || !newLiveClassPlatform || !newLiveClassJoinUrl) {
+        toast({ title: 'Error', description: 'Please fill out all fields for the live class.', variant: 'destructive' });
+        return;
+    }
+    
+    setIsScheduling(true);
+
+    const liveClassData: Omit<LiveClass, 'id'> = {
+        topic: newLiveClassTopic,
+        date: format(newLiveClassDate, 'yyyy-MM-dd'),
+        time: newLiveClassTime,
+        platform: newLiveClassPlatform,
+        joinUrl: newLiveClassJoinUrl,
+    };
+
+    const result = await scheduleLiveClassAction(courseId, liveClassData);
+    
+    if (result.success && result.newAnnouncement) {
+        setLiveClasses(prev => [...prev, result.newAnnouncement!]);
+        toast({ title: 'Success!', description: `Scheduled "${newLiveClassTopic}" successfully.` });
+        setIsLiveClassDialogOpen(false);
+        // Reset form
+        setNewLiveClassTopic('');
+        setNewLiveClassDate(new Date());
+        setNewLiveClassTime('');
+        setNewLiveClassPlatform('Zoom');
+        setNewLiveClassJoinUrl('');
+    } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+    }
+    setIsScheduling(false);
+  };
+
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
       toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
@@ -669,6 +723,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
         includedArchivedCourseIds: includedCourseIds,
         announcements: announcements,
+        liveClasses: liveClasses,
         quizzes: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { deadline, ...rest } = a;
@@ -797,6 +852,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
     { id: 'quizzes', label: 'Quizzes', icon: HelpCircle },
     { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
+    { id: 'live-classes', label: 'Live Classes', icon: Video },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'routine', label: 'Routine', icon: Calendar },
@@ -1012,6 +1068,25 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </PopoverContent>
                     </Popover>
                 </CardContent>
+            )}
+
+            {activeTab === 'live-classes' && (
+              <CardContent className="pt-6 space-y-4">
+                <CardDescription>Schedule and manage live classes for this course. Scheduled classes are added immediately.</CardDescription>
+                <div className="space-y-2">
+                    {liveClasses.map(lc => (
+                        <div key={lc.id} className="flex items-center gap-2 p-2 border rounded-md bg-muted/50">
+                            <Video className="h-5 w-5 text-muted-foreground"/>
+                            <div className="flex-grow">
+                                <p className="font-semibold">{lc.topic}</p>
+                                <p className="text-xs text-muted-foreground">{lc.date} at {lc.time} via {lc.platform}</p>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => removeLiveClass(lc.id)}><X className="text-destructive h-4 w-4"/></Button>
+                        </div>
+                    ))}
+                </div>
+                <Button variant="outline" className="w-full" onClick={() => setIsLiveClassDialogOpen(true)}><PlusCircle className="mr-2"/>Schedule New Live Class</Button>
+              </CardContent>
             )}
 
             {activeTab === 'quizzes' && (
@@ -1369,6 +1444,54 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
                         {isGenerating ? <Loader2 className="mr-2 animate-spin"/> : <Wand2 className="mr-2"/>}
                         Generate
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <Dialog open={isLiveClassDialogOpen} onOpenChange={setIsLiveClassDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Schedule a New Live Class</DialogTitle>
+                    <DialogDescription>The class will be scheduled and students notified immediately.</DialogDescription>
+                </DialogHeader>
+                 <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="topic" className="text-right">Topic</Label>
+                        <Input id="topic" value={newLiveClassTopic} onChange={e => setNewLiveClassTopic(e.target.value)} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="date" className="text-right">Date</Label>
+                        <DatePicker date={newLiveClassDate} setDate={setNewLiveClassDate} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="time" className="text-right">Time</Label>
+                        <Input id="time" type="time" value={newLiveClassTime} onChange={e => setNewLiveClassTime(e.target.value)} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="platform" className="text-right">Platform</Label>
+                            <Select onValueChange={(value: LiveClass['platform']) => setNewLiveClassPlatform(value)} value={newLiveClassPlatform}>
+                            <SelectTrigger id="platform" className="col-span-3">
+                                <SelectValue placeholder="Select a platform" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Zoom">Zoom</SelectItem>
+                                <SelectItem value="Google Meet">Google Meet</SelectItem>
+                                <SelectItem value="YouTube Live">YouTube Live</SelectItem>
+                                <SelectItem value="Facebook Live">Facebook Live</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="url" className="text-right">Join URL</Label>
+                        <Input id="url" value={newLiveClassJoinUrl} onChange={e => setNewLiveClassJoinUrl(e.target.value)} className="col-span-3" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                    <Button onClick={handleScheduleLiveClass} disabled={isScheduling}>
+                        {isScheduling && <Loader2 className="mr-2 animate-spin"/>}
+                        Schedule Class
                     </Button>
                 </DialogFooter>
             </DialogContent>
