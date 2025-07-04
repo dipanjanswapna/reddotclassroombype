@@ -12,9 +12,6 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
   const { language } = useLanguage();
 
   const Logo = ({ className }: { className?: string }) => {
-    if (homepageConfig?.logoUrl && homepageConfig.logoUrl !== "") {
-      return <img src={homepageConfig.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
-    }
     return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
   };
 

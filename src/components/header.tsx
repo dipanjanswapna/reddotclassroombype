@@ -62,10 +62,6 @@ export function Header() {
   ];
 
   const Logo = ({ className }: { className?: string }) => {
-    if (config?.logoUrl && config.logoUrl !== "") {
-      // Using <img> to allow any image URL without next.config.js modification
-      return <img src={config.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
-    }
     return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
   };
 
