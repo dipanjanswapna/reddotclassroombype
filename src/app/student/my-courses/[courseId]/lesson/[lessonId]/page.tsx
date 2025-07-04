@@ -108,7 +108,7 @@ export default function LessonPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare />
-            Discussion & Reactions
+            Discussion
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -148,6 +148,8 @@ export async function addLessonReactionAction(
       if (userData.reactedLessons?.includes(lessonId)) {
         throw new Error("You have already reacted to this lesson.");
       }
+      
+      const courseData = courseDoc.data() as Course;
 
       const updatedSyllabus = courseData.syllabus?.map(module => ({
         ...module,
