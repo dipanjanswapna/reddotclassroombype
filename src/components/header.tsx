@@ -86,7 +86,6 @@ export function Header() {
                         onClick={() => setMenuOpen(false)}
                     >
                         <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
-                        <span className="font-bold text-lg">RED DOT CLASSROOM</span>
                     </Link>
                     </div>
                     
@@ -158,7 +157,6 @@ export function Header() {
             <div className="hidden lg:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
-                    <span className="font-bold text-lg hidden lg:inline-block">RED DOT CLASSROOM</span>
                 </Link>
                 <nav className="flex items-center space-x-1 text-sm font-medium">
                     {mainNavLinks.map((link) => (
