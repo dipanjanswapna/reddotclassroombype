@@ -63,13 +63,14 @@ export default async function PartnerCourseDetailPage({
 }: {
   params: { site: string; courseId: string };
 }) {
-  const course = await getCourse(params.courseId);
+  const { site, courseId } = params;
+  const course = await getCourse(courseId);
   
   if (!course) {
     notFound();
   }
 
-  const enrollments = await getEnrollmentsByCourseId(params.courseId);
+  const enrollments = await getEnrollmentsByCourseId(courseId);
   const studentCount = enrollments.length;
   
   const allCourses = await getCourses();
@@ -82,7 +83,7 @@ export default async function PartnerCourseDetailPage({
 
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
 
-  const checkoutUrl = `/sites/${params.site}/checkout/${course.id}`;
+  const checkoutUrl = `/sites/${site}/checkout/${course.id}`;
 
   return (
     <div className="bg-background">

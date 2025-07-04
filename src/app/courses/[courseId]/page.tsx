@@ -61,14 +61,15 @@ export default async function CourseDetailPage({
 }: {
   params: { courseId: string };
 }) {
-  const course = await getCourse(params.courseId);
+  const { courseId } = params;
+  const course = await getCourse(courseId);
 
   if (!course) {
     notFound();
   }
   
   const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
-  const enrollments = await getEnrollmentsByCourseId(params.courseId);
+  const enrollments = await getEnrollmentsByCourseId(courseId);
   const studentCount = enrollments.length;
 
   const allCourses = await getCourses();
