@@ -354,6 +354,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
+  const [showStudentCount, setShowStudentCount] = useState(false);
 
   // Pre-booking states
   const [isPrebooking, setIsPrebooking] = useState(false);
@@ -435,6 +436,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
+                    setShowStudentCount(courseData.showStudentCount || false);
                 } else {
                     notFound();
                 }
@@ -737,6 +739,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         }).filter(a => a.title),
         status,
         organizationId: organizationId,
+        showStudentCount: showStudentCount,
     };
 
     if (!isNewCourse) {
@@ -980,6 +983,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </PopoverContent>
                      </Popover>
                   </div>
+                  <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <Label htmlFor="showStudentCount" className="font-semibold">Show Student Count</Label>
+                            <p className="text-sm text-muted-foreground">
+                                Display the total number of enrolled students on the public course page.
+                            </p>
+                        </div>
+                        <Switch
+                            id="showStudentCount"
+                            checked={showStudentCount}
+                            onCheckedChange={setShowStudentCount}
+                        />
+                    </div>
                 </div>
               </CardContent>
             )}

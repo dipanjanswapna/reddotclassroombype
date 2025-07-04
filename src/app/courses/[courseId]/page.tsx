@@ -9,6 +9,7 @@ import {
   Star,
   BookOpen,
   Phone,
+  Users,
 } from 'lucide-react';
 import {
   Accordion,
@@ -33,7 +34,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Course } from '@/lib/types';
-import { getCourse, getCourses, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 
@@ -67,6 +68,8 @@ export default async function CourseDetailPage({
   }
   
   const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
+  const enrollments = await getEnrollmentsByCourseId(params.courseId);
+  const studentCount = enrollments.length;
 
   const allCourses = await getCourses();
   const allOrgs = await getOrganizations();
@@ -103,6 +106,27 @@ export default async function CourseDetailPage({
               <p className="text-lg text-muted-foreground mb-4 max-w-4xl">
                 {course.description}
               </p>
+               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                            <AvatarImage src={course.instructors[0].avatarUrl} alt={course.instructors[0].name} />
+                            <AvatarFallback>{course.instructors[0].name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span>By {course.instructors[0].name}</span>
+                    </div>
+                    {course.showStudentCount && (
+                        <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{studentCount.toLocaleString()} Students</span>
+                        </div>
+                    )}
+                    {course.rating && (
+                        <div className="flex items-center gap-2">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span>{course.rating} ({course.reviews} reviews)</span>
+                        </div>
+                    )}
+                </div>
             </div>
           </div>
         </div>

@@ -210,6 +210,7 @@ export type Course = {
   communityUrl?: string;
   videoUrl?: string;
   whatsappNumber?: string;
+  showStudentCount?: boolean;
 };
 
 
