@@ -7,14 +7,10 @@ import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { HomepageConfig } from "@/lib/types";
+import { Logo } from "./logo";
 
 export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
-
-  const Logo = ({ className }: { className?: string }) => {
-    return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
-  };
-
 
   return (
     <footer className="border-t bg-background text-foreground">

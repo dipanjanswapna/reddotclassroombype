@@ -34,7 +34,7 @@ import { NotificationBell } from "./notification-bell";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
-import Image from "next/image";
+import { Logo } from "./logo";
 
 
 export function Header() {
@@ -61,10 +61,6 @@ export function Header() {
     { href: "/contact", label: t.nav_contact[language] },
   ];
 
-  const Logo = ({ className }: { className?: string }) => {
-    return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
-  };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -88,7 +84,7 @@ export function Header() {
                         className="flex items-center space-x-2"
                         onClick={() => setMenuOpen(false)}
                     >
-                        <Logo className="h-8 w-auto" />
+                        <Logo />
                         <span className="font-bold text-lg">RED DOT CLASSROOM</span>
                     </Link>
                     </div>
@@ -160,7 +156,7 @@ export function Header() {
             </div>
             <div className="hidden lg:flex items-center">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
-                    <Logo className="h-8 w-auto" />
+                    <Logo />
                     <span className="font-bold text-lg hidden lg:inline-block">RED DOT CLASSROOM</span>
                 </Link>
                 <nav className="flex items-center space-x-1 text-sm font-medium">
@@ -194,7 +190,7 @@ export function Header() {
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
             <Link href="/">
-                <Logo className="h-8 w-auto" />
+                <Logo />
             </Link>
         </div>
         
