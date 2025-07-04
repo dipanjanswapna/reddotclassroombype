@@ -8,6 +8,7 @@ import { LanguageProvider } from '@/context/language-context';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { AuthProvider } from '@/context/auth-context';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
+import logoIcon from '@/public/logo.png';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -34,9 +35,9 @@ export const metadata: Metadata = {
   },
   description: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/logo.png',
+    icon: logoIcon.src,
+    shortcut: logoIcon.src,
+    apple: logoIcon.src,
   },
 };
 
