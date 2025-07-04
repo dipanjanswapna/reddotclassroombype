@@ -7,7 +7,6 @@ import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { HomepageConfig } from "@/lib/types";
-import { Logo } from "./logo";
 
 export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
@@ -18,7 +17,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <Logo className="h-10 w-auto" />
+              <img src="/logo.png" alt="RED DOT CLASSROOM Logo" className="h-10 w-auto" />
               <span className="font-bold text-xl font-headline text-foreground">
                 RED DOT CLASSROOM
               </span>
