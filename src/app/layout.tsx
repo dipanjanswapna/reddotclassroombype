@@ -27,7 +27,7 @@ const fontHindSiliguri = Hind_Siliguri({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rdc-final.app'),
+  metadataBase: new URL('https://rdc.vercel.app'),
   title: {
     default: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM',
     template: '%s | RED DOT CLASSROOM (RDC)',

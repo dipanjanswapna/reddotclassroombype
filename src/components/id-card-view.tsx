@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef } from 'react';
@@ -205,7 +206,7 @@ export function IdCardView({
                     </div>
                 </main>
                 <footer className="text-center z-10 pt-2">
-                    <p className="text-xs text-gray-400 mt-2">www.rdc-final.app</p>
+                    <p className="text-xs text-gray-400 mt-2">www.rdc.vercel.app</p>
                 </footer>
             </div>
 
@@ -232,7 +233,7 @@ export function IdCardView({
                            <div className="space-y-1 pt-2">
                                <p><strong>Joined Date:</strong> {joinedDate}</p>
                                <p><strong>Email:</strong> {email}</p>
-                               <p><strong>Website:</strong> www.rdc-final.app</p>
+                               <p><strong>Website:</strong> www.rdc.vercel.app</p>
                                <p className="pt-4 font-bold">If found, please return to:</p>
                                <p>Red Dot Classroom Head Office, Dhaka, Bangladesh.</p>
                            </div>
