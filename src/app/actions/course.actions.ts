@@ -63,6 +63,9 @@ export async function launchPrebookingCourseAction(courseId: string) {
         if (prebookings.length === 0) {
             await updateDoc(doc(db, 'courses', courseId), { isPrebooking: false });
             revalidatePath(`/admin/courses/builder/${courseId}`);
+            revalidatePath(`/teacher/courses/builder/${courseId}`);
+            revalidatePath(`/courses/${courseId}`);
+            revalidatePath(`/sites/[site]/courses/${courseId}`);
             return { success: true, message: 'Course launched. No pre-bookings to notify.' };
         }
         
@@ -113,6 +116,7 @@ export async function launchPrebookingCourseAction(courseId: string) {
         revalidatePath(`/admin/courses/builder/${courseId}`);
         revalidatePath(`/teacher/courses/builder/${courseId}`);
         revalidatePath(`/courses/${courseId}`);
+        revalidatePath(`/sites/[site]/courses/${courseId}`);
 
         return { success: true, message: `Course launched! ${prebookings.length} students have been notified with their unique promo codes.` };
 
@@ -141,8 +145,6 @@ export async function addLessonReactionAction(
       if (!courseDoc.exists()) throw new Error("Course not found.");
 
       const userData = userDoc.data() as User;
-      const courseData = courseDoc.data() as Course;
-
       if (userData.reactedLessons?.includes(lessonId)) {
         throw new Error("You have already reacted to this lesson.");
       }

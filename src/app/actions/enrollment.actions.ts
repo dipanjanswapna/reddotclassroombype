@@ -27,7 +27,9 @@ export async function prebookCourseAction(courseId: string, userId: string) {
         
         revalidatePath(`/courses/${courseId}`);
         revalidatePath(`/sites/[site]/courses/${courseId}`);
+        revalidatePath('/student/my-courses');
         revalidatePath('/admin/pre-bookings');
+        revalidatePath('/teacher/pre-bookings');
 
         return { success: true, message: 'Pre-booking successful! You will be notified when the course launches.' };
 
@@ -95,6 +97,7 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');
         revalidatePath(`/checkout/${courseId}`);
+        revalidatePath(`/sites/[site]/checkout/${courseId}`);
         revalidatePath(`/student/my-courses/${courseId}/assignments`);
         if(course.isPrebooking) {
             revalidatePath('/admin/pre-bookings');

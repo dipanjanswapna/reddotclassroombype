@@ -30,9 +30,9 @@ export default function MyCoursesPage() {
     async function fetchCoursesData() {
       try {
         const [enrollmentsData, orgsData, prebookingsData] = await Promise.all([
-          getEnrollmentsByUserId(userInfo.uid),
+          getEnrollmentsByUserId(userInfo!.uid),
           getOrganizations(),
-          getPrebookingsByUserId(userInfo.uid)
+          getPrebookingsByUserId(userInfo!.uid)
         ]);
         setOrganizations(orgsData);
 

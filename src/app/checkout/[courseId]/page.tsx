@@ -102,14 +102,14 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction(course.id!, userInfo.uid);
+    const result = await enrollInCourseAction(course!.id!, userInfo.uid);
 
     if (result.success) {
         toast({
             title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
-            description: `You have successfully enrolled in "${course.title}". Redirecting...`
+            description: `You have successfully enrolled in "${course!.title}". Redirecting...`
         });
-        setTimeout(() => router.push('/'), 2000);
+        setTimeout(() => router.push('/student/my-courses'), 2000);
     } else {
         toast({
             title: 'Enrollment Failed',
