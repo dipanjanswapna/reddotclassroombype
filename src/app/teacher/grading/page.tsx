@@ -24,6 +24,8 @@ import { FileCheck2, Send, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import { format } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 type AssignmentWithCourseInfo = Assignment & {
   courseTitle: string;
@@ -154,7 +156,7 @@ export default function TeacherGradingPage() {
                   <TableCell>{assignment.courseTitle}</TableCell>
                   <TableCell>{assignment.title}</TableCell>
                   <TableCell>
-                      {assignment.submissionDate?.toString().split('T')[0]}
+                      {assignment.submissionDate ? format(safeToDate(assignment.submissionDate), 'PPP') : 'N/A'}
                       {assignment.status === 'Late' && <Badge variant="destructive" className="ml-2">Late</Badge>}
                   </TableCell>
                   <TableCell className="text-right">

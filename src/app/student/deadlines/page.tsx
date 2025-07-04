@@ -13,6 +13,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { format, isPast, differenceInDays } from 'date-fns';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { safeToDate } from '@/lib/utils';
 
 type AssignmentWithCourse = Assignment & {
   courseTitle: string;
@@ -48,7 +49,7 @@ export default function DeadlinesPage() {
                         }))
                     )
                     .filter(a => a.studentId === userInfo.uid && (a.status === 'Pending' || a.status === 'Late'))
-                    .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime());
+                    .sort((a, b) => safeToDate(a.deadline).getTime() - safeToDate(b.deadline).getTime());
                 
                 setAssignments(studentAssignments);
 
@@ -63,8 +64,8 @@ export default function DeadlinesPage() {
         fetchDeadlines();
     }, [authLoading, userInfo, toast]);
 
-    const getDaysLeft = (deadline: string) => {
-        const diff = differenceInDays(new Date(deadline), new Date());
+    const getDaysLeft = (deadline: any) => {
+        const diff = differenceInDays(safeToDate(deadline), new Date());
         if (diff < 0) return { text: 'Overdue', color: 'text-destructive' };
         if (diff === 0) return { text: 'Due today', color: 'text-orange-500' };
         if (diff === 1) return { text: 'Due tomorrow', color: 'text-yellow-500' };
@@ -91,7 +92,7 @@ export default function DeadlinesPage() {
             {assignments.length > 0 ? (
                 <div className="space-y-4">
                     {assignments.map(assignment => {
-                        const daysLeftInfo = getDaysLeft(assignment.deadline as string);
+                        const daysLeftInfo = getDaysLeft(assignment.deadline);
                         return (
                             <Card key={assignment.id}>
                                 <CardContent className="p-4 flex items-center justify-between gap-4">
@@ -105,7 +106,7 @@ export default function DeadlinesPage() {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-semibold">{format(new Date(assignment.deadline as string), 'PPP')}</p>
+                                        <p className="font-semibold">{format(safeToDate(assignment.deadline), 'PPP')}</p>
                                         <p className={`text-sm font-medium ${daysLeftInfo.color}`}>{daysLeftInfo.text}</p>
                                         {assignment.status === 'Late' && <Badge variant="destructive" className="mt-1">Late</Badge>}
                                     </div>

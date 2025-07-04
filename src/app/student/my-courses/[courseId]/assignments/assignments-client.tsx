@@ -22,6 +22,7 @@ import { submitAssignmentAction } from '@/app/actions/assignment.actions';
 import { useAuth } from '@/context/auth-context';
 import type { Course, Assignment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { safeToDate } from '@/lib/utils';
 
 const getStatusBadgeVariant = (status: Assignment['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
@@ -79,7 +80,7 @@ export function AssignmentsClient({ course, initialAssignments }: AssignmentsCli
         setAssignments(prev => 
           prev.map(a => 
             a.id === selectedAssignment.id 
-              ? { ...a, status: new Date() > new Date(a.deadline as string) ? 'Late' : 'Submitted', submissionDate: new Date().toISOString().split('T')[0], submissionText } 
+              ? { ...a, status: new Date() > safeToDate(a.deadline) ? 'Late' : 'Submitted', submissionDate: new Date().toISOString().split('T')[0], submissionText } 
               : a
           )
         );

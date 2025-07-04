@@ -160,7 +160,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {course.whatYouWillLearn.map((item, index) => (
-                            <div key={index} className="flex items-start gap-3">
+                            <div key={`learn-${index}`} className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-primary mt-1 shrink-0" />
                                 <p className='text-muted-foreground'>{item}</p>
                             </div>
@@ -175,8 +175,8 @@ export default async function CourseDetailPage({
                   কোর্স ইন্সট্রাক্টর
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {course.instructors?.map((instructor, index) => (
-                    <Link key={instructor.slug || index} href={`/teachers/${instructor.slug}`} className="text-center flex flex-col items-center group">
+                  {course.instructors?.map((instructor) => (
+                    <Link key={instructor.slug} href={`/teachers/${instructor.slug}`} className="text-center flex flex-col items-center group">
                       <Avatar className="w-24 h-24 mx-auto mb-2">
                         <AvatarImage
                           src={instructor.avatarUrl}
@@ -212,7 +212,7 @@ export default async function CourseDetailPage({
                                 </TableHeader>
                                 <TableBody>
                                     {course.classRoutine.map((item, index) => (
-                                        <TableRow key={index}>
+                                        <TableRow key={`routine-${index}`}>
                                             <TableCell className="font-medium">{item.day}</TableCell>
                                             <TableCell>{item.subject}</TableCell>
                                             <TableCell>{item.time}</TableCell>
@@ -231,8 +231,8 @@ export default async function CourseDetailPage({
                   সিলেবাস
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
-                  {course.syllabus.map((item, index) => (
-                    <AccordionItem value={`item-${index}`} key={index}>
+                  {course.syllabus.map((item) => (
+                    <AccordionItem value={item.id} key={item.id}>
                       <AccordionTrigger className="text-lg font-semibold">
                         <div className="flex items-center gap-3">
                            <BookOpen className="w-6 h-6 text-primary"/>
@@ -297,7 +297,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
                   {course.faqs.map((faq, index) => (
-                    <AccordionItem value={`faq-${index}`} key={index}>
+                    <AccordionItem value={`faq-${index}`} key={`faq-${index}`}>
                       <AccordionTrigger className="font-semibold text-left">
                         {faq.question}
                       </AccordionTrigger>

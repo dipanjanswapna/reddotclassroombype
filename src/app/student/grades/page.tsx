@@ -17,12 +17,13 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
+import { safeToDate } from '@/lib/utils';
 
 type GradedAssignment = Assignment & {
     courseName: string;
 };
 
-function getGradeColor(grade: string) {
+function getGradeColor(grade: string | undefined) {
     if (!grade) return 'bg-gray-500 text-white';
     if (grade.startsWith('A')) return 'bg-green-500 text-white';
     if (grade.startsWith('B')) return 'bg-yellow-500 text-white';
@@ -58,7 +59,7 @@ export default function GradesPage() {
                     });
                 }
             });
-            setGradedAssignments(assignments.sort((a,b) => new Date(b.submissionDate as string).getTime() - new Date(a.submissionDate as string).getTime()));
+            setGradedAssignments(assignments.sort((a,b) => safeToDate(b.submissionDate).getTime() - safeToDate(a.submissionDate).getTime()));
         } catch (error) {
             console.error("Failed to fetch grades", error);
         } finally {
@@ -107,11 +108,10 @@ export default function GradesPage() {
                   <TableCell className="font-medium">{item.courseName}</TableCell>
                   <TableCell>{item.title}</TableCell>
                   <TableCell className="text-center">
-                    <Badge className={getGradeColor(item.grade || '')}>{item.grade || 'N/A'}</Badge>
+                    <Badge className={getGradeColor(item.grade)}>{item.grade || 'N/A'}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {/* Assuming submissionDate is when it was graded for this demo */}
-                    {item.submissionDate && typeof item.submissionDate === 'string' ? format(new Date(item.submissionDate), 'PPP') : 'N/A'}
+                    {item.submissionDate ? format(safeToDate(item.submissionDate), 'PPP') : 'N/A'}
                   </TableCell>
                 </TableRow>
               )) : (
