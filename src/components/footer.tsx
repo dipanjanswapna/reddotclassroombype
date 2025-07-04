@@ -4,7 +4,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
-import { RdcLogo } from "./rdc-logo";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { HomepageConfig } from "@/lib/types";
@@ -13,10 +12,10 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
   const { language } = useLanguage();
 
   const Logo = ({ className }: { className?: string }) => {
-    if (homepageConfig?.logoUrl) {
+    if (homepageConfig?.logoUrl && homepageConfig.logoUrl !== "") {
       return <img src={homepageConfig.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
     }
-    return <RdcLogo className={className} />;
+    return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
   };
 
 

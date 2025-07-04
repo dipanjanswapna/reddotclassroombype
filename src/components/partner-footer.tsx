@@ -2,7 +2,6 @@
 import { Organization } from "@/lib/types";
 import Link from "next/link";
 import Image from "next/image";
-import { RdcLogo } from "./rdc-logo";
 
 export function PartnerFooter({ partner }: { partner: Organization }) {
   return (
@@ -13,8 +12,7 @@ export function PartnerFooter({ partner }: { partner: Organization }) {
             <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
                 <span>Powered by</span>
                 <Link href="/" className="flex items-center gap-1 font-semibold text-foreground hover:text-primary transition-colors">
-                    <RdcLogo className="h-5 w-auto" />
-                    Red Dot Classroom
+                    <Image src="/logo.png" alt="RDC Logo" width={80} height={26} className="h-5 w-auto" />
                 </Link>
             </div>
         </div>

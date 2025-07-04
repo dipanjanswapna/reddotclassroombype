@@ -13,7 +13,6 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { RdcLogo } from "./rdc-logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +34,7 @@ import { NotificationBell } from "./notification-bell";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
+import Image from "next/image";
 
 
 export function Header() {
@@ -62,11 +62,11 @@ export function Header() {
   ];
 
   const Logo = ({ className }: { className?: string }) => {
-    if (config?.logoUrl) {
+    if (config?.logoUrl && config.logoUrl !== "") {
       // Using <img> to allow any image URL without next.config.js modification
       return <img src={config.logoUrl} alt="RED DOT CLASSROOM Logo" className={className} />;
     }
-    return <RdcLogo className={className} />;
+    return <Image src="/logo.png" alt="RED DOT CLASSROOM Logo" width={120} height={40} className={className} />;
   };
 
   return (
