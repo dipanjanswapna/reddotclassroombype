@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,6 @@ import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
 import { User, HomepageConfig } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 function GoogleIcon() {
   return (
@@ -39,7 +38,7 @@ function FacebookIcon() {
     )
 }
 
-export default function SignupPageClient() {
+export default function SignupPageClient({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
   const { signup, loginWithGoogle, loginWithFacebook } = useAuth();
   const router = useRouter();
@@ -50,12 +49,6 @@ export default function SignupPageClient() {
   const [role, setRole] = useState<User['role']>('Student');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [config, setConfig] = useState<HomepageConfig | null>(null);
-
-  useEffect(() => {
-    getHomepageConfig().then(setConfig);
-  }, []);
-
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,11 +98,11 @@ export default function SignupPageClient() {
               )}
             
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('google')} disabled={isLoading || !config?.platformSettings.Student.signupEnabled}>
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('google')} disabled={isLoading || !homepageConfig?.platformSettings.Student.signupEnabled}>
                     <GoogleIcon />
                     <span className="ml-2">Google</span>
                 </Button>
-                 <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || !config?.platformSettings.Student.signupEnabled}>
+                 <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || !homepageConfig?.platformSettings.Student.signupEnabled}>
                     <FacebookIcon />
                     <span className="ml-2">Facebook</span>
                 </Button>
@@ -143,7 +136,7 @@ export default function SignupPageClient() {
                     <Label>{t.registering_as[language]}</Label>
                     <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-2">
                         <div>
-                            <RadioGroupItem value="Student" id="role-student" className="peer sr-only" disabled={!config?.platformSettings.Student.signupEnabled}/>
+                            <RadioGroupItem value="Student" id="role-student" className="peer sr-only" disabled={!homepageConfig?.platformSettings.Student.signupEnabled}/>
                             <Label
                                 htmlFor="role-student"
                                 className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
@@ -152,7 +145,7 @@ export default function SignupPageClient() {
                             </Label>
                         </div>
                         <div>
-                            <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" disabled={!config?.platformSettings.Guardian.signupEnabled}/>
+                            <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" disabled={!homepageConfig?.platformSettings.Guardian.signupEnabled}/>
                             <Label
                                 htmlFor="role-guardian"
                                 className="flex cursor-pointer items-center justify-center rounded-md border-2 border-muted bg-popover p-2 text-center text-sm hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
@@ -192,10 +185,10 @@ export default function SignupPageClient() {
              <div className="mt-4 text-center text-sm space-y-2">
                 <p className="text-muted-foreground">Want to join our team?</p>
                 <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-                    {config?.platformSettings.Teacher.signupEnabled && <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>}
-                    {config?.platformSettings.Seller.signupEnabled && <Link href="/seller-program/apply" className="font-semibold text-primary hover:underline">Apply as Seller</Link>}
-                    {config?.platformSettings.Affiliate.signupEnabled && <Link href="/auth/affiliate-signup" className="font-semibold text-primary hover:underline">Join as Affiliate</Link>}
-                    {config?.platformSettings.Moderator.signupEnabled && <Link href="/auth/moderator-signup" className="font-semibold text-primary hover:underline">Join as Moderator</Link>}
+                    {homepageConfig?.platformSettings.Teacher.signupEnabled && <Link href="/auth/teacher-signup" className="font-semibold text-primary hover:underline">Apply as Teacher</Link>}
+                    {homepageConfig?.platformSettings.Seller.signupEnabled && <Link href="/seller-program/apply" className="font-semibold text-primary hover:underline">Apply as Seller</Link>}
+                    {homepageConfig?.platformSettings.Affiliate.signupEnabled && <Link href="/auth/affiliate-signup" className="font-semibold text-primary hover:underline">Join as Affiliate</Link>}
+                    {homepageConfig?.platformSettings.Moderator.signupEnabled && <Link href="/auth/moderator-signup" className="font-semibold text-primary hover:underline">Join as Moderator</Link>}
                 </div>
             </div>
           </div>

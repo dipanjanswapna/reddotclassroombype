@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import LoginPageClient from './login-client-page';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -15,10 +16,11 @@ const LoginPageFallback = () => (
     </div>
 );
 
-export default function LoginPage() {
+export default async function LoginPage() {
+    const homepageConfig = await getHomepageConfig();
     return (
         <Suspense fallback={<LoginPageFallback />}>
-            <LoginPageClient />
+            <LoginPageClient homepageConfig={homepageConfig} />
         </Suspense>
     );
 }

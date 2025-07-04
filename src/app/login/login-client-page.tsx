@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User, HomepageConfig } from '@/lib/types';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 
 function GoogleIcon() {
@@ -40,7 +39,7 @@ function FacebookIcon() {
     )
 }
 
-export default function LoginPageClient() {
+export default function LoginPageClient({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
   const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll } = useAuth();
 
@@ -51,13 +50,7 @@ export default function LoginPageClient() {
   const [role, setRole] = useState<User['role']>('Seller');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [config, setConfig] = useState<HomepageConfig | null>(null);
-  
   const [activeTab, setActiveTab] = useState('student');
-
-  useEffect(() => {
-    getHomepageConfig().then(setConfig);
-  }, []);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,8 +98,8 @@ export default function LoginPageClient() {
     }
   };
 
-  const socialLoginDisabled = !config?.platformSettings.Student.loginEnabled;
-  const roleLoginDisabled = role && config && role !== 'Admin' && !config.platformSettings[role]?.loginEnabled;
+  const socialLoginDisabled = !homepageConfig?.platformSettings.Student.loginEnabled;
+  const roleLoginDisabled = role && homepageConfig && role !== 'Admin' && !homepageConfig.platformSettings[role]?.loginEnabled;
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-secondary/50">
