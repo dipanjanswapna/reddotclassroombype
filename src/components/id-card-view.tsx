@@ -8,6 +8,7 @@ import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse } f
 import { useToast } from './ui/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { Logo } from './logo';
 
 type IdCardViewProps = {
   name: string;
@@ -170,7 +171,7 @@ export function IdCardView({
                 <div className={`absolute -top-1/4 -left-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
                 <div className={`absolute -bottom-1/4 -right-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
                 <header className="flex items-center justify-between z-10">
-                    <Image src="/logo.png" alt="RDC Logo" width={100} height={33} className="h-10 w-auto object-contain" />
+                    <Logo className="h-10 w-auto object-contain" />
                     <div className="text-right">
                         <h1 className="font-bold text-lg leading-tight">RED DOT CLASSROOM</h1>
                         <p className="text-xs text-gray-500">PRANGONS ECOSYSTEM</p>
