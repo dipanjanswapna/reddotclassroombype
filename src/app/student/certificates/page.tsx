@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Award, Download } from 'lucide-react';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { getCourses, getEnrollmentsByUserId, getOrganizations } from '@/lib/firebase/firestore';
 import type { Course, Enrollment, Organization } from '@/lib/types';
 import Image from 'next/image';
-import { RdcLogo } from '@/components/rdc-logo';
+import logoSrc from '@/public/logo.png';
 import { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
@@ -96,7 +95,7 @@ export default function CertificatesPage() {
                             {partner ? (
                                 <Image src={partner.logoUrl} alt={partner.name} width={40} height={40} className="rounded-full bg-muted object-contain"/>
                             ) : (
-                                <RdcLogo className="w-12 h-auto" />
+                                <Image src={logoSrc} alt="Red Dot Classroom Logo" className="h-12 w-auto" />
                             )}
                         </div>
                         <div className="text-right">
