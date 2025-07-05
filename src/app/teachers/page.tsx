@@ -23,7 +23,7 @@ export default async function AllTeachersPage() {
         <section className="bg-gray-900 text-white py-16">
             <div className="container mx-auto px-4 text-center">
                 <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight">
-                    পরিচিত হয়ে যাও তোমার শিক্ষকদের সাথে, যাদের সাথে পূর্ণাঙ্গ হবে তোমার একাডেমিক প্রস্তুতি
+                    meet our RDC star teachers
                 </h1>
                 <p className="mt-4 text-lg text-gray-300">
                     তোমাদের পড়াশোনাকে আরও সহজ করতে আমরা প্রস্তুত!
