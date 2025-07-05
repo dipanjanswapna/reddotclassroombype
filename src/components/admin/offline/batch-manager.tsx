@@ -74,6 +74,8 @@ export function BatchManager({ initialBatches, allCourses, allBranches, allInstr
     const [endDate, setEndDate] = useState<Date | undefined>();
     const [capacity, setCapacity] = useState<number>(0);
 
+    const offlineAndHybridCourses = allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid');
+
     const handleOpenDialog = (batch: Batch | null) => {
         setEditingBatch(batch);
         if (batch) {
@@ -221,7 +223,7 @@ export function BatchManager({ initialBatches, allCourses, allBranches, allInstr
                           <div className="space-y-2">
                             <Label>Course</Label>
                             <Select value={courseId} onValueChange={setCourseId}><SelectTrigger><SelectValue placeholder="Select Course..." /></SelectTrigger>
-                                <SelectContent>{allCourses.map(c => <SelectItem key={c.id} value={c.id!}>{c.title}</SelectItem>)}</SelectContent>
+                                <SelectContent>{offlineAndHybridCourses.map(c => <SelectItem key={c.id} value={c.id!}>{c.title}</SelectItem>)}</SelectContent>
                             </Select>
                           </div>
                           <div className="space-y-2">
