@@ -332,6 +332,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
+  const [courseType, setCourseType] = useState<'Online' | 'Offline' | 'Hybrid'>('Online');
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [price, setPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
@@ -409,6 +410,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setDescription(courseData.description || '');
                     setCategory(courseData.category || '');
                     setSubCategory(courseData.subCategory || '');
+                    setCourseType(courseData.type || 'Online');
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
                     setDiscountPrice(courseData.discountPrice?.replace(/[^0-9.]/g, '') || '');
                     setIsPrebooking(courseData.isPrebooking || false);
@@ -706,6 +708,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         description: description,
         category: category,
         subCategory: subCategory,
+        type: courseType,
         price: `BDT ${price || 0}`,
         discountPrice: discountPrice ? `BDT ${discountPrice}` : '',
         isPrebooking,
@@ -942,7 +945,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <Label htmlFor="description">Course Description</Label>
                     <Textarea id="description" placeholder="A brief summary of what this course is about..." rows={5} value={description} onChange={e => setDescription(e.target.value)} />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
                         <Popover>
@@ -995,6 +998,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                           value={subCategory} 
                           onChange={e => setSubCategory(e.target.value)} 
                       />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="course-type">Course Type</Label>
+                        <Select value={courseType} onValueChange={(value: 'Online' | 'Offline' | 'Hybrid') => setCourseType(value)}>
+                            <SelectTrigger id="course-type">
+                                <SelectValue placeholder="Select course type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Online">Online</SelectItem>
+                                <SelectItem value="Offline">Offline</SelectItem>
+                                <SelectItem value="Hybrid">Hybrid</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                   </div>
                   <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">

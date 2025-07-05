@@ -3,10 +3,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Building, BookCopy, Users, Users2 } from "lucide-react"
 import { BranchManager } from "@/components/admin/offline/branch-manager";
-import { PlaceholderPage } from "@/components/placeholder-page";
 import { getBranches, getBatches, getCourses, getInstructors, getUsers } from "@/lib/firebase/firestore";
 import { BatchManager } from "@/components/admin/offline/batch-manager";
 import { StudentManager } from "@/components/admin/offline/student-manager";
+import { OfflineCourseManager } from "@/components/admin/offline/offline-course-manager";
 
 export default async function AdminOfflineHubPage() {
     const [
@@ -25,6 +25,8 @@ export default async function AdminOfflineHubPage() {
     
     const studentUsers = allUsers.filter(u => u.role === 'Student');
     const managerUsers = allUsers.filter(u => u.role === 'Admin' || u.role === 'Moderator');
+    const offlineCourses = allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid');
+
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -53,7 +55,7 @@ export default async function AdminOfflineHubPage() {
                    />
                 </TabsContent>
                 <TabsContent value="courses" className="mt-6">
-                    <PlaceholderPage title="Offline Courses" description="This section is under construction. Here you will be able to manage courses specifically designed for offline branches."/>
+                    <OfflineCourseManager initialCourses={offlineCourses} />
                 </TabsContent>
                  <TabsContent value="students" className="mt-6">
                    <StudentManager
