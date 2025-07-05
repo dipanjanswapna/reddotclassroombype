@@ -242,8 +242,9 @@ export const deleteBranch = (id: string) => deleteDoc(doc(db, 'branches', id));
 // Batches (for Offline Hub)
 export const getBatches = () => getCollection<Batch>('batches');
 export const getBatch = (id: string) => getDocument<Batch>('batches', id);
-export const addBatch = (batch: Batch) => addDoc(collection(db, 'batches'), batch);
+export const addBatch = (batch: Partial<Batch>) => addDoc(collection(db, 'batches'), batch);
 export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(db, 'batches', id), batch);
+export const deleteBatch = (id: string) => deleteDoc(doc(db, 'batches', id));
 
 
 const defaultPlatformSettings: PlatformSettings = {
