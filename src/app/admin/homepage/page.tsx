@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig, OfflineHubProgram } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
@@ -928,3 +927,4 @@ export default function AdminHomepageManagementPage() {
     </div>
   );
 }
+
