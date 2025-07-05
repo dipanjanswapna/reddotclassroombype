@@ -1,3 +1,4 @@
+
 import { FinancialsClient } from "./financials-client";
 import { getEnrollments, getCourses, getUsers } from "@/lib/firebase/firestore";
 import type { Metadata } from 'next';
