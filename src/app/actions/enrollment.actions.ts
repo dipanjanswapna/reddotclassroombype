@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { addEnrollment, getCourse, updateCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
-import { Enrollment, Assignment } from '@/lib/types';
+import { Enrollment, Assignment, Exam } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
 
 export async function prebookCourseAction(courseId: string, userId: string) {
@@ -84,10 +84,38 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
             });
         }
         
+        // Generate exams for the student from templates
+        const newExams: Exam[] = [];
+        if (course.examTemplates && course.examTemplates.length > 0) {
+            course.examTemplates.forEach(template => {
+                const examExists = course.exams?.some(
+                    e => e.studentId === userId && e.title === template.title && e.topic === template.topic
+                );
+
+                if (!examExists) {
+                    newExams.push({
+                        id: `${template.id}-${userId}`,
+                        studentId: userId,
+                        studentName: student.name,
+                        title: template.title,
+                        topic: template.topic,
+                        examType: template.examType,
+                        totalMarks: template.totalMarks,
+                        examDate: template.examDate,
+                        status: 'Pending',
+                    });
+                }
+            });
+        }
+        
         const updates: Partial<any> = {};
 
         if (newAssignments.length > 0) {
             updates.assignments = [...(course.assignments || []), ...newAssignments];
+        }
+        
+        if (newExams.length > 0) {
+            updates.exams = [...(course.exams || []), ...newExams];
         }
 
         if (Object.keys(updates).length > 0) {

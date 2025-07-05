@@ -129,6 +129,21 @@ export type Assignment = {
   courseId?: string; // Added for convenience in some components
 };
 
+export type Exam = {
+  id: string; // examTemplateId-studentId
+  studentId: string;
+  studentName: string;
+  title: string;
+  topic: string;
+  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
+  totalMarks: number;
+  examDate?: string | Timestamp | Date;
+  status: 'Pending' | 'Graded';
+  marksObtained?: number;
+  grade?: string;
+  feedback?: string;
+};
+
 export type Announcement = {
   id: string;
   title: string;
@@ -169,6 +184,15 @@ export type AssignmentTemplate = {
   title: string;
   topic: string;
   deadline?: string | Timestamp | Date;
+};
+
+export type ExamTemplate = {
+  id: string;
+  title: string;
+  topic: string;
+  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
+  totalMarks: number;
+  examDate?: string | Timestamp | Date;
 };
 
 export type Classroom = {
@@ -250,6 +274,8 @@ export type Course = {
   quizzes?: Quiz[];
   assignments?: Assignment[];
   assignmentTemplates?: AssignmentTemplate[];
+  exams?: Exam[];
+  examTemplates?: ExamTemplate[];
   announcements?: Announcement[];
   isWishlisted?: boolean;
   communityUrl?: string;

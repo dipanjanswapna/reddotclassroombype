@@ -28,6 +28,7 @@ import {
   ChevronsUpDown,
   Check,
   Video,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,7 +65,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -354,6 +355,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
+  const [examTemplates, setExamTemplates] = useState<ExamTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
   const [showStudentCount, setShowStudentCount] = useState(false);
@@ -439,6 +441,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setLiveClasses(courseData.liveClasses || []);
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
+                    setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString(), examDate: e.examDate ? new Date(e.examDate as string) : undefined })) || []);
                     setOrganizationId(courseData.organizationId);
                     setShowStudentCount(courseData.showStudentCount || false);
                 } else {
@@ -587,6 +590,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
   const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
     setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+  };
+
+  const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100 }]);
+  const removeExamTemplate = (id: string) => setExamTemplates(prev => prev.filter(e => e.id !== id));
+  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date | undefined) => {
+    setExamTemplates(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
   };
 
   const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
@@ -743,6 +752,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 deadline: formattedDeadline,
             };
         }).filter(a => a.title),
+        examTemplates: examTemplates.map(e => {
+            const { examDate, ...rest } = e;
+            const formattedDate = examDate instanceof Date && !isNaN(examDate.getTime())
+                ? format(examDate, 'yyyy-MM-dd')
+                : examDate?.toString() || '';
+            return {
+                ...rest,
+                examDate: formattedDate,
+            };
+        }).filter(e => e.title),
         status,
         organizationId: organizationId,
         showStudentCount: showStudentCount,
@@ -861,6 +880,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
     { id: 'quizzes', label: 'Quizzes', icon: HelpCircle },
     { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
+    { id: 'exams', label: 'Exams', icon: Award },
     { id: 'live-classes', label: 'Live Classes', icon: Video },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
@@ -1228,6 +1248,70 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         ))}
                     </div>
                     <Button variant="outline" className="w-full" onClick={addAssignmentTemplate}><PlusCircle className="mr-2"/>Add Assignment Template</Button>
+                </CardContent>
+            )}
+
+             {activeTab === 'exams' && (
+                <CardContent className="pt-6 space-y-4">
+                    <CardDescription>Create exam templates. When a student enrolls, a personal copy of each exam will be generated for them.</CardDescription>
+                    <div className="space-y-2">
+                        {examTemplates.map(exam => (
+                        <Collapsible key={exam.id} className="p-4 border rounded-md bg-muted/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 flex-grow">
+                                    <Award className="h-5 w-5 text-muted-foreground" />
+                                    <Input 
+                                        value={exam.title}
+                                        onChange={e => updateExamTemplate(exam.id, 'title', e.target.value)}
+                                        placeholder="Exam Title"
+                                        className="font-semibold bg-transparent border-0 focus-visible:ring-1"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="ghost" size="icon" onClick={() => removeExamTemplate(exam.id)}>
+                                        <X className="text-destructive h-4 w-4"/>
+                                    </Button>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                </div>
+                            </div>
+                            <CollapsibleContent className="pt-4 mt-4 border-t space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label>Topic</Label>
+                                        <Input value={exam.topic} onChange={e => updateExamTemplate(exam.id, 'topic', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Exam Type</Label>
+                                        <Select value={exam.examType} onValueChange={(value: ExamTemplate['examType']) => updateExamTemplate(exam.id, 'examType', value)}>
+                                            <SelectTrigger><SelectValue/></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Written">Written</SelectItem>
+                                                <SelectItem value="MCQ">MCQ</SelectItem>
+                                                <SelectItem value="Oral">Oral</SelectItem>
+                                                <SelectItem value="Practical">Practical</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label>Total Marks</Label>
+                                        <Input type="number" value={exam.totalMarks} onChange={e => updateExamTemplate(exam.id, 'totalMarks', Number(e.target.value))} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Exam Date</Label>
+                                        <DatePicker date={exam.examDate as Date | undefined} setDate={(date) => updateExamTemplate(exam.id, 'examDate', date)} />
+                                    </div>
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="w-full" onClick={addExamTemplate}><PlusCircle className="mr-2"/>Add Exam Template</Button>
                 </CardContent>
             )}
 
