@@ -540,7 +540,7 @@ export default function AdminHomepageManagementPage() {
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Programs Section Title (Bangla)</Label>
-                        <Input value={config.offlineHubSection.programsTitle?.bn || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, offlineHubSection: { ...prev.offlineHubSection, programsTitle: { ...prev.offlineHubSection.programsTitle, bn: e.target.value } } }) : null)} />
+                        <Input value={config.offlineHubSection.programsTitle?.bn || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, offlineHubSection: { ...prev.offlineHubSection, programsTitle: { ...(prev.offlineHubSection.programsTitle || { bn: '', en: '' }), bn: e.target.value } } }) : null)} />
                     </div>
                  </div>
                  {config.offlineHubSection.programs?.map((program, progIndex) => (
@@ -704,7 +704,7 @@ export default function AdminHomepageManagementPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Label (Bangla)</Label>
-                                    <Input value={stat.label.bn} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} />
+                                    <Input value={(stat.label as any).bn} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} />
                                 </div>
                             </div>
                         </div>

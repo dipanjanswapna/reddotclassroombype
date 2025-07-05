@@ -1,5 +1,4 @@
 
-
 import { db } from './config';
 import {
   collection,
@@ -353,7 +352,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: "fc6", title: "দৈর্ঘ্য মাপি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "ক্লাস ৬" },
     ]
   },
-   offlineHubSection: {
+  offlineHubSection: {
     display: true,
     title: { bn: "RDC অফলাইন হাব", en: "RDC Offline Hub" },
     subtitle: { bn: "অনলাইনে গত ৯ বছর ধরে লক্ষ লক্ষ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা নিয়ে এবার আমরা সামনাসামনি পড়াবো। এখন, আপনি অত্যাধুনিক মাল্টিমিডিয়া ক্লাসরুমে বসে, দেশের সেরা শিক্ষকদের কাছ থেকে সরাসরি শিখতে পারবেন।", en: "With 9 years of experience teaching millions of students online, we are now teaching face-to-face. Now, you can learn directly from the country's best teachers in a state-of-the-art multimedia classroom." },
@@ -500,6 +499,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         offlineHubSection: { 
             ...defaultHomepageConfig.offlineHubSection, 
             ...data.offlineHubSection,
+            programs: data.offlineHubSection?.programs || defaultHomepageConfig.offlineHubSection.programs,
             contactSection: {
                 ...defaultHomepageConfig.offlineHubSection.contactSection,
                 ...(data.offlineHubSection?.contactSection || {}),
