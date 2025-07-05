@@ -75,6 +75,17 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const handleSectionInputChange = (section: keyof HomepageConfig, key: string, value: string | number) => {
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = { ...prevConfig };
+      if (newConfig[section]) {
+        (newConfig[section] as any)[key] = value;
+      }
+      return newConfig;
+    });
+  };
+
   const addHeroBanner = () => {
     setConfig(prev => prev ? ({
       ...prev,
@@ -355,6 +366,34 @@ export default function AdminHomepageManagementPage() {
                             placeholder="https://example.com/logo.png"
                         />
                         <p className="text-xs text-muted-foreground">If a URL is provided, it will replace the default logo across the site.</p>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Animation Settings</CardTitle>
+                    <CardDescription>Control the scroll speed of homepage carousels.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="teachersScrollSpeed">Teachers Carousel Speed (seconds)</Label>
+                        <Input 
+                        id="teachersScrollSpeed"
+                        type="number"
+                        value={config.teachersSection?.scrollSpeed ?? 25} 
+                        onChange={(e) => handleSectionInputChange('teachersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}
+                        />
+                        <p className="text-xs text-muted-foreground">Lower number means faster scroll. Default is 25.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="partnersScrollSpeed">Partners Carousel Speed (seconds)</Label>
+                        <Input 
+                        id="partnersScrollSpeed"
+                        type="number"
+                        value={config.partnersSection?.scrollSpeed ?? 25} 
+                        onChange={(e) => handleSectionInputChange('partnersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}
+                        />
+                        <p className="text-xs text-muted-foreground">Lower number means faster scroll. Default is 25.</p>
                     </div>
                 </CardContent>
             </Card>

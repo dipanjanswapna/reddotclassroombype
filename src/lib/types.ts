@@ -361,6 +361,7 @@ export type HomepageConfig = {
     subtitle: { [key: string]: string };
     buttonText: { [key: string]: string };
     instructorIds: string[];
+    scrollSpeed?: number;
   };
   videoSection: {
     display: boolean;
@@ -417,6 +418,7 @@ export type HomepageConfig = {
   partnersSection: {
     display: boolean;
     title: { [key: string]: string };
+    scrollSpeed?: number;
     partners: {
       id: number;
       name: string;

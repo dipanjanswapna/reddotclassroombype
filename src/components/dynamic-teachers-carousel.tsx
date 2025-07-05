@@ -10,6 +10,6 @@ const TeachersCarousel = dynamic(() => import('@/components/teachers-carousel').
     ssr: false,
 });
 
-export function DynamicTeachersCarousel({ instructors }: { instructors: Instructor[] }) {
-    return <TeachersCarousel instructors={instructors} />;
+export function DynamicTeachersCarousel({ instructors, scrollSpeed }: { instructors: Instructor[], scrollSpeed?: number }) {
+    return <TeachersCarousel instructors={instructors} scrollSpeed={scrollSpeed} />;
 }

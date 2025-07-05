@@ -108,7 +108,7 @@ export default async function Home() {
                     <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
                 </Button>
             </div>
-            <DynamicTeachersCarousel instructors={featuredInstructors} />
+            <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection.scrollSpeed} />
           </div>
         </section>
       )}
@@ -227,7 +227,10 @@ export default async function Home() {
             <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
               {homepageConfig.partnersSection.title[language]}
             </h2>
-            <PartnersLogoScroll partners={homepageConfig.partnersSection.partners} />
+            <PartnersLogoScroll 
+              partners={homepageConfig.partnersSection.partners}
+              scrollSpeed={homepageConfig.partnersSection.scrollSpeed}
+            />
           </div>
         </section>
       )}

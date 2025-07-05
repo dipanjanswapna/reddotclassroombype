@@ -241,6 +241,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     subtitle: { bn: "দেশের সেরা শিক্ষকদের সাথে আপনার প্রস্তুতিকে নিয়ে যান এক নতুন মাত্রায়।", en: "Take your preparation to a new level with the best teachers in the country." },
     buttonText: { bn: "সকল শিক্ষক", en: "All Teachers" },
     instructorIds: ["ins-ja", "ins-fa", "ins-ms", "ins-nh", "ins-si"],
+    scrollSpeed: 25,
   },
   videoSection: {
     display: true,
@@ -297,6 +298,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   partnersSection: {
     display: true,
     title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
+    scrollSpeed: 25,
     partners: [
       { id: 1, name: "Myalice", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Myalice", dataAiHint: "Myalice logo" },
       { id: 2, name: "Pathao", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Pathao", dataAiHint: "Pathao logo" },

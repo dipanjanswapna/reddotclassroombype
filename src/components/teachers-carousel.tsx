@@ -1,19 +1,24 @@
+
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Instructor } from '@/lib/types';
 
-export function TeachersCarousel({ instructors }: { instructors: Instructor[] }) {
+export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructors: Instructor[], scrollSpeed?: number }) {
   if (!instructors || instructors.length === 0) {
     return null;
   }
+  
+  const animationStyle = {
+    animationDuration: `${scrollSpeed}s`,
+  };
 
   return (
     <div
       className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_48px,_black_calc(100%-48px),transparent_100%)]"
     >
-      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll">
+      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" style={animationStyle}>
         {instructors.map((instructor) => (
             <li key={instructor.id}>
                 <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
@@ -35,7 +40,7 @@ export function TeachersCarousel({ instructors }: { instructors: Instructor[] })
             </li>
         ))}
       </ul>
-      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" aria-hidden="true">
+      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" aria-hidden="true" style={animationStyle}>
         {instructors.map((instructor) => (
             <li key={`${instructor.id}-clone`}>
                 <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
