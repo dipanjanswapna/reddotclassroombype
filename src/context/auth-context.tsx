@@ -269,6 +269,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const searchParams = new URLSearchParams(window.location.search);
             const ref = searchParams.get('ref');
             const newSessionId = uuidv4();
+            const roll = generateRollNumber();
 
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
@@ -278,7 +279,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 role: 'Student',
                 status: 'Active',
                 joined: serverTimestamp(),
-                classRoll: generateRollNumber(),
+                classRoll: roll,
+                offlineRollNo: roll,
                 registrationNumber: generateRegistrationNumber(),
                 currentSessionId: newSessionId,
                 lastLoginAt: serverTimestamp(),
