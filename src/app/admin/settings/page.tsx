@@ -109,7 +109,7 @@ export default function AdminSettingsPage() {
                 setAvatarUrl(reader.result as string);
                  toast({
                     title: "Avatar Updated",
-                    description: "Your new profile picture has been set.",
+                    description: "Your new profile picture has been set. Click 'Save Changes' to confirm.",
                 });
             };
             reader.readAsDataURL(file);

@@ -42,6 +42,21 @@ export default function AffiliateProfilePage() {
             setLoading(false);
         }
     }, [userInfo, authLoading]);
+    
+    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarUrl(reader.result as string);
+                 toast({
+                    title: "Avatar Updated",
+                    description: "Your new profile picture has been set. Click 'Save Changes' to confirm.",
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSave = async () => {
         if (!userInfo?.id) return;
@@ -92,6 +107,24 @@ export default function AffiliateProfilePage() {
                     <CardTitle className="flex items-center gap-2"><User /> Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-20 w-20">
+                            <AvatarImage src={avatarUrl} alt={fullName} />
+                            <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-grow">
+                            <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
+                            <div className="relative">
+                                <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24" />
+                                <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
+                                    <Button asChild variant="outline" className="rounded-l-none -ml-px">
+                                        <div><Upload className="mr-2"/>Upload</div>
+                                    </Button>
+                                </label>
+                                <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
+                            </div>
+                        </div>
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="fullName">Full Name</Label>
                         <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
