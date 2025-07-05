@@ -189,7 +189,7 @@ export default function TeacherGradingPage() {
             <div>
               <Label className="font-semibold">Student's Submission</Label>
               <div className="mt-2 p-4 border rounded-md bg-muted text-sm">
-                <p>{selectedAssignment?.submissionText || "No submission text provided."}</p>
+                <p className="whitespace-pre-wrap">{selectedAssignment?.submissionText || "No submission text provided."}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
