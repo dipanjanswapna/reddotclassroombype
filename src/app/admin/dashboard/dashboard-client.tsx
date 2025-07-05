@@ -32,7 +32,7 @@ const UserRolesChart = dynamic(() => import('@/components/admin/user-roles-chart
 });
 
 // Serializable types for client components
-type SerializableUser = Omit<User, 'joined'> & { joined: string };
+type SerializableUser = Omit<User, 'joined' | 'lastLoginAt'> & { joined: string, lastLoginAt?: string };
 type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & { enrollmentDate: string };
 
 interface DashboardClientProps {

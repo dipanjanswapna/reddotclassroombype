@@ -21,6 +21,7 @@ export default async function AdminDashboardPage() {
   const users = usersData.map(user => ({
     ...user,
     joined: safeToDate(user.joined).toISOString(),
+    lastLoginAt: user.lastLoginAt ? safeToDate(user.lastLoginAt).toISOString() : undefined,
   }));
 
   const enrollments = enrollmentsData.map(enrollment => ({
