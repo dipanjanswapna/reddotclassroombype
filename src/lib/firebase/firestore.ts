@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -232,6 +232,19 @@ export const getPrebookingsByUserId = async (userId: string): Promise<Prebooking
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
 }
+
+// Branches (for Offline Hub)
+export const getBranches = () => getCollection<Branch>('branches');
+export const getBranch = (id: string) => getDocument<Branch>('branches', id);
+export const addBranch = (branch: Branch) => addDoc(collection(db, 'branches'), branch);
+export const updateBranch = (id: string, branch: Partial<Branch>) => updateDoc(doc(db, 'branches', id), branch);
+export const deleteBranch = (id: string) => deleteDoc(doc(db, 'branches', id));
+
+// Batches (for Offline Hub)
+export const getBatches = () => getCollection<Batch>('batches');
+export const getBatch = (id: string) => getDocument<Batch>('batches', id);
+export const addBatch = (batch: Batch) => addDoc(collection(db, 'batches'), batch);
+export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(db, 'batches', id), batch);
 
 
 const defaultPlatformSettings: PlatformSettings = {

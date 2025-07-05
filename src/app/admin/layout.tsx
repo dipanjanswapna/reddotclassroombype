@@ -18,6 +18,7 @@ import {
   Badge,
   Notebook,
   BarChartHorizontal,
+  Building,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -53,6 +54,7 @@ export default function AdminLayout({
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
+        { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/sellers", icon: Handshake, label: "Sellers" },

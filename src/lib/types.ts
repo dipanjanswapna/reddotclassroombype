@@ -171,10 +171,34 @@ export type AssignmentTemplate = {
   deadline?: string | Timestamp | Date;
 };
 
+export type Branch = {
+    id?: string;
+    name: string;
+    address: string;
+    contactPhone: string;
+    contactEmail: string;
+    managerId?: string; // User ID of the branch manager
+};
+
+export type Batch = {
+    id?: string;
+    name: string;
+    courseId: string;
+    branchId: string;
+    instructorSlugs: string[];
+    schedule: { day: string; time: string }[];
+    startDate: string;
+    endDate: string;
+    capacity: number;
+    studentCount: number;
+};
+
+
 export type Course = {
   id?: string;
   title: string;
   description: string;
+  type?: 'Online' | 'Offline' | 'Hybrid';
   instructors: CourseInstructor[]; 
   imageUrl: string;
   dataAiHint: string;
@@ -292,6 +316,10 @@ export type User = {
   studyPlan?: StudyPlanEvent[];
   currentSessionId?: string;
   lastLoginAt?: Timestamp;
+  // Offline fields
+  offlineRollNo?: string;
+  assignedBranchId?: string;
+  assignedBatchId?: string;
 };
 
 export type Enrollment = {
