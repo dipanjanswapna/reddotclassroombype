@@ -52,7 +52,7 @@ export function Header() {
     { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
     { href: "/courses?category=skills", label: t.nav_skills[language] },
     { href: "/courses?category=admission", label: t.nav_admission_test[language] },
-    { href: "/courses?category=online-batch", label: t.nav_online_batch[language] },
+    { href: "/offline-hub", label: t.nav_online_batch[language] },
   ];
 
   const moreLinks = [

@@ -1,5 +1,4 @@
 
-
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * This file contains a central dictionary of translations for the application.
@@ -13,7 +12,7 @@ export const t = {
   nav_class_6_12: { en: 'Class 6-12', bn: 'ক্লাস ৬-১২' },
   nav_skills: { en: 'Skills', bn: 'স্কিলস' },
   nav_admission_test: { en: 'Admission Test', bn: 'ভর্তি পরীক্ষা' },
-  nav_online_batch: { en: 'Online Batch', bn: 'অনলাইন ব্যাচ' },
+  nav_online_batch: { en: 'RDC OFFLINE HUB', bn: 'RDC অফলাইন হাব' },
   nav_more: { en: 'More', bn: 'আরও' },
   nav_blog: { en: 'Blog', bn: 'ব্লগ' },
   nav_faq: { en: 'FAQ', bn: 'জিজ্ঞাসা' },
