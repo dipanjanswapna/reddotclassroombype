@@ -74,6 +74,15 @@ export default function AdminHomepageManagementPage() {
         return newConfig;
     });
   };
+  
+  const handleDeepNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, index: number, field: string, subfield: string, value: string) => {
+    setConfig(prevConfig => {
+        if (!prevConfig) return null;
+        const newConfig = JSON.parse(JSON.stringify(prevConfig));
+        newConfig[section][subSectionKey][index][field][subfield] = value;
+        return newConfig;
+    });
+  };
 
   const handleSectionInputChange = (section: keyof HomepageConfig, key: string, value: string | number) => {
     setConfig(prevConfig => {
@@ -81,6 +90,28 @@ export default function AdminHomepageManagementPage() {
       const newConfig = { ...prevConfig };
       if (newConfig[section]) {
         (newConfig[section] as any)[key] = value;
+      }
+      return newConfig;
+    });
+  };
+  
+  const handleSectionTitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = { ...prevConfig };
+      if (newConfig[section]) {
+        (newConfig[section] as any).title[lang] = value;
+      }
+      return newConfig;
+    });
+  };
+  
+  const handleSectionDescriptionChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = { ...prevConfig };
+      if (newConfig[section]) {
+        (newConfig[section] as any).description[lang] = value;
       }
       return newConfig;
     });
@@ -313,6 +344,34 @@ export default function AdminHomepageManagementPage() {
               ))}
             </CardContent>
           </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Stats Section</CardTitle>
+                    <CardDescription>Manage the "লক্ষাধিক শিক্ষার্থীর পথচলা" section.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Section Title (Bangla)</Label>
+                        <Input value={config.statsSection.title.bn} onChange={e => handleSectionTitleChange('statsSection', 'bn', e.target.value)} />
+                    </div>
+                    {config.statsSection.stats.map((stat, index) => (
+                        <div key={index} className="p-4 border rounded-lg space-y-2 relative">
+                            <h4 className="font-semibold">Stat {index + 1}</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Value</Label>
+                                    <Input value={stat.value} onChange={e => handleNestedInputChange('statsSection', 'stats', 'value', e.target.value, index)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Label (Bangla)</Label>
+                                    <Input value={stat.label.bn} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
           
            <Card>
                 <CardHeader>
@@ -345,6 +404,61 @@ export default function AdminHomepageManagementPage() {
                         <PlusCircle className="mr-2" />
                         Add Partner
                     </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Social Media Section</CardTitle>
+                    <CardDescription>Manage the "আমাদের সাথে কানেক্টেড থাকুন" section.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Section Title (Bangla)</Label>
+                        <Input value={config.socialMediaSection.title.bn} onChange={e => handleSectionTitleChange('socialMediaSection', 'bn', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Section Description (Bangla)</Label>
+                        <Textarea value={config.socialMediaSection.description.bn} onChange={e => handleSectionDescriptionChange('socialMediaSection', 'bn', e.target.value)} />
+                    </div>
+                    {config.socialMediaSection.channels.map((channel, index) => (
+                        <div key={channel.id} className="p-4 border rounded-lg space-y-4">
+                            <h4 className="font-semibold">Channel {index + 1}</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Platform</Label><Input value={channel.platform} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'platform', e.target.value, index)} /></div>
+                                <div className="space-y-2"><Label>Name (Bangla)</Label><Input value={(channel.name as any).bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Handle</Label><Input value={channel.handle} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'handle', e.target.value, index)} /></div>
+                                <div className="space-y-2"><Label>Stat 1 Value</Label><Input value={channel.stat1_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat1_value', e.target.value, index)} /></div>
+                                <div className="space-y-2"><Label>Stat 1 Label (Bangla)</Label><Input value={(channel.stat1_label as any).bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Stat 2 Value</Label><Input value={channel.stat2_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat2_value', e.target.value, index)} /></div>
+                                <div className="space-y-2"><Label>Stat 2 Label (Bangla)</Label><Input value={(channel.stat2_label as any).bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>CTA Text (Bangla)</Label><Input value={(channel.ctaText as any).bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2 col-span-2"><Label>CTA URL</Label><Input value={channel.ctaUrl} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'ctaUrl', e.target.value, index)} /></div>
+                                <div className="space-y-2 col-span-2"><Label>Description (Bangla)</Label><Textarea value={(channel.description as any).bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} /></div>
+                            </div>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Notes Banner</CardTitle>
+                    <CardDescription>Manage the "ফ্রি নোটস এবং লেকচার শিট" banner.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Title (Bangla)</Label>
+                        <Input value={config.notesBanner.title.bn} onChange={e => handleDeepNestedInputChange('notesBanner', 'title', 0, 'bn', 'bn', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Description (Bangla)</Label>
+                        <Input value={config.notesBanner.description.bn} onChange={e => handleDeepNestedInputChange('notesBanner', 'description', 0, 'bn', 'bn', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Button Text (Bangla)</Label>
+                        <Input value={config.notesBanner.buttonText.bn} onChange={e => handleDeepNestedInputChange('notesBanner', 'buttonText', 0, 'bn', 'bn', e.target.value)} />
+                    </div>
                 </CardContent>
             </Card>
 
