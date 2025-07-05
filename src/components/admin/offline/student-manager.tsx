@@ -54,7 +54,7 @@ export function StudentManager({ initialStudents, allBranches, allBatches }: Stu
         setEditingStudent(student);
         setAssignedBranchId(student.assignedBranchId || '');
         setAssignedBatchId(student.assignedBatchId || '');
-        setOfflineRollNo(student.offlineRollNo || '');
+        setOfflineRollNo(student.offlineRollNo || student.classRoll || '');
         setIsDialogOpen(true);
     };
 
@@ -88,7 +88,8 @@ export function StudentManager({ initialStudents, allBranches, allBatches }: Stu
     const filteredStudents = students.filter(student => 
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (student.offlineRollNo && student.offlineRollNo.includes(searchTerm))
+        (student.offlineRollNo && student.offlineRollNo.includes(searchTerm)) ||
+        (student.classRoll && student.classRoll.includes(searchTerm))
     );
 
     return (
@@ -137,7 +138,7 @@ export function StudentManager({ initialStudents, allBranches, allBatches }: Stu
                                     <TableCell>{branch?.name || <span className="text-muted-foreground">N/A</span>}</TableCell>
                                     <TableCell>{batch?.name || <span className="text-muted-foreground">N/A</span>}</TableCell>
                                     <TableCell>
-                                        {student.offlineRollNo ? <Badge variant="outline">{student.offlineRollNo}</Badge> : <span className="text-muted-foreground">N/A</span>}
+                                        {student.offlineRollNo || student.classRoll ? <Badge variant="outline">{student.offlineRollNo || student.classRoll}</Badge> : <span className="text-muted-foreground">N/A</span>}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="outline" size="sm" onClick={() => handleOpenDialog(student)}>
