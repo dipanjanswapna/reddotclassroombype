@@ -335,6 +335,15 @@ export type PlatformSettings = {
   Moderator: PlatformRoleSettings;
 };
 
+export type FreeClass = {
+  id: string;
+  title: string;
+  youtubeUrl: string;
+  subject: string;
+  instructor: string;
+  grade: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -408,6 +417,12 @@ export type HomepageConfig = {
       title: { [key: string]: string };
       description: { [key: string]: string };
     }[];
+  };
+  freeClassesSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    classes: FreeClass[];
   };
   collaborations: {
     display: boolean;

@@ -314,6 +314,19 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { icon: "Users", title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" }, description: { bn: "যেকোনো সমস্যায় আমাদের সাপোর্ট টিম সর্বদা আপনার পাশে আছে।", en: "Our support team is always by your side for any problem." } },
     ],
   },
+  freeClassesSection: {
+    display: true,
+    title: { bn: "আমাদের সকল ফ্রি ক্লাসসমূহ", en: "All Our Free Classes" },
+    subtitle: { bn: "আমাদের ক্লাসের কোয়ালিটি সম্পর্কে ধারণা পেতে সম্পূর্ণ ফ্রিতে দেখে নিতে পারো কিছু ক্লাস", en: "Watch some classes completely free to get an idea about the quality of our classes" },
+    classes: [
+      { id: "fc1", title: "অধ্যায় ১: বিজ্ঞান ও প্রযুক্তি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "ক্লাস ৯" },
+      { id: "fc2", title: "তথ্যঝুঁকি মোকাবেলায় মানববন্ধন | সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "ICT", instructor: "Samin Zahan Sieyam", grade: "ক্লাস ১০" },
+      { id: "fc3", title: "অধ্যায় ৩: গতি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "ক্লাস ৯" },
+      { id: "fc4", title: "৩য় অধ্যায়: অর্থ বুঝি বাক্য লিখি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Bangla", instructor: "Tashmiya Hasan", grade: "ক্লাস ৬" },
+      { id: "fc5", title: "Meeting an Overseas Friend, My Books, Arshi's letter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "English", instructor: "MD Omor Faruk", grade: "ক্লাস ৯" },
+      { id: "fc6", title: "দৈর্ঘ্য মাপি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "ক্লাস ৬" },
+    ]
+  },
   collaborations: {
     display: true,
     title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
@@ -411,6 +424,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         admissionSection: { ...defaultHomepageConfig.admissionSection, ...data.admissionSection },
         jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
         whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
+        freeClassesSection: { ...defaultHomepageConfig.freeClassesSection, ...data.freeClassesSection },
         collaborations: { ...defaultHomepageConfig.collaborations, ...data.collaborations },
         partnersSection: { ...defaultHomepageConfig.partnersSection, ...data.partnersSection },
         socialMediaSection: { ...defaultHomepageConfig.socialMediaSection, ...data.socialMediaSection },

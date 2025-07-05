@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,13 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Separator } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
+import { getYoutubeVideoId } from '@/lib/utils';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -98,25 +100,25 @@ export default function AdminHomepageManagementPage() {
   const handleSectionTitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
     setConfig(prevConfig => {
       if (!prevConfig) return null;
-      const newConfig = { ...prevConfig };
-      if (newConfig[section]) {
-        (newConfig[section] as any).title[lang] = value;
-      }
-      return newConfig;
-    });
-  };
-  
-  const handleSectionDescriptionChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = { ...prevConfig };
-      if (newConfig[section]) {
-        (newConfig[section] as any).description[lang] = value;
+      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
+      if (newConfig[section] && newConfig[section].title) {
+        newConfig[section].title[lang] = value;
       }
       return newConfig;
     });
   };
 
+  const handleSectionSubtitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
+    setConfig(prevConfig => {
+      if (!prevConfig) return null;
+      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
+      if (newConfig[section] && (newConfig[section] as any).subtitle) {
+        (newConfig[section] as any).subtitle[lang] = value;
+      }
+      return newConfig;
+    });
+  };
+  
   const addHeroBanner = () => {
     setConfig(prev => prev ? ({
       ...prev,
@@ -145,6 +147,25 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addFreeClass = () => {
+    setConfig(prev => {
+      if (!prev) return null;
+      const freeClassesSection = prev.freeClassesSection || { display: true, title: { bn: '', en: '' }, subtitle: {bn: '', en: ''}, classes: []};
+      const newClass = {
+        id: `fc_${Date.now()}`,
+        title: 'New Free Class',
+        youtubeUrl: '',
+        subject: '',
+        instructor: '',
+        grade: 'ক্লাস ৯'
+      };
+      return {
+        ...prev,
+        freeClassesSection: { ...freeClassesSection, classes: [...freeClassesSection.classes, newClass]}
+      };
+    });
+  };
+
   const removeHeroBanner = (id: number) => {
     setConfig(prev => prev ? ({
       ...prev,
@@ -161,6 +182,14 @@ export default function AdminHomepageManagementPage() {
             ...prev,
             partnersSection: { ...partnersSection, partners: newPartners }
         };
+    });
+  };
+  
+  const removeFreeClass = (id: string) => {
+    setConfig(prev => {
+      if (!prev || !prev.freeClassesSection) return null;
+      const updatedClasses = prev.freeClassesSection.classes.filter(c => c.id !== id);
+      return { ...prev, freeClassesSection: { ...prev.freeClassesSection, classes: updatedClasses }};
     });
   };
 
@@ -203,6 +232,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'admissionSection', label: 'Admission Section' },
     { key: 'jobPrepSection', label: 'Job Prep Section' },
     { key: 'whyChooseUs', label: 'Why Choose Us Section' },
+    { key: 'freeClassesSection', label: 'Free Classes Section' },
     { key: 'collaborations', label: 'Collaborations Section' },
     { key: 'partnersSection', label: 'Partners Section' },
     { key: 'socialMediaSection', label: 'Social Media Section' },
@@ -347,6 +377,46 @@ export default function AdminHomepageManagementPage() {
 
             <Card>
                 <CardHeader>
+                    <CardTitle>Free Classes Section</CardTitle>
+                    <CardDescription>Manage the "আমাদের সকল ফ্রি ক্লাসসমূহ" section.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Section Title (Bangla)</Label>
+                            <Input value={config.freeClassesSection.title.bn} onChange={e => handleSectionTitleChange('freeClassesSection', 'bn', e.target.value)} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Section Subtitle (Bangla)</Label>
+                            <Input value={config.freeClassesSection.subtitle.bn} onChange={e => handleSectionSubtitleChange('freeClassesSection', 'bn', e.target.value)} />
+                        </div>
+                    </div>
+                    
+                    {config.freeClassesSection.classes.map((item, index) => {
+                        const videoId = getYoutubeVideoId(item.youtubeUrl);
+                        const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/default.jpg` : 'https://placehold.co/120x90.png?text=Invalid';
+                        return (
+                            <div key={item.id} className="p-4 border rounded-lg space-y-2 relative">
+                                <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeFreeClass(item.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                <div className="flex items-start gap-4">
+                                    <Image src={thumbnailUrl} alt="Thumbnail" width={120} height={90} className="rounded-md object-cover bg-muted" />
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 flex-grow">
+                                        <div className="col-span-2 space-y-1"><Label>Class Title</Label><Input value={item.title} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'title', e.target.value, index)} /></div>
+                                        <div className="space-y-1"><Label>Subject</Label><Input value={item.subject} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'subject', e.target.value, index)} /></div>
+                                        <div className="space-y-1"><Label>Instructor</Label><Input value={item.instructor} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'instructor', e.target.value, index)} /></div>
+                                        <div className="col-span-2 space-y-1"><Label>YouTube URL</Label><Input value={item.youtubeUrl} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'youtubeUrl', e.target.value, index)} /></div>
+                                        <div className="col-span-2 space-y-1"><Label>Grade</Label><Input value={item.grade} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'grade', e.target.value, index)} placeholder="e.g., ক্লাস ৯"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                    <Button variant="outline" className="w-full border-dashed" onClick={addFreeClass}><PlusCircle className="mr-2"/>Add Free Class</Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
                     <CardTitle>Stats Section</CardTitle>
                     <CardDescription>Manage the "লক্ষাধিক শিক্ষার্থীর পথচলা" section.</CardDescription>
                 </CardHeader>
@@ -419,7 +489,7 @@ export default function AdminHomepageManagementPage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Section Description (Bangla)</Label>
-                        <Textarea value={config.socialMediaSection.description.bn} onChange={e => handleSectionDescriptionChange('socialMediaSection', 'bn', e.target.value)} />
+                        <Textarea value={config.socialMediaSection.description.bn} onChange={e => handleSectionTitleChange('socialMediaSection', 'bn', e.target.value)} />
                     </div>
                     {config.socialMediaSection.channels.map((channel, index) => (
                         <div key={channel.id} className="p-4 border rounded-lg space-y-4">

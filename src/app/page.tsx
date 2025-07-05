@@ -24,6 +24,7 @@ import { DynamicTeachersCarousel } from '@/components/dynamic-teachers-carousel'
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-carousel';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
+import { FreeClassesSection } from '@/components/free-classes-section';
 
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
@@ -212,6 +213,12 @@ export default async function Home() {
               ))}
             </div>
           </div>
+        </section>
+      )}
+
+      {homepageConfig.freeClassesSection?.display && (
+        <section className="bg-background py-16" aria-labelledby="free-classes-heading">
+          <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
         </section>
       )}
 
