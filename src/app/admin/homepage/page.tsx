@@ -21,6 +21,7 @@ import { getYoutubeVideoId } from '@/lib/utils';
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
+type OfflineCenter = HomepageConfig['offlineHubSection']['centers'][0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -87,7 +88,7 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
-  const handleSectionInputChange = (section: keyof HomepageConfig, key: string, value: string | number) => {
+  const handleSectionInputChange = (section: keyof HomepageConfig, key: string, value: string | number | { bn: string; en: string }) => {
     setConfig(prevConfig => {
       if (!prevConfig) return null;
       const newConfig = { ...prevConfig };
@@ -261,6 +262,30 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addOfflineCenter = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newCenter: OfflineCenter = { id: Date.now().toString(), name: '', address: '' };
+        return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: [...prev.offlineHubSection.centers, newCenter] } };
+    });
+  };
+
+  const updateOfflineCenter = (id: string, field: 'name' | 'address', value: string) => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const updatedCenters = prev.offlineHubSection.centers.map(c => c.id === id ? { ...c, [field]: value } : c);
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: updatedCenters } };
+      });
+  };
+
+  const removeOfflineCenter = (id: string) => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const updatedCenters = prev.offlineHubSection.centers.filter(c => c.id !== id);
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: updatedCenters } };
+      });
+  };
+
   const sections = [
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
@@ -278,6 +303,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'notesBanner', label: 'Notes Banner' },
     { key: 'statsSection', label: 'Stats Section' },
     { key: 'appPromo', label: 'App Promo Section' },
+    { key: 'offlineHubSection', label: 'Offline Hub Section' },
   ] as const;
 
   const handleSectionToggle = (sectionKey: typeof sections[number]['key'], value: boolean) => {
@@ -394,6 +420,52 @@ export default function AdminHomepageManagementPage() {
                 <Button variant="outline" className="w-full border-dashed" onClick={addCategory}><PlusCircle className="mr-2"/>Add Category</Button>
               </CardContent>
           </Card>
+
+           <Card>
+              <CardHeader>
+                <CardTitle>Offline Hub Page Settings</CardTitle>
+                <CardDescription>Control the content on the RDC OFFLINE HUB page.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"> <Label>Title (Bangla)</Label> <Input value={config.offlineHubSection.title.bn} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /> </div>
+                  <div className="space-y-2"> <Label>Title (English)</Label> <Input value={config.offlineHubSection.title.en} onChange={e => handleSectionTitleChange('offlineHubSection', 'en', e.target.value)} /> </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"> <Label>Subtitle (Bangla)</Label> <Textarea value={config.offlineHubSection.subtitle.bn} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /> </div>
+                  <div className="space-y-2"> <Label>Subtitle (English)</Label> <Textarea value={config.offlineHubSection.subtitle.en} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'en', e.target.value)} /> </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"> <Label>Image URL</Label> <Input value={config.offlineHubSection.imageUrl} onChange={e => handleSectionInputChange('offlineHubSection', 'imageUrl', e.target.value)} /> </div>
+                  <div className="space-y-2"> <Label>Image AI Hint</Label> <Input value={config.offlineHubSection.dataAiHint} onChange={e => handleSectionInputChange('offlineHubSection', 'dataAiHint', e.target.value)} /> </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"> <Label>Button 1 Text (BN)</Label> <Input value={config.offlineHubSection.button1Text.bn} onChange={e => handleSectionInputChange('offlineHubSection', 'button1Text', { ...config.offlineHubSection.button1Text, bn: e.target.value })} /> </div>
+                  <div className="space-y-2"> <Label>Button 1 Text (EN)</Label> <Input value={config.offlineHubSection.button1Text.en} onChange={e => handleSectionInputChange('offlineHubSection', 'button1Text', { ...config.offlineHubSection.button1Text, en: e.target.value })} /> </div>
+                  <div className="space-y-2"> <Label>Button 2 Text (BN)</Label> <Input value={config.offlineHubSection.button2Text.bn} onChange={e => handleSectionInputChange('offlineHubSection', 'button2Text', { ...config.offlineHubSection.button2Text, bn: e.target.value })} /> </div>
+                  <div className="space-y-2"> <Label>Button 2 Text (EN)</Label> <Input value={config.offlineHubSection.button2Text.en} onChange={e => handleSectionInputChange('offlineHubSection', 'button2Text', { ...config.offlineHubSection.button2Text, en: e.target.value })} /> </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"> <Label>Centers Title (BN)</Label> <Input value={config.offlineHubSection.centersTitle.bn} onChange={e => handleSectionInputChange('offlineHubSection', 'centersTitle', { ...config.offlineHubSection.centersTitle, bn: e.target.value })} /> </div>
+                  <div className="space-y-2"> <Label>Centers Title (EN)</Label> <Input value={config.offlineHubSection.centersTitle.en} onChange={e => handleSectionInputChange('offlineHubSection', 'centersTitle', { ...config.offlineHubSection.centersTitle, en: e.target.value })} /> </div>
+                </div>
+                <div>
+                    <Label>Center Locations</Label>
+                    <div className="space-y-2 mt-2">
+                        {config.offlineHubSection.centers.map(center => (
+                            <div key={center.id} className="p-2 border rounded-md flex gap-2 items-start">
+                                <div className="flex-grow space-y-2">
+                                    <Input placeholder="Center Name (e.g., Uttara, Dhaka)" value={center.name} onChange={e => updateOfflineCenter(center.id, 'name', e.target.value)} />
+                                    <Textarea placeholder="Full Address" value={center.address} onChange={e => updateOfflineCenter(center.id, 'address', e.target.value)} rows={2}/>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => removeOfflineCenter(center.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            </div>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="w-full mt-2" onClick={addOfflineCenter}><PlusCircle className="mr-2"/>Add Center</Button>
+                </div>
+              </CardContent>
+            </Card>
           
            <Card>
               <CardHeader>

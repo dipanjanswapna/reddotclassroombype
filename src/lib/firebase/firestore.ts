@@ -1,4 +1,5 @@
 
+
 import { db } from './config';
 import {
   collection,
@@ -339,6 +340,23 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: "fc6", title: "দৈর্ঘ্য মাপি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "ক্লাস ৬" },
     ]
   },
+   offlineHubSection: {
+    display: true,
+    title: { bn: "RDC অফলাইন হাব", en: "RDC Offline Hub" },
+    subtitle: { bn: "অনলাইনে গত ৯ বছর ধরে লক্ষ লক্ষ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা নিয়ে এবার আমরা সামনাসামনি পড়াবো। এখন, আপনি অত্যাধুনিক মাল্টিমিডিয়া ক্লাসরুমে বসে, দেশের সেরা শিক্ষকদের কাছ থেকে সরাসরি শিখতে পারবেন।", en: "With 9 years of experience teaching millions of students online, we are now teaching face-to-face. Now, you can learn directly from the country's best teachers in a state-of-the-art multimedia classroom." },
+    imageUrl: "https://placehold.co/600x400.png",
+    dataAiHint: "classroom teacher",
+    button1Text: { bn: "ফ্রি ক্লাস বুক করুন", en: "Book Free Class" },
+    button1Url: "#",
+    button2Text: { bn: "লিফলেট ডাউনলোড করুন", en: "Download Leaflet" },
+    button2Url: "#",
+    centersTitle: { bn: "আমাদের সেন্টারসমূহ", en: "Our Centers" },
+    centers: [
+      { id: "center1", name: "উত্তরা, ঢাকা", address: "লিফট: ৮, হাউজ: ২, রোড: ৭, সেক্টর: ৩, উত্তরা, ঢাকা (রাজলক্ষী কমপ্লেক্সের পেছনে)" },
+      { id: "center2", name: "পান্থপথ, ঢাকা", address: "লিফট: ২, হাউজ: ১৪৭/ এ/২, গ্রীন রোড, পান্থপথ, ঢাকা (পান্থপথ সিগন্যালের উত্তরে)" },
+      { id: "center3", name: "মিরপুর, ঢাকা", address: "লিফট: ৭, প্লট: ১১৪, রোড: ১০, ঢাকা (মেট্রোরেল)" },
+    ],
+  },
   collaborations: {
     display: true,
     title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
@@ -438,6 +456,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
         whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
         freeClassesSection: { ...defaultHomepageConfig.freeClassesSection, ...data.freeClassesSection },
+        offlineHubSection: { ...defaultHomepageConfig.offlineHubSection, ...data.offlineHubSection },
         collaborations: { ...defaultHomepageConfig.collaborations, ...data.collaborations },
         partnersSection: { ...defaultHomepageConfig.partnersSection, ...data.partnersSection },
         socialMediaSection: { ...defaultHomepageConfig.socialMediaSection, ...data.socialMediaSection },

@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -434,6 +435,23 @@ export type HomepageConfig = {
     title: { [key: string]: string };
     subtitle: { [key: string]: string };
     classes: FreeClass[];
+  };
+  offlineHubSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    imageUrl: string;
+    dataAiHint: string;
+    button1Text: { [key: string]: string };
+    button1Url: string;
+    button2Text: { [key: string]: string };
+    button2Url: string;
+    centersTitle: { [key: string]: string };
+    centers: {
+      id: string;
+      name: string;
+      address: string;
+    }[];
   };
   collaborations: {
     display: boolean;
