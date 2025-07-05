@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -61,6 +61,49 @@ export default async function OfflineHubPage() {
                 </div>
             </div>
         </div>
+      
+      {offlineHubData.programs && offlineHubData.programs.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="font-headline text-3xl font-bold text-center mb-12">
+            {offlineHubData.programsTitle?.[language] || "আমাদের প্রোগ্রামসমূহ"}
+          </h2>
+          <div className="space-y-8 max-w-5xl mx-auto">
+            {offlineHubData.programs.map((program) => (
+              <div key={program.id} className="p-8 border border-red-500/30 bg-red-900/20 rounded-xl grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <h3 className="font-headline text-4xl font-bold mb-6">{program.title}</h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8">
+                    {program.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-red-400 mt-1 shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg">
+                      <Link href={program.button1Url}>{program.button1Text}</Link>
+                    </Button>
+                    <Button asChild variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
+                      <Link href={program.button2Url}>{program.button2Text}</Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex justify-center items-center">
+                  <Image
+                    src={program.imageUrl}
+                    alt={program.title}
+                    width={500}
+                    height={350}
+                    className="rounded-xl object-cover"
+                    data-ai-hint={program.dataAiHint}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container mx-auto px-4 py-16">
          <h2 className="font-headline text-3xl font-bold text-center mb-12">
@@ -90,4 +133,3 @@ export default async function OfflineHubPage() {
     </div>
   );
 }
-

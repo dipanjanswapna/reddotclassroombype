@@ -356,6 +356,25 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: "center2", name: "পান্থপথ, ঢাকা", address: "লিফট: ২, হাউজ: ১৪৭/ এ/২, গ্রীন রোড, পান্থপথ, ঢাকা (পান্থপথ সিগন্যালের উত্তরে)" },
       { id: "center3", name: "মিরপুর, ঢাকা", address: "লিফট: ৭, প্লট: ১১৪, রোড: ১০, ঢাকা (মেট্রোরেল)" },
     ],
+    programsTitle: { bn: "আমাদের প্রোগ্রামসমূহ", en: "Our Programs" },
+    programs: [
+      {
+        id: "program1",
+        title: "Spoken English (Junior)",
+        imageUrl: "https://i.imgur.com/rCne6ZJ.png",
+        dataAiHint: "students learning english",
+        features: [
+          "Game ও অ্যাক্টিভিটির মাধ্যমে সহজে ইংরেজি শেখা",
+          "Poster Presentation, Grammar ও Writing ওয়ার্কশপ",
+          "পার্সোনাল Consultation ও Speaking সাপোর্ট",
+          "Parents মিটিং ও Progress রিপোর্ট",
+        ],
+        button1Text: "ফ্রি ক্লাস বুক করুন",
+        button1Url: "#",
+        button2Text: "আরো বিস্তারিত জানুন",
+        button2Url: "#",
+      }
+    ]
   },
   collaborations: {
     display: true,

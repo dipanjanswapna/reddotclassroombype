@@ -345,6 +345,18 @@ export type FreeClass = {
   grade: string;
 };
 
+export type OfflineHubProgram = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  dataAiHint: string;
+  features: string[];
+  button1Text: string;
+  button1Url: string;
+  button2Text: string;
+  button2Url: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -452,6 +464,8 @@ export type HomepageConfig = {
       name: string;
       address: string;
     }[];
+    programsTitle?: { [key: string]: string };
+    programs: OfflineHubProgram[];
   };
   collaborations: {
     display: boolean;

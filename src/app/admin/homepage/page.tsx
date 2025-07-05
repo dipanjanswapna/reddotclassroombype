@@ -9,14 +9,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig } from '@/lib/types';
+import { HomepageConfig, OfflineHubProgram } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
 import { getYoutubeVideoId } from '@/lib/utils';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -286,6 +287,69 @@ export default function AdminHomepageManagementPage() {
       });
   };
 
+  const handleProgramChange = (index: number, field: keyof Omit<OfflineHubProgram, 'id' | 'features'>, value: string) => {
+      setConfig(prev => {
+          if (!prev || !prev.offlineHubSection.programs) return null;
+          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
+          newPrograms[index][field] = value;
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
+      });
+  };
+
+  const handleProgramFeatureChange = (progIndex: number, featIndex: number, value: string) => {
+      setConfig(prev => {
+          if (!prev || !prev.offlineHubSection.programs) return null;
+          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
+          newPrograms[progIndex].features[featIndex] = value;
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
+      });
+  };
+
+  const addProgramFeature = (progIndex: number) => {
+      setConfig(prev => {
+          if (!prev || !prev.offlineHubSection.programs) return null;
+          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
+          newPrograms[progIndex].features.push('');
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
+      });
+  };
+
+  const removeProgramFeature = (progIndex: number, featIndex: number) => {
+      setConfig(prev => {
+          if (!prev || !prev.offlineHubSection.programs) return null;
+          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
+          newPrograms[progIndex].features.splice(featIndex, 1);
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
+      });
+  };
+
+  const addProgram = () => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const newProgram: OfflineHubProgram = {
+              id: Date.now().toString(),
+              title: 'New Program',
+              imageUrl: 'https://placehold.co/600x400.png',
+              dataAiHint: 'program students',
+              features: ['New Feature 1', 'New Feature 2'],
+              button1Text: 'Book Now',
+              button1Url: '#',
+              button2Text: 'Learn More',
+              button2Url: '#',
+          };
+          const programs = prev.offlineHubSection.programs ? [...prev.offlineHubSection.programs, newProgram] : [newProgram];
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs } };
+      });
+  };
+
+  const removeProgram = (id: string) => {
+      setConfig(prev => {
+          if (!prev || !prev.offlineHubSection.programs) return null;
+          const updatedPrograms = prev.offlineHubSection.programs.filter(p => p.id !== id);
+          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: updatedPrograms } };
+      });
+  };
+
   const sections = [
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
@@ -464,6 +528,56 @@ export default function AdminHomepageManagementPage() {
                     </div>
                     <Button variant="outline" className="w-full mt-2" onClick={addOfflineCenter}><PlusCircle className="mr-2"/>Add Center</Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Offline Hub Programs</CardTitle>
+                <CardDescription>Manage the program cards on the offline hub page.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Programs Section Title (Bangla)</Label>
+                        <Input value={config.offlineHubSection.programsTitle?.bn || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, offlineHubSection: { ...prev.offlineHubSection, programsTitle: { ...prev.offlineHubSection.programsTitle, bn: e.target.value } } }) : null)} />
+                    </div>
+                 </div>
+                 {config.offlineHubSection.programs?.map((program, progIndex) => (
+                   <Collapsible key={program.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-semibold pt-2">Program {progIndex + 1}: {program.title}</h4>
+                      <div>
+                        <Button variant="ghost" size="icon" onClick={() => removeProgram(program.id)}><X className="text-destructive h-4 w-4"/></Button>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button>
+                        </CollapsibleTrigger>
+                      </div>
+                    </div>
+                     <CollapsibleContent className="space-y-4">
+                        <div className="space-y-2"><Label>Title</Label><Input value={program.title} onChange={(e) => handleProgramChange(progIndex, 'title', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Image URL</Label><Input value={program.imageUrl} onChange={(e) => handleProgramChange(progIndex, 'imageUrl', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button 1 Text</Label><Input value={program.button1Text} onChange={(e) => handleProgramChange(progIndex, 'button1Text', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button 1 URL</Label><Input value={program.button1Url} onChange={(e) => handleProgramChange(progIndex, 'button1Url', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button 2 Text</Label><Input value={program.button2Text} onChange={(e) => handleProgramChange(progIndex, 'button2Text', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button 2 URL</Label><Input value={program.button2Url} onChange={(e) => handleProgramChange(progIndex, 'button2Url', e.target.value)} /></div>
+                        
+                        <div className="space-y-2">
+                          <Label>Features</Label>
+                          {program.features.map((feature, featIndex) => (
+                            <div key={featIndex} className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500 shrink-0"/>
+                              <Input value={feature} onChange={(e) => handleProgramFeatureChange(progIndex, featIndex, e.target.value)} />
+                              <Button variant="ghost" size="icon" onClick={() => removeProgramFeature(progIndex, featIndex)}><X className="h-4 w-4 text-destructive"/></Button>
+                            </div>
+                          ))}
+                           <Button variant="outline" size="sm" onClick={() => addProgramFeature(progIndex)}><PlusCircle className="mr-2"/>Add Feature</Button>
+                        </div>
+
+                     </CollapsibleContent>
+                   </Collapsible>
+                 ))}
+                 <Button variant="outline" className="w-full border-dashed" onClick={addProgram}><PlusCircle className="mr-2"/>Add Program</Button>
               </CardContent>
             </Card>
           
