@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Cpu, MemoryStick, Monitor, Users, Search, BarChartHorizontal, Wind, Gauge } from 'lucide-react';
+import { Cpu, MemoryStick, Monitor, Users, Search, BarChartHorizontal, Wind, Gauge as GaugeIcon } from 'lucide-react';
 
 const generateInitialTrafficData = () => {
   const data = [];
@@ -23,9 +23,49 @@ const speedInsightData = [
     { name: 'LCP', value: 2.5, unit: 's' },
     { name: 'CLS', value: 0.08, unit: '' },
     { name: 'TTFB', value: 0.6, unit: 's' },
-]
+];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
+// A reusable gauge chart component for displaying scores.
+const Gauge = ({ value, title }: { value: number; title: string }) => {
+  const color = value >= 90 ? 'hsl(var(--chart-2))' : value >= 50 ? 'hsl(var(--warning))' : 'hsl(var(--destructive))';
+
+  const data = [
+    { name: 'Score', value: value, fill: color },
+    { name: 'Remaining', value: 100 - value, fill: 'hsl(var(--muted))' },
+  ];
+
+  return (
+    <div className="relative w-36 h-36">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            startAngle={180}
+            endAngle={-180}
+            innerRadius="80%"
+            outerRadius="100%"
+            dataKey="value"
+            stroke="none"
+            cornerRadius={5}
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-4xl font-bold" style={{ color: color }}>{value}</span>
+        <span className="text-sm font-medium text-muted-foreground mt-1">{title}</span>
+      </div>
+    </div>
+  );
+};
+
 
 export function AnalyticsClient() {
   const [realtime, setRealtime] = useState({
@@ -62,12 +102,9 @@ export function AnalyticsClient() {
     return () => clearInterval(interval);
   }, []);
 
-  const seoData = useMemo(() => [{name: 'SEO', value: realtime.seo}, {name: 'Empty', value: 100-realtime.seo}], [realtime.seo]);
-  const perfData = useMemo(() => [{name: 'Perf', value: realtime.performance}, {name: 'Empty', value: 100-realtime.performance}], [realtime.performance]);
-
   return (
       <div className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Live Visitors</CardTitle>
@@ -81,23 +118,21 @@ export function AnalyticsClient() {
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Performance Score</CardTitle>
-                    <Wind className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Performance</CardTitle>
+                    <GaugeIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{realtime.performance}%</div>
-                    <p className="text-xs text-muted-foreground">Based on Web Vitals</p>
+                <CardContent className="flex justify-center items-center pt-4">
+                   <Gauge value={realtime.performance} title="Score" />
                 </CardContent>
               </Card>
 
                <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">SEO Rank</CardTitle>
+                    <CardTitle className="text-sm font-medium">SEO</CardTitle>
                     <Search className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{realtime.seo}%</div>
-                    <p className="text-xs text-muted-foreground">Organic search visibility</p>
+                <CardContent className="flex justify-center items-center pt-4">
+                   <Gauge value={realtime.seo} title="Rank" />
                 </CardContent>
               </Card>
           </div>
