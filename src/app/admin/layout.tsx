@@ -17,6 +17,7 @@ import {
   Handshake,
   Badge,
   Notebook,
+  BarChartHorizontal,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -61,6 +62,7 @@ export default function AdminLayout({
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
         { href: "/admin/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
         { href: "/admin/financials", icon: DollarSign, label: "Financials" },
+        { href: "/admin/analytics", icon: BarChartHorizontal, label: "Analytics" },
         { href: "/admin/reports", icon: AreaChart, label: "Reports" },
         { href: "/admin/settings", icon: Settings, label: "Settings" },
         { href: "/admin/id-card", icon: Badge, label: "ID Card" },
