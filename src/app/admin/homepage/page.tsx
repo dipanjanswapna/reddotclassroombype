@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -579,6 +580,18 @@ export default function AdminHomepageManagementPage() {
                  <Button variant="outline" className="w-full border-dashed" onClick={addProgram}><PlusCircle className="mr-2"/>Add Program</Button>
               </CardContent>
             </Card>
+
+            <Card>
+                <CardHeader><CardTitle>Offline Hub Contact Section</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                     <div className="space-y-2"> <Label>Title (Bangla)</Label> <Input value={config.offlineHubSection.contactSection.title.bn} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.title.bn = e.target.value; setConfig(newConfig); }} /> </div>
+                     <div className="space-y-2"> <Label>Subtitle (Bangla)</Label> <Textarea value={config.offlineHubSection.contactSection.subtitle.bn} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.subtitle.bn = e.target.value; setConfig(newConfig); }} /> </div>
+                     <div className="space-y-2"> <Label>Call Button Text (Bangla)</Label> <Input value={config.offlineHubSection.contactSection.callButtonText.bn} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.callButtonText.bn = e.target.value; setConfig(newConfig); }} /> </div>
+                     <div className="space-y-2"> <Label>Call Button Number</Label> <Input value={config.offlineHubSection.contactSection.callButtonNumber} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.callButtonNumber = e.target.value; setConfig(newConfig); }} /> </div>
+                     <div className="space-y-2"> <Label>WhatsApp Button Text (Bangla)</Label> <Input value={config.offlineHubSection.contactSection.whatsappButtonText.bn} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.whatsappButtonText.bn = e.target.value; setConfig(newConfig); }} /> </div>
+                     <div className="space-y-2"> <Label>WhatsApp Number</Label> <Input value={config.offlineHubSection.contactSection.whatsappNumber} onChange={e => { const newConfig = JSON.parse(JSON.stringify(config)); newConfig.offlineHubSection.contactSection.whatsappNumber = e.target.value; setConfig(newConfig); }} /> </div>
+                </CardContent>
+            </Card>
           
            <Card>
               <CardHeader>
@@ -927,4 +940,3 @@ export default function AdminHomepageManagementPage() {
     </div>
   );
 }
-

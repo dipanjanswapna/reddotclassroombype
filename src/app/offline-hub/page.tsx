@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
-import { ArrowRight, CheckCircle, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -130,6 +130,34 @@ export default async function OfflineHubPage() {
             ))}
          </div>
       </section>
+
+      {offlineHubData.contactSection?.display && (
+        <section className="py-16">
+            <div className="container mx-auto px-4">
+                <div className="bg-gradient-to-br from-red-800 via-red-900 to-black rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+                    <div className="absolute top-0 left-0 -m-12 w-48 h-48 bg-white/5 rounded-full"></div>
+                    <div className="relative z-10">
+                        <div className="inline-block p-4 bg-white/10 rounded-full mb-4">
+                            <Phone className="w-8 h-8" />
+                        </div>
+                        <h2 className="font-headline text-3xl font-bold">{offlineHubData.contactSection.title[language]}</h2>
+                        <p className="mt-2 text-lg text-gray-300 max-w-lg mx-auto">{offlineHubData.contactSection.subtitle[language]}</p>
+                        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg w-full sm:w-auto">
+                                <a href={`tel:${offlineHubData.contactSection.callButtonNumber}`}>{offlineHubData.contactSection.callButtonText[language]}</a>
+                            </Button>
+                            <span className="font-semibold">{language === 'bn' ? 'অথবা' : 'OR'}</span>
+                            <Button asChild variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg w-full sm:w-auto">
+                                <a href={`https://wa.me/${offlineHubData.contactSection.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                    {offlineHubData.contactSection.whatsappButtonText[language]}
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -374,7 +374,16 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
         button2Text: "আরো বিস্তারিত জানুন",
         button2Url: "#",
       }
-    ]
+    ],
+    contactSection: {
+      display: true,
+      title: { bn: "কোনো প্রশ্ন আছে?", en: "Have a Question?" },
+      subtitle: { bn: "যেকোনো সময় আমাদের স্টুডেন্ট অ্যাডভাইজরের সাথে কথা বলুন।", en: "Talk to our student advisors anytime." },
+      callButtonText: { bn: "কল করুন 01641035736", en: "Call 01641035736" },
+      callButtonNumber: "01641035736",
+      whatsappButtonText: { bn: "WhatsApp-এ মেসেজ দিন", en: "Message on WhatsApp" },
+      whatsappNumber: "8801641035736",
+    },
   },
   collaborations: {
     display: true,
@@ -475,7 +484,14 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
         whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
         freeClassesSection: { ...defaultHomepageConfig.freeClassesSection, ...data.freeClassesSection },
-        offlineHubSection: { ...defaultHomepageConfig.offlineHubSection, ...data.offlineHubSection },
+        offlineHubSection: { 
+            ...defaultHomepageConfig.offlineHubSection, 
+            ...data.offlineHubSection,
+            contactSection: {
+                ...defaultHomepageConfig.offlineHubSection.contactSection,
+                ...(data.offlineHubSection?.contactSection || {}),
+            }
+        },
         collaborations: { ...defaultHomepageConfig.collaborations, ...data.collaborations },
         partnersSection: { ...defaultHomepageConfig.partnersSection, ...data.partnersSection },
         socialMediaSection: { ...defaultHomepageConfig.socialMediaSection, ...data.socialMediaSection },

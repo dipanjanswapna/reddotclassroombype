@@ -357,6 +357,16 @@ export type OfflineHubProgram = {
   button2Url: string;
 };
 
+export type OfflineHubContactSection = {
+  display: boolean;
+  title: { [key: string]: string };
+  subtitle: { [key: string]: string };
+  callButtonText: { [key: string]: string };
+  callButtonNumber: string;
+  whatsappButtonText: { [key: string]: string };
+  whatsappNumber: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -466,6 +476,7 @@ export type HomepageConfig = {
     }[];
     programsTitle?: { [key: string]: string };
     programs: OfflineHubProgram[];
+    contactSection: OfflineHubContactSection;
   };
   collaborations: {
     display: boolean;
