@@ -26,7 +26,8 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/signup') ||
     pathname.startsWith('/seller-program/apply') ||
-    pathname.startsWith('/password-reset');
+    pathname.startsWith('/password-reset') ||
+    pathname.startsWith('/offline-hub');
 
   if (isFullPageLayout) {
     return <>{children}</>;
