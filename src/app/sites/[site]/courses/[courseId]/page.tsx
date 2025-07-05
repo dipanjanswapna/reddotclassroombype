@@ -147,7 +147,7 @@ export default async function PartnerCourseDetailPage({
                     <h2 className="font-headline text-3xl font-bold mb-6">What you'll learn</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         {course.whatYouWillLearn.map((item, index) => (
-                            <div key={index} className="flex items-start gap-3">
+                            <div key={`learn-${index}`} className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-primary mt-1 shrink-0" />
                                 <p className='text-muted-foreground'>{item}</p>
                             </div>
@@ -199,7 +199,7 @@ export default async function PartnerCourseDetailPage({
                                 </TableHeader>
                                 <TableBody>
                                     {course.classRoutine.map((item, index) => (
-                                        <TableRow key={index}>
+                                        <TableRow key={`routine-${item.day}-${index}`}>
                                             <TableCell className="font-medium">{item.day}</TableCell>
                                             <TableCell>{item.subject}</TableCell>
                                             <TableCell>{item.time}</TableCell>
@@ -219,7 +219,7 @@ export default async function PartnerCourseDetailPage({
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
                   {course.syllabus.map((item, index) => (
-                    <AccordionItem value={`item-${index}`} key={index}>
+                    <AccordionItem value={`item-${index}`} key={item.id}>
                       <AccordionTrigger className="text-lg font-semibold">
                         <div className="flex items-center gap-3">
                            <BookOpen className="w-6 h-6 text-primary"/>
@@ -284,7 +284,7 @@ export default async function PartnerCourseDetailPage({
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
                   {course.faqs.map((faq, index) => (
-                    <AccordionItem value={`faq-${index}`} key={index}>
+                    <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`}>
                       <AccordionTrigger className="font-semibold text-left">
                         {faq.question}
                       </AccordionTrigger>
@@ -329,7 +329,7 @@ export default async function PartnerCourseDetailPage({
                       </h3>
                       <ul className="space-y-2 text-sm">
                         {course.features?.slice(0, 5).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                          <li key={`feature-${index}`} className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             <span>{feature}</span>
                           </li>

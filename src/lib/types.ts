@@ -187,7 +187,6 @@ export type Course = {
   whatYouWillLearn?: string[];
   syllabus?: SyllabusModule[];
   features?: string[];
-  features_detailed?: { title: string; description: string }[];
   imageTitle?: string;
   classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
   faqs?: { question: string; answer: string; id?: string; }[];

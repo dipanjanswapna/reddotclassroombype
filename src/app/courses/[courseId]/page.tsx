@@ -212,7 +212,7 @@ export default async function CourseDetailPage({
                                 </TableHeader>
                                 <TableBody>
                                     {course.classRoutine.map((item, index) => (
-                                        <TableRow key={`routine-${index}`}>
+                                        <TableRow key={`routine-${item.day}-${index}`}>
                                             <TableCell className="font-medium">{item.day}</TableCell>
                                             <TableCell>{item.subject}</TableCell>
                                             <TableCell>{item.time}</TableCell>
@@ -297,7 +297,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
                   {course.faqs.map((faq, index) => (
-                    <AccordionItem value={`faq-${index}`} key={`faq-${index}`}>
+                    <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`}>
                       <AccordionTrigger className="font-semibold text-left">
                         {faq.question}
                       </AccordionTrigger>
@@ -349,7 +349,7 @@ export default async function CourseDetailPage({
                       </h3>
                       <ul className="space-y-2 text-sm">
                         {course.features?.slice(0, 5).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
+                          <li key={`feature-${index}`} className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             <span>{feature}</span>
                           </li>

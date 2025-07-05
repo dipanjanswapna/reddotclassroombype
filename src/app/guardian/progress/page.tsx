@@ -19,12 +19,14 @@ import { Assignment, Course, Enrollment } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import { safeToDate } from '@/lib/utils';
 
 type GradedAssignment = Assignment & {
     courseName: string;
 };
 
-function getGradeColor(grade: string) {
+function getGradeColor(grade: string | undefined) {
+    if (!grade) return 'bg-gray-500 text-white';
     if (grade.startsWith('A')) return 'bg-green-500 text-white';
     if (grade.startsWith('B')) return 'bg-yellow-500 text-white';
     if (grade.startsWith('C')) return 'bg-orange-500 text-white';
@@ -83,7 +85,7 @@ export default function GuardianProgressPage() {
                     });
                 }
             });
-            setGradedAssignments(assignments.sort((a,b) => new Date(b.submissionDate as string).getTime() - new Date(a.submissionDate as string).getTime()));
+            setGradedAssignments(assignments.sort((a,b) => safeToDate(b.submissionDate).getTime() - safeToDate(a.submissionDate).getTime()));
 
             // Calculate stats
             const overallCompletion = enrollments.length > 0 
@@ -183,10 +185,10 @@ export default function GuardianProgressPage() {
                   <TableCell className="font-medium">{item.courseName}</TableCell>
                   <TableCell>{item.title}</TableCell>
                   <TableCell className="text-center">
-                    <Badge className={getGradeColor(item.grade || '')}>{item.grade}</Badge>
+                    <Badge className={getGradeColor(item.grade)}>{item.grade}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {item.submissionDate && format(parseISO(item.submissionDate as string), 'PPP')}
+                    {item.submissionDate && format(safeToDate(item.submissionDate), 'PPP')}
                   </TableCell>
                 </TableRow>
               ))}
