@@ -30,9 +30,7 @@ export function UserNav() {
   }
   
   if (!user || !userInfo) {
-    // This case should ideally not be hit if route protection is active, but it's a good fallback.
-    // It might be better to show nothing or a login button. For now, skeleton is fine.
-     return <Skeleton className="h-9 w-9 rounded-full" />;
+    return null;
   }
 
   const getDashboardLink = () => {

@@ -14,34 +14,31 @@ export default async function CoursesPage({
 }: {
   searchParams?: { [key: string]: string | undefined };
 }) {
-  const [courses, categories, providers] = await Promise.all([
-    getCourses(),
-    getCategories(),
-    getOrganizations(),
-  ]);
-
-  let activeCourses = courses.filter(course => course.status === 'Published' && !course.isArchived);
-  const archivedCourses = courses.filter(course => course.status === 'Published' && course.isArchived);
-  const approvedProviders = providers.filter(p => p.status === 'approved');
-  
-  const sortedCategories = [...categories].sort();
-  const allSubCategories = [...new Set(activeCourses.map(course => course.subCategory).filter(Boolean))] as string[];
-
-  // Server-side filtering
   const selectedCategory = searchParams?.category;
   const selectedSubCategory = searchParams?.subCategory;
   const selectedProvider = searchParams?.provider;
-  const hasFilters = !!(selectedCategory || selectedSubCategory || selectedProvider);
 
-  if (selectedCategory) {
-    activeCourses = activeCourses.filter(course => course.category === selectedCategory);
-  }
-  if (selectedSubCategory) {
-    activeCourses = activeCourses.filter(course => course.subCategory === selectedSubCategory);
-  }
-  if (selectedProvider) {
-    activeCourses = activeCourses.filter(course => course.organizationId === selectedProvider);
-  }
+  const [categories, providers, allCoursesData] = await Promise.all([
+    getCategories(),
+    getOrganizations(),
+    getCourses({ status: 'Published' }), // Fetch all published for filters
+  ]);
+
+  const filteredCourses = await getCourses({
+      category: selectedCategory,
+      subCategory: selectedSubCategory,
+      provider: selectedProvider,
+      status: 'Published'
+  });
+  
+  const activeCourses = filteredCourses.filter(course => !course.isArchived);
+  const archivedCourses = allCoursesData.filter(course => course.isArchived);
+  const approvedProviders = providers.filter(p => p.status === 'approved');
+  
+  const sortedCategories = [...categories].sort();
+  const allSubCategories = [...new Set(allCoursesData.map(course => course.subCategory).filter(Boolean))] as string[];
+
+  const hasFilters = !!(selectedCategory || selectedSubCategory || selectedProvider);
 
   return (
     <CoursesPageClient 

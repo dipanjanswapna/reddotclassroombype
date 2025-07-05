@@ -33,7 +33,33 @@ async function getDocument<T>(collectionName: string, id: string): Promise<T | n
 }
 
 // Courses
-export const getCourses = () => getCollection<Course>('courses');
+export const getCourses = async (filters: {
+  category?: string;
+  subCategory?: string;
+  provider?: string;
+  status?: Course['status'];
+} = {}): Promise<Course[]> => {
+  const { category, subCategory, provider, status } = filters;
+  const coursesRef = collection(db, 'courses');
+  const constraints = [];
+
+  if (status) {
+    constraints.push(where("status", "==", status));
+  }
+  if (category) {
+    constraints.push(where("category", "==", category));
+  }
+  if (subCategory) {
+    constraints.push(where("subCategory", "==", subCategory));
+  }
+  if (provider) {
+    constraints.push(where("organizationId", "==", provider));
+  }
+
+  const q = constraints.length > 0 ? query(coursesRef, ...constraints) : query(coursesRef);
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
+};
 export const getCourse = (id: string) => getDocument<Course>('courses', id);
 export const getCoursesByIds = async (ids: string[]): Promise<Course[]> => {
   if (!ids || ids.length === 0) return [];
@@ -160,7 +186,7 @@ export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) 
 
 // Categories
 export const getCategories = async (): Promise<string[]> => {
-    const courses = await getCourses();
+    const courses = await getCollection<Course>('courses');
     const categories = new Set(courses.map(c => c.category));
     return Array.from(categories);
 }

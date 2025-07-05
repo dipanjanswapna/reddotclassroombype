@@ -21,6 +21,7 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { Notification } from '@/lib/types';
 import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
+import { Skeleton } from './ui/skeleton';
 
 const iconMap = {
     Award,
@@ -71,11 +72,7 @@ export function NotificationBell() {
   };
 
   if (authLoading) {
-      return (
-        <Button variant="ghost" size="icon" className="relative" disabled>
-            <Bell className="h-5 w-5 animate-pulse" />
-        </Button>
-      )
+      return <Skeleton className="h-9 w-9 rounded-full" />
   }
   
   if (!userInfo) {

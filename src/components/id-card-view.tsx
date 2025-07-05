@@ -1,10 +1,10 @@
 
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/button';
-import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse } from 'lucide-react';
+import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse, Loader2 } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -110,11 +110,13 @@ export function IdCardView({
 }: IdCardViewProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async () => {
     const element = printAreaRef.current;
     if (!element) return;
     
+    setIsDownloading(true);
     toast({ title: 'Generating PDF...', description: 'Please wait a moment.' });
 
     try {
@@ -160,6 +162,8 @@ export function IdCardView({
     } catch (error) {
         console.error("Failed to generate PDF:", error);
         toast({ title: 'Error', description: 'Could not generate PDF.', variant: 'destructive'});
+    } finally {
+        setIsDownloading(false);
     }
   };
 
@@ -248,8 +252,12 @@ export function IdCardView({
         </div>
         
         <div className="flex gap-4">
-            <Button onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" />
+            <Button onClick={handleDownload} disabled={isDownloading}>
+                {isDownloading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                )}
                 Download as PDF
             </Button>
         </div>
