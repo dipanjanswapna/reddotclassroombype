@@ -358,6 +358,17 @@ export type HomepageConfig = {
     autoplay: boolean;
     autoplayDelay: number;
   };
+  categoriesSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    categories: {
+      id: number;
+      title: string;
+      imageUrl: string;
+      linkUrl: string;
+      dataAiHint: string;
+    }[];
+  };
   journeySection: {
     display: boolean;
     title: { [key: string]: string };

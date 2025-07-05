@@ -25,6 +25,7 @@ import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaboratio
 import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-carousel';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { FreeClassesSection } from '@/components/free-classes-section';
+import { CategoriesCarousel } from '@/components/categories-carousel';
 
 
 const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
@@ -93,6 +94,17 @@ export default async function Home() {
               <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
               <DynamicLiveCoursesCarousel courses={liveCourses} />
             </div>
+          </div>
+        </section>
+      )}
+
+      {homepageConfig.categoriesSection.display && (
+        <section aria-labelledby="categories-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
+              {homepageConfig.categoriesSection.title[language]}
+            </h2>
+            <CategoriesCarousel categories={homepageConfig.categoriesSection.categories} />
           </div>
         </section>
       )}

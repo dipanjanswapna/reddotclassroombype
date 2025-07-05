@@ -20,6 +20,7 @@ import { getYoutubeVideoId } from '@/lib/utils';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
+type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -101,8 +102,8 @@ export default function AdminHomepageManagementPage() {
     setConfig(prevConfig => {
       if (!prevConfig) return null;
       const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
-      if (newConfig[section] && newConfig[section].title) {
-        newConfig[section].title[lang] = value;
+      if (newConfig[section] && (newConfig[section] as any).title) {
+        (newConfig[section] as any).title[lang] = value;
       }
       return newConfig;
     });
@@ -129,6 +130,23 @@ export default function AdminHomepageManagementPage() {
     }) : null);
   };
   
+  const addCategory = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newCategory = {
+            id: Date.now(),
+            title: 'New Category',
+            imageUrl: 'https://placehold.co/400x500.png',
+            linkUrl: '/courses',
+            dataAiHint: 'category placeholder',
+        };
+        return {
+            ...prev,
+            categoriesSection: { ...prev.categoriesSection, categories: [...prev.categoriesSection.categories, newCategory] }
+        };
+    });
+  };
+
   const addPartner = () => {
     setConfig(prev => {
         if (!prev) return null;
@@ -173,6 +191,16 @@ export default function AdminHomepageManagementPage() {
     }) : null);
   };
   
+  const removeCategory = (id: number) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            categoriesSection: { ...prev.categoriesSection, categories: prev.categoriesSection.categories.filter(c => c.id !== id) }
+        };
+    });
+  };
+
   const removePartner = (id: number) => {
     setConfig(prev => {
         if (!prev) return null;
@@ -202,6 +230,16 @@ export default function AdminHomepageManagementPage() {
         return { ...prev, heroBanners: newBanners };
     });
   };
+  
+  const handleCategoryChange = (index: number, field: keyof CategoryItem, value: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newCategories = [...prev.categoriesSection.categories];
+        const categoryToUpdate = { ...newCategories[index], [field]: value };
+        newCategories[index] = categoryToUpdate;
+        return { ...prev, categoriesSection: { ...prev.categoriesSection, categories: newCategories } };
+    });
+  };
 
   const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
     setConfig(prev => {
@@ -224,6 +262,7 @@ export default function AdminHomepageManagementPage() {
   };
 
   const sections = [
+    { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
     { key: 'teachersSection', label: 'Teachers Section' },
     { key: 'videoSection', label: 'Video Section' },
@@ -322,6 +361,38 @@ export default function AdminHomepageManagementPage() {
                     />
                 </div>
             </CardContent>
+          </Card>
+          
+          <Card>
+              <CardHeader>
+                <CardTitle>Categories Section</CardTitle>
+                <CardDescription>Manage the category cards shown on the homepage.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Section Title (Bangla)</Label>
+                        <Input value={config.categoriesSection.title.bn} onChange={e => handleSectionTitleChange('categoriesSection', 'bn', e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label>Section Title (English)</Label>
+                        <Input value={config.categoriesSection.title.en} onChange={e => handleSectionTitleChange('categoriesSection', 'en', e.target.value)} />
+                    </div>
+                </div>
+                {config.categoriesSection.categories.map((category, index) => (
+                  <div key={category.id} className="p-4 border rounded-lg space-y-2 relative">
+                    <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeCategory(category.id)}><X className="text-destructive h-4 w-4"/></Button>
+                    <h4 className="font-semibold">Category {index + 1}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1"><Label>Title</Label><Input value={category.title} onChange={(e) => handleCategoryChange(index, 'title', e.target.value)} /></div>
+                      <div className="space-y-1"><Label>Image URL</Label><Input value={category.imageUrl} onChange={(e) => handleCategoryChange(index, 'imageUrl', e.target.value)} /></div>
+                      <div className="space-y-1"><Label>Link URL</Label><Input value={category.linkUrl} onChange={(e) => handleCategoryChange(index, 'linkUrl', e.target.value)} /></div>
+                      <div className="space-y-1"><Label>Image AI Hint</Label><Input value={category.dataAiHint} onChange={(e) => handleCategoryChange(index, 'dataAiHint', e.target.value)} /></div>
+                    </div>
+                  </div>
+                ))}
+                <Button variant="outline" className="w-full border-dashed" onClick={addCategory}><PlusCircle className="mr-2"/>Add Category</Button>
+              </CardContent>
           </Card>
           
            <Card>

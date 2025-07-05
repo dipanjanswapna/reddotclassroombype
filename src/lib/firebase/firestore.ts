@@ -254,6 +254,18 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     autoplay: true,
     autoplayDelay: 5000,
   },
+  categoriesSection: {
+    display: true,
+    title: { bn: "ক্যাটাগরি", en: "Categories" },
+    categories: [
+      { id: 1, title: 'MOTION GRAPHIC', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Motion+Graphic', dataAiHint: 'motion graphic' },
+      { id: 2, title: 'ADVERTISEMENT', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Advertisement', dataAiHint: 'advertisement can' },
+      { id: 3, title: 'UI DESIGN', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=UI+Design', dataAiHint: 'ui design' },
+      { id: 4, title: 'LOGO DESIGN', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Logo+Design', dataAiHint: 'logo design' },
+      { id: 5, title: 'DIGITAL ART', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Digital+Art', dataAiHint: 'digital art' },
+      { id: 6, title: 'WEB DESIGN', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Web+Design', dataAiHint: 'web design' },
+    ]
+  },
   journeySection: {
     display: true,
     title: { bn: "আপনার শেখার যাত্রা শুরু করুন", en: "Start Your Learning Journey" },
@@ -416,6 +428,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         ...defaultHomepageConfig,
         ...data,
         heroCarousel: { ...defaultHomepageConfig.heroCarousel, ...data.heroCarousel },
+        categoriesSection: { ...defaultHomepageConfig.categoriesSection, ...data.categoriesSection },
         journeySection: { ...defaultHomepageConfig.journeySection, ...data.journeySection },
         teachersSection: { ...defaultHomepageConfig.teachersSection, ...data.teachersSection },
         videoSection: { ...defaultHomepageConfig.videoSection, ...data.videoSection },
