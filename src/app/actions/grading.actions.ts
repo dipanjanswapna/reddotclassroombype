@@ -55,3 +55,57 @@ export async function gradeAssignmentAction(
         return { success: false, message: error.message };
     }
 }
+
+
+export async function gradeExamAction(
+    courseId: string, 
+    studentId: string,
+    examId: string, 
+    marksObtained: number,
+    grade: string,
+    feedback: string
+) {
+    try {
+        const course = await getCourse(courseId);
+        if (!course || !course.exams) {
+            throw new Error("Course or exams not found.");
+        }
+
+        const exam = course.exams.find(e => e.id === examId && e.studentId === studentId);
+        if (!exam) {
+            throw new Error("Exam not found for this student.");
+        }
+
+        const updatedExams = course.exams.map(e => {
+            if (e.id === examId && e.studentId === studentId) {
+                return {
+                    ...e,
+                    status: 'Graded' as const,
+                    marksObtained,
+                    grade,
+                    feedback
+                };
+            }
+            return e;
+        });
+
+        await updateCourse(courseId, { exams: updatedExams });
+
+        await addNotification({
+            userId: studentId,
+            icon: 'Award',
+            title: `Exam Graded: ${exam.title}`,
+            description: `You scored ${marksObtained}/${exam.totalMarks} in "${course.title}".`,
+            date: Timestamp.now(),
+            read: false,
+            link: `/student/my-courses/${courseId}/exams`
+        });
+
+        revalidatePath(`/teacher/grading`);
+        revalidatePath(`/student/my-courses/${courseId}/exams`);
+        return { success: true, message: 'Exam graded successfully.' };
+
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}

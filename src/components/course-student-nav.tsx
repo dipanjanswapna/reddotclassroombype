@@ -13,6 +13,7 @@ import {
   Users,
   Video,
   Archive,
+  Award,
 } from 'lucide-react';
 import { Course } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ export function CourseStudentNav({ course }: { course: Course }) {
     { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
     { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
     { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
+    { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
     { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
     { href: `/student/my-courses/${courseId}/announcements`, label: 'Announcements', icon: Megaphone },
     { href: `/student/my-courses/${courseId}/community`, label: 'Community', icon: Users },

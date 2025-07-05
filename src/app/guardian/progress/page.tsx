@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, CheckCircle, Percent } from 'lucide-react';
+import { BarChart3, CheckCircle, Percent, Award } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -15,13 +15,17 @@ import {
 } from "@/components/ui/table";
 import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Assignment, Course, Enrollment } from '@/lib/types';
+import { Assignment, Course, Enrollment, Exam } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { safeToDate } from '@/lib/utils';
 
 type GradedAssignment = Assignment & {
+    courseName: string;
+};
+
+type GradedExam = Exam & {
     courseName: string;
 };
 
@@ -38,6 +42,7 @@ export default function GuardianProgressPage() {
   const { userInfo: guardian, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [gradedAssignments, setGradedAssignments] = useState<GradedAssignment[]>([]);
+  const [gradedExams, setGradedExams] = useState<GradedExam[]>([]);
   const [stats, setStats] = useState({
       overallCompletion: 0,
       averageScore: 0,
@@ -63,6 +68,7 @@ export default function GuardianProgressPage() {
             const enrolledCourses = allCourses.filter(c => enrolledCourseIds.includes(c.id!));
             
             const assignments: GradedAssignment[] = [];
+            const exams: GradedExam[] = [];
             let totalScore = 0;
             let gradedCount = 0;
 
@@ -74,7 +80,6 @@ export default function GuardianProgressPage() {
                                 ...assignment,
                                 courseName: course.title,
                             });
-                            // Simple score conversion for average
                             if (assignment.grade?.includes('A')) totalScore += 95;
                             else if (assignment.grade?.includes('B')) totalScore += 85;
                             else if (assignment.grade?.includes('C')) totalScore += 75;
@@ -84,10 +89,24 @@ export default function GuardianProgressPage() {
                         }
                     });
                 }
+                if(course.exams) {
+                    course.exams.forEach(exam => {
+                        if (exam.status === 'Graded' && exam.studentId === guardian.linkedStudentId) {
+                            exams.push({
+                                ...exam,
+                                courseName: course.title,
+                            });
+                            if(exam.marksObtained && exam.totalMarks > 0) {
+                                totalScore += (exam.marksObtained / exam.totalMarks) * 100;
+                                gradedCount++;
+                            }
+                        }
+                    });
+                }
             });
             setGradedAssignments(assignments.sort((a,b) => safeToDate(b.submissionDate).getTime() - safeToDate(a.submissionDate).getTime()));
+            setGradedExams(exams.sort((a,b) => safeToDate(b.examDate).getTime() - safeToDate(a.examDate).getTime()));
 
-            // Calculate stats
             const overallCompletion = enrollments.length > 0 
                 ? Math.round(enrollments.reduce((acc, e) => acc + e.progress, 0) / enrollments.length) 
                 : 0;
@@ -164,46 +183,79 @@ export default function GuardianProgressPage() {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-            <CardTitle>Recent Grade Report</CardTitle>
-            <CardDescription>Latest grades from assignments and quizzes.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Course</TableHead>
-                <TableHead>Assignment/Quiz</TableHead>
-                <TableHead className="text-center">Grade</TableHead>
-                <TableHead className="text-right">Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {gradedAssignments.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.courseName}</TableCell>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell className="text-center">
-                    <Badge className={getGradeColor(item.grade)}>{item.grade}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {item.submissionDate && format(safeToDate(item.submissionDate), 'PPP')}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {gradedAssignments.length === 0 && (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card>
+            <CardHeader>
+                <CardTitle>Recent Assignment Grades</CardTitle>
+                <CardDescription>Latest grades from assignments.</CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Table>
+                <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No graded assignments found.
-                  </TableCell>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Assignment</TableHead>
+                    <TableHead className="text-center">Grade</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                {gradedAssignments.map((item) => (
+                    <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.courseName}</TableCell>
+                    <TableCell>{item.title}</TableCell>
+                    <TableCell className="text-center">
+                        <Badge className={getGradeColor(item.grade)}>{item.grade}</Badge>
+                    </TableCell>
+                    </TableRow>
+                ))}
+                {gradedAssignments.length === 0 && (
+                    <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                        No graded assignments found.
+                    </TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
+            </CardContent>
+        </Card>
 
+        <Card>
+            <CardHeader>
+                <CardTitle>Recent Exam Results</CardTitle>
+                <CardDescription>Latest results from exams.</CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Exam</TableHead>
+                    <TableHead className="text-center">Score</TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody>
+                {gradedExams.map((item) => (
+                    <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.courseName}</TableCell>
+                    <TableCell>{item.title}</TableCell>
+                    <TableCell className="text-center">
+                        <Badge className={getGradeColor(item.grade)}>{item.marksObtained}/{item.totalMarks}</Badge>
+                    </TableCell>
+                    </TableRow>
+                ))}
+                {gradedExams.length === 0 && (
+                    <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                        No graded exams found.
+                    </TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
+            </CardContent>
+        </Card>
+       </div>
     </div>
   );
 }
