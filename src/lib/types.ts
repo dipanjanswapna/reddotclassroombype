@@ -289,6 +289,8 @@ export type User = {
     facebook?: string;
   };
   studyPlan?: StudyPlanEvent[];
+  currentSessionId?: string;
+  lastLoginAt?: Timestamp;
 };
 
 export type Enrollment = {

@@ -17,9 +17,10 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { getUserByUid, getHomepageConfig, getUserByClassRoll } from '@/lib/firebase/firestore';
-import { doc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 interface AuthContextType {
     user: FirebaseUser | null;
@@ -70,10 +71,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, fetchAndSetUser);
-        return () => unsubscribe();
+        const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+            fetchAndSetUser(firebaseUser);
+        });
+
+        return () => unsubscribeAuth();
     }, [fetchAndSetUser]);
     
+    // Single device login listener
+    useEffect(() => {
+        if (!userInfo || userInfo.role !== 'Student') {
+            return;
+        }
+
+        const userDocRef = doc(db, 'users', userInfo.uid);
+        const unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const userData = docSnap.data() as User;
+                const dbSessionId = userData.currentSessionId;
+                const clientSessionId = localStorage.getItem('rdc_session_id');
+
+                if (dbSessionId && clientSessionId && dbSessionId !== clientSessionId) {
+                    console.warn('New login detected from another device. Logging out this session.');
+                    toast({
+                        title: 'Logged Out',
+                        description: 'You have been logged out because your account was accessed from another device.',
+                        variant: 'destructive',
+                        duration: 5000,
+                    });
+                    logout();
+                }
+            }
+        });
+
+        return () => unsubscribeFirestore();
+    }, [userInfo]);
+
     const refreshUserInfo = useCallback(async () => {
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -101,13 +134,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         router.push(dashboardUrl);
     };
 
+    const handleStudentLoginSession = async (uid: string) => {
+        const newSessionId = uuidv4();
+        await updateDoc(doc(db, 'users', uid), {
+            currentSessionId: newSessionId,
+            lastLoginAt: serverTimestamp(),
+        });
+        localStorage.setItem('rdc_session_id', newSessionId);
+    };
+
     const login = async (email: string, pass: string, role?: User['role']) => {
         const config = await getHomepageConfig();
         if (!config) {
             throw new Error("Platform configuration is not available. Please try again later.");
         }
         
-        // Normalize 'Partner' role to 'Seller' for backward compatibility
         if (role && (role as any) === 'Partner') {
             role = 'Seller';
         }
@@ -139,7 +180,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
-        // Normalize stored 'Partner' role to 'Seller'
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
         }
@@ -162,6 +202,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
         
+        if (fetchedUserInfo.role === 'Student') {
+            await handleStudentLoginSession(fetchedUserInfo.uid);
+        }
+
         setUserInfo(fetchedUserInfo);
         redirectToDashboard(fetchedUserInfo, 'Login Successful!');
         return userCredential;
@@ -186,6 +230,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
     
+        await handleStudentLoginSession(studentInfo.uid);
         setUserInfo(studentInfo);
         redirectToDashboard(studentInfo, 'Login Successful!');
         return userCredential;
@@ -211,10 +256,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 await signOut(auth);
                 throw new Error("Your account is not active. Please contact support.");
             }
-            // Update avatar if it's a placeholder and a new one is available from the social provider
+
             if (user.photoURL && (!existingUserInfo.avatarUrl || existingUserInfo.avatarUrl.includes('placehold.co'))) {
                 await updateDoc(doc(db, "users", user.uid), { avatarUrl: user.photoURL });
-                existingUserInfo.avatarUrl = user.photoURL; // Update local state immediately
+                existingUserInfo.avatarUrl = user.photoURL;
             }
         } else {
             if (!config.platformSettings['Student']?.signupEnabled) {
@@ -224,6 +269,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             const searchParams = new URLSearchParams(window.location.search);
             const ref = searchParams.get('ref');
+            const newSessionId = uuidv4();
 
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
@@ -235,10 +281,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 joined: serverTimestamp(),
                 classRoll: generateRollNumber(),
                 registrationNumber: generateRegistrationNumber(),
+                currentSessionId: newSessionId,
+                lastLoginAt: serverTimestamp(),
                 ...(ref && { referredBy: ref }),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             existingUserInfo = { ...newUserInfo, id: user.uid } as User;
+            localStorage.setItem('rdc_session_id', newSessionId);
+        }
+
+        if (existingUserInfo.role === 'Student') {
+            await handleStudentLoginSession(existingUserInfo.uid);
         }
 
         setUserInfo(existingUserInfo);
@@ -282,6 +335,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
 
+        const newSessionId = uuidv4();
         const newUserInfo: Omit<User, 'id'> = {
             uid: newUser.uid,
             name: name,
@@ -296,11 +350,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (role === 'Student') {
             newUserInfo.classRoll = generateRollNumber();
             newUserInfo.registrationNumber = generateRegistrationNumber();
+            newUserInfo.currentSessionId = newSessionId;
+            newUserInfo.lastLoginAt = serverTimestamp();
         }
 
         await setDoc(doc(db, "users", newUser.uid), newUserInfo);
 
         if (status === 'Active') {
+            if (role === 'Student') {
+                localStorage.setItem('rdc_session_id', newSessionId);
+            }
             const finalUserInfo = { ...newUserInfo, id: newUser.uid } as User;
             setUserInfo(finalUserInfo);
             redirectToDashboard(finalUserInfo, 'Account Created!');
@@ -311,6 +370,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
         signOut(auth).then(() => {
+            localStorage.removeItem('rdc_session_id');
             router.push('/login');
         });
     };
