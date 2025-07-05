@@ -7,12 +7,21 @@ import {
   Users,
   MessageSquare,
   BarChart,
+  Building,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getCourses, getInstructorByUid, getEnrollments } from '@/lib/firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getCourses, getInstructorByUid, getEnrollments, getBatches, getBranches } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { Batch, Branch, Course } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+
+type BatchWithDetails = Batch & {
+    courseName: string;
+    branchName: string;
+}
 
 export default function TeacherDashboardPage() {
   const { userInfo } = useAuth();
@@ -23,6 +32,7 @@ export default function TeacherDashboardPage() {
     pendingGradingCount: 0,
     averageRating: 0,
   });
+  const [assignedBatches, setAssignedBatches] = useState<BatchWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,9 +47,11 @@ export default function TeacherDashboardPage() {
           return;
         }
         
-        const [allCourses, allEnrollments] = await Promise.all([
+        const [allCourses, allEnrollments, allBatches, allBranches] = await Promise.all([
           getCourses(),
-          getEnrollments()
+          getEnrollments(),
+          getBatches(),
+          getBranches(),
         ]);
         
         const teacherCourses = allCourses.filter(course => 
@@ -81,6 +93,20 @@ export default function TeacherDashboardPage() {
           averageRating: parseFloat(averageRating.toFixed(1)),
         });
 
+        // Fetch and process offline batches
+        const teacherBatches = allBatches.filter(batch => batch.instructorSlugs.includes(instructor.slug));
+        const batchesWithDetails = teacherBatches.map(batch => {
+            const course = allCourses.find(c => c.id === batch.courseId);
+            const branch = allBranches.find(b => b.id === batch.branchId);
+            return {
+                ...batch,
+                courseName: course?.title || 'Unknown Course',
+                branchName: branch?.name || 'Unknown Branch',
+            }
+        });
+        setAssignedBatches(batchesWithDetails);
+
+
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
         toast({ title: "Error", description: "Could not load dashboard data.", variant: "destructive" });
@@ -101,7 +127,7 @@ export default function TeacherDashboardPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="mb-8">
             <h1 className="font-headline text-4xl font-bold tracking-tight">
             Teacher Dashboard
@@ -121,7 +147,7 @@ export default function TeacherDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{stats.courseCount}</div>
                 <p className="text-xs text-muted-foreground">
-                Active courses
+                Active online courses
                 </p>
             </CardContent>
             </Card>
@@ -135,7 +161,7 @@ export default function TeacherDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{stats.studentCount}</div>
                 <p className="text-xs text-muted-foreground">
-                Across all courses
+                Across all online courses
                 </p>
             </CardContent>
             </Card>
@@ -168,6 +194,50 @@ export default function TeacherDashboardPage() {
             </CardContent>
             </Card>
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Building className="h-5 w-5"/>
+                    My Offline Batches
+                </CardTitle>
+                <CardDescription>A list of your assigned batches in offline centers.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Batch Name</TableHead>
+                            <TableHead>Course</TableHead>
+                            <TableHead>Branch</TableHead>
+                            <TableHead>Schedule</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {assignedBatches.length > 0 ? assignedBatches.map(batch => (
+                            <TableRow key={batch.id}>
+                                <TableCell className="font-medium">{batch.name}</TableCell>
+                                <TableCell>{batch.courseName}</TableCell>
+                                <TableCell>{batch.branchName}</TableCell>
+                                <TableCell>
+                                    <div className="flex flex-col gap-1">
+                                        {batch.schedule.map(s => (
+                                            <Badge key={s.day} variant="outline" className="w-fit">{s.day}, {s.time}</Badge>
+                                        ))}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">
+                                    You are not assigned to any offline batches yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
     </div>
   );
 }
