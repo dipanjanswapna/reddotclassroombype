@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -348,7 +347,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
 
         if (role === 'Student') {
-            newUserInfo.classRoll = generateRollNumber();
+            const roll = generateRollNumber();
+            newUserInfo.classRoll = roll;
+            newUserInfo.offlineRollNo = roll;
             newUserInfo.registrationNumber = generateRegistrationNumber();
             newUserInfo.currentSessionId = newSessionId;
             newUserInfo.lastLoginAt = serverTimestamp();
