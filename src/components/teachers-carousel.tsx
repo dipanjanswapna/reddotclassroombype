@@ -2,13 +2,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
 import type { Instructor } from '@/lib/types';
 
 export function TeachersCarousel({ instructors }: { instructors: Instructor[] }) {
@@ -17,31 +10,53 @@ export function TeachersCarousel({ instructors }: { instructors: Instructor[] })
   }
 
   return (
-    <Carousel opts={{ align: 'start' }} className="w-full">
-      <CarouselContent className="-ml-4">
+    <div
+      className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_48px,_black_calc(100%-48px),transparent_100%)]"
+    >
+      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll">
         {instructors.map((instructor) => (
-          <CarouselItem key={instructor.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
-            <Link href={`/teachers/${instructor.slug}`} className="block group text-center">
-              <div className="relative overflow-hidden rounded-lg">
-                <Image
-                  src={instructor.avatarUrl}
-                  alt={instructor.name}
-                  width={250}
-                  height={300}
-                  className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
-                  data-ai-hint={instructor.dataAiHint}
-                />
-                <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
-                  <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
-                  <p className="text-xs opacity-80 truncate">{instructor.title}</p>
-                </div>
-              </div>
-            </Link>
-          </CarouselItem>
+            <li key={instructor.id}>
+                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
+                    <div className="relative overflow-hidden rounded-lg">
+                        <Image
+                            src={instructor.avatarUrl}
+                            alt={instructor.name}
+                            width={250}
+                            height={300}
+                            className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={instructor.dataAiHint}
+                        />
+                        <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
+                            <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
+                            <p className="text-xs opacity-80 truncate">{instructor.title}</p>
+                        </div>
+                    </div>
+                </Link>
+            </li>
         ))}
-      </CarouselContent>
-      <CarouselPrevious className="text-foreground -left-4 hidden sm:flex" />
-      <CarouselNext className="text-foreground -right-4 hidden sm:flex" />
-    </Carousel>
+      </ul>
+      <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" aria-hidden="true">
+        {instructors.map((instructor) => (
+            <li key={`${instructor.id}-clone`}>
+                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
+                    <div className="relative overflow-hidden rounded-lg">
+                        <Image
+                            src={instructor.avatarUrl}
+                            alt={instructor.name}
+                            width={250}
+                            height={300}
+                            className="w-full object-cover aspect-[4/5] transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={instructor.dataAiHint}
+                        />
+                        <div className="absolute bottom-2 left-2 right-2 p-2 rounded-md bg-black/30 backdrop-blur-sm text-white">
+                            <h3 className="font-semibold text-sm truncate">{instructor.name}</h3>
+                            <p className="text-xs opacity-80 truncate">{instructor.title}</p>
+                        </div>
+                    </div>
+                </Link>
+            </li>
+        ))}
+      </ul>
+    </div>
   );
 }
