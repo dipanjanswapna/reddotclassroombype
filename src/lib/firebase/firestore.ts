@@ -14,7 +14,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -135,6 +135,11 @@ export const getUserByEmailAndRole = async (email: string, role: User['role']): 
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
+export const getUsersByBatchId = async (batchId: string): Promise<User[]> => {
+    const q = query(collection(db, "users"), where("assignedBatchId", "==", batchId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+}
 export const addUser = (user: Partial<User>) => addDoc(collection(db, 'users'), user);
 export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(db, 'users', id), user);
 export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));
@@ -245,6 +250,17 @@ export const getBatch = (id: string) => getDocument<Batch>('batches', id);
 export const addBatch = (batch: Partial<Batch>) => addDoc(collection(db, 'batches'), batch);
 export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(db, 'batches', id), batch);
 export const deleteBatch = (id: string) => deleteDoc(doc(db, 'batches', id));
+
+// Attendance
+export const saveAttendanceRecords = async (records: Omit<AttendanceRecord, 'id'>[]) => {
+    const batch = writeBatch(db);
+    const attendanceCol = collection(db, 'attendance');
+    records.forEach(record => {
+        const docRef = doc(attendanceCol);
+        batch.set(docRef, record);
+    });
+    await batch.commit();
+}
 
 
 const defaultPlatformSettings: PlatformSettings = {

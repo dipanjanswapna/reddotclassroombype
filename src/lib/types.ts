@@ -126,6 +126,7 @@ export type Assignment = {
   studentId: string;
   studentName: string;
   submissionText?: string;
+  courseId?: string; // Added for convenience in some components
 };
 
 export type Announcement = {
@@ -203,6 +204,16 @@ export type Batch = {
     studentCount: number;
 };
 
+export type AttendanceRecord = {
+  id?: string;
+  studentId: string;
+  batchId: string;
+  courseId: string;
+  branchId: string;
+  date: string; // YYYY-MM-DD
+  status: 'Present' | 'Absent' | 'Late';
+  recordedBy: string; // teacher's user id
+};
 
 export type Course = {
   id?: string;
