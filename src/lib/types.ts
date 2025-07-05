@@ -170,6 +170,13 @@ export type AssignmentTemplate = {
   deadline?: string | Timestamp | Date;
 };
 
+export type Classroom = {
+  id: string;
+  name: string;
+  capacity: number;
+  equipment: string;
+};
+
 export type Branch = {
     id?: string;
     name: string;
@@ -177,6 +184,10 @@ export type Branch = {
     contactPhone: string;
     contactEmail: string;
     managerId?: string; // User ID of the branch manager
+    branchCode?: string;
+    officeHours?: string;
+    holidays?: string;
+    classrooms?: Classroom[];
 };
 
 export type Batch = {

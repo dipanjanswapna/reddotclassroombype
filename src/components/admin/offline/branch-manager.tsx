@@ -31,16 +31,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Branch } from '@/lib/types';
+import { Branch, Classroom, User } from '@/lib/types';
 import { saveBranchAction, deleteBranchAction } from '@/app/actions/offline.actions';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface BranchManagerProps {
+  initialBranches: Branch[];
+  allManagers: User[];
+}
 
-export function BranchManager({ initialBranches }: { initialBranches: Branch[] }) {
+export function BranchManager({ initialBranches, allManagers }: BranchManagerProps) {
     const { toast } = useToast();
     const [branches, setBranches] = useState<Branch[]>(initialBranches);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -53,6 +58,12 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
     const [address, setAddress] = useState('');
     const [contactPhone, setContactPhone] = useState('');
     const [contactEmail, setContactEmail] = useState('');
+    const [branchCode, setBranchCode] = useState('');
+    const [officeHours, setOfficeHours] = useState('');
+    const [holidays, setHolidays] = useState('');
+    const [managerId, setManagerId] = useState<string | undefined>('');
+    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+
 
     const handleOpenDialog = (branch: Branch | null) => {
         setEditingBranch(branch);
@@ -61,11 +72,21 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
             setAddress(branch.address);
             setContactPhone(branch.contactPhone);
             setContactEmail(branch.contactEmail);
+            setBranchCode(branch.branchCode || '');
+            setOfficeHours(branch.officeHours || '');
+            setHolidays(branch.holidays || '');
+            setManagerId(branch.managerId || '');
+            setClassrooms(branch.classrooms || []);
         } else {
             setName('');
             setAddress('');
             setContactPhone('');
             setContactEmail('');
+            setBranchCode('');
+            setOfficeHours('');
+            setHolidays('');
+            setManagerId('');
+            setClassrooms([]);
         }
         setIsDialogOpen(true);
     };
@@ -83,18 +104,16 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
             address,
             contactPhone,
             contactEmail,
+            branchCode,
+            officeHours,
+            holidays,
+            managerId,
+            classrooms: classrooms.filter(c => c.name),
         });
 
         if (result.success) {
             toast({ title: 'Success', description: result.message });
-            // This is a simplistic update. A proper implementation might re-fetch.
-            if (editingBranch) {
-                setBranches(branches.map(b => b.id === editingBranch.id ? { ...b, name, address, contactPhone, contactEmail } : b));
-            } else {
-                 // For new branches, a full re-fetch is better to get the ID.
-                window.location.reload();
-            }
-            setIsDialogOpen(false);
+            window.location.reload();
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive'});
         }
@@ -112,6 +131,12 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
         }
         setBranchToDelete(null);
     };
+    
+    const handleClassroomChange = (id: string, field: keyof Omit<Classroom, 'id'>, value: string | number) => {
+        setClassrooms(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+    };
+    const addClassroom = () => setClassrooms(prev => [...prev, { id: `new_${Date.now()}`, name: '', capacity: 0, equipment: '' }]);
+    const removeClassroom = (id: string) => setClassrooms(prev => prev.filter(c => c.id !== id));
 
     return (
         <>
@@ -130,6 +155,7 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Branch Name</TableHead>
+                                <TableHead>Branch Code</TableHead>
                                 <TableHead>Address</TableHead>
                                 <TableHead>Contact</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
@@ -139,6 +165,7 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
                             {branches.map(branch => (
                                 <TableRow key={branch.id}>
                                     <TableCell className="font-medium">{branch.name}</TableCell>
+                                    <TableCell>{branch.branchCode || 'N/A'}</TableCell>
                                     <TableCell>{branch.address}</TableCell>
                                     <TableCell>
                                         <div className="flex flex-col">
@@ -168,28 +195,48 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
                 </CardContent>
             </Card>
 
-            {/* Create/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>{editingBranch ? 'Edit Branch' : 'Create New Branch'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">Name</Label>
-                            <Input id="name" value={name} onChange={e => setName(e.target.value)} className="col-span-3" />
+                    <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
+                       <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-2"> <Label>Branch Name</Label> <Input value={name} onChange={e => setName(e.target.value)} /> </div>
+                         <div className="space-y-2"> <Label>Branch Code</Label> <Input value={branchCode} onChange={e => setBranchCode(e.target.value)} placeholder="e.g., UTT-01" /> </div>
+                       </div>
+                        <div className="space-y-2"> <Label>Address</Label> <Input value={address} onChange={e => setAddress(e.target.value)} /> </div>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-2"> <Label>Contact Phone</Label> <Input value={contactPhone} onChange={e => setContactPhone(e.target.value)} /> </div>
+                           <div className="space-y-2"> <Label>Contact Email</Label> <Input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} /> </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="address" className="text-right">Address</Label>
-                            <Input id="address" value={address} onChange={e => setAddress(e.target.value)} className="col-span-3" />
+                         <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-2"> <Label>Office Hours</Label> <Input value={officeHours} onChange={e => setOfficeHours(e.target.value)} placeholder="e.g., Sat-Thu, 9AM-6PM" /> </div>
+                           <div className="space-y-2"> <Label>Holidays</Label> <Input value={holidays} onChange={e => setHolidays(e.target.value)} placeholder="e.g., Friday" /> </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="phone" className="text-right">Phone</Label>
-                            <Input id="phone" value={contactPhone} onChange={e => setContactPhone(e.target.value)} className="col-span-3" />
+                        <div className="space-y-2">
+                           <Label>Branch Manager</Label>
+                           <Select value={managerId} onValueChange={setManagerId}>
+                               <SelectTrigger><SelectValue placeholder="Select a manager..."/></SelectTrigger>
+                               <SelectContent>
+                                  {allManagers.map(manager => <SelectItem key={manager.id} value={manager.id!}>{manager.name}</SelectItem>)}
+                               </SelectContent>
+                           </Select>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="email" className="text-right">Email</Label>
-                            <Input id="email" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} className="col-span-3" />
+                        
+                        <div className="space-y-2 pt-4 border-t">
+                            <Label className="font-semibold">Classrooms</Label>
+                             <div className="space-y-2">
+                                {classrooms.map((room, index) => (
+                                    <div key={room.id} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center">
+                                        <Input placeholder="Classroom Name" value={room.name} onChange={e => handleClassroomChange(room.id, 'name', e.target.value)} />
+                                        <Input placeholder="Capacity" type="number" value={room.capacity} onChange={e => handleClassroomChange(room.id, 'capacity', Number(e.target.value))} className="w-24" />
+                                        <Input placeholder="Equipment (comma-separated)" value={room.equipment} onChange={e => handleClassroomChange(room.id, 'equipment', e.target.value)} />
+                                        <Button variant="ghost" size="icon" onClick={() => removeClassroom(room.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button variant="outline" size="sm" onClick={addClassroom} className="w-full">Add Classroom</Button>
                         </div>
                     </div>
                     <DialogFooter>
@@ -202,7 +249,6 @@ export function BranchManager({ initialBranches }: { initialBranches: Branch[] }
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
             <AlertDialog open={!!branchToDelete} onOpenChange={(open) => !open && setBranchToDelete(null)}>
                 <AlertDialogContent>
                 <AlertDialogHeader>

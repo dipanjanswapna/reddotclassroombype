@@ -24,6 +24,7 @@ export default async function AdminOfflineHubPage() {
     ]);
     
     const studentUsers = allUsers.filter(u => u.role === 'Student');
+    const managerUsers = allUsers.filter(u => u.role === 'Admin' || u.role === 'Moderator');
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -41,7 +42,7 @@ export default async function AdminOfflineHubPage() {
                     <TabsTrigger value="students"><Users className="mr-2"/>Students</TabsTrigger>
                 </TabsList>
                 <TabsContent value="branches" className="mt-6">
-                    <BranchManager initialBranches={initialBranches} />
+                    <BranchManager initialBranches={initialBranches} allManagers={managerUsers} />
                 </TabsContent>
                 <TabsContent value="batches" className="mt-6">
                    <BatchManager 
