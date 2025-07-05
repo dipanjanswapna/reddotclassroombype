@@ -369,10 +369,8 @@ export type HomepageConfig = {
     description: { [key: string]: string };
     buttonText: { [key: string]: string };
     videos: {
-      imageUrl: string;
+      title: string;
       videoUrl: string;
-      alt: string;
-      dataAiHint: string;
     }[];
   };
   sscHscSection: {

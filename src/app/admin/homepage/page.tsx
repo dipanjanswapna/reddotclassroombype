@@ -326,18 +326,18 @@ export default function AdminHomepageManagementPage() {
           <Card>
             <CardHeader>
               <CardTitle>Video Section</CardTitle>
-              <CardDescription>Manage the two promotional videos and their thumbnails.</CardDescription>
+              <CardDescription>Manage the promotional videos. Thumbnails are generated automatically from the YouTube URL.</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6">
               {config.videoSection.videos.map((video, index) => (
-                <div key={index} className="p-4 border rounded-lg space-y-2">
+                <div key={index} className="p-4 border rounded-lg space-y-4">
                     <h4 className="font-semibold">Video {index + 1}</h4>
                      <div className="space-y-1">
-                      <Label>Image URL</Label>
-                      <Input value={video.imageUrl} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'imageUrl', e.target.value, index)} />
+                      <Label>Video Title</Label>
+                      <Input value={video.title} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'title', e.target.value, index)} />
                     </div>
                      <div className="space-y-1">
-                      <Label>Video URL (YouTube/Vimeo)</Label>
+                      <Label>YouTube Video URL</Label>
                       <Input value={video.videoUrl} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'videoUrl', e.target.value, index)} />
                     </div>
                 </div>

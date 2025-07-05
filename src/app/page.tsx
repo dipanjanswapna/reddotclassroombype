@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { cn } from '@/lib/utils';
+import { cn, getYoutubeVideoId } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
@@ -119,14 +119,19 @@ export default async function Home() {
               <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
               <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description[language]}</p>
               <div className="grid md:grid-cols-2 gap-8">
-                  {homepageConfig.videoSection.videos.map((video, index) => (
-                    <div key={index} className="relative rounded-lg overflow-hidden group shadow-lg">
-                        <Image src={video.imageUrl} alt={video.alt} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" data-ai-hint={video.dataAiHint}/>
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
-                        </div>
-                    </div>
-                  ))}
+                  {homepageConfig.videoSection.videos.map((video, index) => {
+                    const videoId = getYoutubeVideoId(video.videoUrl);
+                    const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
+                    
+                    return (
+                        <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-lg overflow-hidden group shadow-lg block">
+                            <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                            </div>
+                        </a>
+                    );
+                  })}
               </div>
               <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                 <Link href="/courses">{homepageConfig.videoSection.buttonText[language]}</Link>

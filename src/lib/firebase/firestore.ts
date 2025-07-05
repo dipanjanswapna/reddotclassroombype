@@ -249,8 +249,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     description: { bn: "আমাদের শিক্ষার্থীদের সফলতার গল্পগুলো দেখুন এবং জানুন কীভাবে RDC তাদের স্বপ্ন পূরণে সহায়তা করেছে।", en: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams." },
     buttonText: { bn: "সকল কোর্স দেখুন", en: "View All Courses" },
     videos: [
-      { imageUrl: "https://placehold.co/600x400.png", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", alt: "Student Testimonial", dataAiHint: "student interview" },
-      { imageUrl: "https://placehold.co/600x400.png", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", alt: "Platform Feature", dataAiHint: "app tutorial" },
+      { title: "Student Testimonial", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+      { title: "Platform Feature", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
     ],
   },
   sscHscSection: {
