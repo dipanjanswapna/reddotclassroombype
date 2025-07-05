@@ -24,7 +24,7 @@ export default async function AdminOfflineHubPage() {
     ]);
     
     const studentUsers = allUsers.filter(u => u.role === 'Student' && u.assignedBatchId);
-    const managerUsers = allUsers.filter(u => u.role === 'Admin' || u.role === 'Moderator');
+    const managerUsers = allUsers.filter(u => u.role === 'Moderator');
     const offlineCourses = allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid');
 
 
