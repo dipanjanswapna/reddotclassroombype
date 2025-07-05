@@ -219,6 +219,31 @@ export default async function Home() {
           </div>
         </section>
       )}
+      
+      {homepageConfig.partnersSection?.display && (
+        <section aria-labelledby="partners-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              {homepageConfig.partnersSection.title[language]}
+            </h2>
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+              {homepageConfig.partnersSection.partners.map((partner) => (
+                <Link key={partner.id} href={partner.href} target="_blank" rel="noopener noreferrer" className="grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                  <Image
+                    src={partner.logoUrl}
+                    alt={partner.name}
+                    width={140}
+                    height={60}
+                    className="object-contain"
+                    data-ai-hint={partner.dataAiHint}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
 
       {homepageConfig.socialMediaSection.display && (
         <section className="bg-secondary/30" aria-labelledby="social-media-heading">

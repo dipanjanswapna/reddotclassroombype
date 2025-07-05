@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2 } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Separator } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
@@ -60,7 +60,7 @@ export default function AdminHomepageManagementPage() {
     setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
   };
   
-  const handleNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, key: string, value: string, index: number) => {
+  const handleNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, key: string, value: string | number, index: number) => {
     setConfig(prevConfig => {
         if (!prevConfig) return null;
         const newConfig = JSON.parse(JSON.stringify(prevConfig));
@@ -84,6 +84,24 @@ export default function AdminHomepageManagementPage() {
       ]
     }) : null);
   };
+  
+  const addPartner = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const partnersSection = prev.partnersSection || { display: true, title: { bn: 'আমাদের পার্টনার', en: 'Our Partners' }, partners: [] };
+        const newPartner = {
+            id: Date.now(),
+            name: 'New Partner',
+            logoUrl: 'https://placehold.co/140x60.png',
+            href: '#',
+            dataAiHint: 'company logo'
+        };
+        return {
+            ...prev,
+            partnersSection: { ...partnersSection, partners: [...partnersSection.partners, newPartner] }
+        };
+    });
+  };
 
   const removeHeroBanner = (id: number) => {
     setConfig(prev => prev ? ({
@@ -92,6 +110,18 @@ export default function AdminHomepageManagementPage() {
     }) : null);
   };
   
+  const removePartner = (id: number) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const partnersSection = prev.partnersSection || { display: true, title: { bn: '', en: '' }, partners: [] };
+        const newPartners = partnersSection.partners.filter(p => p.id !== id);
+        return {
+            ...prev,
+            partnersSection: { ...partnersSection, partners: newPartners }
+        };
+    });
+  };
+
   const handleHeroBannerChange = (index: number, field: 'imageUrl' | 'href', value: string) => {
     setConfig(prev => {
         if (!prev) return null;
@@ -132,6 +162,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'jobPrepSection', label: 'Job Prep Section' },
     { key: 'whyChooseUs', label: 'Why Choose Us Section' },
     { key: 'collaborations', label: 'Collaborations Section' },
+    { key: 'partnersSection', label: 'Partners Section' },
     { key: 'socialMediaSection', label: 'Social Media Section' },
     { key: 'notesBanner', label: 'Notes Banner' },
     { key: 'statsSection', label: 'Stats Section' },
@@ -271,6 +302,41 @@ export default function AdminHomepageManagementPage() {
               ))}
             </CardContent>
           </Card>
+          
+           <Card>
+                <CardHeader>
+                    <CardTitle>Partners Section</CardTitle>
+                    <CardDescription>Manage the logos of partners displayed on the homepage.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                        {config.partnersSection?.partners.map((partner, index) => (
+                            <div key={partner.id} className="p-4 border rounded-lg space-y-4 relative">
+                                <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removePartner(partner.id)}>
+                                    <X className="text-destructive h-4 w-4" />
+                                </Button>
+                                <div className="space-y-2">
+                                    <Label>Partner Name</Label>
+                                    <Input value={partner.name} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'name', e.target.value, index)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Logo URL</Label>
+                                    <Input value={partner.logoUrl} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'logoUrl', e.target.value, index)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Website Link</Label>
+                                    <Input value={partner.href} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'href', e.target.value, index)} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <Button variant="outline" className="w-full border-dashed mt-4" onClick={addPartner}>
+                        <PlusCircle className="mr-2" />
+                        Add Partner
+                    </Button>
+                </CardContent>
+            </Card>
+
         </div>
 
         <div className="lg:col-span-1 space-y-8">

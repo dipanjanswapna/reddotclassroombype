@@ -294,6 +294,17 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: 1, name: "MediShark", organizationId: "org_medishark", type: "organization", logoUrl: "https://i.imgur.com/v1sB0L7.png", dataAiHint: "shark logo", description: { bn: "মেডিকেল ভর্তি প্রস্তুতির সেরা ঠিকানা।", en: "The best place for medical admission preparation." }, cta: { text: { bn: "ওয়েবসাইট দেখুন", en: "View Website" }, href: "#" }, socials: { facebook: "#", youtube: "#" } }
     ],
   },
+  partnersSection: {
+    display: true,
+    title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
+    partners: [
+      { id: 1, name: "Myalice", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Myalice", dataAiHint: "Myalice logo" },
+      { id: 2, name: "Pathao", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Pathao", dataAiHint: "Pathao logo" },
+      { id: 3, name: "Chaldal", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Chaldal", dataAiHint: "Chaldal logo" },
+      { id: 4, name: "Klikit", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Klikit", dataAiHint: "Klikit logo" },
+      { id: 5, name: "Misfit Tech", href: "#", logoUrl: "https://placehold.co/140x60.png?text=Misfit+Tech", dataAiHint: "Misfit Tech logo" },
+    ],
+  },
   socialMediaSection: {
     display: true,
     title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
@@ -373,6 +384,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
         whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
         collaborations: { ...defaultHomepageConfig.collaborations, ...data.collaborations },
+        partnersSection: { ...defaultHomepageConfig.partnersSection, ...data.partnersSection },
         socialMediaSection: { ...defaultHomepageConfig.socialMediaSection, ...data.socialMediaSection },
         notesBanner: { ...defaultHomepageConfig.notesBanner, ...data.notesBanner },
         statsSection: { ...defaultHomepageConfig.statsSection, ...data.statsSection },

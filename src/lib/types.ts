@@ -414,6 +414,17 @@ export type HomepageConfig = {
     title: { [key: string]: string };
     items: CollaborationItem[];
   };
+  partnersSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    partners: {
+      id: number;
+      name: string;
+      logoUrl: string;
+      href: string;
+      dataAiHint: string;
+    }[];
+  };
   socialMediaSection: {
     display: boolean;
     title: { [key: string]: string };

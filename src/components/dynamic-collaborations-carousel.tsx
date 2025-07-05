@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Organization } from '@/lib/types';
 
 const CollaborationsCarousel = dynamic(() => import('@/components/collaborations-carousel').then(mod => mod.CollaborationsCarousel), {
-    loading: () => <Skeleton className="h-[300px] w-full" />,
+    loading: () => <Skeleton className="h-[200px] w-full" />,
     ssr: false,
 });
 
