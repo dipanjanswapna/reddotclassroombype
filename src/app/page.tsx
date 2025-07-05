@@ -85,6 +85,17 @@ export default async function Home() {
     <div className="flex flex-col bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
+      {homepageConfig.categoriesSection.display && (
+        <section aria-labelledby="categories-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
+              {homepageConfig.categoriesSection.title[language]}
+            </h2>
+            <CategoriesCarousel categories={homepageConfig.categoriesSection.categories} />
+          </div>
+        </section>
+      )}
+
       {homepageConfig.journeySection.display && (
         <section className="bg-secondary/50" aria-labelledby="hero-heading">
           <div className="container mx-auto px-4">
@@ -94,17 +105,6 @@ export default async function Home() {
               <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
               <DynamicLiveCoursesCarousel courses={liveCourses} />
             </div>
-          </div>
-        </section>
-      )}
-
-      {homepageConfig.categoriesSection.display && (
-        <section aria-labelledby="categories-heading">
-          <div className="container mx-auto px-4">
-            <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
-              {homepageConfig.categoriesSection.title[language]}
-            </h2>
-            <CategoriesCarousel categories={homepageConfig.categoriesSection.categories} />
           </div>
         </section>
       )}
