@@ -4,21 +4,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Building, BookCopy, Users, Users2 } from "lucide-react"
 import { BranchManager } from "@/components/admin/offline/branch-manager";
 import { PlaceholderPage } from "@/components/placeholder-page";
-import { getBranches, getBatches, getCourses, getInstructors } from "@/lib/firebase/firestore";
+import { getBranches, getBatches, getCourses, getInstructors, getUsers } from "@/lib/firebase/firestore";
 import { BatchManager } from "@/components/admin/offline/batch-manager";
+import { StudentManager } from "@/components/admin/offline/student-manager";
 
 export default async function AdminOfflineHubPage() {
     const [
         initialBranches, 
         initialBatches,
         allCourses,
-        allInstructors
+        allInstructors,
+        allUsers
     ] = await Promise.all([
         getBranches(),
         getBatches(),
         getCourses(),
         getInstructors(),
+        getUsers(),
     ]);
+    
+    const studentUsers = allUsers.filter(u => u.role === 'Student');
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -50,7 +55,11 @@ export default async function AdminOfflineHubPage() {
                     <PlaceholderPage title="Offline Courses" description="This section is under construction. Here you will be able to manage courses specifically designed for offline branches."/>
                 </TabsContent>
                  <TabsContent value="students" className="mt-6">
-                   <PlaceholderPage title="Offline Students" description="This section is under construction. Here you will manage all students enrolled in offline branches."/>
+                   <StudentManager
+                        initialStudents={studentUsers}
+                        allBranches={initialBranches}
+                        allBatches={initialBatches}
+                   />
                 </TabsContent>
             </Tabs>
         </div>
