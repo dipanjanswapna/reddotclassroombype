@@ -352,6 +352,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+  const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
@@ -369,7 +370,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
   const [generatingQuizForLesson, setGeneratingQuizForLesson] = useState<string | null>(null);
 
   const [isLiveClassDialogOpen, setIsLiveClassDialogOpen] = useState(false);
