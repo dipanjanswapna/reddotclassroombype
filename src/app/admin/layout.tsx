@@ -19,6 +19,7 @@ import {
   Notebook,
   BarChartHorizontal,
   Building,
+  QrCode,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -55,6 +56,7 @@ export default function AdminLayout({
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
+        { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/sellers", icon: Handshake, label: "Sellers" },

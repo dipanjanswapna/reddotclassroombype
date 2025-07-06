@@ -13,6 +13,7 @@ import {
   Banknote,
   LayoutDashboard,
   Badge,
+  QrCode,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -49,6 +50,7 @@ export default function SellerLayout({
     { href: "/seller/courses", icon: BookCopy, label: "Courses" },
     { href: "/seller/teachers", icon: UsersIcon, label: "Teachers" },
     { href: "/seller/students", icon: UsersIcon, label: "Students" },
+    { href: "/seller/scan-attendance", icon: QrCode, label: "Scan" },
     { href: "/seller/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
     { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
