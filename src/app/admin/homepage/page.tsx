@@ -207,7 +207,7 @@ export default function AdminHomepageManagementPage() {
     setConfig(prev => {
         if (!prev) return null;
         const partnersSection = prev.partnersSection || { display: true, title: { bn: '', en: '' }, partners: [] };
-        const newPartners = partnersSection.partners.filter(p => p.id !== id);
+        const newPartners = partnersSection.partners.filter(p => p.id !== p.id);
         return {
             ...prev,
             partnersSection: { ...partnersSection, partners: newPartners }

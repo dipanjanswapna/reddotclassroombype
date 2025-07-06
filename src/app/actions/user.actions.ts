@@ -40,6 +40,7 @@ export async function saveUserAction(userData: Partial<User>) {
             revalidatePath('/admin/students');
             revalidatePath('/student/profile');
             revalidatePath(`/admin/manage-user/${id}`);
+            revalidatePath('/admin/offline-hub');
             return { success: true, message: 'User updated successfully.' };
         } else {
             // --- CREATE LOGIC ---
