@@ -100,7 +100,8 @@ export async function saveInstructorProfileAction(id: string, data: Partial<Inst
         
         await batch.commit();
 
-        revalidatePath(`/teacher/profile`);
+        revalidatePath('/'); // Revalidate homepage to show new profile pic
+        revalidatePath('/teacher/profile');
         if (data.slug) {
             revalidatePath(`/teachers/${data.slug}`);
         }
