@@ -21,6 +21,7 @@ import {
   Building,
   QrCode,
   Search,
+  PhoneCall,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -58,6 +59,7 @@ export default function AdminLayout({
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
+        { href: "/admin/absent-students", icon: PhoneCall, label: "Call Center" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/manage-user", icon: Search, label: "Manage User" },
