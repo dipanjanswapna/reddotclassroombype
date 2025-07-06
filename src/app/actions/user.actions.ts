@@ -33,8 +33,11 @@ export async function saveUserAction(userData: Partial<User>) {
         } else {
             // New user creation by admin
             const newUser: Partial<User> = { ...userData, joined: Timestamp.now() };
-            if (!newUser.registrationNumber) {
+            if (!newUser.registrationNumber && newUser.role !== 'Guardian') {
                 newUser.registrationNumber = generateRegistrationNumber();
+            }
+            if (!newUser.status) {
+                newUser.status = 'Active';
             }
             await addUser(newUser);
             revalidatePath('/admin/users');

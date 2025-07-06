@@ -101,6 +101,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             await fetchAndSetUser(currentUser);
         }
     }, [fetchAndSetUser]);
+    
+    const ensureRegistrationNumber = async (user: User): Promise<User> => {
+        if (user.status === 'Active' && !user.registrationNumber && user.role !== 'Guardian') {
+            const newRegNumber = generateRegistrationNumber();
+            await updateUser(user.uid, { registrationNumber: newRegNumber });
+            return { ...user, registrationNumber: newRegNumber };
+        }
+        return user;
+    };
 
     const getDashboardLink = (role: User['role']) => {
         switch (role) {
@@ -167,12 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
-        // Retroactively add registration number if missing for active users
-        if (fetchedUserInfo.status === 'Active' && !fetchedUserInfo.registrationNumber && fetchedUserInfo.role !== 'Guardian') {
-            const newRegNumber = generateRegistrationNumber();
-            await updateUser(fetchedUserInfo.uid, { registrationNumber: newRegNumber });
-            fetchedUserInfo.registrationNumber = newRegNumber; // Update local copy
-        }
+        fetchedUserInfo = await ensureRegistrationNumber(fetchedUserInfo);
         
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
@@ -206,7 +210,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const loginWithClassRoll = async (classRoll: string, pass: string) => {
-        const studentInfo = await getUserByClassRoll(classRoll);
+        let studentInfo = await getUserByClassRoll(classRoll);
         if (!studentInfo) {
             throw new Error("No student found with this class roll.");
         }
@@ -224,6 +228,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
     
+        studentInfo = await ensureRegistrationNumber(studentInfo);
         await handleStudentLoginSession(studentInfo.uid);
         setUserInfo(studentInfo);
         redirectToDashboard(studentInfo, 'Login Successful!');
@@ -242,12 +247,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUserByUid(user.uid);
         
         if (existingUserInfo) {
-            // Retroactively add registration number if missing
-            if (existingUserInfo.status === 'Active' && !existingUserInfo.registrationNumber && existingUserInfo.role !== 'Guardian') {
-                const newRegNumber = generateRegistrationNumber();
-                await updateUser(existingUserInfo.uid, { registrationNumber: newRegNumber });
-                existingUserInfo.registrationNumber = newRegNumber; // Update local copy
-            }
+            existingUserInfo = await ensureRegistrationNumber(existingUserInfo);
 
             if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);
@@ -349,12 +349,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             joined: serverTimestamp(),
             ...(ref && { referredBy: ref }),
         };
+        
+        // Generate reg number for all new non-guardian roles
+        if (role !== 'Guardian') {
+            newUserInfo.registrationNumber = generateRegistrationNumber();
+        }
 
         if (role === 'Student') {
             const roll = generateRollNumber();
             newUserInfo.classRoll = roll;
             newUserInfo.offlineRollNo = roll;
-            newUserInfo.registrationNumber = generateRegistrationNumber();
             newUserInfo.currentSessionId = newSessionId;
             newUserInfo.lastLoginAt = serverTimestamp();
         }
