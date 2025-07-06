@@ -11,6 +11,7 @@ import {
   User,
   LogOut,
   Badge,
+  PhoneCall,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,7 @@ export default function AffiliateLayout({
     { href: "/affiliate/links", icon: Link2, label: "Links" },
     { href: "/affiliate/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/affiliate/payouts", icon: DollarSign, label: "Payouts" },
+    { href: "/affiliate/absent-students", icon: PhoneCall, label: "Call Center" },
     { href: "/affiliate/profile", icon: User, label: "Profile" },
     { href: "/affiliate/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },

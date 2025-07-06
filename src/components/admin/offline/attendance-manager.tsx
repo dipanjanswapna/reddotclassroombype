@@ -11,18 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { AttendanceRecord, Batch, Branch, User } from '@/lib/types';
-import { Edit, Loader2, Search } from 'lucide-react';
-import { updateAttendanceStatusAction } from '@/app/actions/attendance.actions';
+import { Edit, Loader2, Search, Phone, CheckCircle } from 'lucide-react';
+import { updateAttendanceStatusAction, markCallAsCompletedAction } from '@/app/actions/attendance.actions';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/auth-context';
 
 type AttendanceWithDetails = AttendanceRecord & {
   studentName?: string;
   studentRoll?: string;
   batchName?: string;
   branchName?: string;
+  studentPhone?: string;
+  guardianPhone?: string;
 };
 
 interface AttendanceManagerProps {
@@ -43,6 +47,7 @@ const getStatusBadgeVariant = (status: AttendanceRecord['status']) => {
 
 export function AttendanceManager({ initialRecords, allStudents, allBatches, allBranches }: AttendanceManagerProps) {
   const { toast } = useToast();
+  const { userInfo } = useAuth();
   const [records, setRecords] = useState<AttendanceWithDetails[]>([]);
   const [filteredRecords, setFilteredRecords] = useState<AttendanceWithDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,6 +69,8 @@ export function AttendanceManager({ initialRecords, allStudents, allBatches, all
         ...record,
         studentName: student?.name || 'Unknown Student',
         studentRoll: student?.offlineRollNo || student?.classRoll || 'N/A',
+        studentPhone: student?.mobileNumber,
+        guardianPhone: student?.guardianMobileNumber,
         batchName: batch?.name || 'Unknown Batch',
         branchName: branch?.name || 'Unknown Branch',
       };
@@ -110,10 +117,10 @@ export function AttendanceManager({ initialRecords, allStudents, allBatches, all
   };
 
   const handleUpdateStatus = async () => {
-      if (!editingRecord || !newStatus) return;
+      if (!editingRecord || !newStatus || !userInfo) return;
       
       setIsSaving(true);
-      const result = await updateAttendanceStatusAction(editingRecord.id!, newStatus, 'admin_id_placeholder');
+      const result = await updateAttendanceStatusAction(editingRecord.id!, newStatus, userInfo.uid);
       
       if(result.success) {
           toast({ title: "Success", description: "Attendance status updated." });
@@ -123,6 +130,16 @@ export function AttendanceManager({ initialRecords, allStudents, allBatches, all
           toast({ title: "Error", description: result.message, variant: "destructive" });
       }
       setIsSaving(false);
+  };
+  
+  const handleMarkAsCalled = async (recordId: string) => {
+      const result = await markCallAsCompletedAction(recordId);
+      if (result.success) {
+          toast({ title: "Success", description: "Call status marked as completed."});
+          setRecords(prev => prev.map(r => r.id === recordId ? { ...r, callStatus: 'Called' } : r));
+      } else {
+          toast({ title: "Error", description: result.message, variant: "destructive" });
+      }
   };
 
 
@@ -191,28 +208,41 @@ export function AttendanceManager({ initialRecords, allStudents, allBatches, all
                         <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Student</TableHead>
-                            <TableHead>Roll</TableHead>
                             <TableHead>Batch</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {filteredRecords.map(record => (
                             <TableRow key={record.id}>
                                 <TableCell>{format(new Date(record.date), 'PPP')}</TableCell>
-                                <TableCell>{record.studentName}</TableCell>
-                                <TableCell><Badge variant="outline">{record.studentRoll}</Badge></TableCell>
+                                <TableCell>
+                                    <div>{record.studentName}</div>
+                                    <div className="text-xs text-muted-foreground">Roll: {record.studentRoll}</div>
+                                </TableCell>
                                 <TableCell>{record.batchName}</TableCell>
                                 <TableCell><Badge variant={getStatusBadgeVariant(record.status)}>{record.status}</Badge></TableCell>
-                                <TableCell className="text-right">
-                                    <Button size="sm" variant="outline" onClick={() => handleOpenEditDialog(record)}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
+                                <TableCell>
+                                    <div className="flex gap-2 items-center">
+                                        <Button size="sm" variant="outline" onClick={() => handleOpenEditDialog(record)}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
+                                        {record.status === 'Absent' && (
+                                            <>
+                                                <Button size="icon" variant="outline" asChild disabled={!record.studentPhone}><a href={`tel:${record.studentPhone}`}><Phone className="h-4 w-4"/></a></Button>
+                                                <Button size="icon" variant="outline" asChild disabled={!record.guardianPhone}><a href={`tel:${record.guardianPhone}`}><Phone className="h-4 w-4 text-purple-500"/></a></Button>
+                                                <Button size="sm" variant="outline" onClick={() => handleMarkAsCalled(record.id!)} disabled={record.callStatus === 'Called'}>
+                                                    <CheckCircle className={cn("mr-2 h-4 w-4", record.callStatus === 'Called' && "text-green-500")} />
+                                                    {record.callStatus === 'Called' ? 'Called' : 'Mark Called'}
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
                          {filteredRecords.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">No records found for the selected filters.</TableCell>
+                                <TableCell colSpan={5} className="h-24 text-center">No records found for the selected filters.</TableCell>
                             </TableRow>
                         )}
                     </TableBody>

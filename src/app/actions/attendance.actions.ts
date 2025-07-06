@@ -30,6 +30,7 @@ export async function saveAttendanceAction(
                     branchId,
                     date: today,
                     recordedBy: teacherId,
+                    callStatus: 'Called',
                 }
             };
         }
@@ -104,6 +105,19 @@ export async function updateAttendanceStatusAction(recordId: string, newStatus: 
         return { success: true, message: 'Attendance status updated successfully.' };
     } catch(error: any) {
         console.error("Error updating attendance status:", error);
+        return { success: false, message: error.message || 'An unexpected error occurred.' };
+    }
+}
+
+export async function markCallAsCompletedAction(recordId: string) {
+    try {
+        await updateAttendanceRecord(recordId, { callStatus: 'Called' });
+        revalidatePath('/admin/offline-hub');
+        revalidatePath('/moderator/absent-students');
+        revalidatePath('/affiliate/absent-students');
+        return { success: true, message: 'Call status updated successfully.' };
+    } catch(error: any) {
+        console.error("Error updating call status:", error);
         return { success: false, message: error.message || 'An unexpected error occurred.' };
     }
 }

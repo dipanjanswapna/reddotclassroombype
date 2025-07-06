@@ -11,6 +11,7 @@ import {
   LogOut,
   Badge,
   QrCode,
+  PhoneCall,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,7 @@ export default function ModeratorLayout({
   const menuItems = [
     { href: "/moderator/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/moderator/scan-attendance", icon: QrCode, label: "Scan" },
+    { href: "/moderator/absent-students", icon: PhoneCall, label: "Call Center" },
     { href: "/moderator/content-review", icon: FileScan, label: "Content Review" },
     { href: "/moderator/support-tickets", icon: Ticket, label: "Support Tickets" },
     { href: "/moderator/profile", icon: User, label: "Profile" },

@@ -237,6 +237,7 @@ export type AttendanceRecord = {
   date: string; // YYYY-MM-DD
   status: 'Present' | 'Absent' | 'Late';
   recordedBy: string; // teacher's user id
+  callStatus?: 'Called';
 };
 
 export type Course = {
