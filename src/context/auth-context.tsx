@@ -167,9 +167,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
+        const regNo = String(fetchedUserInfo.registrationNumber);
         const isInvalidRegNo = fetchedUserInfo.role !== 'Guardian' &&
                                fetchedUserInfo.status === 'Active' &&
-                               (!fetchedUserInfo.registrationNumber || !/^\d{8}$/.test(String(fetchedUserInfo.registrationNumber)));
+                               (!fetchedUserInfo.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
         if (isInvalidRegNo) {
             const newRegNumber = generateRegistrationNumber();
@@ -227,8 +228,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
     
+        const regNo = String(studentInfo.registrationNumber);
         const isInvalidRegNo = studentInfo.role !== 'Guardian' &&
-                               (!studentInfo.registrationNumber || !/^\d{8}$/.test(String(studentInfo.registrationNumber)));
+                               (!studentInfo.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
         if (isInvalidRegNo) {
             const newRegNumber = generateRegistrationNumber();
@@ -254,9 +256,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUserByUid(user.uid);
         
         if (existingUserInfo) {
+            const regNo = String(existingUserInfo.registrationNumber);
             const isInvalidRegNo = existingUserInfo.role !== 'Guardian' &&
                                          existingUserInfo.status === 'Active' &&
-                                         (!existingUserInfo.registrationNumber || !/^\d{8}$/.test(String(existingUserInfo.registrationNumber)));
+                                         (!existingUserInfo.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
             if (isInvalidRegNo) {
                 const newRegNumber = generateRegistrationNumber();

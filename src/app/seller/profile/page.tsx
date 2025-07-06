@@ -22,7 +22,6 @@ export default function SellerProfilePage() {
     // State for personal information
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
-    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
     
     // State for payment info
     const [paymentMethod, setPaymentMethod] = useState("bKash");
@@ -32,7 +31,6 @@ export default function SellerProfilePage() {
         if (userInfo) {
             setFullName(userInfo.name || "");
             setEmail(userInfo.email || "");
-            setAvatarUrl(userInfo.avatarUrl || "https://placehold.co/100x100.png");
             setLoading(false);
         } else if (!authLoading) {
             setLoading(false);
@@ -43,7 +41,7 @@ export default function SellerProfilePage() {
         if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await saveUserAction({ id: userInfo.id, name: fullName, avatarUrl });
+            await saveUserAction({ id: userInfo.id, name: fullName });
             await refreshUserInfo();
             toast({
                 title: "Profile Updated",
@@ -81,6 +79,10 @@ export default function SellerProfilePage() {
                     <CardTitle className="flex items-center gap-2"><User /> Primary Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="regNumber">Staff ID</Label>
+                        <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="fullName">Contact Name</Label>
                         <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />

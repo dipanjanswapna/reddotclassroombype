@@ -45,7 +45,8 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
                 const user = await getUserByUid(instructor.userId);
                 if(user) {
                     const updates: Partial<User> = { status: 'Active' };
-                    if (!user.registrationNumber) {
+                    const regNo = String(user.registrationNumber);
+                    if (!user.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8) {
                         updates.registrationNumber = generateRegistrationNumber();
                     }
                     await updateUser(user.id!, updates);

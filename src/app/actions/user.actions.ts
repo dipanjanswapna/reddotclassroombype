@@ -26,10 +26,11 @@ export async function saveUserAction(userData: Partial<User>) {
             const { id, ...data } = userData;
             const currentUserState = await getUser(id);
 
+            const regNo = String(currentUserState?.registrationNumber);
             const isInvalidRegNo = currentUserState && 
                                  currentUserState.status === 'Active' && 
                                  currentUserState.role !== 'Guardian' &&
-                                 (!currentUserState.registrationNumber || !/^\d{8}$/.test(String(currentUserState.registrationNumber)));
+                                 (!currentUserState.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
             if (isInvalidRegNo) {
                 data.registrationNumber = generateRegistrationNumber();
