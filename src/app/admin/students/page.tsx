@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Search } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Search, Settings } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +41,7 @@ import { User } from '@/lib/types';
 import { getUsers } from '@/lib/firebase/firestore';
 import { saveUserAction, deleteUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import Link from 'next/link';
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Student: <GraduationCap className="h-4 w-4" />,
@@ -261,7 +262,10 @@ export default function StudentUserManagementPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                           <Link href={`/admin/manage-user/${user.id}`}><Settings className="mr-2"/>Manage Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Quick Edit</DropdownMenuItem>
                         {user.status === 'Active' && user.role !== 'Admin' && (
                            <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Suspended')}>
                                 <UserX className="mr-2 text-destructive"/>Suspend User
@@ -296,7 +300,7 @@ export default function StudentUserManagementPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the account for <strong>{userToDelete?.name}</strong>.
+              This action cannot be undone. This will permanently delete the account for <strong>{userToDelete?.name}</strong> and all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

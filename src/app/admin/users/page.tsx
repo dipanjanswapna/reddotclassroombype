@@ -1,10 +1,9 @@
 
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Settings } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +43,7 @@ import { saveUserAction, deleteUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
+import Link from 'next/link';
 
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
@@ -230,7 +230,10 @@ export default function UserManagementPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Edit User</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                           <Link href={`/admin/manage-user/${user.id}`}><Settings className="mr-2"/>Manage Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleOpenDialog(user)}><Pencil className="mr-2" />Quick Edit</DropdownMenuItem>
                         {user.status === 'Pending Approval' && (
                             <>
                                <DropdownMenuItem onClick={() => handleStatusUpdate(user, 'Active')}>
@@ -275,7 +278,7 @@ export default function UserManagementPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the account for <strong>{userToDelete?.name}</strong>.
+              This action cannot be undone. This will permanently delete the account for <strong>{userToDelete?.name}</strong> and all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
