@@ -1,12 +1,12 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { User, Course, Enrollment, AttendanceRecord, Batch, Branch } from '@/lib/types';
-import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, addEnrollment, getBatches, getBranches } from '@/lib/firebase/firestore';
+import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches } from '@/lib/firebase/firestore';
 import { saveUserAction } from '@/app/actions/user.actions';
+import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -115,17 +115,15 @@ export default function ManageUserPage() {
     const handleManualEnroll = async () => {
         if (!user || !selectedCourseToEnroll) return;
         setIsSaving(true);
-        const result = await addEnrollment({
-            userId: user.uid,
-            courseId: selectedCourseToEnroll,
-            enrollmentDate: new Date(),
-            progress: 0,
-            status: 'in-progress'
-        });
-        toast({ title: "Success", description: `${user.name} has been enrolled.`});
-        await fetchData(); // Re-fetch
-        setIsEnrollDialogOpen(false);
-        setSelectedCourseToEnroll('');
+        const result = await enrollInCourseAction(selectedCourseToEnroll, user.uid);
+        if (result.success) {
+            toast({ title: "Success", description: `${user.name} has been enrolled.`});
+            await fetchData(); // Re-fetch
+            setIsEnrollDialogOpen(false);
+            setSelectedCourseToEnroll('');
+        } else {
+            toast({ title: "Error", description: result.message, variant: "destructive" });
+        }
         setIsSaving(false);
     };
     
@@ -344,3 +342,4 @@ export default function ManageUserPage() {
         </div>
     );
 }
+
