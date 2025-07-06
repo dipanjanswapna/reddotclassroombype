@@ -14,7 +14,7 @@ import {
   CalendarPlus,
   FileCheck2,
   Badge,
-  ClipboardUser,
+  ClipboardCheck,
   QrCode,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -54,7 +54,7 @@ export default function TeacherLayout({
     { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
     { href: "/teacher/students", icon: Users, label: "Students" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
-    { href: "/teacher/attendance", icon: ClipboardUser, label: "Attendance" },
+    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance" },
     { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
     { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
