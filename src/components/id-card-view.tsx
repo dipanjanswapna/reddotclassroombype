@@ -4,7 +4,7 @@
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/button';
-import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse, Loader2 } from 'lucide-react';
+import { Download, Star, User, Phone, MapPin, Hash, CreditCard, ListCollapse, Loader2, Building, Users } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -27,6 +27,8 @@ type IdCardViewProps = {
   enrolledCourses?: { title: string }[];
   joinedDate?: string;
   email?: string;
+  branchName?: string;
+  batchName?: string;
 };
 
 const getRoleColors = (role: string) => {
@@ -106,7 +108,7 @@ const Barcode = () => (
 export function IdCardView({ 
     name, role, idNumber, imageUrl, dataAiHint, organization, className,
     classRoll, fathersName, mothersName, nidNumber, mobileNumber, address,
-    enrolledCourses, joinedDate, email
+    enrolledCourses, joinedDate, email, branchName, batchName
 }: IdCardViewProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -200,8 +202,10 @@ export function IdCardView({
                     <h2 className="text-2xl font-bold mt-4">{name}</h2>
                     <p className="text-primary font-semibold">{role}</p>
                     <div className="text-left w-full mt-4 space-y-1 text-xs">
-                        {classRoll && <div className="flex items-center gap-2"><ListCollapse className="w-4 h-4 text-gray-500 shrink-0"/><span>Class Roll: {classRoll}</span></div>}
+                        {classRoll && <div className="flex items-center gap-2"><ListCollapse className="w-4 h-4 text-gray-500 shrink-0"/><span>Roll: {classRoll}</span></div>}
                         {idNumber && <div className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-500 shrink-0"/><span>Reg. No: {idNumber}</span></div>}
+                        {branchName && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500 shrink-0"/><span>Branch: {branchName}</span></div>}
+                        {batchName && <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500 shrink-0"/><span>Batch: {batchName}</span></div>}
                         {fathersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Father's Name: {fathersName}</span></div>}
                         {mothersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Mother's Name: {mothersName}</span></div>}
                         {mobileNumber && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500 shrink-0"/><span>Mobile: {mobileNumber}</span></div>}

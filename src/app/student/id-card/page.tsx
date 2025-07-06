@@ -6,32 +6,42 @@ import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { useState, useEffect } from "react";
-import { getEnrollmentsByUserId, getCoursesByIds } from "@/lib/firebase/firestore";
-import { Course } from "@/lib/types";
+import { getEnrollmentsByUserId, getCoursesByIds, getBranch, getBatch } from "@/lib/firebase/firestore";
+import { Course, Branch, Batch } from "@/lib/types";
 import { safeToDate } from "@/lib/utils";
 
 export default function StudentIdCardPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+    const [branch, setBranch] = useState<Branch | null>(null);
+    const [batch, setBatch] = useState<Batch | null>(null);
     const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
         if (!authLoading && userInfo) {
-            const fetchEnrolledCourses = async () => {
+            const fetchExtraData = async () => {
                 try {
-                    const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                    const enrollmentsPromise = getEnrollmentsByUserId(userInfo.uid);
+                    const branchPromise = userInfo.assignedBranchId ? getBranch(userInfo.assignedBranchId) : Promise.resolve(null);
+                    const batchPromise = userInfo.assignedBatchId ? getBatch(userInfo.assignedBatchId) : Promise.resolve(null);
+                    
+                    const [enrollments, branchData, batchData] = await Promise.all([enrollmentsPromise, branchPromise, batchPromise]);
+                    
+                    setBranch(branchData);
+                    setBatch(batchData);
+
                     const courseIds = enrollments.map(e => e.courseId);
                     if (courseIds.length > 0) {
                         const courses = await getCoursesByIds(courseIds);
                         setEnrolledCourses(courses);
                     }
                 } catch (error) {
-                    console.error("Failed to fetch enrolled courses for ID card:", error);
+                    console.error("Failed to fetch extra data for ID card:", error);
                 } finally {
                     setDataLoading(false);
                 }
             };
-            fetchEnrolledCourses();
+            fetchExtraData();
         } else if (!authLoading) {
             setDataLoading(false);
         }
@@ -70,13 +80,15 @@ export default function StudentIdCardPage() {
                 email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}
                 dataAiHint="student person"
-                classRoll={userInfo.classRoll}
+                classRoll={userInfo.offlineRollNo || userInfo.classRoll}
                 fathersName={userInfo.fathersName}
                 mothersName={userInfo.mothersName}
                 nidNumber={userInfo.nidNumber}
                 mobileNumber={userInfo.mobileNumber}
                 address={userInfo.address}
                 enrolledCourses={enrolledCourses}
+                branchName={branch?.name}
+                batchName={batch?.name}
             />
         </div>
     );
