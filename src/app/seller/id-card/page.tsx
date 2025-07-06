@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -64,7 +65,7 @@ export default function SellerIdCardPage() {
             <IdCardView 
                 name={organization.name}
                 role="Seller Organization"
-                idNumber={organization.id || userInfo.uid}
+                idNumber={userInfo.registrationNumber || userInfo.uid}
                 joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={organization.logoUrl}

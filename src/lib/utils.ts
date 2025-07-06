@@ -7,6 +7,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function generateRollNumber(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+export function generateRegistrationNumber(): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 /**
  * Recursively removes properties with `undefined` values from an object.
  * This is crucial for sending data to Firebase or server actions that don't

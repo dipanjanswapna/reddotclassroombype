@@ -3,7 +3,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { addOrganization, deleteOrganization, getOrganization, getUserByUid, updateOrganization, updateUser } from '@/lib/firebase/firestore';
-import { Organization } from '@/lib/types';
+import { Organization, User } from '@/lib/types';
+import { generateRegistrationNumber } from '@/lib/utils';
 
 export async function updateOrganizationStatusAction(id: string, status: Organization['status']) {
     try {
@@ -13,7 +14,13 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
             const organization = await getOrganization(id);
             if(organization?.contactUserId) {
                 const user = await getUserByUid(organization.contactUserId);
-                if(user) await updateUser(user.id!, { status: 'Active' });
+                if(user) {
+                    const updates: Partial<User> = { status: 'Active' };
+                    if (!user.registrationNumber) {
+                        updates.registrationNumber = generateRegistrationNumber();
+                    }
+                    await updateUser(user.id!, updates);
+                }
             }
         }
         revalidatePath('/admin/sellers');

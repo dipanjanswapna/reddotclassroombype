@@ -3,7 +3,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { addInstructor, deleteInstructor, getInstructor, getUserByUid, updateInstructor, updateUser } from '@/lib/firebase/firestore';
-import { Instructor } from '@/lib/types';
+import { Instructor, User } from '@/lib/types';
+import { generateRegistrationNumber } from '@/lib/utils';
 
 export async function createInstructorAction(data: Partial<Omit<Instructor, 'status' | 'slug'>> & { uid: string }) {
     try {
@@ -32,7 +33,13 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
             const instructor = await getInstructor(id);
             if(instructor?.userId) {
                 const user = await getUserByUid(instructor.userId);
-                if(user) await updateUser(user.id!, { status: 'Active' });
+                if(user) {
+                    const updates: Partial<User> = { status: 'Active' };
+                    if (!user.registrationNumber) {
+                        updates.registrationNumber = generateRegistrationNumber();
+                    }
+                    await updateUser(user.id!, updates);
+                }
             }
         }
 

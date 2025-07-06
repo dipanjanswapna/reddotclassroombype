@@ -1,5 +1,6 @@
 
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -8,18 +9,32 @@ import { User } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
+import { generateRegistrationNumber } from '@/lib/utils';
 
 export async function saveUserAction(userData: Partial<User>) {
     try {
         if (userData.id) {
             const { id, ...data } = userData;
+
+            // Logic to generate ID upon approval for roles like Moderator/Affiliate
+            if (data.status && data.status === 'Active') {
+                const currentUserState = await getUser(id);
+                if (currentUserState && currentUserState.status !== 'Active' && !currentUserState.registrationNumber) {
+                    data.registrationNumber = generateRegistrationNumber();
+                }
+            }
+
             await updateUser(id, data);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
             revalidatePath('/student/profile');
             return { success: true, message: 'User updated successfully.' };
         } else {
-            const newUser = { ...userData, joined: Timestamp.now() };
+            // New user creation by admin
+            const newUser: Partial<User> = { ...userData, joined: Timestamp.now() };
+            if (!newUser.registrationNumber) {
+                newUser.registrationNumber = generateRegistrationNumber();
+            }
             await addUser(newUser);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');

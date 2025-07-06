@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -193,7 +194,7 @@ export default function UserManagementPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>User ID</TableHead>
+                <TableHead>Registration No.</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Joined</TableHead>
@@ -208,7 +209,7 @@ export default function UserManagementPage() {
                     <div className="text-sm text-muted-foreground">{user.email}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="max-w-[100px] truncate">{user.id}</Badge>
+                    <Badge variant="secondary" className="max-w-[100px] truncate">{user.registrationNumber || 'N/A'}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`gap-2 ${roleColors[user.role]}`}>

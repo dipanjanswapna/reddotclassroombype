@@ -20,6 +20,7 @@ import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/fi
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { generateRollNumber, generateRegistrationNumber } from '@/lib/utils';
 
 interface AuthContextType {
     user: FirebaseUser | null;
@@ -36,19 +37,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-function generateRollNumber(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function generateRegistrationNumber(): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 12; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<FirebaseUser | null>(null);
