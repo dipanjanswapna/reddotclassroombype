@@ -126,6 +126,15 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
+export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
+    const q = query(collection(db, 'users'), where('offlineRollNo', '==', rollNo));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as User;
+};
 export const getUserByEmailAndRole = async (email: string, role: User['role']): Promise<User | null> => {
     const q = query(collection(db, 'users'), where('email', '==', email), where('role', '==', role));
     const querySnapshot = await getDocs(q);
