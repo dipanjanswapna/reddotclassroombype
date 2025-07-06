@@ -355,6 +355,7 @@ export type User = {
   mothersName?: string;
   nidNumber?: string;
   mobileNumber?: string;
+  guardianMobileNumber?: string;
   address?: string;
   referredBy?: string;
   socials?: {

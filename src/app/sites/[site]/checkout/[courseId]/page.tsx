@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Course } from '@/lib/types';
 import { getCourse, getPromoCodeForUserAndCourse } from '@/lib/firebase/firestore';
 import { applyPromoCodeAction } from '@/app/actions/promo.actions';
@@ -14,7 +15,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 
 export default function PartnerCheckoutPage({ params }: { params: { site: string, courseId: string } }) {
@@ -30,6 +32,8 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState('');
+
+  const numbersMissing = !!userInfo && (!userInfo.mobileNumber || !userInfo.guardianMobileNumber);
 
   useEffect(() => {
     async function fetchCourse() {
@@ -192,7 +196,19 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
               </div>
             </CardContent>
             <div className='p-6 pt-0'>
-                <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing}>
+                {numbersMissing && (
+                    <Alert variant="destructive" className="mb-4">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Profile Incomplete</AlertTitle>
+                        <AlertDescription>
+                            You must add your and your guardian's mobile number to your profile before you can enroll.
+                            <Button asChild variant="link" className="p-0 h-auto ml-1">
+                                <Link href="/student/profile">Update Profile</Link>
+                            </Button>
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
                     {isProcessing ? <Loader2 className="animate-spin mr-2" /> : null}
                     {isPrebooking ? 'Pay Pre-booking Fee' : 'Proceed to Payment'}
                 </Button>

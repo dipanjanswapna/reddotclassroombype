@@ -8,14 +8,20 @@ import { Timestamp } from 'firebase/firestore';
 
 export async function prebookCourseAction(courseId: string, userId: string) {
     try {
-        const [course, existingPrebooking] = await Promise.all([
+        const [course, existingPrebooking, student] = await Promise.all([
             getCourse(courseId),
-            getPrebookingForUser(courseId, userId)
+            getPrebookingForUser(courseId, userId),
+            getUser(userId),
         ]);
         
         if (!course) throw new Error("Course not found.");
+        if (!student) throw new Error("Student user not found.");
         if (!course.isPrebooking) throw new Error("This course is not available for pre-booking.");
         if (existingPrebooking) throw new Error("You have already pre-booked this course.");
+
+        if (!student.mobileNumber || !student.guardianMobileNumber) {
+            throw new Error("Please complete your profile by adding your and your guardian's mobile number before pre-booking.");
+        }
 
         await addPrebooking({
             courseId,
@@ -47,6 +53,10 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
             throw new Error("Student user not found.");
         }
         
+        if (!student.mobileNumber || !student.guardianMobileNumber) {
+            throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
+        }
+
         const enrollmentData: Omit<Enrollment, 'id'> = {
             userId,
             courseId,

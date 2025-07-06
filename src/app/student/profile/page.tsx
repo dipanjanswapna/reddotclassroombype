@@ -19,12 +19,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Facebook, Upload } from "lucide-react";
+import { Loader2, Facebook, Upload, AlertTriangle, Phone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { updateUser } from "@/lib/firebase/firestore";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function ProfilePage() {
     const { toast } = useToast();
@@ -39,9 +40,12 @@ export default function ProfilePage() {
     const [fathersName, setFathersName] = useState("");
     const [mothersName, setMothersName] = useState("");
     const [mobileNumber, setMobileNumber] = useState("");
+    const [guardianMobileNumber, setGuardianMobileNumber] = useState("");
     const [nidNumber, setNidNumber] = useState("");
     const [address, setAddress] = useState("");
     const [facebook, setFacebook] = useState("");
+
+    const numbersMissing = !userInfo?.mobileNumber || !userInfo?.guardianMobileNumber;
 
     useEffect(() => {
         if (userInfo) {
@@ -51,6 +55,7 @@ export default function ProfilePage() {
             setFathersName(userInfo.fathersName || "");
             setMothersName(userInfo.mothersName || "");
             setMobileNumber(userInfo.mobileNumber || "");
+            setGuardianMobileNumber(userInfo.guardianMobileNumber || "");
             setNidNumber(userInfo.nidNumber || "");
             setAddress(userInfo.address || "");
             setFacebook(userInfo.socials?.facebook || "");
@@ -85,6 +90,7 @@ export default function ProfilePage() {
                 fathersName,
                 mothersName,
                 mobileNumber,
+                guardianMobileNumber,
                 nidNumber,
                 address,
                 socials: {
@@ -136,7 +142,15 @@ export default function ProfilePage() {
         <h1 className="font-headline text-3xl font-bold tracking-tight">Profile & Settings</h1>
         <p className="text-muted-foreground">Manage your account settings and personal information.</p>
       </div>
-
+        {numbersMissing && (
+            <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Action Required: Complete Your Profile</AlertTitle>
+                <AlertDescription>
+                    You must provide both your mobile number and a guardian's mobile number before you can enroll in any courses. Please fill in the required fields in the 'Contact Information' section below and save your changes.
+                </AlertDescription>
+            </Alert>
+        )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
           <Card>
@@ -208,26 +222,46 @@ export default function ProfilePage() {
                     <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} />
                 </div>
               </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Phone /> Contact Information</CardTitle>
+                <CardDescription>
+                    Your mobile number and a guardian's mobile number are required to enroll in courses. Once saved, these cannot be changed by you.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="mobileNumber">Mobile Number</Label>
-                    <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} />
+                    <Label htmlFor="mobileNumber">Your Mobile Number</Label>
+                    <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} disabled={!!userInfo.mobileNumber} />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="nidNumber">NID Number (Optional)</Label>
-                    <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} />
+                    <Label htmlFor="guardianMobileNumber">Guardian's Mobile Number</Label>
+                    <Input id="guardianMobileNumber" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} disabled={!!userInfo.guardianMobileNumber} />
                 </div>
-              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+                <CardTitle>Address Information</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
+                <Label htmlFor="nidNumber">NID Number (Optional)</Label>
+                <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} />
+              </div>
+              <div className="space-y-2 mt-4">
                 <Label htmlFor="address">Address</Label>
                 <Textarea id="address" value={address} onChange={e => setAddress(e.target.value)} />
               </div>
-
             </CardContent>
-            <div className="p-6 pt-0">
+             <div className="p-6 pt-0">
                 <Button onClick={handleInfoSave} disabled={isSaving}>
                     {isSaving ? <Loader2 className="mr-2 animate-spin"/> : null}
-                    Save Changes
+                    Save All Information
                 </Button>
             </div>
           </Card>

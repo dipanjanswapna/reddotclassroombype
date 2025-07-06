@@ -85,6 +85,8 @@ export default function StudentUserManagementPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<User['role']>('Student');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [guardianMobileNumber, setGuardianMobileNumber] = useState('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -109,11 +111,15 @@ export default function StudentUserManagementPage() {
       setName(user.name);
       setEmail(user.email);
       setRole(user.role);
+      setMobileNumber(user.mobileNumber || '');
+      setGuardianMobileNumber(user.guardianMobileNumber || '');
     } else {
       // Reset for new user
       setName('');
       setEmail('');
       setRole('Student');
+      setMobileNumber('');
+      setGuardianMobileNumber('');
     }
     setIsDialogOpen(true);
   };
@@ -124,7 +130,16 @@ export default function StudentUserManagementPage() {
       return;
     }
     setIsSaving(true);
-    const result = await saveUserAction({ id: editingUser?.id, name, email, role, joined: editingUser?.joined || new Date().toISOString().split('T')[0], status: editingUser?.status || 'Active' });
+    const result = await saveUserAction({ 
+        id: editingUser?.id, 
+        name, 
+        email, 
+        role, 
+        joined: editingUser?.joined || new Date().toISOString().split('T')[0], 
+        status: editingUser?.status || 'Active',
+        mobileNumber,
+        guardianMobileNumber
+    });
     if(result.success) {
         toast({ title: editingUser ? 'User Updated' : 'User Created', description: result.message });
         await fetchData();
@@ -318,6 +333,14 @@ export default function StudentUserManagementPage() {
                     <SelectItem value="Guardian">Guardian</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="mobileNumber" className="text-right">Mobile No.</Label>
+                <Input id="mobileNumber" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="guardianMobileNumber" className="text-right">Guardian Mobile</Label>
+                <Input id="guardianMobileNumber" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} className="col-span-3" />
               </div>
             </div>
             <DialogFooter>
