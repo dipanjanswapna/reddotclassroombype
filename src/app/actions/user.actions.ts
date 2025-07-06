@@ -1,6 +1,5 @@
 
 
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -15,11 +14,13 @@ export async function saveUserAction(userData: Partial<User>) {
     try {
         if (userData.id) {
             const { id, ...data } = userData;
+            const currentUserState = await getUser(id);
 
-            // Logic to generate ID upon approval for roles like Moderator/Affiliate
-            if (data.status && data.status === 'Active') {
-                const currentUserState = await getUser(id);
-                if (currentUserState && currentUserState.status !== 'Active' && !currentUserState.registrationNumber) {
+            // Generate registration number for any user who doesn't have one,
+            // as long as their status is active or is being set to active.
+            if (currentUserState && !currentUserState.registrationNumber) {
+                const targetStatus = data.status || currentUserState.status;
+                if(targetStatus === 'Active') {
                     data.registrationNumber = generateRegistrationNumber();
                 }
             }
