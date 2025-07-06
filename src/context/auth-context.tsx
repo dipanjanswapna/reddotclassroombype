@@ -102,15 +102,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [fetchAndSetUser]);
     
-    const ensureRegistrationNumber = async (user: User): Promise<User> => {
-        if (user.status === 'Active' && !user.registrationNumber && user.role !== 'Guardian') {
-            const newRegNumber = generateRegistrationNumber();
-            await updateUser(user.uid, { registrationNumber: newRegNumber });
-            return { ...user, registrationNumber: newRegNumber };
-        }
-        return user;
-    };
-
     const getDashboardLink = (role: User['role']) => {
         switch (role) {
             case 'Student': return '/student/dashboard';
@@ -176,7 +167,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
-        fetchedUserInfo = await ensureRegistrationNumber(fetchedUserInfo);
+        // --- ROBUST REGISTRATION NUMBER LOGIC ---
+        if (!fetchedUserInfo.registrationNumber && fetchedUserInfo.role !== 'Guardian' && fetchedUserInfo.status === 'Active') {
+            const newRegNumber = generateRegistrationNumber();
+            await updateUser(fetchedUserInfo.id!, { registrationNumber: newRegNumber });
+            fetchedUserInfo.registrationNumber = newRegNumber; // Update local object immediately
+        }
         
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
@@ -228,7 +224,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error(statusMessage);
         }
     
-        studentInfo = await ensureRegistrationNumber(studentInfo);
+        // --- ROBUST REGISTRATION NUMBER LOGIC ---
+        if (!studentInfo.registrationNumber && studentInfo.role !== 'Guardian') {
+            const newRegNumber = generateRegistrationNumber();
+            await updateUser(studentInfo.id!, { registrationNumber: newRegNumber });
+            studentInfo.registrationNumber = newRegNumber; // Update local object
+        }
+
         await handleStudentLoginSession(studentInfo.uid);
         setUserInfo(studentInfo);
         redirectToDashboard(studentInfo, 'Login Successful!');
@@ -247,7 +249,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUserByUid(user.uid);
         
         if (existingUserInfo) {
-            existingUserInfo = await ensureRegistrationNumber(existingUserInfo);
+            // --- ROBUST REGISTRATION NUMBER LOGIC FOR EXISTING USER ---
+            if (!existingUserInfo.registrationNumber && existingUserInfo.role !== 'Guardian' && existingUserInfo.status === 'Active') {
+                const newRegNumber = generateRegistrationNumber();
+                await updateUser(existingUserInfo.id!, { registrationNumber: newRegNumber });
+                existingUserInfo.registrationNumber = newRegNumber; // Update local object
+            }
 
             if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);

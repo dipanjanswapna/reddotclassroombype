@@ -13,16 +13,13 @@ import { generateRegistrationNumber } from '@/lib/utils';
 export async function saveUserAction(userData: Partial<User>) {
     try {
         if (userData.id) {
+            // --- UPDATE LOGIC ---
             const { id, ...data } = userData;
             const currentUserState = await getUser(id);
 
-            // Generate registration number for any user who doesn't have one,
-            // as long as their status is active or is being set to active.
-            if (currentUserState && !currentUserState.registrationNumber) {
-                const targetStatus = data.status || currentUserState.status;
-                if(targetStatus === 'Active') {
-                    data.registrationNumber = generateRegistrationNumber();
-                }
+            // Generate registration number if an active user doesn't have one.
+            if (currentUserState && !currentUserState.registrationNumber && currentUserState.status === 'Active' && currentUserState.role !== 'Guardian') {
+                data.registrationNumber = generateRegistrationNumber();
             }
 
             await updateUser(id, data);
@@ -31,7 +28,7 @@ export async function saveUserAction(userData: Partial<User>) {
             revalidatePath('/student/profile');
             return { success: true, message: 'User updated successfully.' };
         } else {
-            // New user creation by admin
+            // --- CREATE LOGIC ---
             const newUser: Partial<User> = { ...userData, joined: Timestamp.now() };
             if (!newUser.registrationNumber && newUser.role !== 'Guardian') {
                 newUser.registrationNumber = generateRegistrationNumber();
