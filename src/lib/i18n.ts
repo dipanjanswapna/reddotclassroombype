@@ -1,4 +1,5 @@
 
+
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * This file contains a central dictionary of translations for the application.
@@ -23,6 +24,11 @@ export const t = {
   signup: { en: 'Sign Up', bn: 'সাইন আপ' },
   or_login_with_roll: { en: 'Or Login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
   class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
+  or_login_with_staff_id: { en: 'Or Login with Staff ID', bn: 'অথবা স্টাফ আইডি দিয়ে লগইন করুন' },
+  login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি লগইন' },
+  staff_id: { en: 'Staff ID', bn: 'স্টাফ আইডি' },
+  email_login: { en: 'Login with Email', bn: 'ইমেইল লগইন' },
+
 
   // Footer
   footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },

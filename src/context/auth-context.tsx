@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -15,7 +16,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { getUserByUid, getHomepageConfig, getUserByClassRoll, updateUser } from '@/lib/firebase/firestore';
+import { getUserByUid, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -28,6 +29,7 @@ interface AuthContextType {
     loading: boolean;
     login: (email: string, pass: string, role?: User['role']) => Promise<any>;
     loginWithClassRoll: (classRoll: string, pass: string) => Promise<any>;
+    loginWithStaffId: (staffId: string, pass: string) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
     loginWithFacebook: () => Promise<any>;
     signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
@@ -243,6 +245,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         redirectToDashboard(studentInfo, 'Login Successful!');
         return userCredential;
     };
+    
+    const loginWithStaffId = async (staffId: string, pass: string) => {
+        let staffInfo = await getUserByRegistrationNumber(staffId);
+        if (!staffInfo) {
+            throw new Error("No staff member found with this ID.");
+        }
+
+        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Seller'];
+        if (!staffRoles.includes(staffInfo.role)) {
+            throw new Error("This login method is for staff members only.");
+        }
+    
+        const userCredential = await signInWithEmailAndPassword(auth, staffInfo.email, pass);
+    
+        if (staffInfo.status !== 'Active') {
+            await signOut(auth);
+            const statusMessage = staffInfo.status === 'Pending Approval'
+                ? "Your account is pending admin approval."
+                : 'Your account has been suspended.';
+            throw new Error(statusMessage);
+        }
+        
+        // No need to check/generate reg number as it's the login key.
+        setUserInfo(staffInfo);
+        redirectToDashboard(staffInfo, 'Login Successful!');
+        return userCredential;
+    };
 
     const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
         const config = await getHomepageConfig();
@@ -413,6 +442,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         login,
         loginWithClassRoll,
+        loginWithStaffId,
         loginWithGoogle,
         loginWithFacebook,
         signup,

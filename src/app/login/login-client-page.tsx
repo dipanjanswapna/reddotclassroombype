@@ -41,12 +41,14 @@ function FacebookIcon() {
 
 export default function LoginPageClient({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
   const { language } = useLanguage();
-  const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll, loginWithStaffId } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [classRoll, setClassRoll] = useState('');
   const [studentPassword, setStudentPassword] = useState('');
+  const [staffId, setStaffId] = useState('');
+  const [staffPassword, setStaffPassword] = useState('');
   const [role, setRole] = useState<User['role']>('Seller');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,6 +75,19 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
         await loginWithClassRoll(classRoll, studentPassword);
     } catch (err: any) {
         setError(err.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  
+  const handleStaffIdLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+        await loginWithStaffId(staffId, staffPassword);
+    } catch (err: any) {
+        setError(err.message || 'Failed to log in with Staff ID. Please check your credentials.');
     } finally {
         setIsLoading(false);
     }
@@ -169,45 +184,74 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                     </div>
                 </TabsContent>
                 <TabsContent value="staff">
-                    <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
-                        <div className="grid gap-2">
-                          <Label htmlFor="role">Your Role</Label>
-                          <Select value={role} onValueChange={(value) => setRole(value as User['role'])} required>
-                            <SelectTrigger id="role">
-                              <SelectValue placeholder="Select your role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Admin">Admin</SelectItem>
-                              <SelectItem value="Teacher">Teacher</SelectItem>
-                              <SelectItem value="Seller">Seller</SelectItem>
-                              <SelectItem value="Moderator">Moderator</SelectItem>
-                              <SelectItem value="Affiliate">Affiliate</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid gap-2">
-                        <Label htmlFor="email">{t.email[language]}</Label>
-                        <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                        <Label htmlFor="password">{t.password[language]}</Label>
-                        <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-                        </div>
-                        {roleLoginDisabled && (
-                            <Alert variant="destructive" className="p-2 text-xs">
-                                <AlertDescription>Login for the '{role}' role is temporarily disabled.</AlertDescription>
-                            </Alert>
-                        )}
-                        <div className="flex items-center justify-end">
-                            <Link href="/password-reset" className="text-sm text-primary hover:underline">
-                                {t.forgot_password[language]}
-                            </Link>
-                        </div>
-                        <Button type="submit" className="w-full font-bold" disabled={isLoading || !!roleLoginDisabled}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                            {t.login[language]}
-                        </Button>
-                    </form>
+                    <Tabs defaultValue="email" className="w-full pt-4">
+                        <TabsList className="grid w-full grid-cols-2">
+                           <TabsTrigger value="email">{t.email_login[language]}</TabsTrigger>
+                           <TabsTrigger value="id">{t.login_with_staff_id[language]}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="email">
+                           <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
+                                <div className="grid gap-2">
+                                <Label htmlFor="role">Your Role</Label>
+                                <Select value={role} onValueChange={(value) => setRole(value as User['role'])} required>
+                                    <SelectTrigger id="role">
+                                    <SelectValue placeholder="Select your role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    <SelectItem value="Admin">Admin</SelectItem>
+                                    <SelectItem value="Teacher">Teacher</SelectItem>
+                                    <SelectItem value="Seller">Seller</SelectItem>
+                                    <SelectItem value="Moderator">Moderator</SelectItem>
+                                    <SelectItem value="Affiliate">Affiliate</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                <Label htmlFor="email">{t.email[language]}</Label>
+                                <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                                </div>
+                                <div className="grid gap-2">
+                                <Label htmlFor="password">{t.password[language]}</Label>
+                                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                                </div>
+                                {roleLoginDisabled && (
+                                    <Alert variant="destructive" className="p-2 text-xs">
+                                        <AlertDescription>Login for the '{role}' role is temporarily disabled.</AlertDescription>
+                                    </Alert>
+                                )}
+                                <div className="flex items-center justify-end">
+                                    <Link href="/password-reset" className="text-sm text-primary hover:underline">
+                                        {t.forgot_password[language]}
+                                    </Link>
+                                </div>
+                                <Button type="submit" className="w-full font-bold" disabled={isLoading || !!roleLoginDisabled}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                    {t.login[language]}
+                                </Button>
+                            </form>
+                        </TabsContent>
+                        <TabsContent value="id">
+                            <form className="grid gap-4 pt-4" onSubmit={handleStaffIdLogin}>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="staff-id">{t.staff_id[language]}</Label>
+                                    <Input id="staff-id" placeholder="12345678" required value={staffId} onChange={(e) => setStaffId(e.target.value)} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="staff-password">{t.password[language]}</Label>
+                                    <Input id="staff-password" type="password" required value={staffPassword} onChange={(e) => setStaffPassword(e.target.value)} />
+                                </div>
+                                 <div className="flex items-center justify-end">
+                                    <Link href="/password-reset" className="text-sm text-primary hover:underline">
+                                        {t.forgot_password[language]}
+                                    </Link>
+                                </div>
+                                <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                    {t.login[language]}
+                                </Button>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
                 </TabsContent>
             </Tabs>
             
