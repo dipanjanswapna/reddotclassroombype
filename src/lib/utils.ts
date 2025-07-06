@@ -12,12 +12,9 @@ export function generateRollNumber(): string {
 }
 
 export function generateRegistrationNumber(): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 12; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
+  const min = 100000000; // Smallest 9-digit number
+  const max = 999999999; // Largest 9-digit number
+  return Math.floor(Math.random() * (max - min + 1) + min).toString();
 }
 
 /**
