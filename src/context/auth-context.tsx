@@ -15,7 +15,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { getUserByUid, getHomepageConfig, getUserByClassRoll } from '@/lib/firebase/firestore';
+import { getUserByUid, getHomepageConfig, getUserByClassRoll, updateUser } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -167,6 +167,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
+        // Retroactively add registration number if missing for active users
+        if (fetchedUserInfo.status === 'Active' && !fetchedUserInfo.registrationNumber && fetchedUserInfo.role !== 'Guardian') {
+            const newRegNumber = generateRegistrationNumber();
+            await updateUser(fetchedUserInfo.uid, { registrationNumber: newRegNumber });
+            fetchedUserInfo.registrationNumber = newRegNumber; // Update local copy
+        }
+        
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
         }
@@ -235,6 +242,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUserByUid(user.uid);
         
         if (existingUserInfo) {
+            // Retroactively add registration number if missing
+            if (existingUserInfo.status === 'Active' && !existingUserInfo.registrationNumber && existingUserInfo.role !== 'Guardian') {
+                const newRegNumber = generateRegistrationNumber();
+                await updateUser(existingUserInfo.uid, { registrationNumber: newRegNumber });
+                existingUserInfo.registrationNumber = newRegNumber; // Update local copy
+            }
+
             if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);
                 throw new Error(`Logins for your role ('${existingUserInfo.role}') are temporarily disabled.`);
