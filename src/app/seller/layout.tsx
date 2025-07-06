@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   Badge,
   QrCode,
+  PhoneCall,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,7 @@ export default function SellerLayout({
     { href: "/seller/courses", icon: BookCopy, label: "Courses" },
     { href: "/seller/teachers", icon: UsersIcon, label: "Teachers" },
     { href: "/seller/students", icon: UsersIcon, label: "Students" },
+    { href: "/seller/call-center", icon: PhoneCall, label: "Call Center" },
     { href: "/seller/scan-attendance", icon: QrCode, label: "Scan" },
     { href: "/seller/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/seller/payouts", icon: Banknote, label: "Payouts" },

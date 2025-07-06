@@ -220,3 +220,16 @@ export async function findUserByRegistrationOrRoll(id: string): Promise<{ userId
         return { userId: null };
     }
 }
+
+export async function markStudentAsCounseledAction(userId: string) {
+    try {
+        await updateUser(userId, { lastCounseledAt: Timestamp.now() });
+        revalidatePath('/admin/absent-students');
+        revalidatePath('/moderator/absent-students');
+        revalidatePath('/affiliate/absent-students');
+        revalidatePath('/seller/call-center');
+        return { success: true, message: 'Student marked as counseled.' };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'An unexpected error occurred.' };
+    }
+}

@@ -365,6 +365,7 @@ export type User = {
   studyPlan?: StudyPlanEvent[];
   currentSessionId?: string;
   lastLoginAt?: Timestamp;
+  lastCounseledAt?: Timestamp;
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;
