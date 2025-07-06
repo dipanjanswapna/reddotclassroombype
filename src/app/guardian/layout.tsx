@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   Badge,
+  ClipboardCheck,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -48,6 +49,7 @@ export default function GuardianLayout({
     { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/guardian/progress", icon: BarChart3, label: "Progress" },
     { href: "/guardian/courses", icon: BookOpen, label: "Courses" },
+    { href: "/guardian/attendance", icon: ClipboardCheck, label: "Attendance" },
     { href: "/guardian/payment-history", icon: Wallet, label: "Payments" },
     { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact" },
     { href: "/guardian/profile", icon: User, label: "Profile" },

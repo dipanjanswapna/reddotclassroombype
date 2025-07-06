@@ -261,6 +261,16 @@ export const saveAttendanceRecords = async (records: Omit<AttendanceRecord, 'id'
     });
     await batch.commit();
 }
+export const getAttendanceForStudentInCourse = async (studentId: string, courseId: string): Promise<AttendanceRecord[]> => {
+    const q = query(collection(db, 'attendance'), where("studentId", "==", studentId), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
+}
+export const getAttendanceForStudent = async (studentId: string): Promise<AttendanceRecord[]> => {
+    const q = query(collection(db, 'attendance'), where("studentId", "==", studentId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
+}
 
 
 const defaultPlatformSettings: PlatformSettings = {
