@@ -17,7 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { getInstructorByUid, getCourses, getBatches, getBranches, getUsersByBatchId } from '@/lib/firebase/firestore';
 import { saveAttendanceAction } from '@/app/actions/attendance.actions';
 import type { Batch, Course, Branch, User } from '@/lib/types';
-import { ClipboardUser, Loader2 } from 'lucide-react';
+import { ClipboardCheck, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
@@ -169,7 +169,7 @@ export default function TeacherAttendancePage() {
                                     <TableCell>{batch.branchName}</TableCell>
                                     <TableCell className="text-right">
                                         <Button onClick={() => handleOpenDialog(batch)}>
-                                            <ClipboardUser className="mr-2 h-4 w-4" />
+                                            <ClipboardCheck className="mr-2 h-4 w-4" />
                                             Take Attendance
                                         </Button>
                                     </TableCell>
