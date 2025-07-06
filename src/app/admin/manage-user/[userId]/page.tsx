@@ -5,7 +5,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { User, Course, Enrollment, AttendanceRecord, Batch, Branch } from '@/lib/types';
-import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, saveUserAction, addEnrollment, getBatches, getBranches } from '@/lib/firebase/firestore';
+import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, addEnrollment, getBatches, getBranches } from '@/lib/firebase/firestore';
+import { saveUserAction } from '@/app/actions/user.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -95,7 +96,7 @@ export default function ManageUserPage() {
     
     useEffect(() => {
         fetchData();
-    }, [userId]);
+    }, [userId, toast]);
     
     const handleProfileSave = async () => {
         if (!editingUser.id) return;
