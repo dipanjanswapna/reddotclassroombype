@@ -12,7 +12,7 @@ import {
     getCourses
 } from '@/lib/firebase/firestore';
 import { Instructor, User } from '@/lib/types';
-import { generateRegistrationNumber } from '@/lib/utils';
+import { generateRegistrationNumber, removeUndefinedValues } from '@/lib/utils';
 import { writeBatch, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
@@ -63,16 +63,56 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
 
 export async function saveInstructorProfileAction(id: string, data: Partial<Instructor>) {
     try {
-        await updateInstructor(id, data);
+        const currentInstructor = await getInstructor(id);
+        if (!currentInstructor) {
+            throw new Error("Instructor not found.");
+        }
+        const currentSlug = currentInstructor.slug;
+
+        const batch = writeBatch(db);
+
+        const instructorRef = doc(db, 'instructors', id);
+        const cleanData = removeUndefinedValues(data);
+        batch.update(instructorRef, cleanData);
+
+        const allCourses = await getCourses();
+        const affectedCourses = allCourses.filter(course =>
+            course.instructors?.some(i => i.slug === currentSlug)
+        );
+
+        for (const course of affectedCourses) {
+            const courseRef = doc(db, 'courses', course.id!);
+            const newInstructorsArray = course.instructors.map(instructorInCourse => {
+                if (instructorInCourse.slug === currentSlug) {
+                    return {
+                        ...instructorInCourse,
+                        name: data.name ?? instructorInCourse.name,
+                        title: data.title ?? instructorInCourse.title,
+                        avatarUrl: data.avatarUrl ?? instructorInCourse.avatarUrl,
+                        slug: data.slug ?? instructorInCourse.slug,
+                        dataAiHint: data.dataAiHint ?? instructorInCourse.dataAiHint,
+                    };
+                }
+                return instructorInCourse;
+            });
+            batch.update(courseRef, { instructors: newInstructorsArray });
+        }
+        
+        await batch.commit();
+
         revalidatePath(`/teacher/profile`);
         if (data.slug) {
             revalidatePath(`/teachers/${data.slug}`);
         }
-        return { success: true, message: 'Profile updated successfully.' };
+        revalidatePath('/courses', 'layout'); 
+
+        return { success: true, message: 'Profile updated successfully across the platform.' };
     } catch (error: any) {
+        console.error("Error updating instructor profile:", error);
         return { success: false, message: error.message };
     }
 }
+
 
 export async function inviteInstructorAction(data: Partial<Instructor>) {
     try {
