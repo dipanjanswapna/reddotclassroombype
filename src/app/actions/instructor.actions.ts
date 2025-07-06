@@ -2,9 +2,19 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addInstructor, deleteInstructor, getInstructor, getUserByUid, updateInstructor, updateUser } from '@/lib/firebase/firestore';
+import { 
+    addInstructor, 
+    deleteInstructor, 
+    getInstructor, 
+    getUserByUid, 
+    updateInstructor, 
+    updateUser,
+    getCourses
+} from '@/lib/firebase/firestore';
 import { Instructor, User } from '@/lib/types';
 import { generateRegistrationNumber } from '@/lib/utils';
+import { writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 export async function createInstructorAction(data: Partial<Omit<Instructor, 'status' | 'slug'>> & { uid: string }) {
     try {
@@ -107,10 +117,42 @@ export async function adminInviteInstructorAction(data: Partial<Instructor>) {
 
 export async function deleteInstructorAction(id: string) {
     try {
-        await deleteInstructor(id);
+        const instructor = await getInstructor(id);
+        if (!instructor) {
+            throw new Error("Instructor not found.");
+        }
+
+        const batch = writeBatch(db);
+
+        // 1. Delete the instructor document
+        const instructorRef = doc(db, 'instructors', id);
+        batch.delete(instructorRef);
+
+        // 2. If linked to a user, delete the user document
+        if (instructor.userId) {
+            const userToDelete = await getUserByUid(instructor.userId);
+            if (userToDelete?.id) {
+                const userRef = doc(db, 'users', userToDelete.id);
+                batch.delete(userRef);
+            }
+        }
+
+        // 3. Remove this instructor from all courses
+        const allCourses = await getCourses();
+        allCourses.forEach(course => {
+            if (course.instructors?.some(i => i.slug === instructor.slug)) {
+                const updatedInstructors = course.instructors.filter(i => i.slug !== instructor.slug);
+                const courseRef = doc(db, 'courses', course.id!);
+                batch.update(courseRef, { instructors: updatedInstructors });
+            }
+        });
+        
+        await batch.commit();
+        
         revalidatePath('/admin/teachers');
-        return { success: true, message: 'Instructor deleted successfully.' };
+        return { success: true, message: 'Instructor and associated data deleted successfully.' };
     } catch (error: any) {
+        console.error("Error deleting instructor:", error);
         return { success: false, message: error.message };
     }
 }

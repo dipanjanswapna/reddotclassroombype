@@ -1,11 +1,19 @@
-
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addUser, deleteUser, getUser, getUserByEmailAndRole, updateUser } from '@/lib/firebase/firestore';
+import {
+  addUser,
+  deleteUser,
+  getUser,
+  getUserByEmailAndRole,
+  updateUser,
+  getEnrollmentsByUserId,
+  getPrebookingsByUserId,
+  getSupportTicketsByUserId
+} from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
 import { generateRegistrationNumber } from '@/lib/utils';
@@ -47,15 +55,55 @@ export async function saveUserAction(userData: Partial<User>) {
 }
 
 export async function deleteUserAction(id: string) {
+    // Note: Deleting a user from Firebase Authentication requires the Admin SDK
+    // and is best handled in a secure backend environment like Firebase Functions.
+    // This action will delete the user's data from Firestore but not their auth entry.
     try {
-        await deleteUser(id);
+        const user = await getUser(id);
+        if (!user) {
+            throw new Error("User not found.");
+        }
+
+        const batch = writeBatch(db);
+
+        // 1. Delete user document itself
+        const userRef = doc(db, 'users', id);
+        batch.delete(userRef);
+
+        // 2. Delete associated data (if student or guardian)
+        if (user.role === 'Student') {
+            const enrollments = await getEnrollmentsByUserId(user.uid);
+            enrollments.forEach(e => batch.delete(doc(db, 'enrollments', e.id!)));
+            
+            const prebookings = await getPrebookingsByUserId(user.uid);
+            prebookings.forEach(p => batch.delete(doc(db, 'prebookings', p.id!)));
+
+            const tickets = await getSupportTicketsByUserId(user.uid);
+            tickets.forEach(t => batch.delete(doc(db, 'support_tickets', t.id!)));
+            
+            // Unlink guardian if exists
+            if (user.linkedGuardianId) {
+                const guardianRef = doc(db, 'users', user.linkedGuardianId);
+                batch.update(guardianRef, { linkedStudentId: '' });
+            }
+        }
+        
+        if (user.role === 'Guardian' && user.linkedStudentId) {
+            const studentRef = doc(db, 'users', user.linkedStudentId);
+            batch.update(studentRef, { linkedGuardianId: '' });
+        }
+        
+        await batch.commit();
+
         revalidatePath('/admin/users');
         revalidatePath('/admin/students');
-        return { success: true, message: 'User deleted successfully.' };
+        return { success: true, message: 'User and all associated data deleted successfully.' };
     } catch (error: any) {
+        console.error("Error deleting user:", error);
         return { success: false, message: error.message };
     }
 }
+
 
 export async function linkGuardianAction(studentId: string, guardianEmail: string) {
     try {
