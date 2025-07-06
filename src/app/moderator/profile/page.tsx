@@ -110,7 +110,7 @@ export default function ModeratorProfilePage() {
                   </div>
             </div>
             <div className="space-y-2">
-                <Label htmlFor="regNumber">Moderator ID</Label>
+                <Label htmlFor="regNumber">Staff ID</Label>
                 <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
             </div>
             <div className="space-y-2">

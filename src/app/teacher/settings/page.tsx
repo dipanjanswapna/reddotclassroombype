@@ -142,7 +142,7 @@ export default function TeacherSettingsPage() {
                   </div>
                 </div>
               <div className="space-y-2">
-                <Label htmlFor="regNumber">Teacher ID</Label>
+                <Label htmlFor="regNumber">Staff ID</Label>
                 <Input id="regNumber" value={userInfo?.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">

@@ -168,7 +168,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         
         // --- ROBUST REGISTRATION NUMBER LOGIC ---
-        if (!fetchedUserInfo.registrationNumber && fetchedUserInfo.role !== 'Guardian' && fetchedUserInfo.status === 'Active') {
+        const needsRegNumberUpdate = fetchedUserInfo.role !== 'Guardian' &&
+                                     fetchedUserInfo.status === 'Active' &&
+                                     (!fetchedUserInfo.registrationNumber || !/^\d+$/.test(fetchedUserInfo.registrationNumber));
+
+        if (needsRegNumberUpdate) {
             const newRegNumber = generateRegistrationNumber();
             await updateUser(fetchedUserInfo.id!, { registrationNumber: newRegNumber });
             fetchedUserInfo.registrationNumber = newRegNumber; // Update local object immediately
@@ -225,7 +229,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     
         // --- ROBUST REGISTRATION NUMBER LOGIC ---
-        if (!studentInfo.registrationNumber && studentInfo.role !== 'Guardian') {
+        const needsRegNumberUpdate = studentInfo.role !== 'Guardian' &&
+                                     (!studentInfo.registrationNumber || !/^\d+$/.test(studentInfo.registrationNumber));
+
+        if (needsRegNumberUpdate) {
             const newRegNumber = generateRegistrationNumber();
             await updateUser(studentInfo.id!, { registrationNumber: newRegNumber });
             studentInfo.registrationNumber = newRegNumber; // Update local object
@@ -250,7 +257,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (existingUserInfo) {
             // --- ROBUST REGISTRATION NUMBER LOGIC FOR EXISTING USER ---
-            if (!existingUserInfo.registrationNumber && existingUserInfo.role !== 'Guardian' && existingUserInfo.status === 'Active') {
+            const needsRegNumberUpdate = existingUserInfo.role !== 'Guardian' &&
+                                         existingUserInfo.status === 'Active' &&
+                                         (!existingUserInfo.registrationNumber || !/^\d+$/.test(existingUserInfo.registrationNumber));
+
+            if (needsRegNumberUpdate) {
                 const newRegNumber = generateRegistrationNumber();
                 await updateUser(existingUserInfo.id!, { registrationNumber: newRegNumber });
                 existingUserInfo.registrationNumber = newRegNumber; // Update local object
