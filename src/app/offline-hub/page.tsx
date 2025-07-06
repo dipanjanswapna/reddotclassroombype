@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { ArrowRight, CheckCircle, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/context/language-context';
 
 export const metadata: Metadata = {
   title: 'RDC OFFLINE HUB',

@@ -542,6 +542,10 @@ export default function AdminHomepageManagementPage() {
                         <Label>Programs Section Title (Bangla)</Label>
                         <Input value={config.offlineHubSection.programsTitle?.bn || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, offlineHubSection: { ...prev.offlineHubSection, programsTitle: { ...(prev.offlineHubSection.programsTitle || { bn: '', en: '' }), bn: e.target.value } } }) : null)} />
                     </div>
+                     <div className="space-y-2">
+                        <Label>Programs Section Title (English)</Label>
+                        <Input value={config.offlineHubSection.programsTitle?.en || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, offlineHubSection: { ...prev.offlineHubSection, programsTitle: { ...(prev.offlineHubSection.programsTitle || { bn: '', en: '' }), en: e.target.value } } }) : null)} />
+                    </div>
                  </div>
                  {config.offlineHubSection.programs?.map((program, progIndex) => (
                    <Collapsible key={program.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>

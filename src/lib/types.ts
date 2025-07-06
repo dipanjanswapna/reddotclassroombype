@@ -434,11 +434,11 @@ export type OfflineHubProgram = {
 
 export type OfflineHubContactSection = {
   display: boolean;
-  title: { [key: string]: string };
-  subtitle: { [key: string]: string };
-  callButtonText: { [key: string]: string };
+  title: { bn: string; en: string };
+  subtitle: { bn: string; en: string };
+  callButtonText: { bn: string; en: string };
   callButtonNumber: string;
-  whatsappButtonText: { [key: string]: string };
+  whatsappButtonText: { bn: string; en: string };
   whatsappNumber: string;
 };
 
@@ -535,21 +535,21 @@ export type HomepageConfig = {
   };
   offlineHubSection: {
     display: boolean;
-    title: { [key: string]: string };
-    subtitle: { [key: string]: string };
+    title: { bn: string; en: string };
+    subtitle: { bn: string; en: string };
     imageUrl: string;
     dataAiHint: string;
-    button1Text: { [key: string]: string };
+    button1Text: { bn: string; en: string };
     button1Url: string;
-    button2Text: { [key: string]: string };
+    button2Text: { bn: string; en: string };
     button2Url: string;
-    centersTitle: { [key: string]: string };
+    centersTitle: { bn: string; en: string };
     centers: {
       id: string;
       name: string;
       address: string;
     }[];
-    programsTitle?: { [key: string]: string };
+    programsTitle?: { bn: string; en: string };
     programs: OfflineHubProgram[];
     contactSection: OfflineHubContactSection;
   };
