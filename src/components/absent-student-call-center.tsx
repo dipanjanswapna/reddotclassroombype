@@ -232,7 +232,7 @@ export function AbsentStudentCallCenter() {
                                                         <Button variant="outline" size="sm" asChild disabled={!student.guardianMobileNumber}><a href={`tel:${student.guardianMobileNumber}`}><Phone className="mr-2 h-4 w-4 text-purple-500"/>Guardian</a></Button>
                                                         <Button variant="outline" size="sm" onClick={() => handleMarkAsCounseled(student.id!)} disabled={counseled}>
                                                             <BookUser className={cn("mr-2 h-4 w-4", counseled && "text-green-500")} />
-                                                            {counseled ? `Counseled ${format(safeToDate(student.lastCounseledAt), 'MMM d')}` : 'Mark Counseled'}
+                                                            {counseled ? `Counseled on ${format(safeToDate(student.lastCounseledAt), 'MMM d')}` : 'Mark Counseled'}
                                                         </Button>
                                                     </div>
                                                 </TableCell>
