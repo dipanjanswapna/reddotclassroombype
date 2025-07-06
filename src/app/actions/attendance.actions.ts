@@ -2,11 +2,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { saveAttendanceRecords, getUserByOfflineRoll, getBatch } from '@/lib/firebase/firestore';
+import { saveAttendanceRecords, getUserByOfflineRoll, getBatch, getAttendanceRecordForStudentByDate, updateAttendanceRecord } from '@/lib/firebase/firestore';
 import { AttendanceRecord } from '@/lib/types';
-import { auth } from '@/lib/firebase/config';
-import { getAuth } from "firebase-admin/auth";
-import { adminApp } from '@/lib/firebase/admin-config';
 
 export async function saveAttendanceAction(
   batchId: string,
@@ -15,21 +12,36 @@ export async function saveAttendanceAction(
   attendanceData: { studentId: string; status: 'Present' | 'Absent' | 'Late' }[],
   teacherId: string,
 ) {
-  
   try {
     const today = new Date().toISOString().split('T')[0];
-    const recordsToSave: Omit<AttendanceRecord, 'id'>[] = attendanceData.map(data => ({
-      ...data,
-      batchId,
-      courseId,
-      branchId,
-      date: today,
-      recordedBy: teacherId,
-    }));
 
-    await saveAttendanceRecords(recordsToSave);
+    // This action now performs an "upsert". It checks for existing records
+    // for each student on the given day and updates it, or creates a new one.
+    const recordsToUpsert = await Promise.all(attendanceData.map(async (data) => {
+        const existingRecord = await getAttendanceRecordForStudentByDate(data.studentId, today);
+        if (existingRecord) {
+            return { id: existingRecord.id, update: { status: data.status, recordedBy: teacherId } };
+        } else {
+            return {
+                create: {
+                    ...data,
+                    batchId,
+                    courseId,
+                    branchId,
+                    date: today,
+                    recordedBy: teacherId,
+                }
+            };
+        }
+    }));
+    
+    await saveAttendanceRecords(recordsToUpsert);
 
     revalidatePath('/teacher/attendance');
+    revalidatePath('/admin/offline-hub');
+    revalidatePath('/guardian/attendance');
+    revalidatePath('/student/my-courses/*');
+    
     return { success: true, message: 'Attendance saved successfully.' };
   } catch (error: any) {
     console.error("Error in saveAttendanceAction: ", error);
@@ -55,6 +67,7 @@ export async function markAttendanceByRollAction(rollNo: string, teacherId: stri
         }
 
         const today = new Date().toISOString().split('T')[0];
+        
         const record: Omit<AttendanceRecord, 'id'> = {
             studentId: student.id!,
             batchId: batch.id!,
@@ -65,12 +78,32 @@ export async function markAttendanceByRollAction(rollNo: string, teacherId: stri
             recordedBy: teacherId,
         };
 
-        await saveAttendanceRecords([record]);
+        const existingRecord = await getAttendanceRecordForStudentByDate(student.id!, today);
+
+        if (existingRecord) {
+            await updateAttendanceRecord(existingRecord.id!, { status: 'Present', recordedBy: teacherId });
+        } else {
+            await saveAttendanceRecords([{ create: record }]);
+        }
+
+        revalidatePath('/admin/offline-hub');
+        revalidatePath('/teacher/scan-attendance');
 
         return { success: true, message: `${student.name} (Roll: ${rollNo}) has been marked as present.` };
 
     } catch (error: any) {
         console.error("Error marking attendance by roll:", error);
+        return { success: false, message: error.message || 'An unexpected error occurred.' };
+    }
+}
+
+export async function updateAttendanceStatusAction(recordId: string, newStatus: AttendanceRecord['status'], adminId: string) {
+    try {
+        await updateAttendanceRecord(recordId, { status: newStatus, recordedBy: adminId });
+        revalidatePath('/admin/offline-hub');
+        return { success: true, message: 'Attendance status updated successfully.' };
+    } catch(error: any) {
+        console.error("Error updating attendance status:", error);
         return { success: false, message: error.message || 'An unexpected error occurred.' };
     }
 }

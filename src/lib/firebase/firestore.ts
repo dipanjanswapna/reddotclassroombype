@@ -1,4 +1,5 @@
 
+
 import { db } from './config';
 import {
   collection,
@@ -261,15 +262,34 @@ export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(
 export const deleteBatch = (id: string) => deleteDoc(doc(db, 'batches', id));
 
 // Attendance
-export const saveAttendanceRecords = async (records: Omit<AttendanceRecord, 'id'>[]) => {
+export const getAttendanceRecords = () => getCollection<AttendanceRecord>('attendance');
+export const updateAttendanceRecord = (id: string, data: Partial<AttendanceRecord>) => updateDoc(doc(db, 'attendance', id), data);
+
+export const getAttendanceRecordForStudentByDate = async (studentId: string, date: string): Promise<AttendanceRecord | null> => {
+    const q = query(collection(db, 'attendance'), where('studentId', '==', studentId), where('date', '==', date));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as AttendanceRecord;
+};
+
+export const saveAttendanceRecords = async (records: ({ create: Omit<AttendanceRecord, 'id'> } | { id: string, update: Partial<AttendanceRecord> })[]) => {
     const batch = writeBatch(db);
     const attendanceCol = collection(db, 'attendance');
+    
     records.forEach(record => {
-        const docRef = doc(attendanceCol);
-        batch.set(docRef, record);
+        if ('create' in record) {
+            const docRef = doc(attendanceCol);
+            batch.set(docRef, record.create);
+        } else {
+            const docRef = doc(attendanceCol, record.id);
+            batch.update(docRef, record.update);
+        }
     });
+
     await batch.commit();
-}
+};
 export const getAttendanceForStudentInCourse = async (studentId: string, courseId: string): Promise<AttendanceRecord[]> => {
     const q = query(collection(db, 'attendance'), where("studentId", "==", studentId), where("courseId", "==", courseId));
     const querySnapshot = await getDocs(q);
