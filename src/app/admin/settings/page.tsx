@@ -242,8 +242,8 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
                     </div>
                     </div>
                 <div className="space-y-2">
-                    <Label htmlFor="userId">Admin ID</Label>
-                    <Input id="userId" value={userInfo?.id || ''} readOnly className="cursor-not-allowed bg-muted" />
+                    <Label htmlFor="regNumber">Admin Registration No.</Label>
+                    <Input id="regNumber" value={userInfo?.registrationNumber || ''} readOnly className="cursor-not-allowed bg-muted" />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>

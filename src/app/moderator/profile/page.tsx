@@ -110,6 +110,10 @@ export default function ModeratorProfilePage() {
                   </div>
             </div>
             <div className="space-y-2">
+                <Label htmlFor="regNumber">Moderator ID</Label>
+                <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+            </div>
+            <div className="space-y-2">
                 <Label htmlFor="fullName">Moderator Name</Label>
                 <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
             </div>

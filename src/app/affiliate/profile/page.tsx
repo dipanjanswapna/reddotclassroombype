@@ -126,6 +126,10 @@ export default function AffiliateProfilePage() {
                         </div>
                     </div>
                     <div className="space-y-2">
+                        <Label htmlFor="regNumber">Affiliate ID</Label>
+                        <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+                    </div>
+                    <div className="space-y-2">
                         <Label htmlFor="fullName">Full Name</Label>
                         <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
                     </div>

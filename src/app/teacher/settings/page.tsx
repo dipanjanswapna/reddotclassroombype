@@ -142,8 +142,8 @@ export default function TeacherSettingsPage() {
                   </div>
                 </div>
               <div className="space-y-2">
-                <Label htmlFor="userId">Teacher ID</Label>
-                <Input id="userId" value={teacher.id || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
+                <Label htmlFor="regNumber">Teacher ID</Label>
+                <Input id="regNumber" value={userInfo?.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
