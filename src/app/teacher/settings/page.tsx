@@ -151,7 +151,7 @@ export default function TeacherSettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                <Input id="email" type="email" value={email} readOnly disabled/>
               </div>
             </CardContent>
             <div className="p-6 pt-0">

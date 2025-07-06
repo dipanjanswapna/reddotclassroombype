@@ -37,7 +37,7 @@ export default function AdminIdCardPage() {
             <IdCardView 
                 name={userInfo.name}
                 role={userInfo.role}
-                idNumber={userInfo.registrationNumber || userInfo.uid}
+                idNumber={userInfo.registrationNumber || 'N/A'}
                 joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}

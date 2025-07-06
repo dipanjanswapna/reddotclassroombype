@@ -65,7 +65,7 @@ export default function SellerIdCardPage() {
             <IdCardView 
                 name={organization.name}
                 role="Seller Organization"
-                idNumber={userInfo.registrationNumber || userInfo.uid}
+                idNumber={userInfo.registrationNumber || 'N/A'}
                 joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={organization.logoUrl}

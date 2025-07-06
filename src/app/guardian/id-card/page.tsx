@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { IdCardView } from "@/components/id-card-view";
@@ -37,7 +38,7 @@ export default function GuardianIdCardPage() {
             <IdCardView 
                 name={userInfo.name}
                 role={userInfo.role}
-                idNumber={userInfo.uid}
+                idNumber={userInfo.registrationNumber || 'N/A'}
                 joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={userInfo.avatarUrl}

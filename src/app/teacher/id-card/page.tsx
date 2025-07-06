@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -65,7 +64,7 @@ export default function TeacherIdCardPage() {
             <IdCardView 
                 name={instructor.name}
                 role={instructor.title || "Teacher"}
-                idNumber={userInfo.registrationNumber || userInfo.uid}
+                idNumber={userInfo.registrationNumber || 'N/A'}
                 joinedDate={formattedDate}
                 email={userInfo.email}
                 imageUrl={instructor.avatarUrl}

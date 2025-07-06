@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -25,8 +26,12 @@ export async function saveUserAction(userData: Partial<User>) {
             const { id, ...data } = userData;
             const currentUserState = await getUser(id);
 
-            // Generate registration number if an active user doesn't have one.
-            if (currentUserState && !currentUserState.registrationNumber && currentUserState.status === 'Active' && currentUserState.role !== 'Guardian') {
+            const isInvalidRegNo = currentUserState && 
+                                 currentUserState.status === 'Active' && 
+                                 currentUserState.role !== 'Guardian' &&
+                                 (!currentUserState.registrationNumber || !/^\d{8}$/.test(String(currentUserState.registrationNumber)));
+
+            if (isInvalidRegNo) {
                 data.registrationNumber = generateRegistrationNumber();
             }
 
