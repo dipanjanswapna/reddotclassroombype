@@ -13,7 +13,7 @@ import {
   getSupportTicketsByUserId
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
-import { Timestamp, writeBatch, doc } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc, query, collection, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
@@ -28,7 +28,6 @@ export async function saveUserAction(userData: Partial<User>) {
 
             const regNo = String(currentUserState?.registrationNumber);
             const isInvalidRegNo = currentUserState && 
-                                 currentUserState.status === 'Active' && 
                                  currentUserState.role !== 'Guardian' &&
                                  (!currentUserState.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
@@ -40,6 +39,7 @@ export async function saveUserAction(userData: Partial<User>) {
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
             revalidatePath('/student/profile');
+            revalidatePath(`/admin/manage-user/${id}`);
             return { success: true, message: 'User updated successfully.' };
         } else {
             // --- CREATE LOGIC ---
@@ -184,5 +184,38 @@ export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent
         return { success: true, message: 'Study plan saved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
+    }
+}
+
+export async function findUserByRegistrationOrRoll(id: string): Promise<{ userId: string | null }> {
+    try {
+        // Search by registration number first (more unique)
+        let q = query(collection(db, 'users'), where('registrationNumber', '==', id));
+        let querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            return { userId: querySnapshot.docs[0].id };
+        }
+
+        // If not found, search by offline roll number
+        q = query(collection(db, 'users'), where('offlineRollNo', '==', id));
+        querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            return { userId: querySnapshot.docs[0].id };
+        }
+
+        // If still not found, search by class roll
+        q = query(collection(db, 'users'), where('classRoll', '==', id));
+        querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            return { userId: querySnapshot.docs[0].id };
+        }
+
+        return { userId: null };
+    } catch (error) {
+        console.error("Error finding user:", error);
+        return { userId: null };
     }
 }
