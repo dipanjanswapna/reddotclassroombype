@@ -1,15 +1,16 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import type { Course, Exam, ExamTemplate, Question } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, FileText, Loader2, MessageSquare } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -27,10 +28,12 @@ import {
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { submitMcqExamAction } from '@/app/actions/grading.actions';
+import { submitMcqExamAction, submitWrittenExamAction } from '@/app/actions/grading.actions';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ExamTakingPage() {
   const params = useParams();
+  const router = useRouter();
   const { toast } = useToast();
   const { userInfo } = useAuth();
   const courseId = params.courseId as string;
@@ -41,8 +44,13 @@ export default function ExamTakingPage() {
   const [examTemplate, setExamTemplate] = useState<ExamTemplate | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // MCQ state
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({}); // { questionId: optionId }
+  
+  // Written state
+  const [submissionText, setSubmissionText] = useState('');
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [finalScore, setFinalScore] = useState<{ score: number; totalMarks: number } | null>(null);
 
@@ -63,10 +71,13 @@ export default function ExamTakingPage() {
             if (!templateData) return notFound();
             setExamTemplate(templateData);
 
-            if (studentExamData.status === 'Graded') {
+            if (studentExamData.status === 'Graded' || studentExamData.status === 'Submitted') {
                 setIsSubmitted(true);
-                setFinalScore({ score: studentExamData.marksObtained || 0, totalMarks: templateData.totalMarks });
-                setSelectedAnswers(studentExamData.answers || {});
+                setSubmissionText(studentExamData.submissionText || '');
+                if (studentExamData.status === 'Graded') {
+                    setFinalScore({ score: studentExamData.marksObtained || 0, totalMarks: templateData.totalMarks });
+                    setSelectedAnswers(studentExamData.answers || {});
+                }
             }
 
         } catch(e) {
@@ -83,13 +94,25 @@ export default function ExamTakingPage() {
     
     setLoading(true);
     try {
-        const result = await submitMcqExamAction(courseId, userInfo.uid, examId, selectedAnswers);
-        if (result.success) {
-            toast({ title: "Exam Submitted!", description: "Your exam has been graded." });
-            setFinalScore({ score: result.score!, totalMarks: result.totalMarks! });
-            setIsSubmitted(true);
-        } else {
-            throw new Error(result.message);
+        if (examTemplate.examType === 'MCQ') {
+            const result = await submitMcqExamAction(courseId, userInfo.uid, examId, selectedAnswers);
+            if (result.success) {
+                toast({ title: "Exam Submitted!", description: "Your exam has been graded." });
+                setFinalScore({ score: result.score!, totalMarks: result.totalMarks! });
+                setIsSubmitted(true);
+            } else {
+                throw new Error(result.message);
+            }
+        } else if (examTemplate.examType === 'Written') {
+            const result = await submitWrittenExamAction(courseId, userInfo.uid, examId, submissionText);
+            if (result.success) {
+                toast({ title: "Submission Successful!", description: "Your written exam has been submitted for grading."});
+                setIsSubmitted(true);
+                // Manually update local state to show the submitted view
+                setExam(prev => prev ? ({...prev, status: 'Submitted', submissionText}) : null);
+            } else {
+                throw new Error(result.message);
+            }
         }
     } catch (error: any) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -110,28 +133,15 @@ export default function ExamTakingPage() {
     return notFound();
   }
   
+  // MCQ specific logic
   const questions = examTemplate.questions || [];
-
-  const handleSelectAnswer = (questionId: string, optionId: string) => {
-    setSelectedAnswers((prev) => ({ ...prev, [questionId]: optionId }));
-  };
-
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-  
+  const handleSelectAnswer = (questionId: string, optionId: string) => { setSelectedAnswers((prev) => ({ ...prev, [questionId]: optionId })); };
+  const handleNext = () => { if (currentQuestionIndex < questions.length - 1) { setCurrentQuestionIndex(currentQuestionIndex + 1); } };
+  const handlePrev = () => { if (currentQuestionIndex > 0) { setCurrentQuestionIndex(currentQuestionIndex - 1); } };
   const currentQuestion = questions[currentQuestionIndex];
 
   if (isSubmitted) {
-    return (
+     return examTemplate.examType === 'MCQ' ? (
         <div className="max-w-4xl mx-auto">
              <Card>
                 <CardHeader className="text-center">
@@ -173,22 +183,62 @@ export default function ExamTakingPage() {
                  })}
              </div>
         </div>
+    ) : (
+         <div className="max-w-4xl mx-auto">
+             <Card>
+                <CardHeader className="text-center">
+                    <CardTitle className="text-3xl font-bold">Exam Submitted</CardTitle>
+                    <CardDescription>{examTemplate.title} - {course.title}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {exam.status === 'Submitted' && (
+                        <div className="text-center p-8 bg-muted rounded-md">
+                            <p className="font-semibold">Your submission is waiting for grading.</p>
+                            <p className="text-sm text-muted-foreground">You will be notified once your instructor has graded your exam.</p>
+                        </div>
+                    )}
+                     {exam.status === 'Graded' && (
+                        <div className="space-y-4">
+                            <div className="text-center">
+                                <p className="text-lg">You scored:</p>
+                                <p className="text-6xl font-bold text-primary my-2">{exam.marksObtained} / {exam.totalMarks}</p>
+                                <p className="text-muted-foreground">Grade: {exam.grade}</p>
+                            </div>
+                             <Card>
+                                <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><MessageSquare/> Instructor's Feedback</CardTitle></CardHeader>
+                                <CardContent><p className="whitespace-pre-wrap">{exam.feedback || "No feedback provided."}</p></CardContent>
+                            </Card>
+                        </div>
+                    )}
+                    <Card className="mt-4">
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><FileText /> Your Submission</CardTitle></CardHeader>
+                        <CardContent><p className="whitespace-pre-wrap p-4 bg-muted rounded-md">{submissionText}</p></CardContent>
+                    </Card>
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={() => router.back()} className="w-full">Back to Exams</Button>
+                </CardFooter>
+             </Card>
+         </div>
     );
   }
 
+  // Exam Taking UI
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{examTemplate.title}</CardTitle>
           <CardDescription>{course.title}</CardDescription>
-          <div className="pt-2">
-            <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} />
-            <p className="text-sm text-muted-foreground mt-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
-          </div>
+          {examTemplate.examType === 'MCQ' && (
+            <div className="pt-2">
+              <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} />
+              <p className="text-sm text-muted-foreground mt-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-            {currentQuestion && (
+            {examTemplate.examType === 'MCQ' && currentQuestion && (
                 <div className="space-y-6">
                     <p className="text-lg font-semibold">{currentQuestion.text}</p>
                     <RadioGroup value={selectedAnswers[currentQuestion.id] || ''} onValueChange={(value) => handleSelectAnswer(currentQuestion.id, value)} className="space-y-2">
@@ -201,19 +251,41 @@ export default function ExamTakingPage() {
                     </RadioGroup>
                 </div>
             )}
+            {examTemplate.examType === 'Written' && (
+                 <div className="space-y-2">
+                    <Label htmlFor="submissionText" className="font-semibold">Your Answer</Label>
+                    <Textarea
+                        id="submissionText"
+                        placeholder="Write your answer here..."
+                        value={submissionText}
+                        onChange={(e) => setSubmissionText(e.target.value)}
+                        rows={15}
+                    />
+                </div>
+            )}
         </CardContent>
         <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}><ArrowLeft className="mr-2" /> Previous</Button>
-            {currentQuestionIndex < questions.length - 1 ? (
-                 <Button onClick={handleNext}>Next <ArrowRight className="ml-2" /></Button>
+            {examTemplate.examType === 'MCQ' ? (
+                <>
+                    <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}><ArrowLeft className="mr-2" /> Previous</Button>
+                    {currentQuestionIndex < questions.length - 1 ? (
+                        <Button onClick={handleNext}>Next <ArrowRight className="ml-2" /></Button>
+                    ) : (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild><Button variant="accent"><Flag className="mr-2"/> Finish & Submit</Button></AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting.</AlertDialogDescription></AlertDialogHeader>
+                                <AlertDialogFooter><AlertDialogCancel>Review Answers</AlertDialogCancel><AlertDialogAction onClick={handleSubmit}>Submit Exam</AlertDialogAction></AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </>
             ) : (
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                         <Button variant="accent"><Flag className="mr-2"/> Finish & Submit</Button>
-                    </AlertDialogTrigger>
+                 <AlertDialog>
+                    <AlertDialogTrigger asChild><Button variant="accent" className="w-full"><Flag className="mr-2"/> Submit Written Exam</Button></AlertDialogTrigger>
                     <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting. Please review your answers before proceeding.</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel>Review Answers</AlertDialogCancel><AlertDialogAction onClick={handleSubmit}>Submit Exam</AlertDialogAction></AlertDialogFooter>
+                        <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>You will not be able to edit your submission after this.</AlertDialogDescription></AlertDialogHeader>
+                        <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleSubmit}>Yes, Submit</AlertDialogAction></AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
             )}
