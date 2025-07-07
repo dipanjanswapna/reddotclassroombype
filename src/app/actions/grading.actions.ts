@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -152,7 +153,7 @@ export async function submitMcqExamAction(
 
     const updatedExams = course.exams!.map(e => 
         (e.id === examId && e.studentId === studentId)
-        ? { ...e, status: 'Graded' as const, marksObtained, grade }
+        ? { ...e, status: 'Graded' as const, marksObtained, grade, answers, submissionDate: Timestamp.now() }
         : e
     );
 

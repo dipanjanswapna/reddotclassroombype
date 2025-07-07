@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -70,7 +71,7 @@ export default function ExamTakingPage() {
 
     try {
         if (examTemplate.examType === 'MCQ') {
-            const result = await submitMcqExamAction(courseId, examId, userInfo.uid, selectedAnswers);
+            const result = await submitMcqExamAction(courseId, userInfo.uid, examId, selectedAnswers);
             if (result.success) {
                 toast({ title: "Exam Submitted!", description: "Your exam has been graded." });
                 setFinalScore({ score: result.score!, totalMarks: result.totalMarks! });
@@ -150,6 +151,7 @@ export default function ExamTakingPage() {
             if (studentExamData.status === 'Graded') {
                 setIsSubmitted(true);
                 setFinalScore({ score: studentExamData.marksObtained || 0, totalMarks: templateData.totalMarks });
+                 setSelectedAnswers(studentExamData.answers || {});
             } else if (studentExamData.status === 'Submitted') {
                 setIsSubmitted(true);
                 setWrittenSubmission(studentExamData.submissionText || '');

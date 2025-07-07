@@ -145,6 +145,7 @@ export type Exam = {
   feedback?: string;
   submissionText?: string;
   submissionDate?: string | Timestamp | Date;
+  answers?: Record<string, string>; // { [questionId]: optionId }
 };
 
 export type Announcement = {
