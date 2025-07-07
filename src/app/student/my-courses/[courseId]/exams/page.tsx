@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge, badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
-import { Award, CheckCircle, Clock, PlayCircle, Eye } from 'lucide-react';
+import { Award, CheckCircle, Clock, PlayCircle, Eye, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import type { Course, Exam } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -97,7 +97,7 @@ export default function ExamsPage() {
                   <TableHead>Type</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Result</TableHead>
+                  <TableHead>Result</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -123,14 +123,19 @@ export default function ExamsPage() {
                                     {exam.status}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-semibold">
+                            <TableCell className="font-semibold">
                                 {exam.status === 'Graded' ? `${exam.marksObtained} / ${exam.totalMarks}` : 'N/A'}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right flex justify-end gap-2">
                               {exam.status === 'Graded' ? (
-                                <Button variant="outline" size="sm" asChild>
-                                  <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><Eye className="mr-2 h-4 w-4"/>View Results</Link>
-                                </Button>
+                                <>
+                                  <Button variant="outline" size="sm" asChild>
+                                    <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><Eye className="mr-2 h-4 w-4"/>Results</Link>
+                                  </Button>
+                                   <Button variant="secondary" size="sm" asChild>
+                                    <Link href={`/student/my-courses/${courseId}/exams/${exam.id}/leaderboard`}><BarChart3 className="mr-2 h-4 w-4"/>Leaderboard</Link>
+                                  </Button>
+                                </>
                               ) : isTakeable ? (
                                 <Button size="sm" asChild>
                                   <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><PlayCircle className="mr-2 h-4 w-4"/>Take Exam</Link>

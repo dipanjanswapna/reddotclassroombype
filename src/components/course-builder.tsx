@@ -29,6 +29,7 @@ import {
   Check,
   Video,
   Award,
+  BarChart3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,7 +66,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -99,6 +100,7 @@ import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from './ui/switch';
+import { ExamLeaderboard } from './exam-leaderboard';
 
 
 type LessonData = {
@@ -357,6 +359,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [quizzes, setQuizzes] = useState<QuizData[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [examTemplates, setExamTemplates] = useState<ExamTemplate[]>([]);
+  const [allExams, setAllExams] = useState<Exam[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
   const [showStudentCount, setShowStudentCount] = useState(false);
@@ -379,6 +382,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [newLiveClassPlatform, setNewLiveClassPlatform] = useState<LiveClass['platform']>('Zoom');
   const [newLiveClassJoinUrl, setNewLiveClassJoinUrl] = useState('');
   const [isScheduling, setIsScheduling] = useState(false);
+
+  const [isExamResultsOpen, setIsExamResultsOpen] = useState(false);
+  const [selectedExamTemplateForResults, setSelectedExamTemplateForResults] = useState<ExamTemplate | null>(null);
   
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -442,6 +448,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString(), examDate: e.examDate ? new Date(e.examDate as string) : undefined })) || []);
+                    setAllExams(courseData.exams || []);
                     setOrganizationId(courseData.organizationId);
                     setShowStudentCount(courseData.showStudentCount || false);
                 } else {
@@ -1269,6 +1276,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     />
                                 </div>
                                 <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" className="h-8" onClick={() => { setSelectedExamTemplateForResults(exam); setIsExamResultsOpen(true); }}><BarChart3 className="mr-2 h-4 w-4" />View Submissions</Button>
                                     <Button variant="ghost" size="icon" onClick={() => removeExamTemplate(exam.id)}>
                                         <X className="text-destructive h-4 w-4"/>
                                     </Button>
@@ -1628,6 +1636,25 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         {isScheduling && <Loader2 className="mr-2 animate-spin"/>}
                         Schedule Class
                     </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <Dialog open={isExamResultsOpen} onOpenChange={setIsExamResultsOpen}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Submissions for: {selectedExamTemplateForResults?.title}</DialogTitle>
+                    <DialogDescription>
+                        Review student performance and see the leaderboard.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 max-h-[60vh] overflow-y-auto">
+                    <ExamLeaderboard exams={allExams.filter(e => e.id.startsWith(selectedExamTemplateForResults?.id || ''))} />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button>Close</Button>
+                    </DialogClose>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
