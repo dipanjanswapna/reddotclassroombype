@@ -11,15 +11,17 @@ import { prebookCourseAction } from '@/app/actions/enrollment.actions';
 import { useToast } from './ui/use-toast';
 import { useRouter } from 'next/navigation';
 import type { ButtonProps } from './ui/button';
+import type { Course } from '@/lib/types';
 
 interface CourseEnrollmentButtonProps {
     courseId: string;
     isPrebookingActive: boolean;
     checkoutUrl: string;
     size?: ButtonProps['size'];
+    courseType?: Course['type'];
 }
 
-export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutUrl, size = "lg" }: CourseEnrollmentButtonProps) {
+export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutUrl, size = "lg", courseType }: CourseEnrollmentButtonProps) {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const router = useRouter();
@@ -99,7 +101,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         }
         return (
              <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
-                <Link href={checkoutUrl}>Enroll Now</Link>
+                <Link href={checkoutUrl}>{courseType === 'Exam' ? 'Enroll in Exam Batch' : 'Enroll Now'}</Link>
             </Button>
         );
     }
@@ -110,7 +112,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
             <Button size={size} asChild className="w-full font-bold bg-secondary text-secondary-foreground hover:bg-secondary/80">
                 <Link href={`/student/my-courses/${courseId}`}>
                     <BookCheck className="mr-2" />
-                    Go to Course
+                    {courseType === 'Exam' ? 'View Exams' : 'Go to Course'}
                 </Link>
             </Button>
         );
@@ -135,7 +137,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
     return (
         <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" asChild>
             <Link href={checkoutUrl}>
-                Enroll Now
+                {courseType === 'Exam' ? 'Enroll in Exam Batch' : 'Enroll Now'}
             </Link>
         </Button>
     );

@@ -1,5 +1,5 @@
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getCourse } from '@/lib/firebase/firestore';
 import {
@@ -15,7 +15,16 @@ import { Progress } from '@/components/ui/progress';
 export default async function CourseHomePage({ params }: { params: { courseId: string } }) {
   const course = await getCourse(params.courseId);
 
-  if (!course || !course.syllabus) {
+  if (!course) {
+    notFound();
+  }
+
+  // Redirect to the exams page if the course is an Exam Batch
+  if (course.type === 'Exam') {
+    redirect(`/student/my-courses/${params.courseId}/exams`);
+  }
+  
+  if (!course.syllabus) {
     notFound();
   }
 

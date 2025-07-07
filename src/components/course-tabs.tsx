@@ -12,21 +12,27 @@ export function CourseTabs({ course }: { course: Course }) {
     const [activeTab, setActiveTab] = useState('features');
 
     const tabs = React.useMemo(() => {
-        const baseTabs = [
+        let baseTabs = [
             { id: 'features', label: 'Overview' },
             { id: 'instructors', label: 'Instructors' },
         ];
 
-        if (course.classRoutine && course.classRoutine.length > 0) {
-            baseTabs.push({ id: 'routine', label: 'Routine' });
-        }
-    
-        if (course.examTemplates && course.examTemplates.length > 0) {
-            baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
-        }
-    
-        if (course.syllabus && course.syllabus.length > 0) {
-            baseTabs.push({ id: 'syllabus', label: 'Syllabus' });
+        if (course.type === 'Exam') {
+            if (course.examTemplates && course.examTemplates.length > 0) {
+                baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
+            }
+        } else {
+            if (course.classRoutine && course.classRoutine.length > 0) {
+                baseTabs.push({ id: 'routine', label: 'Routine' });
+            }
+        
+            if (course.examTemplates && course.examTemplates.length > 0) {
+                baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
+            }
+        
+            if (course.syllabus && course.syllabus.length > 0) {
+                baseTabs.push({ id: 'syllabus', label: 'Syllabus' });
+            }
         }
         
         if (course.reviewsData && course.reviewsData.length > 0) {

@@ -84,6 +84,7 @@ export function CourseCard(props: CourseCardProps) {
                 isPrebookingActive={isPrebookingActive}
                 checkoutUrl={checkoutUrl}
                 size="default"
+                courseType={type}
             />
          )}
       </div>

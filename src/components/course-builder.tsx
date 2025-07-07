@@ -724,8 +724,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
     const result = await scheduleLiveClassAction(courseId, liveClassData);
     
-    if (result.success && result.newAnnouncement) {
-        setLiveClasses(prev => [...prev, result.newAnnouncement!]);
+    if (result.success && result.newLiveClass) {
+        setLiveClasses(prev => [...prev, result.newLiveClass!]);
         toast({ title: 'Success!', description: `Scheduled "${newLiveClassTopic}" successfully.` });
         setIsLiveClassDialogOpen(false);
         // Reset form
@@ -972,6 +972,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
 
+  const filteredTabs = courseType === 'Exam'
+    ? tabs.filter(tab => !['syllabus', 'quizzes', 'assignments', 'routine', 'outcomes', 'bundles'].includes(tab.id))
+    : tabs;
+
   const isPublished = !isNewCourse && initialStatus === 'Published';
 
   if (loading) {
@@ -1018,7 +1022,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             <CardHeader className="p-0">
                 <div className="border-b">
                     <div className="flex items-center gap-1 overflow-x-auto p-1">
-                        {tabs.map(tab => (
+                        {filteredTabs.map(tab => (
                             <Button 
                                 key={tab.id}
                                 variant="ghost"
@@ -1256,7 +1260,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     <div className="flex items-center justify-between">
                                       <p className="font-semibold">Question {qIndex + 1}</p>
                                       <div>
-                                        <Button variant="ghost" size="icon" onClick={() => removeQuestion(quiz.id, q.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                        <Button variant="ghost" size="icon" onClick={() => removeExamQuestion(quiz.id, q.id)}><X className="text-destructive h-4 w-4"/></Button>
                                         <CollapsibleTrigger asChild>
                                             <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" /></Button>
                                         </CollapsibleTrigger>
@@ -1264,22 +1268,22 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </div>
                                     <CollapsibleContent className="mt-4 space-y-2">
                                         <Label>Question Text</Label>
-                                        <Textarea value={q.text} onChange={e => updateQuestionText(quiz.id, q.id, e.target.value)} />
+                                        <Textarea value={q.text} onChange={e => updateExamQuestionText(quiz.id, q.id, e.target.value)} />
                                         <Label>Options (select the correct one)</Label>
-                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectAnswer(quiz.id, q.id, value)}>
+                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(quiz.id, q.id, value)}>
                                             {q.options.map((opt) => (
                                                 <div key={opt.id} className="flex items-center gap-2">
                                                     <RadioGroupItem value={opt.id} id={opt.id} />
-                                                    <Input value={opt.text} onChange={e => updateOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
-                                                    <Button variant="ghost" size="icon" onClick={() => removeOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                                                    <Input value={opt.text} onChange={e => updateExamOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
+                                                    <Button variant="ghost" size="icon" onClick={() => removeExamOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
                                                 </div>
                                             ))}
                                         </RadioGroup>
-                                        <Button variant="outline" size="sm" onClick={() => addOption(quiz.id, q.id)}>Add Option</Button>
+                                        <Button variant="outline" size="sm" onClick={() => addExamOption(quiz.id, q.id)}>Add Option</Button>
                                     </CollapsibleContent>
                                 </Collapsible>
                             ))}
-                            <Button variant="outline" className="w-full border-dashed" onClick={() => addQuestion(quiz.id)}><PlusCircle className="mr-2"/>Add Question</Button>
+                            <Button variant="outline" className="w-full border-dashed" onClick={() => addExamQuestion(quiz.id)}><PlusCircle className="mr-2"/>Add Question</Button>
                         </CardContent>
                       </Card>
                     ))}

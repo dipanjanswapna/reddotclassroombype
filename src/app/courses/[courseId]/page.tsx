@@ -369,6 +369,7 @@ export default async function CourseDetailPage({
                         courseId={course.id!}
                         isPrebookingActive={isPrebookingActive}
                         checkoutUrl={`/checkout/${course.id!}`}
+                        courseType={course.type}
                     />
                     <WishlistButton courseId={course.id!} />
                   </div>

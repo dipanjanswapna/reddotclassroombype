@@ -23,20 +23,37 @@ export function CourseStudentNav({ course }: { course: Course }) {
   const pathname = usePathname();
   const courseId = course.id;
 
-  const courseNavItems = [
-    { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
-    { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
-    { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
-    { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
-    { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
-    { href: `/student/my-courses/${courseId}/attendance`, label: 'Attendance', icon: ClipboardCheck },
+  const baseNavItems = [
     { href: `/student/my-courses/${courseId}/announcements`, label: 'Announcements', icon: Megaphone },
     { href: `/student/my-courses/${courseId}/community`, label: 'Community', icon: Users },
     { href: `/student/my-courses/${courseId}/reviews`, label: 'Reviews', icon: Star },
   ];
 
-  if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
-    courseNavItems.push({ href: `/student/my-courses/${courseId}/archive`, label: 'Archive', icon: Archive });
+  let courseNavItems = [];
+
+  if (course.type === 'Exam') {
+    courseNavItems = [
+        { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
+        ...baseNavItems,
+    ];
+    if (course.liveClasses && course.liveClasses.length > 0) {
+        courseNavItems.splice(1, 0, { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video });
+    }
+  } else {
+    courseNavItems = [
+      { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
+      { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
+      { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
+      { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
+      { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
+      ...baseNavItems,
+    ];
+    if (course.type === 'Offline' || course.type === 'Hybrid') {
+      courseNavItems.splice(5, 0, { href: `/student/my-courses/${courseId}/attendance`, label: 'Attendance', icon: ClipboardCheck });
+    }
+    if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
+      courseNavItems.push({ href: `/student/my-courses/${courseId}/archive`, label: 'Archive', icon: Archive });
+    }
   }
 
   const getIsActive = (href: string) => {
