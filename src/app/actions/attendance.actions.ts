@@ -115,6 +115,7 @@ export async function markCallAsCompletedAction(recordId: string) {
         revalidatePath('/admin/offline-hub');
         revalidatePath('/moderator/absent-students');
         revalidatePath('/affiliate/absent-students');
+        revalidatePath('/seller/call-center');
         return { success: true, message: 'Call status updated successfully.' };
     } catch(error: any) {
         console.error("Error updating call status:", error);
