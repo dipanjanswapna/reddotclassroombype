@@ -193,6 +193,7 @@ export type ExamTemplate = {
   topic: string;
   examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
   totalMarks: number;
+  duration?: number; // Duration in minutes
   examDate?: string | Timestamp | Date;
   questions?: Question[];
 };

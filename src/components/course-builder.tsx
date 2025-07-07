@@ -594,7 +594,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100 }]);
   const removeExamTemplate = (id: string) => setExamTemplates(prev => prev.filter(e => e.id !== id));
-  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date | undefined) => {
+  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id' | 'questions'>, value: string | number | Date | undefined) => {
     setExamTemplates(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
   };
 
@@ -1298,10 +1298,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         </Select>
                                     </div>
                                 </div>
-                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="space-y-1">
                                         <Label>Total Marks</Label>
                                         <Input type="number" value={exam.totalMarks} onChange={e => updateExamTemplate(exam.id, 'totalMarks', Number(e.target.value))} />
+                                    </div>
+                                     <div className="space-y-1">
+                                        <Label>Duration (Minutes)</Label>
+                                        <Input type="number" value={exam.duration || ''} onChange={e => updateExamTemplate(exam.id, 'duration', Number(e.target.value))} placeholder="e.g., 60"/>
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Exam Date</Label>

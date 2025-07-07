@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import type { Course, Exam, ExamTemplate, Question } from '@/lib/types';
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, Clock } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,13 @@ import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { submitMcqExamAction } from '@/app/actions/grading.actions';
 
+const formatTime = (seconds: number | null): string => {
+    if (seconds === null) return '...';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
 export default function ExamTakingPage() {
   const params = useParams();
   const router = useRouter();
@@ -45,6 +52,61 @@ export default function ExamTakingPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({}); // { questionId: optionId }
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [finalScore, setFinalScore] = useState<{ score: number; totalMarks: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showSubmitWarning, setShowSubmitWarning] = useState(false);
+
+  const handleSubmit = useCallback(async (isAutoSubmit = false) => {
+    if (!userInfo) return;
+    if (!isAutoSubmit) setShowSubmitWarning(false);
+    
+    setLoading(true);
+
+    const result = await submitMcqExamAction(courseId, examId, userInfo.uid, selectedAnswers);
+    
+    if (result.success) {
+      toast({ title: "Exam Submitted!", description: "Your exam has been graded." });
+      setFinalScore({ score: result.score!, totalMarks: result.totalMarks! });
+      setIsSubmitted(true);
+      localStorage.removeItem(`exam-timer-${examId}`);
+    } else {
+      toast({ title: "Error", description: result.message, variant: "destructive" });
+      setLoading(false);
+    }
+  }, [courseId, examId, userInfo, selectedAnswers, toast]);
+
+  useEffect(() => {
+    if (!examTemplate?.duration || isSubmitted) return;
+
+    const examEndTimeKey = `exam-timer-${examId}`;
+    let endTimeString = localStorage.getItem(examEndTimeKey);
+
+    if (!endTimeString) {
+        const newEndTime = Date.now() + examTemplate.duration * 60 * 1000;
+        localStorage.setItem(examEndTimeKey, newEndTime.toString());
+        endTimeString = newEndTime.toString();
+    }
+    
+    const endTime = parseInt(endTimeString, 10);
+
+    const interval = setInterval(() => {
+        const remaining = endTime - Date.now();
+        if (remaining <= 0) {
+            clearInterval(interval);
+            setTimeLeft(0);
+            toast({
+                title: "Time's Up!",
+                description: "Your exam is being submitted automatically.",
+                variant: 'destructive',
+            });
+            handleSubmit(true);
+        } else {
+            setTimeLeft(Math.floor(remaining / 1000));
+        }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [examTemplate, isSubmitted, examId, handleSubmit, toast]);
+
 
   useEffect(() => {
     if (!userInfo) return;
@@ -106,22 +168,6 @@ export default function ExamTakingPage() {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  };
-
-  const handleSubmit = async () => {
-    if (!userInfo) return;
-    setLoading(true);
-
-    const result = await submitMcqExamAction(courseId, examId, userInfo.uid, selectedAnswers);
-    
-    if (result.success) {
-      toast({ title: "Exam Submitted!", description: "Your exam has been graded." });
-      setFinalScore({ score: result.score!, totalMarks: result.totalMarks! });
-      setIsSubmitted(true);
-    } else {
-      toast({ title: "Error", description: result.message, variant: "destructive" });
-    }
-    setLoading(false);
   };
   
   const currentQuestion = questions[currentQuestionIndex];
@@ -187,8 +233,21 @@ export default function ExamTakingPage() {
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{examTemplate.title}</CardTitle>
-          <CardDescription>{course.title}</CardDescription>
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle className="text-2xl">{examTemplate.title}</CardTitle>
+                    <CardDescription>{course.title}</CardDescription>
+                </div>
+                {timeLeft !== null && (
+                    <div className={cn(
+                        "text-right p-2 rounded-lg transition-colors",
+                        timeLeft <= 300 ? "bg-destructive/10 text-destructive" : "bg-muted"
+                    )}>
+                        <p className="text-sm font-medium flex items-center gap-1.5"><Clock className="w-4 h-4"/>Time Left</p>
+                        <p className="text-2xl font-bold font-mono">{formatTime(timeLeft)}</p>
+                    </div>
+                )}
+            </div>
           <div className="pt-2">
             <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} />
             <p className="text-sm text-muted-foreground mt-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
@@ -220,9 +279,9 @@ export default function ExamTakingPage() {
                     Next <ArrowRight className="ml-2" />
                  </Button>
             ) : (
-                <AlertDialog>
+                <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
                     <AlertDialogTrigger asChild>
-                         <Button variant="accent">
+                         <Button variant="accent" onClick={() => setShowSubmitWarning(true)}>
                             <Flag className="mr-2"/> Finish & Submit
                          </Button>
                     </AlertDialogTrigger>
@@ -235,7 +294,7 @@ export default function ExamTakingPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Review Answers</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleSubmit}>Submit Exam</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleSubmit(false)}>Submit Exam</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
