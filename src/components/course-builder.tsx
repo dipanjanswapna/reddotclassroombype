@@ -557,41 +557,101 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setLiveClasses(prev => prev.filter(lc => lc.id !== id));
   };
   
-  const addQuiz = () => setQuizzes(prev => [...prev, { id: Date.now().toString(), title: 'New Quiz', topic: '', questions: [] }]);
-  const removeQuiz = (id: string) => {
-    setQuizzes(prev => prev.filter(q => q.id !== id));
-  };
-  const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => {
-    setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
-  };
-  const addQuestion = (quizId: string) => {
-    setQuizzes(prev => prev.map(q => {
-      if (q.id === quizId) {
-        const newQuestionId = Date.now().toString();
-        const newOptionId = `${newQuestionId}-opt-0`;
-        return { ...q, questions: [...q.questions, { id: newQuestionId, text: '', options: [{id: newOptionId, text: ''}], correctAnswerId: newOptionId }] };
+  // Quiz Management
+  const addQuiz = () => setQuizzes(prev => [...prev, { id: `quiz_${Date.now()}`, title: 'New Quiz', topic: '', questions: [] }]);
+  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
+  const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
+  
+  // Exam Management - MCQ Questions
+  const addExamQuestion = (examId: string) => {
+    setExamTemplates(prev => prev.map(exam => {
+      if (exam.id === examId) {
+        const newQuestionId = `q_${Date.now()}`;
+        const newOptionId = `opt_${Date.now()}`;
+        const newQuestion: NonNullable<ExamTemplate['questions']>[0] = {
+          id: newQuestionId,
+          text: '',
+          options: [{ id: newOptionId, text: '' }],
+          correctAnswerId: newOptionId,
+        };
+        return { ...exam, questions: [...(exam.questions || []), newQuestion] };
       }
-      return q;
+      return exam;
     }));
   };
-  const removeQuestion = (quizId: string, questionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.filter(qu => qu.id !== questionId) } : q));
+
+  const removeExamQuestion = (examId: string, questionId: string) => {
+    setExamTemplates(prev => prev.map(exam => 
+      exam.id === examId 
+        ? { ...exam, questions: (exam.questions || []).filter(q => q.id !== questionId) } 
+        : exam
+    ));
   };
-  const updateQuestionText = (quizId: string, questionId: string, text: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, text } : qu) } : q));
+  
+  const updateExamQuestionText = (examId: string, questionId: string, text: string) => {
+    setExamTemplates(prev => prev.map(exam => 
+      exam.id === examId 
+        ? { ...exam, questions: (exam.questions || []).map(q => q.id === questionId ? { ...q, text } : q) } 
+        : exam
+    ));
   };
-  const addOption = (quizId: string, questionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: [...qu.options, { id: Date.now().toString(), text: '' }] } : q) } : q));
+
+  const addExamOption = (examId: string, questionId: string) => {
+    setExamTemplates(prev => prev.map(exam => {
+      if (exam.id === examId) {
+        const newQuestions = (exam.questions || []).map(q => {
+          if (q.id === questionId) {
+            return { ...q, options: [...q.options, { id: `opt_${Date.now()}`, text: '' }] };
+          }
+          return q;
+        });
+        return { ...exam, questions: newQuestions };
+      }
+      return exam;
+    }));
   };
-  const removeOption = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.filter(opt => opt.id !== optionId) } : q) } : q));
+
+  const removeExamOption = (examId: string, questionId: string, optionId: string) => {
+    setExamTemplates(prev => prev.map(exam => {
+      if (exam.id === examId) {
+        const newQuestions = (exam.questions || []).map(q => {
+          if (q.id === questionId) {
+            return { ...q, options: q.options.filter(opt => opt.id !== optionId) };
+          }
+          return q;
+        });
+        return { ...exam, questions: newQuestions };
+      }
+      return exam;
+    }));
   };
-  const updateOptionText = (quizId: string, questionId: string, optionId: string, text: string) => {
-     setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, options: qu.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) } : q) } : q));
+
+  const updateExamOptionText = (examId: string, questionId: string, optionId: string, text: string) => {
+    setExamTemplates(prev => prev.map(exam => {
+      if (exam.id === examId) {
+        const newQuestions = (exam.questions || []).map(q => {
+          if (q.id === questionId) {
+            const newOptions = q.options.map(opt => opt.id === optionId ? { ...opt, text } : opt);
+            return { ...q, options: newOptions };
+          }
+          return q;
+        });
+        return { ...exam, questions: newQuestions };
+      }
+      return exam;
+    }));
   };
-  const setCorrectAnswer = (quizId: string, questionId: string, optionId: string) => {
-    setQuizzes(prev => prev.map(q => q.id === quizId ? { ...q, questions: q.questions.map(qu => qu.id === questionId ? { ...qu, correctAnswerId: optionId } : qu) } : q));
+  
+  const setCorrectExamAnswer = (examId: string, questionId: string, optionId: string) => {
+    setExamTemplates(prev => prev.map(exam => {
+      if (exam.id === examId) {
+        const newQuestions = (exam.questions || []).map(q => q.id === questionId ? { ...q, correctAnswerId: optionId } : q);
+        return { ...exam, questions: newQuestions };
+      }
+      return exam;
+    }));
   };
+
 
   const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
@@ -599,7 +659,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
   };
 
-  const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100 }]);
+  const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100, questions: [] }]);
   const removeExamTemplate = (id: string) => setExamTemplates(prev => prev.filter(e => e.id !== id));
   const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id' | 'questions'>, value: string | number | Date | undefined) => {
     setExamTemplates(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
@@ -1336,26 +1396,29 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     <div className="pt-4 border-t">
                                         <h4 className="text-md font-semibold mb-2">MCQ Questions</h4>
                                         <div className="space-y-4">
-                                            {exam.questions?.map((q, qIndex) => (
+                                            {(exam.questions || []).map((q, qIndex) => (
                                                 <div key={q.id} className="p-3 border bg-background rounded-md space-y-2">
                                                     <div className="flex justify-between items-center">
                                                       <Label>Question {qIndex + 1}</Label>
-                                                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {/* logic to remove question */}}><X className="h-3 w-3"/></Button>
+                                                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id)}><X className="h-3 w-3 text-destructive"/></Button>
                                                     </div>
-                                                    <Textarea value={q.text} onChange={() => {/* logic to update text */}} placeholder="Question text"/>
+                                                    <Textarea value={q.text} onChange={(e) => updateExamQuestionText(exam.id, q.id, e.target.value)} placeholder="Question text"/>
                                                     <div className="space-y-2">
-                                                        {q.options.map(opt => (
-                                                            <div key={opt.id} className="flex gap-2 items-center">
-                                                                <RadioGroup><RadioGroupItem value={opt.id} checked={q.correctAnswerId === opt.id} /></RadioGroup>
-                                                                <Input value={opt.text} onChange={() => {/* logic to update option */}}/>
-                                                                <Button variant="ghost" size="icon" className="h-6 w-6"><X className="h-3 w-3"/></Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button size="sm" variant="outline" onClick={() => {/* logic to add option */}}>Add Option</Button>
+                                                        <Label className="text-xs">Options (select the correct one)</Label>
+                                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(exam.id, q.id, value)}>
+                                                            {q.options.map(opt => (
+                                                                <div key={opt.id} className="flex gap-2 items-center">
+                                                                    <RadioGroupItem value={opt.id} id={`${exam.id}-${q.id}-${opt.id}`} />
+                                                                    <Input value={opt.text} onChange={(e) => updateExamOptionText(exam.id, q.id, opt.id, e.target.value)}/>
+                                                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
+                                                                </div>
+                                                            ))}
+                                                        </RadioGroup>
+                                                        <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id)}>Add Option</Button>
                                                     </div>
                                                 </div>
                                             ))}
-                                            <Button variant="outline" className="w-full" onClick={() => {/* logic to add question */}}>Add Question</Button>
+                                            <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>Add Question</Button>
                                         </div>
                                     </div>
                                 )}
