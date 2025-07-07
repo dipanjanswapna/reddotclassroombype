@@ -137,6 +137,7 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
         revalidatePath(`/checkout/${courseId}`);
         revalidatePath(`/sites/[site]/checkout/${courseId}`);
         revalidatePath(`/student/my-courses/${courseId}/assignments`);
+        revalidatePath(`/student/my-courses/${courseId}/exams`);
         if(course.isPrebooking) {
             revalidatePath('/admin/pre-bookings');
             revalidatePath('/teacher/pre-bookings');
