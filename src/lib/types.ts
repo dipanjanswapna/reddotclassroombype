@@ -94,18 +94,19 @@ export type Instructor = {
   }[];
 }
 
-export type QuizQuestion = {
+export type Question = {
   id: string;
   text: string;
   options: { id: string; text: string }[];
   correctAnswerId: string;
 };
 
+
 export type Quiz = {
   id: string;
   title: string;
   topic: string;
-  questions: QuizQuestion[];
+  questions: Question[];
   // These were from mock-data, but are not set in the builder.
   // The consuming components should handle their absence.
   totalQuestions?: number;
@@ -193,6 +194,7 @@ export type ExamTemplate = {
   examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
   totalMarks: number;
   examDate?: string | Timestamp | Date;
+  questions?: Question[];
 };
 
 export type Classroom = {

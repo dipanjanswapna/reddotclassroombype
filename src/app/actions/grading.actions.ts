@@ -4,6 +4,7 @@
 import { revalidatePath } from 'next/cache';
 import { addNotification, getCourse, updateCourse } from '@/lib/firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { Exam, ExamTemplate, Question } from '@/lib/types';
 
 export async function gradeAssignmentAction(
     courseId: string, 
@@ -86,7 +87,7 @@ export async function gradeExamAction(
                     feedback
                 };
             }
-            return e;
+            return a;
         });
 
         await updateCourse(courseId, { exams: updatedExams });
@@ -108,4 +109,79 @@ export async function gradeExamAction(
     } catch (error: any) {
         return { success: false, message: error.message };
     }
+}
+
+
+export async function submitMcqExamAction(
+  courseId: string,
+  studentId: string,
+  examId: string,
+  answers: Record<string, string> // { [questionId]: optionId }
+) {
+  try {
+    const course = await getCourse(courseId);
+    if (!course) throw new Error("Course not found.");
+
+    const studentExam = course.exams?.find(e => e.id === examId && e.studentId === studentId);
+    if (!studentExam) throw new Error("Exam instance for this student not found.");
+    if (studentExam.status === 'Graded') throw new Error("This exam has already been graded.");
+
+    const examTemplateId = examId.split('-')[0];
+    const examTemplate = course.examTemplates?.find(et => et.id === examTemplateId);
+    if (!examTemplate) throw new Error("Exam template not found.");
+    if (examTemplate.examType !== 'MCQ' || !examTemplate.questions) {
+      throw new Error("This action is only for MCQ exams with questions.");
+    }
+
+    let correctAnswers = 0;
+    examTemplate.questions.forEach(question => {
+      if (answers[question.id] && answers[question.id] === question.correctAnswerId) {
+        correctAnswers++;
+      }
+    });
+
+    const marksPerQuestion = examTemplate.totalMarks / examTemplate.questions.length;
+    const marksObtained = parseFloat((correctAnswers * marksPerQuestion).toFixed(2));
+    
+    // Simple grading scale
+    const percentage = (marksObtained / examTemplate.totalMarks) * 100;
+    let grade = 'F';
+    if (percentage >= 80) grade = 'A+';
+    else if (percentage >= 70) grade = 'A';
+    else if (percentage >= 60) grade = 'B';
+    else if (percentage >= 50) grade = 'C';
+    else if (percentage >= 40) grade = 'D';
+
+    const updatedExams = course.exams!.map(e => 
+        (e.id === examId && e.studentId === studentId)
+        ? { ...e, status: 'Graded' as const, marksObtained, grade }
+        : e
+    );
+
+    await updateCourse(courseId, { exams: updatedExams });
+
+    await addNotification({
+        userId: studentId,
+        icon: 'Award',
+        title: `Exam Graded: ${examTemplate.title}`,
+        description: `You scored ${marksObtained}/${examTemplate.totalMarks} in "${course.title}".`,
+        date: Timestamp.now(),
+        read: false,
+        link: `/student/my-courses/${courseId}/exams`
+    });
+    
+    revalidatePath(`/student/my-courses/${courseId}/exams`);
+    revalidatePath(`/teacher/grading`);
+
+    return { 
+        success: true, 
+        message: 'Exam submitted and graded successfully.',
+        score: marksObtained,
+        totalMarks: examTemplate.totalMarks
+    };
+
+  } catch (error: any) {
+    console.error("Error submitting MCQ exam:", error);
+    return { success: false, message: error.message };
+  }
 }

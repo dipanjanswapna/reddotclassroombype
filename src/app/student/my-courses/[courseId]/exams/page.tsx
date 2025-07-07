@@ -3,17 +3,19 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
+import Link from 'next/link';
 import { getCourse } from '@/lib/firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge, badgeVariants } from '@/components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
-import { Award, CheckCircle, Clock } from 'lucide-react';
+import { Award, CheckCircle, Clock, PlayCircle, Eye } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import type { Course, Exam } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format, isPast } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const getStatusBadgeVariant = (status: Exam['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
@@ -96,12 +98,16 @@ export default function ExamsPage() {
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Result</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {exams.map((exam) => {
                     const examDate = safeToDate(exam.examDate);
                     const isUpcoming = examDate > new Date();
+                    const examTemplate = course.examTemplates?.find(et => et.id === exam.id.split('-')[0]);
+                    const isTakeable = examTemplate?.examType === 'MCQ' && exam.status !== 'Graded';
+
                     return (
                         <TableRow key={exam.id}>
                             <TableCell className="font-medium">{exam.title}</TableCell>
@@ -119,6 +125,19 @@ export default function ExamsPage() {
                             </TableCell>
                             <TableCell className="text-right font-semibold">
                                 {exam.status === 'Graded' ? `${exam.marksObtained} / ${exam.totalMarks}` : 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {exam.status === 'Graded' ? (
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><Eye className="mr-2 h-4 w-4"/>View Results</Link>
+                                </Button>
+                              ) : isTakeable ? (
+                                <Button size="sm" asChild>
+                                  <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><PlayCircle className="mr-2 h-4 w-4"/>Take Exam</Link>
+                                </Button>
+                              ) : (
+                                <Button size="sm" disabled>N/A</Button>
+                              )}
                             </TableCell>
                         </TableRow>
                     )
