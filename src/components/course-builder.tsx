@@ -66,7 +66,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, Quiz as QuizType } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -843,7 +843,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     }
   };
   
-  const handleGenerateQuiz = async (lessonId: string, lessonTitle: string) => {
+    const handleGenerateQuiz = async (lessonId: string, lessonTitle: string) => {
         setGeneratingQuizForLesson(lessonId);
         try {
             const result = await generateQuizForLesson({
@@ -858,20 +858,32 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 topic: lessonTitle,
                 questions: result.questions.map(q => ({
                     ...q,
-                    id: `${newQuizId}-${q.id}` // ensure question ids are unique
+                    id: `${newQuizId}-${q.id}`
                 }))
             };
 
-            // Add the new quiz to the quizzes state
             setQuizzes(prev => [...prev, newQuiz]);
+            
+            const newLesson: LessonData = {
+              id: `lesson_${Date.now()}`,
+              type: 'quiz',
+              title: `Quiz: ${lessonTitle}`,
+              duration: `${result.questions.length} Questions`,
+              quizId: newQuizId,
+            };
+            
+            const lessonIndex = syllabus.findIndex(item => item.id === lessonId);
+            if (lessonIndex > -1) {
+                const newSyllabus = [...syllabus];
+                newSyllabus.splice(lessonIndex + 1, 0, newLesson);
+                setSyllabus(newSyllabus);
+            }
 
-            // Update the lesson in the syllabus to link to this new quiz
             updateSyllabusItem(lessonId, 'quizId', newQuizId);
-            updateSyllabusItem(lessonId, 'type', 'quiz');
 
             toast({
                 title: 'Quiz Generated!',
-                description: `An AI-powered quiz for "${lessonTitle}" has been created and linked.`
+                description: `An AI-powered quiz for "${lessonTitle}" has been created and added to the syllabus.`
             });
 
         } catch (err) {

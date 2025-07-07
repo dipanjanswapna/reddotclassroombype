@@ -15,7 +15,7 @@ const QuizQuestionSchema = z.object({
     options: z.array(z.object({
         id: z.string().describe("A unique ID for the option, e.g., 'opt1'."),
         text: z.string().describe('The text for this answer option.'),
-    })).describe('An array of 4 possible answer options.'),
+    })).describe('An array of 4 distinct answer options.'),
     correctAnswerId: z.string().describe("The ID of the correct option."),
 });
 
