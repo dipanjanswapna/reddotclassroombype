@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge
+  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -42,8 +42,9 @@ export default function StudentLayout({
     { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
     { href: "/student/live-classes", icon: Video, label: "Live Classes" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
+    { href: "/student/exams", icon: ClipboardEdit, label: "Exams" },
     { href: "/student/deadlines", icon: CalendarClock, label: "Deadlines" },
-    { href: "/student/grades", icon: GraduationCap, label: "Grades" },
+    { href: "/student/grades", icon: FileCheck2, label: "Grades" },
     { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/planner", icon: BookMarked, label: "Planner" },
     { href: "/student/community", icon: UsersIcon, label: "Community" },
