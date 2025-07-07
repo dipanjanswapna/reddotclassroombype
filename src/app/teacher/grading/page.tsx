@@ -85,7 +85,7 @@ export default function TeacherGradingPage() {
         );
 
         const examsToGrade = teacherCourses.flatMap(course =>
-            (course.exams || []).filter(e => e.status === 'Pending').map(exam => ({
+            (course.exams || []).filter(e => e.status === 'Submitted').map(exam => ({
                 ...exam,
                 courseTitle: course.title,
                 courseId: course.id!,
@@ -243,7 +243,7 @@ export default function TeacherGradingPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Pending Exam Submissions</CardTitle>
-                        <CardDescription>A list of all student exams waiting for your review.</CardDescription>
+                        <CardDescription>A list of all student written exams waiting for your review.</CardDescription>
                     </CardHeader>
                     <CardContent>
                          <Table>
@@ -252,7 +252,7 @@ export default function TeacherGradingPage() {
                                     <TableHead>Student</TableHead>
                                     <TableHead>Course</TableHead>
                                     <TableHead>Exam</TableHead>
-                                    <TableHead>Exam Date</TableHead>
+                                    <TableHead>Submitted</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -262,7 +262,7 @@ export default function TeacherGradingPage() {
                                     <TableCell className="font-medium">{exam.studentName}</TableCell>
                                     <TableCell>{exam.courseTitle}</TableCell>
                                     <TableCell>{exam.title}</TableCell>
-                                    <TableCell>{exam.examDate ? format(safeToDate(exam.examDate), 'PPP') : 'N/A'}</TableCell>
+                                    <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : 'N/A'}</TableCell>
                                     <TableCell className="text-right">
                                         <Button onClick={() => handleOpenExamDialog(exam)}>
                                             <Award className="mr-2 h-4 w-4"/> Grade
@@ -294,7 +294,7 @@ export default function TeacherGradingPage() {
           <div className="py-4 space-y-4">
             <div>
               <Label className="font-semibold">Student's Submission</Label>
-              <div className="mt-2 p-4 border rounded-md bg-muted text-sm">
+              <div className="mt-2 p-4 border rounded-md bg-muted text-sm max-h-48 overflow-y-auto">
                 <p className="whitespace-pre-wrap">{selectedAssignment?.submissionText || "No submission text provided."}</p>
               </div>
             </div>
@@ -320,7 +320,7 @@ export default function TeacherGradingPage() {
       </Dialog>
 
       <Dialog open={isExamDialogOpen} onOpenChange={setIsExamDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Grade Exam: {selectedExam?.title}</DialogTitle>
             <DialogDescription>
@@ -328,6 +328,14 @@ export default function TeacherGradingPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
+            {selectedExam?.submissionText && (
+                <div>
+                  <Label className="font-semibold">Student's Submission</Label>
+                  <div className="mt-2 p-4 border rounded-md bg-muted text-sm max-h-48 overflow-y-auto">
+                    <p className="whitespace-pre-wrap">{selectedExam?.submissionText}</p>
+                  </div>
+                </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="marks">Marks Obtained</Label>

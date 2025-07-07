@@ -139,10 +139,12 @@ export type Exam = {
   examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
   totalMarks: number;
   examDate?: string | Timestamp | Date;
-  status: 'Pending' | 'Graded';
+  status: 'Pending' | 'Submitted' | 'Graded';
   marksObtained?: number;
   grade?: string;
   feedback?: string;
+  submissionText?: string;
+  submissionDate?: string | Timestamp | Date;
 };
 
 export type Announcement = {

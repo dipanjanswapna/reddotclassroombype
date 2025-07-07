@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addNotification, getCourse, updateCourse } from '@/lib/firebase/firestore';
+import { addNotification, getCourse, getInstructorBySlug, updateCourse } from '@/lib/firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 import { Exam, ExamTemplate, Question } from '@/lib/types';
 
@@ -72,23 +72,21 @@ export async function gradeExamAction(
             throw new Error("Course or exams not found.");
         }
 
-        const exam = course.exams.find(e => e.id === examId && e.studentId === studentId);
-        if (!exam) {
+        const examIndex = course.exams.findIndex(e => e.id === examId && e.studentId === studentId);
+        if (examIndex === -1) {
             throw new Error("Exam not found for this student.");
         }
+        
+        const exam = course.exams[examIndex];
 
-        const updatedExams = course.exams.map(e => {
-            if (e.id === examId && e.studentId === studentId) {
-                return {
-                    ...e,
-                    status: 'Graded' as const,
-                    marksObtained,
-                    grade,
-                    feedback
-                };
-            }
-            return a;
-        });
+        const updatedExams = [...course.exams];
+        updatedExams[examIndex] = {
+            ...exam,
+            status: 'Graded' as const,
+            marksObtained,
+            grade,
+            feedback
+        };
 
         await updateCourse(courseId, { exams: updatedExams });
 
@@ -182,6 +180,67 @@ export async function submitMcqExamAction(
 
   } catch (error: any) {
     console.error("Error submitting MCQ exam:", error);
+    return { success: false, message: error.message };
+  }
+}
+
+export async function submitWrittenExamAction(
+  courseId: string,
+  studentId: string,
+  examId: string,
+  submissionText: string,
+) {
+  try {
+    const course = await getCourse(courseId);
+    if (!course || !course.exams) {
+      throw new Error("Course or exams not found.");
+    }
+
+    const examIndex = course.exams.findIndex(e => e.id === examId && e.studentId === studentId);
+    if (examIndex === -1) {
+      throw new Error("Exam not found for this student.");
+    }
+    
+    const studentExam = course.exams[examIndex];
+    if (studentExam.status !== 'Pending') {
+      throw new Error("This exam cannot be submitted at this time.");
+    }
+
+    const updatedExams = [...course.exams];
+    updatedExams[examIndex] = {
+      ...studentExam,
+      submissionText,
+      submissionDate: Timestamp.now(),
+      status: 'Submitted' as const,
+    };
+
+    await updateCourse(courseId, { exams: updatedExams });
+
+    // Notify instructors
+    if (course.instructors && course.instructors.length > 0) {
+      for (const instructorInfo of course.instructors) {
+        const instructor = await getInstructorBySlug(instructorInfo.slug);
+        if (instructor?.userId) {
+          await addNotification({
+            userId: instructor.userId,
+            icon: 'FileCheck2',
+            title: `New Exam Submission in ${course.title}`,
+            description: `${studentExam.studentName} submitted "${studentExam.title}".`,
+            date: Timestamp.now(),
+            read: false,
+            link: `/teacher/grading`
+          });
+        }
+      }
+    }
+
+    revalidatePath(`/student/my-courses/${courseId}/exams`);
+    revalidatePath(`/teacher/grading`);
+
+    return { success: true, message: 'Exam submitted successfully for grading.' };
+
+  } catch (error: any) {
+    console.error("Error submitting written exam:", error);
     return { success: false, message: error.message };
   }
 }

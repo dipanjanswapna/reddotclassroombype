@@ -21,6 +21,8 @@ const getStatusBadgeVariant = (status: Exam['status']): VariantProps<typeof badg
   switch (status) {
     case 'Graded':
       return 'accent';
+    case 'Submitted':
+        return 'warning';
     case 'Pending':
     default:
       return 'secondary';
@@ -105,8 +107,7 @@ export default function ExamsPage() {
                 {exams.map((exam) => {
                     const examDate = safeToDate(exam.examDate);
                     const isUpcoming = examDate > new Date();
-                    const examTemplate = course.examTemplates?.find(et => et.id === exam.id.split('-')[0]);
-                    const isTakeable = examTemplate?.examType === 'MCQ' && exam.status !== 'Graded';
+                    const isTakeable = exam.status === 'Pending';
 
                     return (
                         <TableRow key={exam.id}>
@@ -127,7 +128,7 @@ export default function ExamsPage() {
                                 {exam.status === 'Graded' ? `${exam.marksObtained} / ${exam.totalMarks}` : 'N/A'}
                             </TableCell>
                             <TableCell className="text-right flex justify-end gap-2">
-                              {exam.status === 'Graded' ? (
+                              {exam.status === 'Graded' || exam.status === 'Submitted' ? (
                                 <>
                                   <Button variant="outline" size="sm" asChild>
                                     <Link href={`/student/my-courses/${courseId}/exams/${exam.id}`}><Eye className="mr-2 h-4 w-4"/>Results</Link>
