@@ -333,7 +333,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
-  const [courseType, setCourseType] = useState<'Online' | 'Offline' | 'Hybrid'>('Online');
+  const [courseType, setCourseType] = useState<'Online' | 'Offline' | 'Hybrid' | 'Exam'>('Online');
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [price, setPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
@@ -1021,7 +1021,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="course-type">Course Type</Label>
-                        <Select value={courseType} onValueChange={(value: 'Online' | 'Offline' | 'Hybrid') => setCourseType(value)}>
+                        <Select value={courseType} onValueChange={(value: 'Online' | 'Offline' | 'Hybrid' | 'Exam') => setCourseType(value)}>
                             <SelectTrigger id="course-type">
                                 <SelectValue placeholder="Select course type" />
                             </SelectTrigger>
@@ -1029,6 +1029,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 <SelectItem value="Online">Online</SelectItem>
                                 <SelectItem value="Offline">Offline</SelectItem>
                                 <SelectItem value="Hybrid">Hybrid</SelectItem>
+                                <SelectItem value="Exam">Exam Batch</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

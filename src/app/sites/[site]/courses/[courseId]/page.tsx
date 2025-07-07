@@ -120,7 +120,7 @@ export default async function PartnerCourseDetailPage({
         </div>
       </section>
 
-      <CourseTabs />
+      <CourseTabs course={course} />
 
       <main className="container mx-auto px-4 py-16">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -203,6 +203,36 @@ export default async function PartnerCourseDetailPage({
                                             <TableCell className="font-medium">{item.day}</TableCell>
                                             <TableCell>{item.subject}</TableCell>
                                             <TableCell>{item.time}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </section>
+            )}
+
+            {course.examTemplates && course.examTemplates.length > 0 && (
+                <section id="exam-schedule" className="scroll-mt-24 py-0">
+                    <h2 className="font-headline text-3xl font-bold mb-6">পরীক্ষার রুটিন</h2>
+                    <Card>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>পরীক্ষার নাম</TableHead>
+                                        <TableHead>বিষয়</TableHead>
+                                        <TableHead>তারিখ</TableHead>
+                                        <TableHead>মোট নম্বর</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {course.examTemplates.map((item, index) => (
+                                        <TableRow key={`exam-${item.id}-${index}`}>
+                                            <TableCell className="font-medium">{item.title}</TableCell>
+                                            <TableCell>{item.topic}</TableCell>
+                                            <TableCell>{item.examDate ? format(new Date(item.examDate as string), 'PPP') : 'N/A'}</TableCell>
+                                            <TableCell>{item.totalMarks}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

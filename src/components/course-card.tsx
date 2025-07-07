@@ -15,7 +15,7 @@ type CourseCardProps = Partial<Course> & {
 };
 
 export function CourseCard(props: CourseCardProps) {
-  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider } = props;
+  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -42,6 +42,7 @@ export function CourseCard(props: CourseCardProps) {
         </Link>
         <CourseCardWishlistButton courseId={id} />
         {isPrebookingActive && <Badge className="absolute top-2 left-2" variant="warning">Pre-booking</Badge>}
+        {type === 'Exam' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="destructive">Exam Batch</Badge>}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}

@@ -1,23 +1,48 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Course } from '@/lib/types';
 
-const tabs = [
-    { id: 'features', label: 'Overview' },
-    { id: 'instructors', label: 'Instructors' },
-    { id: 'routine', label: 'Routine' },
-    { id: 'syllabus', label: 'Syllabus' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'faq', label: 'FAQ' },
-    { id: 'payment', label: 'Payment' },
-];
 
-export function CourseTabs() {
+export function CourseTabs({ course }: { course: Course }) {
     const [isSticky, setSticky] = useState(false);
     const [activeTab, setActiveTab] = useState('features');
+
+    const tabs = React.useMemo(() => {
+        const baseTabs = [
+            { id: 'features', label: 'Overview' },
+            { id: 'instructors', label: 'Instructors' },
+        ];
+
+        if (course.classRoutine && course.classRoutine.length > 0) {
+            baseTabs.push({ id: 'routine', label: 'Routine' });
+        }
+    
+        if (course.examTemplates && course.examTemplates.length > 0) {
+            baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
+        }
+    
+        if (course.syllabus && course.syllabus.length > 0) {
+            baseTabs.push({ id: 'syllabus', label: 'Syllabus' });
+        }
+        
+        if (course.reviewsData && course.reviewsData.length > 0) {
+            baseTabs.push({ id: 'reviews', label: 'Reviews' });
+        }
+
+        if (course.faqs && course.faqs.length > 0) {
+            baseTabs.push({ id: 'faq', label: 'FAQ' });
+        }
+
+        if (course.price) {
+            baseTabs.push({ id: 'payment', label: 'Payment' });
+        }
+        
+        return baseTabs;
+    }, [course]);
 
     const handleScroll = () => {
         const header = document.querySelector('header');
@@ -45,7 +70,7 @@ export function CourseTabs() {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [tabs]);
 
     const scrollToSection = (id: string) => {
         const section = document.getElementById(id);

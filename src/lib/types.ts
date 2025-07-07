@@ -244,7 +244,7 @@ export type Course = {
   id?: string;
   title: string;
   description: string;
-  type?: 'Online' | 'Offline' | 'Hybrid';
+  type?: 'Online' | 'Offline' | 'Hybrid' | 'Exam';
   instructors: CourseInstructor[]; 
   imageUrl: string;
   dataAiHint: string;
