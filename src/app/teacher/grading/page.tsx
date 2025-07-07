@@ -85,7 +85,13 @@ export default function TeacherGradingPage() {
         );
 
         const examsToGrade = teacherCourses.flatMap(course =>
-            (course.exams || []).filter(e => e.status === 'Submitted').map(exam => ({
+            (course.exams || []).filter(e => {
+                const examDate = safeToDate(e.examDate);
+                const isPast = examDate <= new Date();
+                const isOralOrPracticalPending = (e.examType === 'Oral' || e.examType === 'Practical') && e.status === 'Pending' && isPast;
+                const isWrittenSubmitted = e.examType === 'Written' && e.status === 'Submitted';
+                return isOralOrPracticalPending || isWrittenSubmitted;
+            }).map(exam => ({
                 ...exam,
                 courseTitle: course.title,
                 courseId: course.id!,
@@ -252,6 +258,7 @@ export default function TeacherGradingPage() {
                                     <TableHead>Student</TableHead>
                                     <TableHead>Course</TableHead>
                                     <TableHead>Exam</TableHead>
+                                    <TableHead>Type</TableHead>
                                     <TableHead>Submitted</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
@@ -262,7 +269,8 @@ export default function TeacherGradingPage() {
                                     <TableCell className="font-medium">{exam.studentName}</TableCell>
                                     <TableCell>{exam.courseTitle}</TableCell>
                                     <TableCell>{exam.title}</TableCell>
-                                    <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : 'N/A'}</TableCell>
+                                    <TableCell><Badge variant="outline">{exam.examType}</Badge></TableCell>
+                                    <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : format(safeToDate(exam.examDate), 'PPP')}</TableCell>
                                     <TableCell className="text-right">
                                         <Button onClick={() => handleOpenExamDialog(exam)}>
                                             <Award className="mr-2 h-4 w-4"/> Grade
@@ -271,7 +279,7 @@ export default function TeacherGradingPage() {
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
+                                <TableCell colSpan={6} className="h-24 text-center">
                                     No pending exams to grade.
                                 </TableCell>
                                 </TableRow>
@@ -328,7 +336,7 @@ export default function TeacherGradingPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            {selectedExam?.submissionText && (
+            {selectedExam?.examType === 'Written' && selectedExam?.submissionText && (
                 <div>
                   <Label className="font-semibold">Student's Submission</Label>
                   <div className="mt-2 p-4 border rounded-md bg-muted text-sm max-h-48 overflow-y-auto">

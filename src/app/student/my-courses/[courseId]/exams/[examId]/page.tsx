@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, Clock, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, Clock, FileText, Mic, Beaker } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -195,6 +195,39 @@ export default function ExamTakingPage() {
   };
   
   const currentQuestion = questions[currentQuestionIndex];
+  
+  const renderExamInfo = () => {
+    let Icon = FileText;
+    if (examTemplate.examType === 'Oral') Icon = Mic;
+    if (examTemplate.examType === 'Practical') Icon = Beaker;
+    
+    return (
+        <div className="max-w-4xl mx-auto">
+            <Card>
+                <CardHeader className="text-center">
+                    <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Icon className="w-10 h-10 text-muted-foreground" />
+                    </div>
+                    <CardTitle className="text-3xl font-bold">{examTemplate.examType} Exam</CardTitle>
+                    <CardDescription>{examTemplate.title} - {course.title}</CardDescription>
+                </CardHeader>
+                <CardContent className="text-center space-y-4">
+                    <p className="text-lg">This is a manually graded {examTemplate.examType.toLowerCase()} exam.</p>
+                    <p className="text-muted-foreground">No online submission is required. Please follow your instructor's guidelines for this assessment. Your instructor will grade your performance after the assessment is complete.</p>
+                     {exam.status === 'Graded' && finalScore && (
+                       <div className="pt-4 border-t">
+                           <p className="text-lg font-semibold">Your Result:</p>
+                           <p className="text-5xl font-bold text-primary my-2">{finalScore.score} / {finalScore.totalMarks}</p>
+                           <p className="text-muted-foreground">({((finalScore.score / finalScore.totalMarks) * 100).toFixed(2)}%)</p>
+                           {exam.feedback && <p className="mt-2 text-sm text-muted-foreground"><strong>Feedback:</strong> {exam.feedback}</p>}
+                       </div>
+                   )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+  };
+
 
   if (isSubmitted) {
     return (
@@ -283,25 +316,30 @@ export default function ExamTakingPage() {
                     <Textarea id="written-submission" value={writtenSubmission} onChange={(e) => setWrittenSubmission(e.target.value)} rows={20} placeholder="Start writing your answers here..." />
                 </div>
             )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-            {examTemplate.examType === 'MCQ' ? (
-                <>
-                    <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}><ArrowLeft className="mr-2" /> Previous</Button>
-                    {currentQuestionIndex < questions.length - 1 ? (<Button onClick={handleNext}>Next <ArrowRight className="ml-2" /></Button>) : (
-                         <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
-                            <AlertDialogTrigger asChild><Button variant="accent" onClick={() => setShowSubmitWarning(true)}><Flag className="mr-2"/> Finish & Submit</Button></AlertDialogTrigger>
-                            <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting. Please review your answers before proceeding.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Review Answers</AlertDialogCancel><AlertDialogAction onClick={() => handleSubmit(false)}>Submit Exam</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
-                         </AlertDialog>
-                    )}
-                </>
-            ) : (
-                 <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
-                    <AlertDialogTrigger asChild><Button variant="accent" className="w-full" onClick={() => setShowSubmitWarning(true)}><Flag className="mr-2"/> Submit for Grading</Button></AlertDialogTrigger>
-                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleSubmit(false)}>Submit Exam</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
-                </AlertDialog>
+            {(examTemplate.examType === 'Oral' || examTemplate.examType === 'Practical') && (
+                renderExamInfo()
             )}
-        </CardFooter>
+        </CardContent>
+        {(examTemplate.examType === 'MCQ' || examTemplate.examType === 'Written') && (
+            <CardFooter className="flex justify-between">
+                {examTemplate.examType === 'MCQ' ? (
+                    <>
+                        <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}><ArrowLeft className="mr-2" /> Previous</Button>
+                        {currentQuestionIndex < questions.length - 1 ? (<Button onClick={handleNext}>Next <ArrowRight className="ml-2" /></Button>) : (
+                            <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
+                                <AlertDialogTrigger asChild><Button variant="accent" onClick={() => setShowSubmitWarning(true)}><Flag className="mr-2"/> Finish & Submit</Button></AlertDialogTrigger>
+                                <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting. Please review your answers before proceeding.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Review Answers</AlertDialogCancel><AlertDialogAction onClick={() => handleSubmit(false)}>Submit Exam</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                    </>
+                ) : (
+                    <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
+                        <AlertDialogTrigger asChild><Button variant="accent" className="w-full" onClick={() => setShowSubmitWarning(true)}><Flag className="mr-2"/> Submit for Grading</Button></AlertDialogTrigger>
+                        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to submit?</AlertDialogTitle><AlertDialogDescription>You cannot change your answers after submitting.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleSubmit(false)}>Submit Exam</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                    </AlertDialog>
+                )}
+            </CardFooter>
+        )}
       </Card>
     </div>
   );

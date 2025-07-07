@@ -1320,6 +1320,33 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <DatePicker date={exam.examDate as Date | undefined} setDate={(date) => updateExamTemplate(exam.id, 'examDate', date)} />
                                     </div>
                                 </div>
+                                {exam.examType === 'MCQ' && (
+                                    <div className="pt-4 border-t">
+                                        <h4 className="text-md font-semibold mb-2">MCQ Questions</h4>
+                                        <div className="space-y-4">
+                                            {exam.questions?.map((q, qIndex) => (
+                                                <div key={q.id} className="p-3 border bg-background rounded-md space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                      <Label>Question {qIndex + 1}</Label>
+                                                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => {/* logic to remove question */}}><X className="h-3 w-3"/></Button>
+                                                    </div>
+                                                    <Textarea value={q.text} onChange={() => {/* logic to update text */}} placeholder="Question text"/>
+                                                    <div className="space-y-2">
+                                                        {q.options.map(opt => (
+                                                            <div key={opt.id} className="flex gap-2 items-center">
+                                                                <RadioGroup><RadioGroupItem value={opt.id} checked={q.correctAnswerId === opt.id} /></RadioGroup>
+                                                                <Input value={opt.text} onChange={() => {/* logic to update option */}}/>
+                                                                <Button variant="ghost" size="icon" className="h-6 w-6"><X className="h-3 w-3"/></Button>
+                                                            </div>
+                                                        ))}
+                                                        <Button size="sm" variant="outline" onClick={() => {/* logic to add option */}}>Add Option</Button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <Button variant="outline" className="w-full" onClick={() => {/* logic to add question */}}>Add Question</Button>
+                                        </div>
+                                    </div>
+                                )}
                             </CollapsibleContent>
                         </Collapsible>
                         ))}
