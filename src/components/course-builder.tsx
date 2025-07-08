@@ -66,7 +66,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, Quiz as QuizType } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, Quiz as QuizType, Question } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -562,15 +562,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
   const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
   
-  // Exam Management - MCQ Questions
+  // Exam Management
   const addExamQuestion = (examId: string) => {
     setExamTemplates(prev => prev.map(exam => {
       if (exam.id === examId) {
         const newQuestionId = `q_${Date.now()}`;
         const newOptionId = `opt_${Date.now()}`;
-        const newQuestion: NonNullable<ExamTemplate['questions']>[0] = {
+        const newQuestion: Question = {
           id: newQuestionId,
           text: '',
+          type: 'MCQ',
           options: [{ id: newOptionId, text: '' }],
           correctAnswerId: newOptionId,
           points: 1,
@@ -597,13 +598,37 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         : exam
     ));
   };
+  
+  const updateExamQuestionType = (examId: string, questionId: string, type: Question['type']) => {
+    setExamTemplates(prev => prev.map(exam => {
+        if (exam.id === examId) {
+            const newQuestions = (exam.questions || []).map(q => {
+                if (q.id === questionId) {
+                    const newQuestion: Question = { ...q, type };
+                    if (type !== 'MCQ') {
+                        delete newQuestion.options;
+                        delete newQuestion.correctAnswerId;
+                    } else if (!newQuestion.options || newQuestion.options.length === 0) {
+                        const newOptionId = `opt_${Date.now()}`;
+                        newQuestion.options = [{ id: newOptionId, text: '' }];
+                        newQuestion.correctAnswerId = newOptionId;
+                    }
+                    return newQuestion;
+                }
+                return q;
+            });
+            return { ...exam, questions: newQuestions };
+        }
+        return exam;
+    }));
+  };
 
   const addExamOption = (examId: string, questionId: string) => {
     setExamTemplates(prev => prev.map(exam => {
       if (exam.id === examId) {
         const newQuestions = (exam.questions || []).map(q => {
           if (q.id === questionId) {
-            return { ...q, options: [...q.options, { id: `opt_${Date.now()}`, text: '' }] };
+            return { ...q, options: [...(q.options || []), { id: `opt_${Date.now()}`, text: '' }] };
           }
           return q;
         });
@@ -618,7 +643,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       if (exam.id === examId) {
         const newQuestions = (exam.questions || []).map(q => {
           if (q.id === questionId) {
-            return { ...q, options: q.options.filter(opt => opt.id !== optionId) };
+            return { ...q, options: (q.options || []).filter(opt => opt.id !== optionId) };
           }
           return q;
         });
@@ -633,7 +658,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       if (exam.id === examId) {
         const newQuestions = (exam.questions || []).map(q => {
           if (q.id === questionId) {
-            const newOptions = q.options.map(opt => opt.id === optionId ? { ...opt, text } : opt);
+            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, text } : opt);
             return { ...q, options: newOptions };
           }
           return q;
@@ -1257,7 +1282,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {quiz.questions.map((q, qIndex) => (
+                            {(quiz.questions || []).map((q, qIndex) => (
                                 <Collapsible key={q.id} className="p-4 border rounded-md bg-background">
                                     <div className="flex items-center justify-between">
                                       <p className="font-semibold">Question {qIndex + 1}</p>
@@ -1273,7 +1298,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <Textarea value={q.text} onChange={e => updateExamQuestionText(quiz.id, q.id, e.target.value)} />
                                         <Label>Options (select the correct one)</Label>
                                         <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(quiz.id, q.id, value)}>
-                                            {q.options.map((opt) => (
+                                            {(q.options || []).map((opt) => (
                                                 <div key={opt.id} className="flex items-center gap-2">
                                                     <RadioGroupItem value={opt.id} id={opt.id} />
                                                     <Input value={opt.text} onChange={e => updateExamOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
@@ -1409,23 +1434,43 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             {(exam.questions || []).map((q, qIndex) => (
                                                 <div key={q.id} className="p-3 border bg-background rounded-md space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                      <Label>Question {qIndex + 1}</Label>
-                                                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id)}><X className="h-3 w-3 text-destructive"/></Button>
+                                                        <div className="flex items-center gap-2">
+                                                            <Label>Question {qIndex + 1}</Label>
+                                                            <Select value={q.type} onValueChange={(value) => updateExamQuestionType(exam.id, q.id!, value as Question['type'])}>
+                                                                <SelectTrigger className="w-[120px] h-7 text-xs">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="MCQ">MCQ</SelectItem>
+                                                                    <SelectItem value="Written">Written</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id!)}><X className="h-3 w-3 text-destructive"/></Button>
                                                     </div>
-                                                    <Textarea value={q.text} onChange={(e) => updateExamQuestionText(exam.id, q.id, e.target.value)} placeholder="Question text"/>
-                                                    <div className="space-y-2">
-                                                        <Label className="text-xs">Options (select the correct one)</Label>
-                                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(exam.id, q.id, value)}>
-                                                            {q.options.map(opt => (
-                                                                <div key={opt.id} className="flex gap-2 items-center">
-                                                                    <RadioGroupItem value={opt.id} id={`${exam.id}-${q.id}-${opt.id}`} />
-                                                                    <Input value={opt.text} onChange={(e) => updateExamOptionText(exam.id, q.id, opt.id, e.target.value)}/>
-                                                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
-                                                                </div>
-                                                            ))}
-                                                        </RadioGroup>
-                                                        <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id)}>Add Option</Button>
-                                                    </div>
+                                                    <Textarea value={q.text} onChange={(e) => updateExamQuestionText(exam.id, q.id!, e.target.value)} placeholder="Question text"/>
+                                                    
+                                                    {q.type === 'MCQ' && (
+                                                        <div className="space-y-2 pt-2 border-t mt-2">
+                                                            <Label className="text-xs">Options (select the correct one)</Label>
+                                                            <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(exam.id, q.id!, value)}>
+                                                                {(q.options || []).map(opt => (
+                                                                    <div key={opt.id} className="flex gap-2 items-center">
+                                                                        <RadioGroupItem value={opt.id} id={`${exam.id}-${q.id}-${opt.id}`} />
+                                                                        <Input value={opt.text} onChange={(e) => updateExamOptionText(exam.id, q.id!, opt.id, e.target.value)}/>
+                                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id!, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
+                                                                    </div>
+                                                                ))}
+                                                            </RadioGroup>
+                                                            <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id!)}>Add Option</Button>
+                                                        </div>
+                                                    )}
+
+                                                    {q.type === 'Written' && (
+                                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-center border border-blue-200 dark:border-blue-800">
+                                                            <p className="text-sm text-blue-800 dark:text-blue-300">Written answers will be graded manually by an instructor.</p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                             <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>Add Question</Button>
