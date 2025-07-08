@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -32,9 +33,9 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {(data.features || []).map((feature) => (
-              <div key={feature.id} className="bg-white/10 p-4 rounded-lg flex items-center gap-4 backdrop-blur-sm hover:bg-white/20 transition-colors">
-                <Image src={feature.iconUrl} alt="" width={40} height={40} data-ai-hint={feature.dataAiHint} className="bg-white p-1 rounded-md"/>
+            {(data.features || []).map((feature, index) => (
+              <div key={feature.id || `feature-${index}`} className="bg-white/10 p-4 rounded-lg flex items-center gap-4 backdrop-blur-sm hover:bg-white/20 transition-colors">
+                <Image src={feature.iconUrl} alt={feature.title?.[language] || feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="bg-white p-1 rounded-md"/>
                 <h3 className="font-semibold">{feature.title?.[language] || feature.title?.['bn']}</h3>
               </div>
             ))}
@@ -48,8 +49,8 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             opts={{ loop: (data.testimonials || []).length > 1 }}
           >
             <CarouselContent>
-              {(data.testimonials || []).map((testimonial) => (
-                <CarouselItem key={testimonial.id}>
+              {(data.testimonials || []).map((testimonial, index) => (
+                <CarouselItem key={testimonial.id || `testimonial-${index}`}>
                   <Card className="bg-white text-gray-800 shadow-2xl rounded-2xl">
                     <CardContent className="p-8 grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-2">
