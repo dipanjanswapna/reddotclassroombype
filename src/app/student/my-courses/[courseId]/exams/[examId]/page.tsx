@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { getCourse } from '@/lib/firebase/firestore';
+import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course, Exam, ExamTemplate, Question, QuestionOption, MatchingPair } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -229,6 +229,7 @@ export default function ExamTakingPage() {
   const [exam, setExam] = useState<Exam | null>(null);
   const [examTemplate, setExamTemplate] = useState<ExamTemplate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, any>>({}); 
@@ -261,6 +262,16 @@ export default function ExamTakingPage() {
   const fetchExamData = useCallback(async () => {
     if (!userInfo) return;
     try {
+      const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+      const isEnrolledInCourse = enrollments.some(e => e.courseId === courseId);
+      setIsEnrolled(isEnrolledInCourse);
+      
+      if (!isEnrolledInCourse) {
+        toast({ title: 'Access Denied', description: 'You must be enrolled in this course to take the exam.', variant: 'destructive' });
+        router.push(`/courses/${courseId}`);
+        return;
+      }
+
       const courseData = await getCourse(courseId);
       if (!courseData) return notFound();
       setCourse(courseData);
@@ -288,7 +299,7 @@ export default function ExamTakingPage() {
     } finally {
       setLoading(false);
     }
-  }, [courseId, examId, userInfo]);
+  }, [courseId, examId, userInfo, router, toast]);
   
   useEffect(() => {
     fetchExamData();

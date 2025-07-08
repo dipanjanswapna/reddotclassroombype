@@ -4,7 +4,8 @@
 import { revalidatePath } from 'next/cache';
 import { addEnrollment, getCourse, updateCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam } from '@/lib/types';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc, collection } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 export async function prebookCourseAction(courseId: string, userId: string) {
     try {
@@ -57,6 +58,15 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
             throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
         }
 
+        const course = await getCourse(courseId);
+        if (!course) {
+            throw new Error("Course not found after enrollment.");
+        }
+
+        const batch = writeBatch(db);
+
+        // 1. Create enrollment for the main course
+        const mainEnrollmentRef = doc(collection(db, 'enrollments'));
         const enrollmentData: Omit<Enrollment, 'id'> = {
             userId,
             courseId,
@@ -64,18 +74,27 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
             progress: 0,
             status: 'in-progress'
         };
-        await addEnrollment(enrollmentData);
-
-        const course = await getCourse(courseId);
-        if (!course) {
-            throw new Error("Course not found after enrollment.");
+        batch.set(mainEnrollmentRef, enrollmentData);
+        
+        // 2. Create enrollments for bundled courses
+        if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
+            for (const bundledCourseId of course.includedArchivedCourseIds) {
+                const bundledEnrollmentRef = doc(collection(db, 'enrollments'));
+                const bundledEnrollmentData: Omit<Enrollment, 'id'> = {
+                    userId,
+                    courseId: bundledCourseId,
+                    enrollmentDate: Timestamp.now(),
+                    progress: 100, // Mark as completed
+                    status: 'completed'
+                };
+                batch.set(bundledEnrollmentRef, bundledEnrollmentData);
+            }
         }
-
-        // Generate assignments for the student from templates
+        
+        // 3. Generate assignments and exams for the student from templates
         const newAssignments: Assignment[] = [];
         if (course.assignmentTemplates && course.assignmentTemplates.length > 0) {
             course.assignmentTemplates.forEach(template => {
-                // Check if an assignment for this student and template already exists
                 const assignmentExists = course.assignments?.some(
                     a => a.studentId === userId && a.title === template.title && a.topic === template.topic
                 );
@@ -94,7 +113,6 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
             });
         }
         
-        // Generate exams for the student from templates
         const newExams: Exam[] = [];
         if (course.examTemplates && course.examTemplates.length > 0) {
             course.examTemplates.forEach(template => {
@@ -119,18 +137,19 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
         }
         
         const updates: Partial<any> = {};
-
         if (newAssignments.length > 0) {
             updates.assignments = [...(course.assignments || []), ...newAssignments];
         }
-        
         if (newExams.length > 0) {
             updates.exams = [...(course.exams || []), ...newExams];
         }
 
         if (Object.keys(updates).length > 0) {
-            await updateCourse(courseId, updates);
+             const courseRef = doc(db, 'courses', courseId);
+             batch.update(courseRef, updates);
         }
+        
+        await batch.commit();
 
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');
@@ -145,6 +164,7 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
 
         return { success: true, message: 'Successfully enrolled in the course.' };
     } catch (error: any) {
+        console.error(error);
         return { success: false, message: error.message };
     }
 }

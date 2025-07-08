@@ -374,6 +374,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [allExams, setAllExams] = useState<Exam[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
+  const [isArchived, setIsArchived] = useState(false);
   const [showStudentCount, setShowStudentCount] = useState(false);
 
   // Pre-booking states
@@ -475,6 +476,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString(), examDate: e.examDate ? new Date(e.examDate as string) : undefined })) || []);
                     setAllExams(courseData.exams || []);
                     setOrganizationId(courseData.organizationId);
+                    setIsArchived(courseData.isArchived || false);
                     setShowStudentCount(courseData.showStudentCount || false);
                 } else {
                     notFound();
@@ -845,6 +847,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             };
         }).filter(e => e.title),
         status,
+        isArchived,
         organizationId: organizationId,
         showStudentCount: showStudentCount,
     };
@@ -1181,7 +1184,20 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </Select>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <Label htmlFor="isArchived" className="font-semibold">Archive this Course</Label>
+                            <p className="text-sm text-muted-foreground">
+                                Archived courses are hidden from the main shop but can be bundled with other courses.
+                            </p>
+                        </div>
+                        <Switch
+                            id="isArchived"
+                            checked={isArchived}
+                            onCheckedChange={setIsArchived}
+                        />
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
                             <Label htmlFor="showStudentCount" className="font-semibold">Show Student Count</Label>
                             <p className="text-sm text-muted-foreground">
