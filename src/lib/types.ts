@@ -229,6 +229,7 @@ export type ExamTemplate = {
   shuffleQuestions?: boolean;
   shuffleOptions?: boolean; // For MCQs
   allowBackNavigation?: boolean;
+  webcamProctoring?: boolean;
 };
 
 export type Classroom = {

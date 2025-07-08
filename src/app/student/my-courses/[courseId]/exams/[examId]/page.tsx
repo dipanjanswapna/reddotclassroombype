@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
 import type { Course, Exam, ExamTemplate, Question } from '@/lib/types';
@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, FileText, Loader2, MessageSquare } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, FileText, Loader2, MessageSquare, AlertTriangle, Camera } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -30,6 +30,52 @@ import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { submitMcqExamAction, submitWrittenExamAction } from '@/app/actions/grading.actions';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+
+const ProctoringView = () => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [hasPermission, setHasPermission] = useState(true);
+
+    useEffect(() => {
+        const getCameraPermission = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+            } catch (error) {
+                console.error("Camera access denied:", error);
+                setHasPermission(false);
+            }
+        };
+        getCameraPermission();
+        return () => {
+            if (videoRef.current && videoRef.current.srcObject) {
+                const stream = videoRef.current.srcObject as MediaStream;
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, []);
+
+    if (!hasPermission) {
+        return (
+            <div className="fixed bottom-4 right-4 w-40 h-32 bg-destructive text-destructive-foreground rounded-lg p-2 text-xs flex flex-col items-center justify-center">
+                <AlertTriangle className="w-6 h-6 mb-1"/>
+                <p>Camera access denied. Proctoring is disabled.</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="fixed bottom-4 right-4 w-40 h-32 bg-black rounded-lg shadow-2xl border-2 border-primary overflow-hidden">
+            <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+            <div className="absolute top-1 left-1 bg-destructive text-white text-xs px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+                REC
+            </div>
+        </div>
+    );
+};
 
 export default function ExamTakingPage() {
   const params = useParams();
@@ -53,6 +99,30 @@ export default function ExamTakingPage() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [finalScore, setFinalScore] = useState<{ score: number; totalMarks: number } | null>(null);
+
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState(true);
+  const [checkingPermission, setCheckingPermission] = useState(true);
+  
+  useEffect(() => {
+    async function checkCameraPermission() {
+        if (!navigator.mediaDevices?.getUserMedia) {
+            setCheckingPermission(false);
+            setHasCameraPermission(false);
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            stream.getTracks().forEach(track => track.stop()); // Release camera immediately
+            setHasCameraPermission(true);
+        } catch (error) {
+            setHasCameraPermission(false);
+        } finally {
+            setCheckingPermission(false);
+        }
+    }
+    checkCameraPermission();
+  }, []);
 
   useEffect(() => {
     if (!userInfo) return;
@@ -78,8 +148,9 @@ export default function ExamTakingPage() {
                     setFinalScore({ score: studentExamData.marksObtained || 0, totalMarks: templateData.totalMarks });
                     setSelectedAnswers(studentExamData.answers || {});
                 }
+            } else if (templateData.duration) {
+                setTimeLeft(templateData.duration * 60);
             }
-
         } catch(e) {
             console.error(e);
         } finally {
@@ -88,11 +159,13 @@ export default function ExamTakingPage() {
     }
     fetchExamData();
   }, [courseId, examId, userInfo]);
-
+  
   const handleSubmit = async () => {
     if (!userInfo || !examTemplate) return;
     
     setLoading(true);
+    setTimeLeft(null); // Stop the timer
+
     try {
         if (examTemplate.examType === 'MCQ') {
             const result = await submitMcqExamAction(courseId, userInfo.uid, examId, selectedAnswers);
@@ -121,7 +194,26 @@ export default function ExamTakingPage() {
     }
   };
 
-  if (loading) {
+   useEffect(() => {
+    if (timeLeft === null || isSubmitted) return;
+    if (timeLeft === 0) {
+      toast({ title: "Time's Up!", description: "Your exam has been submitted automatically.", variant: 'destructive' });
+      handleSubmit();
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, isSubmitted]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (loading || checkingPermission) {
     return (
       <div className="flex items-center justify-center h-full min-h-[calc(100vh-10rem)]">
         <LoadingSpinner className="w-12 h-12" />
@@ -131,6 +223,29 @@ export default function ExamTakingPage() {
   
   if (!course || !exam || !examTemplate) {
     return notFound();
+  }
+  
+  const isProctoringRequired = examTemplate.webcamProctoring;
+  
+  if(isProctoringRequired && !hasCameraPermission && exam.status === 'Pending') {
+      return (
+         <div className="max-w-4xl mx-auto">
+            <Card className="text-center">
+                <CardHeader>
+                    <CardTitle className="text-2xl text-destructive">Proctoring Required</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Camera Access Denied</AlertTitle>
+                        <AlertDescription>
+                            This is a proctored exam and requires camera access. Please enable camera permissions for this site in your browser settings and refresh the page to start the exam.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+        </div>
+      )
   }
   
   // MCQ specific logic
@@ -225,11 +340,22 @@ export default function ExamTakingPage() {
 
   // Exam Taking UI
   return (
+    <>
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{examTemplate.title}</CardTitle>
-          <CardDescription>{course.title}</CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">{examTemplate.title}</CardTitle>
+              <CardDescription>{course.title}</CardDescription>
+            </div>
+            {timeLeft !== null && (
+                <div className="text-right">
+                    <Label>Time Left</Label>
+                    <p className="font-mono font-bold text-2xl text-destructive">{formatTime(timeLeft)}</p>
+                </div>
+            )}
+          </div>
           {examTemplate.examType === 'MCQ' && (
             <div className="pt-2">
               <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} />
@@ -267,7 +393,9 @@ export default function ExamTakingPage() {
         <CardFooter className="flex justify-between">
             {examTemplate.examType === 'MCQ' ? (
                 <>
-                    <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}><ArrowLeft className="mr-2" /> Previous</Button>
+                    <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0 || !examTemplate.allowBackNavigation}>
+                        <ArrowLeft className="mr-2" /> Previous
+                    </Button>
                     {currentQuestionIndex < questions.length - 1 ? (
                         <Button onClick={handleNext}>Next <ArrowRight className="ml-2" /></Button>
                     ) : (
@@ -292,5 +420,7 @@ export default function ExamTakingPage() {
         </CardFooter>
       </Card>
     </div>
+    {isProctoringRequired && <ProctoringView />}
+    </>
   );
 }

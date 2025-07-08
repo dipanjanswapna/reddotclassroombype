@@ -573,6 +573,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           text: '',
           options: [{ id: newOptionId, text: '' }],
           correctAnswerId: newOptionId,
+          points: 1,
+          difficulty: 'Medium',
         };
         return { ...exam, questions: [...(exam.questions || []), newQuestion] };
       }
@@ -661,7 +663,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100, questions: [] }]);
   const removeExamTemplate = (id: string) => setExamTemplates(prev => prev.filter(e => e.id !== id));
-  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id' | 'questions'>, value: string | number | Date | undefined) => {
+  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id' | 'questions'>, value: string | number | Date | boolean | undefined) => {
     setExamTemplates(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
   };
 
@@ -1395,6 +1397,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <Label>Exam Date</Label>
                                         <DatePicker date={exam.examDate as Date | undefined} setDate={(date) => updateExamTemplate(exam.id, 'examDate', date)} />
                                     </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch id={`webcam-proctor-${exam.id}`} checked={exam.webcamProctoring} onCheckedChange={checked => updateExamTemplate(exam.id, 'webcamProctoring', checked)} />
+                                    <Label htmlFor={`webcam-proctor-${exam.id}`}>Enable Webcam Proctoring</Label>
                                 </div>
                                 {exam.examType === 'MCQ' && (
                                     <div className="pt-4 border-t">
