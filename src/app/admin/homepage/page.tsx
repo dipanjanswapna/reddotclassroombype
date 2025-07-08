@@ -425,7 +425,26 @@ export default function AdminHomepageManagementPage() {
     });
   }
 
+  const handleStrugglingSectionChange = (key: keyof HomepageConfig['strugglingStudentSection'], value: any) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        return { ...prev, strugglingStudentSection: { ...prev.strugglingStudentSection, [key]: value } };
+    });
+  };
+
+  const handleStrugglingSectionLangChange = (field: 'title' | 'subtitle' | 'buttonText', lang: 'bn' | 'en', value: string) => {
+    setConfig(prevConfig => {
+        if (!prevConfig) return null;
+        const newConfig = JSON.parse(JSON.stringify(prevConfig));
+        if (newConfig.strugglingStudentSection && newConfig.strugglingStudentSection[field]) {
+            newConfig.strugglingStudentSection[field][lang] = value;
+        }
+        return newConfig;
+    });
+  };
+
   const sections = [
+    { key: 'strugglingStudentSection', label: 'Struggling Student Section'},
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
     { key: 'teachersSection', label: 'Teachers Section' },
@@ -529,6 +548,59 @@ export default function AdminHomepageManagementPage() {
             </CardContent>
           </Card>
           
+          <Card>
+            <CardHeader>
+              <CardTitle>Struggling Student Section</CardTitle>
+              <CardDescription>Manage the "Struggling in Studies?" banner on the homepage.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Title (Bangla)</Label>
+                  <Input value={config.strugglingStudentSection.title.bn} onChange={e => handleStrugglingSectionLangChange('title', 'bn', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Title (English)</Label>
+                  <Input value={config.strugglingStudentSection.title.en} onChange={e => handleStrugglingSectionLangChange('title', 'en', e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Subtitle (Bangla)</Label>
+                  <Input value={config.strugglingStudentSection.subtitle.bn} onChange={e => handleStrugglingSectionLangChange('subtitle', 'bn', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Subtitle (English)</Label>
+                  <Input value={config.strugglingStudentSection.subtitle.en} onChange={e => handleStrugglingSectionLangChange('subtitle', 'en', e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Button Text (Bangla)</Label>
+                  <Input value={config.strugglingStudentSection.buttonText.bn} onChange={e => handleStrugglingSectionLangChange('buttonText', 'bn', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Button Text (English)</Label>
+                  <Input value={config.strugglingStudentSection.buttonText.en} onChange={e => handleStrugglingSectionLangChange('buttonText', 'en', e.target.value)} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Image URL</Label>
+                <Input value={config.strugglingStudentSection.imageUrl} onChange={e => handleStrugglingSectionChange('imageUrl', e.target.value)} />
+                {config.strugglingStudentSection.imageUrl && (
+                  <div className="mt-2 rounded-lg border overflow-hidden aspect-[16/9] relative bg-muted max-w-sm">
+                    <Image
+                      src={config.strugglingStudentSection.imageUrl}
+                      alt="Image Preview"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
               <CardHeader>
                 <CardTitle>Categories Section</CardTitle>

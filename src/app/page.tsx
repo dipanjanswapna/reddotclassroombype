@@ -1,5 +1,4 @@
 
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -86,6 +85,38 @@ export default async function Home() {
     <div className="flex flex-col bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
+      {homepageConfig.strugglingStudentSection?.display && (
+        <section className="py-8">
+            <div className="container mx-auto px-4">
+                <div className="bg-teal-50 dark:bg-teal-900/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <Image
+                            src={homepageConfig.strugglingStudentSection.imageUrl}
+                            alt="Struggling in studies illustration"
+                            width={150}
+                            height={100}
+                            className="hidden sm:block object-contain"
+                            data-ai-hint="student family studying"
+                        />
+                        <div>
+                            <h3 className="font-headline text-xl font-bold text-gray-800 dark:text-white">
+                                {homepageConfig.strugglingStudentSection.title[language]}
+                            </h3>
+                            <p className="text-muted-foreground">
+                                {homepageConfig.strugglingStudentSection.subtitle[language]}
+                            </p>
+                        </div>
+                    </div>
+                    <Button asChild className="bg-teal-500 hover:bg-teal-600 font-bold shrink-0">
+                        <Link href="/strugglers-studies">
+                            {homepageConfig.strugglingStudentSection.buttonText[language]}
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
+      )}
+
       {homepageConfig.categoriesSection.display && (
         <section aria-labelledby="categories-heading">
           <div className="container mx-auto px-4">

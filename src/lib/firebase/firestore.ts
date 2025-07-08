@@ -338,6 +338,13 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     autoplay: true,
     autoplayDelay: 5000,
   },
+  strugglingStudentSection: {
+    display: true,
+    title: { bn: "পড়াশোনায় পিছিয়ে পড়ছো?", en: "Struggling in Studies?" },
+    subtitle: { bn: "এসো, তোমার সমস্যার সমাধান করি। ✨", en: "Aaiye apki Samasya ka, Samadan krte hai ✨" },
+    imageUrl: "https://i.imgur.com/2A0F1gE.png",
+    buttonText: { bn: "আমরা কিভাবে সাহায্য করি দেখুন", en: "See How We Help" },
+  },
   categoriesSection: {
     display: true,
     title: { bn: "ক্যাটাগরি", en: "Categories" },
@@ -586,6 +593,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         ...defaultHomepageConfig,
         ...data,
         heroCarousel: { ...defaultHomepageConfig.heroCarousel, ...data.heroCarousel },
+        strugglingStudentSection: { ...defaultHomepageConfig.strugglingStudentSection, ...data.strugglingStudentSection },
         categoriesSection: { ...defaultHomepageConfig.categoriesSection, ...data.categoriesSection },
         journeySection: { ...defaultHomepageConfig.journeySection, ...data.journeySection },
         teachersSection: { ...defaultHomepageConfig.teachersSection, ...data.teachersSection },

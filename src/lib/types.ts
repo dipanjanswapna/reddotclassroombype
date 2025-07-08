@@ -508,6 +508,13 @@ export type HomepageConfig = {
     autoplay: boolean;
     autoplayDelay: number;
   };
+  strugglingStudentSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    imageUrl: string;
+    buttonText: { [key: string]: string };
+  };
   categoriesSection: {
     display: boolean;
     title: { [key: string]: string };
