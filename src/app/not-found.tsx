@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-background px-4 py-12">
+    <main className="flex min-h-[calc(100vh-18rem)] w-full items-center justify-center bg-background px-4 py-12">
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">

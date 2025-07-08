@@ -1,7 +1,7 @@
 
 "use client";
 
-import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { HomepageConfig } from '@/lib/types';
@@ -17,14 +17,9 @@ import { FloatingWhatsAppButton } from './floating-whatsapp-button';
  */
 export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
   const pathname = usePathname();
-  const segment = useSelectedLayoutSegment();
 
-  // The 404 page will not have a layout segment, but the homepage ('/') also has a null segment.
-  // We check the pathname to differentiate.
-  const isNotFoundPage = segment === null && pathname !== '/';
-
+  // Paths that should have a completely custom layout (no header/footer)
   const isFullPageLayout =
-    isNotFoundPage ||
     pathname.startsWith('/sites/') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth/') ||
@@ -37,6 +32,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     return <>{children}</>;
   }
   
+  // Paths for dashboard interfaces which have a header but no footer
   const isDashboardPage = 
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
@@ -54,7 +50,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     );
   }
 
-  // Default layout for all other pages (e.g., home, about, contact).
+  // Default layout for all other pages (e.g., home, about, contact, and now 404)
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
