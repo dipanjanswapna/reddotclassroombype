@@ -31,9 +31,10 @@ import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { submitExamAction } from '@/app/actions/grading.actions';
 import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Image from 'next/image';
 
 const ProctoringView = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -365,6 +366,11 @@ export default function ExamTakingPage() {
                   <CardTitle className="text-lg">Question {index + 1}: {q.text}</CardTitle>
                 </CardHeader>
                 <CardContent>
+                    {q.mediaUrl && q.mediaType === 'image' && (
+                        <div className="relative w-full h-64 border rounded-md overflow-hidden bg-muted mb-4">
+                            <Image src={q.mediaUrl} alt="Question media" layout="fill" objectFit="contain" />
+                        </div>
+                    )}
                    <QuestionRenderer
                       question={q}
                       studentAnswer={selectedAnswers[q.id!]}
@@ -414,6 +420,11 @@ export default function ExamTakingPage() {
         <CardContent>
             {currentQuestion && (
                 <div className="space-y-6">
+                    {currentQuestion.mediaUrl && currentQuestion.mediaType === 'image' && (
+                        <div className="relative w-full h-64 border rounded-md overflow-hidden bg-muted">
+                            <Image src={currentQuestion.mediaUrl} alt="Question media" layout="fill" objectFit="contain" />
+                        </div>
+                    )}
                     <p className="text-lg font-semibold">{currentQuestion.text}</p>
                     <QuestionRenderer 
                         question={currentQuestion}

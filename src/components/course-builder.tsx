@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -1467,6 +1468,42 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                 <div className="flex justify-between items-center">
                                                     <p className="font-semibold">Question {qIndex + 1}</p>
                                                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id!)}><X className="h-3 w-3 text-destructive"/></Button>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Image (Optional)</Label>
+                                                    {q.mediaUrl ? (
+                                                        <div className="relative w-full h-48 border rounded-md overflow-hidden">
+                                                            <Image src={q.mediaUrl} alt="Question media" layout="fill" objectFit="contain" />
+                                                            <Button
+                                                                variant="destructive"
+                                                                size="icon"
+                                                                className="absolute top-1 right-1 h-7 w-7"
+                                                                onClick={() => {
+                                                                    updateExamQuestionField(exam.id, q.id!, 'mediaUrl', undefined);
+                                                                    updateExamQuestionField(exam.id, q.id!, 'mediaType', undefined);
+                                                                }}
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ) : (
+                                                        <Input 
+                                                            type="file" 
+                                                            accept="image/*" 
+                                                            className="h-auto"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (file) {
+                                                                    const reader = new FileReader();
+                                                                    reader.onloadend = () => {
+                                                                        updateExamQuestionField(exam.id, q.id!, 'mediaUrl', reader.result as string);
+                                                                        updateExamQuestionField(exam.id, q.id!, 'mediaType', 'image');
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
                                                 </div>
                                                 <Textarea value={q.text} onChange={(e) => updateExamQuestionField(exam.id, q.id!, 'text', e.target.value)} placeholder="Question text"/>
                                             </div>
