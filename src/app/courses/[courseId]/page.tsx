@@ -76,8 +76,8 @@ export default async function CourseDetailPage({
   const allOrgs = await getOrganizations();
   
   const relatedCourses = allCourses.filter(c => c.id !== course.id).slice(0, 4);
-  const includedCourses = course.includedArchivedCourseIds
-    ? allCourses.filter(c => course.includedArchivedCourseIds?.includes(c.id!))
+  const includedCourses = course.includedCourseIds
+    ? allCourses.filter(c => course.includedCourseIds?.includes(c.id!))
     : [];
 
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();

@@ -301,7 +301,7 @@ export type Course = {
   reviewsData?: Review[];
   liveClasses?: LiveClass[];
   isArchived?: boolean;
-  includedArchivedCourseIds?: string[];
+  includedCourseIds?: string[];
   isPrebooking?: boolean;
   prebookingPrice?: string;
   prebookingEndDate?: string;

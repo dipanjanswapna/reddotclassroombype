@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCourse, getCoursesByIds } from '@/lib/firebase/firestore';
@@ -34,7 +35,7 @@ export default async function ArchivedContentPage({ params }: { params: { course
     notFound();
   }
 
-  const archivedCourseIds = mainCourse.includedArchivedCourseIds || [];
+  const archivedCourseIds = mainCourse.includedCourseIds || [];
   const archivedCourses = archivedCourseIds.length > 0 ? await getCoursesByIds(archivedCourseIds) : [];
   
   if (archivedCourses.length === 0) {

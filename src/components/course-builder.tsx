@@ -357,7 +357,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
-  const [allArchivedCourses, setAllArchivedCourses] = useState<Course[]>([]);
+  const [allCoursesForBundling, setAllCoursesForBundling] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
@@ -425,16 +425,32 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCourses, allInstructorsData, fetchedQuestions ] = await Promise.all([
+            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestions ] = await Promise.all([
                 getCategories(),
                 getCourses(),
                 getInstructors(),
                 getQuestionBank(),
             ]);
             setAllCategories(fetchedCategories);
-            setAllArchivedCourses(allCourses.filter(c => c.isArchived));
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
             setAllQuestionsFromBank(fetchedQuestions);
+            
+            let availableForBundling: Course[] = [];
+            if (userRole === 'Admin') {
+                availableForBundling = allCoursesData;
+            } else if (userRole === 'Seller' && userInfo) {
+                const org = await getOrganizationByUserId(userInfo.uid);
+                if (org?.id) {
+                    availableForBundling = allCoursesData.filter(c => c.organizationId === org.id);
+                }
+            } else if (userRole === 'Teacher' && userInfo) {
+                const inst = await getInstructorByUid(userInfo.uid);
+                if (inst?.organizationId) {
+                    availableForBundling = allCoursesData.filter(c => c.organizationId === inst.organizationId);
+                }
+            }
+            
+            setAllCoursesForBundling(availableForBundling.filter(c => c.id !== courseId));
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -459,7 +475,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setIntroVideoUrl(courseData.videoUrl || '');
                     setWhatsappNumber(courseData.whatsappNumber || '');
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
-                    setIncludedCourseIds(courseData.includedArchivedCourseIds || []);
+                    setIncludedCourseIds(courseData.includedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
                     
@@ -822,7 +838,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           slug: i.slug
         })),
         classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
-        includedArchivedCourseIds: includedCourseIds,
+        includedCourseIds: includedCourseIds,
         announcements: announcements,
         liveClasses: liveClasses,
         quizzes: quizzes,
@@ -1757,11 +1773,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             {activeTab === 'bundles' && (
                 <CardContent className="pt-6">
                     <CardDescription className="mb-4">
-                        Select any archived courses to bundle for free with this course.
-                        Students who purchase this course will get free access to the selected archived content.
+                        Select any other courses to bundle for free with this course. 
+                        Students who purchase this course will get free access to the selected bundled content.
+                        Sellers can only bundle courses from their own organization.
                     </CardDescription>
-                    <div className="space-y-2">
-                        {allArchivedCourses.map(course => (
+                    <div className="space-y-2 max-h-96 overflow-y-auto pr-4">
+                        {allCoursesForBundling.map(course => (
                             <div key={course.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted">
                                 <Checkbox
                                     id={`bundle-${course.id}`}
@@ -1769,12 +1786,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     onCheckedChange={(checked) => handleBundledCourseChange(course.id!, !!checked)}
                                 />
                                 <Label htmlFor={`bundle-${course.id}`} className="cursor-pointer">
-                                    {course.title} <span className="text-muted-foreground text-xs">({course.category})</span>
+                                    {course.title} <span className="text-muted-foreground text-xs">({course.category}) {course.isArchived && <Badge variant="secondary">Archived</Badge>}</span>
                                 </Label>
                             </div>
                         ))}
-                        {allArchivedCourses.length === 0 && (
-                            <p className="text-sm text-muted-foreground p-2">No archived courses available to bundle.</p>
+                        {allCoursesForBundling.length === 0 && (
+                            <p className="text-sm text-muted-foreground p-2">No other courses available to bundle.</p>
                         )}
                     </div>
                 </CardContent>

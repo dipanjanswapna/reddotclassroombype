@@ -77,8 +77,8 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
         batch.set(mainEnrollmentRef, enrollmentData);
         
         // 2. Create enrollments for bundled courses
-        if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
-            for (const bundledCourseId of course.includedArchivedCourseIds) {
+        if (course.includedCourseIds && course.includedCourseIds.length > 0) {
+            for (const bundledCourseId of course.includedCourseIds) {
                 const bundledEnrollmentRef = doc(collection(db, 'enrollments'));
                 const bundledEnrollmentData: Omit<Enrollment, 'id'> = {
                     userId,
