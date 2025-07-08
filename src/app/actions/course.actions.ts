@@ -21,6 +21,25 @@ export async function saveCourseAction(courseData: Partial<Course>) {
   try {
     const { id, ...data } = courseData;
 
+    // Auto-save new questions to the question bank before saving the course
+    if (data.examTemplates && Array.isArray(data.examTemplates)) {
+        for (const template of data.examTemplates) {
+            if (template.questions && Array.isArray(template.questions)) {
+            template.questions = await Promise.all(
+                template.questions.map(async (q) => {
+                if (q.id?.startsWith('new_q_')) {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { id, ...newQuestionData } = q; // Exclude temporary ID
+                    const newQuestionRef = await addDoc(collection(db, 'question_bank'), newQuestionData);
+                    return { ...q, id: newQuestionRef.id };
+                }
+                return q;
+                })
+            );
+            }
+        }
+    }
+
     // Clean the object of any undefined values before sending to Firestore
     const cleanData = removeUndefinedValues(data);
 
