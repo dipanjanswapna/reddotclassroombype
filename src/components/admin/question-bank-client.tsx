@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, Check, Image as ImageIcon, Video, Music } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Question, QuestionOption, MatchingPair } from '@/lib/types';
+import { Question } from '@/lib/types';
 import { saveQuestionAction, deleteQuestionAction } from '@/app/actions/question-bank.actions';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -59,7 +59,15 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
     }, [questions, subjectFilter, chapterFilter, difficultyFilter, typeFilter]);
 
     const handleOpenDialog = (question: Question | null) => {
-        setEditingQuestion(question ? { ...question } : { type: 'MCQ', difficulty: 'Medium', points: 1, options: [{id: 'opt1', text: '', isCorrect: true}], matchingPairs: [{id: 'match1', prompt: '', match: ''}] });
+        setEditingQuestion(question ? { ...question } : { 
+            type: 'MCQ', 
+            difficulty: 'Medium', 
+            points: 1, 
+            options: [{id: 'opt1', text: '', isCorrect: true}], 
+            matchingPairs: [{id: 'match1', prompt: '', match: ''}],
+            subject: '',
+            chapter: ''
+        });
         setIsDialogOpen(true);
     };
 
@@ -102,13 +110,11 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                 if (opt.id === optionId) {
                     return { ...opt, [field]: value };
                 }
-                // For single-correct MCQ, uncheck others when a new one is checked
                 if (prev.type === 'MCQ' && field === 'isCorrect' && value === true) {
                     return { ...opt, isCorrect: false };
                 }
                 return opt;
             });
-            // Ensure the clicked one is set correctly after unchecking others
             if (prev.type === 'MCQ' && field === 'isCorrect' && value === true) {
                 const finalOptions = newOptions?.map(opt => opt.id === optionId ? { ...opt, isCorrect: true } : opt);
                 return { ...prev, options: finalOptions };
@@ -128,8 +134,10 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <CardTitle>Question Bank</CardTitle>
-                    <CardDescription>Create, edit, and manage all exam questions.</CardDescription>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Question Bank</h1>
+                    <p className="mt-1 text-lg text-muted-foreground">
+                        Create, edit, and manage all exam questions for the platform.
+                    </p>
                 </div>
                 <Button onClick={() => handleOpenDialog(null)}><PlusCircle className="mr-2" />Create Question</Button>
             </div>
@@ -137,16 +145,16 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
             <Card>
                 <CardHeader>
                     <div className="flex flex-wrap gap-2">
-                        <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Subject" /></SelectTrigger>
+                        <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Subject" /></SelectTrigger>
                             <SelectContent><SelectItem value="all">All Subjects</SelectItem>{allSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                         </Select>
-                         <Select value={chapterFilter} onValueChange={setChapterFilter}><SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Chapter" /></SelectTrigger>
+                         <Select value={chapterFilter} onValueChange={setChapterFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Chapter" /></SelectTrigger>
                             <SelectContent><SelectItem value="all">All Chapters</SelectItem>{allChapters.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                         </Select>
-                         <Select value={difficultyFilter} onValueChange={setDifficultyFilter}><SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter by Difficulty" /></SelectTrigger>
+                         <Select value={difficultyFilter} onValueChange={setDifficultyFilter}><SelectTrigger className="w-full sm:w-[150px]"><SelectValue placeholder="Filter by Difficulty" /></SelectTrigger>
                             <SelectContent><SelectItem value="all">All Difficulties</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                         </Select>
-                         <Select value={typeFilter} onValueChange={setTypeFilter}><SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter by Type" /></SelectTrigger>
+                         <Select value={typeFilter} onValueChange={setTypeFilter}><SelectTrigger className="w-full sm:w-[150px]"><SelectValue placeholder="Filter by Type" /></SelectTrigger>
                             <SelectContent><SelectItem value="all">All Types</SelectItem>{questionTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
@@ -159,6 +167,7 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                 <TableHead>Type</TableHead>
                                 <TableHead>Difficulty</TableHead>
                                 <TableHead>Subject</TableHead>
+                                <TableHead>Chapter</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -167,8 +176,9 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                 <TableRow key={q.id}>
                                     <TableCell className="font-medium max-w-sm truncate">{q.text}</TableCell>
                                     <TableCell><Badge variant="secondary">{q.type}</Badge></TableCell>
-                                    <TableCell><Badge className={difficultyColors[q.difficulty]}>{q.difficulty}</Badge></TableCell>
+                                    <TableCell><Badge className={(difficultyColors as any)[q.difficulty]}>{q.difficulty}</Badge></TableCell>
                                     <TableCell>{q.subject || 'N/A'}</TableCell>
+                                    <TableCell>{q.chapter || 'N/A'}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
@@ -201,11 +211,10 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                             </div>
                             <div className="space-y-2">
                                 <Label>Question Text</Label>
-                                <Textarea value={editingQuestion.text} onChange={e => updateField('text', e.target.value)} rows={3} />
+                                <Textarea value={editingQuestion.text || ''} onChange={e => updateField('text', e.target.value)} rows={3} />
                                 {editingQuestion.type === 'Fill in the Blanks' && <p className="text-xs text-muted-foreground">Use __BLANK__ to indicate a blank space.</p>}
                             </div>
                             
-                            {/* Type-specific fields */}
                             {editingQuestion.type === 'MCQ' && (
                                 <div className="p-4 border rounded-md space-y-2">
                                     <Label>Options</Label>
@@ -220,8 +229,8 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                 </div>
                             )}
                             
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2"><Label>Points</Label><Input type="number" value={editingQuestion.points} onChange={e => updateField('points', Number(e.target.value))} /></div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="space-y-2"><Label>Points</Label><Input type="number" value={editingQuestion.points || 1} onChange={e => updateField('points', Number(e.target.value))} /></div>
                                 <div className="space-y-2"><Label>Difficulty</Label>
                                     <Select value={editingQuestion.difficulty} onValueChange={(v: Question['difficulty']) => updateField('difficulty', v)}>
                                         <SelectTrigger><SelectValue/></SelectTrigger>
@@ -229,6 +238,7 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                     </Select>
                                 </div>
                                 <div className="space-y-2"><Label>Subject</Label><Input value={editingQuestion.subject || ''} onChange={e => updateField('subject', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Chapter</Label><Input value={editingQuestion.chapter || ''} onChange={e => updateField('chapter', e.target.value)} /></div>
                             </div>
 
                         </div>
