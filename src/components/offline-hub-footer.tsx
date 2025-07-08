@@ -21,8 +21,8 @@ export function OfflineHubFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           
           <div className="lg:col-span-2">
-             <div className="w-24 h-24 bg-white/10 p-4 rounded-md flex items-center justify-center mb-4">
-                 <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto filter brightness-0 invert" />
+             <div className="w-32 h-32 bg-white/10 p-4 rounded-md flex items-center justify-center mb-4 border-2 border-red-500">
+                 <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-24 w-auto filter brightness-0 invert" />
              </div>
             <h3 className="font-bold text-white mb-2">Best Education Center</h3>
             <p className="text-sm">Dhaka, Bangladesh</p>
