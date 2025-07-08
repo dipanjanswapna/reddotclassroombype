@@ -1,7 +1,7 @@
 
 "use client";
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { HomepageConfig } from '@/lib/types';
@@ -17,10 +17,14 @@ import { FloatingWhatsAppButton } from './floating-whatsapp-button';
  */
 export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
   const pathname = usePathname();
-  
-  // An array of path prefixes that should have a completely custom layout
-  // (i.e., no main Header or Footer from this wrapper).
+  const segment = useSelectedLayoutSegment();
+
+  // The 404 page will not have a layout segment, but the homepage ('/') also has a null segment.
+  // We check the pathname to differentiate.
+  const isNotFoundPage = segment === null && pathname !== '/';
+
   const isFullPageLayout =
+    isNotFoundPage ||
     pathname.startsWith('/sites/') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/auth/') ||
@@ -33,7 +37,6 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     return <>{children}</>;
   }
   
-  // An array of path prefixes for internal dashboard pages.
   const isDashboardPage = 
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
