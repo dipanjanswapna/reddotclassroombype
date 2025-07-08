@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -39,7 +40,9 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             <div className="grid grid-cols-2 gap-4">
                 {(data.features || []).map((feature, index) => (
                 <div key={feature.id || `feature-${index}`} className="bg-background/50 border p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors backdrop-blur-sm">
-                    <Image src={feature.iconUrl} alt={feature.title?.['bn'] || 'Feature Icon'} width={60} height={60} data-ai-hint={feature.dataAiHint} className="bg-primary/10 p-2 rounded-lg border-2 border-primary/50"/>
+                    <div className="bg-primary/10 p-2 rounded-lg border-2 border-primary/50">
+                        <Image src={feature.iconUrl} alt={feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="w-10 h-10"/>
+                    </div>
                     <h3 className="font-semibold text-card-foreground">{feature.title?.[language] || feature.title?.['bn']}</h3>
                 </div>
                 ))}
@@ -47,7 +50,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             </div>
         </div>
 
-        <div className="mt-[-4rem] z-10 relative">
+        <div className="mt-12 z-10 relative">
           <Carousel
             plugins={[plugin.current]}
             className="w-full"
@@ -56,7 +59,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             <CarouselContent>
               {(data.testimonials || []).map((testimonial, index) => (
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
-                  <Card className="bg-card shadow-lg rounded-2xl border border-primary">
+                  <Card className="bg-card shadow-lg rounded-2xl border border-primary/20">
                     <CardContent className="p-8 grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-2">
                             <Quote className="text-5xl text-primary/20" fill="currentColor" />
