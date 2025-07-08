@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Settings } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Settings, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +82,9 @@ export default function UserManagementPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+
   // Form state for the dialog
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -146,7 +149,7 @@ export default function UserManagementPage() {
     } else {
        toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
-    setUserToDelete(null); // Close the dialog
+    setUserToDelete(null);
   };
   
   const handleStatusUpdate = async (userToUpdate: User, newStatus: User['status']) => {
@@ -162,6 +165,12 @@ export default function UserManagementPage() {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
   };
+  
+  const filteredUsers = useMemo(() => staffUsers.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [staffUsers, searchTerm]);
+
 
   if (loading) {
     return (
@@ -187,6 +196,15 @@ export default function UserManagementPage() {
         <CardHeader>
           <CardTitle>All Staff Users</CardTitle>
           <CardDescription>A list of all registered staff members.</CardDescription>
+          <div className="relative pt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1.2 h-4 w-4 text-muted-foreground" />
+            <Input
+                placeholder="Search by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -201,7 +219,7 @@ export default function UserManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {staffUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="font-medium">{user.name}</div>
