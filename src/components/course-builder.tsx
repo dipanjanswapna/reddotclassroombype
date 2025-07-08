@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { notFound, useRouter, useParams } from 'next/navigation';
 import {
@@ -30,6 +30,7 @@ import {
   Video,
   Award,
   BarChart3,
+  Database,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,7 +68,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, Quiz as QuizType, Question } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -101,6 +102,8 @@ import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from './ui/switch';
 import { ExamLeaderboard } from './exam-leaderboard';
+import { ScrollArea } from './ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 
 type LessonData = {
@@ -318,6 +321,14 @@ type CourseBuilderProps = {
     redirectPath: string;
 }
 
+const questionTypes: Question['type'][] = ['MCQ', 'True/False', 'Fill in the Blanks', 'Short Answer', 'Essay', 'Matching'];
+const difficultyColors: Record<Question['difficulty'], string> = {
+  Easy: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:border-green-700 dark:text-green-300',
+  Medium: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:border-yellow-700 dark:text-yellow-300',
+  Hard: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:border-red-700 dark:text-red-300',
+};
+
+
 export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const router = useRouter();
   const params = useParams();
@@ -386,6 +397,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [isExamResultsOpen, setIsExamResultsOpen] = useState(false);
   const [selectedExamTemplateForResults, setSelectedExamTemplateForResults] = useState<ExamTemplate | null>(null);
   
+  // Question Bank states
+  const [allQuestionsFromBank, setAllQuestionsFromBank] = useState<Question[]>([]);
+  const [isQuestionBankDialogOpen, setIsQuestionBankDialogOpen] = useState(false);
+  const [activeExamTemplateId, setActiveExamTemplateId] = useState<string | null>(null);
+  const [selectedBankQuestions, setSelectedBankQuestions] = useState<Set<string>>(new Set());
+  const [bankSubjectFilter, setBankSubjectFilter] = useState('all');
+  const [bankChapterFilter, setBankChapterFilter] = useState('all');
+  const [bankDifficultyFilter, setBankDifficultyFilter] = useState('all');
+  const [bankTypeFilter, setBankTypeFilter] = useState('all');
+
+  
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
@@ -401,14 +423,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCourses, allInstructorsData ] = await Promise.all([
+            const [ fetchedCategories, allCourses, allInstructorsData, fetchedQuestions ] = await Promise.all([
                 getCategories(),
                 getCourses(),
-                getInstructors()
+                getInstructors(),
+                getQuestionBank(),
             ]);
             setAllCategories(fetchedCategories);
             setAllArchivedCourses(allCourses.filter(c => c.isArchived));
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
+            setAllQuestionsFromBank(fetchedQuestions);
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -980,6 +1004,55 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             setGeneratingQuizForLesson(null);
         }
     };
+    
+    // Question Bank Dialog Logic
+    const bankSubjects = useMemo(() => [...new Set(allQuestionsFromBank.map(q => q.subject).filter(Boolean))] as string[], [allQuestionsFromBank]);
+    const bankChapters = useMemo(() => [...new Set(allQuestionsFromBank.map(q => q.chapter).filter(Boolean))] as string[], [allQuestionsFromBank]);
+
+    const filteredBankQuestions = useMemo(() => {
+        return allQuestionsFromBank.filter(q => 
+            (bankSubjectFilter === 'all' || q.subject === bankSubjectFilter) &&
+            (bankChapterFilter === 'all' || q.chapter === bankChapterFilter) &&
+            (bankDifficultyFilter === 'all' || q.difficulty === bankDifficultyFilter) &&
+            (bankTypeFilter === 'all' || q.type === bankTypeFilter)
+        );
+    }, [allQuestionsFromBank, bankSubjectFilter, bankChapterFilter, bankDifficultyFilter, bankTypeFilter]);
+
+    const handleSelectBankQuestion = (questionId: string, checked: boolean) => {
+        setSelectedBankQuestions(prev => {
+            const newSet = new Set(prev);
+            if (checked) {
+                newSet.add(questionId);
+            } else {
+                newSet.delete(questionId);
+            }
+            return newSet;
+        });
+    };
+    
+    const handleAddFromBank = () => {
+        if (!activeExamTemplateId) return;
+
+        const questionsToAdd = allQuestionsFromBank.filter(q => selectedBankQuestions.has(q.id!));
+
+        setExamTemplates(prev => prev.map(exam => {
+            if (exam.id === activeExamTemplateId) {
+                const existingQuestionIds = new Set((exam.questions || []).map(q => q.id));
+                const newQuestions = questionsToAdd.filter(q => !existingQuestionIds.has(q.id!));
+                
+                if (newQuestions.length !== questionsToAdd.length) {
+                    toast({ title: 'Notice', description: 'Duplicate questions were not added.' });
+                }
+
+                return { ...exam, questions: [...(exam.questions || []), ...newQuestions] };
+            }
+            return exam;
+        }));
+        
+        setSelectedBankQuestions(new Set());
+        setActiveExamTemplateId(null);
+        setIsQuestionBankDialogOpen(false);
+    };
 
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
@@ -1473,7 +1546,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                     )}
                                                 </div>
                                             ))}
-                                            <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>Add Question</Button>
+                                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                                <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>
+                                                    <PlusCircle className="mr-2"/>Add New Question
+                                                </Button>
+                                                <Button variant="outline" className="w-full" onClick={() => {
+                                                    setActiveExamTemplateId(exam.id);
+                                                    setIsQuestionBankDialogOpen(true);
+                                                }}>
+                                                    <Database className="mr-2 h-4 w-4"/>Add from Bank
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -1720,6 +1803,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </CardContent>
             )}
         </Card>
+        
         <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
             <DialogContent>
                 <DialogHeader>
@@ -1815,6 +1899,58 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
+        <Dialog open={isQuestionBankDialogOpen} onOpenChange={setIsQuestionBankDialogOpen}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Add Questions from Bank</DialogTitle>
+                    <DialogDescription>Select questions to add to your exam template. Use filters to find relevant questions.</DialogDescription>
+                </DialogHeader>
+                 <div className="flex flex-wrap gap-2 pt-4">
+                    <Select value={bankSubjectFilter} onValueChange={setBankSubjectFilter}><SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Subject" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Subjects</SelectItem>{bankSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Select value={bankChapterFilter} onValueChange={setBankChapterFilter}><SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Chapter" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Chapters</SelectItem>{bankChapters.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Select value={bankDifficultyFilter} onValueChange={setBankDifficultyFilter}><SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter by Difficulty" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Difficulties</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
+                    </Select>
+                    <Select value={bankTypeFilter} onValueChange={setBankTypeFilter}><SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter by Type" /></SelectTrigger>
+                        <SelectContent><SelectItem value="all">All Types</SelectItem>{questionTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+                <ScrollArea className="h-[50vh] border rounded-md mt-4">
+                    <Table>
+                        <TableHeader className="sticky top-0 bg-background">
+                            <TableRow>
+                                <TableHead className="w-[50px]"></TableHead>
+                                <TableHead>Question</TableHead>
+                                <TableHead>Type</TableHead>
+                                <TableHead>Difficulty</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredBankQuestions.map(q => (
+                                <TableRow key={q.id}>
+                                    <TableCell><Checkbox checked={selectedBankQuestions.has(q.id!)} onCheckedChange={(checked) => handleSelectBankQuestion(q.id!, !!checked)}/></TableCell>
+                                    <TableCell className="font-medium max-w-sm truncate">{q.text}</TableCell>
+                                    <TableCell><Badge variant="secondary">{q.type}</Badge></TableCell>
+                                    <TableCell><Badge className={(difficultyColors as any)[q.difficulty]}>{q.difficulty}</Badge></TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </ScrollArea>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                    <Button onClick={handleAddFromBank} disabled={selectedBankQuestions.size === 0}>
+                        Add {selectedBankQuestions.size} Questions
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
     </div>
   );
 }
