@@ -9,6 +9,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from './ui/card';
 import { Quote } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type WhyTrustUsProps = {
   data: HomepageConfig['whyChooseUs'];
@@ -21,22 +22,25 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
   if (!data || !data.display) {
     return null;
   }
+  
+  const titleText = data.title?.[language] || data.title?.['bn'] || '';
+  const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="bg-indigo-900 text-white py-16 overflow-hidden">
+    <section className="bg-secondary/50 py-16 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="font-headline text-4xl font-bold">{data.title?.[language] || data.title?.['bn']}</h2>
-            <p className="text-lg opacity-90">
+            <h2 className="font-headline text-4xl font-bold" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
+            <p className="text-lg text-muted-foreground">
               {data.description?.[language] || data.description?.['bn']}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {(data.features || []).map((feature, index) => (
-              <div key={feature.id || `feature-${index}`} className="bg-white/10 p-4 rounded-lg flex items-center gap-4 backdrop-blur-sm hover:bg-white/20 transition-colors">
-                <Image src={feature.iconUrl} alt={feature.title?.[language] || feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="bg-white p-1 rounded-md"/>
-                <h3 className="font-semibold">{feature.title?.[language] || feature.title?.['bn']}</h3>
+              <div key={feature.id || `feature-${index}`} className="bg-card border p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors">
+                <Image src={feature.iconUrl} alt={feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="bg-primary/10 p-2 rounded-lg"/>
+                <h3 className="font-semibold text-card-foreground">{feature.title?.[language] || feature.title?.['bn']}</h3>
               </div>
             ))}
           </div>
@@ -51,10 +55,10 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             <CarouselContent>
               {(data.testimonials || []).map((testimonial, index) => (
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
-                  <Card className="bg-white text-gray-800 shadow-2xl rounded-2xl">
+                  <Card className="bg-card shadow-lg rounded-2xl">
                     <CardContent className="p-8 grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-2">
-                            <Quote className="text-5xl text-indigo-300 -scale-x-100" fill="currentColor" />
+                            <Quote className="text-5xl text-primary/20" fill="currentColor" />
                             <blockquote className="text-lg italic mt-[-2rem] ml-8">
                                 {testimonial.quote?.[language] || testimonial.quote?.['bn']}
                             </blockquote>
@@ -64,7 +68,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
                             </div>
                         </div>
                         <div className="relative w-48 h-48 mx-auto">
-                             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-200 to-purple-200 rounded-2xl transform -rotate-6"></div>
+                             <div className="absolute top-0 left-0 w-full h-full bg-primary/10 rounded-2xl transform -rotate-6"></div>
                             <Image
                                 src={testimonial.imageUrl}
                                 alt={testimonial.studentName}
@@ -81,8 +85,8 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             </CarouselContent>
              {(data.testimonials || []).length > 1 && (
                 <div className="mt-6 flex justify-center gap-4">
-                    <CarouselPrevious className="static translate-y-0 bg-white/20 hover:bg-white/30 text-white" />
-                    <CarouselNext className="static translate-y-0 bg-white/20 hover:bg-white/30 text-white" />
+                    <CarouselPrevious variant="outline" className="static translate-y-0" />
+                    <CarouselNext variant="outline" className="static translate-y-0" />
                 </div>
              )}
           </Carousel>
