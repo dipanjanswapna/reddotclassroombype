@@ -482,6 +482,18 @@ export type OfflineHubContactSection = {
   whatsappNumber: string;
 };
 
+export type TeamMember = {
+  id: string;
+  name: string;
+  title: string;
+  imageUrl: string;
+  dataAiHint: string;
+  socialLinks: {
+    platform: 'facebook' | 'linkedin' | 'twitter' | 'external';
+    url: string;
+  }[];
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -572,6 +584,12 @@ export type HomepageConfig = {
     title: { [key: string]: string };
     subtitle: { [key: string]: string };
     classes: FreeClass[];
+  };
+  aboutUsSection: {
+    display: boolean;
+    title: { [key: string]: string };
+    subtitle: { [key: string]: string };
+    teamMembers: TeamMember[];
   };
   offlineHubSection: {
     display: boolean;

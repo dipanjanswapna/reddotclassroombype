@@ -9,15 +9,16 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, OfflineHubProgram } from '@/lib/types';
+import { HomepageConfig, OfflineHubProgram, TeamMember } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
 import { getYoutubeVideoId } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -349,6 +350,80 @@ export default function AdminHomepageManagementPage() {
           return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: updatedPrograms } };
       });
   };
+  
+  const handleTeamMemberChange = (id: string, field: keyof Omit<TeamMember, 'id' | 'socialLinks'>, value: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newMembers = prev.aboutUsSection.teamMembers.map(m => m.id === id ? { ...m, [field]: value } : m);
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+    });
+  };
+
+  const handleSocialLinkChange = (memberId: string, index: number, field: 'platform' | 'url', value: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newMembers = prev.aboutUsSection.teamMembers.map(member => {
+            if (member.id === memberId) {
+                const newLinks = [...member.socialLinks];
+                newLinks[index] = { ...newLinks[index], [field]: value as any };
+                return { ...member, socialLinks: newLinks };
+            }
+            return member;
+        });
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+    });
+  };
+
+  const addTeamMember = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newMember: TeamMember = {
+            id: `member_${Date.now()}`,
+            name: 'New Member',
+            title: 'Designation',
+            imageUrl: 'https://placehold.co/400x500.png',
+            dataAiHint: 'person professional',
+            socialLinks: [{ platform: 'facebook', url: '#' }]
+        };
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: [...prev.aboutUsSection.teamMembers, newMember] } };
+    });
+  };
+
+  const removeTeamMember = (id: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newMembers = prev.aboutUsSection.teamMembers.filter(m => m.id !== id);
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+    });
+  };
+
+  const addSocialLink = (memberId: string) => {
+     setConfig(prev => {
+        if (!prev) return null;
+        const newMembers = prev.aboutUsSection.teamMembers.map(member => {
+            if (member.id === memberId) {
+                const newLinks = [...member.socialLinks, { platform: 'facebook', url: '#' }];
+                return { ...member, socialLinks: newLinks };
+            }
+            return member;
+        });
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+    });
+  }
+
+  const removeSocialLink = (memberId: string, index: number) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newMembers = prev.aboutUsSection.teamMembers.map(member => {
+            if (member.id === memberId) {
+                const newLinks = member.socialLinks.filter((_, i) => i !== index);
+                return { ...member, socialLinks: newLinks };
+            }
+            return member;
+        });
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+    });
+  }
 
   const sections = [
     { key: 'categoriesSection', label: 'Categories Section' },
@@ -361,6 +436,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'jobPrepSection', label: 'Job Prep Section' },
     { key: 'whyChooseUs', label: 'Why Choose Us Section' },
     { key: 'freeClassesSection', label: 'Free Classes Section' },
+    { key: 'aboutUsSection', label: 'About Us Section'},
     { key: 'collaborations', label: 'Collaborations Section' },
     { key: 'partnersSection', label: 'Partners Section' },
     { key: 'socialMediaSection', label: 'Social Media Section' },
@@ -482,6 +558,70 @@ export default function AdminHomepageManagementPage() {
                   </div>
                 ))}
                 <Button variant="outline" className="w-full border-dashed" onClick={addCategory}><PlusCircle className="mr-2"/>Add Category</Button>
+              </CardContent>
+          </Card>
+          
+          <Card>
+              <CardHeader>
+                  <CardTitle>About Us Section</CardTitle>
+                  <CardDescription>Manage the team members displayed on the About Us page.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                          <Label>Section Title (Bangla)</Label>
+                          <Input value={config.aboutUsSection.title.bn} onChange={e => handleSectionTitleChange('aboutUsSection', 'bn', e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                          <Label>Section Title (English)</Label>
+                          <Input value={config.aboutUsSection.title.en} onChange={e => handleSectionTitleChange('aboutUsSection', 'en', e.target.value)} />
+                      </div>
+                       <div className="space-y-2 col-span-2">
+                          <Label>Section Subtitle (English)</Label>
+                          <Textarea value={config.aboutUsSection.subtitle.en} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} />
+                      </div>
+                  </div>
+                  {config.aboutUsSection.teamMembers.map((member, index) => (
+                      <Collapsible key={member.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>
+                          <div className="flex justify-between items-start">
+                              <h4 className="font-semibold pt-2">Member {index + 1}: {member.name}</h4>
+                              <div>
+                                  <Button variant="ghost" size="icon" onClick={() => removeTeamMember(member.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                  <CollapsibleTrigger asChild>
+                                      <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button>
+                                  </CollapsibleTrigger>
+                              </div>
+                          </div>
+                          <CollapsibleContent className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Name</Label><Input value={member.name} onChange={e => handleTeamMemberChange(member.id, 'name', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Title</Label><Input value={member.title} onChange={e => handleTeamMemberChange(member.id, 'title', e.target.value)} /></div>
+                              </div>
+                              <div className="space-y-2"><Label>Image URL</Label><Input value={member.imageUrl} onChange={e => handleTeamMemberChange(member.id, 'imageUrl', e.target.value)} /></div>
+                              <div className="space-y-2"><Label>Image AI Hint</Label><Input value={member.dataAiHint} onChange={e => handleTeamMemberChange(member.id, 'dataAiHint', e.target.value)} /></div>
+                              <div className="space-y-2">
+                                  <Label>Social Links</Label>
+                                  {member.socialLinks.map((link, linkIndex) => (
+                                      <div key={linkIndex} className="flex items-center gap-2">
+                                          <Select value={link.platform} onValueChange={(value) => handleSocialLinkChange(member.id, linkIndex, 'platform', value)}>
+                                              <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
+                                              <SelectContent>
+                                                  <SelectItem value="facebook">Facebook</SelectItem>
+                                                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                                                  <SelectItem value="twitter">Twitter</SelectItem>
+                                                  <SelectItem value="external">External</SelectItem>
+                                              </SelectContent>
+                                          </Select>
+                                          <Input value={link.url} onChange={e => handleSocialLinkChange(member.id, linkIndex, 'url', e.target.value)} placeholder="Full URL" />
+                                          <Button variant="ghost" size="icon" onClick={() => removeSocialLink(member.id, linkIndex)}><X className="h-4 w-4 text-destructive"/></Button>
+                                      </div>
+                                  ))}
+                                  <Button variant="outline" size="sm" onClick={() => addSocialLink(member.id)}><PlusCircle className="mr-2"/>Add Social Link</Button>
+                              </div>
+                          </CollapsibleContent>
+                      </Collapsible>
+                  ))}
+                  <Button variant="outline" className="w-full border-dashed" onClick={addTeamMember}><PlusCircle className="mr-2"/>Add Team Member</Button>
               </CardContent>
           </Card>
 

@@ -423,6 +423,35 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: "fc6", title: "দৈর্ঘ্য মাপি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "ক্লাস ৬" },
     ]
   },
+  aboutUsSection: {
+    display: true,
+    title: { bn: "আমাদের সম্পর্কে", en: "About Us" },
+    subtitle: { bn: "আমাদের পেছনের কারিগরদের সাথে পরিচিত হন।", en: "Meet the team behind our platform." },
+    teamMembers: [
+      {
+        id: "member1",
+        name: "Md. Mufassal E khuda",
+        title: "Co-Founder & CCO",
+        imageUrl: "https://placehold.co/400x500.png",
+        dataAiHint: "founder person",
+        socialLinks: [
+          { platform: 'facebook', url: '#' },
+          { platform: 'external', url: '#' }
+        ]
+      },
+      {
+        id: "member2",
+        name: "Fairoz Khaled Ohi",
+        title: "Founder & CEO",
+        imageUrl: "https://placehold.co/400x500.png",
+        dataAiHint: "founder person",
+        socialLinks: [
+          { platform: 'facebook', url: '#' },
+          { platform: 'external', url: '#' }
+        ]
+      }
+    ]
+  },
   offlineHubSection: {
     display: true,
     title: { bn: "RDC অফলাইন হাব", en: "RDC Offline Hub" },
@@ -567,6 +596,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         jobPrepSection: { ...defaultHomepageConfig.jobPrepSection, ...data.jobPrepSection },
         whyChooseUs: { ...defaultHomepageConfig.whyChooseUs, ...data.whyChooseUs },
         freeClassesSection: { ...defaultHomepageConfig.freeClassesSection, ...data.freeClassesSection },
+        aboutUsSection: { ...defaultHomepageConfig.aboutUsSection, ...data.aboutUsSection },
         offlineHubSection: { 
             ...defaultHomepageConfig.offlineHubSection, 
             ...data.offlineHubSection,
