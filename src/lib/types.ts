@@ -2,6 +2,37 @@
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
+export type QuestionOption = {
+  id: string;
+  text: string;
+  isCorrect?: boolean;
+};
+
+export type MatchingPair = {
+  id: string;
+  prompt: string;
+  match: string;
+};
+
+export type Question = {
+  id?: string;
+  type: 'MCQ' | 'True/False' | 'Fill in the Blanks' | 'Short Answer' | 'Essay' | 'Matching';
+  text: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'audio';
+  points: number;
+  explanation?: string;
+  subject?: string;
+  chapter?: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  tags?: string[];
+  
+  // Type-specific fields
+  options?: QuestionOption[]; // For MCQ, True/False
+  blanks?: string[]; // For Fill in the Blanks - correct answers for each blank
+  matchingPairs?: MatchingPair[]; // For Matching
+};
+
 export type LiveClass = {
   id: string;
   topic: string;
@@ -93,14 +124,6 @@ export type Instructor = {
     youtubeUrl: string;
   }[];
 }
-
-export type Question = {
-  id: string;
-  text: string;
-  options: { id: string; text: string }[];
-  correctAnswerId: string;
-};
-
 
 export type Quiz = {
   id: string;

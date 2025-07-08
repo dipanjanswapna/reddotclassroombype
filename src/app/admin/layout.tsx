@@ -22,6 +22,7 @@ import {
   QrCode,
   Search,
   PhoneCall,
+  Database,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -65,6 +66,7 @@ export default function AdminLayout({
         { href: "/admin/manage-user", icon: Search, label: "Manage User" },
         { href: "/admin/sellers", icon: Handshake, label: "Sellers" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
+        { href: "/admin/question-bank", icon: Database, label: "Question Bank" },
         { href: "/admin/blog", icon: Notebook, label: "Blog" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },

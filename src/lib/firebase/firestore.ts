@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -32,6 +32,12 @@ async function getDocument<T>(collectionName: string, id: string): Promise<T | n
   }
   return null;
 }
+
+// Question Bank
+export const getQuestionBank = () => getCollection<Question>('question_bank');
+export const addQuestionToBank = (question: Omit<Question, 'id'>) => addDoc(collection(db, 'question_bank'), question);
+export const updateQuestionInBank = (id: string, question: Partial<Question>) => updateDoc(doc(db, 'question_bank', id), question);
+export const deleteQuestionFromBank = (id: string) => deleteDoc(doc(db, 'question_bank', id));
 
 // Courses
 export const getCourses = async (filters: {
