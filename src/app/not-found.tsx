@@ -2,33 +2,14 @@
 // to avoid being wrapped by the main layout.
 import './globals.css';
 import Image from 'next/image';
-import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
-import { cn } from '@/lib/utils';
-
-// Re-declare fonts just like in the root layout for styling consistency
-const fontInter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
-
-const fontPoppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-poppins',
-})
-
-const fontHindSiliguri = Hind_Siliguri({
-  subsets: ['bengali', 'latin'],
-  weight: ['400', '700'],
-  variable: '--font-bengali',
-})
 
 export default function NotFound() {
   return (
-    <html lang="en" className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
+    <html lang="en">
         <head>
             <title>404 - Page Not Found | RDC</title>
             <meta name="description" content="The page you are looking for does not exist." />
+            <link rel="icon" href="/favicon.ico" />
         </head>
         <body>
             <main className="flex min-h-screen w-full items-center justify-center bg-background px-4 py-12">
