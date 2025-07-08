@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, OfflineHubProgram, TeamMember } from '@/lib/types';
+import { HomepageConfig, OfflineHubProgram, TeamMember, TopperPageCard, TopperPageSection } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -443,7 +443,29 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+    const handleTopperPageChange = (field: keyof TopperPageSection, value: string) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const newConfig = JSON.parse(JSON.stringify(prev));
+            newConfig.topperPageSection[field] = value;
+            return newConfig;
+        });
+    };
+
+    const handleTopperCardChange = (id: string, field: keyof TopperPageCard, value: string) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const newCards = prev.topperPageSection.cards.map(c => 
+                c.id === id ? { ...c, [field]: value } : c
+            );
+            const newConfig = JSON.parse(JSON.stringify(prev));
+            newConfig.topperPageSection.cards = newCards;
+            return newConfig;
+        });
+    };
+
   const sections = [
+    { key: 'topperPageSection', label: 'Strugglers/Topper Page'},
     { key: 'strugglingStudentSection', label: 'Struggling Student Section'},
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
@@ -598,6 +620,40 @@ export default function AdminHomepageManagementPage() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+                <CardTitle>Strugglers/Topper Page</CardTitle>
+                <CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label>Page Title</Label>
+                    <Input value={config.topperPageSection.title} onChange={e => handleTopperPageChange('title', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Main Illustration Image URL</Label>
+                    <Input value={config.topperPageSection.mainImageUrl} onChange={e => handleTopperPageChange('mainImageUrl', e.target.value)} />
+                </div>
+                {config.topperPageSection.cards.map((card, index) => (
+                    <div key={card.id} className="p-4 border rounded-lg space-y-2">
+                        <h4 className="font-semibold">Card {index + 1}</h4>
+                        <div className="space-y-1">
+                            <Label>Icon URL</Label>
+                            <Input value={card.iconUrl} onChange={e => handleTopperCardChange(card.id, 'iconUrl', e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Title</Label>
+                            <Input value={card.title} onChange={e => handleTopperCardChange(card.id, 'title', e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Description</Label>
+                            <Textarea value={card.description} onChange={e => handleTopperCardChange(card.id, 'description', e.target.value)} rows={3}/>
+                        </div>
+                    </div>
+                ))}
             </CardContent>
           </Card>
 

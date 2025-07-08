@@ -562,6 +562,18 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     number: "8801700000000",
   },
   platformSettings: defaultPlatformSettings,
+  topperPageSection: {
+    display: true,
+    title: "How We Help You Become A Topper",
+    mainImageUrl: "https://i.imgur.com/qgS2G9i.png",
+    mainImageDataAiHint: "support person questions",
+    cards: [
+      { id: "topper_card_1", iconUrl: "https://placehold.co/64x64.png", dataAiHint: "handshake icon", title: "Hath Pakda hai to Chodenge Nahi", description: "The Moment you enroll in Nexttoppers till the day of Your Exam, your Exam Preparation is our Responsibility from Providing Regular Live session , Lectures Recording, DPP's , regular tests and last but not the least morning marathons on the day of your exam to give that final touch and edge over the rest" },
+      { id: "topper_card_2", iconUrl: "https://placehold.co/64x64.png", dataAiHint: "chat doubt", title: "Classes + Apke bahut sare Doubts = Nexttoppers Special Doubt Solving Classes", description: "Padhai sirf lectures tak simit nahi hai. Jab bhi tumhare doubts ho, unhe clear karna equally important hai. NextToppers mein hum ensure karte hain ki tumhare sabhi doubts regular doubt-solving sessions mein solve ho jaayein, taaki tum confident aur clear raho apne concepts mein." },
+      { id: "topper_card_3", iconUrl: "https://placehold.co/64x64.png", dataAiHint: "team icon", title: "Aisi Team Leke Aye Hai Kisi ke Bass Ki Nahi Hogi", description: "Struggling with \"yrr maths ka Teacher is Institute mai Badhiya hai science ka uss Coaching Mai\", then don't worry we got you, since NextToppers was built to bring the best teachers of individual subjects into one unbeatable team." },
+      { id: "topper_card_4", iconUrl: "https://placehold.co/64x64.png", dataAiHint: "solution book", title: "Exam ki samsya ka smart samadhan- Acp Pcp!!", description: "Aarambh & Prarambh Chapter-wise Problems a.k.a. ACP & PCP are sets of the most expected questions from each chapter, Jab teacher bole karne ka to karne ka , kyuki yahi same questions exams mein repeat hote hai" }
+    ]
+  },
 };
 
 // Blog Posts
@@ -622,6 +634,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
         appPromo: { ...defaultHomepageConfig.appPromo, ...data.appPromo },
         floatingWhatsApp: { ...defaultHomepageConfig.floatingWhatsApp, ...data.floatingWhatsApp },
         platformSettings: { ...defaultHomepageConfig.platformSettings, ...data.platformSettings },
+        topperPageSection: { ...defaultHomepageConfig.topperPageSection, ...data.topperPageSection },
     };
     return { id: docSnap.id, ...mergedConfig } as HomepageConfig;
   }

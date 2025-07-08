@@ -1,58 +1,56 @@
 
 import type { Metadata } from 'next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lightbulb, BookOpen, Users } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'How We Help Students | RDC',
+  title: 'How We Help You Become A Topper | RDC',
   description: 'Learn how Red Dot Classroom provides personalized support and resources to help students overcome their study challenges and succeed.',
 };
 
-export default function StrugglersStudiesPage() {
-  const helpPoints = [
-    {
-      icon: Lightbulb,
-      title: 'Personalized Mentorship',
-      description: 'Our experienced mentors provide one-on-one guidance to identify weak points and create a customized study plan that works for you.'
-    },
-    {
-      icon: BookOpen,
-      title: 'Interactive Learning',
-      description: 'Move beyond traditional methods with our engaging live classes, interactive quizzes, and practical assignments that make learning enjoyable.'
-    },
-    {
-      icon: Users,
-      title: 'Supportive Community',
-      description: "You're not alone. Join our community of fellow students and supportive instructors to ask questions, share knowledge, and stay motivated."
-    },
-  ];
+export default async function TopperPage() {
+    const config = await getHomepageConfig();
+    const sectionData = config?.topperPageSection;
+
+    if (!sectionData || !sectionData.display) {
+        return (
+             <div className="container mx-auto px-4 py-12">
+                <div className="text-center">
+                    <h1 className="font-headline text-4xl font-bold tracking-tight">Information Coming Soon</h1>
+                    <p className="mt-4 text-lg text-muted-foreground">This page is currently under construction.</p>
+                </div>
+             </div>
+        )
+    }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="text-center">
-        <h1 className="font-headline text-4xl font-bold tracking-tight">Struggling in Studies? Let Us Help.</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-          Every student learns differently, and it's okay to face challenges. At Red Dot Classroom, we believe in providing the right support to turn those struggles into strengths. Here's how we do it.
-        </p>
-      </div>
-
-      <div className="mt-12 grid gap-8 md:grid-cols-3">
-        {helpPoints.map((point, index) => {
-          const Icon = point.icon;
-          return (
-            <Card key={index} className="text-center">
-              <CardHeader>
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Icon className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="mt-4">{point.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{point.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
+    <div className="container mx-auto px-4 py-16">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-8">
+            <h1 className="font-headline text-4xl font-bold tracking-tight">{sectionData.title}</h1>
+            <div className="grid sm:grid-cols-2 gap-6">
+                {sectionData.cards.map(card => (
+                    <Card key={card.id} className="p-6 bg-secondary/50 border-border/50">
+                        <div className="flex items-start gap-4 mb-3">
+                            <Image src={card.iconUrl} alt="" width={40} height={40} className="object-contain" data-ai-hint={card.dataAiHint} />
+                            <h2 className="font-bold text-lg leading-tight">{card.title}</h2>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                    </Card>
+                ))}
+            </div>
+        </div>
+        <div className="hidden lg:block">
+            <Image
+                src={sectionData.mainImageUrl}
+                alt={sectionData.title}
+                width={600}
+                height={600}
+                className="object-contain"
+                data-ai-hint={sectionData.mainImageDataAiHint}
+            />
+        </div>
       </div>
     </div>
   );

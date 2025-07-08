@@ -494,6 +494,22 @@ export type TeamMember = {
   }[];
 };
 
+export type TopperPageCard = {
+  id: string;
+  iconUrl: string;
+  dataAiHint: string;
+  title: string;
+  description: string;
+};
+
+export type TopperPageSection = {
+  display: boolean;
+  title: string;
+  mainImageUrl: string;
+  mainImageDataAiHint: string;
+  cards: TopperPageCard[];
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -681,4 +697,5 @@ export type HomepageConfig = {
     number: string;
   };
   platformSettings: PlatformSettings;
+  topperPageSection: TopperPageSection;
 };
