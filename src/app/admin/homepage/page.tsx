@@ -24,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
+type WhyChooseUsFeature = HomepageConfig['whyChooseUs']['features'][0];
+type Testimonial = HomepageConfig['whyChooseUs']['testimonials'][0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -112,6 +114,18 @@ export default function AdminHomepageManagementPage() {
       return newConfig;
     });
   };
+  
+  const handleSectionLangChange = (section: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
+      setConfig(prevConfig => {
+          if (!prevConfig) return null;
+          const newConfig = JSON.parse(JSON.stringify(prevConfig));
+          if (newConfig[section] && newConfig[section][field]) {
+              newConfig[section][field][lang] = value;
+          }
+          return newConfig;
+      });
+  };
+
 
   const handleSectionSubtitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
     setConfig(prevConfig => {
@@ -377,6 +391,15 @@ export default function AdminHomepageManagementPage() {
             return newConfig;
         });
     };
+    
+    // Why Choose Us Section
+    const addWhyChooseUsFeature = () => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: [...p.whyChooseUs.features, {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}]}});
+    const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
+    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.map(f => f.id === id ? {...f, [field]: value} : f)}});
+    const addTestimonial = () => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...p.whyChooseUs.testimonials, {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
+    const removeTestimonial = (id: string) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
+    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...t, [field]: value} : t)}});
+
 
   const allSections = [
     { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
@@ -592,6 +615,45 @@ export default function AdminHomepageManagementPage() {
             </Card>
         </TabsContent>
          <TabsContent value="content" className="mt-6 space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Why Choose Us Section</CardTitle>
+                    <CardDescription>Manage the "কেন RDC-তে আস্থা রাখবে?" section.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs.title.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs.description.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
+                    
+                    <div className="space-y-4 pt-4 border-t">
+                        <Label className="font-semibold">Feature Cards</Label>
+                        {config.whyChooseUs.features.map(feature => (
+                        <div key={feature.id} className="p-3 border rounded-md space-y-2 relative">
+                            <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeWhyChooseUsFeature(feature.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title.bn} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, bn: e.target.value})}/></div>
+                                <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title.en} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
+                            </div>
+                            <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => updateWhyChooseUsFeature(feature.id, 'iconUrl', e.target.value)}/></div>
+                        </div>
+                        ))}
+                        <Button variant="outline" className="w-full border-dashed" onClick={addWhyChooseUsFeature}><PlusCircle className="mr-2"/>Add Feature</Button>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t">
+                        <Label className="font-semibold">Testimonials</Label>
+                        {config.whyChooseUs.testimonials.map(t => (
+                        <div key={t.id} className="p-3 border rounded-md space-y-2 relative">
+                            <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeTestimonial(t.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote.bn} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
+                            <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => updateTestimonial(t.id, 'studentName', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => updateTestimonial(t.id, 'college', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={t.imageUrl} onChange={e => updateTestimonial(t.id, 'imageUrl', e.target.value)}/></div>
+                        </div>
+                        ))}
+                        <Button variant="outline" className="w-full border-dashed" onClick={addTestimonial}><PlusCircle className="mr-2"/>Add Testimonial</Button>
+                    </div>
+                </CardContent>
+            </Card>
             <Card>
                 <CardHeader><CardTitle>About Us Section</CardTitle><CardDescription>Manage the team members displayed on the About Us page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">

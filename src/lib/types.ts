@@ -161,7 +161,7 @@ export type Exam = {
   studentName: string;
   title: string;
   topic: string;
-  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
+  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical' | 'Essay' | 'Short Answer';
   totalMarks: number;
   examDate?: string | Timestamp | Date;
   status: 'Pending' | 'Submitted' | 'Graded';
@@ -219,7 +219,7 @@ export type ExamTemplate = {
   id: string;
   title: string;
   topic: string;
-  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
+  examType: 'MCQ' | 'Written' | 'Oral' | 'Practical' | 'Essay' | 'Short Answer';
   totalMarks: number;
   examDate?: string | Timestamp | Date;
   questions?: Question[];
@@ -282,7 +282,7 @@ export type Course = {
   title: string;
   description: string;
   type?: 'Online' | 'Offline' | 'Hybrid' | 'Exam';
-  instructors?: CourseInstructor[]; 
+  instructors: CourseInstructor[]; 
   imageUrl: string;
   dataAiHint: string;
   category: string;
@@ -596,10 +596,20 @@ export type HomepageConfig = {
   whyChooseUs: {
     display: boolean;
     title: { [key: string]: string };
+    description: { [key: string]: string };
     features: {
-      icon: string;
+      id: string;
+      iconUrl: string;
+      dataAiHint: string;
       title: { [key: string]: string };
-      description: { [key: string]: string };
+    }[];
+    testimonials: {
+      id: string;
+      quote: { [key: string]: string };
+      studentName: string;
+      college: string;
+      imageUrl: string;
+      dataAiHint: string;
     }[];
   };
   freeClassesSection: {
@@ -610,8 +620,8 @@ export type HomepageConfig = {
   };
   aboutUsSection: {
     display: boolean;
-    title: { [key: string]: string };
-    subtitle: { [key: string]: string };
+    title: { bn: string; en: string };
+    subtitle: { bn: string; en: string };
     teamMembers: TeamMember[];
   };
   offlineHubSection: {
@@ -698,4 +708,8 @@ export type HomepageConfig = {
   };
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;
+  notFoundPage?: {
+    imageUrl: string;
+    dataAiHint: string;
+  };
 };

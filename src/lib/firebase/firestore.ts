@@ -410,12 +410,17 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   jobCoursesIds: [],
   whyChooseUs: {
     display: true,
-    title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
+    title: { bn: "কেন RDC-তে আস্থা রাখবে?", en: "Why trust RDC?" },
+    description: {bn: "সেরা মেন্টর ও সর্বাধুনিক প্রযুক্তির সাথে সারাদেশের ১০ লক্ষ+ শিক্ষার্থীর মানসম্মত পড়ালেখা ও পরীক্ষা প্রস্তুতির নির্ভরযোগ্য প্রতিষ্ঠান RDC!", en: "RDC is a reliable institution for quality education and exam preparation for 10 lakh+ students across the country with the best mentors and modern technology!"},
     features: [
-      { icon: "Trophy", title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" }, description: { bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education." } },
-      { icon: "BookOpen", title: { bn: "ইন্টারেক্টিভ লার্নিং", en: "Interactive Learning" }, description: { bn: "লাইভ ক্লাস, কুইজ এবং অ্যাসাইনমেন্টের মাধ্যমে আপনার শেখাকে আরও আনন্দদায়ক করে তুলুন।", en: "Make your learning more enjoyable through live classes, quizzes, and assignments." } },
-      { icon: "Users", title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" }, description: { bn: "যেকোনো সমস্যায় আমাদের সাপোর্ট টিম সর্বদা আপনার পাশে আছে।", en: "Our support team is always by your side for any problem." } },
+      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'diamond icon', title: { bn: "সেরা কন্টেন্ট", en: "Best Content" } },
+      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "সহজ স্টাডি ম্যাটেরিয়াল", en: "Easy Study Material" } },
+      { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "স্বল্প খরচে অনেক কিছু", en: "Lots for a Low Cost" } },
+      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাবলীল উপস্থাপনা", en: "Fluent Presentation" } },
     ],
+    testimonials: [
+        {id: 'test1', quote: {bn: "অনলাইনে RDC'র লেসনগুলো পড়েই আমি গোল্ডেন A+ আর স্কলারশিপ পেয়েছি", en: "I got Golden A+ and a scholarship just by studying RDC's lessons online"}, studentName: "মেহজাবিন রহমান", college: "বি.এ.এফ. শাহীন কলেজ", imageUrl: "https://placehold.co/120x120.png", dataAiHint: "student happy"}
+    ]
   },
   freeClassesSection: {
     display: true,
@@ -491,6 +496,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   partnersSection: {
     display: true,
     title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
+    scrollSpeed: 25,
     partners: [
         { id: 1, name: 'Partner 1', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
         { id: 2, name: 'Partner 2', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
@@ -544,10 +550,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     mainImageUrl: 'https://i.imgur.com/rCne6ZJ.png',
     mainImageDataAiHint: 'happy student celebrating',
     cards: [
-      { id: 'card1', iconUrl: 'https://i.imgur.com/your-icon-1.png', dataAiHint: 'icon book', title: 'লাইভ ক্লাস', description: 'প্রতিটি ক্লাস সরাসরি টিচারের সাথে করার সুযোগ।' },
-      { id: 'card2', iconUrl: 'https://i.imgur.com/your-icon-2.png', dataAiHint: 'icon exam', title: 'পরীক্ষা', description: 'নিয়মিত পরীক্ষা দিয়ে নিজের প্রস্তুতি যাচাই।' },
-      { id: 'card3', iconUrl: 'https://i.imgur.com/your-icon-3.png', dataAiHint: 'icon notes', title: 'লেকচার শিট', description: 'প্রতিটি ক্লাসের পর গুছানো লেকচার শিট।' },
-      { id: 'card4', iconUrl: 'https://i.imgur.com/your-icon-4.png', dataAiHint: 'icon support', title: 'সাপোর্ট', description: 'যেকোনো সমস্যায় ২৪/৭ টিচার সাপোর্ট।' },
+      { id: 'card1', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon book', title: 'লাইভ ক্লাস', description: 'প্রতিটি ক্লাস সরাসরি টিচারের সাথে করার সুযোগ।' },
+      { id: 'card2', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon exam', title: 'পরীক্ষা', description: 'নিয়মিত পরীক্ষা দিয়ে নিজের প্রস্তুতি যাচাই।' },
+      { id: 'card3', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon notes', title: 'লেকচার শিট', description: 'প্রতিটি ক্লাসের পর গুছানো লেকচার শিট।' },
+      { id: 'card4', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon support', title: 'সাপোর্ট', description: 'যেকোনো সমস্যায় ২৪/৭ টিচার সাপোর্ট।' },
     ],
   },
   notFoundPage: {

@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -26,18 +27,7 @@ import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-car
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
-
-
-const WhyChooseUsIcon = ({ icon, className }: { icon: React.ComponentType<{ className?: string }>, className?: string }) => {
-  const Icon = icon;
-  return <Icon className={cn("w-10 h-10 text-primary", className)} />;
-};
-
-const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
-  Trophy,
-  BookOpen,
-  Users,
-};
+import { WhyTrustUs } from '@/components/why-trust-us';
 
 const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
   switch (platform) {
@@ -117,7 +107,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.categoriesSection.display && (
+      {homepageConfig.categoriesSection?.display && (
         <section aria-labelledby="categories-heading">
           <div className="container mx-auto px-4">
             <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
@@ -128,7 +118,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.journeySection.display && (
+      {homepageConfig.journeySection?.display && (
         <section className="bg-secondary/50" aria-labelledby="hero-heading">
           <div className="container mx-auto px-4">
             <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection.title[language]}</h2>
@@ -141,7 +131,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.teachersSection.display && (
+      {homepageConfig.teachersSection?.display && (
         <section aria-labelledby="teachers-heading">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
@@ -158,7 +148,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.videoSection.display && (
+      {homepageConfig.videoSection?.display && (
         <section aria-labelledby="video-section-heading">
           <div className="container mx-auto px-4 text-center">
               <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
@@ -185,7 +175,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.sscHscSection.display && (
+      {homepageConfig.sscHscSection?.display && (
         <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
             <div className="container mx-auto px-4 text-center">
                 <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection.badge[language]}</Badge>
@@ -197,7 +187,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.masterclassSection.display && (
+      {homepageConfig.masterclassSection?.display && (
         <section aria-labelledby="masterclass-heading">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
@@ -209,7 +199,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.admissionSection.display && (
+      {homepageConfig.admissionSection?.display && (
         <section className="bg-secondary/50" aria-labelledby="admission-heading">
             <div className="container mx-auto px-4 text-center">
                 <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection.badge[language]}</Badge>
@@ -224,7 +214,7 @@ export default async function Home() {
         </section>
       )}
       
-      {homepageConfig.jobPrepSection.display && (
+      {homepageConfig.jobPrepSection?.display && (
         <section aria-labelledby="job-prep-heading">
             <div className="container mx-auto px-4 text-center">
                 <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection.badge[language]}</Badge>
@@ -239,34 +229,17 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.whyChooseUs.display && (
-        <section className="bg-secondary/50" aria-labelledby="why-choose-us-heading">
-          <div className="container mx-auto px-4">
-            <h2 id="why-choose-us-heading" className="font-headline text-3xl font-bold text-center mb-12">
-              {homepageConfig.whyChooseUs.title[language]}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              {homepageConfig.whyChooseUs.features.map((feature, index) => (
-                <div key={index} className="flex flex-col items-center p-6 bg-card rounded-lg shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                  <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10">
-                    <WhyChooseUsIcon icon={iconMap[feature.icon] || Trophy} />
-                  </div>
-                  <h3 className="font-headline text-xl font-semibold mb-2">{feature.title[language]}</h3>
-                  <p className="text-muted-foreground">{feature.description[language]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {homepageConfig.freeClassesSection?.display && (
         <section className="bg-background py-16" aria-labelledby="free-classes-heading">
           <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
         </section>
       )}
 
-      {homepageConfig.collaborations.display && approvedCollaborators.length > 0 && (
+      {homepageConfig.whyChooseUs?.display && (
+        <WhyTrustUs data={homepageConfig.whyChooseUs} />
+      )}
+
+      {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
         <section aria-labelledby="collaborations-heading">
           <div className="container mx-auto px-4">
             <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
@@ -292,7 +265,7 @@ export default async function Home() {
       )}
 
 
-      {homepageConfig.socialMediaSection.display && (
+      {homepageConfig.socialMediaSection?.display && (
         <section className="bg-secondary/30" aria-labelledby="social-media-heading">
           <div className="container mx-auto px-4 text-center">
             <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
@@ -344,7 +317,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.notesBanner.display && (
+      {homepageConfig.notesBanner?.display && (
         <section className="bg-secondary/50" aria-labelledby="notes-banner-heading">
           <div className="container mx-auto px-4">
             <Card className="shadow-lg">
@@ -360,7 +333,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.statsSection.display && (
+      {homepageConfig.statsSection?.display && (
         <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
           <div className="container mx-auto px-4 text-center">
               <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection.title[language]}</h2>
@@ -376,7 +349,7 @@ export default async function Home() {
         </section>
       )}
 
-      {homepageConfig.appPromo.display && (
+      {homepageConfig.appPromo?.display && (
         <section aria-labelledby="app-promo-heading">
             <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-center md:text-left">
