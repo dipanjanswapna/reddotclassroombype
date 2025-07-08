@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 // Importing the image directly makes it a part of the build process.
 // This is the most reliable way to ensure the image is always available.
-// The path assumes '404error.png' is inside a 'public' folder.
 import errorImage from '../public/404error.png';
 
 export default function NotFound() {
@@ -57,13 +56,9 @@ export default function NotFound() {
 
       {/* Footer */}
       <footer className="w-full shrink-0 pb-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground px-4 gap-2">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground px-4 gap-2">
           <p>Copyright © Apar's Classroom 2021-23</p>
-          <div className="flex items-center gap-2">
-            <a href="/privacy" className="hover:text-primary">Privacy Policy</a>
-            <span>-</span>
-            <a href="/terms" className="hover:text-primary">Terms & Conditions</a>
-          </div>
+          <p>Privacy Policy - Terms & Conditions</p>
         </div>
       </footer>
     </div>
