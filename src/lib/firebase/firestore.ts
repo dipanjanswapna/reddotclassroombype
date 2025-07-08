@@ -175,7 +175,7 @@ export const getOrganizations = () => getCollection<Organization>('organizations
 export const getOrganization = (id: string) => getDocument<Organization>('organizations', id);
 export const addOrganization = (org: Partial<Organization>) => addDoc(collection(db, 'organizations'), org);
 export const getPartnerBySubdomain = async (subdomain: string): Promise<Organization | null> => {
-    const q = query(collection(db, "organizations"), where("subdomain", "==", subdomain));
+    const q = query(collection(db, "organizations"), where("subdomain", "==", subdomain), where("status", "==", "approved"));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0];

@@ -479,9 +479,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setSyllabus(getSyllabusItems(courseData));
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
                     
-                    const courseInstructors = courseData.instructors.map(courseInst => {
+                    const courseInstructors = courseData.instructors?.map(courseInst => {
                         return allInstructorsData.find(i => i.slug === courseInst.slug);
-                    }).filter((i): i is Instructor => !!i);
+                    }).filter((i): i is Instructor => !!i) || [];
                     setInstructors(courseInstructors);
 
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);

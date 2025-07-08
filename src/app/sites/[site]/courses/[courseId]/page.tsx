@@ -97,13 +97,15 @@ export default async function PartnerCourseDetailPage({
             {course.description}
           </p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground text-sm">
-              <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                      <AvatarImage src={course.instructors[0].avatarUrl} alt={course.instructors[0].name} />
-                      <AvatarFallback>{course.instructors[0].name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span>By {course.instructors[0].name}</span>
-              </div>
+              {course.instructors && course.instructors.length > 0 && (
+                <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                        <AvatarImage src={course.instructors[0].avatarUrl} alt={course.instructors[0].name} />
+                        <AvatarFallback>{course.instructors[0].name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span>By {course.instructors[0].name}</span>
+                </div>
+              )}
               {course.showStudentCount && (
                   <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />

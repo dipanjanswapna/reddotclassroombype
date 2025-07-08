@@ -282,7 +282,7 @@ export type Course = {
   title: string;
   description: string;
   type?: 'Online' | 'Offline' | 'Hybrid' | 'Exam';
-  instructors: CourseInstructor[]; 
+  instructors?: CourseInstructor[]; 
   imageUrl: string;
   dataAiHint: string;
   category: string;
