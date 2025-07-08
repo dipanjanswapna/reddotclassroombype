@@ -22,7 +22,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
-type OfflineCenter = HomepageConfig['offlineHubSection']['centers'][0];
+type OfflineCenter = NonNullable<HomepageConfig['offlineHubSection']['centers']>[0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
