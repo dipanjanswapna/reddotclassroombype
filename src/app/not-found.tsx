@@ -1,3 +1,4 @@
+
 // A standalone 404 page, as per Next.js App Router conventions for root not-found files.
 // This file is NOT wrapped by the root layout.tsx, so it needs its own <html> and <body> tags.
 import './globals.css';
