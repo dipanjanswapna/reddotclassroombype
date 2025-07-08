@@ -1,13 +1,20 @@
 
+
 import { getCourses, getUsers, getEnrollments } from '@/lib/firebase/firestore';
 import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
 import { DashboardClient } from './dashboard-client';
 import { safeToDate } from '@/lib/utils';
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',
     description: 'Platform-wide overview and management tools.',
+};
+
+const serializeStudyPlan = (plan: StudyPlanEvent[] | undefined): any[] | undefined => {
+    if (!plan) return undefined;
+    return plan.map(event => ({ ...event }));
 };
 
 export default async function AdminDashboardPage() {
@@ -22,6 +29,8 @@ export default async function AdminDashboardPage() {
     ...user,
     joined: safeToDate(user.joined).toISOString(),
     lastLoginAt: user.lastLoginAt ? safeToDate(user.lastLoginAt).toISOString() : undefined,
+    lastCounseledAt: user.lastCounseledAt ? safeToDate(user.lastCounseledAt).toISOString() : undefined,
+    studyPlan: serializeStudyPlan(user.studyPlan),
   }));
 
   const enrollments = enrollmentsData.map(enrollment => ({

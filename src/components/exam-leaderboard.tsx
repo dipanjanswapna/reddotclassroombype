@@ -78,4 +78,3 @@ export function ExamLeaderboard({ exams, currentUserUid }: ExamLeaderboardProps)
         </Table>
     );
 }
-
