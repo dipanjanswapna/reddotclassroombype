@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+import errorImage from '@/public/404error.png';
 
 export default function NotFound() {
   
@@ -26,7 +27,7 @@ export default function NotFound() {
           {/* Using a relative container for the fill image */}
           <div className="relative w-full max-w-md h-64 mb-8">
               <Image
-                  src="/404error.png"
+                  src={errorImage}
                   alt="Confused character with a 404 error"
                   fill
                   className="object-contain"
