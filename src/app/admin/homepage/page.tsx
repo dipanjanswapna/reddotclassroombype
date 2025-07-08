@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig, OfflineHubProgram, TeamMember, TopperPageCard, TopperPageSection } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
@@ -1091,6 +1091,28 @@ export default function AdminHomepageManagementPage() {
                             placeholder="https://example.com/logo.png"
                         />
                         <p className="text-xs text-muted-foreground">If a URL is provided, it will replace the default logo across the site.</p>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>404 Page Image</CardTitle>
+                    <CardDescription>Manage the image on the "Not Found" page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Image URL</Label>
+                        <Input 
+                            value={config.notFoundPage?.imageUrl || ''} 
+                            onChange={e => setConfig(prev => prev ? ({ ...prev, notFoundPage: { ...(prev.notFoundPage || { imageUrl: '', dataAiHint: '' }), imageUrl: e.target.value } }) : null)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Image AI Hint</Label>
+                        <Input 
+                            value={config.notFoundPage?.dataAiHint || ''} 
+                            onChange={e => setConfig(prev => prev ? ({ ...prev, notFoundPage: { ...(prev.notFoundPage || { imageUrl: '', dataAiHint: '' }), dataAiHint: e.target.value } }) : null)}
+                        />
                     </div>
                 </CardContent>
             </Card>
