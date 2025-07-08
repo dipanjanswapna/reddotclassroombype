@@ -391,7 +391,7 @@ export default function AdminHomepageManagementPage() {
     const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.map(f => f.id === id ? {...f, [field]: value} : f)}});
     const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
     const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
-    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...t, [field]: value} : t)}});
+    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...f, [field]: value} : t)}});
 
 
   const allSections = [
@@ -547,7 +547,6 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-2">
                     <div className="space-y-1"><Label>Title (BN)</Label><Input value={config.appPromo?.title?.bn || ''} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo?.title, bn: e.target.value })} /></div>
                     <div className="space-y-1"><Label>Description (BN)</Label><Textarea value={config.appPromo?.description?.bn || ''} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo?.description, bn: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>App Screenshot URL</Label><Input value={config.appPromo?.imageUrl || ''} onChange={(e) => handleAppPromoChange('imageUrl', e.target.value )} /></div>
                 </CardContent>
             </Card>
         </TabsContent>

@@ -535,8 +535,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     description: { bn: "আপনার মোবাইল ফোনেই সেরা লার্নিং অভিজ্ঞতা পেতে এখনই আমাদের অ্যাপ ডাউনলোড করুন।", en: "Download our app now to get the best learning experience on your mobile phone." },
     googlePlayUrl: "#",
     appStoreUrl: "#",
-    imageUrl: "https://placehold.co/350x500.png",
-    dataAiHint: "mobile app screenshot",
   },
   floatingWhatsApp: {
       display: true,

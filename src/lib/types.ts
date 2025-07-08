@@ -703,8 +703,6 @@ export type HomepageConfig = {
     description: { [key: string]: string };
     googlePlayUrl: string;
     appStoreUrl: string;
-    imageUrl: string;
-    dataAiHint: string;
   };
   floatingWhatsApp: {
     display: boolean;

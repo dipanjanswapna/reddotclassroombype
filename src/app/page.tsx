@@ -364,7 +364,7 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                    <Image src={homepageConfig.appPromo.imageUrl || 'https://placehold.co/350x500.png'} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint="mobile app screenshot"/>
+                    <Image src="/download.jpg" width={350} height={500} alt="RDC App" className='object-contain' />
                 </div>
             </div>
         </section>
