@@ -200,9 +200,6 @@ export function Header() {
           <div className="flex items-center justify-end space-x-2">
               {user ? (
               <>
-                  <Button variant="ghost" size="icon" aria-label="Search">
-                  <Search className="h-5 w-5" />
-                  </Button>
                   <NotificationBell />
                   <UserNav />
               </>
