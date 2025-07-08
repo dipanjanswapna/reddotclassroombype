@@ -1,7 +1,11 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+// Importing the image directly makes it a part of the build process.
+// This is the most reliable way to ensure the image is always available.
+// The path assumes '404error.png' is inside a 'public' folder, which is inside the 'src' folder.
 import errorImage from '../public/404error.png';
 
 export default function NotFound() {
@@ -19,16 +23,19 @@ export default function NotFound() {
   return (
     // This div is fixed to cover the entire viewport and prevents any scrolling.
     <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center p-4 overflow-hidden">
-      <div className="w-full max-w-xl text-center">
-        <Image
-          src={errorImage}
-          alt="Confused character with a 404 error"
-          width={600}
-          height={400}
-          className="w-full max-w-md h-auto mx-auto mb-8"
-          placeholder="blur"
-          priority
-        />
+      <div className="w-full max-w-xl text-center flex flex-col items-center">
+        
+        {/* Using a relative container for the fill image */}
+        <div className="relative w-full max-w-md h-64 mb-8">
+            <Image
+                src={errorImage}
+                alt="Confused character with a 404 error"
+                fill
+                className="object-contain"
+                priority // Load this image first as it's critical for the page
+            />
+        </div>
+
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
           OOOPS!!
         </h1>
