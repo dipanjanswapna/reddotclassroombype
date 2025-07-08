@@ -1,11 +1,14 @@
 
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getCourses, getBranches } from '@/lib/firebase/firestore';
 import { ArrowRight, CheckCircle, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
-import { useLanguage } from '@/context/language-context';
+import { CourseCard } from '@/components/course-card';
+import { Course } from '@/lib/types';
+
 
 export const metadata: Metadata = {
   title: 'RDC OFFLINE HUB',
@@ -13,9 +16,16 @@ export const metadata: Metadata = {
 };
 
 export default async function OfflineHubPage() {
-    const homepageConfig = await getHomepageConfig();
+    const [homepageConfig, allCourses, allBranches] = await Promise.all([
+        getHomepageConfig(),
+        getCourses({ status: 'Published' }),
+        getBranches(),
+    ]);
+    
     const language = 'bn'; // Defaulting to Bengali as per the image
     const offlineHubData = homepageConfig?.offlineHubSection;
+    const offlineCourses = allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid');
+
 
     if (!offlineHubData || !offlineHubData.display) {
         return (
@@ -62,18 +72,18 @@ export default async function OfflineHubPage() {
             </div>
         </div>
       
-      {offlineHubData.programs && offlineHubData.programs.length > 0 && (
+      {offlineCourses.length > 0 && (
         <section className="container mx-auto px-4 py-16">
           <h2 className="font-headline text-3xl font-bold text-center mb-12">
             {offlineHubData.programsTitle?.[language] || "আমাদের প্রোগ্রামসমূহ"}
           </h2>
           <div className="space-y-8 max-w-5xl mx-auto">
-            {offlineHubData.programs.map((program) => (
+            {offlineCourses.map((program: Course) => (
               <div key={program.id} className="p-8 border border-red-500/30 bg-red-900/20 rounded-xl grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h3 className="font-headline text-4xl font-bold mb-6">{program.title}</h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8">
-                    {program.features.map((feature, index) => (
+                    {program.whatYouWillLearn?.slice(0, 4).map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <CheckCircle className="w-5 h-5 text-red-400 mt-1 shrink-0" />
                         <span>{feature}</span>
@@ -82,10 +92,10 @@ export default async function OfflineHubPage() {
                   </ul>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg">
-                      <Link href={program.button1Url}>{program.button1Text}</Link>
+                      <Link href={`/checkout/${program.id}`}>ভর্তি হোন</Link>
                     </Button>
                     <Button asChild variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
-                      <Link href={program.button2Url}>{program.button2Text}</Link>
+                      <Link href={`/courses/${program.id}`}>আরো বিস্তারিত জানুন</Link>
                     </Button>
                   </div>
                 </div>
@@ -110,7 +120,7 @@ export default async function OfflineHubPage() {
             {offlineHubData.centersTitle[language]}
          </h2>
          <div className="flex gap-8 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory">
-            {offlineHubData.centers.map((center) => (
+            {allBranches.map((center) => (
                 <div key={center.id} className="snap-start shrink-0 w-80">
                     <div className="p-6 border border-red-500/30 bg-gray-800/50 rounded-xl h-full flex flex-col justify-between hover:border-red-500 transition-colors">
                         <div>

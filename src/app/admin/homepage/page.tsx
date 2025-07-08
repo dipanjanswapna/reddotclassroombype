@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, OfflineHubProgram, TeamMember, TopperPageCard, TopperPageSection } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -24,7 +24,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
-type OfflineCenter = NonNullable<HomepageConfig['offlineHubSection']['centers']>[0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -264,93 +263,6 @@ export default function AdminHomepageManagementPage() {
         if (!prev) return null;
         return { ...prev, appPromo: { ...prev.appPromo, [key]: value } };
     });
-  };
-
-  const addOfflineCenter = () => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const newCenter: OfflineCenter = { id: Date.now().toString(), name: '', address: '' };
-        return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: [...prev.offlineHubSection.centers, newCenter] } };
-    });
-  };
-
-  const updateOfflineCenter = (id: string, field: 'name' | 'address', value: string) => {
-      setConfig(prev => {
-          if (!prev) return null;
-          const updatedCenters = prev.offlineHubSection.centers.map(c => c.id === id ? { ...c, [field]: value } : c);
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: updatedCenters } };
-      });
-  };
-
-  const removeOfflineCenter = (id: string) => {
-      setConfig(prev => {
-          if (!prev) return null;
-          const updatedCenters = prev.offlineHubSection.centers.filter(c => c.id !== id);
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, centers: updatedCenters } };
-      });
-  };
-
-  const handleProgramChange = (index: number, field: keyof Omit<OfflineHubProgram, 'id' | 'features'>, value: string) => {
-      setConfig(prev => {
-          if (!prev || !prev.offlineHubSection.programs) return null;
-          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
-          newPrograms[index][field] = value;
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
-      });
-  };
-
-  const handleProgramFeatureChange = (progIndex: number, featIndex: number, value: string) => {
-      setConfig(prev => {
-          if (!prev || !prev.offlineHubSection.programs) return null;
-          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
-          newPrograms[progIndex].features[featIndex] = value;
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
-      });
-  };
-
-  const addProgramFeature = (progIndex: number) => {
-      setConfig(prev => {
-          if (!prev || !prev.offlineHubSection.programs) return null;
-          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
-          newPrograms[progIndex].features.push('');
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
-      });
-  };
-
-  const removeProgramFeature = (progIndex: number, featIndex: number) => {
-      setConfig(prev => {
-          if (!prev || !prev.offlineHubSection.programs) return null;
-          const newPrograms = JSON.parse(JSON.stringify(prev.offlineHubSection.programs));
-          newPrograms[progIndex].features.splice(featIndex, 1);
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: newPrograms } };
-      });
-  };
-
-  const addProgram = () => {
-      setConfig(prev => {
-          if (!prev) return null;
-          const newProgram: OfflineHubProgram = {
-              id: Date.now().toString(),
-              title: 'New Program',
-              imageUrl: 'https://placehold.co/600x400.png',
-              dataAiHint: 'program students',
-              features: ['New Feature 1', 'New Feature 2'],
-              button1Text: 'Book Now',
-              button1Url: '#',
-              button2Text: 'Learn More',
-              button2Url: '#',
-          };
-          const programs = prev.offlineHubSection.programs ? [...prev.offlineHubSection.programs, newProgram] : [newProgram];
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs } };
-      });
-  };
-
-  const removeProgram = (id: string) => {
-      setConfig(prev => {
-          if (!prev || !prev.offlineHubSection.programs) return null;
-          const updatedPrograms = prev.offlineHubSection.programs.filter(p => p.id !== id);
-          return { ...prev, offlineHubSection: { ...prev.offlineHubSection, programs: updatedPrograms } };
-      });
   };
   
   const handleTeamMemberChange = (id: string, field: keyof Omit<TeamMember, 'id' | 'socialLinks'>, value: string) => {
@@ -765,7 +677,7 @@ export default function AdminHomepageManagementPage() {
         </TabsContent>
         <TabsContent value="pages" className="mt-6 space-y-8">
             <Card>
-                <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the content on the RDC OFFLINE HUB page.</CardDescription></CardHeader>
+                <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the static content on the RDC OFFLINE HUB page. Programs and centers are now managed automatically.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection.title.bn} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
