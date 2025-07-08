@@ -77,6 +77,12 @@
 }
 
 @layer components {
+  /* Added rule to hide header and footer for the 404 page */
+  .body-is-404 header,
+  .body-is-404 footer {
+    display: none;
+  }
+
   .hero-carousel-container {
     @apply relative bg-secondary/50 py-16 overflow-hidden;
   }
