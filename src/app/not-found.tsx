@@ -1,10 +1,8 @@
-
 // A standalone 404 page, as per Next.js App Router conventions for root not-found files.
 // This file is NOT wrapped by the root layout.tsx, so it needs its own <html> and <body> tags.
 import './globals.css';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
@@ -48,15 +46,9 @@ export default function NotFound() {
                     <div className="mt-10">
                     <p className="text-muted-foreground">Here are some helpful links instead:</p>
                     <div className="mt-4 flex flex-wrap justify-center gap-4 lg:justify-start">
-                        <Button asChild variant="link" className="text-base">
-                        <Link href="/">Home</Link>
-                        </Button>
-                        <Button asChild variant="link" className="text-base">
-                        <Link href="/courses">Courses</Link>
-                        </Button>
-                        <Button asChild variant="link" className="text-base">
-                        <Link href="/contact">Contact</Link>
-                        </Button>
+                        <Link href="/" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Home</Link>
+                        <Link href="/courses" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Courses</Link>
+                        <Link href="/contact" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Contact</Link>
                     </div>
                     </div>
                 </div>
