@@ -1,7 +1,6 @@
-// A standalone 404 page, as per Next.js App Router conventions for root not-found files.
-// This file is NOT wrapped by the root layout.tsx, so it needs its own <html> and <body> tags.
+// A standalone 404 page. It needs its own <html> and <body> tags
+// to avoid being wrapped by the main layout.
 import './globals.css';
-import Link from 'next/link';
 import Image from 'next/image';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { cn } from '@/lib/utils';
@@ -14,7 +13,7 @@ const fontInter = Inter({
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '700'],
   variable: '--font-poppins',
 })
 
@@ -46,9 +45,9 @@ export default function NotFound() {
                     <div className="mt-10">
                     <p className="text-muted-foreground">Here are some helpful links instead:</p>
                     <div className="mt-4 flex flex-wrap justify-center gap-4 lg:justify-start">
-                        <Link href="/" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Home</Link>
-                        <Link href="/courses" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Courses</Link>
-                        <Link href="/contact" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Contact</Link>
+                        <a href="/" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Home</a>
+                        <a href="/courses" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Courses</a>
+                        <a href="/contact" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline text-base">Contact</a>
                     </div>
                     </div>
                 </div>
