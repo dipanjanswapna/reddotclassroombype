@@ -2,12 +2,12 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+import errorImage from '../public/404error.png';
 
 export default function NotFound() {
   
   useEffect(() => {
     // This effect adds a class to the body to hide the main header and footer.
-    // It runs on the client-side after initial hydration.
     document.body.classList.add('body-is-404');
     
     // Cleanup function to remove the class when the component unmounts.
@@ -21,11 +21,13 @@ export default function NotFound() {
     <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center p-4 overflow-hidden">
       <div className="w-full max-w-xl text-center">
         <Image
-          src="/404error.png"
+          src={errorImage}
           alt="Confused character with a 404 error"
           width={600}
           height={400}
           className="w-full max-w-md h-auto mx-auto mb-8"
+          placeholder="blur"
+          priority
         />
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
           OOOPS!!
