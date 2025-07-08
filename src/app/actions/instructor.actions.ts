@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -6,7 +7,7 @@ import {
     addInstructor, 
     deleteInstructor, 
     getInstructor, 
-    getUserByUid, 
+    getUser, 
     updateInstructor, 
     updateUser,
     getCourses
@@ -42,7 +43,7 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
         if (status === 'Approved') {
             const instructor = await getInstructor(id);
             if(instructor?.userId) {
-                const user = await getUserByUid(instructor.userId);
+                const user = await getUser(instructor.userId);
                 if(user) {
                     const updates: Partial<User> = { status: 'Active' };
                     const regNo = String(user.registrationNumber);
@@ -172,7 +173,7 @@ export async function deleteInstructorAction(id: string) {
 
         // 2. If linked to a user, delete the user document
         if (instructor.userId) {
-            const userToDelete = await getUserByUid(instructor.userId);
+            const userToDelete = await getUser(instructor.userId);
             if (userToDelete?.id) {
                 const userRef = doc(db, 'users', userToDelete.id);
                 batch.delete(userRef);

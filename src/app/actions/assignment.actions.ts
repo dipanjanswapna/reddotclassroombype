@@ -1,8 +1,9 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, updateCourse, addNotification, getInstructorBySlug } from '@/lib/firebase/firestore';
+import { getCourse, updateCourse, addNotification, getInstructor } from '@/lib/firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 
 export async function submitAssignmentAction(
@@ -42,7 +43,7 @@ export async function submitAssignmentAction(
             const studentAssignment = updatedAssignments.find(a => a.id === assignmentId && a.studentId === studentId);
             if (studentAssignment) {
                  for (const instructorInfo of course.instructors) {
-                    const instructor = await getInstructorBySlug(instructorInfo.slug);
+                    const instructor = await getInstructor(instructorInfo.slug);
                     if (instructor?.userId) {
                         await addNotification({
                             userId: instructor.userId,

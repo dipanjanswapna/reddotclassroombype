@@ -1,9 +1,10 @@
 
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addNotification, getCourse, getInstructorBySlug, updateCourse } from '@/lib/firebase/firestore';
+import { addNotification, getCourse, getInstructor, updateCourse } from '@/lib/firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 import { Exam, ExamTemplate, Question } from '@/lib/types';
 
@@ -207,7 +208,7 @@ export async function submitExamAction(
     if (finalStatus === 'Submitted') {
         if (course.instructors && course.instructors.length > 0) {
             for (const instructorInfo of course.instructors) {
-                const instructor = await getInstructorBySlug(instructorInfo.slug);
+                const instructor = await getInstructor(instructorInfo.slug);
                 if (instructor?.userId) {
                 await addNotification({
                     userId: instructor.userId,

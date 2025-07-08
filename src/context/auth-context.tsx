@@ -16,7 +16,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase/config';
-import { getUserByUid, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
+import { getUser, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchAndSetUser = useCallback(async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
             setUser(firebaseUser);
-            const fetchedUserInfo = await getUserByUid(firebaseUser.uid);
+            const fetchedUserInfo = await getUser(firebaseUser.uid);
             setUserInfo(fetchedUserInfo);
         } else {
             setUser(null);
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
         
-        let fetchedUserInfo = await getUserByUid(userCredential.user.uid);
+        let fetchedUserInfo = await getUser(userCredential.user.uid);
 
         if (!fetchedUserInfo && email === 'dipanjanswapnaprangon@gmail.com') {
              const newUserInfo: Omit<User, 'id'> = {
@@ -282,7 +282,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
-        let existingUserInfo = await getUserByUid(user.uid);
+        let existingUserInfo = await getUser(user.uid);
         
         if (existingUserInfo) {
             const regNo = String(existingUserInfo.registrationNumber);

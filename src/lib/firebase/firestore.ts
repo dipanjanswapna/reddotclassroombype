@@ -1,4 +1,5 @@
 
+
 import { db } from './config';
 import {
   collection,
@@ -24,6 +25,7 @@ async function getCollection<T>(collectionName: string): Promise<T[]> {
 
 // Generic function to fetch a document by ID
 async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
+  if (!id) return null;
   const docRef = doc(db, collectionName, id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
@@ -91,13 +93,14 @@ export const getInstructorBySlug = async (slug: string): Promise<Instructor | nu
     return { id: docSnap.id, ...docSnap.data() } as Instructor;
 }
 export const getInstructorByUid = async (uid: string): Promise<Instructor | null> => {
+    if (!uid) return null;
     const q = query(collection(db, "instructors"), where("userId", "==", uid));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
     }
-    const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() } as Instructor;
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as Instructor;
 }
 export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> => {
     if (!ids || ids.length === 0) return [];
@@ -114,15 +117,6 @@ export const deleteInstructor = (id: string) => deleteDoc(doc(db, 'instructors',
 // Users
 export const getUsers = () => getCollection<User>('users');
 export const getUser = (id: string) => getDocument<User>('users', id);
-export const getUserByUid = async (uid: string): Promise<User | null> => {
-    const q = query(collection(db, 'users'), where('uid', '==', uid));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() } as User;
-}
 export const getUserByClassRoll = async (classRoll: string): Promise<User | null> => {
     const q = query(collection(db, 'users'), where('classRoll', '==', classRoll));
     const querySnapshot = await getDocs(q);
@@ -489,12 +483,12 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   collaborations: {
     display: true,
-    title: { bn: "আমাদের সহযোগী প্রতিষ্ঠানসমূহ", en: "Our Collaborations" },
+    title: { bn: 'আমাদের কোলাবোরেশনসমূহ', en: 'Our Collaborations' },
     items: [],
   },
   partnersSection: {
     display: true,
-    title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
+    title: { bn: 'আমাদের পার্টনারগণ', en: 'Our Partners' },
     scrollSpeed: 25,
     partners: [
         { id: 1, name: 'Partner 1', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
@@ -505,8 +499,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   socialMediaSection: {
     display: true,
-    title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
-    description: { bn: "আমাদের সোশ্যাল মিডিয়া পেজগুলোতে ফলো করে আপডেটেড থাকুন।", en: "Follow our social media pages to stay updated." },
+    title: { bn: 'আমাদের সাথে কানেক্টেড থাকুন', en: 'Stay Connected With Us' },
+    description: { bn: 'আমাদের সোশ্যাল মিডিয়া পেজগুলো ফলো করুন।', en: 'Follow our social media pages.' },
     channels: [
       { id: 1, platform: 'YouTube', name: { bn: "ইউটিউব", en: "YouTube" }, handle: "RED DOT CLASSROOM", stat1_value: "100k+", stat1_label: { bn: "সাবস্ক্রাইবার", en: "Subscribers" }, stat2_value: "500+", stat2_label: { bn: "ভিডিও", en: "Videos" }, description: { bn: "আমাদের ইউটিউব চ্যানেলে ফ্রি ক্লাস এবং গুরুত্বপূর্ণ কন্টেন্ট দেখুন।", en: "Watch free classes and important content on our YouTube channel." }, ctaText: { bn: "সাবস্ক্রাইব করুন", en: "Subscribe" }, ctaUrl: "#" },
       { id: 2, platform: 'Facebook Page', name: { bn: "ফেসবুক পেজ", en: "Facebook Page" }, handle: "rdc.official", stat1_value: "500k+", stat1_label: { bn: "লাইক", en: "Likes" }, stat2_value: "550k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { bn: "আমাদের ফেসবুক পেজে সকল আপডেট এবং নোটিশ পেয়ে যান।", en: "Get all updates and notices on our Facebook page." }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" },
@@ -516,13 +510,13 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   notesBanner: {
     display: true,
-    title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes and Lecture Sheets" },
-    description: { bn: "আমাদের ওয়েবসাইটে ফ্রি রিসোর্স সেকশন থেকে প্রয়োজনীয় সকল নোটস এবং লেকচার শিট ডাউনলোড করুন।", en: "Download all necessary notes and lecture sheets from the free resources section on our website." },
-    buttonText: { bn: "এখনই ডাউনলোড করুন", en: "Download Now" },
+    title: { bn: 'ফ্রি নোটস এবং লেকচার শিট', en: 'Free Notes and Lecture Sheets' },
+    description: { bn: 'আপনার প্রস্তুতিকে আরও শক্তিশালী করতে ডাউনলোড করুন ফ্রি নোটস।', en: 'Download free notes to strengthen your preparation.' },
+    buttonText: { bn: 'ডাউনলোড করুন', en: 'Download Now' },
   },
   statsSection: {
     display: true,
-    title: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
+    title: { bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা', en: 'Journey of Lakhs of Students' },
     stats: [
       { value: "12 লাখ+", label: { bn: "শিক্ষার্থী", en: "Students" } },
       { value: "500+", label: { bn: "কোর্স", en: "Courses" } },
@@ -531,8 +525,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   appPromo: {
     display: true,
-    title: { bn: "আমাদের অ্যাপ ডাউনলোড করুন", en: "Download Our App" },
-    description: { bn: "আপনার মোবাইল ফোনেই সেরা লার্নিং অভিজ্ঞতা পেতে এখনই আমাদের অ্যাপ ডাউনলোড করুন।", en: "Download our app now to get the best learning experience on your mobile phone." },
+    title: { bn: 'আমাদের অ্যাপ ডাউনলোড করুন', en: 'Download Our App' },
+    description: { bn: 'যেকোনো সময়, যেকোনো জায়গায় পড়াশোনা করুন।', en: 'Study anytime, anywhere.' },
     googlePlayUrl: "#",
     appStoreUrl: "#",
   },

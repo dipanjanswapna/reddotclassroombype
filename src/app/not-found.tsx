@@ -2,9 +2,6 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-// Importing the image directly makes it a part of the build process.
-// This is the most reliable way to ensure the image is always available.
-import errorImage from '../public/404error.png';
 
 export default function NotFound() {
   
@@ -29,7 +26,7 @@ export default function NotFound() {
           {/* Using a relative container for the fill image */}
           <div className="relative w-full max-w-md h-64 mb-8">
               <Image
-                  src={errorImage}
+                  src="/404error.png"
                   alt="Confused character with a 404 error"
                   fill
                   className="object-contain"

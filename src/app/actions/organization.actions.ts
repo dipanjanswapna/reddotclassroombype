@@ -1,8 +1,9 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addOrganization, deleteOrganization, getOrganization, getUserByUid, updateOrganization, updateUser } from '@/lib/firebase/firestore';
+import { addOrganization, deleteOrganization, getOrganization, getUser, updateOrganization, updateUser } from '@/lib/firebase/firestore';
 import { Organization, User } from '@/lib/types';
 import { generateRegistrationNumber } from '@/lib/utils';
 
@@ -13,7 +14,7 @@ export async function updateOrganizationStatusAction(id: string, status: Organiz
         if (status === 'approved') {
             const organization = await getOrganization(id);
             if(organization?.contactUserId) {
-                const user = await getUserByUid(organization.contactUserId);
+                const user = await getUser(organization.contactUserId);
                 if(user) {
                     const updates: Partial<User> = { status: 'Active' };
                     if (!user.registrationNumber) {

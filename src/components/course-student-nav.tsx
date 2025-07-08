@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -51,7 +52,7 @@ export function CourseStudentNav({ course }: { course: Course }) {
     if (course.type === 'Offline' || course.type === 'Hybrid') {
       courseNavItems.splice(5, 0, { href: `/student/my-courses/${courseId}/attendance`, label: 'Attendance', icon: ClipboardCheck });
     }
-    if (course.includedArchivedCourseIds && course.includedArchivedCourseIds.length > 0) {
+    if (course.includedCourseIds && course.includedCourseIds.length > 0) {
       courseNavItems.push({ href: `/student/my-courses/${courseId}/archive`, label: 'Archive', icon: Archive });
     }
   }

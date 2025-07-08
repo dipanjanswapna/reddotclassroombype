@@ -114,9 +114,10 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
        setIsLoading(false);
     }
   };
-
+  
+  const currentRole = role === ('Partner' as any) ? 'Seller' : role;
   const socialLoginDisabled = !homepageConfig?.platformSettings.Student.loginEnabled;
-  const roleLoginDisabled = role && homepageConfig && role !== 'Admin' && !homepageConfig.platformSettings[role]?.loginEnabled;
+  const roleLoginDisabled = currentRole && homepageConfig && currentRole !== 'Admin' && !homepageConfig.platformSettings[currentRole]?.loginEnabled;
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
