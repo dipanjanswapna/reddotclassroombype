@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -24,8 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
-type WhyChooseUsFeature = NonNullable<HomepageConfig['whyChooseUs']>['features'][0];
-type Testimonial = NonNullable<HomepageConfig['whyChooseUs']>['testimonials'][0];
+
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -353,13 +352,6 @@ export default function AdminHomepageManagementPage() {
         return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
     });
   }
-
-  const handleStrugglingSectionChange = (key: keyof HomepageConfig['strugglingStudentSection'], value: any) => {
-    setConfig(prev => {
-        if (!prev || !prev.strugglingStudentSection) return null;
-        return { ...prev, strugglingStudentSection: { ...prev.strugglingStudentSection, [key]: value } };
-    });
-  };
 
   const handleStrugglingSectionLangChange = (field: 'title' | 'subtitle' | 'buttonText', lang: 'bn' | 'en', value: string) => {
     setConfig(prevConfig => {
@@ -773,13 +765,6 @@ export default function AdminHomepageManagementPage() {
                             <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleTopperCardChange(card.id, 'description', e.target.value)} rows={3}/></div>
                         </div>
                     ))}
-                </CardContent>
-            </Card>
-             <Card>
-                <CardHeader><CardTitle>404 Page Image</CardTitle><CardDescription>Manage the image on the "Not Found" page.</CardDescription></CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Image URL</Label><Input value={config.notFoundPage?.imageUrl || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, notFoundPage: { ...(prev.notFoundPage || { imageUrl: '', dataAiHint: '' }), imageUrl: e.target.value } }) : null)}/></div>
-                    <div className="space-y-2"><Label>Image AI Hint</Label><Input value={config.notFoundPage?.dataAiHint || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, notFoundPage: { ...(prev.notFoundPage || { imageUrl: '', dataAiHint: '' }), dataAiHint: e.target.value } }) : null)}/></div>
                 </CardContent>
             </Card>
         </TabsContent>

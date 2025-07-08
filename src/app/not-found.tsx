@@ -1,13 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
+import Error404Image from '@/public/404 error.png';
 
-export default async function NotFound() {
-  const config = await getHomepageConfig();
-  const imageUrl = config?.notFoundPage?.imageUrl || "https://placehold.co/600x400.png";
-  const dataAiHint = config?.notFoundPage?.dataAiHint || "error 404";
-
+export default function NotFound() {
   return (
     <div className="flex min-h-[calc(100vh-8rem)] w-full items-center justify-center bg-background px-4 py-12">
       <div className="container mx-auto max-w-6xl">
@@ -37,11 +33,11 @@ export default async function NotFound() {
           </div>
           <div className="relative h-96">
             <Image
-              src={imageUrl}
+              src={Error404Image}
               alt="Red Dot Classroom 404 Error"
               fill
               className="object-contain"
-              data-ai-hint={dataAiHint}
+              placeholder="blur"
             />
           </div>
         </div>

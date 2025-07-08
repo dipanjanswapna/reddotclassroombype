@@ -510,6 +510,22 @@ export type TopperPageSection = {
   cards: TopperPageCard[];
 };
 
+export type WhyChooseUsFeature = {
+    id: string;
+    iconUrl: string;
+    dataAiHint: string;
+    title: { [key: string]: string };
+};
+
+export type Testimonial = {
+    id: string;
+    quote: { [key: string]: string };
+    studentName: string;
+    college: string;
+    imageUrl: string;
+    dataAiHint: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -597,20 +613,8 @@ export type HomepageConfig = {
     display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
-    features: {
-      id: string;
-      iconUrl: string;
-      dataAiHint: string;
-      title: { [key: string]: string };
-    }[];
-    testimonials: {
-      id: string;
-      quote: { [key: string]: string };
-      studentName: string;
-      college: string;
-      imageUrl: string;
-      dataAiHint: string;
-    }[];
+    features: WhyChooseUsFeature[];
+    testimonials: Testimonial[];
   };
   freeClassesSection: {
     display: boolean;
@@ -708,8 +712,4 @@ export type HomepageConfig = {
   };
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;
-  notFoundPage?: {
-    imageUrl: string;
-    dataAiHint: string;
-  };
 };

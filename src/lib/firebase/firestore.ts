@@ -1,5 +1,4 @@
 
-
 import { db } from './config';
 import {
   collection,
@@ -410,13 +409,13 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   jobCoursesIds: [],
   whyChooseUs: {
     display: true,
-    title: { bn: "কেন RDC-তে আস্থা রাখবে?", en: "Why trust RDC?" },
-    description: {bn: "সেরা মেন্টর ও সর্বাধুনিক প্রযুক্তির সাথে সারাদেশের ১০ লক্ষ+ শিক্ষার্থীর মানসম্মত পড়ালেখা ও পরীক্ষা প্রস্তুতির নির্ভরযোগ্য প্রতিষ্ঠান RDC!", en: "RDC is a reliable institution for quality education and exam preparation for 10 lakh+ students across the country with the best mentors and modern technology!"},
+    title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
+    description: {bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education."},
     features: [
-      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'diamond icon', title: { bn: "সেরা কন্টেন্ট", en: "Best Content" } },
-      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "সহজ স্টাডি ম্যাটেরিয়াল", en: "Easy Study Material" } },
+      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'diamond icon', title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" } },
+      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "ইন্টারেক্টিভ লার্নিং", en: "Interactive Learning" } },
       { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "স্বল্প খরচে অনেক কিছু", en: "Lots for a Low Cost" } },
-      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাবলীল উপস্থাপনা", en: "Fluent Presentation" } },
+      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" } },
     ],
     testimonials: [
         {id: 'test1', quote: {bn: "অনলাইনে RDC'র লেসনগুলো পড়েই আমি গোল্ডেন A+ আর স্কলারশিপ পেয়েছি", en: "I got Golden A+ and a scholarship just by studying RDC's lessons online"}, studentName: "মেহজাবিন রহমান", college: "বি.এ.এফ. শাহীন কলেজ", imageUrl: "https://placehold.co/120x120.png", dataAiHint: "student happy"}
@@ -511,8 +510,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     channels: [
       { id: 1, platform: 'YouTube', name: { bn: "ইউটিউব", en: "YouTube" }, handle: "RED DOT CLASSROOM", stat1_value: "100k+", stat1_label: { bn: "সাবস্ক্রাইবার", en: "Subscribers" }, stat2_value: "500+", stat2_label: { bn: "ভিডিও", en: "Videos" }, description: { bn: "আমাদের ইউটিউব চ্যানেলে ফ্রি ক্লাস এবং গুরুত্বপূর্ণ কন্টেন্ট দেখুন।", en: "Watch free classes and important content on our YouTube channel." }, ctaText: { bn: "সাবস্ক্রাইব করুন", en: "Subscribe" }, ctaUrl: "#" },
       { id: 2, platform: 'Facebook Page', name: { bn: "ফেসবুক পেজ", en: "Facebook Page" }, handle: "rdc.official", stat1_value: "500k+", stat1_label: { bn: "লাইক", en: "Likes" }, stat2_value: "550k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { bn: "আমাদের ফেসবুক পেজে সকল আপডেট এবং নোটিশ পেয়ে যান।", en: "Get all updates and notices on our Facebook page." }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" },
-      { id: 3, platform: 'Facebook Group', name: { bn: "ফেসবুক গ্রুপ", en: "Facebook Group" }, handle: "rdc.main", stat1_value: "1.2M+", stat1_label: { bn: "সদস্য", en: "Members" }, stat2_value: "10k+", stat2_label: { bn: "পোস্ট", en: "Posts" }, description: { bn: "আমাদের ফেসবুক গ্রুপে দেশের সবচেয়ে বড় স্টুডেন্ট কমিউনিটির সাথে যুক্ত হন।", en: "Join the largest student community in the country in our Facebook group." }, ctaText: { bn: "গ্রুপে যোগ দিন", en: "Join Group" }, ctaUrl: "#" },
-      { id: 4, platform: 'Facebook Page', name: { bn: "আরেকটি ফেসবুক পেজ", en: "Another Facebook Page" }, handle: "rdc.secondary", stat1_value: "50k+", stat1_label: { bn: "লাইক", en: "Likes" }, stat2_value: "60k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { bn: "আমাদের দ্বিতীয় অফিসিয়াল পেজ।", en: "Our second official page." }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" }
+      { id: 3, platform: 'Facebook Group', name: { bn: "ফেসবুক গ্রুপ", en: "Facebook Group" }, handle: "rdc.main", stat1_value: "1.2M+", stat1_label: { bn: "সদস্য", en: "Members" }, stat2_value: "10k+", stat2_label: { bn: "পোস্ট", en: "Posts" }, description: { bn: "আমাদের ফেসবুক গ্রুপে দেশের সবচেয়ে বড় স্টুডেন্ট কমিউনিটির সাথে যুক্ত হন।", en: "Join the largest student community in the country in our Facebook group." }, ctaText: { en: "Join Group", bn: "গ্রুপে যোগ দিন" }, ctaUrl: "#" },
+      { id: 4, platform: 'Facebook Page', name: { bn: "আরেকটি ফেসবুক পেজ", en: "Another Facebook Page" }, handle: "rdc.secondary", stat1_value: "50k+", stat1_label: { en: "Likes", bn: "লাইক" }, stat2_value: "60k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { en: "Our second official page.", bn: "আমাদের দ্বিতীয় অফিসিয়াল পেজ।" }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" }
     ],
   },
   notesBanner: {
@@ -556,10 +555,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: 'card4', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon support', title: 'সাপোর্ট', description: 'যেকোনো সমস্যায় ২৪/৭ টিচার সাপোর্ট।' },
     ],
   },
-  notFoundPage: {
-    imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'error 404',
-  }
 };
 
 
