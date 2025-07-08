@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -591,13 +590,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const addExamQuestion = (examId: string) => {
     setExamTemplates(prev => prev.map(exam => {
       if (exam.id === examId) {
-        const newQuestionId = `q_${Date.now()}`;
-        const newOptionId = `opt_${Date.now()}`;
+        const newQuestionId = `new_q_${Date.now()}`;
         const newQuestion: Question = {
           id: newQuestionId,
-          text: '',
+          text: 'New Question',
           type: 'MCQ',
-          options: [{ id: newOptionId, text: '', isCorrect: true }],
+          options: [],
           points: 1,
           difficulty: 'Medium',
         };
@@ -615,36 +613,30 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     ));
   };
   
-  const updateExamQuestionText = (examId: string, questionId: string, text: string) => {
+  const updateExamQuestionField = (examId: string, questionId: string, field: keyof Question, value: any) => {
     setExamTemplates(prev => prev.map(exam => 
       exam.id === examId 
-        ? { ...exam, questions: (exam.questions || []).map(q => q.id === questionId ? { ...q, text } : q) } 
+        ? { ...exam, questions: (exam.questions || []).map(q => q.id === questionId ? { ...q, [field]: value } : q) } 
         : exam
     ));
   };
-  
-  const updateExamQuestionType = (examId: string, questionId: string, type: Question['type']) => {
+
+  const updateExamQuestionOption = (examId: string, questionId: string, optionId: string, field: 'text' | 'isCorrect', value: string | boolean) => {
     setExamTemplates(prev => prev.map(exam => {
-        if (exam.id === examId) {
-            const newQuestions = (exam.questions || []).map(q => {
-                if (q.id === questionId) {
-                    const newQuestion: Question = { ...q, type };
-                    if (type !== 'MCQ') {
-                        delete newQuestion.options;
-                    } else if (!newQuestion.options || newQuestion.options.length === 0) {
-                        const newOptionId = `opt_${Date.now()}`;
-                        newQuestion.options = [{ id: newOptionId, text: '', isCorrect: false }];
-                    }
-                    return newQuestion;
-                }
-                return q;
-            });
-            return { ...exam, questions: newQuestions };
-        }
-        return exam;
+      if (exam.id === examId) {
+        const newQuestions = (exam.questions || []).map(q => {
+          if (q.id === questionId) {
+            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, [field]: value } : opt);
+            return { ...q, options: newOptions };
+          }
+          return q;
+        });
+        return { ...exam, questions: newQuestions };
+      }
+      return exam;
     }));
   };
-
+  
   const addExamOption = (examId: string, questionId: string) => {
     setExamTemplates(prev => prev.map(exam => {
       if (exam.id === examId) {
@@ -674,23 +666,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       return exam;
     }));
   };
-
-  const updateExamOption = (examId: string, questionId: string, optionId: string, field: 'text' | 'isCorrect', value: string | boolean) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestions = (exam.questions || []).map(q => {
-          if (q.id === questionId) {
-            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, [field]: value } : opt);
-            return { ...q, options: newOptions };
-          }
-          return q;
-        });
-        return { ...exam, questions: newQuestions };
-      }
-      return exam;
-    }));
-  };
-
 
   const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
   const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
@@ -1343,35 +1318,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {(quiz.questions || []).map((q, qIndex) => (
-                                <Collapsible key={q.id} className="p-4 border rounded-md bg-background">
-                                    <div className="flex items-center justify-between">
-                                      <p className="font-semibold">Question {qIndex + 1}</p>
-                                      <div>
-                                        <Button variant="ghost" size="icon" onClick={() => removeExamQuestion(quiz.id, q.id)}><X className="text-destructive h-4 w-4"/></Button>
-                                        <CollapsibleTrigger asChild>
-                                            <Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" /></Button>
-                                        </CollapsibleTrigger>
-                                      </div>
-                                    </div>
-                                    <CollapsibleContent className="mt-4 space-y-2">
-                                        <Label>Question Text</Label>
-                                        <Textarea value={q.text} onChange={e => updateExamQuestionText(quiz.id, q.id, e.target.value)} />
-                                        <Label>Options (select the correct one)</Label>
-                                        <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(quiz.id, q.id, value)}>
-                                            {(q.options || []).map((opt) => (
-                                                <div key={opt.id} className="flex items-center gap-2">
-                                                    <RadioGroupItem value={opt.id} id={opt.id} />
-                                                    <Input value={opt.text} onChange={e => updateExamOption(quiz.id, q.id, opt.id, 'text', e.target.value)} className="flex-grow"/>
-                                                    <Button variant="ghost" size="icon" onClick={() => removeExamOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
-                                                </div>
-                                            ))}
-                                        </RadioGroup>
-                                        <Button variant="outline" size="sm" onClick={() => addExamOption(quiz.id, q.id)}>Add Option</Button>
-                                    </CollapsibleContent>
-                                </Collapsible>
-                            ))}
-                            <Button variant="outline" className="w-full border-dashed" onClick={() => addExamQuestion(quiz.id)}><PlusCircle className="mr-2"/>Add Question</Button>
+                           <p className="text-sm text-muted-foreground">Questions will be added in a future update.</p>
                         </CardContent>
                       </Card>
                     ))}
@@ -1484,55 +1431,59 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <DatePicker date={exam.examDate as Date | undefined} setDate={(date) => updateExamTemplate(exam.id, 'examDate', date)} />
                                     </div>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label>Pass Marks</Label>
+                                        <Input type="number" value={exam.passMarks || ''} onChange={e => updateExamTemplate(exam.id, 'passMarks', Number(e.target.value))} placeholder="e.g., 40"/>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Max Attempts</Label>
+                                        <Input type="number" value={exam.maxAttempts || ''} onChange={e => updateExamTemplate(exam.id, 'maxAttempts', Number(e.target.value))} placeholder="e.g., 1"/>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div className="flex items-center space-x-2 pt-6">
+                                        <Switch id={`shuffle-questions-${exam.id}`} checked={exam.shuffleQuestions} onCheckedChange={checked => updateExamTemplate(exam.id, 'shuffleQuestions', checked)} />
+                                        <Label htmlFor={`shuffle-questions-${exam.id}`}>Shuffle Questions</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2 pt-6">
+                                        <Switch id={`shuffle-options-${exam.id}`} checked={exam.shuffleOptions} onCheckedChange={checked => updateExamTemplate(exam.id, 'shuffleOptions', checked)} />
+                                        <Label htmlFor={`shuffle-options-${exam.id}`}>Shuffle Options</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2 pt-6">
+                                        <Switch id={`allow-back-${exam.id}`} checked={exam.allowBackNavigation} onCheckedChange={checked => updateExamTemplate(exam.id, 'allowBackNavigation', checked)} />
+                                        <Label htmlFor={`allow-back-${exam.id}`}>Allow Back Navigation</Label>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2 pt-4">
                                     <Switch id={`webcam-proctor-${exam.id}`} checked={exam.webcamProctoring} onCheckedChange={checked => updateExamTemplate(exam.id, 'webcamProctoring', checked)} />
                                     <Label htmlFor={`webcam-proctor-${exam.id}`}>Enable Webcam Proctoring</Label>
                                 </div>
-                                {exam.examType === 'MCQ' && (
-                                    <div className="pt-4 border-t">
-                                        <h4 className="text-md font-semibold mb-2">MCQ Questions</h4>
-                                        <div className="space-y-4">
-                                            {(exam.questions || []).map((q, qIndex) => (
-                                                <div key={q.id} className="p-3 border bg-background rounded-md space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="flex items-center gap-2">
-                                                            <Label>Question {qIndex + 1}</Label>
-                                                        </div>
-                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id!)}><X className="h-3 w-3 text-destructive"/></Button>
-                                                    </div>
-                                                    <Textarea value={q.text} onChange={(e) => updateExamQuestionText(exam.id, q.id!, e.target.value)} placeholder="Question text"/>
-                                                    
-                                                    <div className="space-y-2 pt-2 border-t mt-2">
-                                                        <Label className="text-xs">Options (check all correct answers)</Label>
-                                                        {(q.options || []).map(opt => (
-                                                            <div key={opt.id} className="flex gap-2 items-center">
-                                                                <Checkbox 
-                                                                    id={`${exam.id}-${q.id}-${opt.id}`} 
-                                                                    checked={opt.isCorrect} 
-                                                                    onCheckedChange={(checked) => updateExamOption(exam.id, q.id!, opt.id, 'isCorrect', !!checked)}
-                                                                />
-                                                                <Input value={opt.text} onChange={(e) => updateExamOption(exam.id, q.id!, opt.id, 'text', e.target.value)} className="flex-grow h-8"/>
-                                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id!, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id!)}>Add Option</Button>
-                                                    </div>
+                                <div className="pt-4 border-t">
+                                    <h4 className="text-md font-semibold mb-2">Questions</h4>
+                                    <div className="space-y-4">
+                                        {(exam.questions || []).map((q, qIndex) => (
+                                            <div key={q.id} className="p-3 border bg-background rounded-md space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <p className="font-semibold">Question {qIndex + 1}</p>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id!)}><X className="h-3 w-3 text-destructive"/></Button>
                                                 </div>
-                                            ))}
-                                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                                <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>
-                                                    <PlusCircle className="mr-2"/>Add New Question
-                                                </Button>
-                                                <Button variant="outline" className="w-full" onClick={() => {
-                                                    setActiveExamTemplateId(exam.id);
-                                                    setIsQuestionBankDialogOpen(true);
-                                                }}>
-                                                    <Database className="mr-2 h-4 w-4"/>Add from Bank
-                                                </Button>
+                                                <Textarea value={q.text} onChange={(e) => updateExamQuestionField(exam.id, q.id!, 'text', e.target.value)} placeholder="Question text"/>
                                             </div>
+                                        ))}
+                                        <div className="grid grid-cols-2 gap-4 mt-2">
+                                            <Button variant="outline" className="w-full" onClick={() => addExamQuestion(exam.id)}>
+                                                <PlusCircle className="mr-2"/>Add New Question
+                                            </Button>
+                                            <Button variant="outline" className="w-full" onClick={() => {
+                                                setActiveExamTemplateId(exam.id);
+                                                setIsQuestionBankDialogOpen(true);
+                                            }}>
+                                                <Database className="mr-2 h-4 w-4"/>Add from Bank
+                                            </Button>
                                         </div>
                                     </div>
-                                )}
+                                </div>
                             </CollapsibleContent>
                         </Collapsible>
                         ))}

@@ -223,7 +223,6 @@ export type ExamTemplate = {
   totalMarks: number;
   examDate?: string | Timestamp | Date;
   questions?: Question[];
-  // New configuration fields
   duration?: number; // Duration in minutes
   passMarks?: number;
   maxAttempts?: number; // How many times a student can retake the exam
