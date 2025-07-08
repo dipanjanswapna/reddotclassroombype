@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User, HomepageConfig } from '@/lib/types';
+import loginImage from '@/public/login.jpg';
 
 
 function GoogleIcon() {
@@ -269,10 +270,9 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="/login.jpg"
+          src={loginImage}
           alt="Students learning in a classroom"
-          width={1920}
-          height={1080}
+          placeholder="blur"
           className="h-full w-full object-cover"
           data-ai-hint="students classroom"
         />
@@ -280,4 +280,3 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
     </div>
   );
 }
-
