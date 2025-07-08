@@ -55,8 +55,7 @@ export default function NotFound() {
 
       {/* Footer */}
       <footer className="w-full shrink-0 pb-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground px-4 gap-2">
-          <p>© RED DOT CLASSROOM (RDC) POWERED BY PRANGONS ECOSYSTEM</p>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-center items-center text-xs text-muted-foreground px-4 gap-2">
           <p>Privacy Policy - Terms & Conditions</p>
         </div>
       </footer>
