@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,7 +15,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import { gradeAssignmentAction, gradeExamAction } from '@/app/actions/grading.actions';
-import type { Assignment, Exam } from '@/lib/types';
+import type { Assignment, Exam, Course } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,11 +31,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type AssignmentWithCourseInfo = Assignment & {
   courseTitle: string;
   courseId: string;
+  courseType?: Course['type'];
 };
 
 type ExamWithCourseInfo = Exam & {
-    courseTitle: string;
-    courseId: string;
+  courseTitle: string;
+  courseId: string;
+  courseType?: Course['type'];
 }
 
 export default function TeacherGradingPage() {
@@ -82,6 +83,7 @@ export default function TeacherGradingPage() {
             ...assignment,
             courseTitle: course.title,
             courseId: course.id!,
+            courseType: course.type,
           }))
         );
 
@@ -96,6 +98,7 @@ export default function TeacherGradingPage() {
                 ...exam,
                 courseTitle: course.title,
                 courseId: course.id!,
+                courseType: course.type,
             }))
         );
 
@@ -222,7 +225,10 @@ export default function TeacherGradingPage() {
                         {pendingAssignments.length > 0 ? pendingAssignments.map((assignment) => (
                             <TableRow key={`${assignment.id}-${assignment.studentId}`}>
                             <TableCell className="font-medium">{assignment.studentName}</TableCell>
-                            <TableCell>{assignment.courseTitle}</TableCell>
+                            <TableCell>
+                                {assignment.courseTitle}
+                                {assignment.courseType === 'Exam' && <Badge variant="destructive" className="ml-2">Exam Batch</Badge>}
+                            </TableCell>
                             <TableCell>{assignment.title}</TableCell>
                             <TableCell>
                                 {assignment.submissionDate ? format(safeToDate(assignment.submissionDate), 'PPP') : 'N/A'}
@@ -268,7 +274,10 @@ export default function TeacherGradingPage() {
                             {pendingExams.length > 0 ? pendingExams.map((exam) => (
                                 <TableRow key={`${exam.id}-${exam.studentId}`}>
                                     <TableCell className="font-medium">{exam.studentName}</TableCell>
-                                    <TableCell>{exam.courseTitle}</TableCell>
+                                    <TableCell>
+                                        {exam.courseTitle}
+                                        {exam.courseType === 'Exam' && <Badge variant="destructive" className="ml-2">Exam Batch</Badge>}
+                                    </TableCell>
                                     <TableCell>{exam.title}</TableCell>
                                     <TableCell><Badge variant="outline">{exam.examType}</Badge></TableCell>
                                     <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : format(safeToDate(exam.examDate), 'PPP')}</TableCell>

@@ -25,7 +25,11 @@ export default async function CourseHomePage({ params }: { params: { courseId: s
   }
   
   if (!course.syllabus) {
-    notFound();
+    return (
+        <div className="text-center py-16 bg-muted rounded-lg">
+            <p className="text-muted-foreground">No syllabus found for this course.</p>
+        </div>
+    )
   }
 
   // Mock progress dynamically based on course ID for a more realistic feel
