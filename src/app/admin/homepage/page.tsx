@@ -24,8 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
-type WhyChooseUsFeature = HomepageConfig['whyChooseUs']['features'][0];
-type Testimonial = HomepageConfig['whyChooseUs']['testimonials'][0];
+type WhyChooseUsFeature = NonNullable<HomepageConfig['whyChooseUs']>['features'][0];
+type Testimonial = NonNullable<HomepageConfig['whyChooseUs']>['testimonials'][0];
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -88,7 +88,9 @@ export default function AdminHomepageManagementPage() {
     setConfig(prevConfig => {
         if (!prevConfig) return null;
         const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        newConfig[section][subSectionKey][index][field][subfield] = value;
+        if (newConfig[section]?.[subSectionKey]?.[index]?.[field]) {
+          newConfig[section][subSectionKey][index][field][subfield] = value;
+        }
         return newConfig;
     });
   };
@@ -119,7 +121,7 @@ export default function AdminHomepageManagementPage() {
       setConfig(prevConfig => {
           if (!prevConfig) return null;
           const newConfig = JSON.parse(JSON.stringify(prevConfig));
-          if (newConfig[section] && newConfig[section][field]) {
+          if (newConfig[section]?.[field]) {
               newConfig[section][field][lang] = value;
           }
           return newConfig;
@@ -160,7 +162,7 @@ export default function AdminHomepageManagementPage() {
         };
         return {
             ...prev,
-            categoriesSection: { ...prev.categoriesSection, categories: [...prev.categoriesSection.categories, newCategory] }
+            categoriesSection: { ...prev.categoriesSection, categories: [...(prev.categoriesSection?.categories || []), newCategory] }
         };
     });
   };
@@ -178,7 +180,7 @@ export default function AdminHomepageManagementPage() {
         };
         return {
             ...prev,
-            partnersSection: { ...partnersSection, partners: [...partnersSection.partners, newPartner] }
+            partnersSection: { ...partnersSection, partners: [...(partnersSection.partners || []), newPartner] }
         };
     });
   };
@@ -197,7 +199,7 @@ export default function AdminHomepageManagementPage() {
       };
       return {
         ...prev,
-        freeClassesSection: { ...freeClassesSection, classes: [...freeClassesSection.classes, newClass]}
+        freeClassesSection: { ...freeClassesSection, classes: [...(freeClassesSection.classes || []), newClass]}
       };
     });
   };
@@ -211,7 +213,7 @@ export default function AdminHomepageManagementPage() {
   
   const removeCategory = (id: number) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.categoriesSection) return null;
         return {
             ...prev,
             categoriesSection: { ...prev.categoriesSection, categories: prev.categoriesSection.categories.filter(c => c.id !== id) }
@@ -221,12 +223,11 @@ export default function AdminHomepageManagementPage() {
 
   const removePartner = (id: number) => {
     setConfig(prev => {
-        if (!prev) return null;
-        const partnersSection = prev.partnersSection || { display: true, title: { bn: '', en: '' }, partners: [] };
-        const newPartners = partnersSection.partners.filter(p => p.id !== p.id);
+        if (!prev || !prev.partnersSection) return null;
+        const newPartners = prev.partnersSection.partners.filter(p => p.id !== id);
         return {
             ...prev,
-            partnersSection: { ...partnersSection, partners: newPartners }
+            partnersSection: { ...prev.partnersSection, partners: newPartners }
         };
     });
   };
@@ -251,7 +252,7 @@ export default function AdminHomepageManagementPage() {
   
   const handleCategoryChange = (index: number, field: keyof CategoryItem, value: string) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.categoriesSection) return null;
         const newCategories = [...prev.categoriesSection.categories];
         const categoryToUpdate = { ...newCategories[index], [field]: value };
         newCategories[index] = categoryToUpdate;
@@ -274,14 +275,14 @@ export default function AdminHomepageManagementPage() {
   
   const handleAppPromoChange = (key: keyof HomepageConfig['appPromo'], value: any) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.appPromo) return null;
         return { ...prev, appPromo: { ...prev.appPromo, [key]: value } };
     });
   };
   
   const handleTeamMemberChange = (id: string, field: keyof Omit<TeamMember, 'id' | 'socialLinks'>, value: string) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.map(m => m.id === id ? { ...m, [field]: value } : m);
         return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
     });
@@ -289,7 +290,7 @@ export default function AdminHomepageManagementPage() {
 
   const handleSocialLinkChange = (memberId: string, index: number, field: 'platform' | 'url', value: string) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.map(member => {
             if (member.id === memberId) {
                 const newLinks = [...member.socialLinks];
@@ -304,7 +305,7 @@ export default function AdminHomepageManagementPage() {
 
   const addTeamMember = () => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMember: TeamMember = {
             id: `member_${Date.now()}`,
             name: 'New Member',
@@ -313,13 +314,13 @@ export default function AdminHomepageManagementPage() {
             dataAiHint: 'person professional',
             socialLinks: [{ platform: 'facebook', url: '#' }]
         };
-        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: [...prev.aboutUsSection.teamMembers, newMember] } };
+        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: [...(prev.aboutUsSection.teamMembers || []), newMember] } };
     });
   };
 
   const removeTeamMember = (id: string) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.filter(m => m.id !== id);
         return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
     });
@@ -327,7 +328,7 @@ export default function AdminHomepageManagementPage() {
 
   const addSocialLink = (memberId: string) => {
      setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.map(member => {
             if (member.id === memberId) {
                 const newLinks = [...member.socialLinks, { platform: 'facebook', url: '#' }];
@@ -341,7 +342,7 @@ export default function AdminHomepageManagementPage() {
 
   const removeSocialLink = (memberId: string, index: number) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.map(member => {
             if (member.id === memberId) {
                 const newLinks = member.socialLinks.filter((_, i) => i !== index);
@@ -355,16 +356,16 @@ export default function AdminHomepageManagementPage() {
 
   const handleStrugglingSectionChange = (key: keyof HomepageConfig['strugglingStudentSection'], value: any) => {
     setConfig(prev => {
-        if (!prev) return null;
+        if (!prev || !prev.strugglingStudentSection) return null;
         return { ...prev, strugglingStudentSection: { ...prev.strugglingStudentSection, [key]: value } };
     });
   };
 
   const handleStrugglingSectionLangChange = (field: 'title' | 'subtitle' | 'buttonText', lang: 'bn' | 'en', value: string) => {
     setConfig(prevConfig => {
-        if (!prevConfig) return null;
+        if (!prevConfig || !prevConfig.strugglingStudentSection) return null;
         const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        if (newConfig.strugglingStudentSection && newConfig.strugglingStudentSection[field]) {
+        if (newConfig.strugglingStudentSection[field]) {
             newConfig.strugglingStudentSection[field][lang] = value;
         }
         return newConfig;
@@ -373,7 +374,7 @@ export default function AdminHomepageManagementPage() {
 
     const handleTopperPageChange = (field: keyof TopperPageSection, value: string) => {
         setConfig(prev => {
-            if (!prev) return null;
+            if (!prev || !prev.topperPageSection) return null;
             const newConfig = JSON.parse(JSON.stringify(prev));
             newConfig.topperPageSection[field] = value;
             return newConfig;
@@ -382,7 +383,7 @@ export default function AdminHomepageManagementPage() {
 
     const handleTopperCardChange = (id: string, field: keyof TopperPageCard, value: string) => {
         setConfig(prev => {
-            if (!prev) return null;
+            if (!prev || !prev.topperPageSection) return null;
             const newCards = prev.topperPageSection.cards.map(c => 
                 c.id === id ? { ...c, [field]: value } : c
             );
@@ -393,12 +394,12 @@ export default function AdminHomepageManagementPage() {
     };
     
     // Why Choose Us Section
-    const addWhyChooseUsFeature = () => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: [...p.whyChooseUs.features, {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}]}});
-    const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
-    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.map(f => f.id === id ? {...f, [field]: value} : f)}});
-    const addTestimonial = () => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...p.whyChooseUs.testimonials, {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
-    const removeTestimonial = (id: string) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
-    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...t, [field]: value} : t)}});
+    const addWhyChooseUsFeature = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: [...(p.whyChooseUs.features || []), {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}]}});
+    const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
+    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.map(f => f.id === id ? {...f, [field]: value} : f)}});
+    const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
+    const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
+    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...t, [field]: value} : t)}});
 
 
   const allSections = [
@@ -490,11 +491,11 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                         <Label htmlFor="floatingWhatsApp-display" className="font-medium">Display Button</Label>
-                        <Switch id="floatingWhatsApp-display" checked={config.floatingWhatsApp.display} onCheckedChange={(checked) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, display: checked } } : null )}/>
+                        <Switch id="floatingWhatsApp-display" checked={config.floatingWhatsApp?.display} onCheckedChange={(checked) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, display: checked } } : null )}/>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="floatingWhatsApp-number">WhatsApp Number</Label>
-                        <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp.number} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX"/>
+                        <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp?.number || ''} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX"/>
                     </div>
                 </CardContent>
             </Card>
@@ -531,30 +532,30 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Struggling Student Section</CardTitle><CardDescription>Manage the "Struggling in Studies?" banner on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.strugglingStudentSection.title.bn} onChange={e => handleStrugglingSectionLangChange('title', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.strugglingStudentSection.title.en} onChange={e => handleStrugglingSectionLangChange('title', 'en', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Subtitle (BN)</Label><Input value={config.strugglingStudentSection.subtitle.bn} onChange={e => handleStrugglingSectionLangChange('subtitle', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Subtitle (EN)</Label><Input value={config.strugglingStudentSection.subtitle.en} onChange={e => handleStrugglingSectionLangChange('subtitle', 'en', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.strugglingStudentSection.buttonText.bn} onChange={e => handleStrugglingSectionLangChange('buttonText', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Button Text (EN)</Label><Input value={config.strugglingStudentSection.buttonText.en} onChange={e => handleStrugglingSectionLangChange('buttonText', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleStrugglingSectionLangChange('title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.strugglingStudentSection?.title?.en || ''} onChange={e => handleStrugglingSectionLangChange('title', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Subtitle (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleStrugglingSectionLangChange('subtitle', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Subtitle (EN)</Label><Input value={config.strugglingStudentSection?.subtitle?.en || ''} onChange={e => handleStrugglingSectionLangChange('subtitle', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.strugglingStudentSection?.buttonText?.bn || ''} onChange={e => handleStrugglingSectionLangChange('buttonText', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button Text (EN)</Label><Input value={config.strugglingStudentSection?.buttonText?.en || ''} onChange={e => handleStrugglingSectionLangChange('buttonText', 'en', e.target.value)} /></div>
                     </div>
-                    <div className="space-y-2"><Label>Image URL</Label><Input value={config.strugglingStudentSection.imageUrl} onChange={e => handleStrugglingSectionChange('imageUrl', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Image URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleStrugglingSectionChange('imageUrl', e.target.value)} /></div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Notes Banner</CardTitle><CardDescription>Manage the "ফ্রি নোটস এবং লেকচার শিট" banner.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.notesBanner.title.bn} onChange={e => handleSectionInputChange('notesBanner', 'title', { ...config.notesBanner.title, bn: e.target.value })} /></div>
-                    <div className="space-y-2"><Label>Description (BN)</Label><Input value={config.notesBanner.description.bn} onChange={e => handleSectionInputChange('notesBanner', 'description', { ...config.notesBanner.description, bn: e.target.value })} /></div>
-                    <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.notesBanner.buttonText.bn} onChange={e => handleSectionInputChange('notesBanner', 'buttonText', { ...config.notesBanner.buttonText, bn: e.target.value })} /></div>
+                    <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.notesBanner?.title?.bn || ''} onChange={e => handleSectionLangChange('notesBanner', 'title', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Description (BN)</Label><Input value={config.notesBanner?.description?.bn || ''} onChange={e => handleSectionLangChange('notesBanner', 'description', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.notesBanner?.buttonText?.bn || ''} onChange={e => handleSectionLangChange('notesBanner', 'buttonText', 'bn', e.target.value)} /></div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>App Promo Section</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                    <div className="space-y-1"><Label>Title (BN)</Label><Input value={config.appPromo.title.bn} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo.title, bn: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>Description (BN)</Label><Textarea value={config.appPromo.description.bn} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo.description, bn: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>App Screenshot URL</Label><Input value={config.appPromo.imageUrl} onChange={(e) => handleAppPromoChange('imageUrl', e.target.value )} /></div>
+                    <div className="space-y-1"><Label>Title (BN)</Label><Input value={config.appPromo?.title?.bn || ''} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo?.title, bn: e.target.value })} /></div>
+                    <div className="space-y-1"><Label>Description (BN)</Label><Textarea value={config.appPromo?.description?.bn || ''} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo?.description, bn: e.target.value })} /></div>
+                    <div className="space-y-1"><Label>App Screenshot URL</Label><Input value={config.appPromo?.imageUrl || ''} onChange={(e) => handleAppPromoChange('imageUrl', e.target.value )} /></div>
                 </CardContent>
             </Card>
         </TabsContent>
@@ -563,10 +564,10 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Categories Section</CardTitle><CardDescription>Manage the category cards shown on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection.title.bn} onChange={e => handleSectionTitleChange('categoriesSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection.title.en} onChange={e => handleSectionTitleChange('categoriesSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'en', e.target.value)} /></div>
                     </div>
-                    {config.categoriesSection.categories.map((category, index) => (
+                    {config.categoriesSection?.categories?.map((category, index) => (
                     <div key={category.id} className="p-4 border rounded-lg space-y-2 relative">
                         <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeCategory(category.id)}><X className="text-destructive h-4 w-4"/></Button>
                         <h4 className="font-semibold">Category {index + 1}</h4>
@@ -584,21 +585,21 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Featured Courses Sections</CardTitle><CardDescription>Enter comma-separated course IDs to feature in each section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>লাইভ কোর্সসমূহ (IDs)</Label><Input value={config.liveCoursesIds.join(', ')} onChange={(e) => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>SSC ও HSC (IDs)</Label><Input value={config.sscHscCourseIds.join(', ')} onChange={(e) => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>মাস্টারক্লাস (IDs)</Label><Input value={config.masterClassesIds.join(', ')} onChange={(e) => handleStringArrayChange('masterClassesIds', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Admission (IDs)</Label><Input value={config.admissionCoursesIds.join(', ')} onChange={(e) => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Job Prep (IDs)</Label><Input value={config.jobCoursesIds.join(', ')} onChange={(e) => handleStringArrayChange('jobCoursesIds', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>লাইভ কোর্সসমূহ (IDs)</Label><Input value={config.liveCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>SSC ও HSC (IDs)</Label><Input value={config.sscHscCourseIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>মাস্টারক্লাস (IDs)</Label><Input value={config.masterClassesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('masterClassesIds', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Admission (IDs)</Label><Input value={config.admissionCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Job Prep (IDs)</Label><Input value={config.jobCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('jobCoursesIds', e.target.value)} /></div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Free Classes Section</CardTitle><CardDescription>Manage the "আমাদের সকল ফ্রি ক্লাসসমূহ" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.freeClassesSection.title.bn} onChange={e => handleSectionTitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Subtitle (BN)</Label><Input value={config.freeClassesSection.subtitle.bn} onChange={e => handleSectionSubtitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.freeClassesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Subtitle (BN)</Label><Input value={config.freeClassesSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
                     </div>
-                    {config.freeClassesSection.classes.map((item, index) => (
+                    {config.freeClassesSection?.classes?.map((item, index) => (
                         <div key={item.id} className="p-4 border rounded-lg space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeFreeClass(item.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-2 gap-4">
@@ -622,22 +623,22 @@ export default function AdminHomepageManagementPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs.title.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
-                      <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.whyChooseUs.title.en} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'en', e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs?.title?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.whyChooseUs?.title?.en || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'en', e.target.value)} /></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs.description.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Description (EN)</Label><Textarea value={config.whyChooseUs.description.en} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs?.description?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Description (EN)</Label><Textarea value={config.whyChooseUs?.description?.en || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'en', e.target.value)} /></div>
                     </div>
                     
                     <div className="space-y-4 pt-4 border-t">
                         <Label className="font-semibold">Feature Cards</Label>
-                        {config.whyChooseUs.features.map(feature => (
+                        {config.whyChooseUs?.features?.map(feature => (
                         <div key={feature.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeWhyChooseUsFeature(feature.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title.bn} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, bn: e.target.value})}/></div>
-                                <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title.en} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
+                                <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title?.bn || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, bn: e.target.value})}/></div>
+                                <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title?.en || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
                             </div>
                             <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => updateWhyChooseUsFeature(feature.id, 'iconUrl', e.target.value)}/></div>
                             <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={feature.dataAiHint} onChange={e => updateWhyChooseUsFeature(feature.id, 'dataAiHint', e.target.value)}/></div>
@@ -648,12 +649,12 @@ export default function AdminHomepageManagementPage() {
 
                     <div className="space-y-4 pt-4 border-t">
                         <Label className="font-semibold">Testimonials</Label>
-                        {config.whyChooseUs.testimonials.map(t => (
+                        {config.whyChooseUs?.testimonials?.map(t => (
                         <div key={t.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeTestimonial(t.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote.bn} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
-                              <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote.en} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, en: e.target.value})}/></div>
+                              <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
+                              <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote?.en || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, en: e.target.value})}/></div>
                             </div>
                             <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => updateTestimonial(t.id, 'studentName', e.target.value)}/></div>
                             <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => updateTestimonial(t.id, 'college', e.target.value)}/></div>
@@ -669,11 +670,11 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>About Us Section</CardTitle><CardDescription>Manage the team members displayed on the About Us page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.aboutUsSection.title.bn} onChange={e => handleSectionTitleChange('aboutUsSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.aboutUsSection.title.en} onChange={e => handleSectionTitleChange('aboutUsSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection.subtitle.en} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.aboutUsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.aboutUsSection?.title?.en || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection?.subtitle?.en || ''} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} /></div>
                     </div>
-                    {config.aboutUsSection.teamMembers.map((member, index) => (
+                    {config.aboutUsSection?.teamMembers?.map((member, index) => (
                         <Collapsible key={member.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>
                             <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">Member {index + 1}: {member.name}</h4><div><Button variant="ghost" size="icon" onClick={() => removeTeamMember(member.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
                             <CollapsibleContent className="space-y-4">
@@ -703,7 +704,7 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Video Section</CardTitle><CardDescription>Manage the promotional videos. Thumbnails are generated automatically from the YouTube URL.</CardDescription></CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
-                {config.videoSection.videos.map((video, index) => (
+                {config.videoSection?.videos?.map((video, index) => (
                     <div key={index} className="p-4 border rounded-lg space-y-4">
                         <h4 className="font-semibold">Video {index + 1}</h4>
                         <div className="space-y-1"><Label>Video Title</Label><Input value={video.title} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'title', e.target.value, index)} /></div>
@@ -716,7 +717,7 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Partners Section</CardTitle><CardDescription>Manage the logos of partners displayed on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-4">
-                        {config.partnersSection?.partners.map((partner, index) => (
+                        {config.partnersSection?.partners?.map((partner, index) => (
                             <div key={partner.id} className="p-4 border rounded-lg space-y-4 relative">
                                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removePartner(partner.id)}><X className="text-destructive h-4 w-4" /></Button>
                                 <div className="space-y-2"><Label>Partner Name</Label><Input value={partner.name} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'name', e.target.value, index)} /></div>
@@ -731,18 +732,18 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Social Media Section</CardTitle><CardDescription>Manage the "আমাদের সাথে কানেক্টেড থাকুন" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.socialMediaSection.title.bn} onChange={e => handleSectionTitleChange('socialMediaSection', 'bn', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.socialMediaSection.description.bn} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'description', 0, 'bn', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.socialMediaSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('socialMediaSection', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.socialMediaSection?.description?.bn || ''} onChange={e => handleSectionLangChange('socialMediaSection', 'description', 'bn', e.target.value)} /></div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Stats Section</CardTitle><CardDescription>Manage the "লক্ষাধিক শিক্ষার্থীর পথচলা" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.statsSection.title.bn} onChange={e => handleSectionTitleChange('statsSection', 'bn', e.target.value)} /></div>
-                    {config.statsSection.stats.map((stat, index) => (
+                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.statsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('statsSection', 'bn', e.target.value)} /></div>
+                    {config.statsSection?.stats?.map((stat, index) => (
                         <div key={index} className="p-4 border rounded-lg grid grid-cols-2 gap-4">
                             <div className="space-y-2"><Label>Value</Label><Input value={stat.value} onChange={e => handleNestedInputChange('statsSection', 'stats', 'value', e.target.value, index)} /></div>
-                            <div className="space-y-2"><Label>Label (BN)</Label><Input value={(stat.label as any).bn} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Label (BN)</Label><Input value={stat.label?.bn || ''} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} /></div>
                         </div>
                     ))}
                 </CardContent>
@@ -753,18 +754,18 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the static content on the RDC OFFLINE HUB page. Programs and centers are now managed automatically.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection.title.bn} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection.title.en} onChange={e => handleSectionTitleChange('offlineHubSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection.subtitle.bn} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection?.title?.en || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
                     </div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Strugglers/Topper Page</CardTitle><CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection.title} onChange={e => handleTopperPageChange('title', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection.mainImageUrl} onChange={e => handleTopperPageChange('mainImageUrl', e.target.value)} /></div>
-                    {config.topperPageSection.cards.map((card, index) => (
+                    <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection?.title || ''} onChange={e => handleTopperPageChange('title', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleTopperPageChange('mainImageUrl', e.target.value)} /></div>
+                    {config.topperPageSection?.cards?.map((card, index) => (
                         <div key={card.id} className="p-4 border rounded-lg space-y-2">
                             <h4 className="font-semibold">Card {index + 1}</h4>
                             <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleTopperCardChange(card.id, 'iconUrl', e.target.value)} /></div>
