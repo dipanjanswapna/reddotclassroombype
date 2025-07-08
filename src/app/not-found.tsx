@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import Error404Image from '@/public/404 error.png';
 
 export default function NotFound() {
   return (
@@ -33,11 +32,10 @@ export default function NotFound() {
           </div>
           <div className="relative h-96">
             <Image
-              src={Error404Image}
+              src="/404 error.png"
               alt="Red Dot Classroom 404 Error"
               fill
               className="object-contain"
-              placeholder="blur"
             />
           </div>
         </div>
