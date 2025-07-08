@@ -79,8 +79,9 @@
 @layer components {
   /* Added rule to hide header and footer for the 404 page */
   .body-is-404 header,
-  .body-is-404 footer {
-    display: none;
+  .body-is-404 footer,
+  .body-is-404 a[href*="wa.me"] {
+    display: none !important;
   }
 
   .hero-carousel-container {
