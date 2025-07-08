@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,6 +18,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Batch, Branch, Course } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { safeToDate } from '@/lib/utils';
 
 type BatchWithDetails = Batch & {
     courseName: string;
@@ -76,6 +78,13 @@ export default function TeacherDashboardPage() {
           (course.assignments || []).forEach(assignment => {
             if (assignment.status === 'Submitted' || assignment.status === 'Late') {
               pendingGradingCount++;
+            }
+          });
+           (course.exams || []).forEach(exam => {
+            const isOralOrPracticalPending = (exam.examType === 'Oral' || exam.examType === 'Practical') && exam.status === 'Pending' && safeToDate(exam.examDate) <= new Date();
+            const isWrittenSubmitted = exam.examType === 'Written' && exam.status === 'Submitted';
+            if(isOralOrPracticalPending || isWrittenSubmitted) {
+                 pendingGradingCount++;
             }
           });
           if (course.rating) {
@@ -175,7 +184,7 @@ export default function TeacherDashboardPage() {
             <CardContent>
                 <div className="text-2xl font-bold">{stats.pendingGradingCount}</div>
                 <p className="text-xs text-muted-foreground">
-                Assignments to review
+                Assignments & Exams to review
                 </p>
             </CardContent>
             </Card>
