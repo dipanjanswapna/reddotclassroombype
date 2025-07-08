@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
@@ -55,7 +56,7 @@ export default function NotFound() {
       {/* Footer */}
       <footer className="w-full shrink-0 pb-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground px-4 gap-2">
-          <p>Copyright © Apar's Classroom 2021-23</p>
+          <p>© RED DOT CLASSROOM (RDC) POWERED BY PRANGONS ECOSYSTEM</p>
           <p>Privacy Policy - Terms & Conditions</p>
         </div>
       </footer>
