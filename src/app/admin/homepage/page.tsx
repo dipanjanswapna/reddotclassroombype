@@ -621,8 +621,14 @@ export default function AdminHomepageManagementPage() {
                     <CardDescription>Manage the "কেন RDC-তে আস্থা রাখবে?" section.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs.title.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs.description.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs.title.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.whyChooseUs.title.en} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'en', e.target.value)} /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs.description.bn} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Description (EN)</Label><Textarea value={config.whyChooseUs.description.en} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'en', e.target.value)} /></div>
+                    </div>
                     
                     <div className="space-y-4 pt-4 border-t">
                         <Label className="font-semibold">Feature Cards</Label>
@@ -634,6 +640,7 @@ export default function AdminHomepageManagementPage() {
                                 <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title.en} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
                             </div>
                             <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => updateWhyChooseUsFeature(feature.id, 'iconUrl', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={feature.dataAiHint} onChange={e => updateWhyChooseUsFeature(feature.id, 'dataAiHint', e.target.value)}/></div>
                         </div>
                         ))}
                         <Button variant="outline" className="w-full border-dashed" onClick={addWhyChooseUsFeature}><PlusCircle className="mr-2"/>Add Feature</Button>
@@ -644,10 +651,14 @@ export default function AdminHomepageManagementPage() {
                         {config.whyChooseUs.testimonials.map(t => (
                         <div key={t.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeTestimonial(t.id)}><X className="text-destructive h-4 w-4"/></Button>
-                            <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote.bn} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote.bn} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
+                              <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote.en} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, en: e.target.value})}/></div>
+                            </div>
                             <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => updateTestimonial(t.id, 'studentName', e.target.value)}/></div>
                             <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => updateTestimonial(t.id, 'college', e.target.value)}/></div>
                             <div className="space-y-1"><Label>Image URL</Label><Input value={t.imageUrl} onChange={e => updateTestimonial(t.id, 'imageUrl', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Image AI Hint</Label><Input value={t.dataAiHint} onChange={e => updateTestimonial(t.id, 'dataAiHint', e.target.value)}/></div>
                         </div>
                         ))}
                         <Button variant="outline" className="w-full border-dashed" onClick={addTestimonial}><PlusCircle className="mr-2"/>Add Testimonial</Button>
