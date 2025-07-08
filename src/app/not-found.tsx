@@ -7,6 +7,8 @@ import Image from 'next/image';
 export default function NotFound() {
   
   useEffect(() => {
+    // This effect runs on the client after hydration.
+    // It adds a class to the body to hide the main header and footer.
     document.body.classList.add('body-is-404');
     
     // Cleanup function to remove the class when the component unmounts
@@ -16,9 +18,11 @@ export default function NotFound() {
   }, []);
 
   return (
+    // Main container fills the screen and prevents overflow
     <main className="flex min-h-screen w-full items-center justify-center bg-background px-4 py-12 overflow-hidden">
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          {/* Text content section */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <p className="font-semibold text-muted-foreground">ERROR CODE: 404</p>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl">
@@ -36,6 +40,8 @@ export default function NotFound() {
               </div>
             </div>
           </div>
+          
+          {/* Image section */}
           <div className="relative h-80 w-full sm:h-96">
             <Image
               src="/404error.png"
