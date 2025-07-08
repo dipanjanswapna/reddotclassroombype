@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import errorImage from '@/public/404error.png';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
@@ -61,7 +60,7 @@ export default function NotFound() {
               </div>
               <div className="relative h-96">
                 <Image
-                  src={errorImage}
+                  src="/404error.png"
                   alt="Red Dot Classroom 404 Error"
                   fill
                   className="object-contain"
