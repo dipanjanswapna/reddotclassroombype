@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+import errorImage from '../public/404error.png';
 
 export default function NotFound() {
   
@@ -9,7 +10,6 @@ export default function NotFound() {
     document.body.classList.add('body-is-404');
     
     // Cleanup function to remove the class when the component unmounts
-    // (e.g., when the user navigates to a valid page)
     return () => {
       document.body.classList.remove('body-is-404');
     };
@@ -38,11 +38,11 @@ export default function NotFound() {
           </div>
           <div className="relative h-96">
             <Image
-              src="https://placehold.co/500x500.png"
+              src={errorImage}
               alt="Confused character looking at a 404 error"
               fill
               className="object-contain"
-              data-ai-hint="error monster"
+              placeholder="blur"
             />
           </div>
         </div>
