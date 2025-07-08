@@ -26,6 +26,7 @@ export type Question = {
   chapter?: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   tags?: string[];
+  hint?: string; // New field for hints
   
   // Type-specific fields
   options?: QuestionOption[]; // For MCQ, True/False
@@ -219,9 +220,15 @@ export type ExamTemplate = {
   topic: string;
   examType: 'MCQ' | 'Written' | 'Oral' | 'Practical';
   totalMarks: number;
-  duration?: number; // Duration in minutes
   examDate?: string | Timestamp | Date;
   questions?: Question[];
+  // New configuration fields
+  duration?: number; // Duration in minutes
+  passMarks?: number;
+  maxAttempts?: number; // How many times a student can retake the exam
+  shuffleQuestions?: boolean;
+  shuffleOptions?: boolean; // For MCQs
+  allowBackNavigation?: boolean;
 };
 
 export type Classroom = {
