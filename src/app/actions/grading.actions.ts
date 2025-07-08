@@ -111,11 +111,11 @@ export async function gradeExamAction(
 }
 
 
-export async function submitMcqExamAction(
+export async function submitExamAction(
   courseId: string,
   studentId: string,
   examId: string,
-  answers: Record<string, string> // { [questionId]: optionId }
+  answers: Record<string, any> // { [questionId]: answerValue }
 ) {
   try {
     const course = await getCourse(courseId);
@@ -123,27 +123,47 @@ export async function submitMcqExamAction(
 
     const studentExam = course.exams?.find(e => e.id === examId && e.studentId === studentId);
     if (!studentExam) throw new Error("Exam instance for this student not found.");
-    if (studentExam.status === 'Graded') throw new Error("This exam has already been graded.");
+    if (studentExam.status === 'Graded' || studentExam.status === 'Submitted') {
+      throw new Error("This exam has already been submitted.");
+    }
 
     const examTemplateId = examId.split('-')[0];
     const examTemplate = course.examTemplates?.find(et => et.id === examTemplateId);
-    if (!examTemplate) throw new Error("Exam template not found.");
-    if (examTemplate.examType !== 'MCQ' || !examTemplate.questions) {
-      throw new Error("This action is only for MCQ exams with questions.");
+    if (!examTemplate || !examTemplate.questions) {
+      throw new Error("Exam template or questions not found.");
     }
 
-    let correctAnswers = 0;
+    let totalMarksObtained = 0;
+    let hasManualGrading = false;
+
     examTemplate.questions.forEach(question => {
-      if (answers[question.id] && answers[question.id] === question.correctAnswerId) {
-        correctAnswers++;
+      const studentAnswer = answers[question.id!];
+      let isCorrect = false;
+
+      switch (question.type) {
+        case 'MCQ': {
+          const correctOptionIds = new Set(question.options?.filter(o => o.isCorrect).map(o => o.id));
+          const selectedOptionIds = new Set(studentAnswer || []);
+          isCorrect = correctOptionIds.size === selectedOptionIds.size && [...correctOptionIds].every(id => selectedOptionIds.has(id));
+          break;
+        }
+        case 'True/False':
+          isCorrect = studentAnswer === question.correctAnswer;
+          break;
+        case 'Short Answer':
+        case 'Essay':
+        default:
+          hasManualGrading = true;
+          break;
+      }
+      
+      if (isCorrect) {
+        totalMarksObtained += question.points || 0;
       }
     });
-
-    const marksPerQuestion = examTemplate.totalMarks / examTemplate.questions.length;
-    const marksObtained = parseFloat((correctAnswers * marksPerQuestion).toFixed(2));
     
     // Simple grading scale
-    const percentage = (marksObtained / examTemplate.totalMarks) * 100;
+    const percentage = examTemplate.totalMarks > 0 ? (totalMarksObtained / examTemplate.totalMarks) * 100 : 0;
     let grade = 'F';
     if (percentage >= 80) grade = 'A+';
     else if (percentage >= 70) grade = 'A';
@@ -151,97 +171,71 @@ export async function submitMcqExamAction(
     else if (percentage >= 50) grade = 'C';
     else if (percentage >= 40) grade = 'D';
 
+    const finalStatus: Exam['status'] = hasManualGrading ? 'Submitted' : 'Graded';
+
     const updatedExams = course.exams!.map(e => 
         (e.id === examId && e.studentId === studentId)
-        ? { ...e, status: 'Graded' as const, marksObtained, grade, answers, submissionDate: Timestamp.now() }
+        ? { 
+            ...e, 
+            status: finalStatus,
+            marksObtained: totalMarksObtained, 
+            grade: hasManualGrading ? '' : grade,
+            answers, 
+            submissionDate: Timestamp.now(),
+            submissionText: hasManualGrading ? Object.values(answers).join('\n\n---\n\n') : ''
+          }
         : e
     );
 
     await updateCourse(courseId, { exams: updatedExams });
 
+    const notificationTitle = finalStatus === 'Graded' ? `Exam Graded: ${examTemplate.title}` : `Exam Submitted: ${examTemplate.title}`;
+    const notificationDescription = finalStatus === 'Graded' 
+      ? `You scored ${totalMarksObtained}/${examTemplate.totalMarks} in "${course.title}".`
+      : `Your exam "${examTemplate.title}" has been submitted for manual review.`;
+
     await addNotification({
         userId: studentId,
         icon: 'Award',
-        title: `Exam Graded: ${examTemplate.title}`,
-        description: `You scored ${marksObtained}/${examTemplate.totalMarks} in "${course.title}".`,
+        title: notificationTitle,
+        description: notificationDescription,
         date: Timestamp.now(),
         read: false,
-        link: `/student/my-courses/${courseId}/exams`
+        link: `/student/my-courses/${courseId}/exams/${examId}`
     });
+    
+    if (finalStatus === 'Submitted') {
+        if (course.instructors && course.instructors.length > 0) {
+            for (const instructorInfo of course.instructors) {
+                const instructor = await getInstructorBySlug(instructorInfo.slug);
+                if (instructor?.userId) {
+                await addNotification({
+                    userId: instructor.userId,
+                    icon: 'FileCheck2',
+                    title: `New Exam Submission in ${course.title}`,
+                    description: `${studentExam.studentName} submitted "${examTemplate.title}" for manual grading.`,
+                    date: Timestamp.now(),
+                    read: false,
+                    link: `/teacher/grading`
+                });
+                }
+            }
+        }
+    }
     
     revalidatePath(`/student/my-courses/${courseId}/exams`);
     revalidatePath(`/teacher/grading`);
 
     return { 
         success: true, 
-        message: 'Exam submitted and graded successfully.',
-        score: marksObtained,
-        totalMarks: examTemplate.totalMarks
+        message: 'Exam submitted successfully.',
+        score: totalMarksObtained,
+        totalMarks: examTemplate.totalMarks,
+        finalStatus: finalStatus,
     };
 
   } catch (error: any) {
-    console.error("Error submitting MCQ exam:", error);
-    return { success: false, message: error.message };
-  }
-}
-
-export async function submitWrittenExamAction(
-  courseId: string,
-  studentId: string,
-  examId: string,
-  submissionText: string,
-) {
-  try {
-    const course = await getCourse(courseId);
-    if (!course || !course.exams) {
-      throw new Error("Course or exams not found.");
-    }
-
-    const examIndex = course.exams.findIndex(e => e.id === examId && e.studentId === studentId);
-    if (examIndex === -1) {
-      throw new Error("Exam not found for this student.");
-    }
-    
-    const studentExam = course.exams[examIndex];
-    if (studentExam.status !== 'Pending') {
-      throw new Error("This exam cannot be submitted at this time.");
-    }
-
-    const updatedExams = [...course.exams];
-    updatedExams[examIndex] = {
-      ...studentExam,
-      submissionText,
-      submissionDate: Timestamp.now(),
-      status: 'Submitted' as const,
-    };
-
-    await updateCourse(courseId, { exams: updatedExams });
-
-    // Notify instructors
-    if (course.instructors && course.instructors.length > 0) {
-      for (const instructorInfo of course.instructors) {
-        const instructor = await getInstructorBySlug(instructorInfo.slug);
-        if (instructor?.userId) {
-          await addNotification({
-            userId: instructor.userId,
-            icon: 'FileCheck2',
-            title: `New Exam Submission in ${course.title}`,
-            description: `${studentExam.studentName} submitted "${studentExam.title}".`,
-            date: Timestamp.now(),
-            read: false,
-            link: `/teacher/grading`
-          });
-        }
-      }
-    }
-
-    revalidatePath(`/student/my-courses/${courseId}/exams`);
-    revalidatePath(`/teacher/grading`);
-
-    return { success: true, message: 'Exam submitted successfully for grading.' };
-
-  } catch (error: any) {
-    console.error("Error submitting written exam:", error);
+    console.error("Error submitting exam:", error);
     return { success: false, message: error.message };
   }
 }

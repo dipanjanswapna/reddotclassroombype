@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -596,8 +597,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           id: newQuestionId,
           text: '',
           type: 'MCQ',
-          options: [{ id: newOptionId, text: '' }],
-          correctAnswerId: newOptionId,
+          options: [{ id: newOptionId, text: '', isCorrect: true }],
           points: 1,
           difficulty: 'Medium',
         };
@@ -631,11 +631,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     const newQuestion: Question = { ...q, type };
                     if (type !== 'MCQ') {
                         delete newQuestion.options;
-                        delete newQuestion.correctAnswerId;
                     } else if (!newQuestion.options || newQuestion.options.length === 0) {
                         const newOptionId = `opt_${Date.now()}`;
-                        newQuestion.options = [{ id: newOptionId, text: '' }];
-                        newQuestion.correctAnswerId = newOptionId;
+                        newQuestion.options = [{ id: newOptionId, text: '', isCorrect: false }];
                     }
                     return newQuestion;
                 }
@@ -652,7 +650,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       if (exam.id === examId) {
         const newQuestions = (exam.questions || []).map(q => {
           if (q.id === questionId) {
-            return { ...q, options: [...(q.options || []), { id: `opt_${Date.now()}`, text: '' }] };
+            return { ...q, options: [...(q.options || []), { id: `opt_${Date.now()}`, text: '', isCorrect: false }] };
           }
           return q;
         });
@@ -677,26 +675,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     }));
   };
 
-  const updateExamOptionText = (examId: string, questionId: string, optionId: string, text: string) => {
+  const updateExamOption = (examId: string, questionId: string, optionId: string, field: 'text' | 'isCorrect', value: string | boolean) => {
     setExamTemplates(prev => prev.map(exam => {
       if (exam.id === examId) {
         const newQuestions = (exam.questions || []).map(q => {
           if (q.id === questionId) {
-            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, text } : opt);
+            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, [field]: value } : opt);
             return { ...q, options: newOptions };
           }
           return q;
         });
-        return { ...exam, questions: newQuestions };
-      }
-      return exam;
-    }));
-  };
-  
-  const setCorrectExamAnswer = (examId: string, questionId: string, optionId: string) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestions = (exam.questions || []).map(q => q.id === questionId ? { ...q, correctAnswerId: optionId } : q);
         return { ...exam, questions: newQuestions };
       }
       return exam;
@@ -1374,7 +1362,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             {(q.options || []).map((opt) => (
                                                 <div key={opt.id} className="flex items-center gap-2">
                                                     <RadioGroupItem value={opt.id} id={opt.id} />
-                                                    <Input value={opt.text} onChange={e => updateExamOptionText(quiz.id, q.id, opt.id, e.target.value)} className="flex-grow"/>
+                                                    <Input value={opt.text} onChange={e => updateExamOption(quiz.id, q.id, opt.id, 'text', e.target.value)} className="flex-grow"/>
                                                     <Button variant="ghost" size="icon" onClick={() => removeExamOption(quiz.id, q.id, opt.id)}><X className="h-4 w-4 text-destructive"/></Button>
                                                 </div>
                                             ))}
@@ -1509,41 +1497,26 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex items-center gap-2">
                                                             <Label>Question {qIndex + 1}</Label>
-                                                            <Select value={q.type} onValueChange={(value) => updateExamQuestionType(exam.id, q.id!, value as Question['type'])}>
-                                                                <SelectTrigger className="w-[120px] h-7 text-xs">
-                                                                    <SelectValue />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="MCQ">MCQ</SelectItem>
-                                                                    <SelectItem value="Written">Written</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
                                                         </div>
                                                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamQuestion(exam.id, q.id!)}><X className="h-3 w-3 text-destructive"/></Button>
                                                     </div>
                                                     <Textarea value={q.text} onChange={(e) => updateExamQuestionText(exam.id, q.id!, e.target.value)} placeholder="Question text"/>
                                                     
-                                                    {q.type === 'MCQ' && (
-                                                        <div className="space-y-2 pt-2 border-t mt-2">
-                                                            <Label className="text-xs">Options (select the correct one)</Label>
-                                                            <RadioGroup value={q.correctAnswerId} onValueChange={(value) => setCorrectExamAnswer(exam.id, q.id!, value)}>
-                                                                {(q.options || []).map(opt => (
-                                                                    <div key={opt.id} className="flex gap-2 items-center">
-                                                                        <RadioGroupItem value={opt.id} id={`${exam.id}-${q.id}-${opt.id}`} />
-                                                                        <Input value={opt.text} onChange={(e) => updateExamOptionText(exam.id, q.id!, opt.id, e.target.value)}/>
-                                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id!, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
-                                                                    </div>
-                                                                ))}
-                                                            </RadioGroup>
-                                                            <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id!)}>Add Option</Button>
-                                                        </div>
-                                                    )}
-
-                                                    {q.type === 'Written' && (
-                                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-center border border-blue-200 dark:border-blue-800">
-                                                            <p className="text-sm text-blue-800 dark:text-blue-300">Written answers will be graded manually by an instructor.</p>
-                                                        </div>
-                                                    )}
+                                                    <div className="space-y-2 pt-2 border-t mt-2">
+                                                        <Label className="text-xs">Options (check all correct answers)</Label>
+                                                        {(q.options || []).map(opt => (
+                                                            <div key={opt.id} className="flex gap-2 items-center">
+                                                                <Checkbox 
+                                                                    id={`${exam.id}-${q.id}-${opt.id}`} 
+                                                                    checked={opt.isCorrect} 
+                                                                    onCheckedChange={(checked) => updateExamOption(exam.id, q.id!, opt.id, 'isCorrect', !!checked)}
+                                                                />
+                                                                <Input value={opt.text} onChange={(e) => updateExamOption(exam.id, q.id!, opt.id, 'text', e.target.value)} className="flex-grow h-8"/>
+                                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeExamOption(exam.id, q.id!, opt.id)}><X className="h-3 w-3 text-destructive"/></Button>
+                                                            </div>
+                                                        ))}
+                                                        <Button size="sm" variant="outline" onClick={() => addExamOption(exam.id, q.id!)}>Add Option</Button>
+                                                    </div>
                                                 </div>
                                             ))}
                                             <div className="grid grid-cols-2 gap-4 mt-2">

@@ -29,7 +29,7 @@ export type Question = {
   hint?: string;
 
   // Type-specific fields
-  options?: QuestionOption[]; // For MCQ. Can have multiple correct answers.
+  options?: QuestionOption[]; // For MCQ.
   correctAnswer?: 'True' | 'False'; // For True/False
   blanks?: string[]; // For Fill in the Blanks
   matchingPairs?: MatchingPair[]; // For Matching
@@ -170,7 +170,7 @@ export type Exam = {
   feedback?: string;
   submissionText?: string;
   submissionDate?: string | Timestamp | Date;
-  answers?: Record<string, string>; // { [questionId]: optionId }
+  answers?: Record<string, any>; // { [questionId]: answerValue } - Flexible for different answer types
 };
 
 export type Announcement = {
