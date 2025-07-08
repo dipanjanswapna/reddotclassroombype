@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, Loader2, MessageSquare, AlertTriangle, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Flag, Loader2, MessageSquare, AlertTriangle, Eye, UploadCloud } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -81,6 +81,38 @@ const ProctoringView = () => {
     );
 };
 
+const ImageUploader = ({ onAnswerChange, existingImageUrl }: { onAnswerChange: (dataUrl: string) => void, existingImageUrl?: string }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                onAnswerChange(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <input type="file" accept="image/*" ref={inputRef} onChange={handleFileChange} className="hidden" />
+            <Button variant="outline" onClick={() => inputRef.current?.click()} className="w-full">
+                <UploadCloud className="mr-2" />
+                Upload Answer Image
+            </Button>
+            {existingImageUrl && (
+                <div className="mt-2 p-2 border rounded-md">
+                    <p className="text-sm text-muted-foreground mb-2">Image Preview:</p>
+                    <Image src={existingImageUrl} alt="Answer preview" width={400} height={300} className="rounded-md object-contain mx-auto max-h-[300px]" />
+                </div>
+            )}
+        </div>
+    )
+};
+
+
 const QuestionRenderer = ({ question, studentAnswer, isReview, onAnswerChange }: { question: Question, studentAnswer: any, isReview: boolean, onAnswerChange: (questionId: string, answer: any) => void }) => {
   const handleMCQChange = (optionId: string, checked: boolean) => {
     const currentAnswers = new Set(studentAnswer || []);
@@ -129,7 +161,13 @@ const QuestionRenderer = ({ question, studentAnswer, isReview, onAnswerChange }:
         return (
             <Card className="bg-muted">
               <CardHeader><CardTitle className="text-lg">Your Submission</CardTitle></CardHeader>
-              <CardContent><p className="whitespace-pre-wrap">{studentAnswer || 'Not Answered'}</p></CardContent>
+              <CardContent>
+                {studentAnswer?.imageUrl ? (
+                     <Image src={studentAnswer.imageUrl} alt="Submitted answer" width={600} height={400} className="rounded-md object-contain" />
+                ) : (
+                    <p className="whitespace-pre-wrap">{studentAnswer || 'Not Answered'}</p>
+                )}
+              </CardContent>
             </Card>
         );
     }
@@ -164,7 +202,15 @@ const QuestionRenderer = ({ question, studentAnswer, isReview, onAnswerChange }:
       );
     case 'Short Answer':
     case 'Essay':
-       return <Textarea placeholder="Write your answer here..." value={studentAnswer || ''} onChange={e => onAnswerChange(question.id!, e.target.value)} rows={question.type === 'Essay' ? 10 : 4} />;
+       return (
+        <div className="space-y-4">
+            <Textarea placeholder="Write your answer here (optional if uploading image)..." value={studentAnswer?.text || ''} onChange={e => onAnswerChange(question.id!, { ...studentAnswer, text: e.target.value })} rows={question.type === 'Essay' ? 6 : 3} />
+            <ImageUploader 
+                onAnswerChange={(imageUrl) => onAnswerChange(question.id!, { ...studentAnswer, imageUrl })}
+                existingImageUrl={studentAnswer?.imageUrl}
+            />
+        </div>
+       )
     default:
       return <p className="text-muted-foreground">This question type is not yet supported for exam taking.</p>;
   }

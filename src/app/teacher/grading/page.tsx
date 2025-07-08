@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +16,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { getCourses, getInstructorByUid } from '@/lib/firebase/firestore';
 import { gradeAssignmentAction, gradeExamAction } from '@/app/actions/grading.actions';
-import type { Assignment, Exam, Course } from '@/lib/types';
+import type { Assignment, Exam, Course, Question } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,6 +28,7 @@ import { useAuth } from '@/context/auth-context';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Image from 'next/image';
 
 type AssignmentWithCourseInfo = Assignment & {
   courseTitle: string;
@@ -38,6 +40,7 @@ type ExamWithCourseInfo = Exam & {
   courseTitle: string;
   courseId: string;
   courseType?: Course['type'];
+  template?: Course['examTemplates'][0];
 }
 
 export default function TeacherGradingPage() {
@@ -92,13 +95,14 @@ export default function TeacherGradingPage() {
                 const examDate = safeToDate(e.examDate);
                 const isPast = examDate <= new Date();
                 const isOralOrPracticalPending = (e.examType === 'Oral' || e.examType === 'Practical') && e.status === 'Pending' && isPast;
-                const isWrittenSubmitted = e.examType === 'Written' && e.status === 'Submitted';
+                const isWrittenSubmitted = (e.examType === 'Written' || e.examType === 'Essay' || e.examType === 'Short Answer') && e.status === 'Submitted';
                 return isOralOrPracticalPending || isWrittenSubmitted;
             }).map(exam => ({
                 ...exam,
                 courseTitle: course.title,
                 courseId: course.id!,
                 courseType: course.type,
+                template: course.examTemplates?.find(et => exam.id.startsWith(et.id))
             }))
         );
 
@@ -280,7 +284,7 @@ export default function TeacherGradingPage() {
                                     </TableCell>
                                     <TableCell>{exam.title}</TableCell>
                                     <TableCell><Badge variant="outline">{exam.examType}</Badge></TableCell>
-                                    <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : format(safeToDate(exam.examDate), 'PPP')}</TableCell>
+                                    <TableCell>{exam.submissionDate ? format(safeToDate(exam.submissionDate), 'PPP') : format(safeToDate(exam.examDate!), 'PPP')}</TableCell>
                                     <TableCell className="text-right">
                                         <Button onClick={() => handleOpenExamDialog(exam)}>
                                             <Award className="mr-2 h-4 w-4"/> Grade
@@ -338,23 +342,40 @@ export default function TeacherGradingPage() {
       </Dialog>
 
       <Dialog open={isExamDialogOpen} onOpenChange={setIsExamDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Grade Exam: {selectedExam?.title}</DialogTitle>
             <DialogDescription>
               For <strong>{selectedExam?.studentName}</strong> in course: {selectedExam?.courseTitle}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 space-y-4">
-            {selectedExam?.examType === 'Written' && selectedExam?.submissionText && (
-                <div>
-                  <Label className="font-semibold">Student's Submission</Label>
-                  <div className="mt-2 p-4 border rounded-md bg-muted text-sm max-h-48 overflow-y-auto">
-                    <p className="whitespace-pre-wrap">{selectedExam?.submissionText}</p>
-                  </div>
-                </div>
-            )}
-            <div className="grid grid-cols-2 gap-4">
+          <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+            {selectedExam?.template?.questions?.map(q => {
+              const answer = selectedExam.answers?.[q.id!];
+              if (!answer || (q.type !== 'Short Answer' && q.type !== 'Essay')) return null;
+
+              return (
+                <Card key={q.id} className="bg-muted/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Question: {q.text}</CardTitle>
+                    {q.mediaUrl && <Image src={q.mediaUrl} alt="Question image" width={300} height={200} className="rounded-md mt-2" />}
+                  </CardHeader>
+                  <CardContent>
+                    <Label className="font-semibold">Student's Answer</Label>
+                    <div className="mt-2 p-4 border rounded-md bg-background min-h-24">
+                       {answer.imageUrl && (
+                         <Image src={answer.imageUrl} alt="Student answer image" width={600} height={400} className="rounded-md object-contain" />
+                       )}
+                       {answer.text && (
+                          <p className="whitespace-pre-wrap mt-2">{answer.text}</p>
+                       )}
+                       {!answer.imageUrl && !answer.text && <p className="text-muted-foreground">No answer submitted for this question.</p>}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+             <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                 <div className="space-y-2">
                     <Label htmlFor="marks">Marks Obtained</Label>
                     <Input id="marks" type="number" value={examMarks} onChange={e => setExamMarks(Number(e.target.value))} />
