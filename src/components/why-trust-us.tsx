@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -23,7 +22,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
   }
 
   return (
-    <section className="bg-[#3B4DBA] text-white py-16 overflow-hidden">
+    <section className="bg-indigo-900 text-white py-16 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
