@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, Check } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -19,7 +19,6 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '../ui/textarea';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Checkbox } from '../ui/checkbox';
-import { cn } from '@/lib/utils';
 
 interface QuestionBankClientProps {
   initialQuestions: Question[];
@@ -63,7 +62,8 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
             type: 'MCQ', 
             difficulty: 'Medium', 
             points: 1, 
-            options: [{id: 'opt1', text: '', isCorrect: true}], 
+            options: [{id: 'opt1', text: '', isCorrect: false}], 
+            blanks: [''],
             matchingPairs: [{id: 'match1', prompt: '', match: ''}],
             subject: '',
             chapter: ''
@@ -79,7 +79,7 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
 
         if (result.success) {
             toast({ title: 'Success', description: result.message });
-            window.location.reload(); // Simple refresh to get latest data
+            window.location.reload();
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive'});
         }
@@ -103,22 +103,13 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
     const updateField = (field: keyof Question, value: any) => {
         setEditingQuestion(prev => prev ? { ...prev, [field]: value } : null);
     };
+    
     const updateOption = (optionId: string, field: 'text' | 'isCorrect', value: string | boolean) => {
         setEditingQuestion(prev => {
-            if (!prev) return null;
-            const newOptions = prev.options?.map(opt => {
-                if (opt.id === optionId) {
-                    return { ...opt, [field]: value };
-                }
-                if (prev.type === 'MCQ' && field === 'isCorrect' && value === true) {
-                    return { ...opt, isCorrect: false };
-                }
-                return opt;
-            });
-            if (prev.type === 'MCQ' && field === 'isCorrect' && value === true) {
-                const finalOptions = newOptions?.map(opt => opt.id === optionId ? { ...opt, isCorrect: true } : opt);
-                return { ...prev, options: finalOptions };
-            }
+            if (!prev?.options) return prev;
+            const newOptions = prev.options.map(opt => 
+                opt.id === optionId ? { ...opt, [field]: value } : opt
+            );
             return { ...prev, options: newOptions };
         });
     };
@@ -128,6 +119,31 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
     };
     const removeOption = (optionId: string) => {
         setEditingQuestion(prev => prev ? { ...prev, options: prev.options?.filter(o => o.id !== optionId) } : null);
+    };
+
+    const addBlank = () => {
+        setEditingQuestion(prev => prev ? { ...prev, blanks: [...(prev.blanks || []), ''] } : null);
+    };
+    const updateBlank = (index: number, value: string) => {
+        setEditingQuestion(prev => {
+            if (!prev || !prev.blanks) return prev;
+            const newBlanks = [...prev.blanks];
+            newBlanks[index] = value;
+            return { ...prev, blanks: newBlanks };
+        });
+    };
+    const removeBlank = (index: number) => {
+        setEditingQuestion(prev => prev ? { ...prev, blanks: prev.blanks?.filter((_, i) => i !== index) } : null);
+    };
+    
+    const addMatchingPair = () => {
+        setEditingQuestion(prev => prev ? { ...prev, matchingPairs: [...(prev.matchingPairs || []), { id: `match_${Date.now()}`, prompt: '', match: '' }] } : null);
+    };
+    const updateMatchingPair = (id: string, field: 'prompt' | 'match', value: string) => {
+        setEditingQuestion(prev => prev ? { ...prev, matchingPairs: prev.matchingPairs?.map(p => p.id === id ? { ...p, [field]: value } : p) } : null);
+    };
+    const removeMatchingPair = (id: string) => {
+        setEditingQuestion(prev => prev ? { ...prev, matchingPairs: prev.matchingPairs?.filter(p => p.id !== id) } : null);
     };
 
     return (
@@ -217,7 +233,7 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                             
                             {editingQuestion.type === 'MCQ' && (
                                 <div className="p-4 border rounded-md space-y-2">
-                                    <Label>Options</Label>
+                                    <Label>Options (check all correct answers)</Label>
                                     {editingQuestion.options?.map(opt => (
                                         <div key={opt.id} className="flex items-center gap-2">
                                             <Checkbox checked={opt.isCorrect} onCheckedChange={(checked) => updateOption(opt.id, 'isCorrect', !!checked)} />
@@ -226,6 +242,54 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                         </div>
                                     ))}
                                     <Button variant="outline" size="sm" onClick={addOption}>Add Option</Button>
+                                </div>
+                            )}
+
+                             {editingQuestion.type === 'True/False' && (
+                                <div className="p-4 border rounded-md space-y-2">
+                                    <Label>Correct Answer</Label>
+                                    <RadioGroup value={editingQuestion.correctAnswer} onValueChange={(v) => updateField('correctAnswer', v)}>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="True" id="true" />
+                                            <Label htmlFor="true">True</Label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="False" id="false" />
+                                            <Label htmlFor="false">False</Label>
+                                        </div>
+                                    </RadioGroup>
+                                </div>
+                            )}
+
+                            {editingQuestion.type === 'Fill in the Blanks' && (
+                                <div className="p-4 border rounded-md space-y-2">
+                                    <Label>Correct Answers for Blanks</Label>
+                                    <p className="text-xs text-muted-foreground">Add one answer for each __BLANK__ in your question text, in order.</p>
+                                    {editingQuestion.blanks?.map((blank, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <Input value={blank} onChange={e => updateBlank(index, e.target.value)} />
+                                            <Button variant="ghost" size="icon" onClick={() => removeBlank(index)}><X className="h-4 w-4 text-destructive"/></Button>
+                                        </div>
+                                    ))}
+                                    <Button variant="outline" size="sm" onClick={addBlank}>Add Blank Answer</Button>
+                                </div>
+                            )}
+
+                            {editingQuestion.type === 'Matching' && (
+                                <div className="p-4 border rounded-md space-y-2">
+                                    <Label>Matching Pairs</Label>
+                                    <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center text-center text-sm font-medium">
+                                        <p>Prompt</p><div></div><p>Match</p><div></div>
+                                    </div>
+                                    {editingQuestion.matchingPairs?.map((pair) => (
+                                        <div key={pair.id} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center">
+                                            <Input value={pair.prompt} onChange={e => updateMatchingPair(pair.id, 'prompt', e.target.value)} />
+                                            <span className="text-muted-foreground">=</span>
+                                            <Input value={pair.match} onChange={e => updateMatchingPair(pair.id, 'match', e.target.value)} />
+                                            <Button variant="ghost" size="icon" onClick={() => removeMatchingPair(pair.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                                        </div>
+                                    ))}
+                                    <Button variant="outline" size="sm" onClick={addMatchingPair}>Add Pair</Button>
                                 </div>
                             )}
                             
@@ -239,6 +303,10 @@ export function QuestionBankClient({ initialQuestions, subjects: allSubjects, ch
                                 </div>
                                 <div className="space-y-2"><Label>Subject</Label><Input value={editingQuestion.subject || ''} onChange={e => updateField('subject', e.target.value)} /></div>
                                 <div className="space-y-2"><Label>Chapter</Label><Input value={editingQuestion.chapter || ''} onChange={e => updateField('chapter', e.target.value)} /></div>
+                            </div>
+                             <div className="space-y-2">
+                                <Label>Explanation (Optional)</Label>
+                                <Textarea value={editingQuestion.explanation || ''} onChange={e => updateField('explanation', e.target.value)} rows={2} />
                             </div>
 
                         </div>

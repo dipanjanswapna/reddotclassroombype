@@ -26,11 +26,12 @@ export type Question = {
   chapter?: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   tags?: string[];
-  hint?: string; // New field for hints
-  
+  hint?: string;
+
   // Type-specific fields
-  options?: QuestionOption[]; // For MCQ, True/False
-  blanks?: string[]; // For Fill in the Blanks - correct answers for each blank
+  options?: QuestionOption[]; // For MCQ. Can have multiple correct answers.
+  correctAnswer?: 'True' | 'False'; // For True/False
+  blanks?: string[]; // For Fill in the Blanks
   matchingPairs?: MatchingPair[]; // For Matching
 };
 
