@@ -27,6 +27,7 @@ import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import { WhyTrustUs } from '@/components/why-trust-us';
+import downloadAppImage from '@/public/download.jpg';
 
 const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
   switch (platform) {
@@ -364,7 +365,7 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                    <Image src="/download.jpg" width={350} height={500} alt="RDC App" className='object-contain' />
+                    <Image src={downloadAppImage} width={350} height={500} alt="RDC App" className='object-contain' placeholder="blur" />
                 </div>
             </div>
         </section>
