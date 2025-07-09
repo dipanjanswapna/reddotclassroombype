@@ -63,101 +63,135 @@ export default function AdminHomepageManagementPage() {
     setIsSaving(false);
   };
   
-  // --- Start of Corrected State Update Handlers ---
+  // --- Robust State Update Handlers ---
 
-  const handleSimpleValueChange = (key: keyof HomepageConfig, value: any) => {
-    setConfig(prev => prev ? { ...prev, [key]: value } : null);
-  };
+    const handleSimpleValueChange = (key: keyof HomepageConfig, value: any) => {
+        setConfig(prev => prev ? { ...prev, [key]: value } : null);
+    };
 
-  const handleStringArrayChange = (section: CourseIdSections, value: string) => {
-    const ids = value.split(',').map(id => id.trim()).filter(Boolean);
-    setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
-  };
+    const handleSectionValueChange = (sectionKey: keyof HomepageConfig, key: string, value: any) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const sectionData = (prev[sectionKey] as any) || {};
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...sectionData,
+                    [key]: value,
+                },
+            };
+        });
+    };
 
-  const handleSectionValueChange = (section: keyof HomepageConfig, key: string, value: any) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const sectionData = prev[section] as any;
-        return {
-            ...prev,
-            [section]: {
-                ...sectionData,
-                [key]: value,
-            },
-        };
-    });
-  };
-  
-  const handleSectionLangChange = (section: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const sectionData = prev[section] as any;
-        if (!sectionData || typeof sectionData[field] !== 'object') return prev;
-
-        return {
-            ...prev,
-            [section]: {
-                ...sectionData,
-                [field]: {
-                    ...sectionData[field],
-                    [lang]: value,
+    const handleSectionLangChange = (sectionKey: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const sectionData = (prev[sectionKey] as any) || {};
+            const fieldData = sectionData[field] || {};
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...sectionData,
+                    [field]: {
+                        ...fieldData,
+                        [lang]: value,
+                    }
                 }
+            };
+        });
+    };
+
+    const handleNestedArrayChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, value: any) => {
+        setConfig(prev => {
+            if (!prev || index < 0) return prev;
+            
+            const section = (prev[sectionKey] as any) || {};
+            const array = section[arrayKey] ? [...section[arrayKey]] : [];
+            
+            if (array[index]) {
+                array[index] = { ...array[index], [field]: value };
             }
-        };
-    });
-  };
+            
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...section,
+                    [arrayKey]: array
+                }
+            };
+        });
+    };
+
+    const handleDeepNestedLangChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
+        setConfig(prev => {
+            if (!prev || index < 0) return prev;
+            
+            const section = (prev[sectionKey] as any) || {};
+            const array = section[arrayKey] ? [...section[arrayKey]] : [];
+    
+            if (array[index]) {
+                const item = { ...array[index] };
+                const langObject = { ...(item[field] || {}) };
+                langObject[lang] = value;
+                item[field] = langObject;
+                array[index] = item;
+            }
+    
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...section,
+                    [arrayKey]: array
+                }
+            };
+        });
+    };
+
+    const handleStringArrayChange = (section: CourseIdSections, value: string) => {
+        const ids = value.split(',').map(id => id.trim()).filter(Boolean);
+        setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
+    };
+
+    const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            return {
+                ...prev,
+                heroCarousel: {
+                    ...(prev.heroCarousel || { autoplay: true, autoplayDelay: 5000 }),
+                    [key]: value
+                }
+            };
+        });
+    };
+    
+    const handleAppPromoChange = (key: keyof HomepageConfig['appPromo'], value: any) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            return { 
+                ...prev, 
+                appPromo: { 
+                    ...(prev.appPromo || {}), 
+                    [key]: value 
+                } 
+            };
+        });
+    };
   
-  const handleNestedArrayChange = <T,>(section: keyof HomepageConfig, arrayName: string, index: number, field: keyof T, value: any) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const sectionData = prev[section] as any;
-        if (!sectionData || !Array.isArray(sectionData[arrayName])) return prev;
-
-        const newArray = [...sectionData[arrayName]];
-        newArray[index] = {
-            ...newArray[index],
-            [field]: value,
-        };
-        
-        return {
-            ...prev,
-            [section]: {
-                ...sectionData,
-                [arrayName]: newArray,
-            }
-        };
-    });
-  };
-  
-  const handleDeepNestedLangChange = (section: keyof HomepageConfig, arrayName: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const sectionData = prev[section] as any;
-        if (!sectionData || !Array.isArray(sectionData[arrayName])) return prev;
-
-        const newArray = [...sectionData[arrayName]];
-        const itemToUpdate = newArray[index];
-        if (!itemToUpdate || typeof itemToUpdate[field] !== 'object') return prev;
-
-        newArray[index] = {
-            ...itemToUpdate,
-            [field]: {
-                ...itemToUpdate[field],
-                [lang]: value,
-            }
-        };
-
-        return {
-            ...prev,
-            [section]: {
-                ...sectionData,
-                [arrayName]: newArray,
-            }
-        };
-    });
-  };
-
-  // --- End of Corrected State Update Handlers ---
+    const handleSocialLinkChange = (memberId: string, linkIndex: number, field: 'platform' | 'url', value: string) => {
+        setConfig(prev => {
+            if (!prev || !prev.aboutUsSection) return null;
+            const newMembers = prev.aboutUsSection.teamMembers.map(member => {
+                if (member.id === memberId) {
+                    const newLinks = [...member.socialLinks];
+                    newLinks[linkIndex] = { ...newLinks[linkIndex], [field]: value };
+                    return { ...member, socialLinks: newLinks };
+                }
+                return member;
+            });
+            return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
+        });
+    };
 
   const addHeroBanner = () => {
     setConfig(prev => prev ? ({
@@ -172,16 +206,17 @@ export default function AdminHomepageManagementPage() {
   const addCategory = () => {
     setConfig(prev => {
         if (!prev) return null;
-        const newCategory = {
+        const newCategory: CategoryItem = {
             id: Date.now(),
             title: 'New Category',
             imageUrl: 'https://placehold.co/400x500.png',
             linkUrl: '/courses',
             dataAiHint: 'category placeholder',
         };
+        const currentCategories = prev.categoriesSection?.categories || [];
         return {
             ...prev,
-            categoriesSection: { ...prev.categoriesSection, categories: [...(prev.categoriesSection?.categories || []), newCategory] }
+            categoriesSection: { ...prev.categoriesSection, categories: [...currentCategories, newCategory] }
         };
     });
   };
@@ -242,7 +277,7 @@ export default function AdminHomepageManagementPage() {
         const socialSection = prev.socialMediaSection || { display: true, title: {bn: '', en: ''}, description: {bn: '', en: ''}, channels: [] };
         return {
             ...prev,
-            socialMediaSection: { ...socialSection, channels: [...socialSection.channels, newChannel] }
+            socialMediaSection: { ...socialSection, channels: [...(socialSection.channels || []), newChannel] }
         };
     });
   };
@@ -288,45 +323,6 @@ export default function AdminHomepageManagementPage() {
         if (!prev || !prev.socialMediaSection) return null;
         const newChannels = prev.socialMediaSection.channels.filter(c => c.id !== id);
         return { ...prev, socialMediaSection: { ...prev.socialMediaSection, channels: newChannels } };
-    });
-  };
-
-  const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        return {
-            ...prev,
-            heroCarousel: {
-                ...(prev.heroCarousel || { autoplay: true, autoplayDelay: 5000 }),
-                [key]: value
-            }
-        };
-    });
-  };
-  
-  const handleAppPromoChange = (key: keyof HomepageConfig['appPromo'], value: any) => {
-    setConfig(prev => {
-        if (!prev || !prev.appPromo) return null;
-        return { ...prev, appPromo: { ...prev.appPromo, [key]: value } };
-    });
-  };
-  
-  const handleTeamMemberChange = (id: string, field: keyof Omit<TeamMember, 'id' | 'socialLinks'>, value: string) => {
-    handleNestedArrayChange<TeamMember>('aboutUsSection', 'teamMembers', config?.aboutUsSection.teamMembers.findIndex(m => m.id === id) ?? -1, field, value)
-  };
-
-  const handleSocialLinkChange = (memberId: string, linkIndex: number, field: 'platform' | 'url', value: string) => {
-    setConfig(prev => {
-        if (!prev || !prev.aboutUsSection) return null;
-        const newMembers = prev.aboutUsSection.teamMembers.map(member => {
-            if (member.id === memberId) {
-                const newLinks = [...member.socialLinks];
-                newLinks[linkIndex] = { ...newLinks[linkIndex], [field]: value as any };
-                return { ...member, socialLinks: newLinks };
-            }
-            return member;
-        });
-        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
     });
   };
 
@@ -384,11 +380,9 @@ export default function AdminHomepageManagementPage() {
     // Why Choose Us Section
     const addWhyChooseUsFeature = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: [...(p.whyChooseUs.features || []), {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}]}});
     const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
-    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => handleNestedArrayChange<WhyChooseUsFeature>('whyChooseUs', 'features', config?.whyChooseUs.features.findIndex(f => f.id === id) ?? -1, field, value);
-
+    
     const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
     const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
-    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => handleNestedArrayChange<Testimonial>('whyChooseUs', 'testimonials', config?.whyChooseUs.testimonials.findIndex(t => t.id === id) ?? -1, field, value);
     
     // Offline Hub Carousel handlers
     const addOfflineSlide = () => {
@@ -407,7 +401,7 @@ export default function AdminHomepageManagementPage() {
         const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
         return {
             ...prev,
-            offlineHubHeroCarousel: { ...offlineCarousel, slides: [...offlineCarousel.slides, newSlide] }
+            offlineHubHeroCarousel: { ...offlineCarousel, slides: [...(offlineCarousel.slides || []), newSlide] }
         };
         });
     };
@@ -451,6 +445,8 @@ export default function AdminHomepageManagementPage() {
       const newConfig = { ...prevConfig };
       if (newConfig[sectionKey]) {
         (newConfig[sectionKey] as any).display = value;
+      } else {
+        (newConfig as any)[sectionKey] = { display: value };
       }
       return newConfig;
     });
@@ -511,11 +507,11 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                         <Label htmlFor="floatingWhatsApp-display" className="font-medium">Display Button</Label>
-                        <Switch id="floatingWhatsApp-display" checked={config.floatingWhatsApp?.display} onCheckedChange={(checked) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, display: checked } } : null )}/>
+                        <Switch id="floatingWhatsApp-display" checked={config.floatingWhatsApp?.display} onCheckedChange={(checked) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...(prev.floatingWhatsApp || { display: true, number: '' }), display: checked } } : null )}/>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="floatingWhatsApp-number">WhatsApp Number</Label>
-                        <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp?.number || ''} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX"/>
+                        <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp?.number || ''} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...(prev.floatingWhatsApp || { display: true, number: '' }), number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX"/>
                     </div>
                 </CardContent>
             </Card>
@@ -668,7 +664,7 @@ export default function AdminHomepageManagementPage() {
                         <Switch 
                             id="welcome-display" 
                             checked={config.welcomeSection?.display} 
-                            onCheckedChange={(checked) => setConfig(prev => prev ? ({ ...prev, welcomeSection: { ...prev.welcomeSection!, display: checked } }) : null)}
+                            onCheckedChange={(checked) => handleSectionValueChange('welcomeSection', 'display', checked)}
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -705,8 +701,8 @@ export default function AdminHomepageManagementPage() {
                                 <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title?.bn || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'features', index, 'title', 'bn', e.target.value)}/></div>
                                 <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title?.en || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'features', index, 'title', 'en', e.target.value)}/></div>
                             </div>
-                            <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => updateWhyChooseUsFeature(feature.id, 'iconUrl', e.target.value)}/></div>
-                            <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={feature.dataAiHint} onChange={e => updateWhyChooseUsFeature(feature.id, 'dataAiHint', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => handleNestedArrayChange('whyChooseUs', 'features', index, 'iconUrl', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={feature.dataAiHint} onChange={e => handleNestedArrayChange('whyChooseUs', 'features', index, 'dataAiHint', e.target.value)}/></div>
                         </div>
                         ))}
                         <Button variant="outline" className="w-full border-dashed" onClick={addWhyChooseUsFeature}><PlusCircle className="mr-2"/>Add Feature</Button>
@@ -721,10 +717,10 @@ export default function AdminHomepageManagementPage() {
                               <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'testimonials', index, 'quote', 'bn', e.target.value)}/></div>
                               <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote?.en || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'testimonials', index, 'quote', 'en', e.target.value)}/></div>
                             </div>
-                            <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => updateTestimonial(t.id, 'studentName', e.target.value)}/></div>
-                            <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => updateTestimonial(t.id, 'college', e.target.value)}/></div>
-                            <div className="space-y-1"><Label>Image URL</Label><Input value={t.imageUrl} onChange={e => updateTestimonial(t.id, 'imageUrl', e.target.value)}/></div>
-                            <div className="space-y-1"><Label>Image AI Hint</Label><Input value={t.dataAiHint} onChange={e => updateTestimonial(t.id, 'dataAiHint', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'studentName', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'college', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={t.imageUrl} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'imageUrl', e.target.value)}/></div>
+                            <div className="space-y-1"><Label>Image AI Hint</Label><Input value={t.dataAiHint} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'dataAiHint', e.target.value)}/></div>
                         </div>
                         ))}
                         <Button variant="outline" className="w-full border-dashed" onClick={addTestimonial}><PlusCircle className="mr-2"/>Add Testimonial</Button>
@@ -744,11 +740,11 @@ export default function AdminHomepageManagementPage() {
                             <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">Member {index + 1}: {member.name}</h4><div><Button variant="ghost" size="icon" onClick={() => removeTeamMember(member.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
                             <CollapsibleContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2"><Label>Name</Label><Input value={member.name} onChange={e => handleTeamMemberChange(member.id, 'name', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Title</Label><Input value={member.title} onChange={e => handleTeamMemberChange(member.id, 'title', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Name</Label><Input value={member.name} onChange={e => handleNestedArrayChange('aboutUsSection', 'teamMembers', index, 'name', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Title</Label><Input value={member.title} onChange={e => handleNestedArrayChange('aboutUsSection', 'teamMembers', index, 'title', e.target.value)} /></div>
                                 </div>
-                                <div className="space-y-2"><Label>Image URL</Label><Input value={member.imageUrl} onChange={e => handleTeamMemberChange(member.id, 'imageUrl', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Image AI Hint</Label><Input value={member.dataAiHint} onChange={e => handleTeamMemberChange(member.id, 'dataAiHint', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Image URL</Label><Input value={member.imageUrl} onChange={e => handleNestedArrayChange('aboutUsSection', 'teamMembers', index, 'imageUrl', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Image AI Hint</Label><Input value={member.dataAiHint} onChange={e => handleNestedArrayChange('aboutUsSection', 'teamMembers', index, 'dataAiHint', e.target.value)} /></div>
                                 <div className="space-y-2">
                                     <Label>Social Links</Label>
                                     {member.socialLinks.map((link, linkIndex) => (
@@ -804,7 +800,7 @@ export default function AdminHomepageManagementPage() {
                         <Label className="font-semibold">Channels</Label>
                         {config.socialMediaSection?.channels.map((channel, index) => (
                              <Collapsible key={channel.id} className="p-3 border rounded-md space-y-2 relative bg-muted/50">
-                                <div className="flex justify-between items-center"><h4 className="font-medium pt-2">{typeof channel.name === 'object' ? channel.name.bn : channel.name}</h4><div><Button variant="ghost" size="icon" onClick={() => removeSocialChannel(channel.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
+                                <div className="flex justify-between items-center"><h4 className="font-medium pt-2">{channel.name?.bn || 'New Channel'}</h4><div><Button variant="ghost" size="icon" onClick={() => removeSocialChannel(channel.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
                                 <CollapsibleContent className="space-y-4 pt-2">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -814,14 +810,14 @@ export default function AdminHomepageManagementPage() {
                                                 <SelectContent><SelectItem value="YouTube">YouTube</SelectItem><SelectItem value="Facebook Page">Facebook Page</SelectItem></SelectContent>
                                             </Select>
                                         </div>
-                                        <div className="space-y-2"><Label>Channel Name (BN)</Label><Input value={typeof channel.name === 'object' ? channel.name.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Channel Name (BN)</Label><Input value={channel.name?.bn || ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
                                         <div className="space-y-2"><Label>Channel Handle</Label><Input value={channel.handle} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'handle', e.target.value)} placeholder="@handle" /></div>
                                         <div className="space-y-2"><Label>Stat 1 Value</Label><Input value={channel.stat1_value} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'stat1_value', e.target.value)} placeholder="e.g., 1.5M"/></div>
-                                        <div className="space-y-2"><Label>Stat 1 Label (BN)</Label><Input value={typeof channel.stat1_label === 'object' ? channel.stat1_label.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} placeholder="e.g., সাবস্ক্রাইবার" /></div>
+                                        <div className="space-y-2"><Label>Stat 1 Label (BN)</Label><Input value={channel.stat1_label?.bn || ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} placeholder="e.g., সাবস্ক্রাইবার" /></div>
                                         <div className="space-y-2"><Label>Stat 2 Value</Label><Input value={channel.stat2_value} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'stat2_value', e.target.value)} placeholder="e.g., 500+"/></div>
-                                        <div className="space-y-2"><Label>Stat 2 Label (BN)</Label><Input value={typeof channel.stat2_label === 'object' ? channel.stat2_label.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} placeholder="e.g., ভিডিও"/></div>
-                                        <div className="space-y-2 col-span-2"><Label>Description (BN)</Label><Textarea value={typeof channel.description === 'object' ? channel.description.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} rows={2} /></div>
-                                        <div className="space-y-2"><Label>CTA Text (BN)</Label><Input value={typeof channel.ctaText === 'object' ? channel.ctaText.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Stat 2 Label (BN)</Label><Input value={channel.stat2_label?.bn || ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} placeholder="e.g., ভিডিও"/></div>
+                                        <div className="space-y-2 col-span-2"><Label>Description (BN)</Label><Textarea value={channel.description?.bn || ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} rows={2} /></div>
+                                        <div className="space-y-2"><Label>CTA Text (BN)</Label><Input value={channel.ctaText?.bn || ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
                                         <div className="space-y-2"><Label>CTA URL</Label><Input value={channel.ctaUrl} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'ctaUrl', e.target.value)} /></div>
                                     </div>
                                 </CollapsibleContent>
