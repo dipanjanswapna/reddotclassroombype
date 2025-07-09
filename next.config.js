@@ -59,6 +59,16 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.ignoreWarnings = [
+      {
+        module: /handlebars/,
+        message: /require.extensions is not supported by webpack. Use a loader instead./,
+      },
+    ];
+
+    return config;
+  },
 };
 
 module.exports = nextConfig;
