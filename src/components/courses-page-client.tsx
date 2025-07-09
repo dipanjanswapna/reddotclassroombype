@@ -95,7 +95,7 @@ export function CoursesPageClient({
         <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 pt-16">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingSpinner className="w-12 h-12" />
@@ -149,7 +149,7 @@ export function CoursesPageClient({
         )}
       </main>
 
-      <section>
+      <div>
         <div className="relative w-full aspect-[16/6] shadow-lg">
             <Image
                 src="/rdcshop.jpg"
@@ -159,7 +159,7 @@ export function CoursesPageClient({
                 data-ai-hint="shop banner"
             />
         </div>
-      </section>
+      </div>
     </div>
   );
 }
