@@ -9,10 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide } from '@/lib/types';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor } from '@/lib/types';
+import { getHomepageConfig, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
@@ -20,6 +20,8 @@ import { getYoutubeVideoId } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -32,12 +34,20 @@ export default function AdminHomepageManagementPage() {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
+  const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
 
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const fetchedConfig = await getHomepageConfig();
+        const [fetchedConfig, instructorsData, organizationsData] = await Promise.all([
+            getHomepageConfig(),
+            getInstructors(),
+            getOrganizations()
+        ]);
         setConfig(fetchedConfig);
+        setAllInstructors(instructorsData.filter(i => i.status === 'Approved'));
+        setAllOrganizations(organizationsData.filter(o => o.status === 'approved'));
       } catch (error) {
         console.error("Error fetching homepage config:", error);
         toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
@@ -72,7 +82,7 @@ export default function AdminHomepageManagementPage() {
     const handleSectionValueChange = (sectionKey: keyof HomepageConfig, key: string, value: any) => {
         setConfig(prev => {
             if (!prev) return null;
-            const sectionData = (prev[sectionKey] as any) || {};
+            const sectionData = (prev[sectionKey] as any) || { display: true };
             return {
                 ...prev,
                 [sectionKey]: {
@@ -86,7 +96,7 @@ export default function AdminHomepageManagementPage() {
     const handleSectionLangChange = (sectionKey: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
         setConfig(prev => {
             if (!prev) return null;
-            const sectionData = (prev[sectionKey] as any) || {};
+            const sectionData = (prev[sectionKey] as any) || { display: true };
             const fieldData = sectionData[field] || {};
             return {
                 ...prev,
@@ -105,7 +115,7 @@ export default function AdminHomepageManagementPage() {
         setConfig(prev => {
             if (!prev || index < 0) return prev;
             
-            const section = (prev[sectionKey] as any) || {};
+            const section = (prev[sectionKey] as any) || { display: true };
             const array = section[arrayKey] ? [...section[arrayKey]] : [];
             
             if (array[index]) {
@@ -126,7 +136,7 @@ export default function AdminHomepageManagementPage() {
         setConfig(prev => {
             if (!prev || index < 0) return prev;
             
-            const section = (prev[sectionKey] as any) || {};
+            const section = (prev[sectionKey] as any) || { display: true };
             const array = section[arrayKey] ? [...section[arrayKey]] : [];
     
             if (array[index]) {
@@ -414,6 +424,40 @@ export default function AdminHomepageManagementPage() {
         });
     };
 
+  const handleInstructorChange = (instructorId: string, add: boolean) => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const currentIds = prev.teachersSection?.instructorIds || [];
+          const newIds = add 
+              ? [...currentIds, instructorId]
+              : currentIds.filter(id => id !== instructorId);
+          return {
+              ...prev,
+              teachersSection: {
+                  ...(prev.teachersSection || { display: true, title: {bn: '', en: ''}, subtitle: {bn: '', en: ''}, buttonText: {bn: '', en: ''}, instructorIds:[] }),
+                  instructorIds: newIds
+              }
+          }
+      });
+  };
+
+  const handleCollaborationChange = (orgId: string, add: boolean) => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const currentIds = prev.collaborations?.organizationIds || [];
+          const newIds = add 
+              ? [...currentIds, orgId]
+              : currentIds.filter(id => id !== orgId);
+          return {
+              ...prev,
+              collaborations: {
+                  ...(prev.collaborations || { display: true, title: {bn: '', en: ''}, organizationIds: [] }),
+                  organizationIds: newIds
+              }
+          }
+      });
+  };
+
   const allSections = [
     { key: 'welcomeSection', label: 'Welcome Section'},
     { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
@@ -545,7 +589,10 @@ export default function AdminHomepageManagementPage() {
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>Offline Hub & RDC Shop Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub and RDC Shop pages.</CardDescription></CardHeader>
+                <CardHeader>
+                    <CardTitle>Offline Hub & RDC Shop Carousel</CardTitle>
+                    <CardDescription>Manage the slim banner on the Offline Hub and RDC Shop pages. This is controlled from the same place.</CardDescription>
+                </CardHeader>
                 <CardContent className="space-y-4">
                     {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
                         <div key={slide.id} className="p-4 border rounded-lg space-y-2 relative">
@@ -674,6 +721,86 @@ export default function AdminHomepageManagementPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Description (BN)</Label><Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={4}/></div>
                         <div className="space-y-2"><Label>Description (EN)</Label><Textarea value={config.welcomeSection?.description?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'en', e.target.value)} rows={4}/></div>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Teachers Section</CardTitle>
+                    <CardDescription>Manage the featured teachers section on the homepage.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.teachersSection?.title?.bn || ''} onChange={e => handleSectionLangChange('teachersSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.teachersSection?.title?.en || ''} onChange={e => handleSectionLangChange('teachersSection', 'title', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Section Subtitle (BN)</Label><Textarea value={config.teachersSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('teachersSection', 'subtitle', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Button Text (BN)</Label><Input value={config.teachersSection?.buttonText?.bn || ''} onChange={e => handleSectionLangChange('teachersSection', 'buttonText', 'bn', e.target.value)} /></div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Select Instructors</Label>
+                        <div className="flex flex-wrap gap-1">
+                            {config.teachersSection?.instructorIds?.map(instId => {
+                                const inst = allInstructors.find(i => i.id === instId);
+                                return inst ? <Badge key={instId} variant="secondary">{inst.name} <Button variant="ghost" size="icon" className="h-4 w-4 ml-1" onClick={() => handleInstructorChange(instId, false)}><X className="h-3 w-3"/></Button></Badge> : null;
+                            })}
+                        </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full mt-2"><PlusCircle className="mr-2"/> Add Instructor</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                                <Command>
+                                    <CommandInput placeholder="Search instructors..." />
+                                    <CommandEmpty>No instructors found.</CommandEmpty>
+                                    <CommandGroup>
+                                        {allInstructors.filter(inst => !config.teachersSection?.instructorIds?.includes(inst.id!)).map(inst => (
+                                            <CommandItem key={inst.id} onSelect={() => handleInstructorChange(inst.id!, true)}>
+                                                {inst.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Collaborations Section</CardTitle>
+                    <CardDescription>Select which organizations/sellers to feature as collaborators.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.collaborations?.title?.bn || ''} onChange={e => handleSectionLangChange('collaborations', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.collaborations?.title?.en || ''} onChange={e => handleSectionLangChange('collaborations', 'title', 'en', e.target.value)} /></div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Select Organizations</Label>
+                        <div className="flex flex-wrap gap-1">
+                          {config.collaborations?.organizationIds?.map(orgId => {
+                              const org = allOrganizations.find(o => o.id === orgId);
+                              return org ? <Badge key={orgId} variant="secondary">{org.name} <Button variant="ghost" size="icon" className="h-4 w-4 ml-1" onClick={() => handleCollaborationChange(orgId, false)}><X className="h-3 w-3"/></Button></Badge> : null;
+                          })}
+                        </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full mt-2"><PlusCircle className="mr-2"/> Add Organization</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                                <Command>
+                                    <CommandInput placeholder="Search organizations..." />
+                                    <CommandEmpty>No organizations found.</CommandEmpty>
+                                    <CommandGroup>
+                                        {allOrganizations.filter(org => !config.collaborations?.organizationIds?.includes(org.id!)).map(org => (
+                                            <CommandItem key={org.id} onSelect={() => handleCollaborationChange(org.id!, true)}>
+                                                {org.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </CardContent>
             </Card>

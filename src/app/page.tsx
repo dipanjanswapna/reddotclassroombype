@@ -34,7 +34,6 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   switch (platform) {
     case 'YouTube':
       return <Youtube className={cn("w-6 h-6 text-white", className)} />;
-    case 'Facebook Group':
     case 'Facebook Page':
       return <Facebook className={cn("w-6 h-6 text-white", className)} />;
     default:
@@ -67,8 +66,15 @@ export default async function Home() {
     getOrganizations()
   ]);
 
-  const featuredInstructors = allInstructors.filter(inst => inst.status === 'Approved');
-  const approvedCollaborators = organizations.filter(org => org.status === 'approved');
+  const featuredInstructorIds = homepageConfig.teachersSection?.instructorIds || [];
+  const featuredInstructors = allInstructors.filter(inst => 
+    inst.status === 'Approved' && featuredInstructorIds.includes(inst.id!)
+  );
+
+  const collaborationIds = homepageConfig.collaborations?.organizationIds || [];
+  const approvedCollaborators = organizations.filter(org => 
+    org.status === 'approved' && collaborationIds.includes(org.id!)
+  );
   
   const language = 'bn'; // Default language
 

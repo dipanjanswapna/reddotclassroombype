@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, CollaborationItem } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -492,7 +492,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   collaborations: {
     display: true,
     title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
-    items: [],
+    organizationIds: [],
   },
   partnersSection: {
     display: true,

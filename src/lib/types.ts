@@ -419,24 +419,6 @@ export type Enrollment = {
   status: 'in-progress' | 'completed';
 };
 
-export type CollaborationItem = {
-    id: number;
-    name: string;
-    organizationId: string;
-    type: string;
-    logoUrl: string;
-    dataAiHint: string;
-    description: { [key: string]: string };
-    cta: {
-        text: { [key: string]: string };
-        href: string;
-    };
-    socials: {
-        facebook: string;
-        youtube: string;
-    };
-};
-
 export type PlatformRoleSettings = {
   signupEnabled: boolean;
   loginEnabled: boolean;
@@ -668,7 +650,7 @@ export type HomepageConfig = {
   collaborations: {
     display: boolean;
     title: { [key: string]: string };
-    items: CollaborationItem[];
+    organizationIds: string[];
   };
   partnersSection: {
     display: boolean;
