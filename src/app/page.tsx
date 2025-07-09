@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -72,10 +73,10 @@ export default async function Home() {
   const language = 'bn'; // Default language
 
   return (
-    <div className="bg-background">
+    <div className="bg-background [&>div:last-child>section:last-child]:pb-0">
       <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
-      <div className="[&>section:last-child]:pb-0">
+      <div>
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8">
               <div className="container mx-auto px-4">

@@ -169,6 +169,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("Your user profile could not be found. Please contact support.");
         }
         
+        if (fetchedUserInfo.status !== 'Active') {
+            await signOut(auth);
+            const statusMessage = fetchedUserInfo.status === 'Pending Approval'
+                ? "Your account is pending admin approval. You will be notified once it's reviewed."
+                : 'Your account has been suspended.';
+            throw new Error(statusMessage);
+        }
+        
         const regNo = String(fetchedUserInfo.registrationNumber);
         const isInvalidRegNo = fetchedUserInfo.role !== 'Guardian' &&
                                fetchedUserInfo.status === 'Active' &&
@@ -193,14 +201,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             await signOut(auth);
             throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role or tab.`);
         }
-
-        if (fetchedUserInfo.status !== 'Active') {
-            await signOut(auth);
-            const statusMessage = fetchedUserInfo.status === 'Pending Approval'
-                ? "Your account is pending admin approval. You will be notified once it's reviewed."
-                : 'Your account has been suspended.';
-            throw new Error(statusMessage);
-        }
         
         if (fetchedUserInfo.role === 'Student') {
             await handleStudentLoginSession(fetchedUserInfo.uid);
@@ -220,15 +220,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("This login method is for students only.");
         }
     
-        const userCredential = await signInWithEmailAndPassword(auth, studentInfo.email, pass);
-    
         if (studentInfo.status !== 'Active') {
-            await signOut(auth);
             const statusMessage = studentInfo.status === 'Pending Approval'
                 ? "Your account is pending admin approval."
                 : 'Your account has been suspended.';
             throw new Error(statusMessage);
         }
+
+        const userCredential = await signInWithEmailAndPassword(auth, studentInfo.email, pass);
     
         const regNo = String(studentInfo.registrationNumber);
         const isInvalidRegNo = studentInfo.role !== 'Guardian' &&
@@ -257,17 +256,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("This login method is for staff members only.");
         }
     
-        const userCredential = await signInWithEmailAndPassword(auth, staffInfo.email, pass);
-    
         if (staffInfo.status !== 'Active') {
-            await signOut(auth);
             const statusMessage = staffInfo.status === 'Pending Approval'
                 ? "Your account is pending admin approval."
                 : 'Your account has been suspended.';
             throw new Error(statusMessage);
         }
+
+        const userCredential = await signInWithEmailAndPassword(auth, staffInfo.email, pass);
         
-        // No need to check/generate reg number as it's the login key.
         setUserInfo(staffInfo);
         redirectToDashboard(staffInfo, 'Login Successful!');
         return userCredential;
@@ -285,9 +282,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let existingUserInfo = await getUser(user.uid);
         
         if (existingUserInfo) {
+            if (existingUserInfo.status !== 'Active') {
+                await signOut(auth);
+                const statusMessage = existingUserInfo.status === 'Pending Approval'
+                    ? "Your account is pending admin approval. You will be notified once it's reviewed."
+                    : 'Your account has been suspended.';
+                throw new Error(statusMessage);
+            }
+
             const regNo = String(existingUserInfo.registrationNumber);
             const isInvalidRegNo = existingUserInfo.role !== 'Guardian' &&
-                                         existingUserInfo.status === 'Active' &&
                                          (!existingUserInfo.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
 
             if (isInvalidRegNo) {
@@ -299,10 +303,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);
                 throw new Error(`Logins for your role ('${existingUserInfo.role}') are temporarily disabled.`);
-            }
-             if (existingUserInfo.status !== 'Active') {
-                await signOut(auth);
-                throw new Error("Your account is not active. Please contact support.");
             }
 
             if (user.photoURL && (!existingUserInfo.avatarUrl || existingUserInfo.avatarUrl.includes('placehold.co'))) {

@@ -161,7 +161,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
               <Image src={course.imageUrl} alt={course.title} width={120} height={80} className="rounded-md object-cover aspect-video" />
               <div>
                 <CardTitle>{course.title}</CardTitle>
-                <CardDescription>{course.instructors[0].name}</CardDescription>
+                <CardDescription>{course.instructors?.[0]?.name}</CardDescription>
                 {isPrebooking && <Badge className="mt-2" variant="warning">Pre-booking Offer</Badge>}
               </div>
             </CardHeader>

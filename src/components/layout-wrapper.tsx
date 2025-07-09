@@ -25,10 +25,12 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/signup') ||
     pathname.startsWith('/seller-program/apply') ||
-    pathname.startsWith('/password-reset') ||
-    pathname.startsWith('/offline-hub');
+    pathname.startsWith('/password-reset');
+    
+  // The offline hub has its own special layout, so we exclude it from the default wrapper.
+  const isOfflineHub = pathname.startsWith('/offline-hub');
 
-  if (isFullPageLayout) {
+  if (isFullPageLayout || isOfflineHub) {
     return <>{children}</>;
   }
   
@@ -54,7 +56,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="flex-grow">{children}</main>
+      <main>{children}</main>
       <Footer homepageConfig={homepageConfig}/>
       {homepageConfig?.floatingWhatsApp?.display && (
         <FloatingWhatsAppButton number={homepageConfig.floatingWhatsApp.number} />
