@@ -36,12 +36,11 @@ export default async function OfflineHubPage() {
     }
 
   return (
-    <div className="bg-gray-900 text-white font-bengali">
-        <div className="relative overflow-hidden">
+    <div>
+      <Header variant="dark" wrapperClassName="bg-gray-900" containerClassName="bg-transparent border-0 shadow-none" />
+      <div className="bg-gray-900 text-white font-bengali">
+        <div className="relative overflow-hidden pt-20">
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900/40 via-gray-900 to-gray-900 z-0"></div>
-             <div className="container mx-auto px-4 pt-4">
-                <Header variant="dark" containerClassName="bg-[rgb(34,25,38)] border-gray-700" />
-             </div>
              <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div>
@@ -171,6 +170,7 @@ export default async function OfflineHubPage() {
             </div>
         </section>
       )}
+    </div>
     </div>
   );
 }
