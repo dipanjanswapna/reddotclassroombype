@@ -9,7 +9,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getCourses, getOrganizationByUserId } from '@/lib/firebase/firestore';
+import { getCourses, getOrganizationByUserId, getEnrollments } from '@/lib/firebase/firestore';
 import { Course } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -18,40 +18,61 @@ import { useAuth } from '@/context/auth-context';
 export default function SellerDashboardPage() {
     const { toast } = useToast();
     const { userInfo } = useAuth();
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [studentCount, setStudentCount] = useState(0);
+    const [stats, setStats] = useState({
+        courseCount: 0,
+        studentCount: 0,
+        totalRevenue: 0,
+        averageCompletionRate: 0,
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!userInfo) return;
 
-        async function fetchPartnerData() {
+        async function fetchDashboardData() {
             try {
                 const organization = await getOrganizationByUserId(userInfo.uid);
-                if (organization) {
-                    const allCourses = await getCourses();
-                    const partnerCourses = allCourses.filter(c => c.organizationId === organization.id);
-                    setCourses(partnerCourses);
-
-                    // Calculate student count
-                    const studentIds = new Set<string>();
-                    partnerCourses.forEach(course => {
-                        course.assignments?.forEach(assignment => {
-                            studentIds.add(assignment.studentId);
-                        });
-                    });
-                    setStudentCount(studentIds.size);
-                } else {
-                     toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive'});
+                if (!organization) {
+                    toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive' });
+                    setLoading(false);
+                    return;
                 }
-            } catch(err) {
-                console.error(err);
-                toast({ title: 'Error', description: 'Could not fetch dashboard data.', variant: 'destructive'});
+                
+                const [allCourses, allEnrollments] = await Promise.all([
+                    getCourses(),
+                    getEnrollments(),
+                ]);
+
+                const sellerCourses = allCourses.filter(c => c.organizationId === organization.id);
+                const sellerCourseIds = sellerCourses.map(c => c.id!);
+                const sellerEnrollments = allEnrollments.filter(e => sellerCourseIds.includes(e.courseId));
+
+                const totalStudents = new Set(sellerEnrollments.map(e => e.userId)).size;
+
+                const totalRevenue = sellerEnrollments.reduce((acc, enrollment) => {
+                    const course = sellerCourses.find(c => c.id === enrollment.courseId);
+                    const price = parseFloat(course?.price.replace(/[^0-9.]/g, '') || '0');
+                    return acc + price;
+                }, 0);
+
+                const averageCompletionRate = sellerEnrollments.length > 0 
+                    ? Math.round(sellerEnrollments.reduce((sum, e) => sum + e.progress, 0) / sellerEnrollments.length)
+                    : 0;
+
+                setStats({
+                    courseCount: sellerCourses.length,
+                    studentCount: totalStudents,
+                    totalRevenue,
+                    averageCompletionRate,
+                });
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+                toast({ title: "Error", description: "Could not load dashboard data.", variant: "destructive" });
             } finally {
                 setLoading(false);
             }
-        }
-        fetchPartnerData();
+        };
+        fetchDashboardData();
     }, [userInfo, toast]);
     
     if (loading) {
@@ -81,7 +102,7 @@ export default function SellerDashboardPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{studentCount}</div>
+                <div className="text-2xl font-bold">{stats.studentCount}</div>
                 <p className="text-xs text-muted-foreground">
                 Unique students in your courses
                 </p>
@@ -95,7 +116,7 @@ export default function SellerDashboardPage() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{courses.length}</div>
+                <div className="text-2xl font-bold">{stats.courseCount}</div>
                 <p className="text-xs text-muted-foreground">
                 Published courses
                 </p>
@@ -109,9 +130,9 @@ export default function SellerDashboardPage() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">BDT 250,000</div>
+                <div className="text-2xl font-bold">BDT {stats.totalRevenue.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">
-                This month's earnings
+                All-time sales from your courses
                 </p>
             </CardContent>
             </Card>
@@ -123,7 +144,7 @@ export default function SellerDashboardPage() {
                 <BarChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">82%</div>
+                <div className="text-2xl font-bold">{stats.averageCompletionRate}%</div>
                 <p className="text-xs text-muted-foreground">
                 Average across all courses
                 </p>
