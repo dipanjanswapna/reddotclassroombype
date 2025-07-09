@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Header } from '@/components/header';
 import { OfflineHubFooter } from '@/components/offline-hub-footer';
 import offlineBanner from '@/public/rdcoffline.png';
 
@@ -12,8 +11,7 @@ export default function OfflineHubLayout({
 }) {
   return (
     <div className="flex flex-col">
-      <Header variant="dark" containerClassName="bg-[rgb(34,25,38)] border-gray-700" />
-      <main className="flex-grow">{children}</main>
+      <main>{children}</main>
       
       <div 
         className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]"

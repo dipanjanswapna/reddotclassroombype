@@ -1,5 +1,4 @@
 
-
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { ArrowRight, CheckCircle, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
 import { Course } from '@/lib/types';
+import { Header } from '@/components/header';
 
 
 export const metadata: Metadata = {
@@ -39,32 +39,35 @@ export default async function OfflineHubPage() {
     <div className="bg-gray-900 text-white font-bengali">
         <div className="relative overflow-hidden">
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900/40 via-gray-900 to-gray-900 z-0"></div>
+             <div className="container mx-auto px-4 pt-4">
+                <Header variant="dark" containerClassName="bg-[rgb(34,25,38)] border-gray-700" />
+             </div>
              <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <h1 className="font-headline text-4xl lg:text-5xl font-bold tracking-tight">
-                            {offlineHubData.title[language]}
+                            RDC অফলাইন হাব
                         </h1>
                         <p className="mt-4 text-lg text-gray-300">
-                           {offlineHubData.subtitle[language]}
+                           অনলাইনে গত ৯ বছর ধরে লক্ষ লক্ষ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা নিয়ে এবার আমরা সামনাসামনি পড়াবো। এখন, আপনি অত্যাধুনিক মাল্টিমিডিয়া ক্লাসরুমে বসে, দেশের সেরা শিক্ষকদের কাছ থেকে সরাসরি শিখতে পারবেন।
                         </p>
                         <div className="mt-8 flex flex-col sm:flex-row gap-4">
                             <Button className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg">
-                                {offlineHubData.button1Text[language]}
+                                ফ্রি ক্লাস বুক করুন
                             </Button>
                             <Button variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
-                                {offlineHubData.button2Text[language]}
+                                লিফলেট ডাউনলোড করুন
                             </Button>
                         </div>
                     </div>
                      <div className="flex justify-center items-center">
                         <div className="relative w-full max-w-md aspect-[4/3] rounded-2xl border-4 border-red-500/50 p-2 shadow-2xl bg-black/20 backdrop-blur-sm">
                              <Image
-                                src={offlineHubData.imageUrl}
+                                src="https://placehold.co/600x400.png"
                                 alt="Offline classroom"
                                 fill
                                 className="object-cover rounded-xl"
-                                data-ai-hint={offlineHubData.dataAiHint}
+                                data-ai-hint="classroom presentation"
                             />
                         </div>
                     </div>
