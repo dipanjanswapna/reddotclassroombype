@@ -45,7 +45,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
-        {children}
+        <main className="flex-grow">{children}</main>
       </div>
     );
   }

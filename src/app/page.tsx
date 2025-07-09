@@ -72,7 +72,7 @@ export default async function Home() {
   const language = 'bn'; // Default language
 
   return (
-    <div className="flex flex-col bg-background">
+    <div className="bg-background">
       <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
       <div className="[&>section:last-child]:pb-0">
