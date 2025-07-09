@@ -15,10 +15,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { getCourses, getUsers, getInstructorByUid, getEnrollments } from '@/lib/firebase/firestore';
-import { LoadingSpinner } from '@/components/loading-spinner';
 import type { User, Course, Enrollment } from '@/lib/types';
-import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
 
 type StudentDisplayInfo = {
   id: string;

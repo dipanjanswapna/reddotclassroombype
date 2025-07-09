@@ -215,7 +215,7 @@ export async function addLessonReactionAction(
       if (!courseDoc.exists()) throw new Error("Course not found.");
       
       userData = userDoc.data() as User;
-      courseData = courseDoc.data() as Course;
+      courseData = {id: courseDoc.id, ...courseDoc.data()} as Course;
 
       if (userData.reactedLessons?.includes(lessonId)) {
         // This won't be thrown if the button is disabled, but good for API-level protection

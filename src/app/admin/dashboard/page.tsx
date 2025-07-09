@@ -5,6 +5,7 @@ import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
 import { DashboardClient } from './dashboard-client';
 import { safeToDate } from '@/lib/utils';
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',

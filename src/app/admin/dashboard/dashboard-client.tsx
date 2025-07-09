@@ -23,6 +23,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 const OverviewChart = dynamic(() => import('@/components/admin/overview-chart').then(mod => mod.OverviewChart), {
   loading: () => <Skeleton className="h-[350px] w-full" />,
@@ -32,7 +33,12 @@ const UserRolesChart = dynamic(() => import('@/components/admin/user-roles-chart
 });
 
 // Serializable types for client components
-type SerializableUser = Omit<User, 'joined' | 'lastLoginAt'> & { joined: string, lastLoginAt?: string };
+type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounseledAt' | 'studyPlan'> & { 
+    joined: string, 
+    lastLoginAt?: string,
+    lastCounseledAt?: string,
+    studyPlan?: StudyPlanEvent[],
+};
 type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & { enrollmentDate: string };
 
 interface DashboardClientProps {

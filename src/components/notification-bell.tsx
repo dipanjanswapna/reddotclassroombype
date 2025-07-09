@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup
 } from '@/components/ui/dropdown-menu';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
@@ -23,7 +23,7 @@ import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from './ui/skeleton';
 
-const iconMap = {
+const iconMap: { [key in Notification['icon']]: React.ElementType } = {
     Award,
     Video,
     Megaphone,
