@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -11,7 +12,6 @@ import { Course, HomepageConfig, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
-import rdcShopBanner from '@/public/rdcshop.jpg';
 import { OfflineHubCarousel } from './offline-hub-carousel';
 
 type CoursesPageClientProps = {
@@ -158,18 +158,20 @@ export function CoursesPageClient({
         )}
       </main>
 
-      <div>
-        <div className="relative w-full aspect-[16/6]">
-            <Image
-                src={rdcShopBanner}
-                alt="RDC Shop Banner"
-                fill
-                className="object-cover"
-                data-ai-hint="shop banner"
-                placeholder="blur"
-            />
+      {homepageConfig?.rdcShopBanner?.display && (
+        <div>
+          <div className="relative w-full aspect-[16/6]">
+              <Image
+                  src={homepageConfig.rdcShopBanner.imageUrl}
+                  alt="RDC Shop Banner"
+                  fill
+                  className="object-cover"
+                  data-ai-hint={homepageConfig.rdcShopBanner.dataAiHint}
+                  priority
+              />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

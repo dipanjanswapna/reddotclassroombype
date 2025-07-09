@@ -614,6 +614,30 @@ export default function AdminHomepageManagementPage() {
                 </CardContent>
             </Card>
             <Card>
+                <CardHeader>
+                    <CardTitle>RDC Shop Banner</CardTitle>
+                    <CardDescription>Manage the large banner image on the RDC Shop (/courses) page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <Label htmlFor="shopBanner-display" className="font-medium">Display Banner</Label>
+                        <Switch 
+                            id="shopBanner-display" 
+                            checked={config.rdcShopBanner?.display ?? true} 
+                            onCheckedChange={(checked) => handleSectionValueChange('rdcShopBanner', 'display', checked)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="shopBanner-imageUrl">Image URL</Label>
+                        <Input id="shopBanner-imageUrl" value={config.rdcShopBanner?.imageUrl || ''} onChange={e => handleSectionValueChange('rdcShopBanner', 'imageUrl', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="shopBanner-dataAiHint">Image AI Hint</Label>
+                        <Input id="shopBanner-dataAiHint" value={config.rdcShopBanner?.dataAiHint || ''} onChange={e => handleSectionValueChange('rdcShopBanner', 'dataAiHint', e.target.value)} />
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
                 <CardHeader><CardTitle>Struggling Student Section</CardTitle><CardDescription>Manage the "Struggling in Studies?" banner on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

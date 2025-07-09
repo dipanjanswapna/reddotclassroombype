@@ -617,8 +617,8 @@ export type HomepageConfig = {
   };
   offlineHubSection: {
     display: boolean;
-    title: { bn: string; en: string };
-    subtitle: { bn: string; en: string };
+    programsTitle?: { [key: string]: string };
+    centersTitle: { [key: string]: string };
     contactSection: OfflineHubContactSection;
   };
   collaborations: {
@@ -680,6 +680,11 @@ export type HomepageConfig = {
   floatingWhatsApp: {
     display: boolean;
     number: string;
+  };
+  rdcShopBanner?: {
+    display: boolean;
+    imageUrl: string;
+    dataAiHint: string;
   };
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;

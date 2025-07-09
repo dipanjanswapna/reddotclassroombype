@@ -467,8 +467,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   offlineHubSection: {
     display: true,
-    title: { bn: "RDC অফলাইন হাব", en: "RDC Offline Hub" },
-    subtitle: { bn: "অনলাইনে গত ৯ বছর ধরে লক্ষ লক্ষ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা নিয়ে এবার আমরা সামনাসামনি পড়াবো। এখন, আপনি অত্যাধুনিক মাল্টিমিডিয়া ক্লাসরুমে বসে, দেশের সেরা শিক্ষকদের কাছ থেকে সরাসরি শিখতে পারবেন।", en: "With 9 years of experience teaching millions of students online, we are now teaching face-to-face. Now, you can learn directly from the country's best teachers in a state-of-the-art multimedia classroom." },
+    programsTitle: { bn: 'আমাদের প্রোগ্রামসমূহ', en: 'Our Programs' },
+    centersTitle: { bn: 'আমাদের অফলাইন হাবসমূহ', en: 'Our Offline Hubs' },
     contactSection: {
       display: true,
       title: { bn: "কোনো প্রশ্ন আছে?", en: "Have a Question?" },
@@ -521,6 +521,11 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   floatingWhatsApp: {
       display: true,
       number: '8801641035736'
+  },
+  rdcShopBanner: {
+    display: true,
+    imageUrl: "https://placehold.co/1600x400.png",
+    dataAiHint: "shop banner sale",
   },
   platformSettings: defaultPlatformSettings,
   topperPageSection: {
