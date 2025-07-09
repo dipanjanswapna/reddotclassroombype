@@ -15,12 +15,15 @@ export default function OfflineHubLayout({
       <Header />
       <main className="flex-grow">{children}</main>
       
-      <div className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]">
+      <div 
+        className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]"
+        style={{ backgroundColor: 'rgb(17, 24, 38)' }}
+      >
           <Image
               src={offlineBanner}
               alt="RDC Offline Hub Banner"
               fill
-              className="object-cover"
+              className="object-contain"
               placeholder="blur"
               data-ai-hint="offline hub banner"
           />
