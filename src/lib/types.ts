@@ -69,6 +69,7 @@ export type SyllabusModule = {
 export type Review = {
   id: string;
   user: {
+    userId: string;
     name: string;
     avatarUrl: string;
     dataAiHint: string;
@@ -76,6 +77,7 @@ export type Review = {
   rating: number;
   comment: string;
   date: string;
+  isReported?: boolean;
 };
 
 export type Organization = {
@@ -524,6 +526,22 @@ export type OfflineHubHeroSlide = {
   price: string;
   originalPrice: string;
   enrollHref: string;
+};
+
+export type ReportedContent = {
+  id?: string;
+  contentType: 'review';
+  contentId: string; // The ID of the review
+  courseId: string;
+  courseTitle: string;
+  reporterId: string; // UID of the user who reported it
+  reportedUserId: string; // User ID from the review
+  contentSnapshot: string; // The text of the review
+  status: 'pending' | 'resolved';
+  createdAt: Timestamp;
+  resolvedAt?: Timestamp;
+  resolverId?: string; // Moderator's UID
+  actionTaken?: 'dismissed' | 'content_deleted';
 };
 
 export type HomepageConfig = {

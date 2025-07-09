@@ -37,6 +37,7 @@ import { Course } from '@/lib/types';
 import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
+import { ReviewCard } from '@/components/review-card';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -297,24 +298,7 @@ export default async function CourseDetailPage({
                 <Card>
                   <CardContent className="pt-6 space-y-6">
                     {course.reviewsData.map((review) => (
-                      <div key={review.id} className="flex items-start gap-4">
-                        <Avatar>
-                          <AvatarImage src={review.user.avatarUrl} alt={review.user.name} data-ai-hint={review.user.dataAiHint} />
-                          <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <p className="font-semibold">{review.user.name}</p>
-                            <p className="text-xs text-muted-foreground">{review.date}</p>
-                          </div>
-                          <div className="flex items-center gap-0.5 mt-1">
-                            {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-4 h-4 text-yellow-400 ${i < review.rating ? 'fill-current' : ''}`} />
-                            ))}
-                          </div>
-                          <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                        </div>
-                      </div>
+                      <ReviewCard key={review.id} review={review} courseId={courseId} />
                     ))}
                   </CardContent>
                 </Card>

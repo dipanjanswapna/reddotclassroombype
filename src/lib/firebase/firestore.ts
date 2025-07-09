@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -315,6 +315,15 @@ export const getAttendanceForStudent = async (studentId: string): Promise<Attend
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 }
+
+// Reported Content
+export const addReportedContent = (report: Omit<ReportedContent, 'id'>) => addDoc(collection(db, 'reported_content'), report);
+export const getPendingReports = async (): Promise<ReportedContent[]> => {
+    const q = query(collection(db, 'reported_content'), where('status', '==', 'pending'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportedContent));
+};
+export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => updateDoc(doc(db, 'reported_content', id), data);
 
 
 const defaultPlatformSettings: PlatformSettings = {
