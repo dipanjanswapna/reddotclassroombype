@@ -78,15 +78,15 @@ export default async function Home() {
         <section className="bg-secondary/50 py-12 text-center">
             <div className="container mx-auto px-4">
                 <h1 className="text-4xl font-bold tracking-tight">
-                    {homepageConfig.welcomeSection.title[language] || homepageConfig.welcomeSection.title['en']}
+                    {homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en']}
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                    {homepageConfig.welcomeSection.description[language] || homepageConfig.welcomeSection.description['en']}
+                    {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
                 </p>
             </div>
         </section>
       )}
-      <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
+      <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
       
       <div>
         {homepageConfig.strugglingStudentSection?.display && (
@@ -104,16 +104,16 @@ export default async function Home() {
                           />
                           <div>
                               <h3 className="font-headline text-xl font-bold text-gray-800 dark:text-white">
-                                  {homepageConfig.strugglingStudentSection.title[language]}
+                                  {homepageConfig.strugglingStudentSection?.title?.[language]}
                               </h3>
                               <p className="text-muted-foreground">
-                                  {homepageConfig.strugglingStudentSection.subtitle[language]}
+                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language]}
                               </p>
                           </div>
                       </div>
                       <Button asChild className="bg-teal-500 hover:bg-teal-600 font-bold shrink-0">
                           <Link href="/strugglers-studies">
-                              {homepageConfig.strugglingStudentSection.buttonText[language]}
+                              {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
                           </Link>
                       </Button>
                   </div>
@@ -125,9 +125,9 @@ export default async function Home() {
           <section aria-labelledby="categories-heading">
             <div className="container mx-auto px-4">
               <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
-                {homepageConfig.categoriesSection.title[language]}
+                {homepageConfig.categoriesSection?.title?.[language]}
               </h2>
-              <CategoriesCarousel categories={homepageConfig.categoriesSection.categories} />
+              <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
             </div>
           </section>
         )}
@@ -135,10 +135,10 @@ export default async function Home() {
         {homepageConfig.journeySection?.display && (
           <section className="bg-secondary/50" aria-labelledby="hero-heading">
             <div className="container mx-auto px-4">
-              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection.title[language]}</h2>
-              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection.subtitle[language]}</p>
+              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
+              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
-                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection.courseTitle[language]}</h3>
+                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} />
               </div>
             </div>
@@ -150,14 +150,14 @@ export default async function Home() {
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-8">
                   <div>
-                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection.title[language]}</h2>
-                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection.subtitle[language]}</p>
+                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
                   <Button asChild variant="outline">
-                      <Link href="/teachers">{homepageConfig.teachersSection.buttonText[language]}</Link>
+                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
-              <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection.scrollSpeed} />
+              <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
             </div>
           </section>
         )}
@@ -165,10 +165,10 @@ export default async function Home() {
         {homepageConfig.videoSection?.display && (
           <section aria-labelledby="video-section-heading">
             <div className="container mx-auto px-4 text-center">
-                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description[language]}</p>
+                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
+                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {homepageConfig.videoSection.videos.map((video, index) => {
+                    {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
                       
@@ -183,7 +183,7 @@ export default async function Home() {
                     })}
                 </div>
                 <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                  <Link href="/courses">{homepageConfig.videoSection.buttonText[language]}</Link>
+                  <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
           </section>
@@ -192,8 +192,8 @@ export default async function Home() {
         {homepageConfig.sscHscSection?.display && (
           <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection.badge[language]}</Badge>
-                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection.title[language]}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
                   </div>
@@ -204,10 +204,10 @@ export default async function Home() {
         {homepageConfig.masterclassSection?.display && (
           <section aria-labelledby="masterclass-heading">
               <div className="container mx-auto px-4 text-center">
-                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection.title[language]}</h2>
+                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} />
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                    <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection.buttonText[language]}</Link>
+                    <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -216,13 +216,13 @@ export default async function Home() {
         {homepageConfig.admissionSection?.display && (
           <section className="bg-secondary/50" aria-labelledby="admission-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection.badge[language]}</Badge>
-                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection.title[language]}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
                   </div>
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                    <Link href="/courses?category=Admission">{homepageConfig.admissionSection.buttonText[language]}</Link>
+                    <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -231,13 +231,13 @@ export default async function Home() {
         {homepageConfig.jobPrepSection?.display && (
           <section aria-labelledby="job-prep-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection.badge[language]}</Badge>
-                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection.title[language]}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
                   </div>
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
-                    <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection.buttonText[language]}</Link>
+                    <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -257,7 +257,7 @@ export default async function Home() {
           <section aria-labelledby="collaborations-heading">
             <div className="container mx-auto px-4">
               <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
-                {homepageConfig.collaborations.title[language]}
+                {homepageConfig.collaborations?.title?.[language]}
               </h2>
               <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
             </div>
@@ -268,7 +268,7 @@ export default async function Home() {
           <section aria-labelledby="partners-heading">
             <div className="container mx-auto px-4">
               <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
-                {homepageConfig.partnersSection.title[language]}
+                {homepageConfig.partnersSection?.title?.[language]}
               </h2>
               <PartnersLogoScroll 
                 partners={homepageConfig.partnersSection.partners}
@@ -283,13 +283,13 @@ export default async function Home() {
           <section className="bg-secondary/30" aria-labelledby="social-media-heading">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
-                {homepageConfig.socialMediaSection.title[language]}
+                {homepageConfig.socialMediaSection?.title?.[language]}
               </h2>
               <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
-                {homepageConfig.socialMediaSection.description[language]}
+                {homepageConfig.socialMediaSection?.description?.[language]}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {homepageConfig.socialMediaSection.channels.map((channel) => (
+                {homepageConfig.socialMediaSection?.channels.map((channel) => (
                   <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-card">
                     <CardHeader className="p-0">
                       <div className="flex items-center justify-center gap-2 mb-2">
@@ -337,10 +337,10 @@ export default async function Home() {
               <Card className="shadow-lg">
                 <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className='text-center md:text-left'>
-                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner.title[language]}</h3>
-                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner.description[language]}</p>
+                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner.buttonText[language]}</Button>
+                    <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
                 </div>
               </Card>
             </div>
@@ -350,12 +350,12 @@ export default async function Home() {
         {homepageConfig.statsSection?.display && (
           <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
             <div className="container mx-auto px-4 text-center">
-                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection.title[language]}</h2>
+                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {homepageConfig.statsSection.stats.map((stat, index) => (
+                    {homepageConfig.statsSection?.stats.map((stat, index) => (
                         <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
                             <p className="font-headline text-5xl font-bold">{stat.value}</p>
-                            <p className="mt-2 text-lg opacity-90">{stat.label[language]}</p>
+                            <p className="mt-2 text-lg opacity-90">{stat.label?.[language]}</p>
                         </div>
                     ))}
                 </div>
@@ -367,13 +367,13 @@ export default async function Home() {
           <section aria-labelledby="app-promo-heading">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
-                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-[rgb(242,0,0)]">{homepageConfig.appPromo.title[language]}</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo.description[language]}</p>
+                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-[rgb(242,0,0)]">{homepageConfig.appPromo?.title?.[language]}</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
-                        <Link href={homepageConfig.appPromo.googlePlayUrl}>
+                        <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
                         </Link>
-                        <Link href={homepageConfig.appPromo.appStoreUrl}>
+                        <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
                             <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
                         </Link>
                     </div>
