@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -540,6 +541,11 @@ export type OfflineHubHeroSlide = {
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
+  welcomeSection?: {
+    display: boolean;
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+  };
   heroBanners: {
     id: number;
     href: string;

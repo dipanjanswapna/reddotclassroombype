@@ -469,6 +469,7 @@ export default function AdminHomepageManagementPage() {
     };
 
   const allSections = [
+    { key: 'welcomeSection', label: 'Welcome Section'},
     { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
     { key: 'topperPageSection', label: 'Strugglers/Topper Page'},
     { key: 'offlineHubHeroCarousel', label: 'Offline Hub Carousel'},
@@ -596,7 +597,7 @@ export default function AdminHomepageManagementPage() {
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>Offline Hub Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub and RDC Shop pages.</CardDescription></CardHeader>
+                <CardHeader><CardTitle>Offline Hub & RDC Shop Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub and RDC Shop pages.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
                         <div key={slide.id} className="p-4 border rounded-lg space-y-2 relative">
@@ -704,6 +705,30 @@ export default function AdminHomepageManagementPage() {
             </Card>
         </TabsContent>
          <TabsContent value="content" className="mt-6 space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Welcome Section</CardTitle>
+                    <CardDescription>Manage the welcome message shown below the header on the homepage.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <Label htmlFor="welcome-display" className="font-medium">Display Section</Label>
+                        <Switch 
+                            id="welcome-display" 
+                            checked={config.welcomeSection?.display} 
+                            onCheckedChange={(checked) => setConfig(prev => prev ? ({ ...prev, welcomeSection: { ...prev.welcomeSection!, display: checked } }) : null)}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} /></div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Description (BN)</Label><Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={4}/></div>
+                        <div className="space-y-2"><Label>Description (EN)</Label><Textarea value={config.welcomeSection?.description?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'en', e.target.value)} rows={4}/></div>
+                    </div>
+                </CardContent>
+            </Card>
             <Card>
                 <CardHeader>
                     <CardTitle>Why Choose Us Section</CardTitle>

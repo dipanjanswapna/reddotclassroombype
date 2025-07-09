@@ -74,6 +74,18 @@ export default async function Home() {
 
   return (
     <div className="bg-background [&>div:last-child>section:last-child]:pb-0">
+      {homepageConfig.welcomeSection?.display && (
+        <section className="bg-secondary/50 py-12 text-center">
+            <div className="container mx-auto px-4">
+                <h1 className="text-4xl font-bold tracking-tight">
+                    {homepageConfig.welcomeSection.title[language] || homepageConfig.welcomeSection.title['en']}
+                </h1>
+                <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+                    {homepageConfig.welcomeSection.description[language] || homepageConfig.welcomeSection.description['en']}
+                </p>
+            </div>
+        </section>
+      )}
       <HeroCarousel banners={homepageConfig.heroBanners} autoplaySettings={homepageConfig.heroCarousel} />
       
       <div>

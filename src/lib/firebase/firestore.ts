@@ -1,4 +1,5 @@
 
+
 import { db } from './config';
 import {
   collection,
@@ -321,6 +322,14 @@ const defaultPlatformSettings: PlatformSettings = {
 
 const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   logoUrl: "",
+  welcomeSection: {
+    display: true,
+    title: { bn: "RDC শপ", en: "RDC SHOP" },
+    description: { 
+      bn: "রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র, যা সারা দেশের শিক্ষার্থীদের উচ্চ-মানের শিক্ষামূলক সম্পদ প্রদানে বিশেষজ্ঞ। ২০১৮ সালে প্রতিষ্ঠিত, প্ল্যাটফর্মটি তার বিভিন্ন কোর্সের মাধ্যমে ৯০০,০০০ এরও বেশি শিক্ষার্থীর সক্রিয়ভাবে শেখার এবং তাদের দক্ষতা বিকাশের মাধ্যমে বাংলাদেশী শিক্ষার্থীদের মধ্যে দ্রুত জনপ্রিয়তা অর্জন করেছে।",
+      en: "Red Dot Classroom (RDC Shop) is an online education center based in Dhaka, Bangladesh, specializing in providing high-quality educational resources to students across the country. Established in 2018, the platform has quickly gained popularity among Bangladeshi students, with over 900,000 students actively learning and developing their skills through its diverse range of courses." 
+    }
+  },
   heroBanners: [
     { id: 1, href: "/courses/1", imageUrl: "https://placehold.co/800x450.png", alt: "HSC 25 Batch", dataAiHint: "students classroom" },
     { id: 2, href: "/courses/2", imageUrl: "https://placehold.co/800x450.png", alt: "Medical Admission", dataAiHint: "doctor medical" },
