@@ -77,6 +77,7 @@ export async function markAttendanceByRollAction(rollNo: string, teacherId: stri
             date: today,
             status: 'Present',
             recordedBy: teacherId,
+            callStatus: 'Called',
         };
 
         const existingRecord = await getAttendanceRecordForStudentByDate(student.id!, today);
@@ -89,6 +90,7 @@ export async function markAttendanceByRollAction(rollNo: string, teacherId: stri
 
         revalidatePath('/admin/offline-hub');
         revalidatePath('/teacher/scan-attendance');
+        revalidatePath('/moderator/scan-attendance');
 
         return { success: true, message: `${student.name} (Roll: ${rollNo}) has been marked as present.` };
 
