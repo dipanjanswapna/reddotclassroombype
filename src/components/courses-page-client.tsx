@@ -96,7 +96,7 @@ export function CoursesPageClient({
         <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
-      <main className="container mx-auto px-4 pt-16 pb-24">
+      <main className="container mx-auto px-4 pt-16">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingSpinner className="w-12 h-12" />
