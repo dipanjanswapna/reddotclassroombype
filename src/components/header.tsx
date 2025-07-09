@@ -39,7 +39,7 @@ import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 
 
-export function Header({ containerClassName, variant = "light" }: { containerClassName?: string; variant?: "light" | "dark" }) {
+export function Header({ containerClassName, variant = "light", wrapperClassName }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
   const [config, setConfig] = useState<HomepageConfig | null>(null);
@@ -65,7 +65,7 @@ export function Header({ containerClassName, variant = "light" }: { containerCla
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full py-2">
+    <header className={cn("sticky top-0 z-50 w-full py-2", wrapperClassName)}>
       <div className="container">
         <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/80 px-4 shadow-lg backdrop-blur-md border", containerClassName)}>
           <div className="flex items-center">

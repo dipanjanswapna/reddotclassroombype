@@ -12,7 +12,7 @@ export default function OfflineHubLayout({
 }) {
   return (
     <div className="flex flex-col">
-      <Header variant="dark" containerClassName="bg-[rgb(34,25,38)] border-gray-700" />
+      <Header variant="dark" wrapperClassName="bg-[rgb(34,25,38)]" containerClassName="bg-[rgb(34,25,38)] border-gray-700" />
       <main className="flex-grow">{children}</main>
       
       <div 
