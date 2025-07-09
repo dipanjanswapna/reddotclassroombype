@@ -7,7 +7,6 @@ import { ArrowRight, CheckCircle, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
 import { Course } from '@/lib/types';
-import { Header } from '@/components/header';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 
 
@@ -38,8 +37,6 @@ export default async function OfflineHubPage() {
 
   return (
     <div>
-      <Header variant="dark" wrapperClassName="bg-gray-900" />
-      
       {homepageConfig?.offlineHubHeroCarousel?.display && (
         <div className="bg-gray-900">
             <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
