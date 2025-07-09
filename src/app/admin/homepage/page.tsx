@@ -203,6 +203,30 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addSocialChannel = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const newChannel: SocialChannel = {
+            id: Date.now(),
+            platform: 'YouTube',
+            name: { bn: 'নতুন চ্যানেল', en: 'New Channel' },
+            handle: '@newchannel',
+            stat1_value: '0',
+            stat1_label: { bn: 'সাবস্ক্রাইবার', en: 'Subscribers' },
+            stat2_value: '0',
+            stat2_label: { bn: 'ভিডিও', en: 'Videos' },
+            description: { bn: 'চ্যানেলের বিবরণ', en: 'Channel description' },
+            ctaText: { bn: 'সাবস্ক্রাইব করুন', en: 'Subscribe' },
+            ctaUrl: '#',
+        };
+        const socialSection = prev.socialMediaSection || { display: true, title: {bn: '', en: ''}, description: {bn: '', en: ''}, channels: [] };
+        return {
+            ...prev,
+            socialMediaSection: { ...socialSection, channels: [...socialSection.channels, newChannel] }
+        };
+    });
+  };
+
   const removeHeroBanner = (id: number) => {
     setConfig(prev => prev ? ({
       ...prev,
@@ -236,6 +260,14 @@ export default function AdminHomepageManagementPage() {
       if (!prev || !prev.freeClassesSection) return null;
       const updatedClasses = prev.freeClassesSection.classes.filter(c => c.id !== id);
       return { ...prev, freeClassesSection: { ...prev.freeClassesSection, classes: updatedClasses }};
+    });
+  };
+
+  const removeSocialChannel = (id: number) => {
+    setConfig(prev => {
+        if (!prev || !prev.socialMediaSection) return null;
+        const newChannels = prev.socialMediaSection.channels.filter(c => c.id !== id);
+        return { ...prev, socialMediaSection: { ...prev.socialMediaSection, channels: newChannels } };
     });
   };
 
@@ -788,8 +820,38 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Social Media Section</CardTitle><CardDescription>Manage the "আমাদের সাথে কানেক্টেড থাকুন" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.socialMediaSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('socialMediaSection', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.socialMediaSection?.title?.bn || ''} onChange={e => handleSectionLangChange('socialMediaSection', 'title', 'bn', e.target.value)} /></div>
                     <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.socialMediaSection?.description?.bn || ''} onChange={e => handleSectionLangChange('socialMediaSection', 'description', 'bn', e.target.value)} /></div>
+                    
+                    <div className="space-y-4 pt-4 border-t">
+                        <Label className="font-semibold">Channels</Label>
+                        {config.socialMediaSection?.channels.map((channel, index) => (
+                             <Collapsible key={channel.id} className="p-3 border rounded-md space-y-2 relative bg-muted/50">
+                                <div className="flex justify-between items-center"><h4 className="font-medium pt-2">{typeof channel.name === 'object' ? channel.name.bn : channel.name}</h4><div><Button variant="ghost" size="icon" onClick={() => removeSocialChannel(channel.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
+                                <CollapsibleContent className="space-y-4 pt-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Platform</Label>
+                                            <Select value={channel.platform} onValueChange={(value) => handleNestedInputChange('socialMediaSection', 'channels', 'platform', value, index)}>
+                                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                                <SelectContent><SelectItem value="YouTube">YouTube</SelectItem><SelectItem value="Facebook Page">Facebook Page</SelectItem></SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2"><Label>Channel Name (BN)</Label><Input value={typeof channel.name === 'object' ? channel.name.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Channel Handle</Label><Input value={channel.handle} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'handle', e.target.value, index)} placeholder="@handle" /></div>
+                                        <div className="space-y-2"><Label>Stat 1 Value</Label><Input value={channel.stat1_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat1_value', e.target.value, index)} placeholder="e.g., 1.5M"/></div>
+                                        <div className="space-y-2"><Label>Stat 1 Label (BN)</Label><Input value={typeof channel.stat1_label === 'object' ? channel.stat1_label.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} placeholder="e.g., সাবস্ক্রাইবার" /></div>
+                                        <div className="space-y-2"><Label>Stat 2 Value</Label><Input value={channel.stat2_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat2_value', e.target.value, index)} placeholder="e.g., 500+"/></div>
+                                        <div className="space-y-2"><Label>Stat 2 Label (BN)</Label><Input value={typeof channel.stat2_label === 'object' ? channel.stat2_label.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} placeholder="e.g., ভিডিও"/></div>
+                                        <div className="space-y-2 col-span-2"><Label>Description (BN)</Label><Textarea value={typeof channel.description === 'object' ? channel.description.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} rows={2} /></div>
+                                        <div className="space-y-2"><Label>CTA Text (BN)</Label><Input value={typeof channel.ctaText === 'object' ? channel.ctaText.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>CTA URL</Label><Input value={channel.ctaUrl} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'ctaUrl', e.target.value, index)} /></div>
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        ))}
+                        <Button variant="outline" className="w-full border-dashed" onClick={addSocialChannel}><PlusCircle className="mr-2"/>Add Channel</Button>
+                    </div>
                 </CardContent>
             </Card>
             <Card>
