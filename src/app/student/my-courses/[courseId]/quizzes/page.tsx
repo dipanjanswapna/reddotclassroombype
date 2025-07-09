@@ -1,7 +1,6 @@
 
 import { notFound } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
-import type { Quiz } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -10,13 +9,15 @@ import { HelpCircle, PlayCircle } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 
-const getStatusBadgeVariant = (status?: 'Completed' | 'Not Started' | 'In Progress'): VariantProps<typeof badgeVariants>['variant'] => {
+import { getCurrentUser } from '@/lib/firebase/auth'; // A helper we'll assume exists for server components
+import type { QuizResult } from '@/lib/types';
+
+
+const getStatusBadgeVariant = (status?: 'Completed' | 'Not Started'): VariantProps<typeof badgeVariants>['variant'] => {
   if (!status) return 'secondary';
   switch (status) {
     case 'Completed':
       return 'accent';
-    case 'In Progress':
-      return 'warning';
     default:
       return 'secondary';
   }
@@ -24,12 +25,16 @@ const getStatusBadgeVariant = (status?: 'Completed' | 'Not Started' | 'In Progre
 
 export default async function QuizzesPage({ params }: { params: { courseId: string } }) {
   const course = await getCourse(params.courseId);
+  const user = await getCurrentUser();
 
   if (!course) {
     notFound();
   }
 
-  const quizzes = course.quizzes || [];
+  const quizTemplates = course.quizTemplates || [];
+  const quizResults = course.quizResults?.filter(r => r.studentId === user?.uid) || [];
+  
+  const resultsMap = new Map<string, QuizResult>(quizResults.map(r => [r.quizTemplateId, r]));
 
   return (
     <div className="space-y-8">
@@ -44,7 +49,7 @@ export default async function QuizzesPage({ params }: { params: { courseId: stri
           <CardDescription>Complete these quizzes to test your understanding of the course material.</CardDescription>
         </CardHeader>
         <CardContent>
-          {quizzes.length > 0 ? (
+          {quizTemplates.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -56,18 +61,23 @@ export default async function QuizzesPage({ params }: { params: { courseId: stri
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quizzes.map((quiz) => (
+                {quizTemplates.map((quiz) => {
+                  const result = resultsMap.get(quiz.id);
+                  const status = result ? 'Completed' : 'Not Started';
+                  const score = result ? result.score : null;
+
+                  return (
                   <TableRow key={quiz.id}>
                     <TableCell className="font-medium">{quiz.title}</TableCell>
                     <TableCell>{quiz.topic}</TableCell>
                     <TableCell>{quiz.questions.length}</TableCell>
                     <TableCell>
-                        <Badge variant={getStatusBadgeVariant(quiz.status)}>
-                            {quiz.status || 'Not Started'} {quiz.status === 'Completed' && quiz.score && `(${quiz.score}%)`}
+                        <Badge variant={getStatusBadgeVariant(status)}>
+                            {status} {status === 'Completed' && score !== null && `(${score}%)`}
                         </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {quiz.status === 'Completed' ? (
+                      {status === 'Completed' ? (
                         <Button variant="outline" size="sm" asChild>
                            <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
                                 View Results
@@ -77,13 +87,13 @@ export default async function QuizzesPage({ params }: { params: { courseId: stri
                          <Button asChild size="sm">
                             <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
                                 <PlayCircle className="mr-2" />
-                                {quiz.status === 'In Progress' ? 'Continue Quiz' : 'Start Quiz'}
+                                Start Quiz
                             </Link>
                          </Button>
                       )}
                     </TableCell>
                   </TableRow>
-                ))}
+                )})}
               </TableBody>
             </Table>
           ) : (

@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
-import type { Course, Quiz, QuizQuestion } from '@/lib/types';
+import type { Course, QuizTemplate, QuizQuestion } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -25,25 +25,44 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
+import { submitQuizAction } from '@/app/actions/quiz.actions';
 
 export default function QuizPage({ params }: { params: { courseId: string; quizId: string } }) {
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quizTemplate, setQuizTemplate] = useState<QuizTemplate | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({}); // questionIndex -> optionId
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({}); // { questionId -> optionId }
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+
 
   useEffect(() => {
     async function fetchQuizData() {
+        if (!userInfo) {
+            if (!loading) setLoading(false);
+            return;
+        }
+
         try {
             const courseData = await getCourse(params.courseId);
             if (courseData) {
                 setCourse(courseData);
-                const quizData = courseData.quizzes?.find(q => q.id === params.quizId);
-                if (quizData) {
-                    setQuiz(quizData);
+                const templateData = courseData.quizTemplates?.find(q => q.id === params.quizId);
+                if (templateData) {
+                    setQuizTemplate(templateData);
+
+                    const existingResult = courseData.quizResults?.find(r => r.studentId === userInfo.uid && r.quizTemplateId === params.quizId);
+                    if (existingResult) {
+                        setIsSubmitted(true);
+                        setSelectedAnswers(existingResult.answers);
+                        setFinalScore(existingResult.score);
+                    }
                 }
             }
         } catch(e) {
@@ -53,7 +72,7 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
         }
     }
     fetchQuizData();
-  }, [params.courseId, params.quizId]);
+  }, [params.courseId, params.quizId, userInfo]);
 
   if (loading) {
     return (
@@ -63,19 +82,19 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
     );
   }
 
-  if (!course || !quiz) {
+  if (!course || !quizTemplate) {
     notFound();
   }
 
-  const handleSelectAnswer = (questionIndex: number, optionId: string) => {
+  const handleSelectAnswer = (questionId: string, optionId: string) => {
     setSelectedAnswers((prev) => ({
       ...prev,
-      [questionIndex]: optionId,
+      [questionId]: optionId,
     }));
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < quiz.questions.length - 1) {
+    if (currentQuestionIndex < quizTemplate.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -86,20 +105,37 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!userInfo) return;
+
+    const correctAnswers = quizTemplate.questions.reduce((acc, q) => {
+      if (selectedAnswers[q.id!] === q.correctAnswerId) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    const score = Math.round((correctAnswers / quizTemplate.questions.length) * 100);
+    
+    setFinalScore(score);
     setIsSubmitted(true);
-  };
-  
-  const score = Object.entries(selectedAnswers).reduce((acc, [questionIndex, optionId]) => {
-    if (quiz.questions[Number(questionIndex)].correctAnswerId === optionId) {
-      return acc + 1;
+
+    const result = await submitQuizAction(
+      course!.id!,
+      quizTemplate.id,
+      userInfo.uid,
+      userInfo.name,
+      selectedAnswers,
+      score
+    );
+
+    if (result.success) {
+      toast({ title: "Quiz Submitted!", description: "Your answers have been saved." });
+    } else {
+      toast({ title: "Error", description: "Failed to save your quiz results.", variant: "destructive" });
     }
-    return acc;
-  }, 0);
+  };
 
-  const scorePercentage = Math.round((score / quiz.questions.length) * 100);
-
-  const currentQuestion = quiz.questions[currentQuestionIndex];
+  const currentQuestion = quizTemplate.questions[currentQuestionIndex];
 
   if (isSubmitted) {
     return (
@@ -107,18 +143,18 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
              <Card>
                 <CardHeader className="text-center">
                     <CardTitle className="text-3xl font-bold">Quiz Results</CardTitle>
-                    <CardDescription>{quiz.title} - {course.title}</CardDescription>
+                    <CardDescription>{quizTemplate.title} - {course.title}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                     <p className="text-lg">You scored:</p>
-                    <p className="text-6xl font-bold text-primary my-2">{scorePercentage}%</p>
-                    <p className="text-muted-foreground">({score} out of {quiz.questions.length} correct)</p>
+                    <p className="text-6xl font-bold text-primary my-2">{finalScore}%</p>
+                    <p className="text-muted-foreground">({Math.round(finalScore / 100 * quizTemplate.questions.length)} out of {quizTemplate.questions.length} correct)</p>
                 </CardContent>
              </Card>
              <div className="mt-8 space-y-4">
                 <h3 className="text-2xl font-bold">Review Your Answers</h3>
-                 {quiz.questions.map((q, index) => {
-                     const userAnswerId = selectedAnswers[index];
+                 {quizTemplate.questions.map((q, index) => {
+                     const userAnswerId = selectedAnswers[q.id!];
                      const isCorrect = userAnswerId === q.correctAnswerId;
                      return (
                          <Card key={q.id} className={cn(isCorrect ? 'border-green-300' : 'border-red-300')}>
@@ -133,7 +169,7 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
                                  </CardTitle>
                              </CardHeader>
                              <CardContent className="space-y-2">
-                                 {q.options.map((option) => {
+                                 {q.options?.map((option) => {
                                      const isSelected = userAnswerId === option.id;
                                      const isCorrectAnswer = q.correctAnswerId === option.id;
                                      return (
@@ -147,12 +183,6 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
                                         </div>
                                      )
                                  })}
-                                  {!isCorrect && userAnswerId !== undefined && (
-                                      <p className="text-sm pt-2">Your answer: "{q.options.find(opt => opt.id === userAnswerId)?.text}"</p>
-                                  )}
-                                  {!isCorrect && (
-                                      <p className="text-sm text-green-700 font-semibold">Correct answer: "{q.options.find(opt => opt.id === q.correctAnswerId)?.text}"</p>
-                                  )}
                              </CardContent>
                          </Card>
                      )
@@ -166,22 +196,22 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{quiz.title}</CardTitle>
+          <CardTitle className="text-2xl">{quizTemplate.title}</CardTitle>
           <CardDescription>{course.title}</CardDescription>
           <div className="pt-2">
-            <Progress value={((currentQuestionIndex + 1) / quiz.questions.length) * 100} />
-            <p className="text-sm text-muted-foreground mt-2">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+            <Progress value={((currentQuestionIndex + 1) / quizTemplate.questions.length) * 100} />
+            <p className="text-sm text-muted-foreground mt-2">Question {currentQuestionIndex + 1} of {quizTemplate.questions.length}</p>
           </div>
         </CardHeader>
         <CardContent>
             <div className="space-y-6">
                 <p className="text-lg font-semibold">{currentQuestion.text}</p>
                 <RadioGroup 
-                    value={selectedAnswers[currentQuestionIndex]}
-                    onValueChange={(value) => handleSelectAnswer(currentQuestionIndex, value)}
+                    value={selectedAnswers[currentQuestion.id!]}
+                    onValueChange={(value) => handleSelectAnswer(currentQuestion.id!, value)}
                     className="space-y-2"
                 >
-                    {currentQuestion.options.map((option, index) => (
+                    {currentQuestion.options?.map((option, index) => (
                         <Label key={option.id} className="flex items-center gap-3 p-4 border rounded-md cursor-pointer has-[:checked]:bg-muted has-[:checked]:border-primary transition-colors">
                             <RadioGroupItem value={option.id} id={option.id} />
                             <span className="text-base">{option.text}</span>
@@ -194,7 +224,7 @@ export default function QuizPage({ params }: { params: { courseId: string; quizI
             <Button variant="outline" onClick={handlePrev} disabled={currentQuestionIndex === 0}>
                 <ArrowLeft className="mr-2" /> Previous
             </Button>
-            {currentQuestionIndex < quiz.questions.length - 1 ? (
+            {currentQuestionIndex < quizTemplate.questions.length - 1 ? (
                  <Button onClick={handleNext}>
                     Next <ArrowRight className="ml-2" />
                  </Button>

@@ -128,18 +128,24 @@ export type Instructor = {
   }[];
 }
 
-export type Quiz = {
+export type QuizTemplate = {
   id: string;
   title: string;
   topic: string;
   questions: Question[];
-  // These were from mock-data, but are not set in the builder.
-  // The consuming components should handle their absence.
-  totalQuestions?: number;
-  duration?: number; // in minutes
-  status?: 'Completed' | 'Not Started' | 'In Progress';
-  score?: number;
 };
+
+export type QuizResult = {
+  id: string; // quizTemplateId-studentId
+  quizTemplateId: string;
+  studentId: string;
+  studentName: string;
+  score: number; // as percentage
+  status: 'Completed';
+  answers: Record<string, string>; // { questionId: optionId }
+  submissionDate: Timestamp;
+};
+
 
 export type Assignment = {
   id: string;
@@ -310,7 +316,8 @@ export type Course = {
   prebookingTarget?: number;
   organizationId?: string;
   organizationName?: string;
-  quizzes?: Quiz[];
+  quizTemplates?: QuizTemplate[];
+  quizResults?: QuizResult[];
   assignments?: Assignment[];
   assignmentTemplates?: AssignmentTemplate[];
   exams?: Exam[];

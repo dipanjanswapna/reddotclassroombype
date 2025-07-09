@@ -70,10 +70,10 @@ export default function AchievementsPage() {
                 let topClassEarned = false;
 
                 for (const course of courses) {
-                    if (!quizWhizEarned && course.quizzes) {
-                        const highQuizScore = course.quizzes.find(q => q.status === 'Completed' && q.score && q.score >= 90);
+                    if (!quizWhizEarned && course.quizResults) {
+                        const highQuizScore = course.quizResults.find(q => q.studentId === userInfo.uid && q.score >= 90);
                         if (highQuizScore) {
-                             earnedAchievements.push({ ...allAchievements[3], date: new Date().toLocaleDateString() }); // Date can be improved
+                             earnedAchievements.push({ ...allAchievements[3], date: highQuizScore.submissionDate.toDate().toLocaleDateString() });
                              quizWhizEarned = true;
                         }
                     }
