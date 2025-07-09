@@ -149,8 +149,8 @@ export function CoursesPageClient({
         )}
       </main>
 
-      <section className="container mx-auto px-4 my-16">
-        <div className="relative w-full aspect-[16/6] rounded-lg overflow-hidden shadow-lg">
+      <section>
+        <div className="relative w-full aspect-[16/6] shadow-lg">
             <Image
                 src="/rdcshop.jpg"
                 alt="RDC Shop Banner"
