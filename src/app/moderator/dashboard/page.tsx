@@ -9,7 +9,7 @@ import {
   MessageSquareWarning,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,10 +22,8 @@ import { formatDistanceToNow } from 'date-fns';
 export default function ModeratorDashboardPage() {
     const { toast } = useToast();
     const [stats, setStats] = useState({
-        pendingReviews: 12, // Placeholder
         openSupportTickets: 0,
         totalUsers: 0,
-        newReportsToday: 8, // Placeholder
     });
     const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([]);
     const [loading, setLoading] = useState(true);
@@ -80,20 +78,6 @@ export default function ModeratorDashboardPage() {
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                Pending Reviews
-                </CardTitle>
-                <FileScan className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.pendingReviews}</div>
-                <p className="text-xs text-muted-foreground">
-                User-reported content (placeholder)
-                </p>
-            </CardContent>
-            </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
                 Open Support Tickets
                 </CardTitle>
                 <Ticket className="h-4 w-4 text-muted-foreground" />
@@ -119,25 +103,12 @@ export default function ModeratorDashboardPage() {
                 </p>
             </CardContent>
             </Card>
-             <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                New Reports Today
-                </CardTitle>
-                <MessageSquareWarning className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">+{stats.newReportsToday}</div>
-                <p className="text-xs text-muted-foreground">
-                Since yesterday (placeholder)
-                </p>
-            </CardContent>
-            </Card>
         </div>
         
         <Card>
             <CardHeader>
-                <CardTitle>Recent Activity Feed</CardTitle>
+                <CardTitle>Recent Support Tickets</CardTitle>
+                <CardDescription>The newest tickets that need attention.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -150,7 +121,7 @@ export default function ModeratorDashboardPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {recentTickets.map((ticket) => (
+                        {recentTickets.length > 0 ? recentTickets.map((ticket) => (
                             <TableRow key={ticket.id}>
                                 <TableCell><Badge variant='warning'>Ticket</Badge></TableCell>
                                 <TableCell>New ticket from {ticket.userName}: "{ticket.subject}"</TableCell>
@@ -161,7 +132,11 @@ export default function ModeratorDashboardPage() {
                                     </Button>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">No new tickets.</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
