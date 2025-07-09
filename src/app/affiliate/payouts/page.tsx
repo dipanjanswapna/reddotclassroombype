@@ -138,6 +138,13 @@ export default function AffiliatePayoutsPage() {
                                 </TableCell>
                             </TableRow>
                         ))}
+                         {mockPayouts.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center">
+                                    No payout history found.
+                                </TableCell>
+                            </TableRow>
+                         )}
                     </TableBody>
                 </Table>
             </CardContent>

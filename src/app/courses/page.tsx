@@ -1,5 +1,4 @@
 
-
 import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
@@ -36,7 +35,7 @@ export default async function CoursesPage({
   const archivedCourses = allCoursesData.filter(course => course.isArchived);
   const approvedProviders = providers.filter(p => p.status === 'approved');
   
-  const sortedCategories = [...categories].sort();
+  const sortedCategories = [...new Set(allCoursesData.map(c => c.category).filter(Boolean))] as string[];
   const allSubCategories = [...new Set(allCoursesData.map(course => course.subCategory).filter(Boolean))] as string[];
 
   const hasFilters = !!(selectedCategory || selectedSubCategory || selectedProvider);

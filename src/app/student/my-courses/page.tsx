@@ -56,7 +56,6 @@ export default function MyCoursesPage() {
                 ...course,
                 progress: enrollment?.progress || 0,
                 status: enrollment?.status || 'in-progress',
-                lastViewed: 'Today', // Mock lastViewed for display
                 completedDate: enrollment?.status === 'completed' ? enrollment.enrollmentDate.toDate().toISOString().split('T')[0] : undefined,
             };
         });

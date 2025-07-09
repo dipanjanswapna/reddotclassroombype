@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -109,7 +108,7 @@ const Barcode = () => (
 export function IdCardView({ 
     name, role, idNumber, imageUrl, dataAiHint, organization, className,
     classRoll, fathersName, mothersName, nidNumber, mobileNumber, address,
-    enrolledCourses, joinedDate, email, branchName, batchName
+    enrolledCourses = [], joinedDate, email, branchName, batchName
 }: IdCardViewProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -233,7 +232,7 @@ export function IdCardView({
                         {role === 'Student' ? "Enrolled Courses" : "Contact Information"} 
                         </h3>
                         <div className="text-xs text-left bg-gray-50 p-2 rounded-md h-48 overflow-y-auto">
-                        {role === 'Student' && enrolledCourses && enrolledCourses.length > 0 ? (
+                        {role === 'Student' && enrolledCourses.length > 0 ? (
                             <ul className="space-y-1">
                                 {enrolledCourses.map(course => <li key={course.title} className="truncate">✓ {course.title}</li>)}
                             </ul>

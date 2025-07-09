@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -86,7 +85,7 @@ export function CoursesPageClient({
             <p className="mt-2 text-lg text-muted-foreground">
               {language === 'bn' ? 'আপনার প্রয়োজনীয় সকল কোর্স এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।' : 'All the courses you need are now at RDC SHOP. Start your learning journey with the best teachers.'}
             </p>
-            <Button asChild className="mt-6 bg-green-600 font-bold text-white hover:bg-green-700">
+            <Button asChild className="mt-6" variant="accent">
               <Link href="/courses#master-course">
                  <Sparkles className="mr-2 h-4 w-4" />
                  {language === 'bn' ? 'আমাদের ফ্রি কোর্সগুলো দেখুন' : 'See Our Free Courses'}

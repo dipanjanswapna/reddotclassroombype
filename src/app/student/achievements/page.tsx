@@ -19,7 +19,7 @@ const iconMap = {
     BookOpenCheck,
 };
 
-const mockAchievements: Achievement[] = [
+const allAchievements: Achievement[] = [
     { id: '1', title: 'First Steps', description: 'Enrolled in your first course!', icon: 'Medal', date: '2024-05-10' },
     { id: '2', title: 'Course Completer', description: 'Finished your first course.', icon: 'Trophy', date: '2024-06-15' },
     { id: '3', title: 'Weekend Warrior', description: 'Completed 5 lessons in a weekend.', icon: 'Zap', date: '2024-06-22' },
@@ -45,13 +45,13 @@ export default function AchievementsPage() {
             const earnedAchievements: Achievement[] = [];
             
             if (enrollments.length > 0) {
-                earnedAchievements.push(mockAchievements[0]);
+                earnedAchievements.push(allAchievements[0]);
             }
             if (completedCourses.length > 0) {
-                earnedAchievements.push(mockAchievements[1]);
+                earnedAchievements.push(allAchievements[1]);
             }
             if (completedCourses.length >= 5) {
-                earnedAchievements.push(mockAchievements[4]);
+                earnedAchievements.push(allAchievements[4]);
             }
             // Add more logic for other achievements here...
 
