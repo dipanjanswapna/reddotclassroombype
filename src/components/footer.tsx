@@ -9,7 +9,7 @@ import { t } from "@/lib/i18n";
 import { HomepageConfig } from "@/lib/types";
 import logoSrc from '@/public/logo.png';
 
-export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
+export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig }) {
   const { language } = useLanguage();
 
   return (

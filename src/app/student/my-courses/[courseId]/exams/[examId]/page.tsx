@@ -131,7 +131,7 @@ const QuestionRenderer = ({ question, studentAnswer, isReview, onAnswerChange }:
         return (
           <div className="space-y-2">
             {question.options?.map(option => {
-              const isSelected = studentAnswer?.includes(option.id);
+              const isSelected = (studentAnswer as string[] || []).includes(option.id);
               const isCorrect = correctIds.has(option.id);
               return (
                 <div key={option.id} className={cn(

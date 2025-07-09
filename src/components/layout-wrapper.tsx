@@ -15,7 +15,7 @@ import { FloatingWhatsAppButton } from './floating-whatsapp-button';
  * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
  * interfaces, to have distinct layouts.
  */
-export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
+export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig }) {
   const pathname = usePathname();
 
   // Paths that should have a completely custom layout (no header/footer)
@@ -58,7 +58,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
       <Header />
       <main>{children}</main>
       <Footer homepageConfig={homepageConfig}/>
-      {homepageConfig?.floatingWhatsApp?.display && (
+      {homepageConfig.floatingWhatsApp?.display && (
         <FloatingWhatsAppButton number={homepageConfig.floatingWhatsApp.number} />
       )}
     </div>

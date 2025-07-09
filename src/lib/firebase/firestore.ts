@@ -1,5 +1,4 @@
 
-
 import { db } from './config';
 import {
   collection,
@@ -406,7 +405,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
     description: {bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education."},
     features: [
-      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'diamond icon', title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" } },
+      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'icon book', title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" } },
       { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "ইন্টারেক্টিভ লার্নিং", en: "Interactive Learning" } },
       { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "স্বল্প খরচে অনেক কিছু", en: "Lots for a Low Cost" } },
       { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" } },
@@ -483,50 +482,40 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   collaborations: {
     display: true,
-    title: { bn: 'আমাদের কোলাবোরেশনসমূহ', en: 'Our Collaborations' },
+    title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
     items: [],
   },
   partnersSection: {
     display: true,
-    title: { bn: 'আমাদের পার্টনারগণ', en: 'Our Partners' },
+    title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
     scrollSpeed: 25,
-    partners: [
-        { id: 1, name: 'Partner 1', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
-        { id: 2, name: 'Partner 2', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
-        { id: 3, name: 'Partner 3', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
-        { id: 4, name: 'Partner 4', logoUrl: 'https://placehold.co/140x60.png', href: '#', dataAiHint: 'company logo' },
-    ]
+    partners: [],
   },
   socialMediaSection: {
     display: true,
-    title: { bn: 'আমাদের সাথে কানেক্টেড থাকুন', en: 'Stay Connected With Us' },
-    description: { bn: 'আমাদের সোশ্যাল মিডিয়া পেজগুলো ফলো করুন।', en: 'Follow our social media pages.' },
-    channels: [
-      { id: 1, platform: 'YouTube', name: { bn: "ইউটিউব", en: "YouTube" }, handle: "RED DOT CLASSROOM", stat1_value: "100k+", stat1_label: { bn: "সাবস্ক্রাইবার", en: "Subscribers" }, stat2_value: "500+", stat2_label: { bn: "ভিডিও", en: "Videos" }, description: { bn: "আমাদের ইউটিউব চ্যানেলে ফ্রি ক্লাস এবং গুরুত্বপূর্ণ কন্টেন্ট দেখুন।", en: "Watch free classes and important content on our YouTube channel." }, ctaText: { bn: "সাবস্ক্রাইব করুন", en: "Subscribe" }, ctaUrl: "#" },
-      { id: 2, platform: 'Facebook Page', name: { bn: "ফেসবুক পেজ", en: "Facebook Page" }, handle: "rdc.official", stat1_value: "500k+", stat1_label: { bn: "লাইক", en: "Likes" }, stat2_value: "550k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { bn: "আমাদের ফেসবুক পেজে সকল আপডেট এবং নোটিশ পেয়ে যান।", en: "Get all updates and notices on our Facebook page." }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" },
-      { id: 3, platform: 'Facebook Group', name: { bn: "ফেসবুক গ্রুপ", en: "Facebook Group" }, handle: "rdc.main", stat1_value: "1.2M+", stat1_label: { bn: "সদস্য", en: "Members" }, stat2_value: "10k+", stat2_label: { bn: "পোস্ট", en: "Posts" }, description: { bn: "আমাদের ফেসবুক গ্রুপে দেশের সবচেয়ে বড় স্টুডেন্ট কমিউনিটির সাথে যুক্ত হন।", en: "Join the largest student community in the country in our Facebook group." }, ctaText: { en: "Join Group", bn: "গ্রুপে যোগ দিন" }, ctaUrl: "#" },
-      { id: 4, platform: 'Facebook Page', name: { bn: "আরেকটি ফেসবুক পেজ", en: "Another Facebook Page" }, handle: "rdc.secondary", stat1_value: "50k+", stat1_label: { en: "Likes", bn: "লাইক" }, stat2_value: "60k+", stat2_label: { bn: "ফলোয়ার", en: "Followers" }, description: { en: "Our second official page.", bn: "আমাদের দ্বিতীয় অফিসিয়াল পেজ।" }, ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" }, ctaUrl: "#" }
-    ],
+    title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
+    description: { bn: "সর্বশেষ আপডেট, কোর্স অফার এবং শিক্ষামূলক কন্টেন্টের জন্য আমাদের সোশ্যাল মিডিয়া চ্যানেলগুলোতে যোগ দিন।", en: "Join our social media channels for the latest updates, course offers, and educational content." },
+    channels: [],
   },
   notesBanner: {
     display: true,
-    title: { bn: 'ফ্রি নোটস এবং লেকচার শিট', en: 'Free Notes and Lecture Sheets' },
-    description: { bn: 'আপনার প্রস্তুতিকে আরও শক্তিশালী করতে ডাউনলোড করুন ফ্রি নোটস।', en: 'Download free notes to strengthen your preparation.' },
-    buttonText: { bn: 'ডাউনলোড করুন', en: 'Download Now' },
+    title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes and Lecture Sheets" },
+    description: { bn: "আপনার পরীক্ষার প্রস্তুতিকে আরও শক্তিশালী করতে ডাউনলোড করুন আমাদের精心ভাবে তৈরি করা নোটস ও লেকচার শিট।", en: "Download our meticulously prepared notes and lecture sheets to strengthen your exam preparation." },
+    buttonText: { bn: "ডাউনলোড করুন", en: "Download Now" },
   },
   statsSection: {
     display: true,
-    title: { bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা', en: 'Journey of Lakhs of Students' },
+    title: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
     stats: [
-      { value: "12 লাখ+", label: { bn: "শিক্ষার্থী", en: "Students" } },
-      { value: "500+", label: { bn: "কোর্স", en: "Courses" } },
-      { value: "200+", label: { bn: "শিক্ষক", en: "Instructors" } },
+      { value: "9+", label: { bn: "বছর", en: "Years" } },
+      { value: "5M+", label: { bn: "শিক্ষার্থী", en: "Students" } },
+      { value: "50+", label: { bn: "কোর্স", en: "Courses" } },
     ],
   },
   appPromo: {
     display: true,
-    title: { bn: 'আমাদের অ্যাপ ডাউনলোড করুন', en: 'Download Our App' },
-    description: { bn: 'যেকোনো সময়, যেকোনো জায়গায় পড়াশোনা করুন।', en: 'Study anytime, anywhere.' },
+    title: { bn: "ডাউনলোড করুন RDC অ্যাপ", en: "Download the RDC App" },
+    description: { bn: "যেকোনো জায়গা থেকে যেকোনো সময় আপনার পড়াশোনা চালিয়ে যান আমাদের মোবাইল অ্যাপের মাধ্যমে। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন আপনার হাতের মুঠোয়।", en: "Continue your studies anytime, anywhere with our mobile app. Live classes, quizzes, and much more are now at your fingertips." },
     googlePlayUrl: "#",
     appStoreUrl: "#",
   },
@@ -565,7 +554,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
 };
 
 
-export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
+export const getHomepageConfig = async (): Promise<HomepageConfig> => {
     try {
         const configDoc = await getDoc(doc(db, 'singletons', 'homepage'));
         if (configDoc.exists()) {
@@ -576,7 +565,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig | null> => {
             return { id: 'homepage', ...defaultHomepageConfig };
         }
     } catch (error) {
-        console.error("Error getting homepage config:", error);
+        console.error("Error getting homepage config, returning default:", error);
         return { id: 'homepage', ...defaultHomepageConfig }; // Return default on error
     }
 }
