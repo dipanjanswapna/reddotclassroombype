@@ -53,11 +53,19 @@ export default function TeacherStudentsPage() {
                 getUsers(),
                 getEnrollments()
             ]);
+            
+            let teacherCourses: Course[] = [];
+            // If teacher is associated with an organization, they can manage all courses from that org.
+            if (instructor.organizationId) {
+                teacherCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
+            } else {
+                // Otherwise, they can only manage courses they are explicitly assigned to (legacy/independent teachers).
+                teacherCourses = allCourses.filter(course => 
+                    course.instructors?.some(i => i.slug === instructor.slug)
+                );
+            }
 
-            const teacherCourseIds = allCourses
-                .filter(c => c.instructors.some(i => i.slug === instructor.slug))
-                .map(c => c.id);
-
+            const teacherCourseIds = teacherCourses.map(c => c.id!);
             const studentEnrollments = allEnrollments.filter(e => teacherCourseIds.includes(e.courseId));
             
             const studentMap = new Map<string, StudentDisplayInfo[]>();
