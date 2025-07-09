@@ -1,6 +1,6 @@
 
 
-import { getCourses, getCategories, getOrganizations } from '@/lib/firebase/firestore';
+import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 
@@ -18,10 +18,11 @@ export default async function CoursesPage({
   const selectedSubCategory = searchParams?.subCategory;
   const selectedProvider = searchParams?.provider;
 
-  const [categories, providers, allCoursesData] = await Promise.all([
+  const [categories, providers, allCoursesData, homepageConfig] = await Promise.all([
     getCategories(),
     getOrganizations(),
     getCourses({ status: 'Published' }), // Fetch all published for filters
+    getHomepageConfig(),
   ]);
 
   const filteredCourses = await getCourses({
@@ -48,6 +49,7 @@ export default async function CoursesPage({
         allSubCategories={allSubCategories}
         allProviders={approvedProviders}
         hasFilters={hasFilters}
+        homepageConfig={homepageConfig}
     />
   );
 }

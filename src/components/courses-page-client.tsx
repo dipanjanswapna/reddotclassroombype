@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -7,11 +8,12 @@ import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
-import { Course, Organization } from '@/lib/types';
+import { Course, HomepageConfig, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
 import rdcShopBanner from '@/public/rdcshop.jpg';
+import { OfflineHubCarousel } from './offline-hub-carousel';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -20,6 +22,7 @@ type CoursesPageClientProps = {
     allSubCategories: string[];
     allProviders: Organization[];
     hasFilters: boolean;
+    homepageConfig: HomepageConfig | null;
 };
 
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {
@@ -52,7 +55,8 @@ export function CoursesPageClient({
     allCategories,
     allSubCategories,
     allProviders,
-    hasFilters
+    hasFilters,
+    homepageConfig
 }: CoursesPageClientProps) {
   const { language } = useLanguage();
   // Loading state can be simplified as data is pre-fetched and re-fetched by navigation
@@ -70,6 +74,11 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
+      {homepageConfig?.offlineHubHeroCarousel?.display && (
+        <div className="bg-secondary/30">
+            <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+        </div>
+      )}
       <div className="bg-secondary/50 border-b">
         <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16 md:grid-cols-2">
           <div>
