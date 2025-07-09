@@ -12,8 +12,8 @@ export default function OfflineHubLayout({
 }) {
   return (
     <div className="flex flex-col">
-      <Header />
-      <main>{children}</main>
+      <Header containerClassName="bg-[rgb(34,25,38)] text-white border-gray-700" />
+      <main className="flex-grow">{children}</main>
       
       <div 
         className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]"

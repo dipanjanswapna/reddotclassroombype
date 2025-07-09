@@ -36,9 +36,10 @@ import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import Image from "next/image";
 import logoSrc from '@/public/logo.png';
+import { cn } from "@/lib/utils";
 
 
-export function Header() {
+export function Header({ containerClassName }: { containerClassName?: string }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
   const [config, setConfig] = useState<HomepageConfig | null>(null);
@@ -65,7 +66,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full py-2">
       <div className="container">
-        <div className="flex h-16 items-center justify-between rounded-full bg-background/80 px-4 shadow-lg backdrop-blur-md border">
+        <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/80 px-4 shadow-lg backdrop-blur-md border", containerClassName)}>
           <div className="flex items-center">
               {/* Mobile Menu Trigger */}
               <div className="lg:hidden">
