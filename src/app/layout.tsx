@@ -50,7 +50,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn('font-body antialiased min-h-screen bg-background', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
+      <body className={cn('font-body antialiased bg-background', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
         <AuthProvider>
           <LanguageProvider>
             <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
