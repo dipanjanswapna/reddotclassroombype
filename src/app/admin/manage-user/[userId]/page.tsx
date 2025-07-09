@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { User, Course, Enrollment, AttendanceRecord, Batch, Branch } from '@/lib/types';
-import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches } from '@/lib/firebase/firestore';
+import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking } from '@/lib/types';
+import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId } from '@/lib/firebase/firestore';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -23,7 +23,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { safeToDate } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Calendar, Check, ChevronsUpDown, DollarSign, Edit, GraduationCap, Loader2, User as UserIcon } from 'lucide-react';
+import { Calendar, Check, ChevronsUpDown, DollarSign, Edit, GraduationCap, Loader2, User as UserIcon, Ticket, Bookmark } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
@@ -49,6 +49,8 @@ export default function ManageUserPage() {
     const [allBatches, setAllBatches] = useState<Batch[]>([]);
     const [allBranches, setAllBranches] = useState<Branch[]>([]);
     const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+    const [tickets, setTickets] = useState<SupportTicket[]>([]);
+    const [prebookings, setPrebookings] = useState<Prebooking[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
@@ -68,20 +70,33 @@ export default function ManageUserPage() {
             setEditingUser(userData || {});
 
             if (userData) {
-                const coursesData = await getCourses();
-                setAllCourses(coursesData);
+                const [
+                    coursesData, 
+                    enrollmentData, 
+                    attendanceData, 
+                    batchesData, 
+                    branchesData,
+                    ticketsData,
+                    prebookingsData
+                ] = await Promise.all([
+                    getCourses(),
+                    getEnrollmentsByUserId(userData.uid),
+                    getAttendanceForStudent(userData.id!),
+                    getBatches(),
+                    getBranches(),
+                    getSupportTicketsByUserId(userData.uid),
+                    getPrebookingsByUserId(userData.uid),
+                ]);
 
+                setAllCourses(coursesData);
+                setEnrollments(enrollmentData);
+                setAttendance(attendanceData);
+                setAllBatches(batchesData);
+                setAllBranches(branchesData);
+                setTickets(ticketsData);
+                setPrebookings(prebookingsData);
+                
                 if (userData.role === 'Student') {
-                    const [enrollmentData, attendanceData, batchesData, branchesData] = await Promise.all([
-                        getEnrollmentsByUserId(userData.uid),
-                        getAttendanceForStudent(userData.id!),
-                        getBatches(),
-                        getBranches(),
-                    ]);
-                    setEnrollments(enrollmentData);
-                    setAttendance(attendanceData);
-                    setAllBatches(batchesData);
-                    setAllBranches(branchesData);
                     const enrolledCourseIds = enrollmentData.map(e => e.courseId);
                     setEnrolledCourses(coursesData.filter(c => enrolledCourseIds.includes(c.id!)));
                 }
@@ -134,6 +149,13 @@ export default function ManageUserPage() {
         })).sort((a,b) => safeToDate(b.date).getTime() - safeToDate(a.date).getTime());
     }, [attendance, allCourses]);
 
+    const prebookingsWithDetails = useMemo(() => {
+        return prebookings.map(pre => ({
+            ...pre,
+            courseName: allCourses.find(c => c.id === pre.courseId)?.title || 'N/A',
+        })).sort((a,b) => safeToDate(b.prebookingDate).getTime() - safeToDate(a.prebookingDate).getTime());
+    }, [prebookings, allCourses]);
+
     if (loading) {
         return <div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner className="w-12 h-12 m-auto" /></div>;
     }
@@ -167,11 +189,13 @@ export default function ManageUserPage() {
             </Card>
 
             <Tabs defaultValue="profile">
-                <TabsList>
-                    <TabsTrigger value="profile">Profile Details</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-6">
+                    <TabsTrigger value="profile">Profile</TabsTrigger>
                     {user.role === 'Student' && <TabsTrigger value="courses">Courses</TabsTrigger>}
                     {user.role === 'Student' && <TabsTrigger value="attendance">Attendance</TabsTrigger>}
                     {user.role === 'Student' && <TabsTrigger value="payments">Payments</TabsTrigger>}
+                    {user.role === 'Student' && <TabsTrigger value="prebookings">Pre-bookings</TabsTrigger>}
+                    <TabsTrigger value="tickets">Support Tickets</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="profile" className="mt-4">
@@ -267,8 +291,48 @@ export default function ManageUserPage() {
                             </CardContent>
                         </Card>
                     </TabsContent>
+                    <TabsContent value="prebookings" className="mt-4">
+                        <Card>
+                            <CardHeader><CardTitle>Pre-booking History</CardTitle></CardHeader>
+                            <CardContent>
+                               <Table>
+                                    <TableHeader><TableRow><TableHead>Course</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                       {prebookingsWithDetails.map(pre => (
+                                            <TableRow key={pre.id}>
+                                                <TableCell>{pre.courseName}</TableCell>
+                                                <TableCell>{format(safeToDate(pre.prebookingDate), 'PPP')}</TableCell>
+                                            </TableRow>
+                                       ))}
+                                        {prebookings.length === 0 && <TableRow><TableCell colSpan={2} className="text-center">No pre-bookings found.</TableCell></TableRow>}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
                   </>
                 )}
+                 <TabsContent value="tickets" className="mt-4">
+                    <Card>
+                        <CardHeader><CardTitle>Support Tickets</CardTitle></CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader><TableRow><TableHead>Subject</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead><TableHead>Last Updated</TableHead></TableRow></TableHeader>
+                                <TableBody>
+                                    {tickets.map(ticket => (
+                                        <TableRow key={ticket.id}>
+                                            <TableCell className="font-medium">{ticket.subject}</TableCell>
+                                            <TableCell><Badge variant="outline">{ticket.category || 'General'}</Badge></TableCell>
+                                            <TableCell><Badge variant={ticket.status === 'Closed' ? 'accent' : 'warning'}>{ticket.status}</Badge></TableCell>
+                                            <TableCell>{format(safeToDate(ticket.updatedAt), 'PPP')}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {tickets.length === 0 && <TableRow><TableCell colSpan={4} className="text-center">No support tickets found.</TableCell></TableRow>}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                 </TabsContent>
             </Tabs>
 
             {/* Edit Profile Dialog */}
