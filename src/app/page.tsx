@@ -80,8 +80,8 @@ export default async function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8">
               <div className="container mx-auto px-4">
-                  <div className="bg-teal-50 dark:bg-teal-900/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
+                  <div className="bg-teal-50 dark:bg-teal-900/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
+                      <div className="flex items-center gap-4 text-center md:text-left">
                           <Image
                               src={homepageConfig.strugglingStudentSection.imageUrl}
                               alt="Struggling in studies illustration"
@@ -155,7 +155,7 @@ export default async function Home() {
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection.title[language]}</h2>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection.description[language]}</p>
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {homepageConfig.videoSection.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
@@ -353,7 +353,7 @@ export default async function Home() {
 
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading">
-              <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+              <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
                     <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-[rgb(242,0,0)]">{homepageConfig.appPromo.title[language]}</h2>
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo.description[language]}</p>

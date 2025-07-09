@@ -68,8 +68,58 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
     <header className={cn("sticky top-0 z-50 w-full py-2", wrapperClassName)}>
       <div className="container">
         <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/80 px-4 shadow-lg backdrop-blur-md border", containerClassName)}>
-          <div className="flex items-center">
-              {/* Mobile Menu Trigger */}
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center space-x-2">
+                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 md:h-10 w-auto" priority />
+            </Link>
+          </div>
+          
+          <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
+              {mainNavLinks.map((link) => (
+              <Button key={link.href} variant="ghost" asChild className={cn(isDark && "text-white hover:bg-white/20")}>
+                  <Link
+                  href={link.href}
+                  className="transition-colors hover:text-primary"
+                  >
+                  {link.label}
+                  </Link>
+              </Button>
+              ))}
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className={cn("flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
+                      {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                      {moreLinks.map((link) => (
+                          <DropdownMenuItem key={link.href} asChild>
+                              <Link href={link.href}>{link.label}</Link>
+                          </DropdownMenuItem>
+                      ))}
+                  </DropdownMenuContent>
+              </DropdownMenu>
+          </nav>
+
+          <div className="flex items-center justify-end space-x-2">
+              <div className="hidden sm:flex items-center space-x-2">
+                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
+                  <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
+                  {!user && (
+                    <>
+                    <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
+                        <Link href="/login">{t.login[language]}</Link>
+                    </Button>
+                    <Button asChild className={cn(isDark && "bg-white text-black hover:bg-gray-200")}>
+                        <Link href="/signup">{t.signup[language]}</Link>
+                    </Button>
+                    </>
+                  )}
+              </div>
+              
+              {user && <NotificationBell />}
+              {user && <UserNav />}
+
               <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
@@ -132,11 +182,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                       <div className="p-4 flex flex-col gap-2">
                       <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
                       <Separator />
-                      {user ? (
-                          <div className="w-full mt-2">
-                            <UserNav />
-                          </div>
-                      ) : (
+                      {!user && (
                           <div className="flex gap-2 mt-2">
                           <Button asChild variant="outline" className="w-full">
                               <Link href="/login" onClick={() => setMenuOpen(false)}>
@@ -157,66 +203,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                   </SheetContent>
               </Sheet>
               </div>
-
-              {/* Desktop Menu */}
-              <div className="hidden lg:flex items-center">
-                  <Link href="/" className="mr-4 flex items-center space-x-2">
-                      <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
-                  </Link>
-                  <nav className="flex items-center space-x-1 text-sm font-medium">
-                      {mainNavLinks.map((link) => (
-                      <Button key={link.href} variant="ghost" asChild className={cn(isDark && "text-white hover:bg-white/20")}>
-                          <Link
-                          href={link.href}
-                          className="transition-colors hover:text-primary"
-                          >
-                          {link.label}
-                          </Link>
-                      </Button>
-                      ))}
-                      <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className={cn("flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
-                              {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
-                              </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                              {moreLinks.map((link) => (
-                                  <DropdownMenuItem key={link.href} asChild>
-                                      <Link href={link.href}>{link.label}</Link>
-                                  </DropdownMenuItem>
-                              ))}
-                          </DropdownMenuContent>
-                      </DropdownMenu>
-                  </nav>
-              </div>
-          </div>
-          
-          {/* Mobile Logo */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
-              <Link href="/">
-                  <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
-              </Link>
-          </div>
-
-          <div className="flex items-center justify-end space-x-2">
-              {user ? (
-              <>
-                  <NotificationBell />
-                  <UserNav />
-              </>
-              ) : (
-              <div className="hidden sm:flex items-center space-x-2">
-                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
-                  <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
-                  <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
-                  <Link href="/login">{t.login[language]}</Link>
-                  </Button>
-                  <Button asChild className={cn(isDark && "bg-white text-black hover:bg-gray-200")}>
-                  <Link href="/signup">{t.signup[language]}</Link>
-                  </Button>
-              </div>
-              )}
           </div>
         </div>
       </div>

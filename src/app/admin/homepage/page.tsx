@@ -352,6 +352,19 @@ export default function AdminHomepageManagementPage() {
         return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
     });
   }
+    
+  const handleStrugglingSectionChange = (field: 'imageUrl', value: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            strugglingStudentSection: {
+                ...(prev.strugglingStudentSection!),
+                [field]: value
+            }
+        };
+    });
+  };
 
   const handleStrugglingSectionLangChange = (field: 'title' | 'subtitle' | 'buttonText', lang: 'bn' | 'en', value: string) => {
     setConfig(prevConfig => {
@@ -558,11 +571,11 @@ export default function AdminHomepageManagementPage() {
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeOfflineSlide(slide.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <h4 className="font-semibold">Slide {index + 1}</h4>
                             <div className="space-y-1"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'imageUrl', e.target.value, index)} /></div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'title', e.target.value, index)} /></div>
                                 <div className="space-y-1"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'subtitle', e.target.value, index)} /></div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'price', e.target.value, index)} /></div>
                                 <div className="space-y-1"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'originalPrice', e.target.value, index)} /></div>
                             </div>
@@ -575,7 +588,7 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Struggling Student Section</CardTitle><CardDescription>Manage the "Struggling in Studies?" banner on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleStrugglingSectionLangChange('title', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.strugglingStudentSection?.title?.en || ''} onChange={e => handleStrugglingSectionLangChange('title', 'en', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Subtitle (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleStrugglingSectionLangChange('subtitle', 'bn', e.target.value)} /></div>
@@ -606,7 +619,7 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Categories Section</CardTitle><CardDescription>Manage the category cards shown on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'en', e.target.value)} /></div>
                     </div>
@@ -638,14 +651,14 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Free Classes Section</CardTitle><CardDescription>Manage the "আমাদের সকল ফ্রি ক্লাসসমূহ" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.freeClassesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Section Subtitle (BN)</Label><Input value={config.freeClassesSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
                     </div>
                     {config.freeClassesSection?.classes?.map((item, index) => (
                         <div key={item.id} className="p-4 border rounded-lg space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeFreeClass(item.id)}><X className="text-destructive h-4 w-4"/></Button>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="col-span-2 space-y-1"><Label>Class Title</Label><Input value={item.title} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'title', e.target.value, index)} /></div>
                                 <div className="space-y-1"><Label>Subject</Label><Input value={item.subject} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'subject', e.target.value, index)} /></div>
                                 <div className="space-y-1"><Label>Instructor</Label><Input value={item.instructor} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'instructor', e.target.value, index)} /></div>
@@ -665,11 +678,11 @@ export default function AdminHomepageManagementPage() {
                     <CardDescription>Manage the "কেন RDC-তে আস্থা রাখবে?" section.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.whyChooseUs?.title?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} /></div>
                       <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.whyChooseUs?.title?.en || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'en', e.target.value)} /></div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Section Description (BN)</Label><Textarea value={config.whyChooseUs?.description?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Section Description (EN)</Label><Textarea value={config.whyChooseUs?.description?.en || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'en', e.target.value)} /></div>
                     </div>
@@ -679,7 +692,7 @@ export default function AdminHomepageManagementPage() {
                         {config.whyChooseUs?.features?.map(feature => (
                         <div key={feature.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeWhyChooseUsFeature(feature.id)}><X className="text-destructive h-4 w-4"/></Button>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title?.bn || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, bn: e.target.value})}/></div>
                                 <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title?.en || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
                             </div>
@@ -695,7 +708,7 @@ export default function AdminHomepageManagementPage() {
                         {config.whyChooseUs?.testimonials?.map(t => (
                         <div key={t.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeTestimonial(t.id)}><X className="text-destructive h-4 w-4"/></Button>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
                               <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote?.en || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, en: e.target.value})}/></div>
                             </div>
@@ -712,16 +725,16 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>About Us Section</CardTitle><CardDescription>Manage the team members displayed on the About Us page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.aboutUsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.aboutUsSection?.title?.en || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection?.subtitle?.en || ''} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection?.subtitle?.en || ''} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} /></div>
                     </div>
                     {config.aboutUsSection?.teamMembers?.map((member, index) => (
                         <Collapsible key={member.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>
                             <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">Member {index + 1}: {member.name}</h4><div><Button variant="ghost" size="icon" onClick={() => removeTeamMember(member.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
                             <CollapsibleContent className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2"><Label>Name</Label><Input value={member.name} onChange={e => handleTeamMemberChange(member.id, 'name', e.target.value)} /></div>
                                     <div className="space-y-2"><Label>Title</Label><Input value={member.title} onChange={e => handleTeamMemberChange(member.id, 'title', e.target.value)} /></div>
                                 </div>
@@ -746,7 +759,7 @@ export default function AdminHomepageManagementPage() {
             </Card>
             <Card>
                 <CardHeader><CardTitle>Video Section</CardTitle><CardDescription>Manage the promotional videos. Thumbnails are generated automatically from the YouTube URL.</CardDescription></CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {config.videoSection?.videos?.map((video, index) => (
                     <div key={index} className="p-4 border rounded-lg space-y-4">
                         <h4 className="font-semibold">Video {index + 1}</h4>
@@ -784,7 +797,7 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-4">
                     <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.statsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('statsSection', 'bn', e.target.value)} /></div>
                     {config.statsSection?.stats?.map((stat, index) => (
-                        <div key={index} className="p-4 border rounded-lg grid grid-cols-2 gap-4">
+                        <div key={index} className="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2"><Label>Value</Label><Input value={stat.value} onChange={e => handleNestedInputChange('statsSection', 'stats', 'value', e.target.value, index)} /></div>
                             <div className="space-y-2"><Label>Label (BN)</Label><Input value={stat.label?.bn || ''} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} /></div>
                         </div>
@@ -796,10 +809,10 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the static content on the RDC OFFLINE HUB page. Programs and centers are now managed automatically.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
                         <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection?.title?.en || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
                     </div>
                 </CardContent>
             </Card>

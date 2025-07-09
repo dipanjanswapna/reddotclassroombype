@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -171,88 +172,90 @@ export function IdCardView({
 
   return (
     <div className={`flex flex-col items-center gap-6 ${className}`}>
-        <div ref={printAreaRef} className="space-y-4 bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">
-            {/* Front Side */}
-            <div className="id-card-front relative w-[330px] h-[525px] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col overflow-hidden font-sans">
-                <div className={`absolute -top-1/4 -left-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
-                <div className={`absolute -bottom-1/4 -right-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
-                <header className="flex items-center justify-between z-10">
-                    <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto object-contain" />
-                    <div className="text-right">
-                        <h1 className="font-bold text-lg leading-tight">RED DOT CLASSROOM</h1>
-                        <p className="text-xs text-gray-500">PRANGONS ECOSYSTEM</p>
-                        <Image
-                            src="https://mir-s3-cdn-cf.behance.net/projects/max_808/ed1f18226284187.Y3JvcCwxMDI0LDgwMCwwLDM2Nw.png"
-                            alt="DBID Certified"
-                            width={50}
-                            height={25}
-                            className="object-contain ml-auto mt-1"
-                            data-ai-hint="DBID logo"
-                            crossOrigin="anonymous"
-                        />
+        <div ref={printAreaRef} className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg w-full">
+             <div className="flex flex-col md:flex-row gap-4 justify-center">
+                {/* Front Side */}
+                <div className="id-card-front relative w-full max-w-[330px] h-[525px] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col overflow-hidden font-sans mx-auto">
+                    <div className={`absolute -top-1/4 -left-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
+                    <div className={`absolute -bottom-1/4 -right-1/4 w-72 h-72 rounded-full ${getRoleColors(role)} opacity-20`}></div>
+                    <header className="flex items-center justify-between z-10">
+                        <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto object-contain" />
+                        <div className="text-right">
+                            <h1 className="font-bold text-lg leading-tight">RED DOT CLASSROOM</h1>
+                            <p className="text-xs text-gray-500">PRANGONS ECOSYSTEM</p>
+                            <Image
+                                src="https://mir-s3-cdn-cf.behance.net/projects/max_808/ed1f18226284187.Y3JvcCwxMDI0LDgwMCwwLDM2Nw.png"
+                                alt="DBID Certified"
+                                width={50}
+                                height={25}
+                                className="object-contain ml-auto mt-1"
+                                data-ai-hint="DBID logo"
+                                crossOrigin="anonymous"
+                            />
+                        </div>
+                    </header>
+                    <main className="flex-grow flex flex-col items-center justify-center text-center z-10">
+                        <div className={`relative w-36 h-36 rounded-full border-4 border-white shadow-lg ${getRoleColors(role)} p-1`}>
+                            <Image src={imageUrl} alt={name} width={144} height={144} className="rounded-full object-cover" data-ai-hint={dataAiHint} crossOrigin="anonymous"/>
+                            <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
+                                <Star className={`w-6 h-6 text-yellow-400 fill-current`} />
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold mt-4">{name}</h2>
+                        <p className="text-primary font-semibold">{role}</p>
+                        <div className="text-left w-full mt-4 space-y-1 text-xs">
+                            {classRoll && <div className="flex items-center gap-2"><ListCollapse className="w-4 h-4 text-gray-500 shrink-0"/><span>Roll: {classRoll}</span></div>}
+                            {idNumber && <div className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-500 shrink-0"/><span>Reg. No: {idNumber}</span></div>}
+                            {branchName && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500 shrink-0"/><span>Branch: {branchName}</span></div>}
+                            {batchName && <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500 shrink-0"/><span>Batch: {batchName}</span></div>}
+                            {fathersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Father's Name: {fathersName}</span></div>}
+                            {mothersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Mother's Name: {mothersName}</span></div>}
+                            {mobileNumber && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500 shrink-0"/><span>Mobile: {mobileNumber}</span></div>}
+                            {nidNumber && <div className="flex items-center gap-2"><CreditCard className="w-4 h-4 text-gray-500 shrink-0"/><span>NID: {nidNumber}</span></div>}
+                            {address && <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gray-500 shrink-0 mt-0.5"/><span>Address: {address}</span></div>}
+                        </div>
+                    </main>
+                    <footer className="text-center z-10 pt-2">
+                        <p className="text-xs text-gray-400 mt-2">www.rdc.vercel.app</p>
+                    </footer>
+                </div>
+
+                {/* Back Side */}
+                <div className="id-card-back relative w-full max-w-[330px] h-[525px] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col font-bengali mx-auto">
+                    <div className="h-10 bg-gray-200 -m-4 mb-2"></div>
+                    <div className="text-xs text-gray-600 space-y-1 text-center mt-2 px-2 leading-tight">
+                        <p className="font-bold">গুরুত্বপূর্ণ নির্দেশনা</p>
+                        <p>এই কার্ডটি Red Dot Classroom (RDC) এর সম্পত্তি। এটি হস্তান্তরযোগ্য নয়। কার্ডটি হারিয়ে গেলে অবিলম্বে কর্তৃপক্ষকে জানান।</p>
                     </div>
-                </header>
-                <main className="flex-grow flex flex-col items-center justify-center text-center z-10">
-                    <div className={`relative w-36 h-36 rounded-full border-4 border-white shadow-lg ${getRoleColors(role)} p-1`}>
-                        <Image src={imageUrl} alt={name} width={144} height={144} className="rounded-full object-cover" data-ai-hint={dataAiHint} crossOrigin="anonymous"/>
-                        <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
-                            <Star className={`w-6 h-6 text-yellow-400 fill-current`} />
+                    
+                    <div className="flex-grow my-4">
+                        <h3 className="font-bold text-center text-sm mb-2">
+                        {role === 'Student' ? "Enrolled Courses" : "Contact Information"} 
+                        </h3>
+                        <div className="text-xs text-left bg-gray-50 p-2 rounded-md h-48 overflow-y-auto">
+                        {role === 'Student' && enrolledCourses && enrolledCourses.length > 0 ? (
+                            <ul className="space-y-1">
+                                {enrolledCourses.map(course => <li key={course.title} className="truncate">✓ {course.title}</li>)}
+                            </ul>
+                        ) : role === 'Student' ? (
+                                <p className="text-center text-gray-500 pt-16">No courses enrolled.</p>
+                        ) : (
+                            <div className="space-y-1 pt-2">
+                                <p><strong>Joined Date:</strong> {joinedDate}</p>
+                                <p><strong>Email:</strong> {email}</p>
+                                <p><strong>Website:</strong> www.rdc.vercel.app</p>
+                                <p className="pt-4 font-bold">If found, please return to:</p>
+                                <p>Red Dot Classroom Head Office, Dhaka, Bangladesh.</p>
+                            </div>
+                        )}
                         </div>
                     </div>
-                    <h2 className="text-2xl font-bold mt-4">{name}</h2>
-                    <p className="text-primary font-semibold">{role}</p>
-                    <div className="text-left w-full mt-4 space-y-1 text-xs">
-                        {classRoll && <div className="flex items-center gap-2"><ListCollapse className="w-4 h-4 text-gray-500 shrink-0"/><span>Roll: {classRoll}</span></div>}
-                        {idNumber && <div className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-500 shrink-0"/><span>Reg. No: {idNumber}</span></div>}
-                        {branchName && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500 shrink-0"/><span>Branch: {branchName}</span></div>}
-                        {batchName && <div className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500 shrink-0"/><span>Batch: {batchName}</span></div>}
-                        {fathersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Father's Name: {fathersName}</span></div>}
-                        {mothersName && <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500 shrink-0"/><span>Mother's Name: {mothersName}</span></div>}
-                        {mobileNumber && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500 shrink-0"/><span>Mobile: {mobileNumber}</span></div>}
-                        {nidNumber && <div className="flex items-center gap-2"><CreditCard className="w-4 h-4 text-gray-500 shrink-0"/><span>NID: {nidNumber}</span></div>}
-                        {address && <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gray-500 shrink-0 mt-0.5"/><span>Address: {address}</span></div>}
-                    </div>
-                </main>
-                <footer className="text-center z-10 pt-2">
-                    <p className="text-xs text-gray-400 mt-2">www.rdc.vercel.app</p>
-                </footer>
-            </div>
-
-            {/* Back Side */}
-            <div className="id-card-back relative w-[330px] h-[525px] bg-white text-gray-800 rounded-2xl shadow-2xl p-4 flex flex-col font-bengali">
-                 <div className="h-10 bg-gray-200 -m-4 mb-2"></div>
-                 <div className="text-xs text-gray-600 space-y-1 text-center mt-2 px-2 leading-tight">
-                    <p className="font-bold">গুরুত্বপূর্ণ নির্দেশনা</p>
-                    <p>এই কার্ডটি Red Dot Classroom (RDC) এর সম্পত্তি। এটি হস্তান্তরযোগ্য নয়। কার্ডটি হারিয়ে গেলে অবিলম্বে কর্তৃপক্ষকে জানান।</p>
-                </div>
-                
-                <div className="flex-grow my-4">
-                    <h3 className="font-bold text-center text-sm mb-2">
-                       {role === 'Student' ? "Enrolled Courses" : "Contact Information"} 
-                    </h3>
-                    <div className="text-xs text-left bg-gray-50 p-2 rounded-md h-48 overflow-y-auto">
-                       {role === 'Student' && enrolledCourses && enrolledCourses.length > 0 ? (
-                           <ul className="space-y-1">
-                               {enrolledCourses.map(course => <li key={course.title} className="truncate">✓ {course.title}</li>)}
-                           </ul>
-                       ) : role === 'Student' ? (
-                            <p className="text-center text-gray-500 pt-16">No courses enrolled.</p>
-                       ) : (
-                           <div className="space-y-1 pt-2">
-                               <p><strong>Joined Date:</strong> {joinedDate}</p>
-                               <p><strong>Email:</strong> {email}</p>
-                               <p><strong>Website:</strong> www.rdc.vercel.app</p>
-                               <p className="pt-4 font-bold">If found, please return to:</p>
-                               <p>Red Dot Classroom Head Office, Dhaka, Bangladesh.</p>
-                           </div>
-                       )}
+                    
+                    <div className="text-center z-10 pt-2">
+                        <Barcode />
                     </div>
                 </div>
-                
-                <div className="text-center z-10 pt-2">
-                    <Barcode />
-                </div>
-            </div>
+             </div>
         </div>
         
         <div className="flex gap-4">
