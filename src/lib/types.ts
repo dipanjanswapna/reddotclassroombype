@@ -443,18 +443,6 @@ export type FreeClass = {
   grade: string;
 };
 
-export type OfflineHubProgram = {
-  id: string;
-  title: string;
-  imageUrl: string;
-  dataAiHint: string;
-  features: string[];
-  button1Text: string;
-  button1Url: string;
-  button2Text: string;
-  button2Url: string;
-};
-
 export type OfflineHubContactSection = {
   display: boolean;
   title: { bn: string; en: string };
@@ -631,20 +619,6 @@ export type HomepageConfig = {
     display: boolean;
     title: { bn: string; en: string };
     subtitle: { bn: string; en: string };
-    imageUrl: string;
-    dataAiHint: string;
-    button1Text: { bn: string; en: string };
-    button1Url: string;
-    button2Text: { bn: string; en: string };
-    button2Url: string;
-    centersTitle: { bn: string; en: string };
-    centers: {
-      id: string;
-      name: string;
-      address: string;
-    }[];
-    programsTitle?: { bn: string; en: string };
-    programs: OfflineHubProgram[];
     contactSection: OfflineHubContactSection;
   };
   collaborations: {

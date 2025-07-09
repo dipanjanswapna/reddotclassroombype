@@ -481,7 +481,6 @@ export default function AdminHomepageManagementPage() {
     { key: 'notesBanner', label: 'Notes Banner' },
     { key: 'statsSection', label: 'Stats Section' },
     { key: 'appPromo', label: 'App Promo Section' },
-    { key: 'offlineHubSection', label: 'Offline Hub Section' },
   ] as const;
 
   const handleSectionToggle = (sectionKey: typeof allSections[number]['key'], value: boolean) => {
@@ -969,16 +968,6 @@ export default function AdminHomepageManagementPage() {
             </Card>
         </TabsContent>
         <TabsContent value="pages" className="mt-6 space-y-8">
-            <Card>
-                <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the static content on the RDC OFFLINE HUB page. Programs and centers are now managed automatically.</CardDescription></CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection?.title?.bn || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'title', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection?.title?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'title', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'subtitle', 'bn', e.target.value)} /></div>
-                    </div>
-                </CardContent>
-            </Card>
             <Card>
                 <CardHeader><CardTitle>Strugglers/Topper Page</CardTitle><CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
