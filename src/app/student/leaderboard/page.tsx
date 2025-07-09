@@ -7,9 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Crown, Trophy, User as UserIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { getUsers } from '@/lib/firebase/firestore';
+import { getUsers, getCourses, getEnrollments } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
-import type { User } from '@/lib/types';
+import type { User, Course, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { cn } from '@/lib/utils';
 
@@ -33,16 +33,43 @@ export default function LeaderboardPage() {
     useEffect(() => {
         const fetchLeaderboardData = async () => {
             try {
-                const allUsers = await getUsers();
+                const [allUsers, allCourses, allEnrollments] = await Promise.all([
+                    getUsers(),
+                    getCourses(),
+                    getEnrollments(),
+                ]);
                 const studentUsers = allUsers.filter(u => u.role === 'Student');
 
-                const usersWithPoints = studentUsers.map(user => ({
-                    ...user,
-                    // Mock points based on a hash of the user ID for consistent-but-random scores
-                    points: Math.floor(Math.abs(
-                        user.id!.split('').reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)
-                    ) % 5000) + 500
-                })).sort((a,b) => b.points - a.points);
+                const usersWithPoints = studentUsers.map(user => {
+                    let points = 0;
+                    
+                    // Points for course completion
+                    const userEnrollments = allEnrollments.filter(e => e.userId === user.uid);
+                    points += userEnrollments.filter(e => e.status === 'completed').length * 200; // 200 points per completed course
+
+                    userEnrollments.forEach(enrollment => {
+                        const course = allCourses.find(c => c.id === enrollment.courseId);
+                        if (course) {
+                            // Points from quizzes
+                            (course.quizzes || []).forEach(quiz => {
+                                if (quiz.status === 'Completed' && quiz.score) {
+                                    points += quiz.score; // Points equal to quiz score
+                                }
+                            });
+                            // Points from exams
+                            (course.exams || []).forEach(exam => {
+                                if (exam.studentId === user.uid && exam.status === 'Graded' && exam.marksObtained) {
+                                    points += exam.marksObtained * 2; // 2 points per mark
+                                }
+                            });
+                        }
+                    });
+                    
+                    return {
+                        ...user,
+                        points,
+                    };
+                }).sort((a,b) => b.points - a.points);
                 
                 const rankedUsers = usersWithPoints.map((user, index) => ({
                     ...user,

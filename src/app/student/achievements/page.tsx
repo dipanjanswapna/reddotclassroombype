@@ -1,14 +1,14 @@
 
 'use client';
 
-import { Award, BookOpenCheck, BrainCircuit, Medal, Trophy, Zap } from 'lucide-react';
+import { Award, BookOpenCheck, BrainCircuit, Medal, Trophy, Zap, Star } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Achievement } from '@/lib/types';
+import { Achievement, Course, Enrollment, User } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useState, useEffect } from 'react';
-import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getEnrollmentsByUserId, getCoursesByIds } from '@/lib/firebase/firestore';
 
 
 const iconMap = {
@@ -17,15 +17,17 @@ const iconMap = {
     Zap,
     BrainCircuit,
     BookOpenCheck,
+    Star,
 };
 
 const allAchievements: Achievement[] = [
-    { id: '1', title: 'First Steps', description: 'Enrolled in your first course!', icon: 'Medal', date: '2024-05-10' },
-    { id: '2', title: 'Course Completer', description: 'Finished your first course.', icon: 'Trophy', date: '2024-06-15' },
-    { id: '3', title: 'Weekend Warrior', description: 'Completed 5 lessons in a weekend.', icon: 'Zap', date: '2024-06-22' },
-    { id: '4', title: 'Quiz Master', description: 'Scored 100% on a quiz.', icon: 'BrainCircuit', date: '2024-07-01' },
-    { id: '5', title: 'Dedicated Learner', description: 'Completed 5 courses.', icon: 'BookOpenCheck', date: '2024-07-18' },
+    { id: '1', title: 'First Steps', description: 'Enrolled in your first course!', icon: 'Medal', date: '' },
+    { id: '2', title: 'Course Completer', description: 'Finished your first course.', icon: 'Trophy', date: '' },
+    { id: '3', title: '5 Course Veteran', description: 'Completed 5 courses.', icon: 'BookOpenCheck', date: '' },
+    { id: '4', title: 'Quiz Whiz', description: 'Scored 90% or more on a quiz.', icon: 'BrainCircuit', date: '' },
+    { id: '5', title: 'Top of the Class', description: 'Scored 90% or more on an exam.', icon: 'Star', date: '' },
 ];
+
 
 export default function AchievementsPage() {
     const { userInfo, loading: authLoading } = useAuth();
@@ -39,24 +41,57 @@ export default function AchievementsPage() {
         }
 
         async function generateAchievements() {
-            const enrollments = await getEnrollmentsByUserId(userInfo.uid);
-            const completedCourses = enrollments.filter(e => e.status === 'completed');
-            
-            const earnedAchievements: Achievement[] = [];
-            
-            if (enrollments.length > 0) {
-                earnedAchievements.push(allAchievements[0]);
-            }
-            if (completedCourses.length > 0) {
-                earnedAchievements.push(allAchievements[1]);
-            }
-            if (completedCourses.length >= 5) {
-                earnedAchievements.push(allAchievements[4]);
-            }
-            // Add more logic for other achievements here...
+            try {
+                const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                const courseIds = enrollments.map(e => e.courseId);
+                const courses = courseIds.length > 0 ? await getCoursesByIds(courseIds) : [];
+                
+                const completedEnrollments = enrollments.filter(e => e.status === 'completed');
+                
+                const earnedAchievements: Achievement[] = [];
+                
+                // Achievement 1: First Steps
+                if (enrollments.length > 0) {
+                    earnedAchievements.push({ ...allAchievements[0], date: enrollments[0].enrollmentDate.toDate().toLocaleDateString() });
+                }
 
-            setAchievements(earnedAchievements);
-            setLoading(false);
+                // Achievement 2: Course Completer
+                if (completedEnrollments.length > 0) {
+                    earnedAchievements.push({ ...allAchievements[1], date: completedEnrollments[0].enrollmentDate.toDate().toLocaleDateString() });
+                }
+
+                // Achievement 3: 5 Course Veteran
+                if (completedEnrollments.length >= 5) {
+                    earnedAchievements.push({ ...allAchievements[2], date: completedEnrollments[4].enrollmentDate.toDate().toLocaleDateString() });
+                }
+
+                // Check quizzes and exams from all enrolled courses
+                let quizWhizEarned = false;
+                let topClassEarned = false;
+
+                for (const course of courses) {
+                    if (!quizWhizEarned && course.quizzes) {
+                        const highQuizScore = course.quizzes.find(q => q.status === 'Completed' && q.score && q.score >= 90);
+                        if (highQuizScore) {
+                             earnedAchievements.push({ ...allAchievements[3], date: new Date().toLocaleDateString() }); // Date can be improved
+                             quizWhizEarned = true;
+                        }
+                    }
+                    if (!topClassEarned && course.exams) {
+                        const highExamScore = course.exams.find(e => e.studentId === userInfo.uid && e.status === 'Graded' && e.marksObtained && e.totalMarks > 0 && (e.marksObtained / e.totalMarks) >= 0.9);
+                        if (highExamScore) {
+                            earnedAchievements.push({ ...allAchievements[4], date: highExamScore.submissionDate ? new Date(highExamScore.submissionDate as any).toLocaleDateString() : new Date().toLocaleDateString() });
+                            topClassEarned = true;
+                        }
+                    }
+                }
+
+                setAchievements(earnedAchievements);
+            } catch (error) {
+                console.error("Failed to generate achievements", error);
+            } finally {
+                setLoading(false);
+            }
         }
 
         generateAchievements();

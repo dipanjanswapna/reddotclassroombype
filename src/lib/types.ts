@@ -185,7 +185,7 @@ export type Achievement = {
   id: string;
   title: string;
   description: string;
-  icon: 'Medal' | 'Trophy' | 'Zap' | 'BrainCircuit' | 'BookOpenCheck';
+  icon: 'Medal' | 'Trophy' | 'Zap' | 'BrainCircuit' | 'BookOpenCheck' | 'Star';
   date: string;
 };
 
