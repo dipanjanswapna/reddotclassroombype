@@ -526,6 +526,17 @@ export type Testimonial = {
     dataAiHint: string;
 };
 
+export type OfflineHubHeroSlide = {
+  id: number;
+  imageUrl: string;
+  dataAiHint: string;
+  title: string;
+  subtitle: string;
+  price: string;
+  originalPrice: string;
+  enrollHref: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -710,4 +721,8 @@ export type HomepageConfig = {
   };
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;
+  offlineHubHeroCarousel?: {
+    display: boolean;
+    slides: OfflineHubHeroSlide[];
+  };
 };

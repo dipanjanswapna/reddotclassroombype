@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
 import { Course } from '@/lib/types';
 import { Header } from '@/components/header';
+import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 
 
 export const metadata: Metadata = {
@@ -37,7 +38,14 @@ export default async function OfflineHubPage() {
 
   return (
     <div>
-      <Header variant="dark" wrapperClassName="bg-gray-900" containerClassName="bg-transparent border-0 shadow-none" />
+      <Header variant="dark" wrapperClassName="bg-gray-900" />
+      
+      {homepageConfig?.offlineHubHeroCarousel?.display && (
+        <div className="bg-gray-900">
+            <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+        </div>
+      )}
+
       <div className="bg-gray-900 text-white font-bengali">
         <div className="relative overflow-hidden pt-20">
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900/40 via-gray-900 to-gray-900 z-0"></div>

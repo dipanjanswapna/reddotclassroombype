@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide } from '@/lib/types';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -392,11 +392,41 @@ export default function AdminHomepageManagementPage() {
     const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
     const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
     const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...f, [field]: value} : t)}});
+    
+    // Offline Hub Carousel handlers
+    const addOfflineSlide = () => {
+        setConfig(prev => {
+        if (!prev) return null;
+        const newSlide: OfflineHubHeroSlide = {
+            id: Date.now(),
+            imageUrl: 'https://placehold.co/1200x343.png',
+            dataAiHint: 'students course banner',
+            title: 'New Slide Title',
+            subtitle: 'New Slide Subtitle',
+            price: '₹0',
+            originalPrice: '₹0',
+            enrollHref: '#'
+        };
+        const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
+        return {
+            ...prev,
+            offlineHubHeroCarousel: { ...offlineCarousel, slides: [...offlineCarousel.slides, newSlide] }
+        };
+        });
+    };
 
+    const removeOfflineSlide = (id: number) => {
+        setConfig(prev => {
+        if (!prev || !prev.offlineHubHeroCarousel) return null;
+        const newSlides = prev.offlineHubHeroCarousel.slides.filter(s => s.id !== id);
+        return { ...prev, offlineHubHeroCarousel: { ...prev.offlineHubHeroCarousel, slides: newSlides } };
+        });
+    };
 
   const allSections = [
     { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
     { key: 'topperPageSection', label: 'Strugglers/Topper Page'},
+    { key: 'offlineHubHeroCarousel', label: 'Offline Hub Carousel'},
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
     { key: 'teachersSection', label: 'Teachers Section' },
@@ -518,6 +548,28 @@ export default function AdminHomepageManagementPage() {
                     <Button variant="outline" className="w-full border-dashed" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
                     <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm"><Label htmlFor="autoplay-switch" className="font-medium">Enable Autoplay</Label><Switch id="autoplay-switch" checked={config.heroCarousel?.autoplay ?? true} onCheckedChange={(checked) => handleCarouselSettingChange('autoplay', checked)}/></div>
                     <div className="space-y-2"><Label htmlFor="autoplay-delay">Autoplay Delay (ms)</Label><Input id="autoplay-delay" type="number" value={config.heroCarousel?.autoplayDelay ?? 5000} onChange={(e) => handleCarouselSettingChange('autoplayDelay', parseInt(e.target.value))} disabled={!config.heroCarousel?.autoplay}/></div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Offline Hub Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub page.</CardDescription></CardHeader>
+                <CardContent className="space-y-4">
+                    {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
+                        <div key={slide.id} className="p-4 border rounded-lg space-y-2 relative">
+                            <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeOfflineSlide(slide.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            <h4 className="font-semibold">Slide {index + 1}</h4>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'imageUrl', e.target.value, index)} /></div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'title', e.target.value, index)} /></div>
+                                <div className="space-y-1"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'subtitle', e.target.value, index)} /></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'price', e.target.value, index)} /></div>
+                                <div className="space-y-1"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'originalPrice', e.target.value, index)} /></div>
+                            </div>
+                            <div className="space-y-1"><Label>Enroll Link URL</Label><Input value={slide.enrollHref} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'enrollHref', e.target.value, index)} /></div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full border-dashed" onClick={addOfflineSlide}><PlusCircle className="mr-2"/>Add Slide</Button>
                 </CardContent>
             </Card>
             <Card>

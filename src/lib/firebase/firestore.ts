@@ -547,6 +547,21 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       { id: 'card4', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon support', title: 'সাপোর্ট', description: 'যেকোনো সমস্যায় ২৪/৭ টিচার সাপোর্ট।' },
     ],
   },
+  offlineHubHeroCarousel: {
+    display: true,
+    slides: [
+      {
+        id: 1,
+        imageUrl: "https://placehold.co/1200x343.png",
+        dataAiHint: "students course banner",
+        title: "CLASS 11th",
+        subtitle: "प्रारंभ 2.0 COMMERCE",
+        price: "₹3000/-",
+        originalPrice: "₹3500/-",
+        enrollHref: "/courses"
+      }
+    ]
+  },
 };
 
 
