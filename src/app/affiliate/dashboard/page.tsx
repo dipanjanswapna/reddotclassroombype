@@ -2,13 +2,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, Link2, MousePointerClick, Zap } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { DollarSign, Link2, Users } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
 import { getUsers, getCourses, getEnrollments } from '@/lib/firebase/firestore';
-import { User, Course, Enrollment } from '@/lib/types';
+import type { User, Course, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -21,8 +21,6 @@ export default function AffiliateDashboardPage() {
     const [stats, setStats] = useState({
         earnings: 0,
         referrals: 0,
-        clicks: 1234, // Mock data, as click tracking is complex
-        conversionRate: "2.03%" // Mock data
     });
     const [recentReferrals, setRecentReferrals] = useState<User[]>([]);
 
@@ -54,11 +52,10 @@ export default function AffiliateDashboardPage() {
                     }
                 });
 
-                setStats(prev => ({
-                    ...prev,
+                setStats({
                     earnings: totalEarnings,
                     referrals: referredUsers.length
-                }));
+                });
                 
                 setRecentReferrals(referredUsers.sort((a,b) => safeToDate(b.joined).getTime() - safeToDate(a.joined).getTime()).slice(0, 5));
 
@@ -87,7 +84,7 @@ export default function AffiliateDashboardPage() {
                     Here's a summary of your affiliate performance.
                 </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
@@ -101,31 +98,11 @@ export default function AffiliateDashboardPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
-                        <Link2 className="h-4 w-4 text-muted-foreground" />
+                        <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">+{stats.referrals}</div>
                         <p className="text-xs text-muted-foreground">Successful sign-ups</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-                        <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.clicks.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">(Mock Data)</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-                        <Zap className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.conversionRate}</div>
-                        <p className="text-xs text-muted-foreground">(Mock Data)</p>
                     </CardContent>
                 </Card>
             </div>
@@ -144,13 +121,19 @@ export default function AffiliateDashboardPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recentReferrals.map(referral => (
+                            {recentReferrals.length > 0 ? recentReferrals.map(referral => (
                                 <TableRow key={referral.id}>
                                     <TableCell className="font-medium">{referral.name} ({referral.email})</TableCell>
                                     <TableCell><Badge variant="outline">{referral.role}</Badge></TableCell>
                                     <TableCell>{formatDistanceToNow(safeToDate(referral.joined), { addSuffix: true })}</TableCell>
                                 </TableRow>
-                            ))}
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="h-24 text-center">
+                                        No referral activity yet. Share your links to get started!
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>

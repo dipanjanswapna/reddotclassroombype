@@ -11,23 +11,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } from 'recharts';
-import { Link2, MousePointerClick, DollarSign, TrendingUp } from 'lucide-react';
+import { DollarSign, Link2, BarChart3, Users } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { getUsers, getCourses, getEnrollments } from '@/lib/firebase/firestore';
-import { User, Course, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const mockChartData = [
-    { date: 'Jul 1', Clicks: 150, Signups: 5 },
-    { date: 'Jul 2', Clicks: 180, Signups: 8 },
-    { date: 'Jul 3', Clicks: 220, Signups: 7 },
-    { date: 'Jul 4', Clicks: 250, Signups: 12 },
-    { date: 'Jul 5', Clicks: 210, Signups: 10 },
-    { date: 'Jul 6', Clicks: 300, Signups: 15 },
-    { date: 'Jul 7', Clicks: 280, Signups: 14 },
-];
+const EnrollmentTrendsChart = dynamic(() => import('@/components/admin/enrollment-trends-chart').then(mod => mod.EnrollmentTrendsChart), {
+    loading: () => <Skeleton className="h-[350px] w-full" />,
+});
+
 
 export default function AffiliateAnalyticsPage() {
     const { userInfo, loading: authLoading } = useAuth();
@@ -35,13 +30,12 @@ export default function AffiliateAnalyticsPage() {
     const [loading, setLoading] = useState(true);
     
     const [stats, setStats] = useState({
-        clicks: 1234, // This remains mock as click tracking is complex
         signups: 0,
         earnings: 0,
-        conversionRate: "2.03%", // Mock
     });
     
-    const [topReferrals, setTopReferrals] = useState<{ course: string; clicks: number; signups: number; earnings: string }[]>([]);
+    const [topReferrals, setTopReferrals] = useState<{ course: string; signups: number; earnings: string }[]>([]);
+    const [signupData, setSignupData] = useState<{ name: string; total: number }[]>([]);
 
     useEffect(() => {
         if (!userInfo) {
@@ -80,18 +74,16 @@ export default function AffiliateAnalyticsPage() {
                     }
                 });
 
-                setStats(prev => ({
-                    ...prev,
+                setStats({
                     signups: referredUsers.length,
                     earnings: totalEarnings
-                }));
+                });
 
                 const topCourses = Object.entries(courseStats)
                     .map(([courseId, data]) => {
                         const course = allCourses.find(c => c.id === courseId);
                         return {
                             course: course?.title || 'Unknown Course',
-                            clicks: data.signups * 25, // Mock clicks based on signups
                             signups: data.signups,
                             earnings: `৳${data.earnings.toFixed(2)}`
                         }
@@ -100,6 +92,27 @@ export default function AffiliateAnalyticsPage() {
                     .slice(0, 5);
                 
                 setTopReferrals(topCourses);
+                
+                const monthlySignups: { [key: string]: number } = {};
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                referredUsers.forEach(user => {
+                    const joinDate = safeToDate(user.joined);
+                    if (!isNaN(joinDate.getTime())) {
+                        const month = joinDate.getMonth();
+                        const year = joinDate.getFullYear();
+                        const key = `${year}-${monthNames[month]}`;
+                        if (!monthlySignups[key]) monthlySignups[key] = 0;
+                        monthlySignups[key]++;
+                    }
+                });
+                
+                 const chartData = Object.entries(monthlySignups).map(([key, total]) => ({
+                    name: key.split('-')[1],
+                    total,
+                }));
+                setSignupData(chartData);
+
 
             } catch (err) {
                 console.error(err);
@@ -125,35 +138,15 @@ export default function AffiliateAnalyticsPage() {
             </p>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-                    <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{stats.clicks.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">(Mock Data)</p>
-                </CardContent>
-            </Card>
+        <div className="grid gap-6 md:grid-cols-2">
              <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Sign-ups</CardTitle>
-                    <Link2 className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">+{stats.signups}</div>
                     <p className="text-xs text-muted-foreground">Via your referral links</p>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{stats.conversionRate}</div>
-                    <p className="text-xs text-muted-foreground">(Mock Data)</p>
                 </CardContent>
             </Card>
              <Card>
@@ -163,35 +156,25 @@ export default function AffiliateAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">৳{stats.earnings.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">This month's earnings</p>
+                    <p className="text-xs text-muted-foreground">All-time earnings from referrals</p>
                 </CardContent>
             </Card>
         </div>
 
         <Card>
             <CardHeader>
-                <CardTitle>Performance Over Time</CardTitle>
-                <CardDescription>Clicks vs. Sign-ups in the last 7 days. (Mock Data)</CardDescription>
+                <CardTitle>Sign-ups Over Time</CardTitle>
+                <CardDescription>New user sign-ups from your referrals over time.</CardDescription>
             </CardHeader>
             <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={mockChartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" />
-                        <Tooltip />
-                        <Line yAxisId="left" type="monotone" dataKey="Clicks" stroke="hsl(var(--primary))" activeDot={{ r: 8 }} />
-                        <Line yAxisId="right" type="monotone" dataKey="Signups" stroke="hsl(var(--accent))" strokeDasharray="5 5"/>
-                    </LineChart>
-                </ResponsiveContainer>
+               <EnrollmentTrendsChart data={signupData} />
             </CardContent>
         </Card>
 
          <Card>
             <CardHeader>
                 <CardTitle>Top Performing Referrals</CardTitle>
-                <CardDescription>Your most successful course referral links.</CardDescription>
+                <CardDescription>Your most successful course referral links by generated revenue.</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
@@ -203,13 +186,19 @@ export default function AffiliateAnalyticsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {topReferrals.map((referral) => (
+                        {topReferrals.length > 0 ? topReferrals.map((referral) => (
                             <TableRow key={referral.course}>
                                 <TableCell className="font-medium">{referral.course}</TableCell>
                                 <TableCell>{referral.signups}</TableCell>
                                 <TableCell className="text-right font-bold">{referral.earnings}</TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={3} className="h-24 text-center">
+                                    No referral data yet.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
