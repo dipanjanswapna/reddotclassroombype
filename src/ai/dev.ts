@@ -11,3 +11,4 @@ import '@/app/actions/batch.actions';
 import '@/app/actions/question-bank.actions';
 import '@/app/actions/progress.actions';
 import '@/app/actions/quiz.actions';
+import '@/app/actions/user.actions';
