@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -352,6 +353,16 @@ export type Prebooking = {
   userId: string;
   courseId: string;
   prebookingDate: Timestamp;
+};
+
+export type Payout = {
+  id?: string;
+  userId: string; // The user receiving the payout (Affiliate, Teacher, Seller)
+  amount: number;
+  payoutDate: Timestamp;
+  method: 'bKash' | 'Bank Transfer' | 'Other';
+  status: 'Completed' | 'Pending' | 'Failed';
+  transactionId?: string;
 };
 
 export type SupportTicket = {

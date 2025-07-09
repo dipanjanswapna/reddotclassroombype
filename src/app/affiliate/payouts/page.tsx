@@ -15,20 +15,19 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Banknote, DollarSign, Download, Landmark } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { getCourses, getEnrollments, getUsers } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollments, getUsers, getPayoutsByUserId } from '@/lib/firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
-const mockPayouts = [
-    { id: 'p_123', date: '2024-07-15', amount: '৳2,500', method: 'bKash', status: 'Paid' },
-    { id: 'p_124', date: '2024-06-15', amount: '৳1,750', method: 'bKash', status: 'Paid' },
-];
+import { Payout } from '@/lib/types';
+import { format } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 export default function AffiliatePayoutsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({ available: 0, paidOut: 4250 }); // paidOut is mock
+    const [payouts, setPayouts] = useState<Payout[]>([]);
+    const [stats, setStats] = useState({ available: 0, paidOut: 0 });
 
     useEffect(() => {
         if (!userInfo) {
@@ -38,11 +37,16 @@ export default function AffiliatePayoutsPage() {
 
         const fetchEarnings = async () => {
             try {
-                const [allUsers, allCourses, allEnrollments] = await Promise.all([
+                const [allUsers, allCourses, allEnrollments, fetchedPayouts] = await Promise.all([
                     getUsers(),
                     getCourses(),
-                    getEnrollments()
+                    getEnrollments(),
+                    getPayoutsByUserId(userInfo.uid)
                 ]);
+
+                setPayouts(fetchedPayouts.sort((a, b) => b.payoutDate.toMillis() - a.payoutDate.toMillis()));
+                
+                const totalPaidOut = fetchedPayouts.reduce((acc, p) => p.status === 'Completed' ? acc + p.amount : acc, 0);
 
                 const referredUsers = allUsers.filter(u => u.referredBy === userInfo.uid);
                 const referredUserIds = referredUsers.map(u => u.id!);
@@ -57,8 +61,10 @@ export default function AffiliatePayoutsPage() {
                     }
                 });
                 
-                // For this demo, assume available = total - paidOut
-                setStats(prev => ({ ...prev, available: totalEarnings - prev.paidOut }));
+                setStats({ 
+                    available: totalEarnings - totalPaidOut, 
+                    paidOut: totalPaidOut 
+                });
 
             } catch (err) {
                  console.error(err);
@@ -102,7 +108,7 @@ export default function AffiliatePayoutsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">৳{stats.paidOut.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">All-time earnings paid (mock data)</p>
+                    <p className="text-xs text-muted-foreground">All-time earnings paid</p>
                 </CardContent>
             </Card>
         </div>
@@ -111,7 +117,7 @@ export default function AffiliatePayoutsPage() {
             <CardHeader className="flex items-center justify-between">
                 <div>
                     <CardTitle>Payout History</CardTitle>
-                    <CardDescription>A record of all payouts you have received (mock data).</CardDescription>
+                    <CardDescription>A record of all payouts you have received.</CardDescription>
                 </div>
                 <Button variant="outline"><Download className="mr-2"/> Export History</Button>
             </CardHeader>
@@ -127,18 +133,18 @@ export default function AffiliatePayoutsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockPayouts.map((payout) => (
+                        {payouts.map((payout) => (
                             <TableRow key={payout.id}>
-                                <TableCell className="font-mono">{payout.id}</TableCell>
-                                <TableCell>{payout.date}</TableCell>
-                                <TableCell className="font-medium">{payout.amount}</TableCell>
+                                <TableCell className="font-mono">{payout.transactionId || payout.id}</TableCell>
+                                <TableCell>{format(safeToDate(payout.payoutDate), 'PPP')}</TableCell>
+                                <TableCell className="font-medium">৳{payout.amount.toFixed(2)}</TableCell>
                                 <TableCell>{payout.method}</TableCell>
                                 <TableCell className="text-right">
-                                    <Badge variant={payout.status === 'Paid' ? 'accent' : 'secondary'}>{payout.status}</Badge>
+                                    <Badge variant={payout.status === 'Completed' ? 'accent' : 'secondary'}>{payout.status}</Badge>
                                 </TableCell>
                             </TableRow>
                         ))}
-                         {mockPayouts.length === 0 && (
+                         {payouts.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={5} className="h-24 text-center">
                                     No payout history found.
