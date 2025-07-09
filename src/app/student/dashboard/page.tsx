@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +7,7 @@ import {
   Award,
   BarChart3,
   CalendarCheck,
+  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +27,7 @@ export default function DashboardPage() {
     inProgressCourses: [],
     completedCoursesCount: 0,
     overallProgress: 0,
+    recentAchievements: [],
   } as any);
 
   useEffect(() => {
@@ -60,13 +61,53 @@ export default function DashboardPage() {
         const overallProgress = enrollments.length > 0
           ? Math.round(enrollments.reduce((acc, e) => acc + (e.progress || 0), 0) / enrollments.length)
           : 0;
+          
+        // --- Achievements Calculation ---
+        const achievements = [];
+        // 1. First Enrollment
+        if (enrollments.length > 0) {
+            achievements.push({
+                id: 'ach_first_steps',
+                title: 'First Steps',
+                description: 'Enrolled in your first course!',
+                icon: Award,
+            });
+        }
+        // 2. Course Completion
+        const completedCourse = enrolledCourses.find(c => enrollments.some(e => e.courseId === c.id && e.status === 'completed'));
+        if (completedCourse) {
+            achievements.push({
+                id: 'ach_completer',
+                title: 'Course Completer',
+                description: `Completed ${completedCourse.title}`,
+                icon: BookOpen,
+            });
+        }
+        // 3. High Score
+        let highScoringExam = null;
+        for (const course of enrolledCourses) {
+            const exam = (course.exams || []).find(e => e.studentId === userInfo.uid && e.status === 'Graded' && e.marksObtained && e.totalMarks > 0 && (e.marksObtained / e.totalMarks) >= 0.9);
+            if (exam) {
+                highScoringExam = { ...exam, courseTitle: course.title };
+                break;
+            }
+        }
+        if (highScoringExam) {
+            achievements.push({
+                id: 'ach_top_class',
+                title: 'Top of the Class',
+                description: `Scored high in ${highScoringExam.courseTitle} exam.`,
+                icon: Trophy,
+            });
+        }
 
         setStats({
           enrollments,
           upcomingDeadlines,
           inProgressCourses,
           completedCoursesCount,
-          overallProgress
+          overallProgress,
+          recentAchievements: achievements.slice(0, 3)
         });
 
       } catch (error) {
@@ -188,7 +229,19 @@ export default function DashboardPage() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">No recent achievements yet.</p>
+                <ul className="space-y-4">
+                  {stats.recentAchievements.length > 0 ? stats.recentAchievements.map((ach: any) => (
+                    <li key={ach.id} className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                        <ach.icon className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{ach.title}</p>
+                        <p className="text-sm text-muted-foreground">{ach.description}</p>
+                      </div>
+                    </li>
+                  )) : <p className="text-sm text-muted-foreground">No recent achievements yet.</p>}
+                </ul>
               </CardContent>
             </Card>
           </div>
