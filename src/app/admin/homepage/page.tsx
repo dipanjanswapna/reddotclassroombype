@@ -564,7 +564,7 @@ export default function AdminHomepageManagementPage() {
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>Offline Hub Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub page.</CardDescription></CardHeader>
+                <CardHeader><CardTitle>Offline Hub Carousel</CardTitle><CardDescription>Manage the slim banner on the Offline Hub and RDC Shop pages.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
                         <div key={slide.id} className="p-4 border rounded-lg space-y-2 relative">
