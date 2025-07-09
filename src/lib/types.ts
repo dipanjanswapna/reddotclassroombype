@@ -417,6 +417,7 @@ export type Enrollment = {
   enrollmentDate: Timestamp;
   progress: number;
   status: 'in-progress' | 'completed';
+  completedLessons?: string[];
 };
 
 export type PlatformRoleSettings = {

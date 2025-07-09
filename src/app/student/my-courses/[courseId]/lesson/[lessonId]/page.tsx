@@ -3,15 +3,18 @@
 
 import { notFound, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { getCourse } from '@/lib/firebase/firestore';
+import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Download, MessageSquare } from 'lucide-react';
+import { Download, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import type { Course, Lesson } from '@/lib/types';
+import type { Course, Lesson, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LessonFeedback } from '@/components/lesson-feedback';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/components/ui/use-toast';
+import { markLessonAsCompleteAction } from '@/app/actions/progress.actions';
 
 const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
     ssr: false,
@@ -27,16 +30,31 @@ export default function LessonPage() {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [pageUrl, setPageUrl] = useState('');
+  
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   useEffect(() => {
     setPageUrl(window.location.href);
 
     const fetchLessonData = async () => {
-      if (!courseId) return;
+      if (!courseId || !userInfo) {
+        if (!loading) setLoading(false);
+        return;
+      };
       try {
-        const courseData = await getCourse(courseId);
+        const [courseData, enrollments] = await Promise.all([
+          getCourse(courseId),
+          getEnrollmentsByUserId(userInfo.uid)
+        ]);
+
         if (courseData) {
           setCourse(courseData);
+          const currentEnrollment = enrollments.find(e => e.courseId === courseId);
+          setEnrollment(currentEnrollment || null);
+
           for (const module of courseData.syllabus || []) {
             const lessonData = module.lessons.find((l) => l.id === lessonId);
             if (lessonData) {
@@ -53,7 +71,26 @@ export default function LessonPage() {
     };
 
     fetchLessonData();
-  }, [courseId, lessonId]);
+  }, [courseId, lessonId, userInfo]);
+  
+  const isCompleted = enrollment?.completedLessons?.includes(lessonId);
+
+  const handleMarkComplete = async () => {
+      if (!userInfo || isCompleted) return;
+      setIsCompleting(true);
+      const result = await markLessonAsCompleteAction(userInfo.uid, courseId, lessonId);
+      if(result.success) {
+          toast({ title: result.message });
+          // Manually update state to reflect change immediately
+          setEnrollment(prev => prev ? ({
+              ...prev,
+              completedLessons: [...(prev.completedLessons || []), lessonId]
+          }) : null);
+      } else {
+          toast({ title: 'Error', description: result.message, variant: 'destructive' });
+      }
+      setIsCompleting(false);
+  }
 
   if (loading) {
     return (
@@ -86,10 +123,8 @@ export default function LessonPage() {
           allowFullScreen
         ></iframe>
       </div>
-
-      <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lesson.id} />
-
-      <div>
+      
+      <div className="flex flex-wrap gap-4 items-center">
         {lesson.lectureSheetUrl && (
           <Button asChild>
             <a
@@ -102,7 +137,13 @@ export default function LessonPage() {
             </a>
           </Button>
         )}
+        <Button onClick={handleMarkComplete} disabled={!!isCompleted || isCompleting} variant={isCompleted ? 'secondary' : 'default'}>
+          {isCompleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+          {isCompleted ? 'Completed' : 'Mark as Complete'}
+        </Button>
       </div>
+
+      <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lesson.id} />
 
       <Card>
         <CardHeader>
