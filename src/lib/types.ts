@@ -200,7 +200,7 @@ export type LeaderboardEntry = {
 export type Notification = {
   id?: string;
   userId: string;
-  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2';
+  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp';
   title: string;
   description: string;
   date: Timestamp;

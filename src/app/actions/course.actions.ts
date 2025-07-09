@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch, getDoc } from 'firebase/firestore';
 import { 
     deleteCourse, 
     getCourse, 
@@ -10,9 +10,10 @@ import {
     addPromoCode, 
     addNotification, 
     getEnrollmentsByCourseId,
-    getPromoCodes
+    getPromoCodes,
+    getInstructorBySlug
 } from '@/lib/firebase/firestore';
-import { Course, User, PromoCode } from '@/lib/types';
+import { Course, User, PromoCode, Instructor } from '@/lib/types';
 import { db } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
@@ -203,6 +204,8 @@ export async function addLessonReactionAction(
   try {
     const userRef = doc(db, 'users', userId);
     const courseRef = doc(db, 'courses', courseId);
+    let courseData: Course | null = null;
+    let userData: User | null = null;
 
     await runTransaction(db, async (transaction) => {
       const userDoc = await transaction.get(userRef);
@@ -210,14 +213,15 @@ export async function addLessonReactionAction(
 
       if (!userDoc.exists()) throw new Error("User not found.");
       if (!courseDoc.exists()) throw new Error("Course not found.");
+      
+      userData = userDoc.data() as User;
+      courseData = courseDoc.data() as Course;
 
-      const userData = userDoc.data() as User;
       if (userData.reactedLessons?.includes(lessonId)) {
+        // This won't be thrown if the button is disabled, but good for API-level protection
         throw new Error("You have already reacted to this lesson.");
       }
       
-      const courseData = courseDoc.data() as Course;
-
       const updatedSyllabus = courseData.syllabus?.map(module => ({
         ...module,
         lessons: module.lessons.map(lesson => {
@@ -238,6 +242,29 @@ export async function addLessonReactionAction(
       transaction.update(courseRef, { syllabus: updatedSyllabus });
       transaction.update(userRef, { reactedLessons: arrayUnion(lessonId) });
     });
+    
+    // Send notification to instructors
+    if (courseData?.instructors && courseData.instructors.length > 0 && userData) {
+        const studentName = userData.name;
+        const lesson = courseData.syllabus?.flatMap(m => m.lessons).find(l => l.id === lessonId);
+        
+        if (lesson) {
+            for (const instructorInfo of courseData.instructors) {
+                const instructor = await getInstructorBySlug(instructorInfo.slug);
+                if (instructor?.userId) {
+                    await addNotification({
+                        userId: instructor.userId,
+                        icon: 'ThumbsUp',
+                        title: `New Reaction in ${courseData.title}`,
+                        description: `${studentName} reacted to your lesson: "${lesson.title}"`,
+                        date: Timestamp.now(),
+                        read: false,
+                        link: `/teacher/courses/builder/${courseId}`
+                    });
+                }
+            }
+        }
+    }
 
     revalidatePath(`/student/my-courses/${courseId}/lesson/${lessonId}`);
     return { success: true, message: 'Thank you for your reaction!' };
