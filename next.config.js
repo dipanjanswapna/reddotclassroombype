@@ -3,7 +3,10 @@
 const nextConfig = {
   /* config options here */
   experimental: {},
-  allowedDevOrigins: ['https://*.cloudworkstations.dev'],
+  allowedDevOrigins: [
+    'https://*.cloudworkstations.dev',
+    'https://6000-firebase-studio-1751017024253.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev'
+  ],
   typescript: {
     ignoreBuildErrors: true,
   },
