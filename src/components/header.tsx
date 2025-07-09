@@ -39,11 +39,12 @@ import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 
 
-export function Header({ containerClassName }: { containerClassName?: string }) {
+export function Header({ containerClassName, variant = "light" }: { containerClassName?: string; variant?: "light" | "dark" }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
   const [config, setConfig] = useState<HomepageConfig | null>(null);
   const { user, loading } = useAuth();
+  const isDark = variant === 'dark';
 
   useEffect(() => {
     getHomepageConfig().then(setConfig);
@@ -72,7 +73,7 @@ export function Header({ containerClassName }: { containerClassName?: string }) 
               <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu">
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn(isDark && "text-white hover:bg-white/20")}>
                       <Menu className="h-5 w-5" />
                   </Button>
                   </SheetTrigger>
@@ -164,7 +165,7 @@ export function Header({ containerClassName }: { containerClassName?: string }) 
                   </Link>
                   <nav className="flex items-center space-x-1 text-sm font-medium">
                       {mainNavLinks.map((link) => (
-                      <Button key={link.href} variant="ghost" asChild>
+                      <Button key={link.href} variant="ghost" asChild className={cn(isDark && "text-white hover:bg-white/20")}>
                           <Link
                           href={link.href}
                           className="transition-colors hover:text-primary"
@@ -175,7 +176,7 @@ export function Header({ containerClassName }: { containerClassName?: string }) 
                       ))}
                       <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="flex items-center gap-1">
+                              <Button variant="ghost" className={cn("flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
                               {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
@@ -206,12 +207,12 @@ export function Header({ containerClassName }: { containerClassName?: string }) 
               </>
               ) : (
               <div className="hidden sm:flex items-center space-x-2">
-                  <LanguageToggle />
-                  <Button variant="ghost" className="hidden lg:inline-flex"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
-                  <Button asChild variant="outline">
+                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
+                  <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
+                  <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
                   <Link href="/login">{t.login[language]}</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className={cn(isDark && "bg-white text-black hover:bg-gray-200")}>
                   <Link href="/signup">{t.signup[language]}</Link>
                   </Button>
               </div>
