@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { CourseCard } from '@/components/course-card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, BookOpenText } from 'lucide-react';
@@ -147,6 +148,18 @@ export function CoursesPageClient({
             </div>
         )}
       </main>
+
+      <section className="container mx-auto px-4 my-16">
+        <div className="relative w-full aspect-[16/6] rounded-lg overflow-hidden shadow-lg">
+            <Image
+                src="/rdcshop.jpg"
+                alt="RDC Shop Banner"
+                fill
+                className="object-cover"
+                data-ai-hint="shop banner"
+            />
+        </div>
+      </section>
     </div>
   );
 }
