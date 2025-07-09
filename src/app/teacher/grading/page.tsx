@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -77,9 +75,15 @@ export default function TeacherGradingPage() {
         }
 
         const allCourses = await getCourses();
-        const teacherCourses = allCourses.filter(c => 
-          c.instructors?.some(i => i.slug === instructor.slug)
-        );
+        
+        let teacherCourses: Course[] = [];
+        if (instructor.organizationId) {
+            teacherCourses = allCourses.filter(course => course.organizationId === instructor.organizationId);
+        } else {
+            teacherCourses = allCourses.filter(course => 
+                course.instructors?.some(i => i.slug === instructor.slug)
+            );
+        }
 
         const assignmentsToGrade = teacherCourses.flatMap(course => 
           (course.assignments || []).filter(a => a.status === 'Submitted' || a.status === 'Late').map(assignment => ({
