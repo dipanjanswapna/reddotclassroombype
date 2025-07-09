@@ -62,83 +62,103 @@ export default function AdminHomepageManagementPage() {
     }
     setIsSaving(false);
   };
+  
+  // --- Start of Corrected State Update Handlers ---
+
+  const handleSimpleValueChange = (key: keyof HomepageConfig, value: any) => {
+    setConfig(prev => prev ? { ...prev, [key]: value } : null);
+  };
 
   const handleStringArrayChange = (section: CourseIdSections, value: string) => {
     const ids = value.split(',').map(id => id.trim()).filter(Boolean);
     setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
   };
-  
-  const handleNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, key: string, value: string | number, index: number) => {
-    setConfig(prevConfig => {
-        if (!prevConfig) return null;
-        const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        const sectionData = newConfig[section] as any;
-        const subSectionData = sectionData[subSectionKey];
 
-        if (Array.isArray(subSectionData) && index !== undefined && subSectionData[index]) {
-            subSectionData[index][key] = value;
-            newConfig[section][subSectionKey] = subSectionData;
-        }
-        return newConfig;
-    });
-  };
-  
-  const handleDeepNestedInputChange = (section: keyof HomepageConfig, subSectionKey: string, index: number, field: string, subfield: string, value: string) => {
-    setConfig(prevConfig => {
-        if (!prevConfig) return null;
-        const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        if (newConfig[section]?.[subSectionKey]?.[index]?.[field]) {
-          newConfig[section][subSectionKey][index][field][subfield] = value;
-        }
-        return newConfig;
-    });
-  };
-
-  const handleSectionInputChange = (section: keyof HomepageConfig, key: string, value: string | number | { bn: string; en: string }) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = { ...prevConfig };
-      if (newConfig[section]) {
-        (newConfig[section] as any)[key] = value;
-      }
-      return newConfig;
-    });
-  };
-  
-  const handleSectionTitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
-      if (newConfig[section] && (newConfig[section] as any).title) {
-        (newConfig[section] as any).title[lang] = value;
-      }
-      return newConfig;
+  const handleSectionValueChange = (section: keyof HomepageConfig, key: string, value: any) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const sectionData = prev[section] as any;
+        return {
+            ...prev,
+            [section]: {
+                ...sectionData,
+                [key]: value,
+            },
+        };
     });
   };
   
   const handleSectionLangChange = (section: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
-      setConfig(prevConfig => {
-          if (!prevConfig) return null;
-          const newConfig = JSON.parse(JSON.stringify(prevConfig));
-          if (newConfig[section]?.[field]) {
-              newConfig[section][field][lang] = value;
-          }
-          return newConfig;
-      });
-  };
+    setConfig(prev => {
+        if (!prev) return null;
+        const sectionData = prev[section] as any;
+        if (!sectionData || typeof sectionData[field] !== 'object') return prev;
 
-
-  const handleSectionSubtitleChange = (section: keyof HomepageConfig, lang: 'bn' | 'en', value: string) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = JSON.parse(JSON.stringify(prevConfig)); // Deep copy
-      if (newConfig[section] && (newConfig[section] as any).subtitle) {
-        (newConfig[section] as any).subtitle[lang] = value;
-      }
-      return newConfig;
+        return {
+            ...prev,
+            [section]: {
+                ...sectionData,
+                [field]: {
+                    ...sectionData[field],
+                    [lang]: value,
+                }
+            }
+        };
     });
   };
   
+  const handleNestedArrayChange = <T,>(section: keyof HomepageConfig, arrayName: string, index: number, field: keyof T, value: any) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const sectionData = prev[section] as any;
+        if (!sectionData || !Array.isArray(sectionData[arrayName])) return prev;
+
+        const newArray = [...sectionData[arrayName]];
+        newArray[index] = {
+            ...newArray[index],
+            [field]: value,
+        };
+        
+        return {
+            ...prev,
+            [section]: {
+                ...sectionData,
+                [arrayName]: newArray,
+            }
+        };
+    });
+  };
+  
+  const handleDeepNestedLangChange = (section: keyof HomepageConfig, arrayName: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const sectionData = prev[section] as any;
+        if (!sectionData || !Array.isArray(sectionData[arrayName])) return prev;
+
+        const newArray = [...sectionData[arrayName]];
+        const itemToUpdate = newArray[index];
+        if (!itemToUpdate || typeof itemToUpdate[field] !== 'object') return prev;
+
+        newArray[index] = {
+            ...itemToUpdate,
+            [field]: {
+                ...itemToUpdate[field],
+                [lang]: value,
+            }
+        };
+
+        return {
+            ...prev,
+            [section]: {
+                ...sectionData,
+                [arrayName]: newArray,
+            }
+        };
+    });
+  };
+
+  // --- End of Corrected State Update Handlers ---
+
   const addHeroBanner = () => {
     setConfig(prev => prev ? ({
       ...prev,
@@ -271,26 +291,6 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
-  const handleHeroBannerChange = (index: number, field: 'imageUrl' | 'href', value: string) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const newBanners = [...prev.heroBanners];
-        const bannerToUpdate = { ...newBanners[index], [field]: value };
-        newBanners[index] = bannerToUpdate;
-        return { ...prev, heroBanners: newBanners };
-    });
-  };
-  
-  const handleCategoryChange = (index: number, field: keyof CategoryItem, value: string) => {
-    setConfig(prev => {
-        if (!prev || !prev.categoriesSection) return null;
-        const newCategories = [...prev.categoriesSection.categories];
-        const categoryToUpdate = { ...newCategories[index], [field]: value };
-        newCategories[index] = categoryToUpdate;
-        return { ...prev, categoriesSection: { ...prev.categoriesSection, categories: newCategories } };
-    });
-  };
-
   const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
     setConfig(prev => {
         if (!prev) return null;
@@ -312,20 +312,16 @@ export default function AdminHomepageManagementPage() {
   };
   
   const handleTeamMemberChange = (id: string, field: keyof Omit<TeamMember, 'id' | 'socialLinks'>, value: string) => {
-    setConfig(prev => {
-        if (!prev || !prev.aboutUsSection) return null;
-        const newMembers = prev.aboutUsSection.teamMembers.map(m => m.id === id ? { ...m, [field]: value } : m);
-        return { ...prev, aboutUsSection: { ...prev.aboutUsSection, teamMembers: newMembers } };
-    });
+    handleNestedArrayChange<TeamMember>('aboutUsSection', 'teamMembers', config?.aboutUsSection.teamMembers.findIndex(m => m.id === id) ?? -1, field, value)
   };
 
-  const handleSocialLinkChange = (memberId: string, index: number, field: 'platform' | 'url', value: string) => {
+  const handleSocialLinkChange = (memberId: string, linkIndex: number, field: 'platform' | 'url', value: string) => {
     setConfig(prev => {
         if (!prev || !prev.aboutUsSection) return null;
         const newMembers = prev.aboutUsSection.teamMembers.map(member => {
             if (member.id === memberId) {
                 const newLinks = [...member.socialLinks];
-                newLinks[index] = { ...newLinks[index], [field]: value as any };
+                newLinks[linkIndex] = { ...newLinks[linkIndex], [field]: value as any };
                 return { ...member, socialLinks: newLinks };
             }
             return member;
@@ -385,58 +381,14 @@ export default function AdminHomepageManagementPage() {
     });
   }
     
-  const handleStrugglingSectionChange = (field: 'imageUrl', value: string) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        return {
-            ...prev,
-            strugglingStudentSection: {
-                ...(prev.strugglingStudentSection!),
-                [field]: value
-            }
-        };
-    });
-  };
-
-  const handleStrugglingSectionLangChange = (field: 'title' | 'subtitle' | 'buttonText', lang: 'bn' | 'en', value: string) => {
-    setConfig(prevConfig => {
-        if (!prevConfig || !prevConfig.strugglingStudentSection) return null;
-        const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        if (newConfig.strugglingStudentSection[field]) {
-            newConfig.strugglingStudentSection[field][lang] = value;
-        }
-        return newConfig;
-    });
-  };
-
-    const handleTopperPageChange = (field: keyof TopperPageSection, value: string) => {
-        setConfig(prev => {
-            if (!prev || !prev.topperPageSection) return null;
-            const newConfig = JSON.parse(JSON.stringify(prev));
-            newConfig.topperPageSection[field] = value;
-            return newConfig;
-        });
-    };
-
-    const handleTopperCardChange = (id: string, field: keyof TopperPageCard, value: string) => {
-        setConfig(prev => {
-            if (!prev || !prev.topperPageSection) return null;
-            const newCards = prev.topperPageSection.cards.map(c => 
-                c.id === id ? { ...c, [field]: value } : c
-            );
-            const newConfig = JSON.parse(JSON.stringify(prev));
-            newConfig.topperPageSection.cards = newCards;
-            return newConfig;
-        });
-    };
-    
     // Why Choose Us Section
     const addWhyChooseUsFeature = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: [...(p.whyChooseUs.features || []), {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}]}});
     const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
-    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.map(f => f.id === id ? {...f, [field]: value} : f)}});
+    const updateWhyChooseUsFeature = (id: string, field: keyof WhyChooseUsFeature, value: any) => handleNestedArrayChange<WhyChooseUsFeature>('whyChooseUs', 'features', config?.whyChooseUs.features.findIndex(f => f.id === id) ?? -1, field, value);
+
     const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
     const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
-    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.map(t => t.id === id ? {...f, [field]: value} : t)}});
+    const updateTestimonial = (id: string, field: keyof Testimonial, value: any) => handleNestedArrayChange<Testimonial>('whyChooseUs', 'testimonials', config?.whyChooseUs.testimonials.findIndex(t => t.id === id) ?? -1, field, value);
     
     // Offline Hub Carousel handlers
     const addOfflineSlide = () => {
@@ -472,7 +424,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'welcomeSection', label: 'Welcome Section'},
     { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
     { key: 'topperPageSection', label: 'Strugglers/Topper Page'},
-    { key: 'offlineHubHeroCarousel', label: 'Offline Hub Carousel'},
+    { key: 'offlineHubHeroCarousel', label: 'Offline Hub & RDC Shop Carousel'},
     { key: 'categoriesSection', label: 'Categories Section' },
     { key: 'journeySection', label: 'Journey Section (Live Courses)' },
     { key: 'teachersSection', label: 'Teachers Section' },
@@ -542,7 +494,7 @@ export default function AdminHomepageManagementPage() {
                 <CardContent>
                     <div className="space-y-2">
                         <Label htmlFor="logoUrl">Site Logo URL</Label>
-                        <Input id="logoUrl" value={config.logoUrl || ''} onChange={(e) => setConfig(prev => prev ? ({ ...prev, logoUrl: e.target.value }) : null)} placeholder="https://example.com/logo.png"/>
+                        <Input id="logoUrl" value={config.logoUrl || ''} onChange={(e) => handleSimpleValueChange('logoUrl', e.target.value)} placeholder="https://example.com/logo.png"/>
                         <p className="text-xs text-muted-foreground">If a URL is provided, it will replace the default logo across the site.</p>
                     </div>
                 </CardContent>
@@ -550,8 +502,8 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Animation Settings</CardTitle><CardDescription>Control the scroll speed of homepage carousels.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Teachers Carousel Speed (seconds)</Label><Input type="number" value={config.teachersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionInputChange('teachersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
-                    <div className="space-y-2"><Label>Partners Carousel Speed (seconds)</Label><Input type="number" value={config.partnersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionInputChange('partnersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
+                    <div className="space-y-2"><Label>Teachers Carousel Speed (seconds)</Label><Input type="number" value={config.teachersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('teachersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
+                    <div className="space-y-2"><Label>Partners Carousel Speed (seconds)</Label><Input type="number" value={config.partnersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('partnersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
                 </CardContent>
             </Card>
              <Card>
@@ -587,8 +539,8 @@ export default function AdminHomepageManagementPage() {
                         <div key={banner.id} className="p-4 border rounded-lg space-y-2 relative">
                         <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeHeroBanner(banner.id)}><X className="text-destructive h-4 w-4"/></Button>
                         <h4 className="font-semibold">Banner {index + 1}</h4>
-                        <div className="space-y-1"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => handleHeroBannerChange(index, 'imageUrl', e.target.value)} /></div>
-                        <div className="space-y-1"><Label>Link URL (e.g., /courses/1)</Label><Input value={banner.href} onChange={(e) => handleHeroBannerChange(index, 'href', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Link URL (e.g., /courses/1)</Label><Input value={banner.href} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
                         </div>
                     ))}
                     <Button variant="outline" className="w-full border-dashed" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
@@ -603,16 +555,16 @@ export default function AdminHomepageManagementPage() {
                         <div key={slide.id} className="p-4 border rounded-lg space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeOfflineSlide(slide.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <h4 className="font-semibold">Slide {index + 1}</h4>
-                            <div className="space-y-1"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'imageUrl', e.target.value, index)} /></div>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'title', e.target.value, index)} /></div>
-                                <div className="space-y-1"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'subtitle', e.target.value, index)} /></div>
+                                <div className="space-y-1"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} /></div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'price', e.target.value, index)} /></div>
-                                <div className="space-y-1"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'originalPrice', e.target.value, index)} /></div>
+                                <div className="space-y-1"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'price', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'originalPrice', e.target.value)} /></div>
                             </div>
-                            <div className="space-y-1"><Label>Enroll Link URL</Label><Input value={slide.enrollHref} onChange={(e) => handleNestedInputChange('offlineHubHeroCarousel', 'slides', 'enrollHref', e.target.value, index)} /></div>
+                            <div className="space-y-1"><Label>Enroll Link URL</Label><Input value={slide.enrollHref} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'enrollHref', e.target.value)} /></div>
                         </div>
                     ))}
                     <Button variant="outline" className="w-full border-dashed" onClick={addOfflineSlide}><PlusCircle className="mr-2"/>Add Slide</Button>
@@ -622,14 +574,14 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Struggling Student Section</CardTitle><CardDescription>Manage the "Struggling in Studies?" banner on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleStrugglingSectionLangChange('title', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.strugglingStudentSection?.title?.en || ''} onChange={e => handleStrugglingSectionLangChange('title', 'en', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Subtitle (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleStrugglingSectionLangChange('subtitle', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Subtitle (EN)</Label><Input value={config.strugglingStudentSection?.subtitle?.en || ''} onChange={e => handleStrugglingSectionLangChange('subtitle', 'en', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.strugglingStudentSection?.buttonText?.bn || ''} onChange={e => handleStrugglingSectionLangChange('buttonText', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Button Text (EN)</Label><Input value={config.strugglingStudentSection?.buttonText?.en || ''} onChange={e => handleStrugglingSectionLangChange('buttonText', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.strugglingStudentSection?.title?.en || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'title', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Subtitle (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'subtitle', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Subtitle (EN)</Label><Input value={config.strugglingStudentSection?.subtitle?.en || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'subtitle', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button Text (BN)</Label><Input value={config.strugglingStudentSection?.buttonText?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'buttonText', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Button Text (EN)</Label><Input value={config.strugglingStudentSection?.buttonText?.en || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'buttonText', 'en', e.target.value)} /></div>
                     </div>
-                    <div className="space-y-2"><Label>Image URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleStrugglingSectionChange('imageUrl', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Image URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleSectionValueChange('strugglingStudentSection', 'imageUrl', e.target.value)} /></div>
                 </CardContent>
             </Card>
             <Card>
@@ -653,18 +605,18 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Categories Section</CardTitle><CardDescription>Manage the category cards shown on the homepage.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionTitleChange('categoriesSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'en', e.target.value)} /></div>
                     </div>
                     {config.categoriesSection?.categories?.map((category, index) => (
                     <div key={category.id} className="p-4 border rounded-lg space-y-2 relative">
                         <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeCategory(category.id)}><X className="text-destructive h-4 w-4"/></Button>
                         <h4 className="font-semibold">Category {index + 1}</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1"><Label>Title</Label><Input value={category.title} onChange={(e) => handleCategoryChange(index, 'title', e.target.value)} /></div>
-                        <div className="space-y-1"><Label>Image URL</Label><Input value={category.imageUrl} onChange={(e) => handleCategoryChange(index, 'imageUrl', e.target.value)} /></div>
-                        <div className="space-y-1"><Label>Link URL</Label><Input value={category.linkUrl} onChange={(e) => handleCategoryChange(index, 'linkUrl', e.target.value)} /></div>
-                        <div className="space-y-1"><Label>Image AI Hint</Label><Input value={category.dataAiHint} onChange={(e) => handleCategoryChange(index, 'dataAiHint', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Title</Label><Input value={category.title} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'title', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Image URL</Label><Input value={category.imageUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'imageUrl', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Link URL</Label><Input value={category.linkUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'linkUrl', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>Image AI Hint</Label><Input value={category.dataAiHint} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'dataAiHint', e.target.value)} /></div>
                         </div>
                     </div>
                     ))}
@@ -685,18 +637,18 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Free Classes Section</CardTitle><CardDescription>Manage the "আমাদের সকল ফ্রি ক্লাসসমূহ" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.freeClassesSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Subtitle (BN)</Label><Input value={config.freeClassesSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('freeClassesSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.freeClassesSection?.title?.bn || ''} onChange={e => handleSectionLangChange('freeClassesSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Subtitle (BN)</Label><Input value={config.freeClassesSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('freeClassesSection', 'subtitle', 'bn', e.target.value)} /></div>
                     </div>
                     {config.freeClassesSection?.classes?.map((item, index) => (
                         <div key={item.id} className="p-4 border rounded-lg space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeFreeClass(item.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="col-span-2 space-y-1"><Label>Class Title</Label><Input value={item.title} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'title', e.target.value, index)} /></div>
-                                <div className="space-y-1"><Label>Subject</Label><Input value={item.subject} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'subject', e.target.value, index)} /></div>
-                                <div className="space-y-1"><Label>Instructor</Label><Input value={item.instructor} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'instructor', e.target.value, index)} /></div>
-                                <div className="col-span-2 space-y-1"><Label>YouTube URL</Label><Input value={item.youtubeUrl} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'youtubeUrl', e.target.value, index)} /></div>
-                                <div className="col-span-2 space-y-1"><Label>Grade</Label><Input value={item.grade} onChange={(e) => handleNestedInputChange('freeClassesSection', 'classes', 'grade', e.target.value, index)} placeholder="e.g., ক্লাস ৯"/></div>
+                                <div className="col-span-2 space-y-1"><Label>Class Title</Label><Input value={item.title} onChange={(e) => handleNestedArrayChange('freeClassesSection', 'classes', index, 'title', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Subject</Label><Input value={item.subject} onChange={(e) => handleNestedArrayChange('freeClassesSection', 'classes', index, 'subject', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Instructor</Label><Input value={item.instructor} onChange={(e) => handleNestedArrayChange('freeClassesSection', 'classes', index, 'instructor', e.target.value)} /></div>
+                                <div className="col-span-2 space-y-1"><Label>YouTube URL</Label><Input value={item.youtubeUrl} onChange={(e) => handleNestedArrayChange('freeClassesSection', 'classes', index, 'youtubeUrl', e.target.value)} /></div>
+                                <div className="col-span-2 space-y-1"><Label>Grade</Label><Input value={item.grade} onChange={(e) => handleNestedArrayChange('freeClassesSection', 'classes', index, 'grade', e.target.value)} placeholder="e.g., ক্লাস ৯"/></div>
                             </div>
                         </div>
                     ))}
@@ -746,12 +698,12 @@ export default function AdminHomepageManagementPage() {
                     
                     <div className="space-y-4 pt-4 border-t">
                         <Label className="font-semibold">Feature Cards</Label>
-                        {config.whyChooseUs?.features?.map(feature => (
+                        {config.whyChooseUs?.features?.map((feature, index) => (
                         <div key={feature.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeWhyChooseUsFeature(feature.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title?.bn || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, bn: e.target.value})}/></div>
-                                <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title?.en || ''} onChange={e => updateWhyChooseUsFeature(feature.id, 'title', {...feature.title, en: e.target.value})}/></div>
+                                <div className="space-y-1"><Label>Title (BN)</Label><Input value={feature.title?.bn || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'features', index, 'title', 'bn', e.target.value)}/></div>
+                                <div className="space-y-1"><Label>Title (EN)</Label><Input value={feature.title?.en || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'features', index, 'title', 'en', e.target.value)}/></div>
                             </div>
                             <div className="space-y-1"><Label>Icon URL</Label><Input value={feature.iconUrl} onChange={e => updateWhyChooseUsFeature(feature.id, 'iconUrl', e.target.value)}/></div>
                             <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={feature.dataAiHint} onChange={e => updateWhyChooseUsFeature(feature.id, 'dataAiHint', e.target.value)}/></div>
@@ -762,12 +714,12 @@ export default function AdminHomepageManagementPage() {
 
                     <div className="space-y-4 pt-4 border-t">
                         <Label className="font-semibold">Testimonials</Label>
-                        {config.whyChooseUs?.testimonials?.map(t => (
+                        {config.whyChooseUs?.testimonials?.map((t, index) => (
                         <div key={t.id} className="p-3 border rounded-md space-y-2 relative">
                             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeTestimonial(t.id)}><X className="text-destructive h-4 w-4"/></Button>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, bn: e.target.value})}/></div>
-                              <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote?.en || ''} onChange={e => updateTestimonial(t.id, 'quote', {...t.quote, en: e.target.value})}/></div>
+                              <div className="space-y-1"><Label>Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'testimonials', index, 'quote', 'bn', e.target.value)}/></div>
+                              <div className="space-y-1"><Label>Quote (EN)</Label><Textarea value={t.quote?.en || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'testimonials', index, 'quote', 'en', e.target.value)}/></div>
                             </div>
                             <div className="space-y-1"><Label>Student Name</Label><Input value={t.studentName} onChange={e => updateTestimonial(t.id, 'studentName', e.target.value)}/></div>
                             <div className="space-y-1"><Label>College</Label><Input value={t.college} onChange={e => updateTestimonial(t.id, 'college', e.target.value)}/></div>
@@ -783,9 +735,9 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>About Us Section</CardTitle><CardDescription>Manage the team members displayed on the About Us page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.aboutUsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.aboutUsSection?.title?.en || ''} onChange={e => handleSectionTitleChange('aboutUsSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection?.subtitle?.en || ''} onChange={e => handleSectionSubtitleChange('aboutUsSection', 'en', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.aboutUsSection?.title?.bn || ''} onChange={e => handleSectionLangChange('aboutUsSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.aboutUsSection?.title?.en || ''} onChange={e => handleSectionLangChange('aboutUsSection', 'title', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Section Subtitle (EN)</Label><Textarea value={config.aboutUsSection?.subtitle?.en || ''} onChange={e => handleSectionLangChange('aboutUsSection', 'subtitle', 'en', e.target.value)} /></div>
                     </div>
                     {config.aboutUsSection?.teamMembers?.map((member, index) => (
                         <Collapsible key={member.id} className="p-4 border rounded-lg space-y-2 relative" defaultOpen>
@@ -820,8 +772,8 @@ export default function AdminHomepageManagementPage() {
                 {config.videoSection?.videos?.map((video, index) => (
                     <div key={index} className="p-4 border rounded-lg space-y-4">
                         <h4 className="font-semibold">Video {index + 1}</h4>
-                        <div className="space-y-1"><Label>Video Title</Label><Input value={video.title} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'title', e.target.value, index)} /></div>
-                        <div className="space-y-1"><Label>YouTube Video URL</Label><Input value={video.videoUrl} onChange={(e) => handleNestedInputChange('videoSection', 'videos', 'videoUrl', e.target.value, index)} /></div>
+                        <div className="space-y-1"><Label>Video Title</Label><Input value={video.title} onChange={(e) => handleNestedArrayChange('videoSection', 'videos', index, 'title', e.target.value)} /></div>
+                        <div className="space-y-1"><Label>YouTube Video URL</Label><Input value={video.videoUrl} onChange={(e) => handleNestedArrayChange('videoSection', 'videos', index, 'videoUrl', e.target.value)} /></div>
                     </div>
                 ))}
                 </CardContent>
@@ -833,9 +785,9 @@ export default function AdminHomepageManagementPage() {
                         {config.partnersSection?.partners?.map((partner, index) => (
                             <div key={partner.id} className="p-4 border rounded-lg space-y-4 relative">
                                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removePartner(partner.id)}><X className="text-destructive h-4 w-4" /></Button>
-                                <div className="space-y-2"><Label>Partner Name</Label><Input value={partner.name} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'name', e.target.value, index)} /></div>
-                                <div className="space-y-2"><Label>Logo URL</Label><Input value={partner.logoUrl} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'logoUrl', e.target.value, index)} /></div>
-                                <div className="space-y-2"><Label>Website Link</Label><Input value={partner.href} onChange={(e) => handleNestedInputChange('partnersSection', 'partners', 'href', e.target.value, index)} /></div>
+                                <div className="space-y-2"><Label>Partner Name</Label><Input value={partner.name} onChange={(e) => handleNestedArrayChange('partnersSection', 'partners', index, 'name', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Logo URL</Label><Input value={partner.logoUrl} onChange={(e) => handleNestedArrayChange('partnersSection', 'partners', index, 'logoUrl', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Website Link</Label><Input value={partner.href} onChange={(e) => handleNestedArrayChange('partnersSection', 'partners', index, 'href', e.target.value)} /></div>
                             </div>
                         ))}
                     </div>
@@ -857,20 +809,20 @@ export default function AdminHomepageManagementPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label>Platform</Label>
-                                            <Select value={channel.platform} onValueChange={(value) => handleNestedInputChange('socialMediaSection', 'channels', 'platform', value, index)}>
+                                            <Select value={channel.platform} onValueChange={(value) => handleNestedArrayChange('socialMediaSection', 'channels', index, 'platform', value)}>
                                                 <SelectTrigger><SelectValue/></SelectTrigger>
                                                 <SelectContent><SelectItem value="YouTube">YouTube</SelectItem><SelectItem value="Facebook Page">Facebook Page</SelectItem></SelectContent>
                                             </Select>
                                         </div>
-                                        <div className="space-y-2"><Label>Channel Name (BN)</Label><Input value={typeof channel.name === 'object' ? channel.name.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label>Channel Handle</Label><Input value={channel.handle} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'handle', e.target.value, index)} placeholder="@handle" /></div>
-                                        <div className="space-y-2"><Label>Stat 1 Value</Label><Input value={channel.stat1_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat1_value', e.target.value, index)} placeholder="e.g., 1.5M"/></div>
-                                        <div className="space-y-2"><Label>Stat 1 Label (BN)</Label><Input value={typeof channel.stat1_label === 'object' ? channel.stat1_label.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} placeholder="e.g., সাবস্ক্রাইবার" /></div>
-                                        <div className="space-y-2"><Label>Stat 2 Value</Label><Input value={channel.stat2_value} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'stat2_value', e.target.value, index)} placeholder="e.g., 500+"/></div>
-                                        <div className="space-y-2"><Label>Stat 2 Label (BN)</Label><Input value={typeof channel.stat2_label === 'object' ? channel.stat2_label.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} placeholder="e.g., ভিডিও"/></div>
-                                        <div className="space-y-2 col-span-2"><Label>Description (BN)</Label><Textarea value={typeof channel.description === 'object' ? channel.description.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} rows={2} /></div>
-                                        <div className="space-y-2"><Label>CTA Text (BN)</Label><Input value={typeof channel.ctaText === 'object' ? channel.ctaText.bn : ''} onChange={e => handleDeepNestedInputChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label>CTA URL</Label><Input value={channel.ctaUrl} onChange={e => handleNestedInputChange('socialMediaSection', 'channels', 'ctaUrl', e.target.value, index)} /></div>
+                                        <div className="space-y-2"><Label>Channel Name (BN)</Label><Input value={typeof channel.name === 'object' ? channel.name.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'name', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Channel Handle</Label><Input value={channel.handle} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'handle', e.target.value)} placeholder="@handle" /></div>
+                                        <div className="space-y-2"><Label>Stat 1 Value</Label><Input value={channel.stat1_value} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'stat1_value', e.target.value)} placeholder="e.g., 1.5M"/></div>
+                                        <div className="space-y-2"><Label>Stat 1 Label (BN)</Label><Input value={typeof channel.stat1_label === 'object' ? channel.stat1_label.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat1_label', 'bn', e.target.value)} placeholder="e.g., সাবস্ক্রাইবার" /></div>
+                                        <div className="space-y-2"><Label>Stat 2 Value</Label><Input value={channel.stat2_value} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'stat2_value', e.target.value)} placeholder="e.g., 500+"/></div>
+                                        <div className="space-y-2"><Label>Stat 2 Label (BN)</Label><Input value={typeof channel.stat2_label === 'object' ? channel.stat2_label.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'stat2_label', 'bn', e.target.value)} placeholder="e.g., ভিডিও"/></div>
+                                        <div className="space-y-2 col-span-2"><Label>Description (BN)</Label><Textarea value={typeof channel.description === 'object' ? channel.description.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'description', 'bn', e.target.value)} rows={2} /></div>
+                                        <div className="space-y-2"><Label>CTA Text (BN)</Label><Input value={typeof channel.ctaText === 'object' ? channel.ctaText.bn : ''} onChange={e => handleDeepNestedLangChange('socialMediaSection', 'channels', index, 'ctaText', 'bn', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>CTA URL</Label><Input value={channel.ctaUrl} onChange={e => handleNestedArrayChange('socialMediaSection', 'channels', index, 'ctaUrl', e.target.value)} /></div>
                                     </div>
                                 </CollapsibleContent>
                             </Collapsible>
@@ -882,11 +834,11 @@ export default function AdminHomepageManagementPage() {
             <Card>
                 <CardHeader><CardTitle>Stats Section</CardTitle><CardDescription>Manage the "লক্ষাধিক শিক্ষার্থীর পথচলা" section.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.statsSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('statsSection', 'bn', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.statsSection?.title?.bn || ''} onChange={e => handleSectionLangChange('statsSection', 'title', 'bn', e.target.value)} /></div>
                     {config.statsSection?.stats?.map((stat, index) => (
                         <div key={index} className="p-4 border rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2"><Label>Value</Label><Input value={stat.value} onChange={e => handleNestedInputChange('statsSection', 'stats', 'value', e.target.value, index)} /></div>
-                            <div className="space-y-2"><Label>Label (BN)</Label><Input value={stat.label?.bn || ''} onChange={e => handleDeepNestedInputChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Value</Label><Input value={stat.value} onChange={e => handleNestedArrayChange('statsSection', 'stats', index, 'value', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Label (BN)</Label><Input value={stat.label?.bn || ''} onChange={e => handleDeepNestedLangChange('statsSection', 'stats', index, 'label', 'bn', e.target.value)} /></div>
                         </div>
                     ))}
                 </CardContent>
@@ -897,23 +849,23 @@ export default function AdminHomepageManagementPage() {
                 <CardHeader><CardTitle>Offline Hub Page Settings</CardTitle><CardDescription>Control the static content on the RDC OFFLINE HUB page. Programs and centers are now managed automatically.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection?.title?.bn || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection?.title?.en || ''} onChange={e => handleSectionTitleChange('offlineHubSection', 'en', e.target.value)} /></div>
-                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionSubtitleChange('offlineHubSection', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.offlineHubSection?.title?.bn || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'title', 'bn', e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.offlineHubSection?.title?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'title', 'en', e.target.value)} /></div>
+                        <div className="space-y-2 col-span-1 md:col-span-2"><Label>Subtitle (BN)</Label><Textarea value={config.offlineHubSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'subtitle', 'bn', e.target.value)} /></div>
                     </div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle>Strugglers/Topper Page</CardTitle><CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription></CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection?.title || ''} onChange={e => handleTopperPageChange('title', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleTopperPageChange('mainImageUrl', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} /></div>
                     {config.topperPageSection?.cards?.map((card, index) => (
                         <div key={card.id} className="p-4 border rounded-lg space-y-2">
                             <h4 className="font-semibold">Card {index + 1}</h4>
-                            <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleTopperCardChange(card.id, 'iconUrl', e.target.value)} /></div>
-                            <div className="space-y-1"><Label>Title</Label><Input value={card.title} onChange={e => handleTopperCardChange(card.id, 'title', e.target.value)} /></div>
-                            <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleTopperCardChange(card.id, 'description', e.target.value)} rows={3}/></div>
+                            <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} /></div>
+                            <div className="space-y-1"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} /></div>
+                            <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={3}/></div>
                         </div>
                     ))}
                 </CardContent>
