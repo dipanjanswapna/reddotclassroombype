@@ -11,11 +11,11 @@ export default function OfflineHubLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">{children}</main>
       
-      <div className="relative w-full aspect-[16/6]">
+      <div className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]">
           <Image
               src={offlineBanner}
               alt="RDC Offline Hub Banner"
