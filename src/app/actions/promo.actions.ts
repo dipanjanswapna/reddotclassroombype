@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addPromoCode, deletePromoCode, getCourse, getPromoCodeByCode, updatePromoCode } from '@/lib/firebase/firestore';
+import { addPromoCode, deletePromoCode, getCourse, getPromoCodeByCode, updatePromoCode, getInstructor, getCourses } from '@/lib/firebase/firestore';
 import { PromoCode } from '@/lib/types';
 
 export async function applyPromoCodeAction(courseId: string, promoCode: string, userId?: string) {
@@ -58,6 +58,35 @@ export async function applyPromoCodeAction(courseId: string, promoCode: string, 
 
 export async function savePromoCodeAction(promoData: Partial<PromoCode>) {
     try {
+      // If the creator is not 'admin', it must be a teacher ID.
+      // We need to verify the teacher's permissions.
+      if (promoData.createdBy && promoData.createdBy !== 'admin') {
+          const teacherId = promoData.createdBy;
+          const instructor = await getInstructor(teacherId);
+          if (!instructor) {
+              throw new Error("Instructor profile not found.");
+          }
+          
+          // Fetch the courses the teacher is actually assigned to
+          const allCourses = await getCourses();
+          const teacherCourses = allCourses.filter(course => 
+              course.instructors?.some(i => i.slug === instructor.slug)
+          );
+          const teacherCourseIds = new Set(teacherCourses.map(c => c.id!));
+  
+          // When a teacher creates a code for "All My Courses", the FE sends ['all'].
+          // We convert it to the actual list of course IDs here.
+          if (promoData.applicableCourseIds?.includes('all')) {
+              promoData.applicableCourseIds = Array.from(teacherCourseIds);
+          } else {
+              // If specific courses are selected, verify them.
+              const unauthorizedCourses = promoData.applicableCourseIds?.filter(id => !teacherCourseIds.has(id));
+              if (unauthorizedCourses && unauthorizedCourses.length > 0) {
+                  throw new Error("You do not have permission to create promo codes for one or more selected courses.");
+              }
+          }
+      }
+
       if (promoData.id) {
         await updatePromoCode(promoData.id, promoData);
       } else {
