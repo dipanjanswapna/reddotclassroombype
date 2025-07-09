@@ -36,7 +36,7 @@ export default async function OfflineHubPage() {
     }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-bengali">
+    <div className="bg-gray-900 text-white font-bengali">
         <div className="relative overflow-hidden">
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900/40 via-gray-900 to-gray-900 z-0"></div>
              <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
