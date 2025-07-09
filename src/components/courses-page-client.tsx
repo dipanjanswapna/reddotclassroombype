@@ -11,6 +11,7 @@ import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import Link from 'next/link';
 import { useLanguage } from '@/context/language-context';
+import rdcShopBanner from '@/public/rdcshop.jpg';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -95,7 +96,7 @@ export function CoursesPageClient({
         <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
-      <main className="container mx-auto px-4 pt-16">
+      <main className="container mx-auto px-4 pt-16 pb-24">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingSpinner className="w-12 h-12" />
@@ -150,13 +151,14 @@ export function CoursesPageClient({
       </main>
 
       <div>
-        <div className="relative w-full aspect-[16/6] shadow-lg">
+        <div className="relative w-full aspect-[16/6]">
             <Image
-                src="/rdcshop.jpg"
+                src={rdcShopBanner}
                 alt="RDC Shop Banner"
                 fill
                 className="object-cover"
                 data-ai-hint="shop banner"
+                placeholder="blur"
             />
         </div>
       </div>
