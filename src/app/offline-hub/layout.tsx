@@ -13,7 +13,7 @@ export default function OfflineHubLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main>{children}</main>
+      <main className="flex-grow">{children}</main>
       
       <div 
         className="relative w-full aspect-[4/3] sm:aspect-video md:aspect-[16/6]"
