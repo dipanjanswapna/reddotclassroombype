@@ -1081,9 +1081,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </p>
             </div>
             <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
-                    <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
-                </Button>
+                {userRole === 'Admin' && (
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                        <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
+                    </Button>
+                )}
                 {isPublished && userRole === 'Admin' ? (
                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes

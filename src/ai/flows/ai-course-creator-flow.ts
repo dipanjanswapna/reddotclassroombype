@@ -22,7 +22,7 @@ const AiCourseCreatorOutputSchema = z.object({
     lessons: z.array(z.object({
       title: z.string().describe('The title of the lesson.'),
     })).describe('A list of lessons within this module.'),
-  })).describe('A detailed syllabus with modules and lessons. Create 4-6 modules, each with 3-5 lessons.'),
+  })).describe('A detailed syllabus with 4-6 modules, each with 3-5 lessons.'),
   faqs: z.array(z.object({
     question: z.string().describe('A frequently asked question.'),
     answer: z.string().describe('The answer to the question.'),
