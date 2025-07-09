@@ -80,6 +80,8 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         }
         setLoading(false);
     };
+    
+    const isOfflineCourse = courseType === 'Offline' || courseType === 'Hybrid';
 
     if (authLoading || loading) {
         return (
@@ -96,6 +98,13 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
              return (
                 <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
                     Pre-book Now
+                </Button>
+            );
+        }
+        if (isOfflineCourse) {
+             return (
+                <Button size={size} className="w-full font-bold" asChild>
+                    <Link href={`/courses/${courseId}`}>View Details</Link>
                 </Button>
             );
         }
@@ -130,6 +139,14 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         return (
             <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
                 Pre-book Now
+            </Button>
+        );
+    }
+    
+    if (isOfflineCourse) {
+        return (
+            <Button size={size} className="w-full font-bold" asChild>
+                <Link href={`/courses/${courseId}`}>View Details</Link>
             </Button>
         );
     }

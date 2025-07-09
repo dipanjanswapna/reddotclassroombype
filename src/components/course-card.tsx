@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { CourseEnrollmentButton } from "./course-enrollment-button";
+import { Button } from "./ui/button";
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -26,6 +27,8 @@ export function CourseCard(props: CourseCardProps) {
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   const checkoutUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/checkout/${id}` : `/checkout/${id}`;
+  
+  const isOfflineCourse = type === 'Offline' || type === 'Hybrid';
 
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group">
@@ -78,6 +81,10 @@ export function CourseCard(props: CourseCardProps) {
       <div className="p-4 pt-0">
          {isArchived ? (
             <Badge variant="outline">Enrollment Closed</Badge>
+         ) : isOfflineCourse ? (
+             <Button asChild className="w-full font-bold">
+                 <Link href={coursePageUrl}>View Details</Link>
+             </Button>
          ) : (
             <CourseEnrollmentButton
                 courseId={id}
