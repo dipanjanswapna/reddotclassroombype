@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Course } from '@/lib/types';
@@ -22,7 +22,10 @@ import { useAuth } from '@/context/auth-context';
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { userInfo } = useAuth();
+  
+  const cycleId = searchParams.get('cycleId');
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +79,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   };
   
   useEffect(() => {
-    if (userInfo && course) {
+    if (userInfo && course && !cycleId) {
       const checkForPrebookPromo = async () => {
         const promo = await getPromoCodeForUserAndCourse(userInfo.uid, course.id!);
         if (promo) {
@@ -90,11 +93,11 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
       }
       checkForPrebookPromo();
     }
-  }, [userInfo, course]);
+  }, [userInfo, course, cycleId]);
 
 
   const handlePayment = async () => {
-    if (!userInfo) {
+    if (!userInfo || !course) {
         toast({
             title: 'Not logged in',
             description: 'You must be logged in to enroll in a course.',
@@ -106,7 +109,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction({ courseId: course!.id!, userId: userInfo.uid });
+    const result = await enrollInCourseAction({ courseId: course.id!, userId: userInfo.uid });
 
     if (result.success) {
         toast({
@@ -120,8 +123,8 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
             description: result.message,
             variant: 'destructive'
         });
+        setIsProcessing(false);
     }
-    setIsProcessing(false);
   };
 
   if (loading) {
@@ -139,10 +142,16 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
   
-  const listPrice = parseFloat(course.price.replace(/[^0-9.]/g, ''));
+  const selectedCycle = cycleId ? course.cycles?.find(c => c.id === cycleId) : null;
+  const itemTitle = selectedCycle ? `${course.title} - ${selectedCycle.title}` : course.title;
+  
+  const listPrice = parseFloat((selectedCycle ? selectedCycle.price : course.price).replace(/[^0-9.]/g, ''));
   
   const effectivePrice = parseFloat(
-      (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!
+      (selectedCycle 
+        ? selectedCycle.price
+        : (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!
+      )
       .replace(/[^0-9.]/g, '')
   );
 
@@ -160,9 +169,10 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
             <CardHeader className="flex flex-row gap-4 items-start">
               <Image src={course.imageUrl} alt={course.title} width={120} height={80} className="rounded-md object-cover aspect-video" />
               <div>
-                <CardTitle>{course.title}</CardTitle>
+                <CardTitle>{itemTitle}</CardTitle>
                 <CardDescription>{course.instructors?.[0]?.name}</CardDescription>
-                {isPrebooking && <Badge className="mt-2" variant="warning">Pre-booking Offer</Badge>}
+                {isPrebooking && !selectedCycle && <Badge className="mt-2" variant="warning">Pre-booking Offer</Badge>}
+                {selectedCycle && <Badge className="mt-2" variant="secondary">Cycle Enrollment</Badge>}
               </div>
             </CardHeader>
             <CardContent>
@@ -173,12 +183,13 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                     placeholder="Enter promo code" 
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    disabled={promoLoading}
+                    disabled={promoLoading || !!selectedCycle}
                   />
-                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode}>
+                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode || !!selectedCycle}>
                     {promoLoading ? <Loader2 className="animate-spin" /> : 'Apply'}
                   </Button>
                 </div>
+                 {!!selectedCycle && <p className="text-xs text-muted-foreground">Promo codes cannot be applied to individual cycle purchases.</p>}
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
             </CardContent>
@@ -194,16 +205,18 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 <span>Original Price</span>
                 <span>৳{listPrice.toFixed(2)}</span>
               </div>
-              {courseDiscount > 0 && (
+              {courseDiscount > 0 && !selectedCycle && (
                 <div className="flex justify-between text-green-600">
                   <span>Course Discount</span>
                   <span>- ৳{courseDiscount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-green-600">
-                <span>Promo Code Discount</span>
-                <span>- ৳{discount.toFixed(2)}</span>
-              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                    <span>Promo Code Discount</span>
+                    <span>- ৳{discount.toFixed(2)}</span>
+                </div>
+              )}
               <hr className="my-2"/>
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
@@ -224,7 +237,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                     </Alert>
                 )}
                 <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
-                    {isProcessing ? <Loader2 className="animate-spin mr-2" /> : null}
+                    {isProcessing ? <Loader2 className="mr-2 animate-spin" /> : null}
                     {isPrebooking ? 'Pay Pre-booking Fee' : 'Proceed to Payment'}
                 </Button>
             </div>

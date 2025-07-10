@@ -1,5 +1,4 @@
 
-
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -10,6 +9,7 @@ import {
   BookOpen,
   Phone,
   Users,
+  Layers,
 } from 'lucide-react';
 import {
   Accordion,
@@ -33,11 +33,12 @@ import {
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { Course } from '@/lib/types';
+import { Course, CourseCycle } from '@/lib/types';
 import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
+import { cn } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -56,6 +57,29 @@ export async function generateMetadata({ params }: { params: { courseId: string 
     },
   }
 }
+
+const CycleCard = ({ cycle, courseId }: { cycle: CourseCycle, courseId: string }) => (
+    <Card className="bg-muted/50">
+        <CardHeader>
+            <div className="flex justify-between items-start">
+                <div>
+                    <Badge variant="secondary" className="mb-2">Cycle {cycle.order}</Badge>
+                    <CardTitle className="text-xl">{cycle.title}</CardTitle>
+                </div>
+                <p className="text-xl font-bold text-primary">{cycle.price}</p>
+            </div>
+        </CardHeader>
+        <CardContent>
+            <p className="text-sm text-muted-foreground">{cycle.description}</p>
+        </CardContent>
+        <div className="p-6 pt-0">
+             <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
+                <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll Now</Link>
+            </Button>
+        </div>
+    </Card>
+);
+
 
 export default async function CourseDetailPage({
   params,
@@ -198,6 +222,20 @@ export default async function CourseDetailPage({
                   ))}
                 </div>
               </section>
+            )}
+
+             {course.cycles && course.cycles.length > 0 && (
+                <section id="cycles" className="scroll-mt-24 py-0">
+                    <h2 className="font-headline text-3xl font-bold mb-6 flex items-center gap-3">
+                        <Layers />
+                        Cycle based enrollment
+                    </h2>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
+                            <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} />
+                        ))}
+                    </div>
+                </section>
             )}
             
             {course.classRoutine && course.classRoutine.length > 0 && (

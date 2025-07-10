@@ -17,6 +17,10 @@ export function CourseTabs({ course }: { course: Course }) {
             { id: 'instructors', label: 'Instructors' },
         ];
 
+        if (course.cycles && course.cycles.length > 0) {
+            baseTabs.push({ id: 'cycles', label: 'Cycles' });
+        }
+
         if (course.type === 'Exam') {
             if (course.examTemplates && course.examTemplates.length > 0) {
                 baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });

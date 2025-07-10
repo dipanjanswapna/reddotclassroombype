@@ -58,11 +58,12 @@ type ManualEnrollmentDetails = {
         paymentDate: string; // ISO String
         recordedBy: string; // UID of admin/staff
     };
+    cycleId?: string; // Optional: for cycle-based enrollment
 };
 
 
 export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
-    const { courseId, userId, paymentDetails } = details;
+    const { courseId, userId, paymentDetails, cycleId } = details;
     try {
         const student = await getUser(userId);
         if (!student) {
@@ -76,6 +77,13 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         const course = await getCourse(courseId);
         if (!course) {
             throw new Error("Course not found after enrollment.");
+        }
+        
+        const isCycleEnrollment = !!cycleId;
+        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === cycleId) : null;
+        
+        if (isCycleEnrollment && !cycle) {
+            throw new Error("Selected course cycle not found.");
         }
 
         const batch = writeBatch(db);
@@ -101,8 +109,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         }
         batch.set(mainEnrollmentRef, enrollmentData);
         
-        // 2. Create enrollments for bundled courses
-        if (course.includedCourseIds && course.includedCourseIds.length > 0) {
+        // 2. Create enrollments for bundled courses only if it's a full course purchase
+        if (!isCycleEnrollment && course.includedCourseIds && course.includedCourseIds.length > 0) {
             for (const bundledCourseId of course.includedCourseIds) {
                 const bundledEnrollmentRef = doc(collection(db, 'enrollments'));
                 const bundledEnrollmentData: Omit<Enrollment, 'id'> = {
