@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -1243,6 +1244,36 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </div>
               </CardContent>
             )}
+
+            {activeTab === 'syllabus' && (
+              <CardContent className="pt-6">
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                    <SortableContext items={syllabus.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                        <div className="space-y-2">
+                           {syllabus.map(item => (
+                               <SortableSyllabusItem 
+                                 key={item.id} 
+                                 item={item}
+                                 quizzes={quizzes}
+                                 updateItem={updateSyllabusItem}
+                                 removeItem={removeSyllabusItem}
+                                 onGenerateQuiz={handleGenerateQuiz}
+                                 generatingQuizForLesson={generatingQuizForLesson}
+                               />
+                           ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
+                <div className="flex gap-2 mt-4">
+                  <Button variant="outline" className="w-full border-dashed" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2"/> Add Module</Button>
+                  <Button variant="outline" className="w-full border-dashed" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2"/> Add Lesson</Button>
+                </div>
+              </CardContent>
+            )}
             
             {activeTab === 'pricing' && (
               <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1301,8 +1332,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </Card>
               </CardContent>
             )}
-
-            {/* Other tabs will be implemented in next steps */}
         </Card>
     </div>
   );
