@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -1245,48 +1243,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </div>
               </CardContent>
             )}
-
-            {activeTab === 'syllabus' && (
-              <CardContent className="pt-6">
-                <CardDescription className="mb-4">Drag and drop to reorder modules and lessons. Add details for each lesson in the collapsible area.</CardDescription>
-                <DndContext 
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
-                    <SortableContext 
-                        items={syllabus.map(i => i.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <div className="space-y-2">
-                            {syllabus.map(item => (
-                                <SortableSyllabusItem 
-                                    key={item.id}
-                                    item={item}
-                                    quizzes={quizzes}
-                                    updateItem={updateSyllabusItem}
-                                    removeItem={removeSyllabusItem}
-                                    onGenerateQuiz={handleGenerateQuiz}
-                                    generatingQuizForLesson={generatingQuizForLesson}
-                                />
-                            ))}
-                        </div>
-                    </SortableContext>
-                </DndContext>
-                <div className="mt-4 flex gap-2">
-                    <Button variant="outline" className="w-full" onClick={() => addSyllabusItem('module')}>
-                        <PlusCircle className="mr-2" />
-                        Add Module
-                    </Button>
-                    <Button variant="outline" className="w-full" onClick={() => addSyllabusItem('lesson')}>
-                        <PlusCircle className="mr-2" />
-                        Add Lesson
-                    </Button>
-                </div>
-              </CardContent>
-            )}
             
-             {activeTab === 'pricing' && (
+            {activeTab === 'pricing' && (
               <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                     <CardHeader>
@@ -1344,23 +1302,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
               </CardContent>
             )}
 
-            {activeTab === 'outcomes' && (
-                <CardContent className="pt-6">
-                    <CardDescription className="mb-4">List the key skills and knowledge students will gain from this course.</CardDescription>
-                    <div className="space-y-2">
-                        {whatYouWillLearn.map((outcome, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                                <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} />
-                                <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)}><X className="text-destructive h-4 w-4"/></Button>
-                            </div>
-                        ))}
-                    </div>
-                    <Button variant="outline" className="mt-4" onClick={addOutcome}><PlusCircle className="mr-2"/>Add Outcome</Button>
-                </CardContent>
-            )}
-            
-            {/* The rest of the tabs remain the same */}
-            
+            {/* Other tabs will be implemented in next steps */}
         </Card>
     </div>
   );
