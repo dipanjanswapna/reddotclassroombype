@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -26,6 +27,7 @@ import {
   Phone,
   ChevronsUpDown,
   Check,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -440,6 +442,27 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addInstructor = (instructor: Instructor) => setInstructors(prev => [...prev, instructor]);
   const removeInstructor = (slug: string) => setInstructors(prev => prev.filter(ins => ins.slug !== slug));
+  
+  // Routine Handlers
+  const addRoutineRow = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: 'Saturday', subject: '', time: '' }]);
+  const updateRoutineRow = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
+    setClassRoutine(prev => prev.map(row => row.id === id ? { ...row, [field]: value } : row));
+  };
+  const removeRoutineRow = (id: string) => setClassRoutine(prev => prev.filter(row => row.id !== id));
+  
+  // Announcement Handlers
+  const addAnnouncement = () => setAnnouncements(prev => [{ id: `ann_${Date.now()}`, title: '', content: '', date: format(new Date(), 'yyyy-MM-dd') }, ...prev]);
+  const updateAnnouncement = (id: string, field: keyof Omit<Announcement, 'id' | 'date'>, value: string) => {
+      setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
+  };
+  const removeAnnouncement = (id: string) => setAnnouncements(prev => prev.filter(a => a.id !== id));
+
+  // Live Class Handlers
+  const addLiveClass = () => setLiveClasses(prev => [...prev, { id: `lc_${Date.now()}`, topic: '', date: format(new Date(), 'yyyy-MM-dd'), time: '', platform: 'YouTube Live', joinUrl: '' }]);
+  const updateLiveClass = (id: string, field: keyof Omit<LiveClass, 'id'>, value: string) => {
+      setLiveClasses(prev => prev.map(lc => lc.id === id ? { ...lc, [field]: value } : lc));
+  };
+  const removeLiveClass = (id: string) => setLiveClasses(prev => prev.filter(lc => lc.id !== id));
 
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
@@ -504,6 +527,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           dataAiHint: i.dataAiHint,
           slug: i.slug
         })),
+        classRoutine: classRoutine.filter(r => r.day && r.subject && r.time),
+        announcements: announcements.filter(a => a.title && a.content),
+        liveClasses: liveClasses.filter(lc => lc.topic && lc.joinUrl),
         status,
         organizationId: organizationId,
     };
@@ -585,6 +611,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'media', label: 'Media', icon: CloudUpload },
+    { id: 'routine', label: 'Routine', icon: Calendar },
+    { id: 'liveClasses', label: 'Live Classes', icon: Video },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
   ];
 
@@ -877,6 +906,69 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
               </CardContent>
             )}
             
+            {activeTab === 'routine' && (
+                <CardContent className="pt-6 space-y-4">
+                    {classRoutine.map((item, index) => (
+                        <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
+                            <Select value={item.day} onValueChange={value => updateRoutineRow(item.id, 'day', value)}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Saturday">Saturday</SelectItem>
+                                    <SelectItem value="Sunday">Sunday</SelectItem>
+                                    <SelectItem value="Monday">Monday</SelectItem>
+                                    <SelectItem value="Tuesday">Tuesday</SelectItem>
+                                    <SelectItem value="Wednesday">Wednesday</SelectItem>
+                                    <SelectItem value="Thursday">Thursday</SelectItem>
+                                    <SelectItem value="Friday">Friday</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Input placeholder="Subject Name" value={item.subject} onChange={e => updateRoutineRow(item.id, 'subject', e.target.value)} />
+                            <Input placeholder="Time (e.g., 7:00 PM)" value={item.time} onChange={e => updateRoutineRow(item.id, 'time', e.target.value)} />
+                            <Button variant="ghost" size="icon" onClick={() => removeRoutineRow(item.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addRoutineRow}><PlusCircle className="mr-2"/>Add Routine Row</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'liveClasses' && (
+                <CardContent className="pt-6 space-y-4">
+                    {liveClasses.map(lc => (
+                        <Collapsible key={lc.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
+                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">{lc.topic || 'New Live Class'}</h4><div><Button variant="ghost" size="icon" onClick={() => removeLiveClass(lc.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
+                            <CollapsibleContent className="space-y-4">
+                                <div className="space-y-2"><Label>Topic</Label><Input value={lc.topic} onChange={e => updateLiveClass(lc.id, 'topic', e.target.value)} /></div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2"><Label>Date</Label><Input type="date" value={lc.date} onChange={e => updateLiveClass(lc.id, 'date', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Time</Label><Input type="time" value={lc.time} onChange={e => updateLiveClass(lc.id, 'time', e.target.value)} /></div>
+                                </div>
+                                 <div className="space-y-2"><Label>Platform</Label>
+                                    <Select value={lc.platform} onValueChange={(value) => updateLiveClass(lc.id, 'platform', value)}>
+                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                        <SelectContent><SelectItem value="YouTube Live">YouTube Live</SelectItem><SelectItem value="Facebook Live">Facebook Live</SelectItem><SelectItem value="Zoom">Zoom</SelectItem><SelectItem value="Google Meet">Google Meet</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2"><Label>Join URL</Label><Input value={lc.joinUrl} onChange={e => updateLiveClass(lc.id, 'joinUrl', e.target.value)} /></div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addLiveClass}><PlusCircle className="mr-2"/>Add Live Class</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'announcements' && (
+                <CardContent className="pt-6 space-y-4">
+                    {announcements.map(ann => (
+                        <div key={ann.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
+                            <div className="flex justify-between items-center"><Label className="font-semibold">Announcement</Label><Button variant="ghost" size="icon" onClick={() => removeAnnouncement(ann.id)}><X className="text-destructive h-4 w-4"/></Button></div>
+                            <div className="space-y-2"><Label>Title</Label><Input value={ann.title} onChange={e => updateAnnouncement(ann.id, 'title', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Content</Label><Textarea value={ann.content} onChange={e => updateAnnouncement(ann.id, 'content', e.target.value)} /></div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addAnnouncement}><PlusCircle className="mr-2"/>Add Announcement</Button>
+                </CardContent>
+            )}
+
             {activeTab === 'faq' && (
                 <CardContent className="pt-6 space-y-4">
                     {faqs.map((faq, index) => (
