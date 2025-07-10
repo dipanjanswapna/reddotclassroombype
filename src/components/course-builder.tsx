@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -478,7 +477,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
                     setIncludedCourseIds(courseData.includedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
-                    setCycles(courseData.cycles || []);
+                    setCycles(courseData.cycles?.map(c => ({...c, price: c.price.replace(/[^0-9.]/g, '')})) || []);
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
                     
                     const courseInstructors = courseData.instructors?.map(courseInst => {
@@ -1291,6 +1290,29 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
                             <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} />
                             <CardDescription>Optional. If set, this will be the new full course price.</CardDescription>
+                        </div>
+                        <div className="p-4 border rounded-lg space-y-4 bg-secondary/50">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="isPrebooking" className="font-semibold">Enable Pre-booking</Label>
+                                <Switch id="isPrebooking" checked={isPrebooking} onCheckedChange={setIsPrebooking} />
+                            </div>
+                            {isPrebooking && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="prebookingPrice">Pre-booking Price (BDT)</Label>
+                                        <Input id="prebookingPrice" type="number" placeholder="e.g., 500" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Pre-booking End Date</Label>
+                                        <DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="prebookingTarget">Enrollment Target</Label>
+                                        <Input id="prebookingTarget" type="number" placeholder="e.g., 100" value={prebookingTarget} onChange={e => setPrebookingTarget(Number(e.target.value))} />
+                                        <CardDescription>Number of students required to launch the course.</CardDescription>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
