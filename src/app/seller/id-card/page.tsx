@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -70,6 +69,7 @@ export default function SellerIdCardPage() {
                 email={userInfo.email}
                 imageUrl={organization.logoUrl}
                 organization={organization.name}
+                dataAiHint="organization logo"
             />
         </div>
     );
