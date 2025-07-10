@@ -292,6 +292,14 @@ export type AttendanceRecord = {
   callStatus?: 'Called';
 };
 
+export type CourseCycle = {
+  id: string;
+  title: string;
+  price: string;
+  description: string;
+  order: number;
+};
+
 export type Course = {
   id?: string;
   title: string;
@@ -309,6 +317,7 @@ export type Course = {
   reviews?: number;
   whatYouWillLearn?: string[];
   syllabus?: SyllabusModule[];
+  cycles?: CourseCycle[];
   features?: string[];
   imageTitle?: string;
   classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
@@ -361,7 +370,7 @@ export type PromoCode = {
   applicableCourseIds: string[]; // 'all' for all courses
   createdBy: 'admin' | string; // admin or teacherId
   restrictedToUserId?: string;
-}
+};
 
 export type Prebooking = {
   id?: string;
@@ -375,7 +384,6 @@ export type Payout = {
   userId: string; // The user receiving the payout (Affiliate, Teacher, Seller)
   amount: number;
   payoutDate: Timestamp;
-  method: 'bKash' | 'Bank Transfer' | 'Other';
   status: 'Completed' | 'Pending' | 'Failed';
   transactionId?: string;
 };
