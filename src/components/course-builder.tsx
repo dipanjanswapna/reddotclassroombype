@@ -26,11 +26,6 @@ import {
   Phone,
   ChevronsUpDown,
   Check,
-  Video,
-  Award,
-  BarChart3,
-  Database,
-  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,8 +62,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, QuizResult as QuizType, Question, QuizTemplate, CourseCycle } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -93,17 +88,10 @@ import {
     CommandItem,
 } from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
-import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
-import { postAnnouncementAction } from '@/app/actions/announcement.actions';
-import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Switch } from './ui/switch';
-import { ExamLeaderboard } from './exam-leaderboard';
-import { ScrollArea } from './ui/scroll-area';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 
 type LessonData = {
@@ -139,37 +127,7 @@ type ClassRoutineItem = {
   instructorName?: string;
 }
 
-type AnnouncementItem = Announcement;
-
-type QuizQuestionData = {
-  id: string;
-  text: string;
-  options: { id: string; text: string }[];
-  correctAnswerId: string;
-};
-
-type QuizData = {
-  id: string;
-  title: string;
-  topic: string;
-  questions: QuizQuestionData[];
-};
-
-function SortableSyllabusItem({ 
-    item,
-    quizzes,
-    updateItem,
-    removeItem,
-    onGenerateQuiz,
-    generatingQuizForLesson,
-}: { 
-    item: SyllabusItem,
-    quizzes: QuizData[],
-    updateItem: (id: string, field: string, value: any) => void,
-    removeItem: (id: string) => void,
-    onGenerateQuiz: (lessonId: string, lessonTitle: string) => void,
-    generatingQuizForLesson: string | null,
-}) {
+function SortableSyllabusItem({ item, updateItem, removeItem }: { item: SyllabusItem, updateItem: (id: string, field: string, value: any) => void, removeItem: (id: string) => void }) {
     const {
         attributes,
         listeners,
@@ -262,53 +220,11 @@ function SortableSyllabusItem({
                         </div>
                     )}
 
-                    {item.type === 'quiz' && (
-                        <div className="space-y-2">
-                            <Label>Select Quiz</Label>
-                            <Select value={item.quizId || ''} onValueChange={(value) => updateItem(item.id, 'quizId', value)}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a quiz to link..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {quizzes.length === 0 ? (
-                                        <div className="p-4 text-sm text-muted-foreground text-center">No quizzes created yet.</div>
-                                    ) : (
-                                        quizzes.map(quiz => (
-                                            <SelectItem key={quiz.id} value={quiz.id}>{quiz.title}</SelectItem>
-                                        ))
-                                    )}
-                                </SelectContent>
-                            </Select>
-                            <p className="text-xs text-muted-foreground">
-                                You can create new quizzes in the "Quizzes" tab.
-                            </p>
-                        </div>
-                    )}
-                     
                     {(item.type === 'video' || item.type === 'document') && (
-                        <>
                         <div className="space-y-2">
                             <Label htmlFor={`sheetUrl-${item.id}`}>Lecture Sheet / Document URL</Label>
                             <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                         </div>
-                        {!item.quizId && (
-                            <div className="pt-2">
-                                <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    className="text-xs h-auto py-1 px-2"
-                                    onClick={() => onGenerateQuiz(item.id, item.title)}
-                                    disabled={generatingQuizForLesson === item.id}
-                                >
-                                    {generatingQuizForLesson === item.id 
-                                        ? <Loader2 className="mr-2 h-3 w-3 animate-spin"/> 
-                                        : <Wand2 className="mr-2 h-3 w-3"/>
-                                    }
-                                    Generate Quiz with AI
-                                </Button>
-                            </div>
-                        )}
-                        </>
                     )}
                 </div>
             </CollapsibleContent>
@@ -320,14 +236,6 @@ type CourseBuilderProps = {
     userRole: 'Admin' | 'Seller' | 'Teacher';
     redirectPath: string;
 }
-
-const questionTypes: Question['type'][] = ['MCQ', 'True/False', 'Fill in the Blanks', 'Short Answer', 'Essay', 'Matching'];
-const difficultyColors: Record<Question['difficulty'], string> = {
-  Easy: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:border-green-700 dark:text-green-300',
-  Medium: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:border-yellow-700 dark:text-yellow-300',
-  Hard: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/50 dark:border-red-700 dark:text-red-300',
-};
-
 
 export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const router = useRouter();
@@ -352,30 +260,20 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [discountPrice, setDiscountPrice] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
   const [introVideoUrl, setIntroVideoUrl] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
   
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
-  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
-  const [allCoursesForBundling, setAllCoursesForBundling] = useState<Course[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
-  const [cycles, setCycles] = useState<CourseCycle[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
-  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
-  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
-  const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
-  const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
   const [quizzes, setQuizzes] = useState<QuizTemplate[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [examTemplates, setExamTemplates] = useState<ExamTemplate[]>([]);
-  const [allExams, setAllExams] = useState<Exam[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
-  const [isArchived, setIsArchived] = useState(false);
-  const [showStudentCount, setShowStudentCount] = useState(false);
 
   // Pre-booking states
   const [isPrebooking, setIsPrebooking] = useState(false);
@@ -386,30 +284,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatingQuizForLesson, setGeneratingQuizForLesson] = useState<string | null>(null);
 
-  const [isLiveClassDialogOpen, setIsLiveClassDialogOpen] = useState(false);
-  const [newLiveClassTopic, setNewLiveClassTopic] = useState('');
-  const [newLiveClassDate, setNewLiveClassDate] = useState<Date | undefined>(new Date());
-  const [newLiveClassTime, setNewLiveClassTime] = useState('');
-  const [newLiveClassPlatform, setNewLiveClassPlatform] = useState<LiveClass['platform']>('Zoom');
-  const [newLiveClassJoinUrl, setNewLiveClassJoinUrl] = useState('');
-  const [isScheduling, setIsScheduling] = useState(false);
-
-  const [isExamResultsOpen, setIsExamResultsOpen] = useState(false);
-  const [selectedExamTemplateForResults, setSelectedExamTemplateForResults] = useState<ExamTemplate | null>(null);
-  
-  // Question Bank states
-  const [allQuestionsFromBank, setAllQuestionsFromBank] = useState<Question[]>([]);
-  const [isQuestionBankDialogOpen, setIsQuestionBankDialogOpen] = useState(false);
-  const [activeExamTemplateId, setActiveExamTemplateId] = useState<string | null>(null);
-  const [selectedBankQuestions, setSelectedBankQuestions] = useState<Set<string>>(new Set());
-  const [bankSubjectFilter, setBankSubjectFilter] = useState('all');
-  const [bankChapterFilter, setBankChapterFilter] = useState('all');
-  const [bankDifficultyFilter, setBankDifficultyFilter] = useState('all');
-  const [bankTypeFilter, setBankTypeFilter] = useState('all');
-
-  
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
@@ -425,32 +300,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestions ] = await Promise.all([
+            const [ fetchedCategories, allCourses, allInstructorsData ] = await Promise.all([
                 getCategories(),
                 getCourses(),
                 getInstructors(),
-                getQuestionBank(),
             ]);
             setAllCategories(fetchedCategories);
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
-            setAllQuestionsFromBank(fetchedQuestions);
-            
-            let availableForBundling: Course[] = [];
-            if (userRole === 'Admin') {
-                availableForBundling = allCoursesData;
-            } else if (userRole === 'Seller' && userInfo) {
-                const org = await getOrganizationByUserId(userInfo.uid);
-                if (org?.id) {
-                    availableForBundling = allCoursesData.filter(c => c.organizationId === org.id);
-                }
-            } else if (userRole === 'Teacher' && userInfo) {
-                const inst = await getInstructorByUid(userInfo.uid);
-                if (inst?.organizationId) {
-                    availableForBundling = allCoursesData.filter(c => c.organizationId === inst.organizationId);
-                }
-            }
-            
-            setAllCoursesForBundling(availableForBundling.filter(c => c.id !== courseId));
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -473,11 +329,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     }
                     setThumbnailUrl(imageUrl);
                     setIntroVideoUrl(courseData.videoUrl || '');
-                    setWhatsappNumber(courseData.whatsappNumber || '');
                     setWhatYouWillLearn(courseData.whatYouWillLearn || []);
-                    setIncludedCourseIds(courseData.includedCourseIds || []);
                     setSyllabus(getSyllabusItems(courseData));
-                    setCycles(courseData.cycles?.map(c => ({...c, price: c.price.replace(/[^0-9.]/g, '')})) || []);
                     setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
                     
                     const courseInstructors = courseData.instructors?.map(courseInst => {
@@ -489,12 +342,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
                     setLiveClasses(courseData.liveClasses || []);
                     setQuizzes(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
-                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
-                    setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString(), examDate: e.examDate ? new Date(e.examDate as string) : undefined })) || []);
-                    setAllExams(courseData.exams || []);
+                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
+                    setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
                     setOrganizationId(courseData.organizationId);
-                    setIsArchived(courseData.isArchived || false);
-                    setShowStudentCount(courseData.showStudentCount || false);
                 } else {
                     notFound();
                 }
@@ -591,199 +441,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const addInstructor = (instructor: Instructor) => setInstructors(prev => [...prev, instructor]);
   const removeInstructor = (slug: string) => setInstructors(prev => prev.filter(ins => ins.slug !== slug));
 
-  const addRoutineItem = () => setClassRoutine(prev => [...prev, { id: Date.now().toString(), day: '', subject: '', time: '', instructorName: '' }]);
-  const updateRoutineItem = (id: string, field: keyof Omit<ClassRoutineItem, 'id'>, value: string) => {
-      setClassRoutine(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
-  };
-  const removeRoutineItem = (id: string) => setClassRoutine(prev => prev.filter(item => item.id !== id));
-  
-  const removeLiveClass = (id: string) => {
-    setLiveClasses(prev => prev.filter(lc => lc.id !== id));
-  };
-  
-  // Cycle Management
-  const addCycle = () => {
-    const newOrder = cycles.length > 0 ? Math.max(...cycles.map(c => c.order)) + 1 : 1;
-    setCycles(prev => [...prev, { id: `cycle_${Date.now()}`, title: '', price: '', description: '', order: newOrder }]);
-  };
-  const removeCycle = (id: string) => setCycles(prev => prev.filter(c => c.id !== id));
-  const updateCycle = (id: string, field: keyof Omit<CourseCycle, 'id' | 'order'>, value: string) => {
-    setCycles(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
-  };
-
-  // Quiz Management
-  const addQuiz = () => setQuizzes(prev => [...prev, { id: `quiz_${Date.now()}`, title: 'New Quiz', topic: '', questions: [] }]);
-  const removeQuiz = (id: string) => setQuizzes(prev => prev.filter(q => q.id !== id));
-  const updateQuiz = (id: string, field: 'title' | 'topic', value: string) => setQuizzes(prev => prev.map(q => q.id === id ? { ...q, [field]: value } : q));
-  
-  // Exam Management
-  const addExamQuestion = (examId: string) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestionId = `new_q_${Date.now()}`;
-        const newQuestion: Question = {
-          id: newQuestionId,
-          text: 'New Question',
-          type: 'MCQ',
-          options: [],
-          points: 1,
-          difficulty: 'Medium',
-        };
-        return { ...exam, questions: [...(exam.questions || []), newQuestion] };
-      }
-      return exam;
-    }));
-  };
-
-  const removeExamQuestion = (examId: string, questionId: string) => {
-    setExamTemplates(prev => prev.map(exam => 
-      exam.id === examId 
-        ? { ...exam, questions: (exam.questions || []).filter(q => q.id !== questionId) } 
-        : exam
-    ));
-  };
-  
-  const updateExamQuestionField = (examId: string, questionId: string, field: keyof Question, value: any) => {
-    setExamTemplates(prev => prev.map(exam => 
-      exam.id === examId 
-        ? { ...exam, questions: (exam.questions || []).map(q => q.id === questionId ? { ...q, [field]: value } : q) } 
-        : exam
-    ));
-  };
-
-  const updateExamQuestionOption = (examId: string, questionId: string, optionId: string, field: 'text' | 'isCorrect', value: string | boolean) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestions = (exam.questions || []).map(q => {
-          if (q.id === questionId) {
-            const newOptions = (q.options || []).map(opt => opt.id === optionId ? { ...opt, [field]: value } : opt);
-            return { ...q, options: newOptions };
-          }
-          return q;
-        });
-        return { ...exam, questions: newQuestions };
-      }
-      return exam;
-    }));
-  };
-  
-  const addExamOption = (examId: string, questionId: string) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestions = (exam.questions || []).map(q => {
-          if (q.id === questionId) {
-            return { ...q, options: [...(q.options || []), { id: `opt_${Date.now()}`, text: '', isCorrect: false }] };
-          }
-          return q;
-        });
-        return { ...exam, questions: newQuestions };
-      }
-      return exam;
-    }));
-  };
-
-  const removeExamOption = (examId: string, questionId: string, optionId: string) => {
-    setExamTemplates(prev => prev.map(exam => {
-      if (exam.id === examId) {
-        const newQuestions = (exam.questions || []).map(q => {
-          if (q.id === questionId) {
-            return { ...q, options: (q.options || []).filter(opt => opt.id !== optionId) };
-          }
-          return q;
-        });
-        return { ...exam, questions: newQuestions };
-      }
-      return exam;
-    }));
-  };
-
-  const addAssignmentTemplate = () => setAssignmentTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '' }]);
-  const removeAssignmentTemplate = (id: string) => setAssignmentTemplates(prev => prev.filter(a => a.id !== id));
-  const updateAssignmentTemplate = (id: string, field: 'title' | 'topic' | 'deadline', value: string | Date | undefined) => {
-    setAssignmentTemplates(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
-  };
-
-  const addExamTemplate = () => setExamTemplates(prev => [...prev, { id: Date.now().toString(), title: '', topic: '', examType: 'Written', totalMarks: 100, questions: [] }]);
-  const removeExamTemplate = (id: string) => setExamTemplates(prev => prev.filter(e => e.id !== id));
-  const updateExamTemplate = (id: string, field: keyof Omit<ExamTemplate, 'id' | 'questions'>, value: string | number | Date | boolean | undefined) => {
-    setExamTemplates(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
-  };
-
-  const handleBundledCourseChange = (courseId: string, isChecked: boolean) => {
-    setIncludedCourseIds(prev => {
-        if (isChecked) {
-            return [...prev, courseId];
-        } else {
-            return prev.filter(id => id !== courseId);
-        }
-    });
-  };
-
-  const handlePostAnnouncement = async () => {
-    if (!newAnnouncementTitle || !newAnnouncementContent) {
-      toast({ title: 'Error', description: 'Title and content cannot be empty.', variant: 'destructive' });
-      return;
-    }
-    if (isNewCourse) {
-      toast({ title: 'Save Course First', description: 'You must save the course as a draft before posting announcements.', variant: 'destructive' });
-      return;
-    }
-    setIsPostingAnnouncement(true);
-    const result = await postAnnouncementAction(courseId, newAnnouncementTitle, newAnnouncementContent);
-    
-    if (result.success && result.newAnnouncement) {
-        setAnnouncements(prev => [result.newAnnouncement!, ...prev]);
-        setNewAnnouncementTitle('');
-        setNewAnnouncementContent('');
-        toast({ title: 'Success', description: 'Announcement posted and notifications sent.' });
-    } else {
-        toast({ title: 'Error', description: result.message, variant: 'destructive' });
-    }
-    setIsPostingAnnouncement(false);
-  };
-
-  const removeAnnouncement = (id: string) => {
-    setAnnouncements(prev => prev.filter(a => a.id !== id));
-  };
-
-  const handleScheduleLiveClass = async () => {
-    if (isNewCourse) {
-      toast({ title: 'Save Course First', description: 'You must save the course as a draft before scheduling live classes.', variant: 'destructive' });
-      return;
-    }
-    if (!newLiveClassTopic || !newLiveClassDate || !newLiveClassTime || !newLiveClassPlatform || !newLiveClassJoinUrl) {
-        toast({ title: 'Error', description: 'Please fill out all fields for the live class.', variant: 'destructive' });
-        return;
-    }
-    
-    setIsScheduling(true);
-
-    const liveClassData: Omit<LiveClass, 'id'> = {
-        topic: newLiveClassTopic,
-        date: format(newLiveClassDate, 'yyyy-MM-dd'),
-        time: newLiveClassTime,
-        platform: newLiveClassPlatform,
-        joinUrl: newLiveClassJoinUrl,
-    };
-
-    const result = await scheduleLiveClassAction(courseId, liveClassData);
-    
-    if (result.success && result.newLiveClass) {
-        setLiveClasses(prev => [...prev, result.newLiveClass!]);
-        toast({ title: 'Success!', description: `Scheduled "${newLiveClassTopic}" successfully.` });
-        setIsLiveClassDialogOpen(false);
-        // Reset form
-        setNewLiveClassTopic('');
-        setNewLiveClassDate(new Date());
-        setNewLiveClassTime('');
-        setNewLiveClassPlatform('Zoom');
-        setNewLiveClassJoinUrl('');
-    } else {
-        toast({ title: 'Error', description: result.message, variant: 'destructive' });
-    }
-    setIsScheduling(false);
-  };
-
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
       toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
@@ -837,10 +494,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         prebookingTarget: isPrebooking ? prebookingTarget || 0 : 0,
         imageUrl: thumbnailUrl,
         videoUrl: introVideoUrl,
-        whatsappNumber: whatsappNumber,
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
         syllabus: reconstructedSyllabus,
-        cycles: cycles.map(({ ...rest }) => ({...rest, price: `BDT ${rest.price || 0}`})),
         faqs: faqs.map(({ id, ...rest }) => rest).filter(f => f.question && f.answer),
         instructors: instructors.map(i => ({
           name: i.name,
@@ -849,35 +504,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           dataAiHint: i.dataAiHint,
           slug: i.slug
         })),
-        classRoutine: classRoutine.map(({ id, ...rest }) => rest).filter(r => r.day && r.subject && r.time),
-        includedCourseIds: includedCourseIds,
-        announcements: announcements,
-        liveClasses: liveClasses,
-        quizTemplates: quizzes,
-        assignmentTemplates: assignmentTemplates.map(a => {
-            const { deadline, ...rest } = a;
-            const formattedDeadline = deadline instanceof Date && !isNaN(deadline.getTime())
-                ? format(deadline, 'yyyy-MM-dd')
-                : deadline?.toString() || '';
-            return {
-                ...rest,
-                deadline: formattedDeadline,
-            };
-        }).filter(a => a.title),
-        examTemplates: examTemplates.map(e => {
-            const { examDate, ...rest } = e;
-            const formattedDate = examDate instanceof Date && !isNaN(examDate.getTime())
-                ? format(examDate, 'yyyy-MM-dd')
-                : examDate?.toString() || '';
-            return {
-                ...rest,
-                examDate: formattedDate,
-            };
-        }).filter(e => e.title),
         status,
-        isArchived,
         organizationId: organizationId,
-        showStudentCount: showStudentCount,
     };
 
     if (!isNewCourse) {
@@ -948,128 +576,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       setIsGenerating(false);
     }
   };
-  
-    const handleGenerateQuiz = async (lessonId: string, lessonTitle: string) => {
-        setGeneratingQuizForLesson(lessonId);
-        try {
-            const result = await generateQuizForLesson({
-                lessonTitle: lessonTitle,
-                courseContext: `Course Title: ${courseTitle}\nDescription: ${description}`
-            });
-            
-            const newQuizId = `quiz_${Date.now()}`;
-            const newQuiz: QuizTemplate = {
-                id: newQuizId,
-                title: result.title,
-                topic: lessonTitle,
-                questions: result.questions.map(q => ({
-                    ...q,
-                    id: `${newQuizId}-${q.id}`
-                }))
-            };
 
-            setQuizzes(prev => [...prev, newQuiz]);
-            
-            const newLesson: LessonData = {
-              id: `lesson_${Date.now()}`,
-              type: 'quiz',
-              title: `Quiz: ${lessonTitle}`,
-              duration: `${result.questions.length} Questions`,
-              quizId: newQuizId,
-            };
-            
-            const lessonIndex = syllabus.findIndex(item => item.id === lessonId);
-            if (lessonIndex > -1) {
-                const newSyllabus = [...syllabus];
-                newSyllabus.splice(lessonIndex + 1, 0, newLesson);
-                setSyllabus(newSyllabus);
-            }
-
-            updateSyllabusItem(lessonId, 'quizId', newQuizId);
-
-            toast({
-                title: 'Quiz Generated!',
-                description: `An AI-powered quiz for "${lessonTitle}" has been created and added to the syllabus.`
-            });
-
-        } catch (err) {
-            console.error(err);
-            toast({ title: "Error", description: "Failed to generate quiz with AI.", variant: "destructive"});
-        } finally {
-            setGeneratingQuizForLesson(null);
-        }
-    };
-    
-    // Question Bank Dialog Logic
-    const bankSubjects = useMemo(() => [...new Set(allQuestionsFromBank.map(q => q.subject).filter(Boolean))] as string[], [allQuestionsFromBank]);
-    const bankChapters = useMemo(() => [...new Set(allQuestionsFromBank.map(q => q.chapter).filter(Boolean))] as string[], [allQuestionsFromBank]);
-
-    const filteredBankQuestions = useMemo(() => {
-        return allQuestionsFromBank.filter(q => 
-            (bankSubjectFilter === 'all' || q.subject === bankSubjectFilter) &&
-            (bankChapterFilter === 'all' || q.chapter === bankChapterFilter) &&
-            (bankDifficultyFilter === 'all' || q.difficulty === bankDifficultyFilter) &&
-            (bankTypeFilter === 'all' || q.type === bankTypeFilter)
-        );
-    }, [allQuestionsFromBank, bankSubjectFilter, bankChapterFilter, bankDifficultyFilter, bankTypeFilter]);
-
-    const handleSelectBankQuestion = (questionId: string, checked: boolean) => {
-        setSelectedBankQuestions(prev => {
-            const newSet = new Set(prev);
-            if (checked) {
-                newSet.add(questionId);
-            } else {
-                newSet.delete(questionId);
-            }
-            return newSet;
-        });
-    };
-    
-    const handleAddFromBank = () => {
-        if (!activeExamTemplateId) return;
-
-        const questionsToAdd = allQuestionsFromBank.filter(q => selectedBankQuestions.has(q.id!));
-
-        setExamTemplates(prev => prev.map(exam => {
-            if (exam.id === activeExamTemplateId) {
-                const existingQuestionIds = new Set((exam.questions || []).map(q => q.id));
-                const newQuestions = questionsToAdd.filter(q => !existingQuestionIds.has(q.id!));
-                
-                if (newQuestions.length !== questionsToAdd.length) {
-                    toast({ title: 'Notice', description: 'Duplicate questions were not added.' });
-                }
-
-                return { ...exam, questions: [...(exam.questions || []), ...newQuestions] };
-            }
-            return exam;
-        }));
-        
-        setSelectedBankQuestions(new Set());
-        setActiveExamTemplateId(null);
-        setIsQuestionBankDialogOpen(false);
-    };
 
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
-    { id: 'quizzes', label: 'Quizzes', icon: HelpCircle },
-    { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
-    { id: 'exams', label: 'Exams', icon: Award },
-    { id: 'live-classes', label: 'Live Classes', icon: Video },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
-    { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'media', label: 'Media', icon: CloudUpload },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone },
-    { id: 'contact', label: 'Contact', icon: Phone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
-    { id: 'bundles', label: 'Bundles', icon: Archive },
   ];
-
-  const filteredTabs = courseType === 'Exam'
-    ? tabs.filter(tab => !['syllabus', 'quizzes', 'assignments', 'routine', 'outcomes', 'bundles'].includes(tab.id))
-    : tabs;
 
   const isPublished = !isNewCourse && initialStatus === 'Published';
 
@@ -1119,7 +636,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             <CardHeader className="p-0">
                 <div className="border-b">
                     <div className="flex items-center gap-1 overflow-x-auto p-1">
-                        {filteredTabs.map(tab => (
+                        {tabs.map(tab => (
                             <Button 
                                 key={tab.id}
                                 variant="ghost"
@@ -1214,32 +731,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </Select>
                     </div>
                   </div>
-                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                            <Label htmlFor="isArchived" className="font-semibold">Archive this Course</Label>
-                            <p className="text-sm text-muted-foreground">
-                                Archived courses are hidden from the main shop but can be bundled with other courses.
-                            </p>
-                        </div>
-                        <Switch
-                            id="isArchived"
-                            checked={isArchived}
-                            onCheckedChange={setIsArchived}
-                        />
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                            <Label htmlFor="showStudentCount" className="font-semibold">Show Student Count</Label>
-                            <p className="text-sm text-muted-foreground">
-                                Display the total number of enrolled students on the public course page.
-                            </p>
-                        </div>
-                        <Switch
-                            id="showStudentCount"
-                            checked={showStudentCount}
-                            onCheckedChange={setShowStudentCount}
-                        />
-                    </div>
                 </div>
               </CardContent>
             )}
@@ -1257,11 +748,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                <SortableSyllabusItem 
                                  key={item.id} 
                                  item={item}
-                                 quizzes={quizzes}
                                  updateItem={updateSyllabusItem}
                                  removeItem={removeSyllabusItem}
-                                 onGenerateQuiz={handleGenerateQuiz}
-                                 generatingQuizForLesson={generatingQuizForLesson}
                                />
                            ))}
                         </div>
@@ -1275,23 +763,25 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             )}
             
             {activeTab === 'pricing' && (
-              <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Standard Pricing</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="price">Full Course Price (BDT)</Label>
-                            <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
-                            <CardDescription>The main price of the course. If cycles are used, this is the 'buy all at once' price.</CardDescription>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 className="font-semibold mb-2">Standard Pricing</h3>
+                        <div className="space-y-4 p-4 border rounded-md">
+                            <div className="space-y-2">
+                                <Label htmlFor="price">Full Course Price (BDT)</Label>
+                                <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
+                                <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} />
+                                <CardDescription>Optional. If set, this will be the new full course price.</CardDescription>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
-                            <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} />
-                            <CardDescription>Optional. If set, this will be the new full course price.</CardDescription>
-                        </div>
-                        <div className="p-4 border rounded-lg space-y-4 bg-secondary/50">
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-2">Pre-booking</h3>
+                        <div className="p-4 border rounded-md space-y-4">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="isPrebooking" className="font-semibold">Enable Pre-booking</Label>
                                 <Switch id="isPrebooking" checked={isPrebooking} onCheckedChange={setIsPrebooking} />
@@ -1306,7 +796,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <Label>Pre-booking End Date</Label>
                                         <DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} />
                                     </div>
-                                    <div className="space-y-2">
+                                     <div className="space-y-2">
                                         <Label htmlFor="prebookingTarget">Enrollment Target</Label>
                                         <Input id="prebookingTarget" type="number" placeholder="e.g., 100" value={prebookingTarget} onChange={e => setPrebookingTarget(Number(e.target.value))} />
                                         <CardDescription>Number of students required to launch the course.</CardDescription>
@@ -1314,45 +804,92 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </div>
                             )}
                         </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Layers /> Cycle Management</CardTitle>
-                        <CardDescription>Break the course into smaller, purchasable cycles or modules.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            {cycles.map(cycle => (
-                                <Collapsible key={cycle.id} className="p-3 border rounded-md space-y-2 relative bg-background">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-semibold text-sm">Cycle {cycle.order}</h4>
-                                        <div className="flex items-center">
-                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeCycle(cycle.id)}><X className="text-destructive h-4 w-4"/></Button>
-                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger>
-                                        </div>
-                                    </div>
-                                    <CollapsibleContent className="space-y-2 pt-2 border-t">
-                                        <div className="space-y-1">
-                                            <Label>Cycle Title</Label>
-                                            <Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label>Cycle Price (BDT)</Label>
-                                            <Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} />
-                                        </div>
-                                         <div className="space-y-1">
-                                            <Label>Cycle Description</Label>
-                                            <Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/>
-                                        </div>
-                                    </CollapsibleContent>
-                                </Collapsible>
+                    </div>
+                </div>
+              </CardContent>
+            )}
+
+             {activeTab === 'outcomes' && (
+              <CardContent className="pt-6 space-y-4">
+                  <div className="space-y-2">
+                      <Label>What students will learn</Label>
+                      {whatYouWillLearn.map((outcome, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                              <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} placeholder="e.g., Fundamentals of React" />
+                              <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)}><X className="text-destructive"/></Button>
+                          </div>
+                      ))}
+                      <Button variant="outline" className="w-full" onClick={addOutcome}><PlusCircle className="mr-2"/>Add Learning Outcome</Button>
+                  </div>
+              </CardContent>
+            )}
+
+            {activeTab === 'instructors' && (
+              <CardContent className="pt-6 space-y-4">
+                   <div className="space-y-2">
+                        <Label>Assigned Instructors</Label>
+                        <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-12">
+                            {instructors.length === 0 && <p className="text-sm text-muted-foreground">No instructors assigned.</p>}
+                            {instructors.map(inst => (
+                                <Badge key={inst.slug} variant="outline" className="p-2 gap-2">
+                                    <Avatar className="h-6 w-6"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
+                                    {inst.name}
+                                    <Button variant="ghost" size="icon" className="h-4 w-4" onClick={() => removeInstructor(inst.slug)}><X className="h-3 w-3"/></Button>
+                                </Badge>
                             ))}
                         </div>
-                         <Button variant="outline" className="w-full border-dashed" onClick={addCycle}><PlusCircle className="mr-2"/>Add Cycle</Button>
-                    </CardContent>
-                </Card>
+                   </div>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full"><PlusCircle className="mr-2"/>Add Instructor</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                                <CommandInput placeholder="Search instructors..." />
+                                <CommandEmpty>No instructor found.</CommandEmpty>
+                                <CommandGroup>
+                                    {allInstructors.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
+                                        <CommandItem key={inst.id} onSelect={() => addInstructor(inst)}>
+                                            <Avatar className="h-6 w-6 mr-2"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
+                                            {inst.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
               </CardContent>
+            )}
+
+            {activeTab === 'media' && (
+              <CardContent className="pt-6 space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="thumbnail">Thumbnail Image URL</Label>
+                    <Input id="thumbnail" value={thumbnailUrl} onChange={e => setThumbnailUrl(e.target.value)} />
+                    <div className="mt-2 rounded-lg border overflow-hidden aspect-video relative max-w-sm bg-muted">
+                      <Image src={thumbnailUrl} alt="Thumbnail Preview" fill className="object-cover" />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="introVideo">Intro Video URL</Label>
+                    <Input id="introVideo" value={introVideoUrl} onChange={e => setIntroVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..."/>
+                </div>
+              </CardContent>
+            )}
+            
+            {activeTab === 'faq' && (
+                <CardContent className="pt-6 space-y-4">
+                    {faqs.map((faq, index) => (
+                         <Collapsible key={faq.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
+                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">FAQ {index + 1}</h4><div><Button variant="ghost" size="icon" onClick={() => removeFaq(faq.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
+                            <CollapsibleContent className="space-y-4">
+                                <div className="space-y-2"><Label>Question</Label><Input value={faq.question} onChange={e => updateFaq(faq.id, 'question', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Answer</Label><Textarea value={faq.answer} onChange={e => updateFaq(faq.id, 'answer', e.target.value)} rows={3}/></div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addFaq}><PlusCircle className="mr-2"/>Add FAQ</Button>
+                </CardContent>
             )}
         </Card>
     </div>
