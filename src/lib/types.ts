@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -437,6 +436,13 @@ export type Enrollment = {
   progress: number;
   status: 'in-progress' | 'completed';
   completedLessons?: string[];
+  totalFee?: number;
+  paidAmount?: number;
+  dueAmount?: number;
+  paymentMethod?: string;
+  discount?: number;
+  enrolledBy?: string; // UID of admin/staff who enrolled
+  paymentStatus?: 'paid' | 'due' | 'partial';
 };
 
 export type PlatformRoleSettings = {

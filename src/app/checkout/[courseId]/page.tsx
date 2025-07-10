@@ -106,7 +106,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction(course!.id!, userInfo.uid);
+    const result = await enrollInCourseAction({ courseId: course!.id!, userId: userInfo.uid });
 
     if (result.success) {
         toast({

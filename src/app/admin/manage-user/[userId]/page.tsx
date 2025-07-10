@@ -59,7 +59,12 @@ export default function ManageUserPage() {
 
     // Form states
     const [editingUser, setEditingUser] = useState<Partial<User>>({});
-    const [selectedCourseToEnroll, setSelectedCourseToEnroll] = useState('');
+    const [selectedCourseToEnroll, setSelectedCourseToEnroll] = useState<Course | null>(null);
+    const [paymentDetails, setPaymentDetails] = useState({
+      paidAmount: '',
+      paymentMethod: 'Cash',
+      discount: '',
+    });
     
     const fetchData = async () => {
         if (!userId) return;
@@ -130,12 +135,26 @@ export default function ManageUserPage() {
     const handleManualEnroll = async () => {
         if (!user || !selectedCourseToEnroll) return;
         setIsSaving(true);
-        const result = await enrollInCourseAction(selectedCourseToEnroll, user.uid);
+        const result = await enrollInCourseAction({
+            courseId: selectedCourseToEnroll.id!, 
+            userId: user.uid,
+            paymentDetails: {
+                totalFee: parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')),
+                paidAmount: parseFloat(paymentDetails.paidAmount) || 0,
+                dueAmount: parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')) - (parseFloat(paymentDetails.paidAmount) || 0),
+                paymentMethod: paymentDetails.paymentMethod,
+                discount: parseFloat(paymentDetails.discount) || 0,
+                paymentDate: new Date().toISOString(),
+                recordedBy: user.uid, // Should be admin's UID from useAuth
+            }
+        });
+
         if (result.success) {
             toast({ title: "Success", description: `${user.name} has been enrolled.`});
             await fetchData(); // Re-fetch
             setIsEnrollDialogOpen(false);
-            setSelectedCourseToEnroll('');
+            setSelectedCourseToEnroll(null);
+            setPaymentDetails({ paidAmount: '', paymentMethod: 'Cash', discount: '' });
         } else {
             toast({ title: "Error", description: result.message, variant: "destructive" });
         }
@@ -373,11 +392,11 @@ export default function ManageUserPage() {
              <Dialog open={isEnrollDialogOpen} onOpenChange={setIsEnrollDialogOpen}>
                 <DialogContent>
                     <DialogHeader><DialogTitle>Enroll {user.name} in a Course</DialogTitle></DialogHeader>
-                    <div className="py-4">
+                    <div className="grid gap-4 py-4">
                          <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" role="combobox" className="w-full justify-between">
-                                    {selectedCourseToEnroll ? allCourses.find(c => c.id === selectedCourseToEnroll)?.title : "Select a course..."}
+                                    {selectedCourseToEnroll ? selectedCourseToEnroll.title : "Select a course..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
@@ -387,8 +406,8 @@ export default function ManageUserPage() {
                                     <CommandEmpty>No course found.</CommandEmpty>
                                     <CommandGroup>
                                         {allCourses.filter(c => c.status === 'Published').map(course => (
-                                            <CommandItem key={course.id} onSelect={() => setSelectedCourseToEnroll(course.id!)}>
-                                                <Check className={selectedCourseToEnroll === course.id ? 'opacity-100 mr-2' : 'opacity-0 mr-2'}/>
+                                            <CommandItem key={course.id} onSelect={() => setSelectedCourseToEnroll(course)}>
+                                                <Check className={selectedCourseToEnroll?.id === course.id ? 'opacity-100 mr-2' : 'opacity-0 mr-2'}/>
                                                 {course.title}
                                             </CommandItem>
                                         ))}
@@ -396,6 +415,41 @@ export default function ManageUserPage() {
                                 </Command>
                             </PopoverContent>
                          </Popover>
+                         {selectedCourseToEnroll && (
+                             <Card className="bg-muted">
+                                 <CardHeader>
+                                    <CardTitle className="text-lg">Payment Details</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                     <div className="space-y-1">
+                                        <Label>Total Fee</Label>
+                                        <Input value={selectedCourseToEnroll.price} disabled/>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <Label htmlFor="paidAmount">Paid Amount</Label>
+                                            <Input id="paidAmount" type="number" value={paymentDetails.paidAmount} onChange={e => setPaymentDetails(p => ({...p, paidAmount: e.target.value}))}/>
+                                        </div>
+                                         <div className="space-y-1">
+                                            <Label>Due Amount</Label>
+                                            <Input value={parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')) - (parseFloat(paymentDetails.paidAmount) || 0)} disabled/>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Payment Method</Label>
+                                        <Select value={paymentDetails.paymentMethod} onValueChange={(v) => setPaymentDetails(p => ({...p, paymentMethod: v}))}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Cash">Cash</SelectItem>
+                                                <SelectItem value="bKash">bKash</SelectItem>
+                                                <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                                                <SelectItem value="Cheque">Cheque</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </CardContent>
+                             </Card>
+                         )}
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsEnrollDialogOpen(false)}>Cancel</Button>

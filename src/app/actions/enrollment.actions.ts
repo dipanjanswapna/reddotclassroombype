@@ -46,15 +46,30 @@ export async function prebookCourseAction(courseId: string, userId: string) {
     }
 }
 
+type ManualEnrollmentDetails = {
+    courseId: string;
+    userId: string; // The UID of the student being enrolled
+    paymentDetails?: {
+        totalFee: number;
+        paidAmount: number;
+        dueAmount: number;
+        paymentMethod: string;
+        discount?: number;
+        paymentDate: string; // ISO String
+        recordedBy: string; // UID of admin/staff
+    };
+};
 
-export async function enrollInCourseAction(courseId: string, userId: string) {
+
+export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
+    const { courseId, userId, paymentDetails } = details;
     try {
         const student = await getUser(userId);
         if (!student) {
             throw new Error("Student user not found.");
         }
         
-        if (!student.mobileNumber || !student.guardianMobileNumber) {
+        if (!paymentDetails && (!student.mobileNumber || !student.guardianMobileNumber)) {
             throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
         }
 
@@ -65,15 +80,25 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
 
         const batch = writeBatch(db);
 
-        // 1. Create enrollment for the main course
+        // 1. Create enrollment document
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
-        const enrollmentData: Omit<Enrollment, 'id'> = {
+        const enrollmentData: Partial<Enrollment> = {
             userId,
             courseId,
             enrollmentDate: Timestamp.now(),
             progress: 0,
             status: 'in-progress'
         };
+
+        if (paymentDetails) {
+            enrollmentData.totalFee = paymentDetails.totalFee;
+            enrollmentData.paidAmount = paymentDetails.paidAmount;
+            enrollmentData.dueAmount = paymentDetails.dueAmount;
+            enrollmentData.paymentMethod = paymentDetails.paymentMethod;
+            enrollmentData.discount = paymentDetails.discount;
+            enrollmentData.enrolledBy = paymentDetails.recordedBy;
+            enrollmentData.paymentStatus = paymentDetails.dueAmount > 0 ? 'partial' : 'paid';
+        }
         batch.set(mainEnrollmentRef, enrollmentData);
         
         // 2. Create enrollments for bundled courses
@@ -153,6 +178,7 @@ export async function enrollInCourseAction(courseId: string, userId: string) {
 
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');
+        revalidatePath(`/admin/manage-user/${student.id}`);
         revalidatePath(`/checkout/${courseId}`);
         revalidatePath(`/sites/[site]/checkout/${courseId}`);
         revalidatePath(`/student/my-courses/${courseId}/assignments`);
