@@ -29,6 +29,7 @@ import {
   Check,
   Video,
   Award,
+  Database,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,8 +66,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -91,6 +92,7 @@ import {
     CommandItem,
 } from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
+import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { removeUndefinedValues, cn } from '@/lib/utils';
@@ -130,7 +132,7 @@ type ClassRoutineItem = {
   instructorName?: string;
 }
 
-function SortableSyllabusItem({ item, updateItem, removeItem }: { item: SyllabusItem, updateItem: (id: string, field: string, value: any) => void, removeItem: (id: string) => void }) {
+function SortableSyllabusItem({ item, updateItem, removeItem, onGenerateQuiz }: { item: SyllabusItem, updateItem: (id: string, field: string, value: any) => void, removeItem: (id: string) => void, onGenerateQuiz: (lesson: LessonData) => void }) {
     const {
         attributes,
         listeners,
@@ -143,6 +145,14 @@ function SortableSyllabusItem({ item, updateItem, removeItem }: { item: Syllabus
         transform: CSS.Transform.toString(transform),
         transition,
     };
+    
+    const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+
+    const handleGenerateQuiz = async (lesson: LessonData) => {
+        setIsGeneratingQuiz(true);
+        await onGenerateQuiz(lesson);
+        setIsGeneratingQuiz(false);
+    }
 
     if (item.type === 'module') {
         return (
@@ -229,6 +239,15 @@ function SortableSyllabusItem({ item, updateItem, removeItem }: { item: Syllabus
                             <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                         </div>
                     )}
+                    
+                     {item.type !== 'quiz' && (
+                        <div className="mt-2">
+                            <Button size="sm" variant="outline" onClick={() => handleGenerateQuiz(item as LessonData)} disabled={isGeneratingQuiz}>
+                                {isGeneratingQuiz ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                                Generate Quiz with AI
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </CollapsibleContent>
         </Collapsible>
@@ -272,7 +291,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizTemplate[]>([]);
+  const [quizTemplates, setQuizTemplates] = useState<QuizTemplate[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [examTemplates, setExamTemplates] = useState<ExamTemplate[]>([]);
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
@@ -284,9 +303,20 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [prebookingEndDate, setPrebookingEndDate] = useState<Date | undefined>();
   const [prebookingTarget, setPrebookingTarget] = useState<number | undefined>();
 
+  // Cycle Management states
+  const [cycles, setCycles] = useState<Course['cycles']>([]);
+
+  // AI Dialog states
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Question Bank Dialog states
+  const [isQuestionBankOpen, setIsQuestionBankOpen] = useState(false);
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
+  const [selectedExamForQB, setSelectedExamForQB] = useState<ExamTemplate | null>(null);
+  const [qbFilters, setQbFilters] = useState({ subject: 'all', chapter: 'all', difficulty: 'all' });
+  const [qbSelectedQuestions, setQbSelectedQuestions] = useState<Question[]>([]);
 
   const getSyllabusItems = (course: Course): SyllabusItem[] => {
     if (!course?.syllabus) return [];
@@ -303,13 +333,15 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCourses, allInstructorsData ] = await Promise.all([
+            const [ fetchedCategories, allCourses, allInstructorsData, fetchedQuestionBank ] = await Promise.all([
                 getCategories(),
                 getCourses(),
                 getInstructors(),
+                getQuestionBank()
             ]);
             setAllCategories(fetchedCategories);
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
+            setQuestionBank(fetchedQuestionBank);
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -326,6 +358,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setPrebookingPrice(courseData.prebookingPrice?.replace(/[^0-9.]/g, '') || '');
                     setPrebookingEndDate(courseData.prebookingEndDate ? new Date(courseData.prebookingEndDate) : undefined);
                     setPrebookingTarget(courseData.prebookingTarget || undefined);
+                    setCycles(courseData.cycles || []);
                     let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
                     if (imageUrl.includes('placehold.c/')) {
                       imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
@@ -344,7 +377,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
                     setLiveClasses(courseData.liveClasses || []);
-                    setQuizzes(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
+                    setQuizTemplates(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
                     setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
                     setOrganizationId(courseData.organizationId);
@@ -474,10 +507,18 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   // Exam Handlers
   const addExam = () => setExamTemplates(p => [...p, { id: `ex_${Date.now()}`, title: '', topic: '', examType: 'MCQ', totalMarks: 100, examDate: format(new Date(), 'yyyy-MM-dd') }]);
-  const updateExam = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date) => {
+  const updateExam = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date | boolean | Question[]) => {
       setExamTemplates(p => p.map(e => e.id === id ? { ...e, [field]: field === 'examDate' ? format(value as Date, 'yyyy-MM-dd') : value } : e));
   };
   const removeExam = (id: string) => setExamTemplates(p => p.filter(e => e.id !== id));
+  
+    // Cycle Handlers
+  const addCycle = () => setCycles(prev => [...(prev || []), { id: `cy_${Date.now()}`, title: '', description: '', price: '', order: (prev?.length || 0) + 1 }]);
+  const updateCycle = (id: string, field: keyof Omit<Course['cycles'][0], 'id'>, value: string | number) => {
+    setCycles(prev => prev?.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+  const removeCycle = (id: string) => setCycles(prev => prev?.filter(c => c.id !== id));
+
 
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
@@ -530,6 +571,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         prebookingPrice: isPrebooking ? `BDT ${prebookingPrice || 0}` : '',
         prebookingEndDate: isPrebooking && prebookingEndDate ? format(prebookingEndDate, 'yyyy-MM-dd') : '',
         prebookingTarget: isPrebooking ? prebookingTarget || 0 : 0,
+        cycles: cycles?.filter(c => c.title && c.price),
         imageUrl: thumbnailUrl,
         videoUrl: introVideoUrl,
         whatYouWillLearn: whatYouWillLearn.filter(o => o),
@@ -545,6 +587,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         classRoutine: classRoutine.filter(r => r.day && r.subject && r.time),
         announcements: announcements.filter(a => a.title && a.content),
         liveClasses: liveClasses.filter(lc => lc.topic && lc.joinUrl),
+        quizTemplates,
         assignmentTemplates: assignmentTemplates.filter(a => a.title),
         examTemplates: examTemplates.filter(e => e.title),
         status,
@@ -619,6 +662,56 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       setIsGenerating(false);
     }
   };
+  
+  const handleGenerateQuiz = async (lesson: LessonData) => {
+    try {
+      const input = {
+        lessonTitle: lesson.title,
+        courseContext: `This lesson is part of the course "${courseTitle}". The course is about: ${description}.`,
+      };
+      const result = await generateQuizForLesson(input);
+      const newQuizTemplate: QuizTemplate = {
+          ...result,
+          id: `quiz_${Date.now()}`
+      };
+      
+      setQuizTemplates(prev => [...prev, newQuizTemplate]);
+      
+      // Also link it to the lesson
+      updateSyllabusItem(lesson.id, 'quizId', newQuizTemplate.id);
+      updateSyllabusItem(lesson.id, 'type', 'quiz'); // Change lesson type to quiz
+
+      toast({ title: 'Quiz Generated!', description: `A quiz for "${lesson.title}" has been created and linked.` });
+    } catch(err) {
+      console.error(err);
+      toast({ title: "Error", description: "Could not generate quiz with AI.", variant: "destructive" });
+    }
+  };
+  
+  const openQuestionBank = (exam: ExamTemplate) => {
+    setSelectedExamForQB(exam);
+    setQbSelectedQuestions(exam.questions || []);
+    setIsQuestionBankOpen(true);
+  };
+
+  const handleAddQuestionsFromBank = () => {
+    if (!selectedExamForQB) return;
+    const existingQuestionIds = new Set(selectedExamForQB.questions?.map(q => q.id));
+    const newQuestions = qbSelectedQuestions.filter(q => !existingQuestionIds.has(q.id));
+    const updatedQuestions = [...(selectedExamForQB.questions || []), ...newQuestions];
+    updateExam(selectedExamForQB.id, 'questions', updatedQuestions);
+    setIsQuestionBankOpen(false);
+    setQbSelectedQuestions([]);
+    toast({ title: 'Success', description: `${newQuestions.length} questions added to the exam.`});
+  };
+
+  const filteredQbQuestions = useMemo(() => {
+    return questionBank.filter(q => 
+        (qbFilters.subject === 'all' || q.subject === qbFilters.subject) &&
+        (qbFilters.chapter === 'all' || q.chapter === qbFilters.chapter) &&
+        (qbFilters.difficulty === 'all' || q.difficulty === qbFilters.difficulty)
+    );
+  }, [questionBank, qbFilters]);
 
 
   const tabs = [
@@ -798,6 +891,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                  item={item}
                                  updateItem={updateSyllabusItem}
                                  removeItem={removeSyllabusItem}
+                                 onGenerateQuiz={handleGenerateQuiz}
                                />
                            ))}
                         </div>
@@ -812,9 +906,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             
             {activeTab === 'pricing' && (
               <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
-                        <h3 className="font-semibold mb-2">Standard Pricing</h3>
+                        <h3 className="font-semibold mb-2 text-lg">Standard Pricing</h3>
                         <div className="space-y-4 p-4 border rounded-md">
                             <div className="space-y-2">
                                 <Label htmlFor="price">Full Course Price (BDT)</Label>
@@ -828,7 +922,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </div>
                     </div>
                     <div>
-                        <h3 className="font-semibold mb-2">Pre-booking</h3>
+                        <h3 className="font-semibold mb-2 text-lg">Pre-booking</h3>
                         <div className="p-4 border rounded-md space-y-4">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="isPrebooking" className="font-semibold">Enable Pre-booking</Label>
@@ -851,6 +945,22 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                     <div className="lg:col-span-2">
+                        <h3 className="font-semibold mb-2 text-lg">Cycle Management</h3>
+                        <div className="p-4 border rounded-md space-y-4">
+                           {(cycles || []).map((cycle, index) => (
+                               <div key={cycle.id} className="p-3 border rounded-md space-y-2 bg-muted/50">
+                                   <div className="flex justify-between items-center"><Label className="font-semibold">Cycle {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)}><X className="text-destructive h-4 w-4"/></Button></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2"><Label>Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price.replace(/[^0-9.]/g, '')} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
+                                    </div>
+                                     <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
+                               </div>
+                           ))}
+                           <Button variant="outline" className="w-full" onClick={addCycle}><PlusCircle className="mr-2"/>Add Cycle</Button>
                         </div>
                     </div>
                 </div>
@@ -928,23 +1038,40 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             {activeTab === 'exams' && (
                 <CardContent className="pt-6 space-y-4">
                     {examTemplates.map((exam, index) => (
-                         <div key={exam.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
-                            <div className="flex justify-between items-center"><Label className="font-semibold">Exam {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)}><X className="text-destructive h-4 w-4"/></Button></div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-2 md:col-span-2"><Label>Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Exam Type</Label>
-                                    <Select value={exam.examType} onValueChange={(value) => updateExam(exam.id, 'examType', value)}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent><SelectItem value="MCQ">MCQ</SelectItem><SelectItem value="Written">Written</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem></SelectContent>
-                                    </Select>
+                         <Collapsible key={exam.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
+                            <div className="flex justify-between items-center"><Label className="font-semibold">Exam: {exam.title || `Exam ${index + 1}`}</Label>
+                                <div>
+                                    <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                    <CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger>
                                 </div>
                             </div>
-                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-2"><Label>Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} /></div>
-                                <div className="space-y-2"><Label>Exam Date</Label><DatePicker date={exam.examDate ? new Date(exam.examDate as string) : new Date()} setDate={(date) => updateExam(exam.id, 'examDate', date!)} /></div>
-                            </div>
-                        </div>
+                            <CollapsibleContent className="space-y-4 pt-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2 md:col-span-2"><Label>Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Exam Type</Label>
+                                        <Select value={exam.examType} onValueChange={(value) => updateExam(exam.id, 'examType', value)}>
+                                            <SelectTrigger><SelectValue/></SelectTrigger>
+                                            <SelectContent><SelectItem value="MCQ">MCQ</SelectItem><SelectItem value="Written">Written</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem><SelectItem value="Essay">Essay</SelectItem><SelectItem value="Short Answer">Short Answer</SelectItem></SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2"><Label>Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} /></div>
+                                    <div className="space-y-2"><Label>Exam Date</Label><DatePicker date={exam.examDate ? new Date(exam.examDate as string) : new Date()} setDate={(date) => updateExam(exam.id, 'examDate', date!)} /></div>
+                                </div>
+                                 <div className="space-y-2 pt-4 border-t">
+                                    <Label className="font-semibold">Questions</Label>
+                                    <div className="space-y-2">
+                                        {(exam.questions || []).map(q => <Badge key={q.id}>{q.text.substring(0, 30)}...</Badge>)}
+                                    </div>
+                                    <Button variant="outline" size="sm" onClick={() => openQuestionBank(exam)}>
+                                        <Database className="mr-2 h-4 w-4"/>
+                                        Add from Question Bank
+                                    </Button>
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                     ))}
                     <Button variant="outline" className="w-full" onClick={addExam}><PlusCircle className="mr-2"/>Add Exam Template</Button>
                 </CardContent>
@@ -1044,6 +1171,76 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </CardContent>
             )}
         </Card>
+
+        {/* AI Generator Dialog */}
+        <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Generate Course with AI</DialogTitle>
+                    <DialogDescription>Enter a topic and let AI generate a draft for your course structure.</DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="ai-topic">Course Topic</Label>
+                        <Input id="ai-topic" value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Introduction to Quantum Physics"/>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
+                        {isGenerating && <Loader2 className="mr-2 animate-spin"/>} Generate Content
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        
+        {/* Question Bank Dialog */}
+        <Dialog open={isQuestionBankOpen} onOpenChange={setIsQuestionBankOpen}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>Add Questions from Bank</DialogTitle>
+                  <DialogDescription>Select questions to add to the exam: "{selectedExamForQB?.title}".</DialogDescription>
+              </DialogHeader>
+              <div className="flex gap-2 p-4 border-b">
+                  {/* Filters for QB */}
+              </div>
+              <div className="max-h-[50vh] overflow-y-auto p-4">
+                  <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead className="w-12"></TableHead>
+                              <TableHead>Question</TableHead>
+                              <TableHead>Type</TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {filteredQbQuestions.map(q => (
+                              <TableRow key={q.id}>
+                                  <TableCell>
+                                      <Checkbox 
+                                        checked={qbSelectedQuestions.some(sq => sq.id === q.id)}
+                                        onCheckedChange={(checked) => {
+                                            if(checked) {
+                                                setQbSelectedQuestions(prev => [...prev, q]);
+                                            } else {
+                                                setQbSelectedQuestions(prev => prev.filter(sq => sq.id !== q.id));
+                                            }
+                                        }}
+                                      />
+                                  </TableCell>
+                                  <TableCell>{q.text}</TableCell>
+                                  <TableCell><Badge variant="outline">{q.type}</Badge></TableCell>
+                              </TableRow>
+                          ))}
+                      </TableBody>
+                  </Table>
+              </div>
+              <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)}>Cancel</Button>
+                  <Button onClick={handleAddQuestionsFromBank}>Add Selected Questions</Button>
+              </DialogFooter>
+          </DialogContent>
+        </Dialog>
     </div>
   );
 }
