@@ -129,11 +129,18 @@ export type Instructor = {
   }[];
 }
 
+export type QuizQuestion = {
+    id: string;
+    text: string;
+    options: { id: string; text: string; }[];
+    correctAnswerId: string;
+};
+
 export type QuizTemplate = {
   id: string;
   title: string;
   topic: string;
-  questions: Question[];
+  questions: QuizQuestion[];
 };
 
 export type QuizResult = {

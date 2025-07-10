@@ -68,7 +68,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, Quiz as QuizType, Question } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Exam, Lesson as LessonType, QuizResult as QuizType, Question, QuizTemplate } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -368,7 +368,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
   const [isPostingAnnouncement, setIsPostingAnnouncement] = useState(false);
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
-  const [quizzes, setQuizzes] = useState<QuizData[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizTemplate[]>([]);
   const [assignmentTemplates, setAssignmentTemplates] = useState<AssignmentTemplate[]>([]);
   const [examTemplates, setExamTemplates] = useState<ExamTemplate[]>([]);
   const [allExams, setAllExams] = useState<Exam[]>([]);
@@ -487,7 +487,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
                     setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
                     setLiveClasses(courseData.liveClasses || []);
-                    setQuizzes(courseData.quizzes?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
+                    setQuizzes(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString(), deadline: a.deadline ? new Date(a.deadline as string) : undefined })) || []);
                     setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString(), examDate: e.examDate ? new Date(e.examDate as string) : undefined })) || []);
                     setAllExams(courseData.exams || []);
@@ -841,7 +841,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         includedCourseIds: includedCourseIds,
         announcements: announcements,
         liveClasses: liveClasses,
-        quizzes: quizzes,
+        quizTemplates: quizzes,
         assignmentTemplates: assignmentTemplates.map(a => {
             const { deadline, ...rest } = a;
             const formattedDeadline = deadline instanceof Date && !isNaN(deadline.getTime())
@@ -946,7 +946,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             });
             
             const newQuizId = `quiz_${Date.now()}`;
-            const newQuiz: QuizData = {
+            const newQuiz: QuizTemplate = {
                 id: newQuizId,
                 title: result.title,
                 topic: lessonTitle,
