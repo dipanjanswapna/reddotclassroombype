@@ -28,6 +28,7 @@ import {
   ChevronsUpDown,
   Check,
   Video,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -464,6 +465,20 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   };
   const removeLiveClass = (id: string) => setLiveClasses(prev => prev.filter(lc => lc.id !== id));
 
+  // Assignment Handlers
+  const addAssignment = () => setAssignmentTemplates(p => [...p, { id: `as_${Date.now()}`, title: '', topic: '', deadline: format(new Date(), 'yyyy-MM-dd') }]);
+  const updateAssignment = (id: string, field: keyof Omit<AssignmentTemplate, 'id'>, value: string | Date) => {
+      setAssignmentTemplates(p => p.map(a => a.id === id ? { ...a, [field]: field === 'deadline' ? format(value as Date, 'yyyy-MM-dd') : value } : a));
+  };
+  const removeAssignment = (id: string) => setAssignmentTemplates(p => p.filter(a => a.id !== id));
+
+  // Exam Handlers
+  const addExam = () => setExamTemplates(p => [...p, { id: `ex_${Date.now()}`, title: '', topic: '', examType: 'MCQ', totalMarks: 100, examDate: format(new Date(), 'yyyy-MM-dd') }]);
+  const updateExam = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date) => {
+      setExamTemplates(p => p.map(e => e.id === id ? { ...e, [field]: field === 'examDate' ? format(value as Date, 'yyyy-MM-dd') : value } : e));
+  };
+  const removeExam = (id: string) => setExamTemplates(p => p.filter(e => e.id !== id));
+
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
       toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
@@ -530,6 +545,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         classRoutine: classRoutine.filter(r => r.day && r.subject && r.time),
         announcements: announcements.filter(a => a.title && a.content),
         liveClasses: liveClasses.filter(lc => lc.topic && lc.joinUrl),
+        assignmentTemplates: assignmentTemplates.filter(a => a.title),
+        examTemplates: examTemplates.filter(e => e.title),
         status,
         organizationId: organizationId,
     };
@@ -610,6 +627,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
+    { id: 'exams', label: 'Exams', icon: Award },
     { id: 'media', label: 'Media', icon: CloudUpload },
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'liveClasses', label: 'Live Classes', icon: Video },
@@ -888,6 +907,47 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </PopoverContent>
                     </Popover>
               </CardContent>
+            )}
+
+             {activeTab === 'assignments' && (
+                <CardContent className="pt-6 space-y-4">
+                    {assignmentTemplates.map((assignment, index) => (
+                        <div key={assignment.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
+                            <div className="flex justify-between items-center"><Label className="font-semibold">Assignment {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)}><X className="text-destructive h-4 w-4"/></Button></div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Title</Label><Input value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Topic</Label><Input value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} /></div>
+                            </div>
+                            <div className="space-y-2"><Label>Deadline</Label><DatePicker date={assignment.deadline ? new Date(assignment.deadline as string) : new Date()} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} /></div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addAssignment}><PlusCircle className="mr-2"/>Add Assignment Template</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'exams' && (
+                <CardContent className="pt-6 space-y-4">
+                    {examTemplates.map((exam, index) => (
+                         <div key={exam.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
+                            <div className="flex justify-between items-center"><Label className="font-semibold">Exam {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)}><X className="text-destructive h-4 w-4"/></Button></div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2 md:col-span-2"><Label>Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Exam Type</Label>
+                                    <Select value={exam.examType} onValueChange={(value) => updateExam(exam.id, 'examType', value)}>
+                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                        <SelectContent><SelectItem value="MCQ">MCQ</SelectItem><SelectItem value="Written">Written</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2"><Label>Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} /></div>
+                                <div className="space-y-2"><Label>Exam Date</Label><DatePicker date={exam.examDate ? new Date(exam.examDate as string) : new Date()} setDate={(date) => updateExam(exam.id, 'examDate', date!)} /></div>
+                            </div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addExam}><PlusCircle className="mr-2"/>Add Exam Template</Button>
+                </CardContent>
             )}
 
             {activeTab === 'media' && (
