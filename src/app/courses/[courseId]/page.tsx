@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: { params: { courseId: string 
   }
 }
 
-const CycleCard = ({ cycle, courseId }: { cycle: CourseCycle, courseId: string }) => (
+const CycleCard = ({ cycle, courseId, isPrebookingActive }: { cycle: CourseCycle, courseId: string, isPrebookingActive: boolean }) => (
     <Card className="bg-muted/50">
         <CardHeader>
             <div className="flex justify-between items-start">
@@ -78,9 +78,13 @@ const CycleCard = ({ cycle, courseId }: { cycle: CourseCycle, courseId: string }
             <p className="text-sm text-muted-foreground">{cycle.description}</p>
         </CardContent>
         <div className="p-6 pt-0">
-             <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
-                <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll Now</Link>
-            </Button>
+             {isPrebookingActive ? (
+                <Button className="w-full font-bold" disabled>Pre-booking Ongoing</Button>
+             ) : (
+                <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
+                    <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll Now</Link>
+                </Button>
+             )}
         </div>
     </Card>
 );
@@ -247,7 +251,7 @@ export default async function CourseDetailPage({
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
-                            <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} />
+                            <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} isPrebookingActive={isPrebookingActive}/>
                         ))}
                     </div>
                 </section>
