@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -187,17 +188,6 @@ function SortableSyllabusItem({
                   value={item.title} 
                   onChange={(e) => updateItem(item.id, 'title', e.target.value)}
                   className="flex-grow bg-muted" />
-                <Select value={item.cycleId || ''} onValueChange={(value) => updateItem(item.id, 'cycleId', value)}>
-                    <SelectTrigger className="w-[180px] bg-background">
-                        <SelectValue placeholder="Assign to Cycle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="">No Cycle</SelectItem>
-                        {cycles?.map(cycle => (
-                            <SelectItem key={cycle.id} value={cycle.id}>Cycle {cycle.order}: {cycle.title}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -355,7 +345,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
     course.syllabus.forEach(module => {
-        items.push({ id: module.id, type: 'module', title: module.title, cycleId: module.cycleId });
+        items.push({ id: module.id, type: 'module', title: module.title });
         module.lessons.forEach(lesson => {
             items.push({ ...lesson });
         });
@@ -546,11 +536,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const removeExam = (id: string) => setExamTemplates(p => p.filter(e => e.id !== id));
   
     // Cycle Handlers
-  const addCycle = () => setCycles(prev => [...(prev || []), { id: `cy_${Date.now()}`, title: '', description: '', price: '', order: (prev?.length || 0) + 1 }]);
-  const updateCycle = (id: string, field: keyof Omit<CourseCycle, 'id'>, value: string | number) => {
+  const addCycle = () => {
+    setCycles(prev => [...(prev || []), { id: `cy_${Date.now()}`, title: '', description: '', price: '', order: (prev?.length || 0) + 1, moduleIds: [] }]);
+  };
+
+  const updateCycle = (id: string, field: keyof Omit<CourseCycle, 'id'>, value: string | number | string[]) => {
     setCycles(prev => prev?.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
-  const removeCycle = (id: string) => setCycles(prev => prev?.filter(c => c.id !== id));
+  const removeCycle = (id: string) => {
+    setCycles(prev => prev?.filter(c => c.id !== id));
+  };
 
 
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
@@ -575,7 +570,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             if (currentModule) {
                 reconstructedSyllabus.push(currentModule);
             }
-            currentModule = { id: item.id, title: item.title, lessons: [], cycleId: item.cycleId || '' };
+            currentModule = { id: item.id, title: item.title, lessons: [] };
         } else if (currentModule && item.type !== 'module') {
             currentModule.lessons.push({
                 id: item.id,
@@ -985,14 +980,56 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         <h3 className="font-semibold mb-2 text-lg">Cycle Management</h3>
                         <div className="p-4 border rounded-md space-y-4">
                            {(cycles || []).map((cycle, index) => (
-                               <div key={cycle.id} className="p-3 border rounded-md space-y-2 bg-muted/50">
-                                   <div className="flex justify-between items-center"><Label className="font-semibold">Cycle {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)}><X className="text-destructive h-4 w-4"/></Button></div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2"><Label>Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price.replace(/[^0-9.]/g, '')} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
-                                    </div>
-                                     <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
-                               </div>
+                               <Collapsible key={cycle.id} className="p-3 border rounded-md space-y-2 bg-muted/50">
+                                   <div className="flex justify-between items-center">
+                                       <Label className="font-semibold">Cycle {cycle.order || index + 1}: {cycle.title || 'New Cycle'}</Label>
+                                       <div>
+                                            <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)}><X className="text-destructive h-4 w-4"/></Button>
+                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger>
+                                       </div>
+                                   </div>
+                                    <CollapsibleContent className="space-y-4 pt-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2"><Label>Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} /></div>
+                                            <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price.replace(/[^0-9.]/g, '')} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
+                                        </div>
+                                        <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
+                                        <div className="space-y-2">
+                                            <Label>Modules in this Cycle</Label>
+                                             <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button variant="outline" className="w-full justify-start text-left h-auto">
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {(cycle.moduleIds && cycle.moduleIds.length > 0) ? cycle.moduleIds.map(id => {
+                                                                const module = syllabus.find(s => s.id === id);
+                                                                return module ? <Badge key={id} variant="secondary">{module.title}</Badge> : null;
+                                                            }) : 'Select Modules...'}
+                                                        </div>
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search modules..." />
+                                                        <CommandEmpty>No modules found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {syllabus.filter(s => s.type === 'module').map(m => (
+                                                                <CommandItem key={m.id} onSelect={() => {
+                                                                    const currentIds = new Set(cycle.moduleIds || []);
+                                                                    if(currentIds.has(m.id)) currentIds.delete(m.id);
+                                                                    else currentIds.add(m.id);
+                                                                    updateCycle(cycle.id, 'moduleIds', Array.from(currentIds));
+                                                                }}>
+                                                                     <Check className={cn("mr-2 h-4 w-4", (cycle.moduleIds || []).includes(m.id) ? "opacity-100" : "opacity-0")} />
+                                                                     {m.title}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
+                                    </CollapsibleContent>
+                               </Collapsible>
                            ))}
                            <Button variant="outline" className="w-full" onClick={addCycle}><PlusCircle className="mr-2"/>Add Cycle</Button>
                         </div>
@@ -1157,7 +1194,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     {liveClasses.map(lc => (
                         <Collapsible key={lc.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
                             <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">{lc.topic || 'New Live Class'}</h4><div><Button variant="ghost" size="icon" onClick={() => removeLiveClass(lc.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
-                            <CollapsibleContent className="space-y-4">
+                            <CollapsibleContent className="space-y-4 pt-2">
                                 <div className="space-y-2"><Label>Topic</Label><Input value={lc.topic} onChange={e => updateLiveClass(lc.id, 'topic', e.target.value)} /></div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2"><Label>Date</Label><Input type="date" value={lc.date} onChange={e => updateLiveClass(lc.id, 'date', e.target.value)} /></div>
