@@ -32,7 +32,6 @@ import {
   Award,
   Database,
   Settings,
-  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,14 +45,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import {
   DndContext,
   closestCenter,
@@ -77,8 +68,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Enrollment, User } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getEnrollmentsByCourseId, getUsers } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -88,7 +79,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog';
 import {
     Popover,
@@ -106,10 +96,9 @@ import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
-import { removeUndefinedValues, cn, safeToDate } from '@/lib/utils';
+import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from '@/components/ui/switch';
-import Link from 'next/link';
 
 
 type LessonData = {
@@ -150,13 +139,11 @@ function SortableSyllabusItem({
     updateItem, 
     removeItem, 
     onGenerateQuiz, 
-    cycles 
 }: { 
     item: SyllabusItem, 
     updateItem: (id: string, field: string, value: any) => void, 
     removeItem: (id: string) => void, 
     onGenerateQuiz: (lesson: LessonData) => void,
-    cycles: CourseCycle[] | undefined 
 }) {
     const {
         attributes,
@@ -338,9 +325,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   // Cycle Management states
   const [cycles, setCycles] = useState<Course['cycles']>([]);
 
-  // Students Tab State
-  const [enrolledUsers, setEnrolledUsers] = useState<User[]>([]);
-
   // AI Dialog states
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
@@ -382,13 +366,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             if (!isNewCourse) {
                 const courseData = allCoursesData.find(c => c.id === courseId);
                  if (courseData) {
-                    const [enrollments, users] = await Promise.all([
-                        getEnrollmentsByCourseId(courseId),
-                        getUsers(),
-                    ]);
-                    const enrolledUserIds = new Set(enrollments.map(e => e.userId));
-                    setEnrolledUsers(users.filter(u => enrolledUserIds.has(u.uid)));
-                    
                     setInitialStatus(courseData.status);
                     setCourseTitle(courseData.title || '');
                     setDescription(courseData.description || '');
@@ -781,7 +758,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'instructors', label: 'Instructors', icon: Users },
     { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
     { id: 'exams', label: 'Exams', icon: Award },
-    { id: 'students', label: 'Students', icon: Users },
     { id: 'media', label: 'Media', icon: CloudUpload },
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'liveClasses', label: 'Live Classes', icon: Video },
@@ -958,7 +934,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                  updateItem={updateSyllabusItem}
                                  removeItem={removeSyllabusItem}
                                  onGenerateQuiz={handleGenerateQuiz}
-                                 cycles={cycles}
                                />
                            ))}
                         </div>
@@ -1183,44 +1158,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </Collapsible>
                     ))}
                     <Button variant="outline" className="w-full" onClick={addExam}><PlusCircle className="mr-2"/>Add Exam Template</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'students' && (
-                <CardContent className="pt-6">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Student</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Progress</TableHead>
-                                <TableHead>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {enrolledUsers.map(user => {
-                                // This is a mock, a real implementation might need to fetch enrollment data
-                                const progress = Math.floor(Math.random() * 101); 
-                                return (
-                                    <TableRow key={user.id}>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{progress}%</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/admin/manage-user/${user.id}`}><Eye className="mr-2 h-4 w-4"/>Manage</Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                            {enrolledUsers.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24">No students enrolled yet.</TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
                 </CardContent>
             )}
 
