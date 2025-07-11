@@ -86,4 +86,3 @@ export function CourseStudentNav({ course }: { course: Course }) {
     </nav>
   );
 }
-

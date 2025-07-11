@@ -65,7 +65,7 @@ export default function StudentLayout({
   ];
   
   const getIsActive = (href: string) => {
-    if (href.endsWith('/dashboard')) {
+    if (href.endsWith('/dashboard') || href.endsWith('/my-courses')) {
         return pathname === href;
     }
     if (href === '/') {
