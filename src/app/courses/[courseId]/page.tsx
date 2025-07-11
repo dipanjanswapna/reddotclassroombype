@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -89,7 +90,7 @@ export default async function CourseDetailPage({
   const { courseId } = params;
   const course = await getCourse(courseId);
 
-  if (!course) {
+  if (!course || course.isArchived) {
     notFound();
   }
   
