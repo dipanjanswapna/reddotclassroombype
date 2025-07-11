@@ -122,10 +122,11 @@ type ModuleData = {
     id: string;
     type: 'module';
     title: string;
+    cycleId?: string;
     lessons: LessonData[];
 };
 
-type SyllabusItem = ModuleData['lessons'][0] | Omit<ModuleData, 'lessons'>;
+type SyllabusItem = LessonData | Omit<ModuleData, 'lessons'>;
 
 type FaqItem = {
   id: string;
@@ -141,7 +142,19 @@ type ClassRoutineItem = {
   instructorName?: string;
 }
 
-function SortableSyllabusItem({ item, updateItem, removeItem, onGenerateQuiz }: { item: SyllabusItem, updateItem: (id: string, field: string, value: any) => void, removeItem: (id: string) => void, onGenerateQuiz: (lesson: LessonData) => void }) {
+function SortableSyllabusItem({ 
+    item, 
+    updateItem, 
+    removeItem, 
+    onGenerateQuiz, 
+    cycles 
+}: { 
+    item: SyllabusItem, 
+    updateItem: (id: string, field: string, value: any) => void, 
+    removeItem: (id: string) => void, 
+    onGenerateQuiz: (lesson: LessonData) => void,
+    cycles: CourseCycle[] | undefined 
+}) {
     const {
         attributes,
         listeners,
@@ -174,6 +187,17 @@ function SortableSyllabusItem({ item, updateItem, removeItem, onGenerateQuiz }: 
                   value={item.title} 
                   onChange={(e) => updateItem(item.id, 'title', e.target.value)}
                   className="flex-grow bg-muted" />
+                <Select value={item.cycleId || ''} onValueChange={(value) => updateItem(item.id, 'cycleId', value)}>
+                    <SelectTrigger className="w-[180px] bg-background">
+                        <SelectValue placeholder="Assign to Cycle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="">No Cycle</SelectItem>
+                        {cycles?.map(cycle => (
+                            <SelectItem key={cycle.id} value={cycle.id}>Cycle {cycle.order}: {cycle.title}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -331,7 +355,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     if (!course?.syllabus) return [];
     const items: SyllabusItem[] = [];
     course.syllabus.forEach(module => {
-        items.push({ id: module.id, type: 'module', title: module.title });
+        items.push({ id: module.id, type: 'module', title: module.title, cycleId: module.cycleId });
         module.lessons.forEach(lesson => {
             items.push({ ...lesson });
         });
@@ -551,7 +575,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             if (currentModule) {
                 reconstructedSyllabus.push(currentModule);
             }
-            currentModule = { id: item.id, title: item.title, lessons: [] };
+            currentModule = { id: item.id, title: item.title, lessons: [], cycleId: item.cycleId || '' };
         } else if (currentModule && item.type !== 'module') {
             currentModule.lessons.push({
                 id: item.id,
@@ -901,6 +925,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                  updateItem={updateSyllabusItem}
                                  removeItem={removeSyllabusItem}
                                  onGenerateQuiz={handleGenerateQuiz}
+                                 cycles={cycles}
                                />
                            ))}
                         </div>

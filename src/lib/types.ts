@@ -64,6 +64,7 @@ export type SyllabusModule = {
   id: string;
   title: string;
   lessons: Lesson[];
+  cycleId?: string; // Link to a specific course cycle
 };
 
 export type Review = {
