@@ -45,7 +45,8 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
-  const course = await getCourse(params.courseId);
+  const awaitedParams = await params;
+  const course = await getCourse(awaitedParams.courseId);
 
   if (!course) {
     return {
@@ -90,7 +91,8 @@ export default async function CourseDetailPage({
 }: {
   params: { courseId: string };
 }) {
-  const { courseId } = params;
+  const awaitedParams = await params;
+  const { courseId } = awaitedParams;
   const course = await getCourse(courseId);
 
   if (!course || course.isArchived) {
