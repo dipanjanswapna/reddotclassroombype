@@ -81,14 +81,24 @@ export default async function OfflineHubPage() {
       
       {offlineCourses.length > 0 && (
         <section className="container mx-auto px-4 py-16">
-          <h2 className="font-headline text-3xl font-bold text-center mb-12">
+          <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-12">
             {offlineHubData.programsTitle?.[language] || "আমাদের প্রোগ্রামসমূহ"}
           </h2>
           <div className="space-y-8 max-w-5xl mx-auto">
             {offlineCourses.map((program: Course) => (
-              <div key={program.id} className="p-8 border border-red-500/30 bg-red-900/20 rounded-xl grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h3 className="font-headline text-4xl font-bold mb-6">{program.title}</h3>
+              <div key={program.id} className="p-6 md:p-8 border border-red-500/30 bg-red-900/20 rounded-xl grid md:grid-cols-2 gap-8 items-center">
+                <div className="md:order-2">
+                  <Image
+                    src={program.imageUrl}
+                    alt={program.title}
+                    width={500}
+                    height={350}
+                    className="rounded-xl object-cover"
+                    data-ai-hint={program.dataAiHint}
+                  />
+                </div>
+                <div className="md:order-1">
+                  <h3 className="font-headline text-3xl md:text-4xl font-bold mb-6">{program.title}</h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8">
                     {program.whatYouWillLearn?.slice(0, 4).map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
@@ -106,16 +116,6 @@ export default async function OfflineHubPage() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-center items-center">
-                  <Image
-                    src={program.imageUrl}
-                    alt={program.title}
-                    width={500}
-                    height={350}
-                    className="rounded-xl object-cover"
-                    data-ai-hint={program.dataAiHint}
-                  />
-                </div>
               </div>
             ))}
           </div>
@@ -123,12 +123,12 @@ export default async function OfflineHubPage() {
       )}
 
       <section className="container mx-auto px-4 py-16">
-         <h2 className="font-headline text-3xl font-bold text-center mb-12">
+         <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-12">
             {offlineHubData.centersTitle[language]}
          </h2>
-         <div className="flex gap-8 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory">
+         <div className="flex gap-6 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory">
             {allBranches.map((center) => (
-                <div key={center.id} className="snap-start shrink-0 w-80">
+                <div key={center.id} className="snap-start shrink-0 w-[90%] sm:w-80">
                     <div className="p-6 border border-red-500/30 bg-gray-800/50 rounded-xl h-full flex flex-col justify-between hover:border-red-500 transition-colors">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
@@ -151,14 +151,14 @@ export default async function OfflineHubPage() {
       {offlineHubData.contactSection?.display && (
         <section className="py-16">
             <div className="container mx-auto px-4">
-                <div className="bg-gradient-to-br from-red-800 via-red-900 to-black rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+                <div className="bg-gradient-to-br from-red-800 via-red-900 to-black rounded-2xl p-6 md:p-12 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 -m-12 w-48 h-48 bg-white/5 rounded-full"></div>
                     <div className="relative z-10">
                         <div className="inline-block p-4 bg-white/10 rounded-full mb-4">
                             <Phone className="w-8 h-8" />
                         </div>
-                        <h2 className="font-headline text-3xl font-bold">{offlineHubData.contactSection.title[language]}</h2>
-                        <p className="mt-2 text-lg text-gray-300 max-w-lg mx-auto">{offlineHubData.contactSection.subtitle[language]}</p>
+                        <h2 className="font-headline text-2xl md:text-3xl font-bold">{offlineHubData.contactSection.title[language]}</h2>
+                        <p className="mt-2 text-md md:text-lg text-gray-300 max-w-lg mx-auto">{offlineHubData.contactSection.subtitle[language]}</p>
                         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg w-full sm:w-auto">
                                 <a href={`tel:${offlineHubData.contactSection.callButtonNumber}`}>{offlineHubData.contactSection.callButtonText[language]}</a>
