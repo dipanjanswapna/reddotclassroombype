@@ -9,23 +9,26 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { CourseCard } from '@/components/course-card';
-import type { Course } from '@/lib/types';
+import type { Course, Organization } from '@/lib/types';
 
-export function MasterclassCarousel({ courses }: { courses: Course[] }) {
+export function MasterclassCarousel({ courses, providers }: { courses: Course[], providers?: Organization[] }) {
     if (!courses || courses.length === 0) {
         return null;
     }
 
   return (
-    <Carousel opts={{ align: 'start', loop: true }}>
+    <Carousel opts={{ align: 'start', loop: courses.length > 3 }}>
       <CarouselContent>
-        {courses.map((course) => (
-          <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
-            <div className="p-1">
-              <CourseCard {...course} />
-            </div>
-          </CarouselItem>
-        ))}
+        {courses.map((course) => {
+           const provider = providers?.find(p => p.id === course.organizationId);
+           return (
+              <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
+                <div className="p-1">
+                  <CourseCard {...course} provider={provider} partnerSubdomain={provider?.subdomain}/>
+                </div>
+              </CarouselItem>
+          )
+        })}
       </CarouselContent>
       <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
       <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>

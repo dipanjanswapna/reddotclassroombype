@@ -2,14 +2,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Course } from '@/lib/types';
 import { getCourse, getPromoCodeForUserAndCourse } from '@/lib/firebase/firestore';
 import { applyPromoCodeAction } from '@/app/actions/promo.actions';
-import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
+import { prebookCourseAction, enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, User, Bookmark } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { safeToDate } from '@/lib/utils';
 
@@ -111,17 +111,18 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction({ courseId: course.id!, userId: userInfo.uid, cycleId: cycleId || undefined });
-
+    const action = course.isPrebooking && !cycleId ? prebookCourseAction : enrollInCourseAction;
+    const result = await action({ courseId: course.id!, userId: userInfo.uid, cycleId: cycleId || undefined });
+    
     if (result.success) {
         toast({
-            title: 'Enrollment Successful!',
-            description: `You have successfully enrolled in "${course!.title}". Redirecting...`
+            title: 'Success!',
+            description: result.message
         });
         setTimeout(() => router.push('/student/my-courses'), 2000);
     } else {
         toast({
-            title: 'Enrollment Failed',
+            title: 'Action Failed',
             description: result.message,
             variant: 'destructive'
         });
@@ -185,13 +186,13 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                     placeholder="Enter promo code" 
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    disabled={promoLoading || !!selectedCycle}
+                    disabled={promoLoading || !!selectedCycle || isPrebooking}
                   />
-                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode || !!selectedCycle}>
+                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode || !!selectedCycle || isPrebooking}>
                     {promoLoading ? <Loader2 className="animate-spin" /> : 'Apply'}
                   </Button>
                 </div>
-                 {!!selectedCycle && <p className="text-xs text-muted-foreground">Promo codes cannot be applied to individual cycle purchases.</p>}
+                 {(!!selectedCycle || isPrebooking) && <p className="text-xs text-muted-foreground">Promo codes cannot be applied to cycle purchases or pre-bookings.</p>}
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
             </CardContent>
@@ -240,7 +241,13 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 )}
                 <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
                     {isProcessing ? <Loader2 className="mr-2 animate-spin" /> : null}
-                    Proceed to Payment
+                    {isPrebooking && !cycleId ? (
+                        <>
+                            <Bookmark className="mr-2 h-4 w-4"/> Pre-book Now
+                        </>
+                    ) : (
+                        'Proceed to Payment'
+                    )}
                 </Button>
             </div>
           </Card>

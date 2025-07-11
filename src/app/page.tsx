@@ -35,6 +35,7 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
     case 'YouTube':
       return <Youtube className={cn("w-6 h-6 text-white", className)} />;
     case 'Facebook Page':
+    case 'Facebook Group':
       return <Facebook className={cn("w-6 h-6 text-white", className)} />;
     default:
       return null;
@@ -145,7 +146,7 @@ export default async function Home() {
               <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
                 <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
-                <DynamicLiveCoursesCarousel courses={liveCourses} />
+                <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
             </div>
           </section>
@@ -201,7 +202,7 @@ export default async function Home() {
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                      {sscHscCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                      {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
               </div>
           </section>
@@ -211,7 +212,7 @@ export default async function Home() {
           <section aria-labelledby="masterclass-heading">
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
-                  <DynamicMasterclassCarousel courses={masterClasses} />
+                  <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
@@ -225,7 +226,7 @@ export default async function Home() {
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                      {admissionCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                      {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
@@ -240,7 +241,7 @@ export default async function Home() {
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                      {jobCourses.map(course => <CourseCard key={course.id} {...course} />)}
+                      {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>

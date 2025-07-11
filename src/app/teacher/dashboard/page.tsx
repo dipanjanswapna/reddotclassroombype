@@ -81,7 +81,9 @@ export default function TeacherDashboardPage() {
             }
           });
            (course.exams || []).forEach(exam => {
-            const isOralOrPracticalPending = (exam.examType === 'Oral' || exam.examType === 'Practical') && exam.status === 'Pending' && safeToDate(exam.examDate) <= new Date();
+            const examDate = safeToDate(exam.examDate);
+            const isPast = examDate <= new Date();
+            const isOralOrPracticalPending = (exam.examType === 'Oral' || exam.examType === 'Practical') && exam.status === 'Pending' && isPast;
             const isWrittenSubmitted = (exam.examType === 'Written' || exam.examType === 'Essay' || exam.examType === 'Short Answer') && exam.status === 'Submitted';
             if(isOralOrPracticalPending || isWrittenSubmitted) {
                  pendingGradingCount++;

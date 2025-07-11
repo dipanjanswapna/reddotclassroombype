@@ -3,7 +3,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { 
     deleteCourse as deleteCourseFromDb, 
     getCourse, 
@@ -14,7 +14,7 @@ import {
     getPromoCodes,
     getInstructorBySlug
 } from '@/lib/firebase/firestore';
-import { Course, User, PromoCode, Instructor } from '@/lib/types';
+import { Course, User, PromoCode, Instructor, Enrollment } from '@/lib/types';
 import { db } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
@@ -69,17 +69,42 @@ export async function saveCourseAction(courseData: Partial<Course>) {
   }
 }
 
-export async function deleteCourseAction(id: string) {
+export async function deleteCourseAction(courseId: string) {
     try {
-        await deleteCourseFromDb(id);
+        const batch = writeBatch(db);
+
+        // 1. Delete the course itself
+        const courseRef = doc(db, 'courses', courseId);
+        batch.delete(courseRef);
+
+        // 2. Find and delete all enrollments for this course
+        const enrollmentsQuery = query(collection(db, 'enrollments'), where('courseId', '==', courseId));
+        const enrollmentsSnapshot = await getDocs(enrollmentsQuery);
+        enrollmentsSnapshot.forEach(doc => batch.delete(doc.ref));
+
+        // 3. Find and delete all pre-bookings for this course
+        const prebookingsQuery = query(collection(db, 'prebookings'), where('courseId', '==', courseId));
+        const prebookingsSnapshot = await getDocs(prebookingsQuery);
+        prebookingsSnapshot.forEach(doc => batch.delete(doc.ref));
+
+        // 4. Find and delete all promo codes applicable to this course
+        const promosQuery = query(collection(db, 'promo_codes'), where('applicableCourseIds', 'array-contains', courseId));
+        const promosSnapshot = await getDocs(promosQuery);
+        promosSnapshot.forEach(doc => batch.delete(doc.ref));
+        
+        // 5. Optionally, you could also delete attendance, notifications, etc.
+        // For now, we'll keep them for historical records, but they can be added here.
+
+        await batch.commit();
+
         revalidatePath('/admin/courses');
         revalidatePath('/teacher/courses');
         revalidatePath('/seller/courses');
         revalidatePath('/courses');
-        return { success: true, message: 'Course and associated data deleted successfully.' };
+        return { success: true, message: 'Course and all associated data deleted successfully.' };
     } catch (error: any) {
         console.error('Error deleting course:', error);
-        return { success: false, message: error.message };
+        return { success: false, message: error.message || 'An unexpected error occurred.' };
     }
 }
 

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { useAuth } from '@/context/auth-context';
 import { getEnrollmentsByUserId, getPrebookingForUser } from '@/lib/firebase/firestore';
-import { BookCheck, Loader2, BookmarkPlus } from 'lucide-react';
+import { BookCheck, Loader2, BookmarkPlus, Bookmark } from 'lucide-react';
 import { prebookCourseAction } from '@/app/actions/enrollment.actions';
 import { useToast } from './ui/use-toast';
 import { useRouter } from 'next/navigation';
@@ -64,7 +64,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
             router.push(`/login?redirect=/courses/${courseId}`);
             return;
         }
-        const result = await prebookCourseAction(courseId, userInfo.uid);
+        const result = await prebookCourseAction({ courseId, userId: userInfo.uid });
         if (result.success) {
             toast({
                 title: "Pre-booking Successful!",
@@ -95,7 +95,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         if (isPrebookingActive) {
              return (
                 <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
-                    Pre-book Now
+                    <Bookmark className="mr-2 h-4 w-4" /> Pre-book Now
                 </Button>
             );
         }
@@ -122,14 +122,14 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         if (isPrebooked) {
              return (
                 <Button size={size} className="w-full font-bold" disabled>
-                    <BookmarkPlus className="mr-2" />
+                    <BookmarkCheck className="mr-2" />
                     Successfully Pre-booked
                 </Button>
             );
         }
         return (
             <Button size={size} className="w-full font-bold bg-green-600 hover:bg-green-700" onClick={handlePrebook}>
-                Pre-book Now
+                 <Bookmark className="mr-2 h-4 w-4" /> Pre-book Now
             </Button>
         );
     }

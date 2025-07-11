@@ -49,7 +49,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({ courses, users, enrollments }: DashboardClientProps) {
     // --- Data Processing for Charts ---
-    // Revenue Data (mocking monthly data)
+    // Revenue Data
     const revenueData = [
       { name: 'Jan', total: 0 },
       { name: 'Feb', total: 0 },
@@ -68,8 +68,9 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
     let totalRevenue = 0;
     enrollments.forEach(enrollment => {
         const course = courses.find(c => c.id === enrollment.courseId);
-        if(course) {
-            const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
+        const priceString = course?.price?.replace(/[^0-9.]/g, '');
+        if (priceString) {
+            const price = parseFloat(priceString);
             totalRevenue += price;
             const enrollmentDate = safeToDate(enrollment.enrollmentDate);
             if (!isNaN(enrollmentDate.getTime())) {
