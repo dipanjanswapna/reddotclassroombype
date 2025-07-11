@@ -172,8 +172,18 @@ export default function ManageUserPage() {
         setLoadingInvoice(true);
         setIsInvoiceOpen(true);
         try {
-          let invoice = await getInvoiceByEnrollmentId(enrollment.id);
+          let invoice: Invoice | null = null;
+          // First, check if the enrollment document itself has an invoiceId
+          if (enrollment.invoiceId) {
+            invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
+          }
           
+          // If not found via ID, try searching by enrollmentId
+          if (!invoice) {
+              invoice = await getInvoiceByEnrollmentId(enrollment.id);
+          }
+          
+          // If still no invoice, create one
           if (!invoice) {
               const course = allCourses.find(c => c.id === enrollment.courseId);
               if (course) {

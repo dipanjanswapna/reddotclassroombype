@@ -447,6 +447,7 @@ export type User = {
 
 export type Enrollment = {
   id?: string;
+  invoiceId?: string;
   userId: string;
   courseId: string;
   enrollmentDate: Timestamp;

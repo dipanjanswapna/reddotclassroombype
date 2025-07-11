@@ -74,14 +74,20 @@ export default function PaymentsPage() {
   }, [authLoading, userInfo, toast]);
   
   const handleViewInvoice = async (enrollment: Enrollment) => {
-    if (!enrollment.id) return;
+    if (!enrollment.id || !userInfo) return;
     setLoadingInvoice(true);
     setIsInvoiceOpen(true);
     try {
-      let invoice = await getInvoiceByEnrollmentId(enrollment.id);
+      let invoice: Invoice | null = null;
+       if (enrollment.invoiceId) {
+            invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
+       }
       
-      // If invoice doesn't exist, create it on-the-fly
-      if (!invoice && userInfo) {
+      if (!invoice) {
+          invoice = await getInvoiceByEnrollmentId(enrollment.id);
+      }
+      
+      if (!invoice) {
         const course = await getCourse(enrollment.courseId);
         if (course) {
             const creationResult = await createInvoiceAction(enrollment, userInfo, course);
@@ -172,11 +178,13 @@ export default function PaymentsPage() {
 
       <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
         <DialogContent className="max-w-4xl p-0">
-            {loadingInvoice ? (
-                <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
-            ) : selectedInvoice ? (
-                <InvoiceView invoice={selectedInvoice} />
-            ) : null}
+            <div className="max-h-[80vh] overflow-y-auto">
+                {loadingInvoice ? (
+                    <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+                ) : selectedInvoice ? (
+                    <InvoiceView invoice={selectedInvoice} />
+                ) : null}
+            </div>
         </DialogContent>
       </Dialog>
     </>

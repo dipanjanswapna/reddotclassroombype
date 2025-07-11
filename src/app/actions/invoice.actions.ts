@@ -1,10 +1,11 @@
 
 'use server';
 
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
+import { getOrganization } from './organization.actions';
 
 function generateInvoiceNumber(): string {
     const date = new Date();
@@ -16,6 +17,8 @@ function generateInvoiceNumber(): string {
 
 export async function createInvoiceAction(enrollment: Enrollment, user: User, course: Course): Promise<{ success: boolean; invoiceId?: string; message?: string }> {
     try {
+        const netPayable = (enrollment.totalFee || 0) - (enrollment.discount || 0);
+
         const newInvoiceData: Omit<Invoice, 'id'> = {
             enrollmentId: enrollment.id!,
             userId: user.uid,
@@ -28,7 +31,7 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
                 rdcId: user.registrationNumber || 'N/A',
                 phone: user.mobileNumber || 'N/A',
                 email: user.email,
-                guardianName: user.fathersName || 'N/A',
+                guardianName: user.fathersName || 'N/A', // Assuming father's name as guardian for now
                 className: user.className || 'N/A',
                 nai: user.nidNumber || 'N/A',
             },
@@ -39,15 +42,15 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             },
             paymentDetails: {
                 method: enrollment.paymentMethod || 'Online',
-                date: enrollment.enrollmentDate,
+                date: enrollment.enrollmentDate, // Use enrollment date as payment date
                 transactionId: `TRX-${enrollment.id!.slice(0,8).toUpperCase()}`, // Example transaction ID
             },
             financialSummary: {
-                totalFee: enrollment.totalFee || parseFloat(course.price?.replace(/[^0-9.]/g, '') || '0'),
+                totalFee: enrollment.totalFee || 0,
                 discount: enrollment.discount || 0,
-                netPayable: (enrollment.totalFee || parseFloat(course.price?.replace(/[^0-9.]/g, '') || '0')) - (enrollment.discount || 0),
+                netPayable: netPayable,
                 amountPaid: enrollment.paidAmount || 0,
-                dueAmount: enrollment.dueAmount || 0,
+                dueAmount: (enrollment.dueAmount !== undefined) ? enrollment.dueAmount : (netPayable - (enrollment.paidAmount || 0)),
             },
             generatedBy: enrollment.enrolledBy || 'system',
             createdAt: Timestamp.now(),
@@ -56,6 +59,10 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         const cleanInvoiceData = removeUndefinedValues(newInvoiceData);
         
         const invoiceRef = await addDoc(collection(db, 'invoices'), cleanInvoiceData);
+        
+        // Also update the enrollment with the invoice ID for future reference
+        await updateDoc(doc(db, 'enrollments', enrollment.id!), { invoiceId: invoiceRef.id });
+
         return { success: true, invoiceId: invoiceRef.id };
     } catch (error: any) {
         console.error("Error creating invoice:", error);

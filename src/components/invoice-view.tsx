@@ -117,29 +117,28 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                     </div>
                 </div>
                 <div className="text-right w-full sm:w-auto">
-                    <Image src="https://placehold.co/120x120.png?text=QR" alt="QR Code" width={120} height={120} data-ai-hint="qr code"/>
+                    <p className="text-sm"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
+                    <p className="text-sm"><strong>Date:</strong> {format(safeToDate(invoice.invoiceDate), 'PPP')}</p>
                 </div>
             </header>
 
             <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-4 border-y">
                 <div>
-                    <p className="text-sm"><strong>Date:</strong> {format(safeToDate(invoice.invoiceDate), 'yyyy-MM-dd HH:mm:ss')}</p>
-                    <p className="text-sm mt-4"><strong>Invoiced To:</strong></p>
+                    <p className="text-sm font-semibold text-gray-500 uppercase">Invoiced To:</p>
                     <p className="font-bold">{invoice.studentDetails.name}</p>
-                    <p className="text-sm">{invoice.studentDetails.phone}</p>
-                    <p className="text-sm">{invoice.studentDetails.email}</p>
-                    <p className="text-sm">{invoice.studentDetails.className}</p>
-                    <p className="text-sm">{invoice.studentDetails.nai}</p>
+                    <p className="text-sm">RDC ID: {invoice.studentDetails.rdcId}</p>
+                    <p className="text-sm">Phone: {invoice.studentDetails.phone}</p>
+                    <p className="text-sm">Email: {invoice.studentDetails.email}</p>
+                    {invoice.studentDetails.className && <p className="text-sm">Class: {invoice.studentDetails.className}</p>}
+                    {invoice.studentDetails.nai && <p className="text-sm">NID/Birth Cert.: {invoice.studentDetails.nai}</p>}
                 </div>
                 <div className="sm:text-right">
-                    <p className="text-sm"><strong>Status:</strong> <span className="font-semibold text-green-600 uppercase">{invoice.status}</span></p>
-                    <p className="text-sm mt-4"><strong>Paid To:</strong></p>
-                    <p className="font-bold">RDC Classroom</p>
+                    <p className="text-sm font-semibold text-gray-500 uppercase">Paid To:</p>
+                    <p className="font-bold">Red Dot Classroom</p>
                     <p className="text-sm">Mirpur DOHS, Dhaka, Bangladesh</p>
                     <div className="mt-2 text-sm space-y-1">
                         <p className="flex items-center justify-start sm:justify-end gap-2"><Mail className="h-4 w-4"/> support@reddotclassroom.com</p>
                         <p className="flex items-center justify-start sm:justify-end gap-2"><Globe className="h-4 w-4"/> rdc.vercel.app</p>
-                        <p className="flex items-center justify-start sm:justify-end gap-2"><Facebook className="h-4 w-4"/> RDC Students Group</p>
                     </div>
                 </div>
             </section>
@@ -150,22 +149,36 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="p-2 font-semibold uppercase">Course</th>
-                                <th className="p-2 font-semibold uppercase">Cycle</th>
-                                <th className="p-2 font-semibold uppercase">Gateway</th>
-                                <th className="p-2 font-semibold uppercase">Coupon</th>
-                                <th className="p-2 font-semibold uppercase text-right">Amount</th>
+                                <th className="p-2 font-semibold uppercase text-right">Amount (BDT)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr className="border-b">
-                                <td className="p-2">{invoice.courseDetails.name}</td>
-                                <td className="p-2">{invoice.courseDetails.cycleName || "N/A"}</td>
-                                <td className="p-2">{invoice.paymentDetails.method}</td>
-                                <td className="p-2">{invoice.coupon || 'N/A'}</td>
-                                <td className="p-2 text-right font-semibold">BDT {invoice.financialSummary.netPayable.toFixed(2)}</td>
+                                <td className="p-2">
+                                    <p className="font-medium">{invoice.courseDetails.name}</p>
+                                    <p className="text-xs text-gray-500">{invoice.courseDetails.type}{invoice.courseDetails.cycleName ? ` - ${invoice.courseDetails.cycleName}` : ''}</p>
+                                </td>
+                                <td className="p-2 text-right font-medium">{invoice.financialSummary.totalFee.toFixed(2)}</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+            
+            <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="text-sm space-y-2">
+                    <p><strong>Payment Method:</strong> {invoice.paymentDetails.method}</p>
+                    <p><strong>Payment Date:</strong> {format(safeToDate(invoice.paymentDetails.date), 'PPP')}</p>
+                    <p><strong>Transaction ID:</strong> {invoice.paymentDetails.transactionId}</p>
+                </div>
+                <div className="space-y-1 text-sm bg-gray-50 p-4 rounded-md border">
+                    <div className="flex justify-between"><span>Subtotal:</span><span>{invoice.financialSummary.totalFee.toFixed(2)}</span></div>
+                    {invoice.financialSummary.discount > 0 && <div className="flex justify-between"><span>Discount:</span><span>({invoice.financialSummary.discount.toFixed(2)})</span></div>}
+                    <Separator/>
+                    <div className="flex justify-between font-bold"><span>Net Payable:</span><span>{invoice.financialSummary.netPayable.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>Amount Paid:</span><span>{invoice.financialSummary.amountPaid.toFixed(2)}</span></div>
+                    <Separator/>
+                    <div className="flex justify-between font-bold text-lg text-primary"><span>Due Amount:</span><span>{invoice.financialSummary.dueAmount.toFixed(2)}</span></div>
                 </div>
             </section>
 
@@ -182,7 +195,6 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
                     <a href="https://www.facebook.com/groups/rdc.main" target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
                 </Button>
-                <p className="text-sm font-semibold text-blue-600 mt-2"><a href="https://www.facebook.com/groups/rdc.main" target="_blank" rel="noopener noreferrer">https://www.facebook.com/groups/rdc.main</a></p>
             </section>
             
             <footer className="mt-12 pt-6 border-t text-center text-xs text-gray-500">
