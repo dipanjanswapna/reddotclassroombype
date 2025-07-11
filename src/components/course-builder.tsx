@@ -31,6 +31,7 @@ import {
   Video,
   Award,
   Database,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,7 +124,6 @@ type ModuleData = {
     id: string;
     type: 'module';
     title: string;
-    cycleId?: string;
     lessons: LessonData[];
 };
 
@@ -320,6 +320,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [organizationId, setOrganizationId] = useState<string | undefined>(undefined);
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
 
+  // Settings tab states
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
+  const [isArchived, setIsArchived] = useState(false);
+  const [showStudentCount, setShowStudentCount] = useState(true);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+
   // Pre-booking states
   const [isPrebooking, setIsPrebooking] = useState(false);
   const [prebookingPrice, setPrebookingPrice] = useState('');
@@ -356,18 +363,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCourses, allInstructorsData, fetchedQuestionBank ] = await Promise.all([
+            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestionBank ] = await Promise.all([
                 getCategories(),
                 getCourses(),
                 getInstructors(),
                 getQuestionBank()
             ]);
             setAllCategories(fetchedCategories);
+            setAllCourses(allCoursesData);
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
             setQuestionBank(fetchedQuestionBank);
 
             if (!isNewCourse) {
-                const courseData = await getCourse(courseId);
+                const courseData = allCoursesData.find(c => c.id === courseId);
                 if (courseData) {
                     setInitialStatus(courseData.status);
                     setCourseTitle(courseData.title || '');
@@ -377,6 +385,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setCourseType(courseData.type || 'Online');
                     setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
                     setDiscountPrice(courseData.discountPrice?.replace(/[^0-9.]/g, '') || '');
+                    setWhatsappNumber(courseData.whatsappNumber || '');
                     setIsPrebooking(courseData.isPrebooking || false);
                     setPrebookingPrice(courseData.prebookingPrice?.replace(/[^0-9.]/g, '') || '');
                     setPrebookingEndDate(courseData.prebookingEndDate ? new Date(courseData.prebookingEndDate) : undefined);
@@ -404,6 +413,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
                     setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
                     setOrganizationId(courseData.organizationId);
+
+                    // Set settings
+                    setIncludedCourseIds(courseData.includedCourseIds || []);
+                    setIsArchived(courseData.isArchived || false);
+                    setShowStudentCount(courseData.showStudentCount ?? true);
+
                 } else {
                     notFound();
                 }
@@ -595,6 +610,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         type: courseType,
         price: `BDT ${price || 0}`,
         discountPrice: discountPrice ? `BDT ${discountPrice}` : '',
+        whatsappNumber: whatsappNumber,
         isPrebooking,
         prebookingPrice: isPrebooking ? `BDT ${prebookingPrice || 0}` : '',
         prebookingEndDate: isPrebooking && prebookingEndDate ? format(prebookingEndDate, 'yyyy-MM-dd') : '',
@@ -620,6 +636,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         examTemplates: examTemplates.filter(e => e.title),
         status,
         organizationId: organizationId,
+        includedCourseIds,
+        isArchived,
+        showStudentCount,
     };
 
     if (!isNewCourse) {
@@ -754,6 +773,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'liveClasses', label: 'Live Classes', icon: Video },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
   ];
 
@@ -900,6 +920,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </Select>
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsappNumber" className="flex items-center gap-2"><Phone className="h-4 w-4"/> WhatsApp Contact Number (Optional)</Label>
+                    <Input id="whatsappNumber" placeholder="e.g., 8801700000000" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} />
+                    <CardDescription>If provided, a contact button will appear on the course page.</CardDescription>
+                  </div>
                 </div>
               </CardContent>
             )}
@@ -991,7 +1016,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     <CollapsibleContent className="space-y-4 pt-2">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2"><Label>Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} /></div>
-                                            <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price.replace(/[^0-9.]/g, '')} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
+                                            <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
                                         </div>
                                         <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
                                         <div className="space-y-2">
@@ -1224,6 +1249,62 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </div>
                     ))}
                     <Button variant="outline" className="w-full" onClick={addAnnouncement}><PlusCircle className="mr-2"/>Add Announcement</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'settings' && (
+                <CardContent className="pt-6 space-y-4">
+                    <div className="space-y-4">
+                        <Label>Bundled Courses</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start text-left h-auto min-h-10">
+                                    <div className="flex flex-wrap gap-1">
+                                    {includedCourseIds.length > 0
+                                        ? allCourses.filter(c => includedCourseIds.includes(c.id!)).map(c => <Badge key={c.id} variant="secondary">{c.title}</Badge>)
+                                        : "Select courses to bundle..."}
+                                    </div>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                <Command>
+                                    <CommandInput placeholder="Search courses..."/>
+                                    <CommandEmpty>No courses found.</CommandEmpty>
+                                    <CommandGroup>
+                                    {allCourses.filter(c => c.id !== courseId).map(c => (
+                                        <CommandItem
+                                            key={c.id}
+                                            onSelect={() => {
+                                                const newSelection = includedCourseIds.includes(c.id!)
+                                                ? includedCourseIds.filter(id => id !== c.id)
+                                                : [...includedCourseIds, c.id!];
+                                                setIncludedCourseIds(newSelection);
+                                            }}
+                                        >
+                                            <Check className={cn("mr-2 h-4 w-4", includedCourseIds.includes(c.id!) ? "opacity-100" : "opacity-0")} />
+                                            {c.title}
+                                        </CommandItem>
+                                    ))}
+                                    </CommandGroup>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                        <p className="text-sm text-muted-foreground">Students enrolling in this course will automatically get access to the selected bundled courses.</p>
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="showStudentCount" className="font-semibold">Show Student Count</Label>
+                            <p className="text-sm text-muted-foreground">Display the total number of enrolled students on the public course page.</p>
+                        </div>
+                        <Switch id="showStudentCount" checked={showStudentCount} onCheckedChange={setShowStudentCount} />
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="archive" className="font-semibold text-destructive">Archive This Course</Label>
+                            <p className="text-sm text-muted-foreground">Archived courses will not be visible to the public or for new enrollments.</p>
+                        </div>
+                        <Switch id="archive" checked={isArchived} onCheckedChange={setIsArchived} />
+                    </div>
                 </CardContent>
             )}
 
