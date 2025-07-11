@@ -216,7 +216,7 @@ export type LeaderboardEntry = {
 export type Notification = {
   id?: string;
   userId: string;
-  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp';
+  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp' | 'Users';
   title: string;
   description: string;
   date: Timestamp;
@@ -466,7 +466,10 @@ export type Enrollment = {
   cycleId?: string;
   accessGranted?: {
       moduleIds?: string[];
-  }
+  };
+  isGroupAccessed?: boolean;
+  groupAccessedAt?: Timestamp;
+  groupAccessedBy?: string; // Admin UID
 };
 
 export type PlatformRoleSettings = {
@@ -730,7 +733,7 @@ export type HomepageConfig = {
   };
   collaborations: {
     display: boolean;
-    title: { [key: string]: string },
+    title: { [key: string]: string };
     organizationIds: string[];
   },
   partnersSection: {

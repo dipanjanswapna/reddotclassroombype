@@ -3,9 +3,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentByInvoiceId, getInvoiceByEnrollmentId, addNotification, updateEnrollment } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam } from '@/lib/types';
-import { Timestamp, writeBatch, doc, collection } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc, collection, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
@@ -32,7 +32,8 @@ export async function prebookCourseAction(courseId: string, userId: string) {
             prebookingDate: Timestamp.now(),
         });
         
-        await updateCourse(courseId, { prebookingCount: (course.prebookingCount || 0) + 1 });
+        const courseDocRef = doc(db, 'courses', courseId);
+        await updateDoc(courseDocRef, { prebookingCount: (course.prebookingCount || 0) + 1 });
         
         revalidatePath(`/courses/${courseId}`);
         revalidatePath(`/sites/[site]/courses/${courseId}`);
@@ -99,6 +100,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             enrollmentDate: Timestamp.now(),
             progress: 0,
             status: 'in-progress',
+            isGroupAccessed: false, // New field for group access tracking
             enrollmentType: isCycleEnrollment ? 'cycle' : 'full_course',
             ...(isCycleEnrollment && { cycleId: cycleId }),
             accessGranted: {
@@ -223,6 +225,76 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         return { success: true, message: 'Successfully enrolled in the course.' };
     } catch (error: any) {
         console.error(error);
+        return { success: false, message: error.message };
+    }
+}
+
+
+export async function verifyGroupAccessCodeAction(accessCode: string) {
+    try {
+        const enrollment = await getEnrollmentByInvoiceId(accessCode); // Assuming access code is enrollment ID
+        if (!enrollment) {
+            return { success: false, message: 'Invalid Group Access Code.' };
+        }
+
+        const [student, course] = await Promise.all([
+            getUser(enrollment.userId),
+            getCourse(enrollment.courseId),
+        ]);
+
+        if (!student || !course) {
+            return { success: false, message: 'Could not find student or course details.' };
+        }
+        
+        return { success: true, data: { enrollment, student, course } };
+
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+}
+
+export async function markAsGroupAccessedAction(enrollmentId: string, adminId: string) {
+    try {
+        const enrollmentDoc = await getDoc(doc(db, 'enrollments', enrollmentId));
+        if (!enrollmentDoc.exists()) {
+            throw new Error('Enrollment not found.');
+        }
+
+        const enrollment = enrollmentDoc.data() as Enrollment;
+
+        if (enrollment.isGroupAccessed) {
+            return { success: true, message: 'Student was already marked as added.' };
+        }
+        
+        const course = await getCourse(enrollment.courseId);
+        if (!course) {
+            throw new Error('Course not found.');
+        }
+
+        await updateEnrollment(enrollmentId, {
+            isGroupAccessed: true,
+            groupAccessedAt: Timestamp.now(),
+            groupAccessedBy: adminId,
+        });
+        
+        const cycle = enrollment.cycleId ? course.cycles?.find(c => c.id === enrollment.cycleId) : null;
+        
+        const notificationTitle = `Welcome to the ${course.title} Group!`;
+        const notificationDescription = `You have been successfully added to the secret group for ${course.title}${cycle ? ` - ${cycle.title}` : ''}. Start learning with your peers!`;
+        
+        await addNotification({
+            userId: enrollment.userId,
+            icon: 'Users',
+            title: notificationTitle,
+            description: notificationDescription,
+            date: Timestamp.now(),
+            read: false,
+            link: enrollment.cycleId ? cycle?.communityUrl : course.communityUrl,
+        });
+        
+        return { success: true, message: 'Student marked as added and notified.' };
+
+    } catch (error: any) {
         return { success: false, message: error.message };
     }
 }
