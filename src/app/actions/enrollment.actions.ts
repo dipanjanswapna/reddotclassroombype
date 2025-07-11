@@ -222,3 +222,4 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         return { success: false, message: error.message };
     }
 }
+

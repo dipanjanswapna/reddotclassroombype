@@ -63,3 +63,4 @@ export async function markLessonAsCompleteAction(userId: string, courseId: strin
         return { success: false, message: error.message };
     }
 }
+
