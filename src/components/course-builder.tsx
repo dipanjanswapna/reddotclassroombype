@@ -286,17 +286,23 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const { toast } = useToast();
   const { userInfo } = useAuth();
   
-  const [loading, setLoading] = useState(!isNewCourse);
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
+  
+  // All static data fetched once
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
 
+  // Course-specific state
   const [courseTitle, setCourseTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
   const [courseType, setCourseType] = useState<'Online' | 'Offline' | 'Hybrid' | 'Exam'>('Online');
-  const [allCategories, setAllCategories] = useState<string[]>([]);
   const [price, setPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('https://placehold.co/600x400.png');
@@ -305,7 +311,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [whatYouWillLearn, setWhatYouWillLearn] = useState<string[]>([]);
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -317,7 +322,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
 
   // Settings tab states
-  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
   const [isArchived, setIsArchived] = useState(false);
   const [showStudentCount, setShowStudentCount] = useState(true);
@@ -339,7 +343,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
   // Question Bank Dialog states
   const [isQuestionBankOpen, setIsQuestionBankOpen] = useState(false);
-  const [questionBank, setQuestionBank] = useState<Question[]>([]);
   const [selectedExamForQB, setSelectedExamForQB] = useState<ExamTemplate | null>(null);
   const [qbFilters, setQbFilters] = useState({ subject: 'all', chapter: 'all', difficulty: 'all' });
   const [qbSelectedQuestions, setQbSelectedQuestions] = useState<Question[]>([]);
@@ -356,10 +359,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     return items;
   }
   
-  const fetchCourseData = useCallback(async () => {
-    try {
-      const courseData = await getCourse(courseId);
-      if (courseData) {
+  const setCourseData = useCallback((courseData: Course, allInstructorsList: Instructor[]) => {
+    if (courseData) {
         setInitialStatus(courseData.status);
         setCourseTitle(courseData.title || '');
         setDescription(courseData.description || '');
@@ -376,7 +377,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         setCycles(courseData.cycles || []);
         let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
         if (imageUrl.includes('placehold.c/')) {
-          imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
+            imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
         }
         setThumbnailUrl(imageUrl);
         setIntroVideoUrl(courseData.videoUrl || '');
@@ -384,7 +385,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         setSyllabus(getSyllabusItems(courseData));
         setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
         const courseInstructors = courseData.instructors?.map(courseInst => {
-            return allInstructors.find(i => i.slug === courseInst.slug);
+            return allInstructorsList.find(i => i.slug === courseInst.slug);
         }).filter((i): i is Instructor => !!i) || [];
         setInstructors(courseInstructors);
         setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
@@ -397,32 +398,34 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         setIncludedCourseIds(courseData.includedCourseIds || []);
         setIsArchived(courseData.isArchived || false);
         setShowStudentCount(courseData.showStudentCount ?? true);
-      } else {
-        notFound();
-      }
-    } catch (err) {
-      console.error(err);
-      toast({ title: 'Error loading course data', variant: 'destructive' });
     }
-  }, [courseId, toast, allInstructors]);
+  }, []);
 
   useEffect(() => {
-    async function fetchInitialData() {
+    async function fetchAllData() {
         setLoading(true);
         try {
-            const [ fetchedCategories, fetchedCourses, fetchedInstructors, fetchedQuestionBank, fetchedOrganizations ] = await Promise.all([
+            const [fetchedCategories, fetchedCourses, fetchedInstructors, fetchedQuestionBank, fetchedOrganizations] = await Promise.all([
                 getCategories(), getCourses(), getInstructors(), getQuestionBank(), getOrganizations(),
             ]);
+
+            const approvedInstructors = fetchedInstructors.filter(i => i.status === 'Approved');
+            const approvedOrgs = fetchedOrganizations.filter(o => o.status === 'approved');
+
             setAllCategories(fetchedCategories);
             setAllCourses(fetchedCourses);
-            setAllInstructors(fetchedInstructors.filter(i => i.status === 'Approved'));
+            setAllInstructors(approvedInstructors);
+            setAllOrganizations(approvedOrgs);
             setQuestionBank(fetchedQuestionBank);
-            setAllOrganizations(fetchedOrganizations.filter(o => o.status === 'approved'));
 
             if (!isNewCourse) {
-                // Now we can call fetchCourseData since allInstructors is set
-                 await fetchCourseData();
-            } else if (userInfo) { // Pre-fill for new course
+                const courseData = await getCourse(courseId);
+                if (courseData) {
+                    setCourseData(courseData, approvedInstructors);
+                } else {
+                    notFound();
+                }
+            } else if (userInfo) {
                 if (userRole === 'Seller') {
                     const org = await getOrganizationByUserId(userInfo.uid);
                     if (org?.id) setOrganizationId(org.id);
@@ -436,13 +439,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             }
         } catch (err) {
             console.error(err);
-            toast({ title: 'Error loading initial data', variant: 'destructive' });
+            toast({ title: 'Error loading page data', variant: 'destructive' });
         } finally {
             setLoading(false);
         }
     }
-    fetchInitialData();
-  }, [courseId, isNewCourse, toast, userInfo, userRole, fetchCourseData]);
+    fetchAllData();
+  }, [courseId, isNewCourse, toast, userInfo, userRole, setCourseData]);
 
 
   const sensors = useSensors(
@@ -665,11 +668,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           description: result.message 
       });
       if (isNewCourse && result.courseId) {
-        // New course was created, redirect to edit page with new ID
         router.replace(`${redirectPath}/builder/${result.courseId}`);
-      } else {
-        // Existing course, just refresh data
-        await fetchCourseData();
       }
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -727,9 +726,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       
       setQuizTemplates(prev => [...prev, newQuizTemplate]);
       
-      // Also link it to the lesson
       updateSyllabusItem(lesson.id, 'quizId', newQuizTemplate.id);
-      updateSyllabusItem(lesson.id, 'type', 'quiz'); // Change lesson type to quiz
+      updateSyllabusItem(lesson.id, 'type', 'quiz'); 
 
       toast({ title: 'Quiz Generated!', description: `A quiz for "${lesson.title}" has been created and linked.` });
     } catch(err) {
