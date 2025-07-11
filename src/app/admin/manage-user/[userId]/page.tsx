@@ -1,11 +1,10 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking, Invoice } from '@/lib/types';
-import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId, getInvoiceByEnrollmentId, getDocument } from '@/lib/firebase/firestore';
+import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId, getInvoiceByEnrollmentId, getDocument, getCourse } from '@/lib/firebase/firestore';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { createInvoiceAction } from '@/app/actions/invoice.actions';
 import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
@@ -185,7 +184,7 @@ export default function ManageUserPage() {
           
           // If still no invoice, create one
           if (!invoice) {
-              const course = allCourses.find(c => c.id === enrollment.courseId);
+              const course = await getCourse(enrollment.courseId);
               if (course) {
                   const creationResult = await createInvoiceAction(enrollment, user, course);
                   if (creationResult.success && creationResult.invoiceId) {

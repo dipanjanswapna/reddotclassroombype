@@ -1,5 +1,4 @@
 
-
 import { db } from './config';
 import {
   collection,
@@ -509,164 +508,73 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   collaborations: {
     display: true,
-    title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
-    organizationIds: [],
-  },
+    title: { [key: string]: string };
+    organizationIds: string[];
+  };
   partnersSection: {
-    display: true,
-    title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
-    scrollSpeed: 25,
-    partners: [],
-  },
+    display: boolean;
+    title: { [key: string]: string };
+    scrollSpeed?: number;
+    partners: {
+      id: number;
+      name: string;
+      logoUrl: string;
+      href: string;
+      dataAiHint: string;
+    }[];
+  };
   socialMediaSection: {
-    display: true,
-    title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
-    description: { bn: "সর্বশেষ আপডেট, কোর্স অফার এবং শিক্ষামূলক কন্টেন্টের জন্য আমাদের সোশ্যাল মিডিয়া চ্যানেলগুলোতে যোগ দিন।", en: "Join our social media channels for the latest updates, course offers, and educational content." },
-    channels: [],
-  },
+    display: boolean;
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    channels: {
+      id: number;
+      platform: string;
+      name: { [key: string]: string } | string;
+      handle: string;
+      stat1_value: string;
+      stat1_label: { [key: string]: string } | string;
+      stat2_value: string;
+      stat2_label: { [key: string]: string } | string;
+      description: { [key: string]: string } | string;
+      ctaText: { [key: string]: string } | string;
+      ctaUrl: string;
+    }[];
+  };
   notesBanner: {
-    display: true,
-    title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes and Lecture Sheets" },
-    description: { bn: "আপনার পরীক্ষার প্রস্তুতিকে আরও শক্তিশালী করতে ডাউনলোড করুন আমাদের精心ভাবে তৈরি করা নোটস ও লেকচার শিট।", en: "Download our meticulously prepared notes and lecture sheets to strengthen your exam preparation." },
-    buttonText: { bn: "ডাউনলোড করুন", en: "Download Now" },
-  },
+    display: boolean;
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    buttonText: { [key: string]: string };
+  };
   statsSection: {
-    display: true,
-    title: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
-    stats: [
-      { value: "9+", label: { bn: "বছর", en: "Years" } },
-      { value: "5M+", label: { bn: "শিক্ষার্থী", en: "Students" } },
-      { value: "50+", label: { bn: "কোর্স", en: "Courses" } },
-    ],
-  },
+    display: boolean;
+    title: { [key: string]: string };
+    stats: {
+      value: string;
+      label: { [key: string]: string };
+    }[];
+  };
   appPromo: {
-    display: true,
-    title: { bn: "ডাউনলোড করুন RDC অ্যাপ", en: "Download the RDC App" },
-    description: { bn: "যেকোনো জায়গা থেকে যেকোনো সময় আপনার পড়াশোনা চালিয়ে যান আমাদের মোবাইল অ্যাপের মাধ্যমে। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন আপনার হাতের মুঠোয়।", en: "Continue your studies anytime, anywhere with our mobile app. Live classes, quizzes, and much more are now at your fingertips." },
-    googlePlayUrl: "#",
-    appStoreUrl: "#",
-  },
+    display: boolean;
+    title: { [key: string]: string };
+    description: { [key: string]: string };
+    googlePlayUrl: string;
+    appStoreUrl: string;
+  };
   floatingWhatsApp: {
-      display: true,
-      number: '8801641035736'
+      display: boolean;
+      number: string;
   },
-  rdcShopBanner: {
-    display: true,
-    imageUrl: "https://placehold.co/1600x400.png",
-    dataAiHint: "shop banner sale",
+  rdcShopBanner?: {
+    display: boolean;
+    imageUrl: string;
+    dataAiHint: string;
   },
-  platformSettings: defaultPlatformSettings,
-  topperPageSection: {
-    display: true,
-    title: 'যেভাবে আমরা তোমাকে সাহায্য করি একজন টপার হতে',
-    mainImageUrl: 'https://i.imgur.com/rCne6ZJ.png',
-    mainImageDataAiHint: 'happy student celebrating',
-    cards: [
-      { id: 'card1', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon book', title: 'লাইভ ক্লাস', description: 'প্রতিটি ক্লাস সরাসরি টিচারের সাথে করার সুযোগ।' },
-      { id: 'card2', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon exam', title: 'পরীক্ষা', description: 'নিয়মিত পরীক্ষা দিয়ে নিজের প্রস্তুতি যাচাই।' },
-      { id: 'card3', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon notes', title: 'লেকচার শিট', description: 'প্রতিটি ক্লাসের পর গুছানো লেকচার শিট।' },
-      { id: 'card4', iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon support', title: 'সাপোর্ট', description: 'যেকোনো সমস্যায় ২৪/৭ টিচার সাপোর্ট।' },
-    ],
-  },
-  offlineHubHeroCarousel: {
-    display: true,
-    slides: [
-      {
-        id: 1,
-        imageUrl: "https://placehold.co/1200x343.png",
-        dataAiHint: "students course banner",
-        title: "CLASS 11th",
-        subtitle: "प्रारंभ 2.0 COMMERCE",
-        price: "₹3000/-",
-        originalPrice: "₹3500/-",
-        enrollHref: "/courses"
-      }
-    ]
-  },
+  platformSettings: PlatformSettings;
+  topperPageSection: TopperPageSection;
+  offlineHubHeroCarousel?: {
+    display: boolean;
+    slides: OfflineHubHeroSlide[];
+  };
 };
-
-
-export const getHomepageConfig = async (): Promise<HomepageConfig> => {
-    try {
-        const configDoc = await getDoc(doc(db, 'singletons', 'homepage'));
-        if (configDoc.exists()) {
-            return { id: configDoc.id, ...configDoc.data() } as HomepageConfig;
-        } else {
-            console.log("No homepage config found, creating one with default values.");
-            await setDoc(doc(db, 'singletons', 'homepage'), defaultHomepageConfig);
-            return { id: 'homepage', ...defaultHomepageConfig };
-        }
-    } catch (error) {
-        console.error("Error getting homepage config, returning default:", error);
-        return { id: 'homepage', ...defaultHomepageConfig }; // Return default on error
-    }
-}
-
-export const updateHomepageConfig = (config: Partial<HomepageConfig>) => {
-    const configRef = doc(db, 'singletons', 'homepage');
-    return updateDoc(configRef, config);
-};
-
-
-// Promo Codes
-export const getPromoCodes = () => getCollection<PromoCode>('promo_codes');
-export const getPromoCode = (id: string) => getDocument<PromoCode>('promo_codes', id);
-export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null> => {
-    const q = query(collection(db, 'promo_codes'), where('code', '==', code));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as PromoCode;
-}
-export const getPromoCodeForUserAndCourse = async (userId: string, courseId: string): Promise<PromoCode | null> => {
-    const q = query(collection(db, 'promo_codes'), 
-        where('restrictedToUserId', '==', userId), 
-        where('applicableCourseIds', 'array-contains', courseId),
-        where('usageCount', '==', 0),
-        where('isActive', '==', true)
-    );
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as PromoCode;
-}
-export const addPromoCode = (promo: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), promo);
-export const updatePromoCode = (id: string, promo: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), promo);
-export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
-
-// Blog Posts
-export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
-export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
-    const q = query(collection(db, 'blog_posts'), where('slug', '==', slug));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as BlogPost;
-}
-export const addBlogPost = (post: Omit<BlogPost, 'id'>) => addDoc(collection(db, 'blog_posts'), post);
-export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(db, 'blog_posts', id), post);
-export const deleteBlogPost = (id: string) => deleteDoc(doc(db, 'blog_posts', id));
-
-// Notifications
-export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(db, 'notifications'), notification);
-
-export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
-    const q = query(collection(db, "notifications"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
-};
-
-export const markAllNotificationsAsRead = async (userId: string) => {
-    const q = query(collection(db, "notifications"), where("userId", "==", userId), where("read", "==", false));
-    const querySnapshot = await getDocs(q);
-    
-    const batch = writeBatch(db);
-    querySnapshot.forEach(doc => {
-        batch.update(doc.ref, { read: true });
-    });
-    
-    await batch.commit();
-}

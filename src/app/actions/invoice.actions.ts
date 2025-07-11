@@ -5,7 +5,7 @@ import { collection, addDoc, Timestamp, doc, getDoc, updateDoc } from 'firebase/
 import { db } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
-import { getOrganization } from './organization.actions';
+import { getOrganization } from '@/lib/firebase/firestore';
 
 function generateInvoiceNumber(): string {
     const date = new Date();
@@ -24,16 +24,17 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             userId: user.uid,
             courseId: course.id!,
             invoiceNumber: generateInvoiceNumber(),
-            invoiceDate: Timestamp.now(),
+            invoiceDate: enrollment.enrollmentDate, // Use enrollment date for consistency
             status: 'VALID',
+            coupon: enrollment.discount ? 'DISCOUNT' : undefined,
             studentDetails: {
                 name: user.name,
                 rdcId: user.registrationNumber || 'N/A',
                 phone: user.mobileNumber || 'N/A',
                 email: user.email,
-                guardianName: user.fathersName || 'N/A', // Assuming father's name as guardian for now
-                className: user.className || 'N/A',
-                nai: user.nidNumber || 'N/A',
+                guardianName: user.fathersName || undefined,
+                className: user.className || undefined,
+                nai: user.nidNumber || undefined,
             },
             courseDetails: {
                 name: course.title,
