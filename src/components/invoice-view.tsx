@@ -41,19 +41,37 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 2,
+            scale: 2, // Higher scale for better quality
             useCORS: true,
             backgroundColor: '#ffffff'
         });
         
-        const imgData = canvas.toDataURL('image/png');
+        // A4 size in points: 595.28 x 841.89
         const pdf = new jsPDF({
             orientation: 'portrait',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
+            unit: 'pt',
+            format: 'a4'
         });
         
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = imgWidth / imgHeight;
+
+        let finalWidth = pdfWidth - 40; // 20pt margin on each side
+        let finalHeight = finalWidth / ratio;
+
+        if (finalHeight > pdfHeight - 40) {
+            finalHeight = pdfHeight - 40;
+            finalWidth = finalHeight * ratio;
+        }
+
+        const x = (pdfWidth - finalWidth) / 2;
+        const y = 20; // 20pt margin from top
+        
+        pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
         pdf.save(`${invoice.invoiceNumber}.pdf`);
 
     } catch (error) {
@@ -64,9 +82,29 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
     }
   };
 
+  const handlePrint = () => {
+      window.print();
+  }
+
   return (
     <div className={`flex flex-col items-center gap-6 p-4 bg-gray-100 dark:bg-gray-900 ${className}`}>
-        <div ref={printAreaRef} className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border">
+        <style jsx global>{`
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+                #printable-invoice, #printable-invoice * {
+                    visibility: visible;
+                }
+                #printable-invoice {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                }
+            }
+        `}</style>
+        <div id="printable-invoice" ref={printAreaRef} className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border">
             <header className="flex flex-col sm:flex-row justify-between items-start pb-6 gap-4">
                 <div className="flex items-center gap-4">
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
@@ -105,26 +143,28 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
             </section>
             
             <section className="mt-6">
-                <table className="w-full text-left text-sm">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="p-2 font-semibold uppercase">Course</th>
-                            <th className="p-2 font-semibold uppercase">Cycle</th>
-                            <th className="p-2 font-semibold uppercase">Gateway</th>
-                            <th className="p-2 font-semibold uppercase">Coupon</th>
-                            <th className="p-2 font-semibold uppercase text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-b">
-                            <td className="p-2">{invoice.courseDetails.name}</td>
-                            <td className="p-2">{invoice.courseDetails.cycleName || "N/A"}</td>
-                            <td className="p-2">{invoice.paymentDetails.method}</td>
-                            <td className="p-2">{invoice.coupon || 'N/A'}</td>
-                            <td className="p-2 text-right font-semibold">BDT {invoice.financialSummary.netPayable.toFixed(2)}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="p-2 font-semibold uppercase">Course</th>
+                                <th className="p-2 font-semibold uppercase">Cycle</th>
+                                <th className="p-2 font-semibold uppercase">Gateway</th>
+                                <th className="p-2 font-semibold uppercase">Coupon</th>
+                                <th className="p-2 font-semibold uppercase text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="border-b">
+                                <td className="p-2">{invoice.courseDetails.name}</td>
+                                <td className="p-2">{invoice.courseDetails.cycleName || "N/A"}</td>
+                                <td className="p-2">{invoice.paymentDetails.method}</td>
+                                <td className="p-2">{invoice.coupon || 'N/A'}</td>
+                                <td className="p-2 text-right font-semibold">BDT {invoice.financialSummary.netPayable.toFixed(2)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <section className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
@@ -138,9 +178,9 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 </div>
                 <p className="text-xs text-gray-500 mt-2 px-4">বি.দ্র. উপরের গ্রুপ এক্সেস কোডটি কপি করে নিচের লিংক / বাটনে ক্লিক করে গ্রুপে তোমার মোবাইল নম্বর, ইমেইল ও গ্রুপ এক্সেস কোড সঠিকভাবে পূরণ করে জয়েন রিকুয়েস্ট দাও। তোমার জয়েন রিকুয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্। ♥️</p>
                 <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-                    <a href="#" target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
+                    <a href="https://www.facebook.com/groups/rdc.main" target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
                 </Button>
-                <p className="text-sm font-semibold text-blue-600 mt-2"><a href="#" target="_blank" rel="noopener noreferrer">https://www.facebook.com/groups/rdc.main</a></p>
+                <p className="text-sm font-semibold text-blue-600 mt-2"><a href="https://www.facebook.com/groups/rdc.main" target="_blank" rel="noopener noreferrer">https://www.facebook.com/groups/rdc.main</a></p>
             </section>
             
             <footer className="mt-12 pt-6 border-t text-center text-xs text-gray-500">
@@ -157,7 +197,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 )}
                 Download
             </Button>
-             <Button variant="outline" onClick={() => window.print()}>
+             <Button variant="outline" onClick={handlePrint}>
                 <Printer className="mr-2 h-4 w-4" />
                 Print
             </Button>
