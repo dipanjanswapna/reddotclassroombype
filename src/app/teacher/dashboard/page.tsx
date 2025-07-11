@@ -60,7 +60,7 @@ export default function TeacherDashboardPage() {
           course.instructors?.some(i => i.slug === instructor.slug)
         );
 
-        const teacherCourseIds = teacherCourses.map(c => c.id);
+        const teacherCourseIds = teacherCourses.map(c => c.id!);
 
         const studentIds = new Set<string>();
         allEnrollments.forEach(enrollment => {
@@ -89,7 +89,7 @@ export default function TeacherDashboardPage() {
                  pendingGradingCount++;
             }
           });
-          if (course.rating) {
+          if (course.rating && course.rating > 0) {
             totalRating += course.rating;
             ratedCourses++;
           }

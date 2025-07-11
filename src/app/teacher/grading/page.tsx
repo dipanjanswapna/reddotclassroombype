@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -213,7 +214,7 @@ export default function TeacherGradingPage() {
                 <TabsTrigger value="assignments">Assignments ({pendingAssignments.length})</TabsTrigger>
                 <TabsTrigger value="exams">Exams ({pendingExams.length})</TabsTrigger>
             </TabsList>
-            <TabsContent value="assignments">
+            <TabsContent value="assignments" className="mt-4">
                 <Card>
                     <CardHeader>
                     <CardTitle>Pending Assignment Submissions</CardTitle>
@@ -261,7 +262,7 @@ export default function TeacherGradingPage() {
                     </CardContent>
                 </Card>
             </TabsContent>
-            <TabsContent value="exams">
+            <TabsContent value="exams" className="mt-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Pending Exam Submissions</CardTitle>
