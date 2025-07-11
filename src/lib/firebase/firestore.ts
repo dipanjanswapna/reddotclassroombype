@@ -508,73 +508,187 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   collaborations: {
     display: true,
-    title: { [key: string]: string };
-    organizationIds: string[];
-  };
+    title: { bn: 'আমাদের সহযোগী প্রতিষ্ঠানসমূহ', en: 'Our Collaborations' },
+    organizationIds: [],
+  },
   partnersSection: {
-    display: boolean;
-    title: { [key: string]: string };
-    scrollSpeed?: number;
-    partners: {
-      id: number;
-      name: string;
-      logoUrl: string;
-      href: string;
-      dataAiHint: string;
-    }[];
-  };
+    display: true,
+    title: { bn: 'আমাদের পার্টনার', en: 'Our Partners' },
+    scrollSpeed: 25,
+    partners: [
+      {
+        id: 1,
+        name: 'Partner One',
+        logoUrl: 'https://placehold.co/140x60.png',
+        href: '#',
+        dataAiHint: 'company logo'
+      },
+       {
+        id: 2,
+        name: 'Partner Two',
+        logoUrl: 'https://placehold.co/140x60.png',
+        href: '#',
+        dataAiHint: 'company logo'
+      }
+    ],
+  },
   socialMediaSection: {
-    display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
-    channels: {
-      id: number;
-      platform: string;
-      name: { [key: string]: string } | string;
-      handle: string;
-      stat1_value: string;
-      stat1_label: { [key: string]: string } | string;
-      stat2_value: string;
-      stat2_label: { [key: string]: string } | string;
-      description: { [key: string]: string } | string;
-      ctaText: { [key: string]: string } | string;
-      ctaUrl: string;
-    }[];
-  };
+    display: true,
+    title: { bn: 'আমাদের সাথে কানেক্টেড থাকুন', en: 'Stay Connected With Us' },
+    description: { bn: 'আমাদের সোশ্যাল মিডিয়া চ্যানেলগুলোতে যোগ দিন এবং আপডেট থাকুন।', en: 'Join our social media channels and stay updated.' },
+    channels: [
+      {
+        id: 1,
+        platform: 'YouTube',
+        name: { bn: 'RDC YouTube', en: 'RDC YouTube' },
+        handle: '@rdc',
+        stat1_value: '1.5M',
+        stat1_label: { bn: 'সাবস্ক্রাইবার', en: 'Subscribers' },
+        stat2_value: '500+',
+        stat2_label: { bn: 'ভিডিও', en: 'Videos' },
+        description: { bn: 'আমাদের ইউটিউব চ্যানেলে শিক্ষামূলক ভিডিও দেখুন।', en: 'Watch educational videos on our YouTube channel.' },
+        ctaText: { bn: 'সাবস্ক্রাইব করুন', en: 'Subscribe' },
+        ctaUrl: '#',
+      },
+    ],
+  },
   notesBanner: {
-    display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
-    buttonText: { [key: string]: string };
-  };
+    display: true,
+    title: { bn: 'ফ্রি নোটস এবং লেকচার শিট', en: 'Free Notes and Lecture Sheets' },
+    description: { bn: 'আমাদের ওয়েবসাইটে ফ্রি নোটস এবং লেকচার শিট ডাউনলোড করুন।', en: 'Download free notes and lecture sheets on our website.' },
+    buttonText: { bn: 'ডাউনলোড করুন', en: 'Download Now' },
+  },
   statsSection: {
-    display: boolean;
-    title: { [key: string]: string };
-    stats: {
-      value: string;
-      label: { [key: string]: string };
-    }[];
-  };
+    display: true,
+    title: { bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা', en: 'Journey of Millions of Students' },
+    stats: [
+      { value: '1.5M+', label: { bn: 'অ্যাপ ডাউনলোড', en: 'App Downloads' } },
+      { value: '500K+', label: { bn: 'ফেসবুক ফলোয়ার', en: 'Facebook Followers' } },
+      { value: '2M+', label: { bn: 'ইউটিউব সাবস্ক্রাইবার', en: 'YouTube Subscribers' } },
+    ],
+  },
   appPromo: {
-    display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
-    googlePlayUrl: string;
-    appStoreUrl: string;
-  };
+    display: true,
+    title: { bn: 'RDC অ্যাপ ডাউনলোড করুন', en: 'Download the RDC App' },
+    description: { bn: 'আমাদের অ্যাপ ডাউনলোড করে আপনার শেখার অভিজ্ঞতাকে আরও সহজ করুন।', en: 'Make your learning experience easier by downloading our app.' },
+    googlePlayUrl: '#',
+    appStoreUrl: '#',
+  },
   floatingWhatsApp: {
-      display: boolean;
-      number: string;
+      display: true,
+      number: '8801641035736',
   },
-  rdcShopBanner?: {
-    display: boolean;
-    imageUrl: string;
-    dataAiHint: string;
+  rdcShopBanner: {
+    display: true,
+    imageUrl: 'https://placehold.co/1200x300.png',
+    dataAiHint: 'online courses banner',
   },
-  platformSettings: PlatformSettings;
-  topperPageSection: TopperPageSection;
-  offlineHubHeroCarousel?: {
-    display: boolean;
-    slides: OfflineHubHeroSlide[];
-  };
+  platformSettings: defaultPlatformSettings,
+  topperPageSection: {
+    display: true,
+    title: "যেভাবে আমরা তোমাকে সাহায্য করবো টপার হতে!",
+    mainImageUrl: "https://i.imgur.com/GZ0gQfN.png",
+    mainImageDataAiHint: "students success celebration",
+    cards: [
+        {id: "card1", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'book icon', title: "Weekly Master Plan", description: "সপ্তাহ শুরু হওয়ার আগেই রুটিন করে দেয়া হবে।"},
+        {id: "card2", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'exam icon', title: "Daily Exam", description: "প্রতিদিনের ক্লাস বা লেকচারের উপর ভিত্তি করে পরীক্ষা।"},
+        {id: "card3", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'headset icon', title: "Doubt Solving Sessions", description: "সরাসরি শিক্ষকের সাথে কথা বলে সমস্যার সমাধান।"},
+        {id: "card4", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'teacher icon', title: "Counseling Sessions", description: "অভিজ্ঞ মেন্টরদের দ্বারা ব্যক্তিগত গাইডলাইন।"},
+    ]
+  },
+  offlineHubHeroCarousel: {
+    display: true,
+    slides: [
+      { id: 1, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'students classroom', title: 'HSC 25 Crash Course', subtitle: 'Admission & Board Exam Prep', price: '৳5000', originalPrice: '৳7000', enrollHref: '/checkout/1'},
+      { id: 2, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'science lab', title: 'Medical Admission', subtitle: 'Guaranteed Success Program', price: '৳15000', originalPrice: '৳20000', enrollHref: '/checkout/2'},
+    ]
+  },
+};
+
+// Singleton instance for homepage config
+let homepageConfigCache: HomepageConfig | null = null;
+
+export async function getHomepageConfig(): Promise<HomepageConfig> {
+    if (homepageConfigCache) {
+      return homepageConfigCache;
+    }
+
+    const configRef = doc(db, 'singletons', 'homepage');
+    const docSnap = await getDoc(configRef);
+
+    if (docSnap.exists()) {
+        homepageConfigCache = { id: docSnap.id, ...docSnap.data() } as HomepageConfig;
+        return homepageConfigCache;
+    } else {
+        // If it doesn't exist, create it with default values
+        await setDoc(configRef, defaultHomepageConfig);
+        homepageConfigCache = { id: configRef.id, ...defaultHomepageConfig } as HomepageConfig;
+        return homepageConfigCache;
+    }
+}
+
+export const updateHomepageConfig = (config: Partial<HomepageConfig>) => {
+    homepageConfigCache = null; // Invalidate cache
+    return updateDoc(doc(db, 'singletons', 'homepage'), config);
+};
+
+
+// Promo Codes
+export const getPromoCodes = () => getCollection<PromoCode>('promo_codes');
+export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null> => {
+    const q = query(collection(db, 'promo_codes'), where('code', '==', code));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as PromoCode;
+};
+export const getPromoCodeForUserAndCourse = async (userId: string, courseId: string): Promise<PromoCode | null> => {
+    const q = query(
+        collection(db, 'promo_codes'), 
+        where('restrictedToUserId', '==', userId),
+        where('applicableCourseIds', 'array-contains', courseId),
+        where('isActive', '==', true)
+    );
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as PromoCode;
+}
+export const addPromoCode = (code: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), code);
+export const updatePromoCode = (id: string, code: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), code);
+export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
+
+// Blog
+export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+    const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as BlogPost;
+}
+export const addBlogPost = (post: Partial<BlogPost>) => addDoc(collection(db, 'blog_posts'), post);
+export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(db, 'blog_posts', id), post);
+export const deleteBlogPost = (id: string) => deleteDoc(doc(db, 'blog_posts', id));
+
+// Notifications
+export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
+    const q = query(collection(db, 'notifications'), where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+};
+
+export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(db, 'notifications'), notification);
+
+export const markAllNotificationsAsRead = async (userId: string) => {
+    const q = query(collection(db, 'notifications'), where('userId', '==', userId), where('read', '==', false));
+    const querySnapshot = await getDocs(q);
+    
+    const batch = writeBatch(db);
+    querySnapshot.docs.forEach(doc => {
+        batch.update(doc.ref, { read: true });
+    });
+    await batch.commit();
 };
