@@ -8,7 +8,6 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
-import { CourseEnrollmentButton } from "./course-enrollment-button";
 import { Button } from "./ui/button";
 
 type CourseCardProps = Partial<Course> & {
@@ -27,7 +26,6 @@ export function CourseCard(props: CourseCardProps) {
   const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
-  const checkoutUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/checkout/${id}` : `/checkout/${id}`;
   
   const isOfflineCourse = type === 'Offline' || type === 'Hybrid';
 
@@ -82,18 +80,10 @@ export function CourseCard(props: CourseCardProps) {
       <div className="p-4 pt-0">
          {isArchived ? (
             <Badge variant="outline">Enrollment Closed</Badge>
-         ) : isOfflineCourse ? (
-             <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
-                 <Link href={checkoutUrl}>Enroll Now</Link>
-             </Button>
          ) : (
-            <CourseEnrollmentButton
-                courseId={id}
-                isPrebookingActive={isPrebookingActive}
-                checkoutUrl={checkoutUrl}
-                size="default"
-                courseType={type}
-            />
+            <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
+                 <Link href={coursePageUrl}>View Details</Link>
+             </Button>
          )}
       </div>
     </Card>
