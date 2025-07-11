@@ -107,7 +107,7 @@ export default function TeacherCoursesPage() {
                     Manage Courses
                 </h1>
                 <p className="mt-1 text-lg text-muted-foreground">
-                    Manage all courses from your associated organization.
+                    Manage all courses you are assigned to.
                 </p>
             </div>
         </div>

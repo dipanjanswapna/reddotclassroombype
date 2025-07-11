@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { notFound, useRouter, useParams } from 'next/navigation';
 import {
@@ -357,94 +356,93 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     return items;
   }
   
+  const fetchCourseData = useCallback(async () => {
+    try {
+      const courseData = await getCourse(courseId);
+      if (courseData) {
+        setInitialStatus(courseData.status);
+        setCourseTitle(courseData.title || '');
+        setDescription(courseData.description || '');
+        setCategory(courseData.category || '');
+        setSubCategory(courseData.subCategory || '');
+        setCourseType(courseData.type || 'Online');
+        setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
+        setDiscountPrice(courseData.discountPrice?.replace(/[^0-9.]/g, '') || '');
+        setWhatsappNumber(courseData.whatsappNumber || '');
+        setIsPrebooking(courseData.isPrebooking || false);
+        setPrebookingPrice(courseData.prebookingPrice?.replace(/[^0-9.]/g, '') || '');
+        setPrebookingEndDate(courseData.prebookingEndDate ? new Date(courseData.prebookingEndDate) : undefined);
+        setPrebookingTarget(courseData.prebookingTarget || undefined);
+        setCycles(courseData.cycles || []);
+        let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
+        if (imageUrl.includes('placehold.c/')) {
+          imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
+        }
+        setThumbnailUrl(imageUrl);
+        setIntroVideoUrl(courseData.videoUrl || '');
+        setWhatYouWillLearn(courseData.whatYouWillLearn || []);
+        setSyllabus(getSyllabusItems(courseData));
+        setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
+        const courseInstructors = courseData.instructors?.map(courseInst => {
+            return allInstructors.find(i => i.slug === courseInst.slug);
+        }).filter((i): i is Instructor => !!i) || [];
+        setInstructors(courseInstructors);
+        setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
+        setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
+        setLiveClasses(courseData.liveClasses || []);
+        setQuizTemplates(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
+        setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
+        setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
+        setOrganizationId(courseData.organizationId);
+        setIncludedCourseIds(courseData.includedCourseIds || []);
+        setIsArchived(courseData.isArchived || false);
+        setShowStudentCount(courseData.showStudentCount ?? true);
+      } else {
+        notFound();
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Error loading course data', variant: 'destructive' });
+    }
+  }, [courseId, toast, allInstructors]);
+
   useEffect(() => {
     async function fetchInitialData() {
+        setLoading(true);
         try {
-            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestionBank, fetchedOrganizations ] = await Promise.all([
-                getCategories(),
-                getCourses(),
-                getInstructors(),
-                getQuestionBank(),
-                getOrganizations(),
+            const [ fetchedCategories, fetchedCourses, fetchedInstructors, fetchedQuestionBank, fetchedOrganizations ] = await Promise.all([
+                getCategories(), getCourses(), getInstructors(), getQuestionBank(), getOrganizations(),
             ]);
             setAllCategories(fetchedCategories);
-            setAllCourses(allCoursesData);
-            setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
+            setAllCourses(fetchedCourses);
+            setAllInstructors(fetchedInstructors.filter(i => i.status === 'Approved'));
             setQuestionBank(fetchedQuestionBank);
             setAllOrganizations(fetchedOrganizations.filter(o => o.status === 'approved'));
 
             if (!isNewCourse) {
-                const courseData = allCoursesData.find(c => c.id === courseId);
-                 if (courseData) {
-                    setInitialStatus(courseData.status);
-                    setCourseTitle(courseData.title || '');
-                    setDescription(courseData.description || '');
-                    setCategory(courseData.category || '');
-                    setSubCategory(courseData.subCategory || '');
-                    setCourseType(courseData.type || 'Online');
-                    setPrice(courseData.price?.replace(/[^0-9.]/g, '') || '');
-                    setDiscountPrice(courseData.discountPrice?.replace(/[^0-9.]/g, '') || '');
-                    setWhatsappNumber(courseData.whatsappNumber || '');
-                    setIsPrebooking(courseData.isPrebooking || false);
-                    setPrebookingPrice(courseData.prebookingPrice?.replace(/[^0-9.]/g, '') || '');
-                    setPrebookingEndDate(courseData.prebookingEndDate ? new Date(courseData.prebookingEndDate) : undefined);
-                    setPrebookingTarget(courseData.prebookingTarget || undefined);
-                    setCycles(courseData.cycles || []);
-                    let imageUrl = courseData.imageUrl || 'https://placehold.co/600x400.png';
-                    if (imageUrl.includes('placehold.c/')) {
-                      imageUrl = imageUrl.replace('placehold.c/', 'placehold.co/');
-                    }
-                    setThumbnailUrl(imageUrl);
-                    setIntroVideoUrl(courseData.videoUrl || '');
-                    setWhatYouWillLearn(courseData.whatYouWillLearn || []);
-                    setSyllabus(getSyllabusItems(courseData));
-                    setFaqs(courseData.faqs?.map(f => ({...f, id: Math.random().toString()})) || []);
-                    
-                    const courseInstructors = courseData.instructors?.map(courseInst => {
-                        return allInstructorsData.find(i => i.slug === courseInst.slug);
-                    }).filter((i): i is Instructor => !!i) || [];
-                    setInstructors(courseInstructors);
-
-                    setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
-                    setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
-                    setLiveClasses(courseData.liveClasses || []);
-                    setQuizTemplates(courseData.quizTemplates?.map(q => ({...q, id: q.id || Math.random().toString()})) || []);
-                    setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
-                    setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
-                    setOrganizationId(courseData.organizationId);
-
-                    // Set settings
-                    setIncludedCourseIds(courseData.includedCourseIds || []);
-                    setIsArchived(courseData.isArchived || false);
-                    setShowStudentCount(courseData.showStudentCount ?? true);
-
-                } else {
-                    notFound();
-                }
-            } else {
-                // Pre-fill based on user role for new course
-                if (userInfo) {
-                    if (userRole === 'Seller') {
-                        const org = await getOrganizationByUserId(userInfo.uid);
-                        if (org?.id) setOrganizationId(org.id);
-                    } else if (userRole === 'Teacher') {
-                        const inst = await getInstructorByUid(userInfo.uid);
-                        if (inst) {
-                            if (inst.organizationId) setOrganizationId(inst.organizationId);
-                            setInstructors([inst]);
-                        }
+                // Now we can call fetchCourseData since allInstructors is set
+                 await fetchCourseData();
+            } else if (userInfo) { // Pre-fill for new course
+                if (userRole === 'Seller') {
+                    const org = await getOrganizationByUserId(userInfo.uid);
+                    if (org?.id) setOrganizationId(org.id);
+                } else if (userRole === 'Teacher') {
+                    const inst = await getInstructorByUid(userInfo.uid);
+                    if (inst) {
+                        if (inst.organizationId) setOrganizationId(inst.organizationId);
+                        setInstructors([inst]);
                     }
                 }
             }
         } catch (err) {
             console.error(err);
-            toast({ title: 'Error loading data', variant: 'destructive' });
+            toast({ title: 'Error loading initial data', variant: 'destructive' });
         } finally {
             setLoading(false);
         }
     }
     fetchInitialData();
-  }, [courseId, isNewCourse, toast, userInfo, userRole]);
+  }, [courseId, isNewCourse, toast, userInfo, userRole, fetchCourseData]);
 
 
   const sensors = useSensors(
@@ -666,8 +664,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           title: toastTitle, 
           description: result.message 
       });
-      if (status === 'Pending Approval' || (isNewCourse && result.courseId)) {
-        router.push(redirectPath);
+      if (isNewCourse && result.courseId) {
+        // New course was created, redirect to edit page with new ID
+        router.replace(`${redirectPath}/builder/${result.courseId}`);
+      } else {
+        // Existing course, just refresh data
+        await fetchCourseData();
       }
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -779,7 +781,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   ];
 
   const isPublished = !isNewCourse && initialStatus === 'Published';
-  const instructorForSelection = userRole === 'Seller' ? allInstructors.filter(i => i.organizationId === organizationId) : allInstructors;
+  
+  const instructorForSelection = useMemo(() => {
+    if (userRole === 'Admin') return allInstructors;
+    if (userRole === 'Seller') return allInstructors.filter(i => i.organizationId === organizationId);
+    return [];
+  }, [userRole, allInstructors, organizationId]);
 
   if (loading) {
     return (
@@ -946,7 +953,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
             {activeTab === 'syllabus' && (
               <CardContent className="pt-6">
-                 <p className="text-sm text-muted-foreground mb-4">To assign modules to a specific cycle, please go to the 'Pricing' tab.</p>
+                 <p className="text-sm text-muted-foreground mb-4">Assign modules to a cycle in the 'Pricing' tab.</p>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
