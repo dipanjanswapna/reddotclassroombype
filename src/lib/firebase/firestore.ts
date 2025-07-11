@@ -233,6 +233,18 @@ export const getEnrollmentsByUserId = async (userId: string): Promise<Enrollment
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
 }
 
+export const getEnrollmentByInvoiceId = async (invoiceId: string): Promise<Enrollment | null> => {
+    if (!invoiceId) return null;
+    const q = query(collection(db, "enrollments"), where("invoiceId", "==", invoiceId));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        // Fallback for older data structure where enrollmentId is the access code
+        return getDocument<Enrollment>('enrollments', invoiceId);
+    }
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as Enrollment;
+};
+
 export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enrollment[]> => {
     const q = query(collection(db, "enrollments"), where("courseId", "==", courseId));
     const querySnapshot = await getDocs(q);
@@ -240,6 +252,8 @@ export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enroll
 }
 
 export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(db, 'enrollments'), enrollment);
+export const updateEnrollment = (id: string, data: Partial<Enrollment>) => updateDoc(doc(db, 'enrollments', id), data);
+
 
 // Pre-bookings
 export const addPrebooking = (prebooking: Omit<Prebooking, 'id'>) => addDoc(collection(db, 'prebookings'), prebooking);
