@@ -68,8 +68,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getOrganizations } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -290,6 +290,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [loading, setLoading] = useState(!isNewCourse);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
 
   const [courseTitle, setCourseTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -359,16 +360,18 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   useEffect(() => {
     async function fetchInitialData() {
         try {
-            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestionBank ] = await Promise.all([
+            const [ fetchedCategories, allCoursesData, allInstructorsData, fetchedQuestionBank, fetchedOrganizations ] = await Promise.all([
                 getCategories(),
                 getCourses(),
                 getInstructors(),
-                getQuestionBank()
+                getQuestionBank(),
+                getOrganizations(),
             ]);
             setAllCategories(fetchedCategories);
             setAllCourses(allCoursesData);
             setAllInstructors(allInstructorsData.filter(i => i.status === 'Approved'));
             setQuestionBank(fetchedQuestionBank);
+            setAllOrganizations(fetchedOrganizations.filter(o => o.status === 'approved'));
 
             if (!isNewCourse) {
                 const courseData = allCoursesData.find(c => c.id === courseId);
@@ -641,7 +644,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         courseData.id = courseId;
     }
     
-    if (initialStatus === 'Published' && status !== 'Published') {
+    if (initialStatus === 'Published' && status !== 'Published' && userRole !== 'Admin') {
         courseData.status = 'Published';
     }
     
@@ -655,6 +658,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       if (status === 'Pending Approval') {
           toastTitle = 'Course Submitted';
       } else if (status === 'Published') {
+          toastTitle = 'Course Published';
+      } else if (initialStatus === 'Published') {
           toastTitle = 'Course Updated';
       }
       toast({ 
@@ -774,6 +779,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   ];
 
   const isPublished = !isNewCourse && initialStatus === 'Published';
+  const instructorForSelection = userRole === 'Seller' ? allInstructors.filter(i => i.organizationId === organizationId) : allInstructors;
 
   if (loading) {
     return (
@@ -793,6 +799,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 <p className="mt-1 text-lg text-muted-foreground">
                    {isNewCourse ? 'Create a new course from scratch.' : 'Manage your course content with ease.'}
                 </p>
+                {initialStatus && <Badge className="mt-2">{initialStatus}</Badge>}
             </div>
             <div className="flex gap-2 shrink-0">
                 {userRole === 'Admin' && (
@@ -800,19 +807,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                     </Button>
                 )}
-                {isPublished && userRole === 'Admin' ? (
-                    <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
-                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Changes
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
+                </Button>
+                {userRole === 'Admin' ? (
+                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
+                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
+                        {isPublished ? 'Update Published Course' : 'Publish Course'}
                     </Button>
                 ) : (
-                    <>
-                        <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
-                        </Button>
-                        <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} Submit for Approval
-                        </Button>
-                    </>
+                    <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving || isPublished}>
+                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
+                        {isPublished ? 'Published' : 'Submit for Approval'}
+                    </Button>
                 )}
             </div>
         </div>
@@ -916,6 +923,18 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </Select>
                     </div>
                   </div>
+                  {userRole === 'Admin' && (
+                    <div className="space-y-2">
+                        <Label>Organization (Optional)</Label>
+                        <Select value={organizationId} onValueChange={setOrganizationId}>
+                            <SelectTrigger><SelectValue placeholder="Select an organization..."/></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">None (RDC Original)</SelectItem>
+                                {allOrganizations.map(org => <SelectItem key={org.id} value={org.id!}>{org.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="whatsappNumber" className="flex items-center gap-2"><Phone className="h-4 w-4"/> WhatsApp Contact Number (Optional)</Label>
                     <Input id="whatsappNumber" placeholder="e.g., 8801700000000" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} />
@@ -927,6 +946,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
             {activeTab === 'syllabus' && (
               <CardContent className="pt-6">
+                 <p className="text-sm text-muted-foreground mb-4">To assign modules to a specific cycle, please go to the 'Pricing' tab.</p>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -1097,7 +1117,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 <CommandInput placeholder="Search instructors..." />
                                 <CommandEmpty>No instructor found.</CommandEmpty>
                                 <CommandGroup>
-                                    {allInstructors.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
+                                    {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
                                         <CommandItem key={inst.id} onSelect={() => addInstructor(inst)}>
                                             <Avatar className="h-6 w-6 mr-2"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
                                             {inst.name}
