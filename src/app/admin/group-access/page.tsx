@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -125,6 +126,7 @@ export default function GroupAccessVerificationPage() {
                                     <h4 className="font-semibold text-lg flex items-center gap-2"><User /> Student Details</h4>
                                     <p><strong>Name:</strong> {verificationResult.student.name}</p>
                                     <p><strong>RDC ID:</strong> {verificationResult.student.registrationNumber || 'N/A'}</p>
+                                    <p><strong>Class Roll:</strong> {verificationResult.student.classRoll || 'N/A'}</p>
                                 </div>
                                  <div className="space-y-2">
                                     <h4 className="font-semibold text-lg flex items-center gap-2"><BookOpen /> Enrollment Details</h4>
