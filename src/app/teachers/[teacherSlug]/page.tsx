@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getInstructorBySlug, getCourses } from '@/lib/firebase/firestore';
+import { getInstructorBySlug, getCourses, getEnrollments } from '@/lib/firebase/firestore';
 import type { Course, Instructor } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -40,19 +40,22 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
         notFound();
     }
 
-    const allCourses = await getCourses();
+    const [allCourses, allEnrollments] = await Promise.all([
+        getCourses(),
+        getEnrollments()
+    ]);
+    
     const courses = allCourses.filter(c => 
         c.status === 'Published' && c.instructors?.some(i => i.slug === params.teacherSlug)
     );
+    const courseIds = courses.map(c => c.id);
+    const studentCount = new Set(allEnrollments.filter(e => courseIds.includes(e.courseId)).map(e => e.userId)).size;
+
 
     // --- Dynamic Stats Calculation ---
     const ratedCourses = courses.filter(c => c.rating && c.rating > 0);
     const totalRatingSum = ratedCourses.reduce((sum, course) => sum + (course.rating || 0), 0);
     const averageRating = ratedCourses.length > 0 ? (totalRatingSum / ratedCourses.length).toFixed(1) : "N/A";
-    
-    // Simple mock for student count to avoid heavy queries.
-    const totalReviews = courses.reduce((sum, course) => sum + (course.reviews || 0), 0);
-    const studentCount = totalReviews > 0 ? totalReviews * 10 + courses.length * 5 : 0;
 
 
     return (
@@ -123,7 +126,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                                                 fill
                                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                                 data-ai-hint="youtube video tutorial"
-                                                sizes="(max-width: 768px) 50vw, 33vw"
+                                                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                                 />
                                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <PlayCircle className="w-16 h-16 text-white/80" />
