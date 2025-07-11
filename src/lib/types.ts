@@ -315,12 +315,18 @@ export type Course = {
   subCategory?: string;
   price: string;
   discountPrice?: string;
+  whatsappNumber?: string;
+  isPrebooking?: boolean;
+  prebookingPrice?: string;
+  prebookingEndDate?: string;
+  prebookingCount?: number;
+  prebookingTarget?: number;
+  cycles?: CourseCycle[];
   status: 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
   rating?: number;
   reviews?: number;
   whatYouWillLearn?: string[];
   syllabus?: SyllabusModule[];
-  cycles?: CourseCycle[];
   features?: string[];
   imageTitle?: string;
   classRoutine?: { day: string; subject: string; time: string; id?: string; instructorName?: string; }[];
@@ -329,11 +335,6 @@ export type Course = {
   liveClasses?: LiveClass[];
   isArchived?: boolean;
   includedCourseIds?: string[];
-  isPrebooking?: boolean;
-  prebookingPrice?: string;
-  prebookingEndDate?: string;
-  prebookingCount?: number;
-  prebookingTarget?: number;
   organizationId?: string;
   organizationName?: string;
   quizTemplates?: QuizTemplate[];
@@ -346,7 +347,6 @@ export type Course = {
   isWishlisted?: boolean;
   communityUrl?: string;
   videoUrl?: string;
-  whatsappNumber?: string;
   showStudentCount?: boolean;
 };
 
