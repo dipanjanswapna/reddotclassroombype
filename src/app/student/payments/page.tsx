@@ -177,6 +177,10 @@ export default function PaymentsPage() {
 
       <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
         <DialogContent className="max-w-4xl p-0">
+            <DialogHeader className="p-6 pb-0 sr-only">
+                <DialogTitle>Invoice Details</DialogTitle>
+                <DialogDescription>A detailed view of your invoice.</DialogDescription>
+            </DialogHeader>
             <div className="max-h-[80vh] overflow-y-auto">
                 {loadingInvoice ? (
                     <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
