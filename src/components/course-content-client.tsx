@@ -43,15 +43,8 @@ export function CourseContentClient({ course }: { course: Course }) {
     fetchEnrollment();
   }, [userInfo, authLoading, course.id]);
 
-  if (loading || authLoading) {
-      return <div className="flex justify-center py-8"><LoadingSpinner /></div>;
-  }
-  
-  const courseProgress = enrollment?.progress || 0;
-  const completedLessons = enrollment?.completedLessons || [];
-  
   const isFullCourseAccess = !enrollment?.cycleId || enrollment.enrollmentType === 'full_course';
-  
+
   const accessibleModuleIds = useMemo(() => {
       if (isFullCourseAccess) {
           return new Set(course.syllabus?.map(m => m.id));
@@ -60,6 +53,13 @@ export function CourseContentClient({ course }: { course: Course }) {
       return new Set(cycle?.moduleIds || []);
   }, [isFullCourseAccess, enrollment, course]);
 
+
+  if (loading || authLoading) {
+      return <div className="flex justify-center py-8"><LoadingSpinner /></div>;
+  }
+  
+  const courseProgress = enrollment?.progress || 0;
+  const completedLessons = enrollment?.completedLessons || [];
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -152,4 +152,3 @@ export function CourseContentClient({ course }: { course: Course }) {
     </>
   );
 }
-
