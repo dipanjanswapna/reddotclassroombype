@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -27,6 +28,7 @@ import { format } from 'date-fns';
 import { Calendar, Check, ChevronsUpDown, DollarSign, Edit, GraduationCap, Loader2, User as UserIcon, Ticket, Bookmark, Eye } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { InvoiceView } from '@/components/invoice-view';
+import { useAuth } from '@/context/auth-context';
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Student: <GraduationCap className="h-4 w-4" />,
@@ -42,6 +44,7 @@ export default function ManageUserPage() {
     const params = useParams();
     const router = useRouter();
     const { toast } = useToast();
+    const { userInfo: adminInfo } = useAuth();
     const userId = params.userId as string;
 
     const [user, setUser] = useState<User | null>(null);
@@ -66,6 +69,7 @@ export default function ManageUserPage() {
     const [editingUser, setEditingUser] = useState<Partial<User>>({});
     const [selectedCourseToEnroll, setSelectedCourseToEnroll] = useState<Course | null>(null);
     const [paymentDetails, setPaymentDetails] = useState({
+      totalFee: '',
       paidAmount: '',
       paymentMethod: 'Cash',
       discount: '',
@@ -138,19 +142,24 @@ export default function ManageUserPage() {
     };
     
     const handleManualEnroll = async () => {
-        if (!user || !selectedCourseToEnroll) return;
+        if (!user || !selectedCourseToEnroll || !adminInfo) return;
         setIsSaving(true);
+        const totalFeeNum = parseFloat(paymentDetails.totalFee) || 0;
+        const paidAmountNum = parseFloat(paymentDetails.paidAmount) || 0;
+        const discountNum = parseFloat(paymentDetails.discount) || 0;
+        const dueAmountNum = totalFeeNum - paidAmountNum - discountNum;
+
         const result = await enrollInCourseAction({
             courseId: selectedCourseToEnroll.id!, 
             userId: user.uid,
             paymentDetails: {
-                totalFee: parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')),
-                paidAmount: parseFloat(paymentDetails.paidAmount) || 0,
-                dueAmount: parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')) - (parseFloat(paymentDetails.paidAmount) || 0),
+                totalFee: totalFeeNum,
+                paidAmount: paidAmountNum,
+                dueAmount: dueAmountNum,
                 paymentMethod: paymentDetails.paymentMethod,
-                discount: parseFloat(paymentDetails.discount) || 0,
+                discount: discountNum,
                 paymentDate: new Date().toISOString(),
-                recordedBy: user.uid, // Should be admin's UID from useAuth
+                recordedBy: adminInfo.uid,
             }
         });
 
@@ -159,7 +168,7 @@ export default function ManageUserPage() {
             await fetchData(); // Re-fetch
             setIsEnrollDialogOpen(false);
             setSelectedCourseToEnroll(null);
-            setPaymentDetails({ paidAmount: '', paymentMethod: 'Cash', discount: '' });
+            setPaymentDetails({ totalFee: '', paidAmount: '', paymentMethod: 'Cash', discount: '' });
         } else {
             toast({ title: "Error", description: result.message, variant: "destructive" });
         }
@@ -222,6 +231,13 @@ export default function ManageUserPage() {
             courseName: allCourses.find(c => c.id === pre.courseId)?.title || 'N/A',
         })).sort((a,b) => safeToDate(b.prebookingDate).getTime() - safeToDate(a.prebookingDate).getTime());
     }, [prebookings, allCourses]);
+    
+    const dueAmount = useMemo(() => {
+      const total = parseFloat(paymentDetails.totalFee) || 0;
+      const paid = parseFloat(paymentDetails.paidAmount) || 0;
+      const discount = parseFloat(paymentDetails.discount) || 0;
+      return (total - paid - discount).toFixed(2);
+    }, [paymentDetails.totalFee, paymentDetails.paidAmount, paymentDetails.discount]);
 
     if (loading) {
         return <div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner className="w-12 h-12 m-auto" /></div>;
@@ -346,7 +362,7 @@ export default function ManageUserPage() {
                                            return (
                                                 <TableRow key={enr.id}>
                                                     <TableCell>{course?.title || 'N/A'}</TableCell>
-                                                    <TableCell>{course?.price || 'N/A'}</TableCell>
+                                                    <TableCell>{enr.totalFee ? `৳${enr.totalFee}` : 'N/A'}</TableCell>
                                                     <TableCell>{format(safeToDate(enr.enrollmentDate), 'PPP')}</TableCell>
                                                     <TableCell>
                                                         <Button variant="outline" size="sm" onClick={() => handleViewInvoice(enr)}>
@@ -458,7 +474,10 @@ export default function ManageUserPage() {
                                     <CommandEmpty>No course found.</CommandEmpty>
                                     <CommandGroup>
                                         {allCourses.filter(c => c.status === 'Published').map(course => (
-                                            <CommandItem key={course.id} onSelect={() => setSelectedCourseToEnroll(course)}>
+                                            <CommandItem key={course.id} onSelect={() => {
+                                                setSelectedCourseToEnroll(course);
+                                                setPaymentDetails(prev => ({...prev, totalFee: course.price.replace(/[^0-9.]/g, '')}))
+                                            }}>
                                                 <Check className={selectedCourseToEnroll?.id === course.id ? 'opacity-100 mr-2' : 'opacity-0 mr-2'}/>
                                                 {course.title}
                                             </CommandItem>
@@ -475,17 +494,21 @@ export default function ManageUserPage() {
                                 <CardContent className="space-y-4">
                                      <div className="space-y-1">
                                         <Label>Total Fee</Label>
-                                        <Input value={selectedCourseToEnroll.price} disabled/>
+                                        <Input value={paymentDetails.totalFee} onChange={e => setPaymentDetails(p => ({...p, totalFee: e.target.value}))}/>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
+                                            <Label htmlFor="discount">Discount</Label>
+                                            <Input id="discount" type="number" value={paymentDetails.discount} onChange={e => setPaymentDetails(p => ({...p, discount: e.target.value}))}/>
+                                        </div>
+                                         <div className="space-y-1">
                                             <Label htmlFor="paidAmount">Paid Amount</Label>
                                             <Input id="paidAmount" type="number" value={paymentDetails.paidAmount} onChange={e => setPaymentDetails(p => ({...p, paidAmount: e.target.value}))}/>
                                         </div>
-                                         <div className="space-y-1">
-                                            <Label>Due Amount</Label>
-                                            <Input value={parseFloat(selectedCourseToEnroll.price.replace(/[^0-9.]/g, '')) - (parseFloat(paymentDetails.paidAmount) || 0)} disabled/>
-                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label>Due Amount</Label>
+                                        <Input value={dueAmount} disabled/>
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Payment Method</Label>

@@ -4,8 +4,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument } from '@/lib/firebase/firestore';
-import { Enrollment, Assignment, Exam, Invoice } from '@/lib/types';
-import { Timestamp, writeBatch, doc, collection, getDoc } from 'firebase/firestore';
+import { Enrollment, Assignment, Exam, Invoice, User } from '@/lib/types';
+import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
@@ -313,7 +313,7 @@ export async function markAsGroupAccessedAction(enrollmentId: string, adminId: s
             description: notificationDescription,
             date: Timestamp.now(),
             read: false,
-            link: enrollment.cycleId ? cycle?.communityUrl : course.communityUrl,
+            link: cycle ? cycle.communityUrl : course.communityUrl,
         });
         
         return { success: true, message: 'Student marked as added and notified.' };
