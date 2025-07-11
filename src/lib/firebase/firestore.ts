@@ -24,7 +24,7 @@ async function getCollection<T>(collectionName: string): Promise<T[]> {
 }
 
 // Generic function to fetch a document by ID
-async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
+export async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
   if (!id) return null;
   const docRef = doc(db, collectionName, id);
   const docSnap = await getDoc(docRef);

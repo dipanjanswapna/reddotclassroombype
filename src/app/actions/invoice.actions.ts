@@ -33,16 +33,16 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
                 cycleName: enrollment.cycleId ? course.cycles?.find(c => c.id === enrollment.cycleId)?.title : undefined,
             },
             paymentDetails: {
-                method: enrollment.paymentMethod!,
+                method: enrollment.paymentMethod || 'Online',
                 date: enrollment.enrollmentDate,
                 transactionId: `TRX-${enrollment.id!.slice(0,8).toUpperCase()}`, // Example transaction ID
             },
             financialSummary: {
-                totalFee: enrollment.totalFee!,
+                totalFee: enrollment.totalFee || parseFloat(course.price.replace(/[^0-9.]/g, '')),
                 discount: enrollment.discount || 0,
-                netPayable: enrollment.totalFee! - (enrollment.discount || 0),
-                amountPaid: enrollment.paidAmount!,
-                dueAmount: enrollment.dueAmount!,
+                netPayable: (enrollment.totalFee || parseFloat(course.price.replace(/[^0-9.]/g, ''))) - (enrollment.discount || 0),
+                amountPaid: enrollment.paidAmount || 0,
+                dueAmount: enrollment.dueAmount || 0,
             },
             generatedBy: enrollment.enrolledBy || 'system',
             createdAt: serverTimestamp(),
@@ -54,15 +54,4 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         console.error("Error creating invoice:", error);
         return { success: false, message: error.message };
     }
-}
-
-export async function getInvoiceByEnrollmentId(enrollmentId: string): Promise<Invoice | null> {
-    if (!enrollmentId) return null;
-    const q = query(collection(db, "invoices"), where("enrollmentId", "==", enrollmentId));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    const docSnap = querySnapshot.docs[0];
-    return { id: docSnap.id, ...docSnap.data() } as Invoice;
 }

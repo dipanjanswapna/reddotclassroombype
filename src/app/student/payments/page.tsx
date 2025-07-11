@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/context/auth-context';
-import { getCourses, getEnrollmentsByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId, getInvoiceByEnrollmentId, getDocument } from '@/lib/firebase/firestore';
 import { Course, Enrollment, Invoice } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
@@ -23,6 +23,7 @@ import { Wallet, Eye, Loader2 } from 'lucide-react';
 import { InvoiceView } from '@/components/invoice-view';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { createInvoiceAction } from '@/app/actions/invoice.actions';
 
 type Transaction = Enrollment & {
   courseName: string;
@@ -72,19 +73,32 @@ export default function PaymentsPage() {
     fetchPaymentHistory();
   }, [authLoading, userInfo, toast]);
   
-  const handleViewInvoice = async (enrollmentId: string) => {
+  const handleViewInvoice = async (enrollment: Enrollment) => {
     setLoadingInvoice(true);
     setIsInvoiceOpen(true);
     try {
-      const invoice = await getInvoiceByEnrollmentId(enrollmentId);
+      let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+      
+      // If invoice doesn't exist, create it on-the-fly
+      if (!invoice) {
+        const student = await getUser(enrollment.userId);
+        const course = await getCourse(enrollment.courseId);
+        if (student && course) {
+            const creationResult = await createInvoiceAction(enrollment, student, course);
+            if (creationResult.success && creationResult.invoiceId) {
+                invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+            }
+        }
+      }
+
       if (invoice) {
         setSelectedInvoice(invoice);
       } else {
-        toast({ title: 'Error', description: 'Invoice not found for this transaction.', variant: 'destructive' });
+        toast({ title: 'Error', description: 'Could not find or create the invoice.', variant: 'destructive' });
         setIsInvoiceOpen(false);
       }
     } catch(err) {
-      toast({ title: 'Error', description: 'Could not load the invoice.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'An error occurred while handling the invoice.', variant: 'destructive' });
       setIsInvoiceOpen(false);
     } finally {
       setLoadingInvoice(false);
@@ -135,7 +149,7 @@ export default function PaymentsPage() {
                       <Badge variant={transaction.paymentStatus === 'paid' ? 'accent' : 'warning'}>{transaction.paymentStatus || 'Paid'}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                       <Button variant="outline" size="sm" onClick={() => handleViewInvoice(transaction.id!)}><Eye className="mr-2 h-4 w-4"/> View Invoice</Button>
+                       <Button variant="outline" size="sm" onClick={() => handleViewInvoice(transaction)}><Eye className="mr-2 h-4 w-4"/> View Invoice</Button>
                     </TableCell>
                   </TableRow>
                 )) : (

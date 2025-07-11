@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking, Invoice } from '@/lib/types';
 import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
 import { saveUserAction } from '@/app/actions/user.actions';
+import { createInvoiceAction } from '@/app/actions/invoice.actions';
 import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,19 +167,29 @@ export default function ManageUserPage() {
         setIsSaving(false);
     };
 
-    const handleViewInvoice = async (enrollmentId: string) => {
+    const handleViewInvoice = async (enrollment: Enrollment) => {
         setLoadingInvoice(true);
         setIsInvoiceOpen(true);
         try {
-          const invoice = await getInvoiceByEnrollmentId(enrollmentId);
+          let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+          if (!invoice) {
+              const student = await getUser(enrollment.userId);
+              const course = await getCourse(enrollment.courseId);
+              if (student && course) {
+                  const creationResult = await createInvoiceAction(enrollment, student, course);
+                  if (creationResult.success && creationResult.invoiceId) {
+                      invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+                  }
+              }
+          }
           if (invoice) {
             setSelectedInvoice(invoice);
           } else {
-            toast({ title: 'Error', description: 'Invoice not found for this transaction.', variant: 'destructive' });
+            toast({ title: 'Error', description: 'Could not find or create the invoice.', variant: 'destructive' });
             setIsInvoiceOpen(false);
           }
         } catch(err) {
-          toast({ title: 'Error', description: 'Could not load the invoice.', variant: 'destructive' });
+          toast({ title: 'Error', description: 'An error occurred while handling the invoice.', variant: 'destructive' });
           setIsInvoiceOpen(false);
         } finally {
           setLoadingInvoice(false);
@@ -325,7 +336,7 @@ export default function ManageUserPage() {
                                                     <TableCell>{course?.price || 'N/A'}</TableCell>
                                                     <TableCell>{format(safeToDate(enr.enrollmentDate), 'PPP')}</TableCell>
                                                     <TableCell>
-                                                        <Button variant="outline" size="sm" onClick={() => handleViewInvoice(enr.id!)}>
+                                                        <Button variant="outline" size="sm" onClick={() => handleViewInvoice(enr)}>
                                                             <Eye className="mr-2 h-4 w-4"/> View
                                                         </Button>
                                                     </TableCell>
