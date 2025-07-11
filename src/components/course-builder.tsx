@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -66,7 +67,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -514,7 +515,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
     // Cycle Handlers
   const addCycle = () => setCycles(prev => [...(prev || []), { id: `cy_${Date.now()}`, title: '', description: '', price: '', order: (prev?.length || 0) + 1 }]);
-  const updateCycle = (id: string, field: keyof Omit<Course['cycles'][0], 'id'>, value: string | number) => {
+  const updateCycle = (id: string, field: keyof Omit<CourseCycle, 'id'>, value: string | number) => {
     setCycles(prev => prev?.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
   const removeCycle = (id: string) => setCycles(prev => prev?.filter(c => c.id !== id));
