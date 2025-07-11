@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
@@ -5,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2
+  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -59,6 +60,7 @@ export default function StudentLayout({
     { href: "/student/id-card", icon: Badge, label: "ID Card" },
     { href: "/student/guardian", icon: UsersIcon, label: "Guardian" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
+    { href: "/student/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
