@@ -99,7 +99,14 @@ import { useAuth } from '@/context/auth-context';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from '@/components/ui/switch';
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type LessonData = {
     id: string;
@@ -762,8 +769,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'routine', label: 'Routine', icon: Calendar },
     { id: 'liveClasses', label: 'Live Classes', icon: Video },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
-    { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const isPublished = !isNewCourse && initialStatus === 'Published';
@@ -1240,8 +1247,23 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </CardContent>
             )}
 
-            {activeTab === 'settings' && (
+            {activeTab === 'faq' && (
                 <CardContent className="pt-6 space-y-4">
+                    {faqs.map((faq, index) => (
+                         <Collapsible key={faq.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
+                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">FAQ {index + 1}</h4><div><Button variant="ghost" size="icon" onClick={() => removeFaq(faq.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
+                            <CollapsibleContent className="space-y-4">
+                                <div className="space-y-2"><Label>Question</Label><Input value={faq.question} onChange={e => updateFaq(faq.id, 'question', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Answer</Label><Textarea value={faq.answer} onChange={e => updateFaq(faq.id, 'answer', e.target.value)} rows={3}/></div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={addFaq}><PlusCircle className="mr-2"/>Add FAQ</Button>
+                </CardContent>
+            )}
+
+            {activeTab === 'settings' && (
+                <CardContent className="pt-6 space-y-6">
                     <div className="space-y-4">
                         <Label>Bundled Courses</Label>
                         <Popover>
@@ -1293,21 +1315,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </div>
                         <Switch id="archive" checked={isArchived} onCheckedChange={setIsArchived} />
                     </div>
-                </CardContent>
-            )}
-
-            {activeTab === 'faq' && (
-                <CardContent className="pt-6 space-y-4">
-                    {faqs.map((faq, index) => (
-                         <Collapsible key={faq.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
-                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">FAQ {index + 1}</h4><div><Button variant="ghost" size="icon" onClick={() => removeFaq(faq.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
-                            <CollapsibleContent className="space-y-4">
-                                <div className="space-y-2"><Label>Question</Label><Input value={faq.question} onChange={e => updateFaq(faq.id, 'question', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Answer</Label><Textarea value={faq.answer} onChange={e => updateFaq(faq.id, 'answer', e.target.value)} rows={3}/></div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addFaq}><PlusCircle className="mr-2"/>Add FAQ</Button>
                 </CardContent>
             )}
         </Card>
