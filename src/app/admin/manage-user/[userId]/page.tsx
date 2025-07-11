@@ -168,14 +168,13 @@ export default function ManageUserPage() {
     };
 
     const handleViewInvoice = async (enrollment: Enrollment) => {
-        if (!enrollment.id) return;
+        if (!enrollment.id || !user) return;
         setLoadingInvoice(true);
         setIsInvoiceOpen(true);
         try {
           let invoice = await getInvoiceByEnrollmentId(enrollment.id);
           
-          // If invoice doesn't exist, create it on-the-fly
-          if (!invoice && user) {
+          if (!invoice) {
               const course = allCourses.find(c => c.id === enrollment.courseId);
               if (course) {
                   const creationResult = await createInvoiceAction(enrollment, user, course);
@@ -505,11 +504,13 @@ export default function ManageUserPage() {
             {/* View Invoice Dialog */}
             <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
                 <DialogContent className="max-w-4xl p-0">
-                    {loadingInvoice ? (
-                        <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
-                    ) : selectedInvoice ? (
-                        <InvoiceView invoice={selectedInvoice} />
-                    ) : null}
+                   <div className="max-h-[80vh] overflow-y-auto">
+                        {loadingInvoice ? (
+                            <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+                        ) : selectedInvoice ? (
+                            <InvoiceView invoice={selectedInvoice} />
+                        ) : null}
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

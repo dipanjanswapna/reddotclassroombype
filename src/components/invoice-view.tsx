@@ -46,6 +46,8 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
             backgroundColor: '#ffffff'
         });
         
+        const imgData = canvas.toDataURL('image/png');
+        
         // A4 size in points: 595.28 x 841.89
         const pdf = new jsPDF({
             orientation: 'portrait',
@@ -170,9 +172,9 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
             <section className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
                 <h3 className="font-bold text-lg">Group Access Code:</h3>
                 <div className="flex items-center justify-center gap-2 mt-2 max-w-md mx-auto">
-                    <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.id}</p>
-                    <Button size="sm" onClick={() => handleCopy(invoice.id!)}>
-                        {copiedCode === invoice.id ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
+                    <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.enrollmentId}</p>
+                    <Button size="sm" onClick={() => handleCopy(invoice.enrollmentId)}>
+                        {copiedCode === invoice.enrollmentId ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
                         <span className="ml-2 hidden sm:inline">Copy Code</span>
                     </Button>
                 </div>
