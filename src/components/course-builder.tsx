@@ -105,6 +105,7 @@ import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { removeUndefinedValues, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Switch } from '@/components/ui/switch';
 
 
 type LessonData = {
