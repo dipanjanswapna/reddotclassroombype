@@ -1348,8 +1348,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                   <DialogTitle>Add Questions from Bank</DialogTitle>
                   <DialogDescription>Select questions to add to the exam: "{selectedExamForQB?.title}".</DialogDescription>
               </DialogHeader>
-              <div className="flex gap-2 p-4 border-b">
-                  {/* Filters for QB */}
+              <div className="flex flex-wrap gap-2 p-4 border-b">
+                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Subject" /></SelectTrigger>
+                    <SelectContent><SelectItem value="all">All Subjects</SelectItem>{[...new Set(questionBank.map(q => q.subject).filter(Boolean))] .map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
+                </Select>
+                 <Select value={qbFilters.chapter} onValueChange={(v) => setQbFilters(f => ({...f, chapter: v}))}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Chapter" /></SelectTrigger>
+                    <SelectContent><SelectItem value="all">All Chapters</SelectItem>{[...new Set(questionBank.map(q => q.chapter).filter(Boolean))] .map(c => <SelectItem key={c} value={c!}>{c}</SelectItem>)}</SelectContent>
+                </Select>
+                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[150px]"><SelectValue placeholder="Filter by Difficulty" /></SelectTrigger>
+                    <SelectContent><SelectItem value="all">All Difficulties</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
+                </Select>
               </div>
               <div className="max-h-[50vh] overflow-y-auto p-4">
                   <Table>
