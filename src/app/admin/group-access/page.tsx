@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, Search, CheckCircle, User, BookOpen, Layers3, Hash, BadgeInfo, XCircle } from 'lucide-react';
 import { verifyGroupAccessCodeAction, markAsGroupAccessedAction } from '@/app/actions/enrollment.actions';
-import { Enrollment, User as Student, Course } from '@/lib/types';
+import { Enrollment, User as Student, Course, Invoice } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
 
@@ -17,6 +17,7 @@ type VerificationResult = {
     enrollment: Enrollment;
     student: Student;
     course: Course;
+    invoice?: Invoice;
 };
 
 export default function GroupAccessVerificationPage() {
@@ -133,7 +134,7 @@ export default function GroupAccessVerificationPage() {
                                     <p><strong>Course:</strong> {verificationResult.course.title}</p>
                                     {cycle && <p><strong>Cycle:</strong> {cycle.title}</p>}
                                     <p><strong>Enrollment ID:</strong> {verificationResult.enrollment.id}</p>
-                                    <p><strong>Invoice ID:</strong> {verificationResult.enrollment.invoiceId || 'N/A'}</p>
+                                    <p><strong>ইনভয়েস নম্বর (Invoice #):</strong> {verificationResult.invoice?.invoiceNumber || 'N/A'}</p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <Button onClick={handleMarkAsAdded} disabled={isMarking || verificationResult.enrollment.isGroupAccessed}>

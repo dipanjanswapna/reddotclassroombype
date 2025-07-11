@@ -247,21 +247,29 @@ export async function verifyGroupAccessCodeAction(accessCode: string) {
         }
 
         // If invoice doesn't exist, create it.
-        if (!enrollment.invoiceId) {
-            let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
-            if (!invoice) {
-                const creationResult = await createInvoiceAction(enrollment, student, course);
-                if (creationResult.success && creationResult.invoiceId) {
-                    // Re-fetch enrollment to get the updated invoiceId
-                    enrollment = await getDocument<Enrollment>('enrollments', accessCode) ?? enrollment;
-                }
-            } else {
-                 await updateEnrollment(enrollment.id!, { invoiceId: invoice.id });
-                 enrollment.invoiceId = invoice.id;
+        let invoice = null;
+        if (enrollment.invoiceId) {
+            invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
+        }
+        
+        if (!invoice) {
+            invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+            if (invoice) {
+                await updateEnrollment(enrollment.id!, { invoiceId: invoice.id });
+                enrollment.invoiceId = invoice.id;
             }
         }
         
-        return { success: true, data: { enrollment, student, course } };
+        if (!invoice) {
+            const creationResult = await createInvoiceAction(enrollment, student, course);
+            if (creationResult.success && creationResult.invoiceId) {
+                invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+                await updateEnrollment(enrollment.id!, { invoiceId: invoice!.id });
+                enrollment.invoiceId = invoice!.id;
+            }
+        }
+        
+        return { success: true, data: { enrollment, student, course, invoice } };
 
     } catch (error: any) {
         console.error("Error verifying group access code:", error);
