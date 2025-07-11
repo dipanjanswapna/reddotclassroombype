@@ -3,6 +3,7 @@
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
+import { removeUndefinedValues } from '@/lib/utils';
 
 function generateInvoiceNumber(): string {
     const date = new Date();
@@ -14,7 +15,7 @@ function generateInvoiceNumber(): string {
 
 export async function createInvoiceAction(enrollment: Enrollment, user: User, course: Course): Promise<{ success: boolean; invoiceId?: string; message?: string }> {
     try {
-        const newInvoice: Omit<Invoice, 'id'> = {
+        const newInvoiceData: Omit<Invoice, 'id'> = {
             enrollmentId: enrollment.id!,
             userId: user.uid,
             courseId: course.id!,
@@ -48,7 +49,9 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             createdAt: Timestamp.now(),
         };
 
-        const invoiceRef = await addDoc(collection(db, 'invoices'), newInvoice);
+        const cleanInvoiceData = removeUndefinedValues(newInvoiceData);
+        
+        const invoiceRef = await addDoc(collection(db, 'invoices'), cleanInvoiceData);
         return { success: true, invoiceId: invoiceRef.id };
     } catch (error: any) {
         console.error("Error creating invoice:", error);
