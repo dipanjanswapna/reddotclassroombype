@@ -193,7 +193,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 </div>
                 <p className="text-xs text-gray-500 mt-2 px-4">বি.দ্র. উপরের গ্রুপ এক্সেস কোডটি কপি করে নিচের লিংক / বাটনে ক্লিক করে গ্রুপে তোমার মোবাইল নম্বর, ইমেইল ও গ্রুপ এক্সেস কোড সঠিকভাবে পূরণ করে জয়েন রিকুয়েস্ট দাও। তোমার জয়েন রিকুয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্। ♥️</p>
                 <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-                    <a href="https://www.facebook.com/groups/rdc.main" target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
+                    <a href={invoice.courseDetails.communityUrl || 'https://www.facebook.com/groups/rdc.main'} target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
                 </Button>
             </section>
             

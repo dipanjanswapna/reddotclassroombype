@@ -18,6 +18,11 @@ function generateInvoiceNumber(): string {
 export async function createInvoiceAction(enrollment: Enrollment, user: User, course: Course): Promise<{ success: boolean; invoiceId?: string; message?: string }> {
     try {
         const netPayable = (enrollment.totalFee || 0) - (enrollment.discount || 0);
+        const isCycleEnrollment = !!enrollment.cycleId;
+        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === enrollment.cycleId) : null;
+        
+        const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
+
 
         const newInvoiceData: Omit<Invoice, 'id'> = {
             enrollmentId: enrollment.id!,
@@ -39,7 +44,8 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             courseDetails: {
                 name: course.title,
                 type: course.type || 'Online',
-                cycleName: enrollment.cycleId ? course.cycles?.find(c => c.id === enrollment.cycleId)?.title : undefined,
+                cycleName: isCycleEnrollment ? cycle?.title : undefined,
+                communityUrl: communityUrl,
             },
             paymentDetails: {
                 method: enrollment.paymentMethod || 'Online',

@@ -300,6 +300,7 @@ export type CourseCycle = {
   description: string;
   order: number;
   moduleIds: string[]; // List of syllabus module IDs included in this cycle
+  communityUrl?: string;
 };
 
 export type Course = {
@@ -595,6 +596,7 @@ export type Invoice = {
     name: string;
     type: string;
     cycleName?: string;
+    communityUrl?: string;
   };
   paymentDetails: {
     method: string;
@@ -728,9 +730,9 @@ export type HomepageConfig = {
   };
   collaborations: {
     display: boolean;
-    title: { [key: string]: string };
+    title: { [key: string]: string },
     organizationIds: string[];
-  };
+  },
   partnersSection: {
     display: boolean;
     title: { [key: string]: string };
@@ -742,7 +744,7 @@ export type HomepageConfig = {
       href: string;
       dataAiHint: string;
     }[];
-  };
+  },
   socialMediaSection: {
     display: boolean;
     title: { [key: string]: string };
@@ -760,13 +762,13 @@ export type HomepageConfig = {
       ctaText: { [key: string]: string } | string;
       ctaUrl: string;
     }[];
-  };
+  },
   notesBanner: {
     display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     buttonText: { [key: string]: string };
-  };
+  },
   statsSection: {
     display: boolean;
     title: { [key: string]: string };
@@ -774,14 +776,14 @@ export type HomepageConfig = {
       value: string;
       label: { [key: string]: string };
     }[];
-  };
+  },
   appPromo: {
     display: boolean;
     title: { [key: string]: string };
     description: { [key: string]: string };
     googlePlayUrl: string;
     appStoreUrl: string;
-  };
+  },
   floatingWhatsApp: {
       display: boolean;
       number: string;

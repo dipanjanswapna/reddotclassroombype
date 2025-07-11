@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -31,6 +32,7 @@ import {
   Award,
   Database,
   Settings,
+  Link,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -322,6 +324,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [initialStatus, setInitialStatus] = useState<Course['status'] | null>(null);
 
   // Settings tab states
+  const [communityUrl, setCommunityUrl] = useState('');
   const [includedCourseIds, setIncludedCourseIds] = useState<string[]>([]);
   const [isArchived, setIsArchived] = useState(false);
   const [showStudentCount, setShowStudentCount] = useState(true);
@@ -395,6 +398,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         setAssignmentTemplates(courseData.assignmentTemplates?.map(a => ({...a, id: a.id || Math.random().toString() })) || []);
         setExamTemplates(courseData.examTemplates?.map(e => ({...e, id: e.id || Math.random().toString() })) || []);
         setOrganizationId(courseData.organizationId);
+        setCommunityUrl(courseData.communityUrl || '');
         setIncludedCourseIds(courseData.includedCourseIds || []);
         setIsArchived(courseData.isArchived || false);
         setShowStudentCount(courseData.showStudentCount ?? true);
@@ -636,6 +640,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         examTemplates: examTemplates.filter(e => e.title),
         status,
         organizationId: organizationId,
+        communityUrl,
         includedCourseIds,
         isArchived,
         showStudentCount,
@@ -1039,6 +1044,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
                                         </div>
                                         <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
+                                        <div className="space-y-2"><Label>Community URL</Label><Input value={cycle.communityUrl || ''} onChange={e => updateCycle(cycle.id, 'communityUrl', e.target.value)} placeholder="https://facebook.com/groups/..." /></div>
                                         <div className="space-y-2">
                                             <Label>Modules in this Cycle</Label>
                                              <Popover>
@@ -1289,6 +1295,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
             {activeTab === 'settings' && (
                 <CardContent className="pt-6 space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="communityUrl" className="flex items-center gap-2"><Link className="h-4 w-4"/> Course Community URL</Label>
+                        <Input id="communityUrl" value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." />
+                        <CardDescription>The main Facebook/Discord group link for this entire course.</CardDescription>
+                    </div>
                     <div className="space-y-4">
                         <Label>Bundled Courses</Label>
                         <Popover>
