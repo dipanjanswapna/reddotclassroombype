@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/context/auth-context';
-import { getCourses, getEnrollmentsByUserId, getInvoiceByEnrollmentId, getDocument } from '@/lib/firebase/firestore';
+import { getCourses, getEnrollmentsByUserId, getInvoiceByEnrollmentId, getDocument, getUser, getCourse } from '@/lib/firebase/firestore';
 import { Course, Enrollment, Invoice } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
@@ -80,11 +80,10 @@ export default function PaymentsPage() {
       let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
       
       // If invoice doesn't exist, create it on-the-fly
-      if (!invoice) {
-        const student = await getUser(enrollment.userId);
+      if (!invoice && userInfo) {
         const course = await getCourse(enrollment.courseId);
-        if (student && course) {
-            const creationResult = await createInvoiceAction(enrollment, student, course);
+        if (course) {
+            const creationResult = await createInvoiceAction(enrollment, userInfo, course);
             if (creationResult.success && creationResult.invoiceId) {
                 invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
             }
