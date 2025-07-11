@@ -1,11 +1,10 @@
 
 'use server';
 
-import { collection, addDoc, Timestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
-import { getOrganization } from '@/lib/firebase/firestore';
 
 function generateInvoiceNumber(): string {
     const date = new Date();

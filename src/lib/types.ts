@@ -788,8 +788,8 @@ export type HomepageConfig = {
     appStoreUrl: string;
   };
   floatingWhatsApp: {
-    display: boolean;
-    number: string;
+      display: boolean;
+      number: string;
   };
   rdcShopBanner?: {
     display: boolean;

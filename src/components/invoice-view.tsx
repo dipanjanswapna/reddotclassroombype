@@ -188,7 +188,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                     <div className="flex items-center justify-center gap-2 mt-2 max-w-md mx-auto">
                         <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.enrollmentId}</p>
                         <Button size="sm" onClick={() => handleCopy(invoice.enrollmentId)}>
-                            {copiedCode === invoice.enrollmentId ? <Check className="w-4 h-4"/> : <Copy className="w-4 w-4"/>}
+                            {copiedCode === invoice.enrollmentId ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
                             <span className="ml-2 hidden sm:inline">Copy Code</span>
                         </Button>
                     </div>
