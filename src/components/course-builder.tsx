@@ -289,12 +289,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
-  const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
   
   // All static data fetched once
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
+  const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
   const [questionBank, setQuestionBank] = useState<Question[]>([]);
 
   // Course-specific state
