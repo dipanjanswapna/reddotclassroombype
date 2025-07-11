@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Phone, MessageSquare, X, MessagesSquare } from 'lucide-react';
+import { Phone, MessageSquare, X } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -85,7 +85,7 @@ export function FloatingActionButton({ whatsappNumber }: FloatingActionButtonPro
         aria-label="Toggle support options"
       >
         <div className="transition-transform duration-300 ease-in-out" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)'}}>
-            {isOpen ? <X className="h-8 w-8 text-white" /> : <MessagesSquare className="h-8 w-8 text-white" />}
+            {isOpen ? <X className="h-8 w-8 text-white" /> : <MessageSquare className="h-8 w-8 text-white" />}
         </div>
       </Button>
     </div>
