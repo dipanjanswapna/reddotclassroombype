@@ -168,28 +168,33 @@ export default function ManageUserPage() {
     };
 
     const handleViewInvoice = async (enrollment: Enrollment) => {
+        if (!enrollment.id) return;
         setLoadingInvoice(true);
         setIsInvoiceOpen(true);
         try {
-          let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
-          if (!invoice) {
-              const student = await getUser(enrollment.userId);
-              const course = await getCourse(enrollment.courseId);
-              if (student && course) {
-                  const creationResult = await createInvoiceAction(enrollment, student, course);
+          let invoice = await getInvoiceByEnrollmentId(enrollment.id);
+          
+          // If invoice doesn't exist, create it on-the-fly
+          if (!invoice && user) {
+              const course = allCourses.find(c => c.id === enrollment.courseId);
+              if (course) {
+                  const creationResult = await createInvoiceAction(enrollment, user, course);
                   if (creationResult.success && creationResult.invoiceId) {
                       invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+                  } else {
+                      throw new Error(creationResult.message || 'Failed to create invoice.');
                   }
               }
           }
+          
           if (invoice) {
             setSelectedInvoice(invoice);
           } else {
             toast({ title: 'Error', description: 'Could not find or create the invoice.', variant: 'destructive' });
             setIsInvoiceOpen(false);
           }
-        } catch(err) {
-          toast({ title: 'Error', description: 'An error occurred while handling the invoice.', variant: 'destructive' });
+        } catch(err: any) {
+          toast({ title: 'Error', description: `An error occurred while handling the invoice: ${err.message}`, variant: 'destructive' });
           setIsInvoiceOpen(false);
         } finally {
           setLoadingInvoice(false);

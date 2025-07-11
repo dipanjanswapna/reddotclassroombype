@@ -578,7 +578,7 @@ export type Invoice = {
   userId: string;
   courseId: string;
   invoiceNumber: string;
-  invoiceDate: Timestamp;
+  invoiceDate: any; // Using any to accommodate serverTimestamp and Timestamp
   studentDetails: {
     name: string;
     rdcId: string;
@@ -605,7 +605,7 @@ export type Invoice = {
   };
   generatedBy: string; // 'system' or UID of admin
   pdfUrl?: string;
-  createdAt: Timestamp;
+  createdAt: any; // Using any to accommodate serverTimestamp and Timestamp
 };
 
 export type HomepageConfig = {
@@ -778,14 +778,14 @@ export type HomepageConfig = {
     appStoreUrl: string;
   };
   floatingWhatsApp: {
-    display: boolean;
-    number: string;
-  };
+      display: boolean;
+      number: string;
+  },
   rdcShopBanner?: {
     display: boolean;
     imageUrl: string;
     dataAiHint: string;
-  };
+  },
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;
   offlineHubHeroCarousel?: {

@@ -74,10 +74,11 @@ export default function PaymentsPage() {
   }, [authLoading, userInfo, toast]);
   
   const handleViewInvoice = async (enrollment: Enrollment) => {
+    if (!enrollment.id) return;
     setLoadingInvoice(true);
     setIsInvoiceOpen(true);
     try {
-      let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+      let invoice = await getInvoiceByEnrollmentId(enrollment.id);
       
       // If invoice doesn't exist, create it on-the-fly
       if (!invoice && userInfo) {
@@ -86,6 +87,8 @@ export default function PaymentsPage() {
             const creationResult = await createInvoiceAction(enrollment, userInfo, course);
             if (creationResult.success && creationResult.invoiceId) {
                 invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+            } else {
+                throw new Error(creationResult.message || 'Failed to create invoice.');
             }
         }
       }
@@ -96,8 +99,8 @@ export default function PaymentsPage() {
         toast({ title: 'Error', description: 'Could not find or create the invoice.', variant: 'destructive' });
         setIsInvoiceOpen(false);
       }
-    } catch(err) {
-      toast({ title: 'Error', description: 'An error occurred while handling the invoice.', variant: 'destructive' });
+    } catch(err: any) {
+      toast({ title: 'Error', description: `An error occurred while handling the invoice: ${err.message}`, variant: 'destructive' });
       setIsInvoiceOpen(false);
     } finally {
       setLoadingInvoice(false);

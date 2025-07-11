@@ -1,6 +1,6 @@
 'use server';
 
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 
@@ -19,7 +19,7 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             userId: user.uid,
             courseId: course.id!,
             invoiceNumber: generateInvoiceNumber(),
-            invoiceDate: serverTimestamp(),
+            invoiceDate: Timestamp.now(),
             studentDetails: {
                 name: user.name,
                 rdcId: user.registrationNumber || 'N/A',
@@ -45,7 +45,7 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
                 dueAmount: enrollment.dueAmount || 0,
             },
             generatedBy: enrollment.enrolledBy || 'system',
-            createdAt: serverTimestamp(),
+            createdAt: Timestamp.now(),
         };
 
         const invoiceRef = await addDoc(collection(db, 'invoices'), newInvoice);
