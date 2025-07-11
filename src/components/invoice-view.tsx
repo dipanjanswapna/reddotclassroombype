@@ -111,8 +111,8 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 <div className="flex items-center gap-4">
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
                     <div>
-                         <h1 className="font-bold text-2xl text-gray-800">RDC Classroom</h1>
-                         <p className="text-xs text-gray-500">SINCE 2018</p>
+                         <h1 className="font-bold text-2xl text-gray-800">RED DOT CLASSROOM</h1>
+                         <p className="text-xs text-gray-500">powered by prangons ecosystem</p>
                          <p className="text-xl font-semibold mt-2">Invoice</p>
                     </div>
                 </div>
