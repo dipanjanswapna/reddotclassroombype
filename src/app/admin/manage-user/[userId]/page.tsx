@@ -181,17 +181,14 @@ export default function ManageUserPage() {
         setIsInvoiceOpen(true);
         try {
           let invoice: Invoice | null = null;
-          // First, check if the enrollment document itself has an invoiceId
           if (enrollment.invoiceId) {
             invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
           }
           
-          // If not found via ID, try searching by enrollmentId
           if (!invoice) {
               invoice = await getInvoiceByEnrollmentId(enrollment.id);
           }
           
-          // If still no invoice, create one
           if (!invoice) {
               const course = await getCourse(enrollment.courseId);
               if (course) {
@@ -202,6 +199,18 @@ export default function ManageUserPage() {
                       throw new Error(creationResult.message || 'Failed to create invoice.');
                   }
               }
+          }
+
+          if (invoice && !invoice.courseDetails.communityUrl) {
+            const course = await getCourse(invoice.courseId);
+            if(course) {
+                 const isCycleEnrollment = !!invoice.courseDetails.cycleName;
+                 const cycle = isCycleEnrollment ? course.cycles?.find(c => c.title === invoice.courseDetails.cycleName) : null;
+                 const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
+                 if (communityUrl) {
+                     invoice.courseDetails.communityUrl = communityUrl;
+                 }
+            }
           }
           
           if (invoice) {
