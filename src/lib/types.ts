@@ -498,11 +498,11 @@ export type FreeClass = {
 
 export type OfflineHubContactSection = {
   display: boolean;
-  title: { bn: string; en: string };
-  subtitle: { bn: string; en: string };
-  callButtonText: { bn: string; en: string };
+  title: { [key: string]: string };
+  subtitle: { [key: string]: string };
+  callButtonText: { [key: string]: string };
   callButtonNumber: string;
-  whatsappButtonText: { bn: string; en: string };
+  whatsappButtonText: { [key: string]: string };
   whatsappNumber: string;
 };
 

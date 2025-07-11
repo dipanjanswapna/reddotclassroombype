@@ -32,7 +32,7 @@ import {
   Award,
   Database,
   Settings,
-  Link,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1296,7 +1296,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             {activeTab === 'settings' && (
                 <CardContent className="pt-6 space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="communityUrl" className="flex items-center gap-2"><Link className="h-4 w-4"/> Course Community URL</Label>
+                        <Label htmlFor="communityUrl" className="flex items-center gap-2"><LinkIcon className="h-4 w-4"/> Course Community URL</Label>
                         <Input id="communityUrl" value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." />
                         <CardDescription>The main Facebook/Discord group link for this entire course.</CardDescription>
                     </div>
