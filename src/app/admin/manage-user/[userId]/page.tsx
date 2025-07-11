@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking, Invoice } from '@/lib/types';
 import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
