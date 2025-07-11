@@ -182,20 +182,22 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 </div>
             </section>
 
-            <section className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-bold text-lg">Group Access Code:</h3>
-                <div className="flex items-center justify-center gap-2 mt-2 max-w-md mx-auto">
-                    <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.enrollmentId}</p>
-                    <Button size="sm" onClick={() => handleCopy(invoice.enrollmentId)}>
-                        {copiedCode === invoice.enrollmentId ? <Check className="w-4 h-4"/> : <Copy className="w-4 w-4"/>}
-                        <span className="ml-2 hidden sm:inline">Copy Code</span>
+            {invoice.courseDetails.communityUrl && (
+                <section className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
+                    <h3 className="font-bold text-lg">Group Access Code:</h3>
+                    <div className="flex items-center justify-center gap-2 mt-2 max-w-md mx-auto">
+                        <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.enrollmentId}</p>
+                        <Button size="sm" onClick={() => handleCopy(invoice.enrollmentId)}>
+                            {copiedCode === invoice.enrollmentId ? <Check className="w-4 h-4"/> : <Copy className="w-4 w-4"/>}
+                            <span className="ml-2 hidden sm:inline">Copy Code</span>
+                        </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 px-4">বি.দ্র. উপরের গ্রুপ এক্সেস কোডটি কপি করে নিচের লিংক / বাটনে ক্লিক করে গ্রুপে তোমার মোবাইল নম্বর, ইমেইল ও গ্রুপ এক্সেস কোড সঠিকভাবে পূরণ করে জয়েন রিকুয়েস্ট দাও। তোমার জয়েন রিকুয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্। ♥️</p>
+                    <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
+                        <a href={invoice.courseDetails.communityUrl} target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
                     </Button>
-                </div>
-                <p className="text-xs text-gray-500 mt-2 px-4">বি.দ্র. উপরের গ্রুপ এক্সেস কোডটি কপি করে নিচের লিংক / বাটনে ক্লিক করে গ্রুপে তোমার মোবাইল নম্বর, ইমেইল ও গ্রুপ এক্সেস কোড সঠিকভাবে পূরণ করে জয়েন রিকুয়েস্ট দাও। তোমার জয়েন রিকুয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্। ♥️</p>
-                <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-                    <a href={invoice.courseDetails.communityUrl || 'https://www.facebook.com/groups/rdc.main'} target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
-                </Button>
-            </section>
+                </section>
+            )}
             
             <footer className="mt-12 pt-6 border-t text-center text-xs text-gray-500">
                  <p>This is a digital invoice. You can find this on rdc.vercel.app/student/payments</p>

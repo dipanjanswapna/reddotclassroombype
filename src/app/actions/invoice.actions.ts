@@ -21,6 +21,9 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         const isCycleEnrollment = !!enrollment.cycleId;
         const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === enrollment.cycleId) : null;
         
+        // Determine the correct community URL
+        // 1. Check for a cycle-specific URL first.
+        // 2. If not found or not a cycle enrollment, use the main course community URL.
         const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
 
 
@@ -29,9 +32,9 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             userId: user.uid,
             courseId: course.id!,
             invoiceNumber: generateInvoiceNumber(),
-            invoiceDate: enrollment.enrollmentDate, // Use enrollment date for consistency
             status: 'VALID',
             coupon: enrollment.discount ? 'DISCOUNT' : undefined,
+            invoiceDate: enrollment.enrollmentDate, // Use enrollment date for consistency
             studentDetails: {
                 name: user.name,
                 rdcId: user.registrationNumber || 'N/A',
