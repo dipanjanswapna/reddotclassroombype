@@ -95,7 +95,12 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             courseId,
             enrollmentDate: Timestamp.now(),
             progress: 0,
-            status: 'in-progress'
+            status: 'in-progress',
+            enrollmentType: isCycleEnrollment ? 'cycle' : 'full_course',
+            ...(isCycleEnrollment && { cycleId: cycleId }),
+            accessGranted: {
+                moduleIds: isCycleEnrollment ? cycle?.moduleIds : course.syllabus?.map(m => m.id) || []
+            }
         };
 
         if (paymentDetails) {
@@ -111,6 +116,13 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             enrollmentData.paidAmount = enrollmentData.totalFee;
             enrollmentData.dueAmount = 0;
             enrollmentData.paymentStatus = 'paid';
+        } else {
+            // Full course enrollment without manual payment details (e.g., via social login)
+            const price = parseFloat(course.price?.replace(/[^0-9.]/g, '')) || 0;
+            enrollmentData.totalFee = price;
+            enrollmentData.paidAmount = price;
+            enrollmentData.dueAmount = 0;
+            enrollmentData.paymentStatus = 'paid';
         }
         
         batch.set(mainEnrollmentRef, enrollmentData);
@@ -124,7 +136,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                     courseId: bundledCourseId,
                     enrollmentDate: Timestamp.now(),
                     progress: 100, // Mark as completed
-                    status: 'completed'
+                    status: 'completed',
+                    enrollmentType: 'full_course',
                 };
                 batch.set(bundledEnrollmentRef, bundledEnrollmentData);
             }

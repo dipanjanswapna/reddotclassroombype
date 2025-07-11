@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,12 +10,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { CheckCircle, PlayCircle, FileText, HelpCircle } from 'lucide-react';
+import { CheckCircle, PlayCircle, FileText, HelpCircle, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/context/auth-context';
 import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
-import { Course, Enrollment } from '@/lib/types';
+import { Course, Enrollment, SyllabusModule } from '@/lib/types';
 import { LoadingSpinner } from './loading-spinner';
 
 export function CourseContentClient({ course }: { course: Course }) {
@@ -47,6 +48,9 @@ export function CourseContentClient({ course }: { course: Course }) {
   
   const courseProgress = enrollment?.progress || 0;
   const completedLessons = enrollment?.completedLessons || [];
+  
+  const accessibleModuleIds = new Set(enrollment?.accessGranted?.moduleIds || []);
+  const isFullCourseAccess = enrollment?.enrollmentType === 'full_course' || !course.cycles || course.cycles.length === 0;
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -61,6 +65,8 @@ export function CourseContentClient({ course }: { course: Course }) {
     }
   };
 
+  const visibleSyllabus = course.syllabus?.filter(module => isFullCourseAccess || accessibleModuleIds.has(module.id));
+
   return (
     <>
       <div className="space-y-2">
@@ -73,13 +79,13 @@ export function CourseContentClient({ course }: { course: Course }) {
 
       <div>
         <h2 className="font-headline text-2xl font-bold mb-4">Course Content</h2>
-        {!course.syllabus || course.syllabus.length === 0 ? (
+        {!visibleSyllabus || visibleSyllabus.length === 0 ? (
           <div className="text-center py-16 bg-muted rounded-lg">
-            <p className="text-muted-foreground">No syllabus found for this course.</p>
+            <p className="text-muted-foreground">You do not have access to any content in this course.</p>
           </div>
         ) : (
-          <Accordion type="multiple" defaultValue={course.syllabus.map(m => m.id)} className="w-full space-y-2">
-            {course.syllabus.map((module) => (
+          <Accordion type="multiple" defaultValue={visibleSyllabus.map(m => m.id)} className="w-full space-y-2">
+            {visibleSyllabus.map((module) => (
               <AccordionItem value={module.id} key={module.id} className="border rounded-lg bg-card overflow-hidden">
                 <AccordionTrigger className="text-lg font-semibold px-6 py-4 hover:no-underline bg-muted/50">
                   <div className="flex flex-col text-left">
@@ -123,6 +129,15 @@ export function CourseContentClient({ course }: { course: Course }) {
               </AccordionItem>
             ))}
           </Accordion>
+        )}
+        
+        {!isFullCourseAccess && (
+             <div className="text-center py-8 mt-4 rounded-lg bg-muted/50">
+                <Lock className="w-8 h-8 mx-auto text-muted-foreground mb-2"/>
+                <p className="font-semibold">Some modules are locked.</p>
+                <p className="text-sm text-muted-foreground">Enroll in other cycles or the full course to unlock all content.</p>
+                <Button asChild variant="link" size="sm"><Link href={`/courses/${course.id}#cycles`}>View All Cycles</Link></Button>
+            </div>
         )}
       </div>
     </>

@@ -64,7 +64,6 @@ export type SyllabusModule = {
   id: string;
   title: string;
   lessons: Lesson[];
-  cycleId?: string; // Link to a specific course cycle
 };
 
 export type Review = {
@@ -300,6 +299,7 @@ export type CourseCycle = {
   price: string;
   description: string;
   order: number;
+  moduleIds: string[]; // List of syllabus module IDs included in this cycle
 };
 
 export type Course = {
@@ -460,6 +460,11 @@ export type Enrollment = {
   discount?: number;
   enrolledBy?: string; // UID of admin/staff who enrolled
   paymentStatus?: 'paid' | 'due' | 'partial';
+  enrollmentType?: 'full_course' | 'cycle';
+  cycleId?: string;
+  accessGranted?: {
+      moduleIds?: string[];
+  }
 };
 
 export type PlatformRoleSettings = {
