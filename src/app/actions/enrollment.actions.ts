@@ -106,7 +106,13 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             enrollmentData.discount = paymentDetails.discount;
             enrollmentData.enrolledBy = paymentDetails.recordedBy;
             enrollmentData.paymentStatus = paymentDetails.dueAmount > 0 ? 'partial' : 'paid';
+        } else if (isCycleEnrollment && cycle) {
+            enrollmentData.totalFee = parseFloat(cycle.price.replace(/[^0-9.]/g, '')) || 0;
+            enrollmentData.paidAmount = enrollmentData.totalFee;
+            enrollmentData.dueAmount = 0;
+            enrollmentData.paymentStatus = 'paid';
         }
+        
         batch.set(mainEnrollmentRef, enrollmentData);
         
         // 2. Create enrollments for bundled courses only if it's a full course purchase

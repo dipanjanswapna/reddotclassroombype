@@ -105,7 +105,7 @@ export default async function CourseDetailPage({
     ? allCourses.filter(c => course.includedCourseIds?.includes(c.id!))
     : [];
 
-  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
+  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
 

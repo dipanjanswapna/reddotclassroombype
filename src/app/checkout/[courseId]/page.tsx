@@ -109,7 +109,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction({ courseId: course.id!, userId: userInfo.uid });
+    const result = await enrollInCourseAction({ courseId: course.id!, userId: userInfo.uid, cycleId: cycleId || undefined });
 
     if (result.success) {
         toast({
@@ -145,7 +145,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const selectedCycle = cycleId ? course.cycles?.find(c => c.id === cycleId) : null;
   const itemTitle = selectedCycle ? `${course.title} - ${selectedCycle.title}` : course.title;
   
-  const listPrice = parseFloat((selectedCycle ? selectedCycle.price : course.price).replace(/[^0-9.]/g, ''));
+  const listPrice = parseFloat((selectedCycle ? selectedCycle.price : course.price)?.replace(/[^0-9.]/g, '') || '0');
   
   const effectivePrice = parseFloat(
       (selectedCycle 
