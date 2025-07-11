@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -108,8 +109,8 @@ export default async function OfflineHubPage() {
                     ))}
                   </ul>
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg">
-                      <Link href={`/checkout/${program.id}`}>ভর্তি হোন</Link>
+                    <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
+                      <Link href={`/checkout/${program.id}`}>Enroll Now</Link>
                     </Button>
                     <Button asChild variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
                       <Link href={`/courses/${program.id}`}>আরো বিস্তারিত জানুন</Link>

@@ -104,7 +104,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
         if (isOfflineCourse) {
              return (
                 <Button size={size} className="w-full font-bold" asChild>
-                    <Link href={`/courses/${courseId}`}>View Details</Link>
+                    <Link href={`/courses/${courseId}`}>Enroll Now</Link>
                 </Button>
             );
         }
@@ -146,7 +146,7 @@ export function CourseEnrollmentButton({ courseId, isPrebookingActive, checkoutU
     if (isOfflineCourse) {
         return (
             <Button size={size} className="w-full font-bold" asChild>
-                <Link href={`/courses/${courseId}`}>View Details</Link>
+                <Link href={`/courses/${courseId}`}>Enroll Now</Link>
             </Button>
         );
     }
