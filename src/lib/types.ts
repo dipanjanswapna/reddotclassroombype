@@ -578,6 +578,8 @@ export type Invoice = {
   userId: string;
   courseId: string;
   invoiceNumber: string;
+  status: 'VALID' | 'CANCELLED';
+  coupon?: string;
   invoiceDate: any; // Using any to accommodate serverTimestamp and Timestamp
   studentDetails: {
     name: string;
@@ -585,6 +587,8 @@ export type Invoice = {
     phone: string;
     email: string;
     guardianName?: string;
+    className?: string;
+    nai?: string; // Not Applicable Information / Other
   };
   courseDetails: {
     name: string;

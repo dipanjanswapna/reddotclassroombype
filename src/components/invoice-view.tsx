@@ -1,9 +1,10 @@
+
 'use client';
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/button';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, Copy, Check, Mail, Globe, Facebook, Printer } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -22,6 +23,14 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    toast({ title: 'Code Copied!' });
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
 
   const handleDownload = async () => {
     const element = printAreaRef.current;
@@ -32,17 +41,16 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 2, // Use a scale of 2 for better resolution
+            scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff'
         });
         
         const imgData = canvas.toDataURL('image/png');
-        
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'px',
-            format: [canvas.width, canvas.height] // Set PDF size to canvas size
+            format: [canvas.width, canvas.height]
         });
         
         pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
@@ -57,93 +65,86 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
   };
 
   return (
-    <div className={`flex flex-col items-center gap-6 ${className}`}>
-        <div ref={printAreaRef} className="bg-white p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border">
-            <header className="flex justify-between items-start pb-6 border-b">
-                <div className="w-1/2">
-                    <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto mb-4" />
-                    <h1 className="font-bold text-lg">RED DOT CLASSROOM</h1>
-                    <p className="text-xs text-gray-500">PRANGONS ECOSYSTEM</p>
-                    <p className="text-xs text-gray-500">Dhaka, Bangladesh</p>
-                    <p className="text-xs text-gray-500">support@reddotclassroom.com</p>
+    <div className={`flex flex-col items-center gap-6 p-4 bg-gray-100 dark:bg-gray-900 ${className}`}>
+        <div ref={printAreaRef} className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border">
+            <header className="flex flex-col sm:flex-row justify-between items-start pb-6 gap-4">
+                <div className="flex items-center gap-4">
+                    <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
+                    <div>
+                         <h1 className="font-bold text-2xl text-gray-800">RDC Classroom</h1>
+                         <p className="text-xs text-gray-500">SINCE 2018</p>
+                         <p className="text-xl font-semibold mt-2">Invoice</p>
+                    </div>
                 </div>
-                <div className="text-right w-1/2">
-                    <h2 className="text-3xl font-bold text-gray-400 uppercase">Invoice</h2>
-                    <p className="text-sm mt-2"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
-                    <p className="text-sm"><strong>Date:</strong> {format(safeToDate(invoice.invoiceDate), 'PPP')}</p>
+                <div className="text-right w-full sm:w-auto">
+                    <Image src="https://placehold.co/120x120.png?text=QR" alt="QR Code" width={120} height={120} data-ai-hint="qr code"/>
                 </div>
             </header>
 
-            <section className="grid grid-cols-2 gap-8 mt-6">
+            <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-4 border-y">
                 <div>
-                    <h3 className="font-semibold text-gray-500 uppercase text-sm mb-2">Bill To</h3>
+                    <p className="text-sm"><strong>Date:</strong> {format(safeToDate(invoice.invoiceDate), 'yyyy-MM-dd HH:mm:ss')}</p>
+                    <p className="text-sm mt-4"><strong>Invoiced To:</strong></p>
                     <p className="font-bold">{invoice.studentDetails.name}</p>
-                    <p className="text-sm">{invoice.studentDetails.rdcId}</p>
-                    <p className="text-sm">{invoice.studentDetails.email}</p>
                     <p className="text-sm">{invoice.studentDetails.phone}</p>
+                    <p className="text-sm">{invoice.studentDetails.email}</p>
+                    <p className="text-sm">{invoice.studentDetails.className}</p>
+                    <p className="text-sm">{invoice.studentDetails.nai}</p>
                 </div>
-                <div className="text-right">
-                    <h3 className="font-semibold text-gray-500 uppercase text-sm mb-2">Payment Details</h3>
-                    <p className="text-sm"><strong>Method:</strong> {invoice.paymentDetails.method}</p>
-                    <p className="text-sm"><strong>Transaction ID:</strong> {invoice.paymentDetails.transactionId}</p>
+                <div className="sm:text-right">
+                    <p className="text-sm"><strong>Status:</strong> <span className="font-semibold text-green-600 uppercase">{invoice.status}</span></p>
+                    <p className="text-sm mt-4"><strong>Paid To:</strong></p>
+                    <p className="font-bold">RDC Classroom</p>
+                    <p className="text-sm">Mirpur DOHS, Dhaka, Bangladesh</p>
+                    <div className="mt-2 text-sm space-y-1">
+                        <p className="flex items-center justify-start sm:justify-end gap-2"><Mail className="h-4 w-4"/> support@reddotclassroom.com</p>
+                        <p className="flex items-center justify-start sm:justify-end gap-2"><Globe className="h-4 w-4"/> rdc.vercel.app</p>
+                        <p className="flex items-center justify-start sm:justify-end gap-2"><Facebook className="h-4 w-4"/> RDC Students Group</p>
+                    </div>
                 </div>
             </section>
             
-            <section className="mt-8">
-                <table className="w-full text-left">
+            <section className="mt-6">
+                <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="p-2 font-semibold">Description</th>
-                            <th className="p-2 font-semibold text-right">Amount</th>
+                            <th className="p-2 font-semibold uppercase">Course</th>
+                            <th className="p-2 font-semibold uppercase">Cycle</th>
+                            <th className="p-2 font-semibold uppercase">Gateway</th>
+                            <th className="p-2 font-semibold uppercase">Coupon</th>
+                            <th className="p-2 font-semibold uppercase text-right">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr className="border-b">
-                            <td className="p-2">
-                                <p className="font-medium">{invoice.courseDetails.name}</p>
-                                <p className="text-xs text-gray-500">
-                                    {invoice.courseDetails.type} Course
-                                    {invoice.courseDetails.cycleName && ` - ${invoice.courseDetails.cycleName}`}
-                                </p>
-                            </td>
-                            <td className="p-2 text-right">BDT {invoice.financialSummary.totalFee.toFixed(2)}</td>
+                            <td className="p-2">{invoice.courseDetails.name}</td>
+                            <td className="p-2">{invoice.courseDetails.cycleName || "N/A"}</td>
+                            <td className="p-2">{invoice.paymentDetails.method}</td>
+                            <td className="p-2">{invoice.coupon || 'N/A'}</td>
+                            <td className="p-2 text-right font-semibold">BDT {invoice.financialSummary.netPayable.toFixed(2)}</td>
                         </tr>
                     </tbody>
                 </table>
             </section>
-            
-            <section className="mt-6 flex justify-end">
-                <div className="w-full max-w-xs space-y-2">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Subtotal:</span>
-                        <span>BDT {invoice.financialSummary.totalFee.toFixed(2)}</span>
-                    </div>
-                    {invoice.financialSummary.discount > 0 && (
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Discount:</span>
-                            <span>- BDT {invoice.financialSummary.discount.toFixed(2)}</span>
-                        </div>
-                    )}
-                    <Separator />
-                    <div className="flex justify-between font-bold">
-                        <span>Net Payable:</span>
-                        <span>BDT {invoice.financialSummary.netPayable.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-green-600">
-                        <span>Amount Paid:</span>
-                        <span>BDT {invoice.financialSummary.amountPaid.toFixed(2)}</span>
-                    </div>
-                    <Separator className="my-2"/>
-                     <div className="flex justify-between font-bold text-xl bg-gray-100 p-2 rounded-md">
-                        <span>Due Amount:</span>
-                        <span className={invoice.financialSummary.dueAmount > 0 ? 'text-red-600' : ''}>BDT {invoice.financialSummary.dueAmount.toFixed(2)}</span>
-                    </div>
+
+            <section className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
+                <h3 className="font-bold text-lg">Group Access Code:</h3>
+                <div className="flex items-center justify-center gap-2 mt-2 max-w-md mx-auto">
+                    <p className="font-mono text-lg bg-gray-200 px-4 py-2 rounded-md flex-grow text-center">{invoice.id}</p>
+                    <Button size="sm" onClick={() => handleCopy(invoice.id!)}>
+                        {copiedCode === invoice.id ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
+                        <span className="ml-2 hidden sm:inline">Copy Code</span>
+                    </Button>
                 </div>
+                <p className="text-xs text-gray-500 mt-2 px-4">বি.দ্র. উপরের গ্রুপ এক্সেস কোডটি কপি করে নিচের লিংক / বাটনে ক্লিক করে গ্রুপে তোমার মোবাইল নম্বর, ইমেইল ও গ্রুপ এক্সেস কোড সঠিকভাবে পূরণ করে জয়েন রিকুয়েস্ট দাও। তোমার জয়েন রিকুয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্। ♥️</p>
+                <Button variant="outline" asChild className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
+                    <a href="#" target="_blank" rel="noopener noreferrer"><Facebook className="mr-2 h-4 w-4"/> Join Secret Group</a>
+                </Button>
+                <p className="text-sm font-semibold text-blue-600 mt-2"><a href="#" target="_blank" rel="noopener noreferrer">https://www.facebook.com/groups/rdc.main</a></p>
             </section>
             
-            <footer className="mt-12 pt-6 border-t text-center">
-                 <p className="text-sm text-gray-600">Thank you for choosing Red Dot Classroom!</p>
-                 <p className="text-xs text-gray-400 mt-1">This is a computer-generated invoice and does not require a signature.</p>
+            <footer className="mt-12 pt-6 border-t text-center text-xs text-gray-500">
+                 <p>This is a digital invoice. You can find this on rdc.vercel.app/student/payments</p>
             </footer>
         </div>
         
@@ -154,7 +155,11 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                 ) : (
                     <Download className="mr-2 h-4 w-4" />
                 )}
-                Download as PDF
+                Download
+            </Button>
+             <Button variant="outline" onClick={() => window.print()}>
+                <Printer className="mr-2 h-4 w-4" />
+                Print
             </Button>
         </div>
     </div>

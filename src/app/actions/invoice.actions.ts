@@ -1,3 +1,4 @@
+
 'use server';
 
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
@@ -21,12 +22,15 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             courseId: course.id!,
             invoiceNumber: generateInvoiceNumber(),
             invoiceDate: Timestamp.now(),
+            status: 'VALID',
             studentDetails: {
                 name: user.name,
                 rdcId: user.registrationNumber || 'N/A',
                 phone: user.mobileNumber || 'N/A',
                 email: user.email,
                 guardianName: user.fathersName || 'N/A',
+                className: user.className || 'N/A',
+                nai: user.nidNumber || 'N/A',
             },
             courseDetails: {
                 name: course.title,
@@ -39,9 +43,9 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
                 transactionId: `TRX-${enrollment.id!.slice(0,8).toUpperCase()}`, // Example transaction ID
             },
             financialSummary: {
-                totalFee: enrollment.totalFee || parseFloat(course.price.replace(/[^0-9.]/g, '')),
+                totalFee: enrollment.totalFee || parseFloat(course.price?.replace(/[^0-9.]/g, '') || '0'),
                 discount: enrollment.discount || 0,
-                netPayable: (enrollment.totalFee || parseFloat(course.price.replace(/[^0-9.]/g, ''))) - (enrollment.discount || 0),
+                netPayable: (enrollment.totalFee || parseFloat(course.price?.replace(/[^0-9.]/g, '') || '0')) - (enrollment.discount || 0),
                 amountPaid: enrollment.paidAmount || 0,
                 dueAmount: enrollment.dueAmount || 0,
             },
