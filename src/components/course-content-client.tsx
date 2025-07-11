@@ -17,6 +17,7 @@ import { useAuth } from '@/context/auth-context';
 import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { Course, Enrollment, SyllabusModule } from '@/lib/types';
 import { LoadingSpinner } from './loading-spinner';
+import { Button } from './ui/button';
 
 export function CourseContentClient({ course }: { course: Course }) {
   const { userInfo, loading: authLoading } = useAuth();
@@ -49,8 +50,16 @@ export function CourseContentClient({ course }: { course: Course }) {
   const courseProgress = enrollment?.progress || 0;
   const completedLessons = enrollment?.completedLessons || [];
   
-  const accessibleModuleIds = new Set(enrollment?.accessGranted?.moduleIds || []);
-  const isFullCourseAccess = enrollment?.enrollmentType === 'full_course' || !course.cycles || course.cycles.length === 0;
+  const isFullCourseAccess = !enrollment?.cycleId || enrollment.enrollmentType === 'full_course';
+  
+  const accessibleModuleIds = useMemo(() => {
+      if (isFullCourseAccess) {
+          return new Set(course.syllabus?.map(m => m.id));
+      }
+      const cycle = course.cycles?.find(c => c.id === enrollment?.cycleId);
+      return new Set(cycle?.moduleIds || []);
+  }, [isFullCourseAccess, enrollment, course]);
+
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -65,7 +74,7 @@ export function CourseContentClient({ course }: { course: Course }) {
     }
   };
 
-  const visibleSyllabus = course.syllabus?.filter(module => isFullCourseAccess || accessibleModuleIds.has(module.id));
+  const visibleSyllabus = course.syllabus?.filter(module => accessibleModuleIds.has(module.id));
 
   return (
     <>
