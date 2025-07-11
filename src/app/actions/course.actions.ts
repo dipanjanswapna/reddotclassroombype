@@ -5,7 +5,7 @@
 import { revalidatePath } from 'next/cache';
 import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch, getDoc } from 'firebase/firestore';
 import { 
-    deleteCourse, 
+    deleteCourse as deleteCourseFromDb, 
     getCourse, 
     getPrebookingsByCourseId, 
     addPromoCode, 
@@ -71,45 +71,7 @@ export async function saveCourseAction(courseData: Partial<Course>) {
 
 export async function deleteCourseAction(id: string) {
     try {
-        const batch = writeBatch(db);
-
-        // 1. Delete course document
-        const courseRef = doc(db, 'courses', id);
-        batch.delete(courseRef);
-
-        // 2. Delete enrollments for this course
-        const enrollments = await getEnrollmentsByCourseId(id);
-        enrollments.forEach(enrollment => {
-            const enrollmentRef = doc(db, 'enrollments', enrollment.id!);
-            batch.delete(enrollmentRef);
-        });
-        
-        // 3. Delete prebookings for this course
-        const prebookings = await getPrebookingsByCourseId(id);
-        prebookings.forEach(prebooking => {
-            const prebookingRef = doc(db, 'prebookings', prebooking.id!);
-            batch.delete(prebookingRef);
-        });
-        
-        // 4. Update or delete relevant promo codes
-        const promoCodes = await getPromoCodes();
-        promoCodes.forEach(promo => {
-            if (promo.applicableCourseIds.includes(id)) {
-                if (promo.applicableCourseIds.length === 1) {
-                    // Delete promo if it only applies to this course
-                    const promoRef = doc(db, 'promo_codes', promo.id!);
-                    batch.delete(promoRef);
-                } else {
-                    // Otherwise, just remove this courseId from the list
-                    const updatedApplicableIds = promo.applicableCourseIds.filter(courseId => courseId !== id);
-                    const promoRef = doc(db, 'promo_codes', promo.id!);
-                    batch.update(promoRef, { applicableCourseIds: updatedApplicableIds });
-                }
-            }
-        });
-
-        await batch.commit();
-
+        await deleteCourseFromDb(id);
         revalidatePath('/admin/courses');
         revalidatePath('/teacher/courses');
         revalidatePath('/seller/courses');

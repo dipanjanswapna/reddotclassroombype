@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,6 +37,28 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
 
   const numbersMissing = !!userInfo && (!userInfo.mobileNumber || !userInfo.guardianMobileNumber);
 
+  const handleApplyPromo = useCallback(async (codeToApply?: string) => {
+    const code = codeToApply || promoCode;
+    if (!code) return;
+
+    setError('');
+    setPromoLoading(true);
+    
+    const result = await applyPromoCodeAction(params.courseId, code, userInfo?.uid);
+
+    if (result.success) {
+      setDiscount(result.discount!);
+      if (!codeToApply) {
+        toast({ title: 'Success!', description: result.message });
+      }
+    } else {
+      setError(result.message);
+      setDiscount(0);
+    }
+    setPromoLoading(false);
+  }, [params.courseId, promoCode, toast, userInfo?.uid]);
+
+
   useEffect(() => {
     async function fetchCourse() {
         try {
@@ -55,27 +78,6 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     fetchCourse();
   }, [params.courseId]);
 
-  const handleApplyPromo = async (codeToApply?: string) => {
-    const code = codeToApply || promoCode;
-    if (!code) return;
-
-    setError('');
-    setPromoLoading(true);
-    
-    const result = await applyPromoCodeAction(params.courseId, code, userInfo?.uid);
-
-    if (result.success) {
-      setDiscount(result.discount!);
-      if (!codeToApply) {
-        toast({ title: 'Success!', description: result.message });
-      }
-    } else {
-      setError(result.message);
-      setDiscount(0);
-    }
-    setPromoLoading(false);
-  };
-
   useEffect(() => {
     if (userInfo && course) {
       const checkForPrebookPromo = async () => {
@@ -91,7 +93,7 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
       }
       checkForPrebookPromo();
     }
-  }, [userInfo, course]);
+  }, [userInfo, course, handleApplyPromo, toast]);
 
   
   const handlePayment = async () => {
@@ -138,7 +140,9 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
   }
 
   const isPrebooking = course.isPrebooking && course.prebookingEndDate && safeToDate(course.prebookingEndDate) > new Date();
-  const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
+  const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
+  
+  const originalPrice = parseFloat((isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!.replace(/[^0-9.]/g, ''));
   const finalPrice = originalPrice - discount;
 
   return (

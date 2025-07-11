@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -39,26 +40,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   
   const numbersMissing = !!userInfo && (!userInfo.mobileNumber || !userInfo.guardianMobileNumber);
 
-  useEffect(() => {
-    async function fetchCourse() {
-        try {
-            const courseData = await getCourse(params.courseId);
-            if (courseData) {
-                setCourse(courseData);
-            } else {
-                notFound();
-            }
-        } catch(e) {
-            console.error(e);
-            notFound();
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchCourse();
-  }, [params.courseId]);
-
-  const handleApplyPromo = async (codeToApply?: string) => {
+  const handleApplyPromo = useCallback(async (codeToApply?: string) => {
     const code = codeToApply || promoCode;
     if (!code) return;
 
@@ -77,7 +59,26 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
       setDiscount(0);
     }
     setPromoLoading(false);
-  };
+  }, [params.courseId, promoCode, toast, userInfo?.uid]);
+
+  useEffect(() => {
+    async function fetchCourse() {
+        try {
+            const courseData = await getCourse(params.courseId);
+            if (courseData) {
+                setCourse(courseData);
+            } else {
+                notFound();
+            }
+        } catch(e) {
+            console.error(e);
+            notFound();
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCourse();
+  }, [params.courseId]);
   
   useEffect(() => {
     if (userInfo && course && !cycleId) {
@@ -94,8 +95,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
       }
       checkForPrebookPromo();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo, course, cycleId]);
+  }, [userInfo, course, cycleId, handleApplyPromo, toast]);
 
 
   const handlePayment = async () => {

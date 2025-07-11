@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -21,7 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Facebook, Upload, AlertTriangle, Phone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { updateUser } from "@/lib/firebase/firestore";
+import { saveUserAction } from "@/app/actions/user.actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useAuth } from "@/context/auth-context";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,7 +85,7 @@ export default function ProfilePage() {
         if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await updateUser(userInfo.id, { 
+            await saveUserAction({ id: userInfo.id, 
                 name: fullName, 
                 avatarUrl,
                 fathersName,
