@@ -129,57 +129,48 @@ export async function launchPrebookingCourseAction(courseId: string) {
         }
 
         const prebookings = await getPrebookingsByCourseId(courseId);
-        if (prebookings.length === 0) {
-            await updateDoc(doc(db, 'courses', courseId), { isPrebooking: false });
-            revalidatePath(`/admin/courses/builder/${courseId}`);
-            revalidatePath(`/teacher/courses/builder/${courseId}`);
-            revalidatePath(`/courses/${courseId}`);
-            revalidatePath(`/sites/[site]/courses/${courseId}`);
-            return { success: true, message: 'Course launched. No pre-bookings to notify.' };
-        }
         
-        const finalPrice = parseFloat((course.price || '0').replace(/[^0-9.]/g, ''));
-        const prebookingPrice = parseFloat((course.prebookingPrice || '0').replace(/[^0-9.]/g, ''));
-        const discountAmount = finalPrice - prebookingPrice;
-
-        if (discountAmount <= 0) {
-            throw new Error('Final price must be greater than pre-booking price to create a discount.');
-        }
-
         const batch = writeBatch(db);
-
-        for (const prebooking of prebookings) {
-            const promoCode: Omit<PromoCode, 'id'> = {
-                code: `PREBOOK-${courseId.slice(0, 4).toUpperCase()}-${prebooking.userId.slice(0, 4)}`,
-                type: 'fixed',
-                value: discountAmount,
-                usageCount: 0,
-                usageLimit: 1,
-                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
-                isActive: true,
-                applicableCourseIds: [courseId],
-                createdBy: 'admin',
-                restrictedToUserId: prebooking.userId,
-            };
-            const promoRef = doc(collection(db, 'promo_codes'));
-            batch.set(promoRef, promoCode);
-
-            const notification = {
-                userId: prebooking.userId,
-                icon: 'Award' as const,
-                title: `"${course.title}" is now live!`,
-                description: `Your pre-booking was successful! Use code ${promoCode.code} to get your special discount.`,
-                date: Timestamp.now(),
-                read: false,
-                link: `/checkout/${courseId}`
-            };
-            const notifRef = doc(collection(db, 'notifications'));
-            batch.set(notifRef, notification);
-        }
-        
         const courseRef = doc(db, 'courses', courseId);
         batch.update(courseRef, { isPrebooking: false });
 
+        if (prebookings.length > 0) {
+            const finalPrice = parseFloat((course.price || '0').replace(/[^0-9.]/g, ''));
+            const prebookingPrice = parseFloat((course.prebookingPrice || '0').replace(/[^0-9.]/g, ''));
+            const discountAmount = finalPrice - prebookingPrice;
+
+            if (discountAmount > 0) {
+                for (const prebooking of prebookings) {
+                    const promoCode: Omit<PromoCode, 'id'> = {
+                        code: `PREBOOK-${courseId.slice(0, 4).toUpperCase()}-${prebooking.userId.slice(0, 4)}`,
+                        type: 'fixed',
+                        value: discountAmount,
+                        usageCount: 0,
+                        usageLimit: 1,
+                        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+                        isActive: true,
+                        applicableCourseIds: [courseId],
+                        createdBy: 'admin',
+                        restrictedToUserId: prebooking.userId,
+                    };
+                    const promoRef = doc(collection(db, 'promo_codes'));
+                    batch.set(promoRef, promoCode);
+
+                    const notification = {
+                        userId: prebooking.userId,
+                        icon: 'Award' as const,
+                        title: `"${course.title}" is now live!`,
+                        description: `Your pre-booking was successful! Use code ${promoCode.code} to get your special discount.`,
+                        date: Timestamp.now(),
+                        read: false,
+                        link: `/checkout/${courseId}`
+                    };
+                    const notifRef = doc(collection(db, 'notifications'));
+                    batch.set(notifRef, notification);
+                }
+            }
+        }
+        
         await batch.commit();
 
         revalidatePath(`/admin/courses/builder/${courseId}`);
@@ -187,7 +178,11 @@ export async function launchPrebookingCourseAction(courseId: string) {
         revalidatePath(`/courses/${courseId}`);
         revalidatePath(`/sites/[site]/courses/${courseId}`);
 
-        return { success: true, message: `Course launched! ${prebookings.length} students have been notified with their unique promo codes.` };
+        const message = prebookings.length > 0 
+            ? `Course launched! ${prebookings.length} students have been notified with their unique promo codes.`
+            : 'Course launched. No pre-bookings to notify.';
+
+        return { success: true, message };
 
     } catch (error: any) {
         console.error("Error launching prebooking course:", error);

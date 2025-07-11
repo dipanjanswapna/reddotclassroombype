@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -82,8 +83,8 @@ export function CourseCard(props: CourseCardProps) {
          {isArchived ? (
             <Badge variant="outline">Enrollment Closed</Badge>
          ) : isOfflineCourse ? (
-             <Button asChild className="w-full font-bold">
-                 <Link href={coursePageUrl}>View Details</Link>
+             <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700">
+                 <Link href={checkoutUrl}>Enroll Now</Link>
              </Button>
          ) : (
             <CourseEnrollmentButton

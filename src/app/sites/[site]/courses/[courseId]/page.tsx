@@ -40,7 +40,8 @@ import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { safeToDate } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
-  const course = await getCourse(params.courseId);
+  const awaitedParams = await params;
+  const course = await getCourse(awaitedParams.courseId);
 
   if (!course) {
     return {
@@ -64,7 +65,8 @@ export default async function PartnerCourseDetailPage({
 }: {
   params: { site: string; courseId: string };
 }) {
-  const { site, courseId } = params;
+  const awaitedParams = await params;
+  const { site, courseId } = awaitedParams;
   const course = await getCourse(courseId);
   
   if (!course) {

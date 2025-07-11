@@ -94,6 +94,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
       }
       checkForPrebookPromo();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo, course, cycleId]);
 
 
