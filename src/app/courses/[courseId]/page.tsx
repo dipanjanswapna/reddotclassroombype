@@ -1,7 +1,7 @@
 
 
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import {
   CheckCircle,
@@ -41,6 +41,8 @@ import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
 import { cn } from '@/lib/utils';
 import { safeToDate } from '@/lib/utils';
+import { getCurrentUser } from '@/lib/firebase/auth';
+import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -93,6 +95,15 @@ export default async function CourseDetailPage({
 
   if (!course || course.isArchived) {
     notFound();
+  }
+  
+  // If the course is an Exam Batch, and the user is enrolled, redirect them.
+  const user = await getCurrentUser();
+  if (user && course.type === 'Exam') {
+    const enrollments = await getEnrollmentsByUserId(user.uid);
+    if (enrollments.some(e => e.courseId === courseId)) {
+      redirect(`/student/my-courses/${courseId}`);
+    }
   }
   
   const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
