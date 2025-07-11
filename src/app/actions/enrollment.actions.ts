@@ -3,10 +3,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addEnrollment, getCourse, updateCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
+import { createInvoiceAction } from './invoice.actions';
 
 export async function prebookCourseAction(courseId: string, userId: string) {
     try {
@@ -92,6 +93,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         // 1. Create enrollment document
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
         const enrollmentData: Partial<Enrollment> = {
+            id: mainEnrollmentRef.id,
             userId,
             courseId,
             enrollmentDate: Timestamp.now(),
@@ -117,13 +119,14 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             enrollmentData.paidAmount = enrollmentData.totalFee;
             enrollmentData.dueAmount = 0;
             enrollmentData.paymentStatus = 'paid';
+            enrollmentData.paymentMethod = 'Online';
         } else {
-            // Full course enrollment without manual payment details (e.g., via social login)
             const price = parseFloat(course.price?.replace(/[^0-9.]/g, '')) || 0;
             enrollmentData.totalFee = price;
             enrollmentData.paidAmount = price;
             enrollmentData.dueAmount = 0;
             enrollmentData.paymentStatus = 'paid';
+            enrollmentData.paymentMethod = 'Online';
         }
         
         batch.set(mainEnrollmentRef, enrollmentData);
@@ -144,7 +147,6 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             }
         }
         
-        // 3. Generate assignments and exams for the student from templates
         const newAssignments: Assignment[] = [];
         if (course.assignmentTemplates && course.assignmentTemplates.length > 0) {
             course.assignmentTemplates.forEach(template => {
@@ -203,6 +205,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         }
         
         await batch.commit();
+
+        await createInvoiceAction(enrollmentData as Enrollment, student, course);
 
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');

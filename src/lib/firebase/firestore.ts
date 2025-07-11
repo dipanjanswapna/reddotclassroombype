@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -213,6 +213,18 @@ export const getCategories = async (): Promise<string[]> => {
     const categories = new Set(courses.map(c => c.category));
     return Array.from(categories);
 }
+
+// Invoices
+export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<Invoice | null> => {
+    if (!enrollmentId) return null;
+    const q = query(collection(db, "invoices"), where("enrollmentId", "==", enrollmentId));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as Invoice;
+};
 
 // Enrollments
 export const getEnrollments = () => getCollection<Enrollment>('enrollments');

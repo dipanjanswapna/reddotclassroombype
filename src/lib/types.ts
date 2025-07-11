@@ -572,6 +572,42 @@ export type ReportedContent = {
   actionTaken?: 'dismissed' | 'content_deleted';
 };
 
+export type Invoice = {
+  id?: string;
+  enrollmentId: string;
+  userId: string;
+  courseId: string;
+  invoiceNumber: string;
+  invoiceDate: Timestamp;
+  studentDetails: {
+    name: string;
+    rdcId: string;
+    phone: string;
+    email: string;
+    guardianName?: string;
+  };
+  courseDetails: {
+    name: string;
+    type: string;
+    cycleName?: string;
+  };
+  paymentDetails: {
+    method: string;
+    date: Timestamp;
+    transactionId: string;
+  };
+  financialSummary: {
+    totalFee: number;
+    discount: number;
+    netPayable: number;
+    amountPaid: number;
+    dueAmount: number;
+  };
+  generatedBy: string; // 'system' or UID of admin
+  pdfUrl?: string;
+  createdAt: Timestamp;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;
@@ -757,4 +793,3 @@ export type HomepageConfig = {
     slides: OfflineHubHeroSlide[];
   };
 };
-

@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking } from '@/lib/types';
-import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId } from '@/lib/firebase/firestore';
+import { User, Course, Enrollment, AttendanceRecord, Batch, Branch, SupportTicket, Prebooking, Invoice } from '@/lib/types';
+import { getUser, getEnrollmentsByUserId, getCourses, getAttendanceForStudent, getBatches, getBranches, getSupportTicketsByUserId, getPrebookingsByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -23,8 +24,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { safeToDate } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Calendar, Check, ChevronsUpDown, DollarSign, Edit, GraduationCap, Loader2, User as UserIcon, Ticket, Bookmark } from 'lucide-react';
+import { Calendar, Check, ChevronsUpDown, DollarSign, Edit, GraduationCap, Loader2, User as UserIcon, Ticket, Bookmark, Eye } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { InvoiceView } from '@/components/invoice-view';
 
 const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Student: <GraduationCap className="h-4 w-4" />,
@@ -55,6 +57,9 @@ export default function ManageUserPage() {
 
     const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
     const [isEnrollDialogOpen, setIsEnrollDialogOpen] = useState(false);
+    const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [loadingInvoice, setLoadingInvoice] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
     // Form states
@@ -66,7 +71,7 @@ export default function ManageUserPage() {
       discount: '',
     });
     
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         if (!userId) return;
         setLoading(true);
         try {
@@ -112,11 +117,11 @@ export default function ManageUserPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, toast]);
     
     useEffect(() => {
         fetchData();
-    }, [userId, toast]);
+    }, [fetchData]);
     
     const handleProfileSave = async () => {
         if (!editingUser.id) return;
@@ -159,6 +164,25 @@ export default function ManageUserPage() {
             toast({ title: "Error", description: result.message, variant: "destructive" });
         }
         setIsSaving(false);
+    };
+
+    const handleViewInvoice = async (enrollmentId: string) => {
+        setLoadingInvoice(true);
+        setIsInvoiceOpen(true);
+        try {
+          const invoice = await getInvoiceByEnrollmentId(enrollmentId);
+          if (invoice) {
+            setSelectedInvoice(invoice);
+          } else {
+            toast({ title: 'Error', description: 'Invoice not found for this transaction.', variant: 'destructive' });
+            setIsInvoiceOpen(false);
+          }
+        } catch(err) {
+          toast({ title: 'Error', description: 'Could not load the invoice.', variant: 'destructive' });
+          setIsInvoiceOpen(false);
+        } finally {
+          setLoadingInvoice(false);
+        }
     };
     
     const attendanceWithDetails = useMemo(() => {
@@ -291,16 +315,20 @@ export default function ManageUserPage() {
                             <CardHeader><CardTitle>Payment History</CardTitle></CardHeader>
                             <CardContent>
                                <Table>
-                                    <TableHeader><TableRow><TableHead>Invoice ID</TableHead><TableHead>Course</TableHead><TableHead>Amount</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
+                                    <TableHeader><TableRow><TableHead>Course</TableHead><TableHead>Amount</TableHead><TableHead>Date</TableHead><TableHead>Invoice</TableHead></TableRow></TableHeader>
                                     <TableBody>
                                        {enrollments.map(enr => {
                                            const course = allCourses.find(c => c.id === enr.courseId);
                                            return (
                                                 <TableRow key={enr.id}>
-                                                    <TableCell className="font-mono">{enr.id?.slice(0, 8)}</TableCell>
                                                     <TableCell>{course?.title || 'N/A'}</TableCell>
                                                     <TableCell>{course?.price || 'N/A'}</TableCell>
                                                     <TableCell>{format(safeToDate(enr.enrollmentDate), 'PPP')}</TableCell>
+                                                    <TableCell>
+                                                        <Button variant="outline" size="sm" onClick={() => handleViewInvoice(enr.id!)}>
+                                                            <Eye className="mr-2 h-4 w-4"/> View
+                                                        </Button>
+                                                    </TableCell>
                                                 </TableRow>
                                            )
                                        })}
@@ -455,6 +483,17 @@ export default function ManageUserPage() {
                         <Button variant="outline" onClick={() => setIsEnrollDialogOpen(false)}>Cancel</Button>
                         <Button onClick={handleManualEnroll} disabled={isSaving || !selectedCourseToEnroll}>{isSaving && <Loader2 className="mr-2 animate-spin"/>}Enroll Student</Button>
                     </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* View Invoice Dialog */}
+            <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
+                <DialogContent className="max-w-4xl p-0">
+                    {loadingInvoice ? (
+                        <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+                    ) : selectedInvoice ? (
+                        <InvoiceView invoice={selectedInvoice} />
+                    ) : null}
                 </DialogContent>
             </Dialog>
         </div>
