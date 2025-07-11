@@ -22,9 +22,9 @@ export default async function PartnerSiteLayout({
 
   // Define CSS variables for dynamic theming
   const partnerThemeStyle = {
-    '--primary': partner.primaryColor,
-    '--secondary': partner.secondaryColor,
-    '--ring': partner.primaryColor,
+    '--primary': partner.primaryColor || '346.8 77.2% 49.8%',
+    '--secondary': partner.secondaryColor || '210 40% 96.1%',
+    '--ring': partner.primaryColor || '346.8 77.2% 49.8%',
   } as React.CSSProperties;
 
   return (
