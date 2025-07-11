@@ -3,8 +3,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentByInvoiceId, getInvoiceByEnrollmentId, addNotification, updateEnrollment } from '@/lib/firebase/firestore';
-import { Enrollment, Assignment, Exam } from '@/lib/types';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument } from '@/lib/firebase/firestore';
+import { Enrollment, Assignment, Exam, Invoice } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
@@ -232,7 +232,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
 export async function verifyGroupAccessCodeAction(accessCode: string) {
     try {
-        const enrollment = await getEnrollmentByInvoiceId(accessCode); // Assuming access code is enrollment ID
+        let enrollment = await getDocument<Enrollment>('enrollments', accessCode);
         if (!enrollment) {
             return { success: false, message: 'Invalid Group Access Code.' };
         }
@@ -245,11 +245,27 @@ export async function verifyGroupAccessCodeAction(accessCode: string) {
         if (!student || !course) {
             return { success: false, message: 'Could not find student or course details.' };
         }
+
+        // If invoice doesn't exist, create it.
+        if (!enrollment.invoiceId) {
+            let invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+            if (!invoice) {
+                const creationResult = await createInvoiceAction(enrollment, student, course);
+                if (creationResult.success && creationResult.invoiceId) {
+                    // Re-fetch enrollment to get the updated invoiceId
+                    enrollment = await getDocument<Enrollment>('enrollments', accessCode) ?? enrollment;
+                }
+            } else {
+                 await updateEnrollment(enrollment.id!, { invoiceId: invoice.id });
+                 enrollment.invoiceId = invoice.id;
+            }
+        }
         
         return { success: true, data: { enrollment, student, course } };
 
     } catch (error: any) {
-        return { success: false, message: error.message };
+        console.error("Error verifying group access code:", error);
+        return { success: false, message: error.message || 'An unexpected error occurred during verification.' };
     }
 }
 

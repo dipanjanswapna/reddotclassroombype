@@ -451,7 +451,7 @@ export type Enrollment = {
   invoiceId?: string;
   userId: string;
   courseId: string;
-  enrollmentDate: Timestamp;
+  enrollmentDate: any;
   progress: number;
   status: 'in-progress' | 'completed';
   completedLessons?: string[];
@@ -733,12 +733,16 @@ export type HomepageConfig = {
   };
   collaborations: {
     display: boolean;
-    title: { [key: string]: string };
+    title: {
+      [key: string]: string;
+    };
     organizationIds: string[];
-  },
+  };
   partnersSection: {
     display: boolean;
-    title: { [key: string]: string };
+    title: {
+      [key: string]: string;
+    };
     scrollSpeed?: number;
     partners: {
       id: number;
@@ -747,55 +751,83 @@ export type HomepageConfig = {
       href: string;
       dataAiHint: string;
     }[];
-  },
+  };
   socialMediaSection: {
     display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
+    title: {
+      [key: string]: string;
+    };
+    description: {
+      [key: string]: string;
+    };
     channels: {
       id: number;
       platform: string;
-      name: { [key: string]: string } | string;
+      name: {
+        [key: string]: string;
+      } | string;
       handle: string;
       stat1_value: string;
-      stat1_label: { [key: string]: string } | string;
+      stat1_label: {
+        [key: string]: string;
+      } | string;
       stat2_value: string;
-      stat2_label: { [key: string]: string } | string;
-      description: { [key: string]: string } | string;
-      ctaText: { [key: string]: string } | string;
+      stat2_label: {
+        [key: string]: string;
+      } | string;
+      description: {
+        [key: string]: string;
+      } | string;
+      ctaText: {
+        [key: string]: string;
+      } | string;
       ctaUrl: string;
     }[];
-  },
+  };
   notesBanner: {
     display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
-    buttonText: { [key: string]: string };
-  },
+    title: {
+      [key: string]: string;
+    };
+    description: {
+      [key: string]: string;
+    };
+    buttonText: {
+      [key: string]: string;
+    };
+  };
   statsSection: {
     display: boolean;
-    title: { [key: string]: string };
+    title: {
+      [key: string]: string;
+    };
     stats: {
       value: string;
-      label: { [key: string]: string };
+      label: {
+        [key: string]: string;
+      };
     }[];
-  },
+  };
   appPromo: {
     display: boolean;
-    title: { [key: string]: string };
-    description: { [key: string]: string };
+    title: {
+      [key: string]: string;
+    };
+    description: {
+      [key: string]: string;
+    };
     googlePlayUrl: string;
     appStoreUrl: string;
-  },
+  };
   floatingWhatsApp: {
-      display: boolean;
-      number: string;
-  },
+    display: boolean;
+    number: string;
+  };
   rdcShopBanner?: {
     display: boolean;
     imageUrl: string;
     dataAiHint: string;
-  },
+  };
   platformSettings: PlatformSettings;
   topperPageSection: TopperPageSection;
   offlineHubHeroCarousel?: {
