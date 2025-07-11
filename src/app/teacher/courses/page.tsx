@@ -148,7 +148,7 @@ export default function TeacherCoursesPage() {
                                     <Button variant="outline" size="sm" asChild>
                                         <Link href={`/teacher/courses/builder/${course.id}`}>
                                             <Pencil className="mr-2 h-4 w-4" />
-                                            Edit
+                                            Manage Content
                                         </Link>
                                     </Button>
                                 </TableCell>
