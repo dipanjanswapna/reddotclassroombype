@@ -37,6 +37,7 @@ import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganizations } fro
 import type { Course } from '@/lib/types';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
+import { safeToDate } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -81,7 +82,7 @@ export default async function PartnerCourseDetailPage({
     ? allCourses.filter(c => course.includedCourseIds?.includes(c.id!))
     : [];
 
-  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate) > new Date();
+  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
 
   const checkoutUrl = `/sites/${site}/checkout/${course.id}`;
 
@@ -233,7 +234,7 @@ export default async function PartnerCourseDetailPage({
                                         <TableRow key={`exam-${item.id}-${index}`}>
                                             <TableCell className="font-medium">{item.title}</TableCell>
                                             <TableCell>{item.topic}</TableCell>
-                                            <TableCell>{item.examDate ? format(new Date(item.examDate as string), 'PPP') : 'N/A'}</TableCell>
+                                            <TableCell>{item.examDate ? format(safeToDate(item.examDate), 'PPP') : 'N/A'}</TableCell>
                                             <TableCell>{item.totalMarks}</TableCell>
                                         </TableRow>
                                     ))}
@@ -338,9 +339,9 @@ export default async function PartnerCourseDetailPage({
           <div className="lg:col-span-1">
             <Card className="sticky top-24 bg-card text-card-foreground shadow-xl">
                 <CardHeader>
-                    {isPrebookingActive && (
+                    {isPrebookingActive ? (
                         <p className="text-muted-foreground line-through">{course.price}</p>
-                    )}
+                    ) : null}
                   <CardTitle className="text-3xl font-bold text-primary">
                     {isPrebookingActive ? course.prebookingPrice : course.price}
                   </CardTitle>

@@ -40,6 +40,7 @@ import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
 import { cn } from '@/lib/utils';
+import { safeToDate } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const course = await getCourse(params.courseId);
@@ -286,7 +287,7 @@ export default async function CourseDetailPage({
                                         <TableRow key={`exam-${item.id}-${index}`}>
                                             <TableCell className="font-medium">{item.title}</TableCell>
                                             <TableCell>{item.topic}</TableCell>
-                                            <TableCell>{item.examDate ? format(new Date(item.examDate as string), 'PPP') : 'N/A'}</TableCell>
+                                            <TableCell>{item.examDate ? format(safeToDate(item.examDate), 'PPP') : 'N/A'}</TableCell>
                                             <TableCell>{item.totalMarks}</TableCell>
                                         </TableRow>
                                     ))}

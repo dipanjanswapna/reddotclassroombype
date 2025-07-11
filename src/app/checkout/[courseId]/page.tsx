@@ -18,6 +18,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { safeToDate } from '@/lib/utils';
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
@@ -113,7 +114,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
 
     if (result.success) {
         toast({
-            title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
+            title: 'Enrollment Successful!',
             description: `You have successfully enrolled in "${course!.title}". Redirecting...`
         });
         setTimeout(() => router.push('/student/my-courses'), 2000);
@@ -139,7 +140,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     return notFound();
   }
 
-  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
+  const isPrebooking = course.isPrebooking && course.prebookingEndDate && safeToDate(course.prebookingEndDate) > new Date();
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
   
   const selectedCycle = cycleId ? course.cycles?.find(c => c.id === cycleId) : null;
@@ -161,7 +162,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   return (
     <div className="container mx-auto max-w-4xl py-12">
       <h1 className="font-headline text-3xl font-bold mb-8">
-        {isPrebooking ? 'Complete Your Pre-booking' : 'Complete Your Purchase'}
+        Complete Your Purchase
       </h1>
       <div className="grid md:grid-cols-2 gap-8">
         <div>
@@ -238,7 +239,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 )}
                 <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
                     {isProcessing ? <Loader2 className="mr-2 animate-spin" /> : null}
-                    {isPrebooking ? 'Pay Pre-booking Fee' : 'Proceed to Payment'}
+                    Proceed to Payment
                 </Button>
             </div>
           </Card>

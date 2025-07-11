@@ -18,6 +18,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { safeToDate } from '@/lib/utils';
 
 export default function PartnerCheckoutPage({ params }: { params: { site: string, courseId: string } }) {
   const { toast } = useToast();
@@ -106,12 +107,12 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     
     setIsProcessing(true);
     
-    const result = await enrollInCourseAction(course.id!, userInfo.uid);
+    const result = await enrollInCourseAction({ courseId: course!.id!, userId: userInfo.uid });
 
     if (result.success) {
         toast({
-            title: isPrebooking ? 'Pre-booking Successful!' : 'Enrollment Successful!',
-            description: `You have successfully enrolled in "${course.title}". Redirecting...`
+            title: 'Enrollment Successful!',
+            description: `You have successfully enrolled in "${course!.title}". Redirecting...`
         });
         setTimeout(() => router.push('/'), 2000);
     } else {
@@ -136,7 +137,7 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
     return notFound();
   }
 
-  const isPrebooking = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
+  const isPrebooking = course.isPrebooking && course.prebookingEndDate && safeToDate(course.prebookingEndDate) > new Date();
   const originalPrice = parseFloat((isPrebooking && course.prebookingPrice ? course.prebookingPrice : course.price).replace(/[^0-9.]/g, ''));
   const finalPrice = originalPrice - discount;
 
@@ -209,7 +210,7 @@ export default function PartnerCheckoutPage({ params }: { params: { site: string
                     </Alert>
                 )}
                 <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
-                    {isProcessing ? <Loader2 className="animate-spin mr-2" /> : null}
+                    {isProcessing ? <Loader2 className="mr-2 animate-spin" /> : null}
                     {isPrebooking ? 'Pay Pre-booking Fee' : 'Proceed to Payment'}
                 </Button>
             </div>
