@@ -21,16 +21,17 @@ The platform supports multiple user roles, each with a dedicated dashboard and s
 The Admin has full control over the platform.
 
 - **Dashboard**: Central overview of platform-wide analytics (revenue, users, enrollments).
-- **Homepage Management**: A full CMS to control all sections of the main landing page.
+- **Homepage Management**: A full CMS to control all sections of the main landing page and static pages like "About Us".
 - **Offline Hub**: Manage physical branches, batches, offline courses, and student assignments to them.
 - **Scan Attendance**: QR code/barcode scanner for taking attendance.
+- **Group Access Verification**: Verify enrollment IDs to grant students access to secret groups.
 - **Call Center**: View lists of absent students for follow-up and manage monthly student counseling calls.
 - **User Management**:
     - **Staff Users**: Manage Admins, Teachers, Sellers, Moderators, and Affiliates.
     - **Student Users**: Manage Students and Guardians.
-    - **Manage User (Search)**: A dedicated page to search for any user by ID/roll number and view/edit their complete profile, including courses, attendance, and payments.
+    - **Manage User (Search)**: A dedicated page to search for any user by ID/roll number and view/edit their complete profile, including courses, attendance, and detailed payment history (paid, due, status).
 - **Sellers**: Approve, manage, and view third-party seller organizations.
-- **Courses**: Create, edit, publish, approve, and delete all courses on the platform.
+- **Courses**: Create, edit, publish, approve, and delete all courses. Manage **Course Cycles** to sell parts of a course separately.
 - **Blog**: A complete Content Management System (CMS) for creating, editing, and deleting blog posts.
 - **Teachers**: Approve applications and manage teacher profiles.
 - **Promo Codes**: Create and manage all promotional codes.
@@ -38,14 +39,14 @@ The Admin has full control over the platform.
 - **Financials**: View detailed transaction history and revenue reports.
 - **Analytics**: A real-time dashboard for web analytics and performance insights.
 - **Reports**: In-depth reports on user growth, course enrollments, and top performers.
-- **Settings**: Manage personal admin profile and platform-wide settings (e.g., enable/disable logins for different roles).
+- **Settings**: Manage personal admin profile and platform-wide settings (e.g., enable/disable logins for different roles, manage API keys).
 - **ID Card**: View and download a personal Admin ID card.
 
 ### 2.2. Student (`/student`)
 The primary consumer of educational content.
 
 - **Dashboard**: Personalized overview of ongoing courses, progress, and upcoming deadlines.
-- **My Courses**: A central hub to view enrolled, completed, and wishlisted courses.
+- **My Courses**: A central hub to view enrolled, completed, wishlisted, and pre-booked courses.
 - **Course-Specific Pages**: For each course, dedicated pages for:
     - Lessons (Video, Document, Quiz)
     - Assignments (Submission & Feedback)
@@ -69,7 +70,7 @@ The primary consumer of educational content.
 ### 2.3. Teacher (`/teacher`)
 Content creators and student mentors.
 
-- **Dashboard**: Overview of their courses, total students, and pending grading tasks.
+- **Dashboard**: Overview of their courses, total students, pending grading tasks, and assigned offline batches.
 - **Course Management**: Edit and manage content for assigned courses via a comprehensive Course Builder.
 - **Student Management**: View lists of students enrolled in their courses.
 - **Grading**: A dedicated interface to review and grade student assignments and exams.
@@ -97,9 +98,10 @@ Monitors a student's progress.
 Third-party organizations that publish courses.
 
 - **Dashboard**: Overview of the organization's sales and student enrollment performance.
-- **Storefront & Branding**: Customize a dedicated public-facing storefront page (`/sites/[site]`).
+- **Storefront & Branding**: Customize a dedicated public-facing storefront page (`/sites/[site]`), including custom colors.
 - **Course Management**: Create and manage all courses published by their organization.
 - **Instructor Management**: Invite and manage teachers associated with their organization.
+- **Student Management**: View a list of all students enrolled in their courses.
 - **Call Center & Attendance**: Tools to manage student engagement and attendance for their offline courses.
 - **Analytics & Payouts**: View sales analytics and payout history.
 - **Profile & ID Card**: Manage the organization's profile and view its ID card.
@@ -120,13 +122,14 @@ Maintains community standards and provides support.
 - **Content Review**: A queue for reviewing user-reported content (comments, reviews).
 - **Support Tickets**: A dedicated interface to manage and respond to user support requests.
 - **Call Center & Attendance**: Tools to manage student engagement and attendance.
+- **Scan Attendance**: Use a QR scanner to mark student attendance.
 - **Profile & ID Card**: Manage personal information and view a moderator ID card.
 
 ## 3. Public-Facing Pages
 
 - **Home (`/`)**: Dynamic landing page controlled via the Admin CMS.
 - **Courses (`/courses`)**: A filterable catalog of all published courses.
-- **Course Details (`/courses/[id]`)**: Detailed page for each course, including syllabus, instructor info, and reviews.
+- **Course Details (`/courses/[id]`)**: Detailed page for each course, including syllabus, instructor info, reviews, and course cycles.
 - **Blog (`/blog`)**: A list of all published blog posts.
 - **Blog Post (`/blog/[slug]`)**: SEO-friendly page for individual articles.
 - **Teachers (`/teachers`)**: A browsable directory of all approved instructors.
@@ -135,6 +138,7 @@ Maintains community standards and provides support.
 - **Offline Hub (`/offline-hub`)**: A public page showcasing offline centers and programs.
 - **Authentication Pages**: Custom pages for login, signup, password reset, and role-specific applications.
 - **Static Pages**: About Us, Contact Us, FAQ, Privacy Policy, Terms of Service.
+- **Strugglers to Topper (`/strugglers-studies`)**: A page explaining how RDC helps students succeed.
 
 ## 4. AI-Powered Features (Genkit)
 
