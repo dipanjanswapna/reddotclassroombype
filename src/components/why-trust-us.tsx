@@ -10,6 +10,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from './ui/card';
 import { Quote } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 type WhyTrustUsProps = {
   data: HomepageConfig['whyChooseUs'];
@@ -17,22 +18,24 @@ type WhyTrustUsProps = {
 
 export function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
+  const pathname = usePathname();
   const plugin = React.useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));
+  const isHomePage = pathname === '/';
 
   if (!data || !data.display) {
     return null;
   }
   
   const titleText = data.title?.[language] || data.title?.['bn'] || '';
-  const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
+  const renderedTitle = titleText.replace(/RDC/g, `<span style={{color: 'hsl(var(--primary))'}}>RDC</span>`);
 
   return (
-    <section className="bg-background py-16 overflow-hidden">
+    <section className={cn("py-16 overflow-hidden", isHomePage ? "bg-transparent" : "bg-background")}>
       <div className="container mx-auto px-4">
-        <div className="bg-primary/5 dark:bg-primary/10 rounded-3xl p-8 md:p-12">
+        <div className={cn("rounded-3xl p-8 md:p-12", isHomePage ? "bg-[#f5f3ef]" : "bg-primary/5")}>
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-                <h2 className="font-headline text-4xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
+                <h2 className="font-headline text-4xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: renderedTitle.replace('text-primary', 'text-[#a16207]') }} />
                 <p className="text-lg text-muted-foreground">
                 {data.description?.[language] || data.description?.['bn']}
                 </p>

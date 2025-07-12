@@ -6,6 +6,7 @@ import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { HomepageConfig } from '@/lib/types';
 import { FloatingActionButton } from './floating-whatsapp-button';
+import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview LayoutWrapper component.
@@ -42,6 +43,8 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
     pathname.startsWith('/admin') ||
     pathname.startsWith('/moderator') ||
     pathname.startsWith('/seller');
+    
+  const isHomePage = pathname === '/';
 
   if (isDashboardPage) {
     return (
@@ -54,7 +57,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
 
   // Default layout for all other pages (e.g., home, about, contact, and now 404)
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className={cn("min-h-screen flex flex-col", !isHomePage && "bg-background")}>
       <Header />
       <main>{children}</main>
       <Footer homepageConfig={homepageConfig}/>

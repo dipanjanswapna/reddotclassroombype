@@ -79,9 +79,9 @@ export default async function Home() {
   const language = 'bn'; // Default language
 
   return (
-    <div className="bg-background [&>div:last-child>section:last-child]:pb-0">
+    <div style={{ backgroundColor: '#FFFDF6', color: '#403d39' }} className="[&>div:last-child>section:last-child]:pb-0">
       {homepageConfig.welcomeSection?.display && (
-        <section className="bg-secondary/50 py-12 text-center">
+        <section className="bg-primary/5 py-12 text-center">
             <div className="container mx-auto px-4">
                 <h1 className="text-4xl font-bold tracking-tight">
                     {homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en']}
@@ -98,7 +98,7 @@ export default async function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8">
               <div className="container mx-auto px-4">
-                  <div className="bg-primary/10 dark:bg-primary/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
+                  <div className="bg-primary/10 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
                       <div className="flex items-center gap-4 text-center md:text-left">
                           <Image
                               src={homepageConfig.strugglingStudentSection.imageUrl}
@@ -109,7 +109,7 @@ export default async function Home() {
                               data-ai-hint="student family studying"
                           />
                           <div>
-                              <h3 className="font-headline text-xl font-bold text-gray-800 dark:text-white">
+                              <h3 className="font-headline text-xl font-bold text-gray-800">
                                   {homepageConfig.strugglingStudentSection?.title?.[language]}
                               </h3>
                               <p className="text-muted-foreground">
@@ -117,7 +117,7 @@ export default async function Home() {
                               </p>
                           </div>
                       </div>
-                      <Button asChild className="font-bold shrink-0">
+                      <Button asChild className="font-bold shrink-0" style={{backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))'}}>
                           <Link href="/strugglers-studies">
                               {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
                           </Link>
@@ -139,7 +139,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.journeySection?.display && (
-          <section className="bg-secondary/50" aria-labelledby="hero-heading">
+          <section className="bg-primary/5" aria-labelledby="hero-heading">
             <div className="container mx-auto px-4">
               <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
               <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
@@ -188,7 +188,7 @@ export default async function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
@@ -196,7 +196,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section className="bg-secondary/50" aria-labelledby="ssc-hsc-heading">
+          <section className="bg-primary/5" aria-labelledby="ssc-hsc-heading">
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
@@ -212,7 +212,7 @@ export default async function Home() {
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -220,14 +220,14 @@ export default async function Home() {
         )}
 
         {homepageConfig.admissionSection?.display && (
-          <section className="bg-secondary/50" aria-labelledby="admission-heading">
+          <section className="bg-primary/5" aria-labelledby="admission-heading">
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -242,7 +242,7 @@ export default async function Home() {
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="accent" size="lg" className="mt-12 font-bold">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -286,7 +286,7 @@ export default async function Home() {
 
 
         {homepageConfig.socialMediaSection?.display && (
-          <section className="bg-secondary/30" aria-labelledby="social-media-heading">
+          <section className="bg-primary/5" aria-labelledby="social-media-heading">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language]}
@@ -338,7 +338,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.notesBanner?.display && (
-          <section className="bg-secondary/50" aria-labelledby="notes-banner-heading">
+          <section className="bg-primary/5" aria-labelledby="notes-banner-heading">
             <div className="container mx-auto px-4">
               <Card className="shadow-lg">
                 <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
@@ -346,7 +346,7 @@ export default async function Home() {
                         <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="accent" size="lg" className="font-bold shrink-0">{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
+                    <Button variant="default" size="lg" className="font-bold shrink-0" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
                 </div>
               </Card>
             </div>
@@ -354,7 +354,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.statsSection?.display && (
-          <section className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground" aria-labelledby="stats-heading">
+          <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

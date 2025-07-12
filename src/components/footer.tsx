@@ -8,12 +8,16 @@ import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { HomepageConfig } from "@/lib/types";
 import logoSrc from '@/public/logo.png';
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig }) {
   const { language } = useLanguage();
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   return (
-    <footer className="border-t bg-background text-foreground">
+    <footer className={cn("border-t", isHomePage ? 'bg-transparent text-foreground' : 'bg-background text-foreground')}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
