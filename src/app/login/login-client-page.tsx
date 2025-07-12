@@ -149,7 +149,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
                                 <span className="ml-2">Continue with Google</span>
                             </Button>
-                            <Button variant="outline" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full">
+                            <Button variant="social" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full">
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FacebookIcon />}
                                 <span className="ml-2">Continue with Facebook</span>
                             </Button>

@@ -11,6 +11,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 import Script from 'next/script';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -53,12 +54,19 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-        <AuthProvider>
-          <LanguageProvider>
-            <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
-            <Toaster />
-          </LanguageProvider>
-        </AuthProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+          <AuthProvider>
+            <LanguageProvider>
+              <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
+              <Toaster />
+            </LanguageProvider>
+          </AuthProvider>
+        </ThemeProvider>
         <Script id="tawk-to-script" strategy="lazyOnload">
           {`
             var Tawk_API=Tawk_API||{};
