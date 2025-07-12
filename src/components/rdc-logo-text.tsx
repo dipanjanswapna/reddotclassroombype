@@ -1,9 +1,471 @@
-import { SVGProps } from "react";
+'use client';
 
-export function RdcLogoText(props: SVGProps<SVGSVGElement>) {
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { 
+  BookOpen,
+  PlayCircle,
+  Users,
+  Trophy,
+  Youtube,
+  Facebook,
+  Video,
+  ThumbsUp,
+  ArrowRight,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CourseCard } from '@/components/course-card';
+import { Badge } from '@/components/ui/badge';
+import { HeroCarousel } from '@/components/hero-carousel';
+import { cn, getYoutubeVideoId } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
+import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
+import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
+import { FreeClassesSection } from '@/components/free-classes-section';
+import { CategoriesCarousel } from '@/components/categories-carousel';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+import downloadAppImage from '@/public/download.jpg';
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { RequestCallbackForm } from '@/components/request-callback-form';
+import logoTypeText from '@/public/rdc-logo-text.png';
+
+
+const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+});
+
+const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
+    loading: () => <Skeleton className="h-[380px] w-full" />,
+    ssr: false,
+});
+
+const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
+    loading: () => <Skeleton className="h-[250px] w-full" />,
+    ssr: false,
+});
+
+const DynamicCollaborationsCarousel = dynamic(() => import('@/components/dynamic-collaborations-carousel').then(mod => mod.DynamicCollaborationsCarousel), {
+    loading: () => <Skeleton className="h-[200px] w-full" />,
+    ssr: false,
+});
+
+const DynamicMasterclassCarousel = dynamic(() => import('@/components/dynamic-masterclass-carousel').then(mod => mod.DynamicMasterclassCarousel), {
+    loading: () => <Skeleton className="h-[380px] w-full" />,
+    ssr: false,
+});
+
+
+const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
+  switch (platform) {
+    case 'YouTube':
+      return <Youtube className={cn("w-6 h-6 text-white", className)} />;
+    case 'Facebook Page':
+    case 'Facebook Group':
+      return <Facebook className={cn("w-6 h-6 text-white", className)} />;
+    default:
+      return null;
+  }
+};
+
+export default function Home() {
+  const { language } = useLanguage();
+  const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
+  const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
+  const [sscHscCourses, setSscHscCourses] = React.useState<Course[]>([]);
+  const [masterClasses, setMasterClasses] = React.useState<Course[]>([]);
+  const [admissionCourses, setAdmissionCourses] = React.useState<Course[]>([]);
+  const [jobCourses, setJobCourses] = React.useState<Course[]>([]);
+  const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
+  const [approvedCollaborators, setApprovedCollaborators] = React.useState<Organization[]>([]);
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const config = await getHomepageConfig();
+        setHomepageConfig(config);
+
+        const [
+            live,
+            sscHsc,
+            masters,
+            admission,
+            job,
+            instructorsData,
+            orgsData
+        ] = await Promise.all([
+            getCoursesByIds(config.liveCoursesIds || []),
+            getCoursesByIds(config.sscHscCourseIds || []),
+            getCoursesByIds(config.masterClassesIds || []),
+            getCoursesByIds(config.admissionCoursesIds || []),
+            getCoursesByIds(config.jobCoursesIds || []),
+            getInstructors(),
+            getOrganizations()
+        ]);
+        
+        setLiveCourses(live);
+        setSscHscCourses(sscHsc);
+        setMasterClasses(masters);
+        setAdmissionCourses(admission);
+        setJobCourses(job);
+        setOrganizations(orgsData);
+
+        const featuredIds = config.teachersSection?.instructorIds || [];
+        setFeaturedInstructors(instructorsData.filter(inst => 
+            inst.status === 'Approved' && featuredIds.includes(inst.id!)
+        ));
+
+        const collabIds = config.collaborations?.organizationIds || [];
+        setApprovedCollaborators(orgsData.filter(org => 
+            org.status === 'approved' && collabIds.includes(org.id!)
+        ));
+      } catch (error) {
+        console.error("Failed to fetch homepage data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading || !homepageConfig) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner className="h-12 w-12" />
+      </div>
+    );
+  }
+  
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="1387" height="99" viewBox="0 0 1387 99" {...props}>
-      <image xlinkHref="data:image/png;base64,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" x="0" y="0" width="1387" height="99"/>
-                  </svg>
-  )
+    <div className="bg-[#FFFDF6] dark:bg-[#1a1a2e] text-foreground [&>div>section:last-child]:pb-0">
+      {homepageConfig.welcomeSection?.display && (
+        <section className="bg-primary/5 dark:bg-transparent py-12 text-center">
+            <div className="container mx-auto px-4">
+                 <h1 className="text-4xl text-primary flex justify-center">
+                    <Image src={logoTypeText} alt="RED DOT CLASSROOM" priority className="h-10 w-auto dark:invert"/>
+                </h1>
+                <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+                    {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
+                </p>
+            </div>
+        </section>
+      )}
+      <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
+      
+      <div>
+        {homepageConfig.strugglingStudentSection?.display && (
+          <section className="py-8 bg-background">
+              <div className="container mx-auto px-4">
+                  <div className="group relative bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 overflow-hidden">
+                      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
+                      <div className="flex items-center gap-4 text-center md:text-left z-10">
+                          <Image
+                              src={homepageConfig.strugglingStudentSection.imageUrl}
+                              alt="Struggling in studies illustration"
+                              width={120}
+                              height={100}
+                              className="hidden sm:block object-contain"
+                              data-ai-hint="student family studying"
+                          />
+                          <div>
+                              <h3 className="font-headline text-xl font-bold text-gray-800 dark:text-gray-200">
+                                  {homepageConfig.strugglingStudentSection?.title?.[language]}
+                              </h3>
+                              <p className="text-muted-foreground">
+                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language]}
+                              </p>
+                          </div>
+                      </div>
+                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300">
+                          <Link href="/strugglers-studies">
+                              {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
+                               <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                      </Button>
+                  </div>
+              </div>
+          </section>
+        )}
+
+        {homepageConfig.categoriesSection?.display && (
+          <section aria-labelledby="categories-heading" className="bg-background">
+            <div className="container mx-auto px-4">
+              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10 text-gray-800 dark:text-gray-200">
+                {homepageConfig.categoriesSection?.title?.[language]}
+              </h2>
+              <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.journeySection?.display && (
+          <section className="bg-gray-900 text-white" aria-labelledby="hero-heading">
+            <div className="container mx-auto px-4">
+              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
+              <p className="text-gray-400 text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+              <div>
+                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.teachersSection?.display && (
+          <section aria-labelledby="teachers-heading" className="bg-gray-900 text-white">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center justify-between mb-8">
+                  <div>
+                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <p className="text-gray-400 mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                  </div>
+                  <Button asChild variant="outline" className="text-white border-white/50 hover:bg-white/10 hover:text-white">
+                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
+                  </Button>
+              </div>
+              <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.videoSection?.display && (
+          <section aria-labelledby="video-section-heading" className="bg-gray-900 text-white">
+            <div className="container mx-auto px-4 text-center">
+                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
+                <p className="text-gray-400 mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {homepageConfig.videoSection?.videos.map((video, index) => {
+                      const videoId = getYoutubeVideoId(video.videoUrl);
+                      const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
+                      
+                      return (
+                          <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-lg overflow-hidden group shadow-lg block">
+                              <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                              </div>
+                          </a>
+                      );
+                    })}
+                </div>
+                <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
+                  <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
+                </Button>
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.sscHscSection?.display && (
+          <section className="bg-gray-900 text-white" aria-labelledby="ssc-hsc-heading">
+              <div className="container mx-auto px-4 text-center">
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
+                  </div>
+              </div>
+          </section>
+        )}
+
+        {homepageConfig.masterclassSection?.display && (
+          <section aria-labelledby="masterclass-heading" className="bg-gray-900 text-white">
+              <div className="container mx-auto px-4 text-center">
+                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
+                  <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
+                    <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
+                  </Button>
+              </div>
+          </section>
+        )}
+
+        {homepageConfig.admissionSection?.display && (
+          <section className="bg-gray-900 text-white" aria-labelledby="admission-heading">
+              <div className="container mx-auto px-4 text-center">
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
+                  </div>
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
+                    <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
+                  </Button>
+              </div>
+          </section>
+        )}
+        
+        {homepageConfig.jobPrepSection?.display && (
+          <section aria-labelledby="job-prep-heading" className="bg-gray-900 text-white">
+              <div className="container mx-auto px-4 text-center">
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
+                  </div>
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>
+                    <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
+                  </Button>
+              </div>
+          </section>
+        )}
+
+        {homepageConfig.freeClassesSection?.display && (
+          <section className="bg-gray-900 text-white py-16" aria-labelledby="free-classes-heading">
+            <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
+          </section>
+        )}
+
+        {homepageConfig.whyChooseUs?.display && (
+          <WhyTrustUs data={homepageConfig.whyChooseUs} />
+        )}
+
+        {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
+          <section aria-labelledby="collaborations-heading" className="bg-background">
+            <div className="container mx-auto px-4">
+              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
+                {homepageConfig.collaborations?.title?.[language]}
+              </h2>
+              <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
+            </div>
+          </section>
+        )}
+        
+        {homepageConfig.partnersSection?.display && (
+          <section aria-labelledby="partners-heading" className="bg-background">
+            <div className="container mx-auto px-4">
+              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
+                {homepageConfig.partnersSection?.title?.[language]}
+              </h2>
+              <PartnersLogoScroll 
+                partners={homepageConfig.partnersSection.partners}
+                scrollSpeed={homepageConfig.partnersSection.scrollSpeed}
+              />
+            </div>
+          </section>
+        )}
+
+
+        {homepageConfig.socialMediaSection?.display && (
+          <section className="bg-gray-900 text-white" aria-labelledby="social-media-heading">
+            <div className="container mx-auto px-4 text-center">
+              <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
+                {homepageConfig.socialMediaSection?.title?.[language]}
+              </h2>
+              <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
+                {homepageConfig.socialMediaSection?.description?.[language]}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {homepageConfig.socialMediaSection?.channels.map((channel) => (
+                  <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-gray-800 border-gray-700">
+                    <CardHeader className="p-0">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
+                          <SocialIcon platform={channel.platform} />
+                        </div>
+                        <CardTitle className="text-lg text-white">{typeof channel.name === 'object' ? channel.name[language] : channel.name}</CardTitle>
+                      </div>
+                      <CardDescription className="text-gray-400">{channel.handle}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-4 pt-4">
+                      <div className="flex justify-center gap-4 text-sm text-gray-400">
+                        {channel.stat1_value && (
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            <span>{channel.stat1_value} {typeof channel.stat1_label === 'object' ? channel.stat1_label[language] : channel.stat1_label}</span>
+                          </div>
+                        )}
+                        {channel.stat2_value && (
+                          <div className="flex items-center gap-1">
+                            {channel.platform === 'YouTube' ? <Video className="w-4 h-4" /> : <ThumbsUp className="w-4 h-4" />}
+                            <span>{channel.stat2_value} {typeof channel.stat2_label === 'object' ? channel.stat2_label[language] : channel.stat2_label}</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-400">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
+                    </CardContent>
+                    <CardFooter className="p-0 w-full">
+                      <Button asChild className="w-full" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
+                        <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
+                          <span className="ml-2">{typeof channel.ctaText === 'object' ? channel.ctaText[language] : channel.ctaText}</span>
+                        </Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.notesBanner?.display && (
+          <section className="bg-gray-900 text-white" aria-labelledby="notes-banner-heading">
+            <div className="container mx-auto px-4">
+              <Card className="shadow-lg bg-gray-800 border-gray-700">
+                <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className='text-center md:text-left'>
+                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-white">{homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <p className="text-gray-400 mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
+                    </div>
+                    <Button variant="default" size="lg" className="font-bold shrink-0" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
+                </div>
+              </Card>
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.statsSection?.display && (
+          <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
+            <div className="container mx-auto px-4 text-center">
+                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {homepageConfig.statsSection?.stats.map((stat, index) => (
+                        <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
+                            <p className="font-headline text-5xl font-bold">{stat.value}</p>
+                            <p className="mt-2 text-lg opacity-90">{stat.label?.[language]}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </section>
+        )}
+
+        {homepageConfig.requestCallbackSection?.display && (
+            <section className="bg-background">
+                <div className="container mx-auto px-4">
+                    <RequestCallbackForm homepageConfig={homepageConfig} />
+                </div>
+            </section>
+        )}
+
+        {homepageConfig.appPromo?.display && (
+          <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">
+              <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                  <div className="text-center md:text-left">
+                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language]}</h2>
+                    <p className="mt-4 text-lg text-gray-600">{homepageConfig.appPromo?.description?.[language]}</p>
+                    <div className="flex justify-center md:justify-start gap-4 mt-8">
+                        <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
+                            <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                        </Link>
+                        <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
+                            <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                        </Link>
+                    </div>
+                  </div>
+                  <div className="flex justify-center">
+                      <Image src={downloadAppImage} width={350} height={500} alt="RDC App" className='object-contain' placeholder="blur" />
+                  </div>
+              </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
 }

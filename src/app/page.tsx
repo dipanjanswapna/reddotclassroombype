@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React from 'react';
@@ -34,7 +32,8 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
-import { RdcLogoText } from '@/components/rdc-logo-text';
+import logoSrc from '@/public/logo.png';
+
 
 const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
@@ -149,8 +148,8 @@ export default function Home() {
       {homepageConfig.welcomeSection?.display && (
         <section className="bg-primary/5 dark:bg-transparent py-12 text-center">
             <div className="container mx-auto px-4">
-                <h1 className="text-4xl text-primary flex justify-center">
-                    <RdcLogoText className="h-10 text-foreground dark:text-white" />
+                 <h1 className="text-4xl text-primary flex justify-center">
+                    <Image src={logoSrc} alt="RED DOT CLASSROOM" priority className="h-10 w-auto dark:invert"/>
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
                     {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
