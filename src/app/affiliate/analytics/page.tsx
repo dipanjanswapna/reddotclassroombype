@@ -18,9 +18,11 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import { safeToDate } from '@/lib/utils';
 
 const EnrollmentTrendsChart = dynamic(() => import('@/components/admin/enrollment-trends-chart').then(mod => mod.EnrollmentTrendsChart), {
     loading: () => <Skeleton className="h-[350px] w-full" />,
+    ssr: false,
 });
 
 
