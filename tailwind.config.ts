@@ -19,8 +19,9 @@ export default {
       fontFamily: {
         body: ['var(--font-inter)', 'sans-serif'],
         headline: ['var(--font-poppins)', 'sans-serif'],
-        code: ['monospace'],
         bengali: ['var(--font-bengali)', 'sans-serif'],
+        squid: ['var(--font-squid)', 'sans-serif'],
+        code: ['monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
