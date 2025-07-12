@@ -7,8 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { saveUserAction } from "@/app/actions/user.actions";
@@ -20,13 +19,11 @@ export default function SellerSettingsPage() {
 
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
-    const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/100x100.png");
 
     useEffect(() => {
         if (userInfo) {
             setFullName(userInfo.name || "");
             setEmail(userInfo.email || "");
-            setAvatarUrl(userInfo.avatarUrl || "https://placehold.co/100x100.png");
         }
     }, [userInfo]);
 
@@ -34,7 +31,7 @@ export default function SellerSettingsPage() {
         if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await saveUserAction({ id: userInfo.id, name: fullName, avatarUrl });
+            await saveUserAction({ id: userInfo.id, name: fullName });
             await refreshUserInfo();
             toast({
                 title: "Profile Updated",
@@ -54,21 +51,6 @@ export default function SellerSettingsPage() {
         });
     };
     
-    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAvatarUrl(reader.result as string);
-                 toast({
-                    title: "Avatar Updated",
-                    description: "Your new avatar has been set. Click 'Save Changes' to confirm.",
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
     if (authLoading) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
@@ -85,46 +67,6 @@ export default function SellerSettingsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2 space-y-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Contact Person Information</CardTitle>
-                            <CardDescription>Update your personal details here.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src={avatarUrl} alt={fullName} />
-                                    <AvatarFallback>{fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-grow">
-                                    <Label htmlFor="avatar-upload" className="block text-sm font-medium mb-1">Update Avatar</Label>
-                                    <div className="relative">
-                                        <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24" />
-                                        <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
-                                            <Button asChild variant="outline" className="rounded-l-none -ml-px">
-                                                <div><Upload className="mr-2"/>Upload</div>
-                                            </Button>
-                                        </label>
-                                        <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email Address</Label>
-                                <Input id="email" type="email" value={email} readOnly disabled/>
-                            </div>
-                        </CardContent>
-                        <div className="p-6 pt-0">
-                            <Button onClick={handleInfoSave} disabled={isSaving}>
-                                {isSaving ? <Loader2 className="mr-2 animate-spin"/> : null}
-                                Save Changes
-                            </Button>
-                        </div>
-                    </Card>
                     <Card>
                         <CardHeader>
                             <CardTitle>Change Password</CardTitle>

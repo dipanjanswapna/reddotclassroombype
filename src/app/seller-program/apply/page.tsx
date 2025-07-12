@@ -154,7 +154,7 @@ export default function SellerApplicationPage() {
             <div className="grid gap-2">
                 <Label htmlFor="subdomain">Preferred Site Path</Label>
                 <div className="flex items-center">
-                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">rdc.com/sites/</span>
+                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-secondary text-sm text-muted-foreground">rdc.vercel.app/sites/</span>
                     <Input id="subdomain" name="subdomain" placeholder="your-company-name" className="rounded-l-none" required />
                 </div>
                 <p className="text-xs text-muted-foreground">This will be your dedicated storefront address.</p>
