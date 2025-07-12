@@ -437,7 +437,7 @@ export default function Home() {
             </div>
           </section>
         )}
-
+        
         {homepageConfig.requestCallbackSection?.display && (
             <section className="bg-background">
                 <div className="container mx-auto px-4">
