@@ -1,5 +1,4 @@
 
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -54,19 +53,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-          <AuthProvider>
-            <LanguageProvider>
-              <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
-              <Toaster />
-            </LanguageProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
         <Script id="tawk-to-script" strategy="lazyOnload">
           {`
             var Tawk_API=Tawk_API||{};
