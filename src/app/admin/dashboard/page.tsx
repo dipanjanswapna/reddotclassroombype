@@ -12,6 +12,16 @@ export const metadata: Metadata = {
     description: 'Platform-wide overview and management tools.',
 };
 
+// Serializable types for client components
+export type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounseledAt' | 'studyPlan'> & { 
+    joined: string, 
+    lastLoginAt?: string,
+    lastCounseledAt?: string,
+    studyPlan?: StudyPlanEvent[],
+};
+export type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & { enrollmentDate: string };
+
+
 export default async function AdminDashboardPage() {
   const [courses, usersData, enrollmentsData]: [Course[], User[], Enrollment[]] = await Promise.all([
     getCourses(),
@@ -20,7 +30,7 @@ export default async function AdminDashboardPage() {
   ]);
 
   // Serialize Timestamps to strings before passing to Client Component
-  const users = usersData.map(user => ({
+  const users: SerializableUser[] = usersData.map(user => ({
     ...user,
     joined: safeToDate(user.joined).toISOString(),
     lastLoginAt: user.lastLoginAt ? safeToDate(user.lastLoginAt).toISOString() : undefined,
@@ -28,7 +38,7 @@ export default async function AdminDashboardPage() {
     studyPlan: user.studyPlan,
   }));
 
-  const enrollments = enrollmentsData.map(enrollment => ({
+  const enrollments: SerializableEnrollment[] = enrollmentsData.map(enrollment => ({
     ...enrollment,
     enrollmentDate: safeToDate(enrollment.enrollmentDate).toISOString(),
   }));

@@ -1,6 +1,7 @@
 
 'use client';
 
+import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -14,7 +15,7 @@ type CourseCardProps = Partial<Course> & {
   provider?: Organization | null;
 };
 
-export function CourseCard(props: CourseCardProps) {
+const CourseCardComponent = (props: CourseCardProps) => {
   const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
   
   if (!id || !title || !imageUrl) {
@@ -86,3 +87,5 @@ export function CourseCard(props: CourseCardProps) {
     </Card>
   );
 }
+
+export const CourseCard = React.memo(CourseCardComponent);

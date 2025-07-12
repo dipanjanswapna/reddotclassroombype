@@ -11,6 +11,12 @@ import {
 } from '@/components/ui/carousel';
 import { CourseCard } from '@/components/course-card';
 import type { Course, Organization } from '@/lib/types';
+import dynamic from 'next/dynamic';
+
+const DynamicCourseCard = dynamic(() => import('@/components/course-card').then(mod => mod.CourseCard), {
+    ssr: false,
+});
+
 
 export function LiveCoursesCarousel({ courses, providers }: { courses: Course[], providers?: Organization[] }) {
   if (!courses || courses.length === 0) {
@@ -25,7 +31,7 @@ export function LiveCoursesCarousel({ courses, providers }: { courses: Course[],
           return (
             <CarouselItem key={course.id} className="md:basis-1/2 lg:basis-1/4">
               <div className="p-1">
-                <CourseCard {...course} provider={provider} partnerSubdomain={provider?.subdomain}/>
+                <DynamicCourseCard {...course} provider={provider} partnerSubdomain={provider?.subdomain}/>
               </div>
             </CarouselItem>
           );

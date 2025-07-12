@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -7,8 +8,6 @@ import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 import Script from 'next/script';
-import { Suspense } from 'react';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
 
 const fontInter = Inter({
@@ -55,11 +54,9 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-         <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><LoadingSpinner/></div>}>
-            <LayoutWrapper homepageConfig={homepageConfig}>
-                {children}
-            </LayoutWrapper>
-        </Suspense>
+        <LayoutWrapper homepageConfig={homepageConfig}>
+            {children}
+        </LayoutWrapper>
         <Script id="tawk-to-script" strategy="lazyOnload">
           {`
             var Tawk_API=Tawk_API||{};
