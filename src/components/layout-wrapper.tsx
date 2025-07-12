@@ -49,7 +49,7 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
             isDashboardPage && "bg-background"
         )}>
             <Header />
-            <main className={cn(isDashboardPage ? "flex-grow" : "")}>
+            <main className={cn("flex-grow", isDashboardPage && "flex-grow")}>
               {children}
             </main>
             {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
