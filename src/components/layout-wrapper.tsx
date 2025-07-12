@@ -57,7 +57,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
 
   // Default layout for all other pages (e.g., home, about, contact, and now 404)
   return (
-    <div className={cn("min-h-screen flex flex-col", !isHomePage && "bg-background")}>
+    <div className={cn("min-h-screen flex flex-col", isHomePage ? "bg-[#FFFDF6]" : "bg-background")}>
       <Header />
       <main>{children}</main>
       <Footer homepageConfig={homepageConfig}/>
