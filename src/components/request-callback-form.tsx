@@ -57,7 +57,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
             class: "12th+",
             goals: "NEET",
             preferredCourses: "Online Courses",
-            state: "Andaman and Nicobar Islands",
+            state: "Bangladesh",
         },
     });
 
@@ -124,7 +124,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                     <FormItem>
                                     <FormLabel>Mobile Number*</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: +919876543210" {...field} />
+                                        <Input placeholder="Ex: +8801700000000" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
@@ -143,9 +143,13 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="11th">11th</SelectItem>
-                                        <SelectItem value="12th">12th</SelectItem>
                                         <SelectItem value="12th+">12th+</SelectItem>
+                                        <SelectItem value="11th">11th</SelectItem>
+                                        <SelectItem value="10th">10th</SelectItem>
+                                        <SelectItem value="9th">9th</SelectItem>
+                                        <SelectItem value="8th">8th</SelectItem>
+                                        <SelectItem value="7th">7th</SelectItem>
+                                        <SelectItem value="6th">6th</SelectItem>
                                     </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -167,7 +171,9 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                     <SelectContent>
                                         <SelectItem value="NEET">NEET</SelectItem>
                                         <SelectItem value="JEE">JEE</SelectItem>
-                                        <SelectItem value="CUET">CUET</SelectItem>
+                                        <SelectItem value="Board Exams">Board Exams</SelectItem>
+                                        <SelectItem value="University Admission">University Admission</SelectItem>
+                                        <SelectItem value="Other">Other</SelectItem>
                                     </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -189,6 +195,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                     <SelectContent>
                                         <SelectItem value="Online Courses">Online Courses</SelectItem>
                                         <SelectItem value="Offline Courses">Offline Courses</SelectItem>
+                                        <SelectItem value="Both">Both</SelectItem>
                                     </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -208,9 +215,15 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
+                                        <SelectItem value="Dhaka">Dhaka</SelectItem>
+                                        <SelectItem value="Chattogram">Chattogram</SelectItem>
+                                        <SelectItem value="Khulna">Khulna</SelectItem>
+                                        <SelectItem value="Rajshahi">Rajshahi</SelectItem>
+                                        <SelectItem value="Barishal">Barishal</SelectItem>
+                                        <SelectItem value="Sylhet">Sylhet</SelectItem>
+                                        <SelectItem value="Rangpur">Rangpur</SelectItem>
+                                        <SelectItem value="Mymensingh">Mymensingh</SelectItem>
                                         <SelectItem value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</SelectItem>
-                                        <SelectItem value="Bangladesh">Bangladesh</SelectItem>
-                                        <SelectItem value="India">India</SelectItem>
                                     </SelectContent>
                                     </Select>
                                     <FormMessage />

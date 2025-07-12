@@ -625,9 +625,13 @@ export type CallbackRequest = {
   goals: string;
   preferredCourses: string;
   state: string;
-  createdAt: Timestamp;
-  status: 'pending' | 'contacted' | 'closed';
+  requestedAt: Timestamp;
+  status: 'Pending' | 'Contacted' | 'Completed';
+  contactedAt?: Timestamp;
+  contactedBy?: string;
+  notes?: string;
 };
+
 
 export type HomepageConfig = {
   id?: string;
