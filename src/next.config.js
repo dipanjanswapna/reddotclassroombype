@@ -58,7 +58,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cdni.iconscout.com',
+        hostname: 'static.vecteezy.com',
         port: '',
         pathname: '/**',
       },
