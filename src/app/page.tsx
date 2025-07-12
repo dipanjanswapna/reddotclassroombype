@@ -123,7 +123,7 @@ export default function Home() {
         <section className="bg-primary/5 dark:bg-transparent py-12 text-center">
             <div className="container mx-auto px-4">
                 <h1 className="text-4xl font-bold tracking-tight text-primary">
-                    {homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en']}
+                    {homepageConfig.welcomeSection?.title?.['bn'] === '\" RED DOT CLASSROOM \"' ? 'RED DOT CLASSROOM' : (homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en'])}
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
                     {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}

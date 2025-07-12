@@ -49,7 +49,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({ courses, users, enrollments }: DashboardClientProps) {
     // --- Data Processing for Charts ---
-    // Revenue Data (mocking monthly data)
+    // Revenue Data
     const revenueData = [
       { name: 'Jan', total: 0 },
       { name: 'Feb', total: 0 },

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from "next/image";
@@ -27,8 +26,6 @@ export function CourseCard(props: CourseCardProps) {
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
-  const isOfflineCourse = type === 'Offline' || type === 'Hybrid';
-
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-gray-800 text-white border-gray-700 group">
       <CardHeader className="p-0 overflow-hidden relative">
