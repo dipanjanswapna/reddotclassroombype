@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -805,6 +804,10 @@ export type HomepageConfig = {
   };
   rdcShopBanner?: {
     display: boolean;
+    imageUrl: string;
+    dataAiHint: string;
+  };
+  requestCallbackSection?: {
     imageUrl: string;
     dataAiHint: string;
   };

@@ -498,11 +498,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
         id: "member2",
         name: "Fairoz Khaled Ohi",
         title: "Founder & CEO",
-        imageUrl: "https://placehold.co/400x500.png",
+        imageUrl: "https://scontent.fdac138-1.fna.fbcdn.net/v/t39.30808-6/487076226_1889375535134421_6130098570179736415_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=thUcU8J7ROoQ7kNvwHydEuI&_nc_oc=AdkINDyf5C7UuRWfgDQyNEz_HhUDKaJST56WCdAl3zayEO_cE2al7Ql8zuHafoE7Ffo&_nc_zt=23&_nc_ht=scontent.fdac138-1.fna&_nc_gid=sqmiXKg937KPft7-jqGDjw&oh=00_AfS2Es-aZsQKwAQAGcDuKtslTnT_8yswe3d9swIMUJkyUw&oe=6872D6A4",
         dataAiHint: "founder person",
         socialLinks: [
-          { platform: 'facebook', url: '#' },
-          { platform: 'external', url: '#' }
+          { platform: 'facebook', url: 'https://www.facebook.com/dipanjanswapna2' }
         ]
       }
     ]
@@ -584,10 +583,14 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   appPromo: {
     display: true,
-    title: { bn: 'RDC অ্যাপ ডাউনলোড করুন', en: 'Download the RDC App' },
+    title: { bn: 'আমাদের অ্যাপ ডাউনলোড করুন', en: 'Download our App' },
     description: { bn: 'আমাদের অ্যাপ ডাউনলোড করে আপনার শেখার অভিজ্ঞতাকে আরও সহজ করুন।', en: 'Make your learning experience easier by downloading our app.' },
     googlePlayUrl: '#',
     appStoreUrl: '#',
+  },
+  requestCallbackSection: {
+    imageUrl: 'https://i.imgur.com/GZ0gQfN.png',
+    dataAiHint: 'student illustration',
   },
   floatingWhatsApp: {
       display: true,
@@ -603,7 +606,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     title: "যেভাবে আমরা তোমাকে সাহায্য করবো টপার হতে!",
     mainImageUrl: "https://i.imgur.com/GZ0gQfN.png",
-    mainImageDataAiHint: "students success celebration",
+    mainImageDataAiHint: "happy student celebrating",
     cards: [
         {id: "card1", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'book icon', title: "Weekly Master Plan", description: "সপ্তাহ শুরু হওয়ার আগেই রুটিন করে দেয়া হবে।"},
         {id: "card2", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'exam icon', title: "Daily Exam", description: "প্রতিদিনের ক্লাস বা লেকচারের উপর ভিত্তি করে পরীক্ষা।"},

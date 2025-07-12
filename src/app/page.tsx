@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -416,11 +417,13 @@ export default function Home() {
           </section>
         )}
 
-        <section className="bg-background">
-            <div className="container mx-auto px-4">
-                <RequestCallbackForm />
-            </div>
-        </section>
+        {homepageConfig.requestCallbackSection && (
+            <section className="bg-background">
+                <div className="container mx-auto px-4">
+                    <RequestCallbackForm homepageConfig={homepageConfig} />
+                </div>
+            </section>
+        )}
 
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">

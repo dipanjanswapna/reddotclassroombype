@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +29,7 @@ import { useState } from "react";
 import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { addCallbackRequest } from "@/app/actions/callback.actions";
+import { HomepageConfig } from "@/lib/types";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -42,9 +44,10 @@ const formSchema = z.object({
   state: z.string(),
 });
 
-export function RequestCallbackForm() {
+export function RequestCallbackForm({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const callbackSection = homepageConfig?.requestCallbackSection;
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -88,12 +91,12 @@ export function RequestCallbackForm() {
             <div className="grid md:grid-cols-2">
                 <div className="hidden md:flex items-center justify-center bg-[#eef5ff] dark:bg-gray-800 p-8">
                      <Image
-                        src="https://i.imgur.com/GZ0gQfN.png"
+                        src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
                         alt="Happy student requesting a callback"
                         width={300}
                         height={400}
                         className="object-contain"
-                        data-ai-hint="student illustration"
+                        data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
                     />
                 </div>
                 <div className="p-6 md:p-8 bg-[#f7faff] dark:bg-gray-900/50">

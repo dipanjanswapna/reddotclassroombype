@@ -481,6 +481,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'notesBanner', label: 'Notes Banner' },
     { key: 'statsSection', label: 'Stats Section' },
     { key: 'appPromo', label: 'App Promo Section' },
+    { key: 'requestCallbackSection', label: 'Request Callback Section'},
   ] as const;
 
   const handleSectionToggle = (sectionKey: typeof allSections[number]['key'], value: boolean) => {
@@ -664,6 +665,19 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-2">
                     <div className="space-y-1"><Label>Title (BN)</Label><Input value={config.appPromo?.title?.bn || ''} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo?.title, bn: e.target.value })} /></div>
                     <div className="space-y-1"><Label>Description (BN)</Label><Textarea value={config.appPromo?.description?.bn || ''} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo?.description, bn: e.target.value })} /></div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Request Callback Section</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Image URL</Label>
+                        <Input value={config.requestCallbackSection?.imageUrl || ''} onChange={e => handleSectionValueChange('requestCallbackSection', 'imageUrl', e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label>Image AI Hint</Label>
+                        <Input value={config.requestCallbackSection?.dataAiHint || ''} onChange={e => handleSectionValueChange('requestCallbackSection', 'dataAiHint', e.target.value)} />
+                    </div>
                 </CardContent>
             </Card>
         </TabsContent>
