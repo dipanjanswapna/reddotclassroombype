@@ -313,7 +313,7 @@ export async function markAsGroupAccessedAction(enrollmentId: string, adminId: s
             description: notificationDescription,
             date: Timestamp.now(),
             read: false,
-            link: cycle ? cycle.communityUrl : course.communityUrl,
+            link: cycle?.communityUrl || course.communityUrl,
         });
         
         return { success: true, message: 'Student marked as added and notified.' };

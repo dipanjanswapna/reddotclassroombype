@@ -154,8 +154,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
       (selectedCycle 
         ? selectedCycle.price
         : (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!
-      )
-      .replace(/[^0-9.]/g, '')
+      )?.replace(/[^0-9.]/g, '') || '0'
   );
 
   const courseDiscount = listPrice - effectivePrice;
