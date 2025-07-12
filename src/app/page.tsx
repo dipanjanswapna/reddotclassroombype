@@ -154,7 +154,7 @@ export default function Home() {
                     <p className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</p>
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                    {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
+                    {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['bn']}
                 </p>
             </div>
         </section>
