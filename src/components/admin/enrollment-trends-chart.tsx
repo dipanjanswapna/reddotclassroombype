@@ -7,7 +7,7 @@ interface ChartProps {
   data: { name: string; total: number }[];
 }
 
-export function EnrollmentTrendsChart({ data }: ChartProps) {
+export default function EnrollmentTrendsChart({ data }: ChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <AreaChart data={data}>

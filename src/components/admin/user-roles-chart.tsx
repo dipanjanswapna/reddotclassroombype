@@ -9,7 +9,7 @@ interface UserRolesChartProps {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1943'];
 
-export function UserRolesChart({ data }: UserRolesChartProps) {
+export default function UserRolesChart({ data }: UserRolesChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <PieChart>

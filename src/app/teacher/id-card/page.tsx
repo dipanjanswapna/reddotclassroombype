@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { IdCardView } from "@/components/id-card-view";
 import { useAuth } from "@/context/auth-context";
 import { getInstructorByUid } from "@/lib/firebase/firestore";
 import type { Instructor } from "@/lib/types";
@@ -10,6 +9,14 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { safeToDate } from "@/lib/utils";
+import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
+
+const IdCardView = dynamic(() => import('@/components/id-card-view').then(mod => mod.IdCardView), {
+  loading: () => <Skeleton className="h-[525px] w-full max-w-[330px] rounded-2xl" />,
+  ssr: false,
+});
+
 
 export default function TeacherIdCardPage() {
     const { userInfo, loading: authLoading } = useAuth();

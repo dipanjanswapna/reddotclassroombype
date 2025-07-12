@@ -1,11 +1,17 @@
 
 'use client';
 
-import { IdCardView } from "@/components/id-card-view";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
+import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
+
+const IdCardView = dynamic(() => import('@/components/id-card-view').then(mod => mod.IdCardView), {
+  loading: () => <Skeleton className="h-[525px] w-full max-w-[330px] rounded-2xl" />,
+  ssr: false,
+});
 
 
 export default function GuardianIdCardPage() {

@@ -7,7 +7,7 @@ interface ChartProps {
   data: { name: string; total: number }[];
 }
 
-export function UserGrowthChart({ data }: ChartProps) {
+export default function UserGrowthChart({ data }: ChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={data}>
