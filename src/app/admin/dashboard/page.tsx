@@ -19,7 +19,14 @@ export type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounse
     lastCounseledAt?: string,
     studyPlan?: StudyPlanEvent[],
 };
-export type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & { enrollmentDate: string };
+
+export type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate' | 'groupAccessedAt' | 'paymentDetails'> & { 
+    enrollmentDate: string;
+    groupAccessedAt?: string;
+    paymentDetails?: {
+        date: string;
+    } & Omit<NonNullable<Enrollment['paymentDetails']>, 'date'>
+};
 
 
 export default async function AdminDashboardPage() {
@@ -38,10 +45,24 @@ export default async function AdminDashboardPage() {
     studyPlan: user.studyPlan,
   }));
 
-  const enrollments: SerializableEnrollment[] = enrollmentsData.map(enrollment => ({
-    ...enrollment,
-    enrollmentDate: safeToDate(enrollment.enrollmentDate).toISOString(),
-  }));
+  const enrollments: SerializableEnrollment[] = enrollmentsData.map(enrollment => {
+      const { enrollmentDate, groupAccessedAt, ...rest } = enrollment;
+
+      const serializablePaymentDetails = rest.paymentDetails
+        ? {
+            ...rest.paymentDetails,
+            date: safeToDate(rest.paymentDetails.date).toISOString()
+          }
+        : undefined;
+
+      return {
+        ...rest,
+        enrollmentDate: safeToDate(enrollmentDate).toISOString(),
+        groupAccessedAt: groupAccessedAt ? safeToDate(groupAccessedAt).toISOString() : undefined,
+        paymentDetails: serializablePaymentDetails,
+      } as SerializableEnrollment;
+  });
+
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
