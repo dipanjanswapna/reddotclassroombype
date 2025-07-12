@@ -356,6 +356,21 @@ export const getCallbackRequests = () => getCollection<CallbackRequest>('callbac
 export const updateCallbackRequest = (id: string, data: Partial<CallbackRequest>) => updateDoc(doc(db, 'callbacks', id), data);
 
 
+// Homepage Configuration
+export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+    const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        const docData = querySnapshot.docs[0];
+        return { id: docData.id, ...docData.data() } as BlogPost;
+    }
+    return null;
+}
+export const addBlogPost = (post: Partial<BlogPost>) => addDoc(collection(db, 'blog_posts'), post);
+export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(db, 'blog_posts', id), post);
+export const deleteBlogPost = (id: string) => deleteDoc(doc(db, 'blog_posts', id));
+
 const defaultPlatformSettings: PlatformSettings = {
     Student: { signupEnabled: true, loginEnabled: true },
     Teacher: { signupEnabled: true, loginEnabled: true },
@@ -606,6 +621,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     dataAiHint: "students sale offer"
   },
   requestCallbackSection: {
+    display: true,
     imageUrl: "https://i.imgur.com/GZ0gQfN.png",
     dataAiHint: "student illustration"
   },

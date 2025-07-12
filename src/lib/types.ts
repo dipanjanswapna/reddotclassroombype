@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -813,6 +812,7 @@ export type HomepageConfig = {
     dataAiHint: string;
   };
   requestCallbackSection?: {
+    display: boolean;
     imageUrl: string;
     dataAiHint: string;
   };

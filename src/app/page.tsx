@@ -151,7 +151,7 @@ export default function Home() {
             <div className="container mx-auto px-4">
                  <h1 className="text-4xl text-primary flex justify-center items-center gap-4">
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 md:h-16 w-auto" priority />
-                    <span className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</span>
+                    <p className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</p>
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
                     {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
