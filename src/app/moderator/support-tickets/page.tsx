@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { format } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 const getStatusBadgeVariant = (status: SupportTicket['status']) => {
   switch (status) {
@@ -49,21 +49,22 @@ export default function ModeratorSupportTicketsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reply, setReply] = useState('');
 
+  const fetchTickets = async () => {
+    try {
+        const fetchedTickets = await getSupportTickets();
+        const sortedTickets = fetchedTickets.sort((a, b) => safeToDate(b.updatedAt).getTime() - safeToDate(a.updatedAt).getTime());
+        setTickets(sortedTickets);
+    } catch (error) {
+        console.error("Failed to fetch tickets:", error);
+        toast({ title: 'Error', description: 'Could not fetch support tickets.', variant: 'destructive' });
+    } finally {
+        setLoading(false);
+    }
+  }
+
   useEffect(() => {
-      async function fetchTickets() {
-          try {
-              const fetchedTickets = await getSupportTickets();
-              const sortedTickets = fetchedTickets.sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis());
-              setTickets(sortedTickets);
-          } catch (error) {
-              console.error("Failed to fetch tickets:", error);
-              toast({ title: 'Error', description: 'Could not fetch support tickets.', variant: 'destructive' });
-          } finally {
-              setLoading(false);
-          }
-      }
       fetchTickets();
-  }, [toast]);
+  }, []);
 
   const handleOpenDialog = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
@@ -78,8 +79,7 @@ export default function ModeratorSupportTicketsPage() {
     const result = await replyToSupportTicketAction(selectedTicket.id, reply);
 
     if (result.success) {
-        const updatedTickets = await getSupportTickets();
-        setTickets(updatedTickets.sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis()));
+        await fetchTickets();
         toast({ title: 'Reply Sent!', description: 'Your reply has been sent to the user.' });
         setIsDialogOpen(false);
     } else {
@@ -93,7 +93,7 @@ export default function ModeratorSupportTicketsPage() {
       setIsReplying(true); // Reuse loading state
       const result = await closeSupportTicketAction(selectedTicket.id);
       if (result.success) {
-          setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, status: 'Closed' } : t).sort((a, b) => b.updatedAt.toMillis() - a.updatedAt.toMillis()));
+          await fetchTickets();
           toast({ title: 'Ticket Closed', description: 'The support ticket has been marked as closed.' });
           setIsDialogOpen(false);
       } else {
@@ -149,7 +149,7 @@ export default function ModeratorSupportTicketsPage() {
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(ticket.status)}>{ticket.status}</Badge>
                   </TableCell>
-                  <TableCell>{format(ticket.updatedAt.toDate(), 'PPP p')}</TableCell>
+                  <TableCell>{format(safeToDate(ticket.updatedAt), 'PPP p')}</TableCell>
                   <TableCell className="text-right">
                       <Button variant="outline" size="sm" onClick={() => handleOpenDialog(ticket)}>View & Reply</Button>
                   </TableCell>
@@ -172,14 +172,14 @@ export default function ModeratorSupportTicketsPage() {
                   <DialogTitle>Ticket: {selectedTicket?.subject}</DialogTitle>
                   <DialogDescription>
                     From: {selectedTicket?.userName} |
-                    Created: {selectedTicket && format(selectedTicket.createdAt.toDate(), 'PPP p')}
+                    Created: {selectedTicket && format(safeToDate(selectedTicket.createdAt), 'PPP p')}
                     {selectedTicket?.category === 'Guardian Inquiry' && ` | For: ${selectedTicket.recipient}`}
                   </DialogDescription>
               </DialogHeader>
               <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
                  {selectedTicket?.replies.map((r, index) => (
                     <div key={index} className="space-y-2">
-                        <p className="font-semibold">{r.author}'s Reply ({format(r.date.toDate(), 'PPP p')}):</p>
+                        <p className="font-semibold">{r.author}'s Reply ({format(safeToDate(r.date), 'PPP p')}):</p>
                         <p className={`p-3 border rounded-md text-sm ${r.author === 'Support' ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-muted'}`}>{r.message}</p>
                     </div>
                  ))}

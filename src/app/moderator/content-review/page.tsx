@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { AlertTriangle, Trash2, Check, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import { safeToDate } from '@/lib/utils';
 
 export default function ContentReviewPage() {
     const { toast } = useToast();
@@ -101,7 +102,7 @@ export default function ContentReviewPage() {
                                             {report.courseTitle} <ExternalLink className="inline h-3 w-3" />
                                         </Link>
                                     </TableCell>
-                                    <TableCell>{format(report.createdAt.toDate(), 'PPP p')}</TableCell>
+                                    <TableCell>{format(safeToDate(report.createdAt), 'PPP p')}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex gap-2 justify-end">
                                             <Button size="sm" variant="outline" onClick={() => handleDismiss(report.id!)}><Check className="mr-2 h-4 w-4 text-green-500" /> Dismiss</Button>

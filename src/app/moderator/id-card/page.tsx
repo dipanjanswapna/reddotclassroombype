@@ -1,4 +1,3 @@
-
 'use client';
 
 import { IdCardView } from "@/components/id-card-view";

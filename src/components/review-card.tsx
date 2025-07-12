@@ -9,6 +9,9 @@ import { useAuth } from '@/context/auth-context';
 import { Review } from '@/lib/types';
 import { reportReviewAction } from '@/app/actions/report.actions';
 import { Badge } from './ui/badge';
+import { cn } from '@/lib/utils';
+import { safeToDate } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface ReviewCardProps {
   review: Review;
@@ -51,7 +54,7 @@ export function ReviewCard({ review, courseId }: ReviewCardProps) {
         <div className="flex items-center justify-between">
           <p className="font-semibold">{review.user.name}</p>
           <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground">{review.date}</p>
+            <p className="text-xs text-muted-foreground">{format(safeToDate(review.date), 'PPP')}</p>
             {isReported ? (
                 <Badge variant="destructive">Reported</Badge>
             ) : (

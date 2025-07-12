@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -39,7 +38,7 @@ export default function ModeratorProfilePage() {
         if (!userInfo?.id) return;
         setIsSaving(true);
         try {
-            await saveUserAction({ id: userInfo.id, name: fullName, email, avatarUrl });
+            await saveUserAction({ id: userInfo.id, name: fullName, avatarUrl });
             await refreshUserInfo();
             toast({
                 title: "Profile Updated",

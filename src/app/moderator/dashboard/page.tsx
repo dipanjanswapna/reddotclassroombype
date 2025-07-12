@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,6 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { getSupportTickets, getUsers } from '@/lib/firebase/firestore';
 import { SupportTicket, User } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
+import { safeToDate } from '@/lib/utils';
 
 export default function ModeratorDashboardPage() {
     const { toast } = useToast();
@@ -37,7 +37,7 @@ export default function ModeratorDashboardPage() {
                 ]);
 
                 const openTickets = allTickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
-                const sortedTickets = allTickets.sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                const sortedTickets = allTickets.sort((a,b) => safeToDate(b.createdAt).getTime() - safeToDate(a.createdAt).getTime());
                 
                 setStats(prev => ({
                     ...prev,
@@ -125,7 +125,7 @@ export default function ModeratorDashboardPage() {
                             <TableRow key={ticket.id}>
                                 <TableCell><Badge variant='warning'>Ticket</Badge></TableCell>
                                 <TableCell>New ticket from {ticket.userName}: "{ticket.subject}"</TableCell>
-                                <TableCell>{formatDistanceToNow(ticket.createdAt.toDate(), { addSuffix: true })}</TableCell>
+                                <TableCell>{formatDistanceToNow(safeToDate(ticket.createdAt), { addSuffix: true })}</TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">
                                         <Link href="/moderator/support-tickets">View</Link>
