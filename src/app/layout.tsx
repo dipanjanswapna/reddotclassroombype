@@ -2,15 +2,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
-import { LanguageProvider } from '@/context/language-context';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
-import { AuthProvider } from '@/context/auth-context';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 import Script from 'next/script';
-import { ThemeProvider } from '@/components/theme-provider';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -53,7 +49,9 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-        <LayoutWrapper homepageConfig={homepageConfig}>{children}</LayoutWrapper>
+        <LayoutWrapper homepageConfig={homepageConfig}>
+            {children}
+        </LayoutWrapper>
         <Script id="tawk-to-script" strategy="lazyOnload">
           {`
             var Tawk_API=Tawk_API||{};

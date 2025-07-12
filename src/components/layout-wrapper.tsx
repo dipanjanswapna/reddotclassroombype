@@ -13,7 +13,7 @@ import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { Toaster } from './ui/toaster';
 
 
-const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig }) => {
+const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) => {
   const pathname = usePathname();
   const { language } = useLanguage();
 
@@ -52,8 +52,8 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
             <main className={cn(isDashboardPage ? "flex-grow" : "")}>
               {children}
             </main>
-            {!isDashboardPage && <Footer homepageConfig={homepageConfig} />}
-             {homepageConfig.floatingWhatsApp?.display && (
+            {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+             {homepageConfig?.floatingWhatsApp?.display && (
                 <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
             )}
         </div>
@@ -70,7 +70,7 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
  * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
  * interfaces, to have distinct layouts.
  */
-export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig }) {
+export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
  return (
      <ThemeProvider
         attribute="class"

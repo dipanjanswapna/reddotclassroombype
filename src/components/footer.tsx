@@ -17,7 +17,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig }) {
   const isHomePage = pathname === '/';
 
   return (
-    <footer className={cn("border-t", isHomePage ? "bg-[#f5f3ef]" : "bg-background")}>
+    <footer className={cn("border-t", isHomePage ? "bg-transparent" : "bg-background")}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
