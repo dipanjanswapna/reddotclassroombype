@@ -37,8 +37,6 @@ import { useAuth } from "@/context/auth-context";
 import Image from "next/image";
 import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "./theme-toggle";
-
 
 export function Header({ containerClassName, variant = "light", wrapperClassName }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -104,7 +102,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-2">
-                  <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
                   {!user && (
