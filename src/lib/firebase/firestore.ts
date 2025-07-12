@@ -609,8 +609,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   topperPageSection: {
     display: true,
     title: "যেভাবে আমরা তোমাকে সাহায্য করবো টপার হতে!",
-    mainImageUrl: "https://placehold.co/600x600.png",
-    mainImageDataAiHint: "happy student celebrating",
+    mainImageUrl: "https://i.imgur.com/GZ0gQfN.png",
+    mainImageDataAiHint: "student success illustration",
     cards: [
         {id: "card1", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'book icon', title: "Weekly Master Plan", description: "সপ্তাহ শুরু হওয়ার আগেই রুটিন করে দেয়া হবে।"},
         {id: "card2", iconUrl: "https://placehold.co/64x64.png", dataAiHint: 'exam icon', title: "Daily Exam", description: "প্রতিদিনের ক্লাস বা লেকচারের উপর ভিত্তি করে পরীক্ষা।"},

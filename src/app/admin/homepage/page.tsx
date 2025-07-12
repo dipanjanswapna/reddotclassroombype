@@ -333,7 +333,7 @@ export default function AdminHomepageManagementPage() {
     setConfig(prev => {
         if (!prev || !prev.socialMediaSection) return null;
         const newChannels = prev.socialMediaSection.channels.filter(c => c.id !== id);
-        return { ...prev, socialMediaSection: { ...prev.socialMediaSection, channels: newChannels } };
+        return { ...prev, socialMediaSection: { ...socialMediaSection, channels: newChannels } };
     });
   };
 
