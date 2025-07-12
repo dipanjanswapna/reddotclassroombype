@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { LayoutWrapper } from '@/components/layout-wrapper';
-import { Inter, Poppins, Hind_Siliguri, Lilita_One } from 'next/font/google';
+import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 
@@ -26,13 +26,6 @@ const fontHindSiliguri = Hind_Siliguri({
   subsets: ['bengali', 'latin'],
   weight: ['400', '700'],
   variable: '--font-bengali',
-  display: 'swap',
-});
-
-const fontLilitaOne = Lilita_One({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-squid',
   display: 'swap',
 });
 
@@ -58,7 +51,7 @@ export default async function RootLayout({
   const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable, fontLilitaOne.variable)}>
+      <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
         <LayoutWrapper homepageConfig={homepageConfig}>
             {children}
         </LayoutWrapper>

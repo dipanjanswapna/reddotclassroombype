@@ -1,4 +1,5 @@
 
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -20,7 +21,6 @@ export default {
         body: ['var(--font-inter)', 'sans-serif'],
         headline: ['var(--font-poppins)', 'sans-serif'],
         bengali: ['var(--font-bengali)', 'sans-serif'],
-        squid: ['var(--font-squid)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
