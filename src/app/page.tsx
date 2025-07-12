@@ -14,6 +14,7 @@ import {
   Facebook,
   Video,
   ThumbsUp,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -162,12 +163,13 @@ export default function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8 bg-background">
               <div className="container mx-auto px-4">
-                  <div className="bg-primary/10 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
-                      <div className="flex items-center gap-4 text-center md:text-left">
+                  <div className="group relative bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 overflow-hidden">
+                      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
+                      <div className="flex items-center gap-4 text-center md:text-left z-10">
                           <Image
                               src={homepageConfig.strugglingStudentSection.imageUrl}
                               alt="Struggling in studies illustration"
-                              width={150}
+                              width={120}
                               height={100}
                               className="hidden sm:block object-contain"
                               data-ai-hint="student family studying"
@@ -181,9 +183,10 @@ export default function Home() {
                               </p>
                           </div>
                       </div>
-                      <Button asChild className="font-bold shrink-0" style={{backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))'}}>
+                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300">
                           <Link href="/strugglers-studies">
                               {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
+                               <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                       </Button>
                   </div>
@@ -466,3 +469,4 @@ export default function Home() {
     </div>
   );
 }
+
