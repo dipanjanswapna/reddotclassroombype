@@ -27,7 +27,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
   }
   
   const titleText = data.title?.[language] || data.title?.['bn'] || '';
-  const renderedTitle = titleText.replace(/RDC/g, `<span style={{color: 'hsl(var(--primary))'}}>RDC</span>`);
+  const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
     <section className={cn("py-16 overflow-hidden", isHomePage ? "bg-transparent" : "bg-background")}>
@@ -35,7 +35,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
         <div className={cn("rounded-3xl p-8 md:p-12", isHomePage ? "bg-[#f5f3ef]" : "bg-primary/5")}>
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-                <h2 className="font-headline text-4xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: renderedTitle.replace('text-primary', 'text-[#a16207]') }} />
+                <h2 className="font-headline text-4xl font-bold text-[#403d39]" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
                 <p className="text-lg text-muted-foreground">
                 {data.description?.[language] || data.description?.['bn']}
                 </p>
