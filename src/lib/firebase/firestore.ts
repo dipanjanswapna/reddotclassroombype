@@ -373,7 +373,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     title: { bn: "RDC শপ", en: "RDC SHOP" },
     description: { 
       bn: "রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র, যা সারা দেশের শিক্ষার্থীদের উচ্চ-মানের শিক্ষামূলক সম্পদ প্রদানে বিশেষজ্ঞ। ২০১৮ সালে প্রতিষ্ঠিত, প্ল্যাটফর্মটি তার বিভিন্ন কোর্সের মাধ্যমে ৯০০,০০০ এরও বেশি শিক্ষার্থীর সক্রিয়ভাবে শেখার এবং তাদের দক্ষতা বিকাশের মাধ্যমে বাংলাদেশী শিক্ষার্থীদের মধ্যে দ্রুত জনপ্রিয়তা অর্জন করেছে।",
-      en: "is an online education center based in Dhaka, Bangladesh, specializing in providing high-quality educational resources to students across the country. Established in 2025, the platform has quickly gained popularity among Bangladeshi students. a platform based on prangons ecosystem." 
+      en: "Red Dot Classroom (RDC Shop) is an online education center based in Dhaka, Bangladesh, specializing in providing high-quality educational resources to students across the country. Established in 2018, the platform has quickly gained popularity among Bangladeshi students, with over 900,000 learners actively developing their skills through its diverse courses."
     }
   },
   heroBanners: [
