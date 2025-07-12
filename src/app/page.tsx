@@ -1,5 +1,7 @@
 
+'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -29,6 +31,9 @@ import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import { WhyTrustUs } from '@/components/why-trust-us';
 import downloadAppImage from '@/public/download.jpg';
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
   switch (platform) {
@@ -42,49 +47,82 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
   }
 };
 
-export default async function Home() {
-  const homepageConfig = await getHomepageConfig();
+export default function Home() {
+  const { language } = useLanguage();
+  const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
+  const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
+  const [sscHscCourses, setSscHscCourses] = React.useState<Course[]>([]);
+  const [masterClasses, setMasterClasses] = React.useState<Course[]>([]);
+  const [admissionCourses, setAdmissionCourses] = React.useState<Course[]>([]);
+  const [jobCourses, setJobCourses] = React.useState<Course[]>([]);
+  const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
+  const [approvedCollaborators, setApprovedCollaborators] = React.useState<Organization[]>([]);
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [loading, setLoading] = React.useState(true);
   
-  if (!homepageConfig) {
-    return <div className="container mx-auto p-4">Homepage configuration not found. Please set it up in the admin panel.</div>;
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const config = await getHomepageConfig();
+        setHomepageConfig(config);
+
+        const [
+            live,
+            sscHsc,
+            masters,
+            admission,
+            job,
+            instructorsData,
+            orgsData
+        ] = await Promise.all([
+            getCoursesByIds(config.liveCoursesIds || []),
+            getCoursesByIds(config.sscHscCourseIds || []),
+            getCoursesByIds(config.masterClassesIds || []),
+            getCoursesByIds(config.admissionCoursesIds || []),
+            getCoursesByIds(config.jobCoursesIds || []),
+            getInstructors(),
+            getOrganizations()
+        ]);
+        
+        setLiveCourses(live);
+        setSscHscCourses(sscHsc);
+        setMasterClasses(masters);
+        setAdmissionCourses(admission);
+        setJobCourses(job);
+        setOrganizations(orgsData);
+
+        const featuredIds = config.teachersSection?.instructorIds || [];
+        setFeaturedInstructors(instructorsData.filter(inst => 
+            inst.status === 'Approved' && featuredIds.includes(inst.id!)
+        ));
+
+        const collabIds = config.collaborations?.organizationIds || [];
+        setApprovedCollaborators(orgsData.filter(org => 
+            org.status === 'approved' && collabIds.includes(org.id!)
+        ));
+      } catch (error) {
+        console.error("Failed to fetch homepage data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading || !homepageConfig) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner className="h-12 w-12" />
+      </div>
+    );
   }
-
-  const [
-    liveCourses,
-    allInstructors,
-    sscHscCourses,
-    masterClasses,
-    admissionCourses,
-    jobCourses,
-    organizations
-  ] = await Promise.all([
-    getCoursesByIds(homepageConfig.liveCoursesIds || []),
-    getInstructors(),
-    getCoursesByIds(homepageConfig.sscHscCourseIds || []),
-    getCoursesByIds(homepageConfig.masterClassesIds || []),
-    getCoursesByIds(homepageConfig.admissionCoursesIds || []),
-    getCoursesByIds(homepageConfig.jobCoursesIds || []),
-    getOrganizations()
-  ]);
-
-  const featuredInstructorIds = homepageConfig.teachersSection?.instructorIds || [];
-  const featuredInstructors = allInstructors.filter(inst => 
-    inst.status === 'Approved' && featuredInstructorIds.includes(inst.id!)
-  );
-
-  const collaborationIds = homepageConfig.collaborations?.organizationIds || [];
-  const approvedCollaborators = organizations.filter(org => 
-    org.status === 'approved' && collaborationIds.includes(org.id!)
-  );
   
-  const language = 'bn'; // Default language
-
   return (
-    <div style={{ backgroundColor: '#1a1a2e', color: '#f0f0f0' }} className="[&>div>section:last-child]:pb-0">
+    <div className="bg-[#FFFDF6] dark:bg-[#1a1a2e] text-foreground [&>div>section:last-child]:pb-0">
       {homepageConfig.welcomeSection?.display && (
-        <section className="bg-primary/5 py-12 text-center">
+        <section className="bg-primary/5 dark:bg-transparent py-12 text-center">
             <div className="container mx-auto px-4">
-                <h1 className="text-4xl font-bold tracking-tight text-red-500">
+                <h1 className="text-4xl font-bold tracking-tight text-primary">
                     {homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en']}
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -97,7 +135,7 @@ export default async function Home() {
       
       <div>
         {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-8">
+          <section className="py-8 bg-background">
               <div className="container mx-auto px-4">
                   <div className="bg-primary/10 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
                       <div className="flex items-center gap-4 text-center md:text-left">
@@ -110,7 +148,7 @@ export default async function Home() {
                               data-ai-hint="student family studying"
                           />
                           <div>
-                              <h3 className="font-headline text-xl font-bold text-gray-800">
+                              <h3 className="font-headline text-xl font-bold text-gray-800 dark:text-gray-200">
                                   {homepageConfig.strugglingStudentSection?.title?.[language]}
                               </h3>
                               <p className="text-muted-foreground">
@@ -129,9 +167,9 @@ export default async function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section aria-labelledby="categories-heading">
+          <section aria-labelledby="categories-heading" className="bg-background">
             <div className="container mx-auto px-4">
-              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
+              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10 text-gray-800 dark:text-gray-200">
                 {homepageConfig.categoriesSection?.title?.[language]}
               </h2>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
@@ -261,9 +299,9 @@ export default async function Home() {
         )}
 
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
-          <section aria-labelledby="collaborations-heading">
+          <section aria-labelledby="collaborations-heading" className="bg-background">
             <div className="container mx-auto px-4">
-              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
                 {homepageConfig.collaborations?.title?.[language]}
               </h2>
               <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
@@ -272,9 +310,9 @@ export default async function Home() {
         )}
         
         {homepageConfig.partnersSection?.display && (
-          <section aria-labelledby="partners-heading">
+          <section aria-labelledby="partners-heading" className="bg-background">
             <div className="container mx-auto px-4">
-              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
                 {homepageConfig.partnersSection?.title?.[language]}
               </h2>
               <PartnersLogoScroll 
@@ -371,11 +409,11 @@ export default async function Home() {
         )}
 
         {homepageConfig.appPromo?.display && (
-          <section aria-labelledby="app-promo-heading">
+          <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
                     <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language]}</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
+                    <p className="mt-4 text-lg text-gray-600">{homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
