@@ -56,6 +56,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdni.iconscout.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

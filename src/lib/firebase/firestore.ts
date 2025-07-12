@@ -589,7 +589,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     appStoreUrl: '#',
   },
   requestCallbackSection: {
-    imageUrl: 'https://i.imgur.com/GZ0gQfN.png',
+    imageUrl: 'https://placehold.co/300x400.png',
     dataAiHint: 'student illustration',
   },
   floatingWhatsApp: {
