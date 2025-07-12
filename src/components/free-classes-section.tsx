@@ -52,7 +52,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   return (
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 id="free-classes-heading" className="font-headline text-4xl font-bold" style={{color: '#FF4D6D'}}>{title.bn}</h2>
+          <h2 id="free-classes-heading" className="font-headline text-4xl font-bold text-primary">{title.bn}</h2>
           <p className="mt-2 text-muted-foreground max-w-xl mx-auto">{subtitle.bn}</p>
         </div>
 
@@ -61,7 +61,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             <Button
               key={grade}
               variant={selectedGrade === grade ? 'default' : 'outline'}
-              className={cn("rounded-md font-semibold px-4 py-2 text-sm", selectedGrade === grade && "bg-pink-500 hover:bg-pink-600 border-pink-500 text-white")}
+              className="rounded-full font-semibold px-4 py-2 text-sm"
               onClick={() => handleGradeChange(grade)}
             >
               {grade}
@@ -85,7 +85,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
                       data-ai-hint="youtube video class"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <PlayCircle className="w-16 h-16 text-red-500" />
+                      <PlayCircle className="w-16 h-16 text-primary" />
                     </div>
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
@@ -105,7 +105,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
               <Button
                 key={i + 1}
                 variant={currentPage === i + 1 ? 'default' : 'outline'}
-                className={cn("h-10 w-10", currentPage === i + 1 && "bg-pink-500 hover:bg-pink-600 border-pink-500 text-white")}
+                className="h-10 w-10"
                 onClick={() => handlePageChange(i + 1)}
               >
                 {i + 1}

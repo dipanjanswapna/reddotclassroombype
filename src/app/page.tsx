@@ -98,7 +98,7 @@ export default async function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8">
               <div className="container mx-auto px-4">
-                  <div className="bg-teal-50 dark:bg-teal-900/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
+                  <div className="bg-primary/10 dark:bg-primary/20 rounded-full p-4 flex flex-col md:flex-row items-center justify-center md:justify-between gap-4">
                       <div className="flex items-center gap-4 text-center md:text-left">
                           <Image
                               src={homepageConfig.strugglingStudentSection.imageUrl}
@@ -117,7 +117,7 @@ export default async function Home() {
                               </p>
                           </div>
                       </div>
-                      <Button asChild className="bg-teal-500 hover:bg-teal-600 font-bold shrink-0">
+                      <Button asChild className="font-bold shrink-0">
                           <Link href="/strugglers-studies">
                               {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
                           </Link>
@@ -373,7 +373,7 @@ export default async function Home() {
           <section aria-labelledby="app-promo-heading">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
-                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-[rgb(242,0,0)]">{homepageConfig.appPromo?.title?.[language]}</h2>
+                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language]}</h2>
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>

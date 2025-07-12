@@ -29,7 +29,7 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
   return (
     <section className="bg-background py-16 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="bg-blue-600/5 dark:bg-blue-500/10 rounded-3xl p-8 md:p-12">
+        <div className="bg-primary/5 dark:bg-primary/10 rounded-3xl p-8 md:p-12">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
                 <h2 className="font-headline text-4xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
