@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -36,6 +37,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
             alt={title}
             width={600}
             height={400}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="w-full h-auto object-cover aspect-[16/10] transition-transform duration-300 group-hover:scale-105"
             data-ai-hint={dataAiHint}
           />

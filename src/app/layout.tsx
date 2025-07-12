@@ -52,7 +52,6 @@ export default async function RootLayout({
   const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
         <LayoutWrapper homepageConfig={homepageConfig}>
             {children}

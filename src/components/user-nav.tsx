@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -81,26 +82,26 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2" />My Dashboard</Link>
+            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2 h-4 w-4" />My Dashboard</Link>
           </DropdownMenuItem>
           
           <DropdownMenuItem asChild>
-              <Link href={getProfileLink()}><User className="mr-2" />Profile &amp; Settings</Link>
+              <Link href={getProfileLink()}><User className="mr-2 h-4 w-4" />Profile &amp; Settings</Link>
           </DropdownMenuItem>
           
           {userInfo.role === 'Student' && (
             <DropdownMenuItem asChild>
-                <Link href="/student/my-courses"><BookOpen className="mr-2" />My Courses</Link>
+                <Link href="/student/my-courses"><BookOpen className="mr-2 h-4 w-4" />My Courses</Link>
             </DropdownMenuItem>
           )}
 
            <DropdownMenuItem asChild>
-             <Link href="/faq"><HelpCircle className="mr-2" />Help &amp; Support</Link>
+             <Link href="/faq"><HelpCircle className="mr-2 h-4 w-4" />Help &amp; Support</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>
-          <LogOut className="mr-2" />Log out
+          <LogOut className="mr-2 h-4 w-4" />Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

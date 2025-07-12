@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -16,7 +17,7 @@ type WhyTrustUsProps = {
   data: HomepageConfig['whyChooseUs'];
 };
 
-export function WhyTrustUs({ data }: WhyTrustUsProps) {
+export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
   const pathname = usePathname();
   const plugin = React.useRef(Autoplay({ delay: 5000, stopOnInteraction: true }));

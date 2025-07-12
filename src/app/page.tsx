@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -29,11 +28,18 @@ import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-car
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
-import { WhyTrustUs } from '@/components/why-trust-us';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 import downloadAppImage from '@/public/download.jpg';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
+
+const WhyTrustUs = dynamic(() => import('@/components/why-trust-us').then(mod => mod.WhyTrustUs), {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+});
+
 
 const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
   switch (platform) {

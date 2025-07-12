@@ -17,12 +17,13 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   const selectedSubCategory = searchParams?.subCategory;
   const selectedProvider = searchParams?.provider;
 
-  const [categories, providers, allCoursesData, homepageConfig] = await Promise.all([
-    getCategories(),
+  const [providers, allCoursesData, homepageConfig] = await Promise.all([
     getOrganizations(),
     getCourses({ status: 'Published' }), // Fetch all published for filters
     getHomepageConfig(),
   ]);
+  
+  const allCategories = [...new Set(allCoursesData.map(c => c.category).filter(Boolean))] as string[];
 
   const filteredCourses = await getCourses({
       category: selectedCategory,
@@ -35,7 +36,6 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   const archivedCourses = allCoursesData.filter(course => course.isArchived);
   const approvedProviders = providers.filter(p => p.status === 'approved');
   
-  const sortedCategories = [...new Set(allCoursesData.map(c => c.category).filter(Boolean))] as string[];
   const allSubCategories = [...new Set(allCoursesData.map(course => course.subCategory).filter(Boolean))] as string[];
 
   const hasFilters = !!(selectedCategory || selectedSubCategory || selectedProvider);
@@ -44,7 +44,7 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
     <CoursesPageClient 
         initialCourses={activeCourses}
         archivedCourses={archivedCourses}
-        allCategories={sortedCategories}
+        allCategories={allCategories}
         allSubCategories={allSubCategories}
         allProviders={approvedProviders}
         hasFilters={hasFilters}
