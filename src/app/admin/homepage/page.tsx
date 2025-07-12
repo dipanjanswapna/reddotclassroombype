@@ -1007,20 +1007,35 @@ export default function AdminHomepageManagementPage() {
         </TabsContent>
         <TabsContent value="pages" className="mt-6 space-y-8">
             <Card>
-                <CardHeader><CardTitle>Strugglers/Topper Page</CardTitle><CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription></CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Image AI Hint</Label><Input value={config.topperPageSection?.mainImageDataAiHint || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageDataAiHint', e.target.value)} /></div>
+                <CardHeader>
+                    <CardTitle>Strugglers/Topper Page</CardTitle>
+                    <CardDescription>Manage the content for the "/strugglers-studies" page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label>Page Title</Label>
+                        <Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Main Illustration Image URL</Label>
+                        <Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Image AI Hint</Label>
+                        <Input value={config.topperPageSection?.mainImageDataAiHint || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageDataAiHint', e.target.value)} />
+                    </div>
                     
-                    {config.topperPageSection?.cards?.map((card, index) => (
-                        <div key={card.id} className="p-4 border rounded-lg space-y-2">
-                            <h4 className="font-semibold">Card {index + 1}</h4>
-                            <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} /></div>
-                            <div className="space-y-1"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} /></div>
-                            <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={3}/></div>
-                        </div>
-                    ))}
+                    <div className="space-y-4 pt-4 border-t">
+                        <Label className="font-semibold">Feature Cards</Label>
+                        {config.topperPageSection?.cards?.map((card, index) => (
+                            <div key={card.id} className="p-3 border rounded-md space-y-2">
+                                <h4 className="font-semibold">Card {index + 1}</h4>
+                                <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={2}/></div>
+                            </div>
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
         </TabsContent>
