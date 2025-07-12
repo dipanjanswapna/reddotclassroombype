@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -35,7 +36,7 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
-const WhyTrustUs = dynamic(() => import('@/components/why-trust-us').then(mod => mod.WhyTrustUs), {
+const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false,
 });
