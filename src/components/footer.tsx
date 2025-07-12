@@ -23,7 +23,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig }) {
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto" />
-              <span className="font-bold text-xl font-headline text-gray-900">
+              <span className="font-bold text-xl font-headline text-primary">
                 RED DOT CLASSROOM
               </span>
             </Link>
