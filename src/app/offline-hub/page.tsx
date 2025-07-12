@@ -138,7 +138,7 @@ export default async function OfflineHubPage() {
                             </div>
                             <p className="text-gray-400 text-sm">{center.address}</p>
                         </div>
-                        <Button variant="link" className="p-0 h-auto mt-4 text-red-400 hover:text-red-300 justify-start">
+                        <Button variant="link" className="p-0 h-auto mt-4 text-red-400 hover:text-red-300 justify-start" asChild>
                            <Link href="#">
                                 Get Directions <ArrowRight className="ml-2 h-4 w-4" />
                            </Link>

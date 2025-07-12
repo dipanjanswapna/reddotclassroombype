@@ -9,7 +9,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Course, User, Enrollment } from '@/lib/types';
+import { Course } from '@/lib/types';
 import {
   Table,
   TableBody,
@@ -23,7 +23,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { SerializableUser, SerializableEnrollment } from '@/app/admin/dashboard/page';
 
 const OverviewChart = dynamic(() => import('@/components/admin/overview-chart').then(mod => mod.OverviewChart), {
   loading: () => <Skeleton className="h-[350px] w-full" />,
@@ -32,14 +32,6 @@ const UserRolesChart = dynamic(() => import('@/components/admin/user-roles-chart
     loading: () => <Skeleton className="h-[350px] w-full" />,
 });
 
-// Serializable types for client components
-type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounseledAt' | 'studyPlan'> & { 
-    joined: string, 
-    lastLoginAt?: string,
-    lastCounseledAt?: string,
-    studyPlan?: StudyPlanEvent[],
-};
-type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate'> & { enrollmentDate: string };
 
 interface DashboardClientProps {
     courses: Course[];
@@ -68,9 +60,8 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
     let totalRevenue = 0;
     enrollments.forEach(enrollment => {
         const course = courses.find(c => c.id === enrollment.courseId);
-        const priceString = course?.price?.replace(/[^0-9.]/g, '');
-        if (priceString) {
-            const price = parseFloat(priceString);
+        if(course) {
+            const price = parseFloat(course.price.replace(/[^0-9.]/g, '')) || 0;
             totalRevenue += price;
             const enrollmentDate = safeToDate(enrollment.enrollmentDate);
             if (!isNaN(enrollmentDate.getTime())) {

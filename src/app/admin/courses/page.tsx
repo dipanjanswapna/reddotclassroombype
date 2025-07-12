@@ -1,52 +1,20 @@
 
+
 import Link from 'next/link';
-import { PlusCircle, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge, badgeVariants } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import type { VariantProps } from 'class-variance-authority';
-import { Course } from '@/lib/types';
 import { getCourses } from '@/lib/firebase/firestore';
 import { AdminCoursesClient } from './admin-courses-client';
-
-type Status = 'Published' | 'Pending Approval' | 'Draft' | 'Rejected';
-
-const getStatusBadgeVariant = (status: Status): VariantProps<typeof badgeVariants>['variant'] => {
-  switch (status) {
-    case 'Published':
-      return 'accent';
-    case 'Pending Approval':
-      return 'warning';
-    case 'Rejected':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-};
+import { Suspense } from 'react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 
-export default async function AdminCourseManagementPage() {
-  const courses = await getCourses();
+async function AdminCoursesContent() {
+    const courses = await getCourses();
+    return <AdminCoursesClient initialCourses={courses} />;
+}
 
+export default function AdminCourseManagementPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex items-center justify-between">
@@ -65,8 +33,9 @@ export default async function AdminCourseManagementPage() {
                 </Link>
             </Button>
         </div>
-
-        <AdminCoursesClient initialCourses={courses} />
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><LoadingSpinner /></div>}>
+            <AdminCoursesContent />
+        </Suspense>
     </div>
   );
 }

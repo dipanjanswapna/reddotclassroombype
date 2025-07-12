@@ -73,7 +73,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                          <span className="text-md md:text-lg line-through opacity-80">{slide.originalPrice}</span>
                       </div>
                       <Button asChild className="mt-2 bg-red-600 hover:bg-red-700 font-bold rounded-lg text-sm md:text-base">
-                        <Link href={slide.enrollHref}>ENROLL NOW!</Link>
+                        <Link href={slide.enrollHref} aria-label={`Enroll in ${slide.title}`}>ENROLL NOW!</Link>
                       </Button>
                     </div>
                   </div>

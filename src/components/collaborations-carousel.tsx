@@ -53,7 +53,7 @@ export function CollaborationsCarousel({ organizations }: { organizations: Organ
                 </CardContent>
                 <CardFooter className="p-0 flex-col w-full gap-4">
                   <Button asChild variant="outline" className="w-full">
-                    <Link href={`/sites/${org.subdomain}`}>
+                    <Link href={`/sites/${org.subdomain}`} rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       ওয়েবসাইট দেখুন
                     </Link>

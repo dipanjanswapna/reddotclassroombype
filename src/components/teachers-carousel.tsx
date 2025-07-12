@@ -21,7 +21,7 @@ export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructor
       <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" style={animationStyle}>
         {instructors.map((instructor) => (
             <li key={instructor.id}>
-                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
+                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]" aria-label={`View profile for ${instructor.name}`}>
                     <div className="relative overflow-hidden rounded-lg">
                         <Image
                             src={instructor.avatarUrl}
@@ -43,7 +43,7 @@ export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructor
       <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" aria-hidden="true" style={animationStyle}>
         {instructors.map((instructor) => (
             <li key={`${instructor.id}-clone`}>
-                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]">
+                <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]" aria-label={`View profile for ${instructor.name}`}>
                     <div className="relative overflow-hidden rounded-lg">
                         <Image
                             src={instructor.avatarUrl}

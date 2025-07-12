@@ -24,7 +24,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/components/ui/use-toast';
 import type { VariantProps } from 'class-variance-authority';
@@ -114,23 +113,23 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
                                 <div className="flex gap-2 justify-end">
                                     {course.status === 'Pending Approval' && (
                                         <>
-                                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-primary-foreground" onClick={() => handleStatusChange(course.id!, 'Published')}>
+                                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-primary-foreground" onClick={() => handleStatusChange(course.id!, 'Published')} aria-label={`Approve ${course.title}`}>
                                                 <CheckCircle className="mr-2 h-4 w-4" />
                                                 Approve
                                             </Button>
-                                            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(course.id!, 'Rejected')}>
+                                            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(course.id!, 'Rejected')} aria-label={`Reject ${course.title}`}>
                                                 <XCircle className="mr-2 h-4 w-4" />
                                                 Reject
                                             </Button>
                                         </>
                                     )}
                                     <Button variant="outline" size="sm" asChild>
-                                        <Link href={`/admin/courses/builder/${course.id}`}>
+                                        <Link href={`/admin/courses/builder/${course.id}`} aria-label={`Edit ${course.title}`}>
                                             <Pencil className="mr-2 h-4 w-4" />
                                             Edit
                                         </Link>
                                     </Button>
-                                    <Button variant="destructive" size="sm" onClick={() => setCourseToDelete(course)}>
+                                    <Button variant="destructive" size="sm" onClick={() => setCourseToDelete(course)} aria-label={`Delete ${course.title}`}>
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Delete
                                     </Button>

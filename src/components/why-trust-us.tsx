@@ -92,8 +92,8 @@ export function WhyTrustUs({ data }: WhyTrustUsProps) {
             </CarouselContent>
              {(data.testimonials || []).length > 1 && (
                 <div className="mt-6 flex justify-center gap-4">
-                    <CarouselPrevious variant="outline" className="static translate-y-0" />
-                    <CarouselNext variant="outline" className="static translate-y-0" />
+                    <CarouselPrevious variant="outline" className="static translate-y-0" aria-label="Previous testimonial"/>
+                    <CarouselNext variant="outline" className="static translate-y-0" aria-label="Next testimonial"/>
                 </div>
              )}
           </Carousel>

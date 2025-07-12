@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bell, CheckCheck, Award, Video, Megaphone, FileCheck2, ThumbsUp } from 'lucide-react';
+import { Bell, CheckCheck, Award, Video, Megaphone, FileCheck2, ThumbsUp, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -28,7 +28,8 @@ const iconMap: { [key in Notification['icon']]: React.ElementType } = {
     Video,
     Megaphone,
     FileCheck2,
-    ThumbsUp
+    ThumbsUp,
+    Users,
 };
 
 // Function to group notifications by date
@@ -130,7 +131,7 @@ export function NotificationBell() {
                         const DropdownItemContent = (
                             <div className={`w-full flex items-start gap-3 p-2 h-auto ${!notification.read ? 'bg-accent/50' : ''}`}>
                                  {!notification.read && <div className="h-2 w-2 rounded-full bg-primary mt-2"></div>}
-                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 mt-1 shrink-0">
+                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 shrink-0">
                                     <Icon className="h-4 w-4 text-primary" />
                                 </div>
                                 <div className="flex-1">
