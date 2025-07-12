@@ -15,7 +15,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -350,6 +350,10 @@ export const getPendingReports = async (): Promise<ReportedContent[]> => {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportedContent));
 };
 export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => updateDoc(doc(db, 'reported_content', id), data);
+
+// Callback Requests
+export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
+export const updateCallbackRequest = (id: string, data: Partial<CallbackRequest>) => updateDoc(doc(db, 'callbacks', id), data);
 
 
 const defaultPlatformSettings: PlatformSettings = {

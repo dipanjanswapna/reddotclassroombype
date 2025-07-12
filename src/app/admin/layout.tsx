@@ -63,6 +63,7 @@ export default function AdminLayout({
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/group-access", icon: Users2, label: "Group Access" },
         { href: "/admin/absent-students", icon: PhoneCall, label: "Call Center" },
+        { href: "/admin/callback-requests", icon: PhoneCall, label: "Callbacks" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
         { href: "/admin/manage-user", icon: Search, label: "Manage User" },
