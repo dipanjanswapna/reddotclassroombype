@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -79,11 +80,11 @@ export default async function Home() {
   const language = 'bn'; // Default language
 
   return (
-    <div style={{ backgroundColor: '#FFFDF6', color: '#403d39' }} className="[&>div:last-child>section:last-child]:pb-0">
+    <div style={{ backgroundColor: '#FFFDF6', color: '#403d39' }} className="[&>div>section:last-child]:pb-0">
       {homepageConfig.welcomeSection?.display && (
         <section className="bg-primary/5 py-12 text-center">
             <div className="container mx-auto px-4">
-                <h1 className="text-4xl font-bold tracking-tight">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900">
                     {homepageConfig.welcomeSection?.title?.[language] || homepageConfig.welcomeSection?.title?.['en']}
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -139,10 +140,10 @@ export default async function Home() {
         )}
 
         {homepageConfig.journeySection?.display && (
-          <section className="bg-primary/5" aria-labelledby="hero-heading">
+          <section className="bg-gray-900 text-white" aria-labelledby="hero-heading">
             <div className="container mx-auto px-4">
               <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
-              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+              <p className="text-gray-400 text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
                 <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
@@ -152,14 +153,14 @@ export default async function Home() {
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <section aria-labelledby="teachers-heading">
+          <section aria-labelledby="teachers-heading" className="bg-gray-900 text-white">
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-8">
                   <div>
                       <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
-                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                      <p className="text-gray-400 mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
-                  <Button asChild variant="outline">
+                  <Button asChild variant="outline" className="text-white border-white/50 hover:bg-white/10 hover:text-white">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -169,10 +170,10 @@ export default async function Home() {
         )}
 
         {homepageConfig.videoSection?.display && (
-          <section aria-labelledby="video-section-heading">
+          <section aria-labelledby="video-section-heading" className="bg-gray-900 text-white">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                <p className="text-gray-400 mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
@@ -196,9 +197,9 @@ export default async function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section className="bg-primary/5" aria-labelledby="ssc-hsc-heading">
+          <section className="bg-gray-900 text-white" aria-labelledby="ssc-hsc-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
@@ -208,7 +209,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.masterclassSection?.display && (
-          <section aria-labelledby="masterclass-heading">
+          <section aria-labelledby="masterclass-heading" className="bg-gray-900 text-white">
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
@@ -220,9 +221,9 @@ export default async function Home() {
         )}
 
         {homepageConfig.admissionSection?.display && (
-          <section className="bg-primary/5" aria-labelledby="admission-heading">
+          <section className="bg-gray-900 text-white" aria-labelledby="admission-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
@@ -235,9 +236,9 @@ export default async function Home() {
         )}
         
         {homepageConfig.jobPrepSection?.display && (
-          <section aria-labelledby="job-prep-heading">
+          <section aria-labelledby="job-prep-heading" className="bg-gray-900 text-white">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
@@ -250,7 +251,7 @@ export default async function Home() {
         )}
 
         {homepageConfig.freeClassesSection?.display && (
-          <section className="bg-background py-16" aria-labelledby="free-classes-heading">
+          <section className="bg-gray-900 text-white py-16" aria-labelledby="free-classes-heading">
             <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
           </section>
         )}
@@ -286,28 +287,28 @@ export default async function Home() {
 
 
         {homepageConfig.socialMediaSection?.display && (
-          <section className="bg-primary/5" aria-labelledby="social-media-heading">
+          <section className="bg-gray-900 text-white" aria-labelledby="social-media-heading">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language]}
               </h2>
-              <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
+              <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
                 {homepageConfig.socialMediaSection?.description?.[language]}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {homepageConfig.socialMediaSection?.channels.map((channel) => (
-                  <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-card">
+                  <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between shadow-lg hover:shadow-xl transition-shadow bg-gray-800 border-gray-700">
                     <CardHeader className="p-0">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
                           <SocialIcon platform={channel.platform} />
                         </div>
-                        <CardTitle className="text-lg">{typeof channel.name === 'object' ? channel.name[language] : channel.name}</CardTitle>
+                        <CardTitle className="text-lg text-white">{typeof channel.name === 'object' ? channel.name[language] : channel.name}</CardTitle>
                       </div>
-                      <CardDescription>{channel.handle}</CardDescription>
+                      <CardDescription className="text-gray-400">{channel.handle}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-4 pt-4">
-                      <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex justify-center gap-4 text-sm text-gray-400">
                         {channel.stat1_value && (
                           <div className="flex items-center gap-1">
                             <Users className="w-4 h-4" />
@@ -321,7 +322,7 @@ export default async function Home() {
                           </div>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
+                      <p className="text-sm text-gray-400">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
                     </CardContent>
                     <CardFooter className="p-0 w-full">
                       <Button asChild className="w-full" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
@@ -338,13 +339,13 @@ export default async function Home() {
         )}
 
         {homepageConfig.notesBanner?.display && (
-          <section className="bg-primary/5" aria-labelledby="notes-banner-heading">
+          <section className="bg-gray-900 text-white" aria-labelledby="notes-banner-heading">
             <div className="container mx-auto px-4">
-              <Card className="shadow-lg">
+              <Card className="shadow-lg bg-gray-800 border-gray-700">
                 <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className='text-center md:text-left'>
-                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-card-foreground">{homepageConfig.notesBanner?.title?.[language]}</h3>
-                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
+                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold text-white">{homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <p className="text-gray-400 mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
                     <Button variant="default" size="lg" className="font-bold shrink-0" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
                 </div>

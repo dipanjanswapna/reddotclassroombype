@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -30,8 +31,8 @@ export function MasterclassCarousel({ courses, providers }: { courses: Course[],
           )
         })}
       </CarouselContent>
-      <CarouselPrevious className="bg-background/50 hover:bg-background/80 text-foreground"/>
-      <CarouselNext className="bg-background/50 hover:bg-background/80 text-foreground"/>
+      <CarouselPrevious className="bg-gray-800/50 hover:bg-gray-700/80 text-white"/>
+      <CarouselNext className="bg-gray-800/50 hover:bg-gray-700/80 text-white"/>
     </Carousel>
   );
 }

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -53,7 +54,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 id="free-classes-heading" className="font-headline text-4xl font-bold text-primary">{title.bn}</h2>
-          <p className="mt-2 text-muted-foreground max-w-xl mx-auto">{subtitle.bn}</p>
+          <p className="mt-2 text-gray-400 max-w-xl mx-auto">{subtitle.bn}</p>
         </div>
 
         <div className="flex items-center justify-center flex-wrap gap-2 mb-8">
@@ -61,7 +62,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             <Button
               key={grade}
               variant={selectedGrade === grade ? 'default' : 'outline'}
-              className="rounded-full font-semibold px-4 py-2 text-sm"
+              className="rounded-full font-semibold px-4 py-2 text-sm bg-gray-800 border-gray-600 hover:bg-gray-700 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               onClick={() => handleGradeChange(grade)}
             >
               {grade}
@@ -75,7 +76,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
             return (
               <Link key={item.id} href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                <Card className="overflow-hidden h-full flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <Card className="overflow-hidden h-full flex flex-col rounded-lg shadow-md hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
                   <div className="relative aspect-video">
                     <Image
                       src={thumbnailUrl}
@@ -89,8 +90,8 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
                     </div>
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{item.subject} • {item.instructor}</p>
+                    <h3 className="font-semibold text-white">{item.title}</h3>
+                    <p className="text-sm text-gray-400 mt-1">{item.subject} • {item.instructor}</p>
                   </div>
                 </Card>
               </Link>
@@ -100,18 +101,18 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
 
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-12">
-            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}> <ArrowLeft className="h-4 w-4" /> </Button>
+            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="bg-gray-800 border-gray-600 hover:bg-gray-700"> <ArrowLeft className="h-4 w-4" /> </Button>
             {[...Array(totalPages)].map((_, i) => (
               <Button
                 key={i + 1}
                 variant={currentPage === i + 1 ? 'default' : 'outline'}
-                className="h-10 w-10"
+                className="h-10 w-10 bg-gray-800 border-gray-600 hover:bg-gray-700 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 onClick={() => handlePageChange(i + 1)}
               >
                 {i + 1}
               </Button>
             ))}
-            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}> <ArrowRight className="h-4 w-4" /> </Button>
+            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="bg-gray-800 border-gray-600 hover:bg-gray-700"> <ArrowRight className="h-4 w-4" /> </Button>
           </div>
         )}
       </div>
