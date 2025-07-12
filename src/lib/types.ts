@@ -618,6 +618,18 @@ export type Invoice = {
   createdAt: any; // Using any to accommodate serverTimestamp and Timestamp
 };
 
+export type CallbackRequest = {
+  id?: string;
+  fullName: string;
+  mobileNumber: string;
+  class: string;
+  goals: string;
+  preferredCourses: string;
+  state: string;
+  createdAt: Timestamp;
+  status: 'pending' | 'contacted' | 'closed';
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl?: string;

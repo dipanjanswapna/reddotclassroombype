@@ -35,6 +35,7 @@ import downloadAppImage from '@/public/download.jpg';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { RequestCallbackForm } from '@/components/request-callback-form';
 
 const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
@@ -227,7 +228,7 @@ export default function Home() {
                       return (
                           <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-lg overflow-hidden group shadow-lg block">
                               <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" />
-                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                   <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
                               </div>
                           </a>
@@ -414,6 +415,12 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        <section className="bg-background">
+            <div className="container mx-auto px-4">
+                <RequestCallbackForm />
+            </div>
+        </section>
 
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">
