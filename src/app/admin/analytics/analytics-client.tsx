@@ -6,6 +6,13 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Cpu, MemoryStick, Monitor, Users, Search, BarChartHorizontal, Wind, Gauge as GaugeIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import dynamic from 'next/dynamic';
+
+const Gauge = dynamic(() => import('@/components/gauge').then(mod => mod.Gauge), {
+    loading: () => <Skeleton className="h-36 w-36 rounded-full" />,
+    ssr: false,
+});
 
 const generateInitialTrafficData = () => {
   const data = [];
@@ -26,46 +33,6 @@ const speedInsightData = [
 ];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
-
-// A reusable gauge chart component for displaying scores.
-const Gauge = ({ value, title }: { value: number; title: string }) => {
-  const color = value >= 90 ? 'hsl(var(--chart-2))' : value >= 50 ? 'hsl(var(--warning))' : 'hsl(var(--destructive))';
-
-  const data = [
-    { name: 'Score', value: value, fill: color },
-    { name: 'Remaining', value: 100 - value, fill: 'hsl(var(--muted))' },
-  ];
-
-  return (
-    <div className="relative w-36 h-36">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            startAngle={180}
-            endAngle={-180}
-            innerRadius="80%"
-            outerRadius="100%"
-            dataKey="value"
-            stroke="none"
-            cornerRadius={5}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold" style={{ color: color }}>{value}</span>
-        <span className="text-sm font-medium text-muted-foreground mt-1">{title}</span>
-      </div>
-    </div>
-  );
-};
-
 
 export function AnalyticsClient() {
   const [realtime, setRealtime] = useState({
