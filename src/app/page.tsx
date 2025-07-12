@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React from 'react';
@@ -23,10 +22,6 @@ import { cn, getYoutubeVideoId } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
-import { DynamicLiveCoursesCarousel } from '@/components/dynamic-live-courses-carousel';
-import { DynamicTeachersCarousel } from '@/components/dynamic-teachers-carousel';
-import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
-import { DynamicMasterclassCarousel } from '@/components/dynamic-masterclass-carousel';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
@@ -40,6 +35,26 @@ import { RequestCallbackForm } from '@/components/request-callback-form';
 
 const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+});
+
+const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
+    loading: () => <Skeleton className="h-[380px] w-full" />,
+    ssr: false,
+});
+
+const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
+    loading: () => <Skeleton className="h-[250px] w-full" />,
+    ssr: false,
+});
+
+const DynamicCollaborationsCarousel = dynamic(() => import('@/components/dynamic-collaborations-carousel').then(mod => mod.DynamicCollaborationsCarousel), {
+    loading: () => <Skeleton className="h-[200px] w-full" />,
+    ssr: false,
+});
+
+const DynamicMasterclassCarousel = dynamic(() => import('@/components/dynamic-masterclass-carousel').then(mod => mod.DynamicMasterclassCarousel), {
+    loading: () => <Skeleton className="h-[380px] w-full" />,
     ssr: false,
 });
 
@@ -417,7 +432,7 @@ export default function Home() {
           </section>
         )}
 
-        {homepageConfig.requestCallbackSection && (
+        {homepageConfig.requestCallbackSection?.display && (
             <section className="bg-background">
                 <div className="container mx-auto px-4">
                     <RequestCallbackForm homepageConfig={homepageConfig} />
