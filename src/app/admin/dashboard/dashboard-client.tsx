@@ -27,9 +27,11 @@ import { SerializableUser, SerializableEnrollment } from '@/app/admin/dashboard/
 
 const OverviewChart = dynamic(() => import('@/components/admin/overview-chart').then(mod => mod.OverviewChart), {
   loading: () => <Skeleton className="h-[350px] w-full" />,
+  ssr: false,
 });
 const UserRolesChart = dynamic(() => import('@/components/admin/user-roles-chart').then(mod => mod.UserRolesChart), {
     loading: () => <Skeleton className="h-[350px] w-full" />,
+    ssr: false,
 });
 
 
