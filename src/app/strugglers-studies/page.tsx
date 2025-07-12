@@ -1,4 +1,5 @@
 
+
 import type { Metadata } from 'next';
 import { Card } from '@/components/ui/card';
 import { getHomepageConfig } from '@/lib/firebase/firestore';

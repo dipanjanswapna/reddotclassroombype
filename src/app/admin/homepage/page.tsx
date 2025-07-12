@@ -405,8 +405,8 @@ export default function AdminHomepageManagementPage() {
             dataAiHint: 'students course banner',
             title: 'New Slide Title',
             subtitle: 'New Slide Subtitle',
-            price: '₹0',
-            originalPrice: '₹0',
+            price: '৳0',
+            originalPrice: '৳0',
             enrollHref: '#'
         };
         const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
@@ -1011,6 +1011,8 @@ export default function AdminHomepageManagementPage() {
                 <CardContent className="space-y-4">
                     <div className="space-y-2"><Label>Page Title</Label><Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} /></div>
                     <div className="space-y-2"><Label>Main Illustration Image URL</Label><Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Image AI Hint</Label><Input value={config.topperPageSection?.mainImageDataAiHint || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageDataAiHint', e.target.value)} /></div>
+                    
                     {config.topperPageSection?.cards?.map((card, index) => (
                         <div key={card.id} className="p-4 border rounded-lg space-y-2">
                             <h4 className="font-semibold">Card {index + 1}</h4>
