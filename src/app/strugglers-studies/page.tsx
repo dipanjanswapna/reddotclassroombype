@@ -46,7 +46,7 @@ export default async function TopperPage() {
                     {sectionData.cards.map(card => (
                         <Card key={card.id} className="p-6 bg-secondary/50 border-border/50">
                             <div className="flex items-start gap-4 mb-3">
-                                <Image src={card.iconUrl} alt="" width={40} height={40} className="object-contain" data-ai-hint={card.dataAiHint} />
+                                <Image src={card.iconUrl} alt={card.title} width={40} height={40} className="object-contain" data-ai-hint={card.dataAiHint} />
                                 <h2 className="font-bold text-lg leading-tight">{card.title}</h2>
                             </div>
                             <p className="text-sm text-muted-foreground">{card.description}</p>

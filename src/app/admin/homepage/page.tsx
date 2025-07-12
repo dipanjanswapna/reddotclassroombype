@@ -1031,6 +1031,7 @@ export default function AdminHomepageManagementPage() {
                             <div key={card.id} className="p-3 border rounded-md space-y-2">
                                 <h4 className="font-semibold">Card {index + 1}</h4>
                                 <div className="space-y-1"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} /></div>
+                                <div className="space-y-1"><Label>Icon AI Hint</Label><Input value={card.dataAiHint} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'dataAiHint', e.target.value)} /></div>
                                 <div className="space-y-1"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} /></div>
                                 <div className="space-y-1"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={2}/></div>
                             </div>

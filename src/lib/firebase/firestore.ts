@@ -592,10 +592,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     googlePlayUrl: '#',
     appStoreUrl: '#',
   },
-  requestCallbackSection: {
-    imageUrl: 'https://placehold.co/300x400.png',
-    dataAiHint: 'student illustration',
-  },
   floatingWhatsApp: {
       display: true,
       number: '8801641035736',
@@ -604,6 +600,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     imageUrl: 'https://placehold.co/1200x300.png',
     dataAiHint: 'online courses banner',
+  },
+  requestCallbackSection: {
+    imageUrl: 'https://placehold.co/300x400.png',
+    dataAiHint: 'student illustration',
   },
   platformSettings: defaultPlatformSettings,
   topperPageSection: {
