@@ -4,32 +4,67 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check for Admin role
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin';
+    // Helper functions
+    function isOwner(userId) {
+      return request.auth.uid == userId;
     }
-    
-    // Helper function to check for Teacher role
-    function isTeacher() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Teacher';
-    }
-    
-    // Helper function to check for any authenticated user
     function isSignedIn() {
       return request.auth != null;
     }
-
-    // Publicly readable collections
-    match /courses/{courseId} {
-      allow read: if true;
-      allow write: if isAdmin();
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin';
+    }
+    function isTeacher() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Teacher';
+    }
+     function isModerator() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Moderator';
     }
 
+    // USER-EDITABLE DATA
+    match /users/{userId} {
+      // Users can read their own data. Admins can read anyone's data.
+      allow read: if isOwner(userId) || isAdmin();
+      // Users can create their own account data.
+      allow create: if isOwner(userId);
+      // Users can only update their own data. Admins can update anyone's data.
+      allow update: if isOwner(userId) || isAdmin();
+       // Only admins can delete users.
+      allow delete: if isAdmin();
+    }
+    
+    match /support_tickets/{ticketId} {
+        // Users can read/create/update their own tickets
+        allow read, write: if request.auth.uid == resource.data.userId;
+        // Admins and moderators can read/update any ticket
+        allow read, write: if isAdmin() || isModerator();
+    }
+    
+     match /enrollments/{enrollmentId} {
+        // Users can read their own enrollments
+        allow read: if isSignedIn() && request.auth.uid == resource.data.userId;
+        // Admins, Teachers (for their courses) can read any enrollment
+        allow read: if isAdmin() || isTeacher() || isModerator();
+        // Users can create their own enrollments (through a server action)
+        allow create: if isSignedIn();
+        // Only admins can update enrollments directly
+        allow update, delete: if isAdmin();
+    }
+
+    // READ-ONLY FOR MOST USERS
+    match /courses/{courseId} {
+      allow read: if true; // Courses are public
+      allow write: if isAdmin(); // Only admins can edit courses
+    }
+    
     match /instructors/{instructorId} {
-      allow read: if true;
-      allow write: if isAdmin();
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+    
+    match /organizations/{organizationId} {
+        allow read: if true;
+        allow write: if isAdmin();
     }
     
     match /blog_posts/{postId} {
@@ -37,63 +72,31 @@ service cloud.firestore {
         allow write: if isAdmin();
     }
     
-    match /organizations/{orgId} {
-        allow read: if true;
-        allow write: if isAdmin();
-    }
-
-    match /config/homepage {
-        allow read: if true;
-        allow update: if isAdmin();
-    }
-
-    // User-specific data
-    match /users/{userId} {
-      allow read: if request.auth.uid == userId || isAdmin();
-      // Allow user creation on signup and updates by user or admin
-      // Prevent users from changing their own role or status
-      allow create: if request.auth.uid == userId;
-      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role;
-      allow delete: if isAdmin();
-    }
-    
-    match /enrollments/{enrollmentId} {
-        allow read, create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-        allow list: if isAdmin() || isTeacher();
-    }
-    
-    match /notifications/{notificationId} {
-        allow read, update: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-    }
-
-    match /support_tickets/{ticketId} {
-        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-        allow read, update: if isSignedIn() && get(/databases/$(database)/documents/support_tickets/$(ticketId)).data.userId == request.auth.uid || isAdmin();
-    }
-    
-    match /prebookings/{prebookingId} {
-        allow read, create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-    }
-    
-    // Admin-only collections for write access
-    match /branches/{branchId} {
-        allow read: if isSignedIn();
-        allow write: if isAdmin();
-    }
-
-    match /batches/{batchId} {
-        allow read: if isSignedIn();
-        allow write: if isAdmin();
-    }
-    
-    match /attendance/{recordId} {
-        allow read: if isSignedIn();
-        allow write: if isAdmin() || isTeacher();
+    match /single_documents/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /promo_codes/{codeId} {
         allow read: if isSignedIn();
         allow write: if isAdmin() || isTeacher();
     }
+    
+    match /prebookings/{prebookingId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn();
+        allow delete: if isAdmin();
+    }
+    
+    match /question_bank/{questionId} {
+      allow read: if isAdmin() || isTeacher();
+      allow write: if isAdmin();
+    }
+
+    match /notices/{noticeId} {
+      allow read: if resource.data.isPublished == true || (isSignedIn() && (isAdmin() || isTeacher()));
+      allow write: if isAdmin() || isTeacher();
+    }
+
   }
 }

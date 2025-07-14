@@ -36,6 +36,27 @@ export type Question = {
   matchingPairs?: MatchingPair[]; // For Matching
 };
 
+export type NoticeAttachment = {
+  fileName: string;
+  fileURL: string;
+  fileType: string;
+};
+
+export type Notice = {
+  id?: string;
+  title: string;
+  content: string;
+  publishedAt: Timestamp;
+  authorId: string;
+  authorRole: string;
+  attachments?: NoticeAttachment[];
+  isPublished: boolean;
+  targetAudience?: ('student' | 'teacher' | 'all')[];
+  expiresAt?: Timestamp;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
 export type LiveClass = {
   id: string;
   topic: string;
