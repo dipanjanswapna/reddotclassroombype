@@ -675,6 +675,14 @@ export default function AdminHomepageManagementPage() {
                             <Input value={config.appPromo?.appStoreImageUrl || ''} onChange={(e) => handleAppPromoChange('appStoreImageUrl', e.target.value)} />
                         </div>
                     </div>
+                     <div className="space-y-2">
+                        <Label>Promo Image URL</Label>
+                        <Input value={config.appPromo?.promoImageUrl || ''} onChange={(e) => handleAppPromoChange('promoImageUrl', e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label>Promo Image AI Hint</Label>
+                        <Input value={config.appPromo?.promoImageDataAiHint || ''} onChange={(e) => handleAppPromoChange('promoImageDataAiHint', e.target.value)} />
+                    </div>
                 </CardContent>
             </Card>
             <Card>

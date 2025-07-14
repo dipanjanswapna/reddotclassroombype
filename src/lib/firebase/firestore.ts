@@ -366,7 +366,6 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
         constraints.push(where("isPublished", "==", true));
     }
     
-    // Sort by creation date to ensure latest appears first, regardless of publish date timing issues.
     constraints.push(orderBy("createdAt", "desc"));
 
     if (queryLimit) {
