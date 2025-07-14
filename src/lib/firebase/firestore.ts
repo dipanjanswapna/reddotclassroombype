@@ -16,6 +16,7 @@ import {
   writeBatch,
   orderBy,
   limit,
+  Timestamp,
 } from 'firebase/firestore';
 import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice } from '../types';
 
@@ -365,7 +366,8 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
         constraints.push(where("isPublished", "==", true));
     }
     
-    constraints.push(orderBy("publishedAt", "desc"));
+    // Sort by creation date to ensure latest appears first, regardless of publish date timing issues.
+    constraints.push(orderBy("createdAt", "desc"));
 
     if (queryLimit) {
         constraints.push(limit(queryLimit));
