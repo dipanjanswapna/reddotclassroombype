@@ -431,6 +431,14 @@ export default function Home() {
           </section>
         )}
 
+        {homepageConfig.requestCallbackSection?.display && (
+            <section className="bg-background">
+                <div className="container mx-auto px-4">
+                    <RequestCallbackForm homepageConfig={homepageConfig} />
+                </div>
+            </section>
+        )}
+
         {homepageConfig.statsSection?.display && (
           <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
             <div className="container mx-auto px-4 text-center">
@@ -447,14 +455,6 @@ export default function Home() {
           </section>
         )}
         
-        {homepageConfig.requestCallbackSection?.display && (
-            <section className="bg-background">
-                <div className="container mx-auto px-4">
-                    <RequestCallbackForm homepageConfig={homepageConfig} />
-                </div>
-            </section>
-        )}
-
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
