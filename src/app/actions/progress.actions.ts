@@ -3,9 +3,8 @@
 
 import { db } from '@/lib/firebase/config';
 import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
-import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
-import type { Enrollment } from '@/lib/types';
 
 export async function markLessonAsCompleteAction(userId: string, courseId: string, lessonId: string) {
     try {
@@ -22,46 +21,26 @@ export async function markLessonAsCompleteAction(userId: string, courseId: strin
         }
         
         const enrollmentRef = doc(db, 'enrollments', enrollment.id);
-
-        // Fetch the enrollment document once to get its current state
-        const enrollmentDoc = await getDoc(enrollmentRef);
-        if (!enrollmentDoc.exists()) {
-            throw new Error("Enrollment data could not be found.");
-        }
-        const currentEnrollmentData = enrollmentDoc.data() as Enrollment;
-        const completedLessons = currentEnrollmentData.completedLessons || [];
-
+        
+        const completedLessons = enrollment.completedLessons || [];
         // If lesson is already complete, do nothing.
         if (completedLessons.includes(lessonId)) {
             return { success: true, message: "Lesson was already marked as complete." };
         }
 
-        const newCompletedLessons = [...completedLessons, lessonId];
+        await updateDoc(enrollmentRef, { completedLessons: arrayUnion(lessonId) });
         
-        let totalLessonsInScope = 0;
-        const isCycleEnrollment = enrollment.enrollmentType === 'cycle' && enrollment.cycleId;
-
-        if (isCycleEnrollment) {
-            const cycle = course.cycles?.find(c => c.id === enrollment.cycleId);
-            const accessibleModuleIds = new Set(cycle?.moduleIds || []);
-            totalLessonsInScope = course.syllabus
-                ?.filter(m => accessibleModuleIds.has(m.id))
-                .reduce((acc, module) => acc + module.lessons.length, 0) || 0;
-        } else {
-            // Full course enrollment
-            totalLessonsInScope = course.syllabus?.reduce((acc, module) => acc + module.lessons.length, 0) || 0;
-        }
+        const totalLessons = course.syllabus?.reduce((acc, module) => acc + module.lessons.length, 0) || 0;
         
-        if (totalLessonsInScope === 0) {
-            await updateDoc(enrollmentRef, { progress: 100, status: 'completed', completedLessons: newCompletedLessons });
+        if (totalLessons === 0) {
+            await updateDoc(enrollmentRef, { progress: 100, status: 'completed' });
             revalidatePath(`/student/my-courses/${courseId}`, 'layout');
             return { success: true, message: "Course marked as complete." };
         }
 
-        const newProgress = Math.min(100, Math.round((newCompletedLessons.length / totalLessonsInScope) * 100));
-
-        const updates: Partial<Enrollment> = {
-            completedLessons: newCompletedLessons,
+        const newProgress = Math.min(100, Math.round(((completedLessons.length + 1) / totalLessons) * 100));
+        
+        const updates: { progress: number, status?: 'completed' } = {
             progress: newProgress,
         };
         

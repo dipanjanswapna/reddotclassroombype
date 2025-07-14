@@ -18,7 +18,7 @@ export default async function CourseLayout({
   }
   
   // This layout handles pages within a specific course
-  // The nav bar needs to be a client component to use usePathname
+  // The nav bar needs to be a client component to use Pathname
   return (
     <>
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">

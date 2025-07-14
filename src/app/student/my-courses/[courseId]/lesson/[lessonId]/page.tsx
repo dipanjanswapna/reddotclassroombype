@@ -2,7 +2,6 @@
 'use client'; 
 
 import { notFound, useParams } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Download, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
@@ -11,15 +10,9 @@ import { useEffect, useState } from 'react';
 import type { Course, Lesson, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LessonFeedback } from '@/components/lesson-feedback';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { markLessonAsCompleteAction } from '@/app/actions/progress.actions';
-
-const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
-    ssr: false,
-    loading: () => <Skeleton className="h-24 w-full" />,
-});
 
 export default function LessonPage() {
   const params = useParams();
@@ -29,7 +22,6 @@ export default function LessonPage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pageUrl, setPageUrl] = useState('');
   
   const { userInfo } = useAuth();
   const { toast } = useToast();
@@ -37,8 +29,6 @@ export default function LessonPage() {
   const [isCompleting, setIsCompleting] = useState(false);
 
   useEffect(() => {
-    setPageUrl(window.location.href);
-
     const fetchLessonData = async () => {
       if (!courseId || !userInfo) {
         if (!loading) setLoading(false);
@@ -142,20 +132,6 @@ export default function LessonPage() {
           {isCompleted ? 'Completed' : 'Mark as Complete'}
         </Button>
       </div>
-
-      <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lesson.id} />
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare />
-            Discussion
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FacebookComments href={pageUrl} />
-        </CardContent>
-      </Card>
     </div>
   );
 }

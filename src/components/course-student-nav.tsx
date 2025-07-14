@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React from 'react';
@@ -12,10 +11,7 @@ import {
   Megaphone,
   Star,
   Users,
-  Video,
-  Archive,
-  Award,
-  ClipboardCheck,
+  Video
 } from 'lucide-react';
 import { Course } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -24,38 +20,15 @@ export function CourseStudentNav({ course }: { course: Course }) {
   const pathname = usePathname();
   const courseId = course.id;
 
-  const baseNavItems = [
+  const navItems = [
+    { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
+    { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
+    { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
+    { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
     { href: `/student/my-courses/${courseId}/announcements`, label: 'Announcements', icon: Megaphone },
     { href: `/student/my-courses/${courseId}/community`, label: 'Community', icon: Users },
     { href: `/student/my-courses/${courseId}/reviews`, label: 'Reviews', icon: Star },
   ];
-
-  let courseNavItems = [];
-
-  if (course.type === 'Exam') {
-    courseNavItems = [
-        { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
-        ...baseNavItems,
-    ];
-    if (course.liveClasses && course.liveClasses.length > 0) {
-        courseNavItems.splice(1, 0, { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video });
-    }
-  } else {
-    courseNavItems = [
-      { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
-      { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
-      { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
-      { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: Award },
-      { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
-      ...baseNavItems,
-    ];
-    if (course.type === 'Offline' || course.type === 'Hybrid') {
-      courseNavItems.splice(5, 0, { href: `/student/my-courses/${courseId}/attendance`, label: 'Attendance', icon: ClipboardCheck });
-    }
-    if (course.includedCourseIds && course.includedCourseIds.length > 0) {
-      courseNavItems.push({ href: `/student/my-courses/${courseId}/archive`, label: 'Archive', icon: Archive });
-    }
-  }
 
   const getIsActive = (href: string) => {
     if (href.endsWith(courseId!)) {
@@ -67,7 +40,7 @@ export function CourseStudentNav({ course }: { course: Course }) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
       <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
-        {courseNavItems.map((item) => (
+        {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
