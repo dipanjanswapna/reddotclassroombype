@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -38,6 +37,7 @@ import { RequestCallbackForm } from '@/components/request-callback-form';
 import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
+import { NoticeBoard } from '@/components/notice-board';
 
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
@@ -208,6 +208,10 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        <div className="container mx-auto px-4">
+            <NoticeBoard />
+        </div>
 
         {homepageConfig.journeySection?.display && (
           <section className="bg-gray-900 text-white" aria-labelledby="hero-heading">
