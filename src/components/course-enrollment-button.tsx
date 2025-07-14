@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { useAuth } from '@/context/auth-context';
 import { getEnrollmentsByUserId, getPrebookingForUser } from '@/lib/firebase/firestore';
-import { BookCheck, Loader2, BookmarkPlus, Bookmark } from 'lucide-react';
+import { BookCheck, Loader2, BookmarkPlus, Bookmark, BookmarkCheck } from 'lucide-react';
 import { prebookCourseAction } from '@/app/actions/enrollment.actions';
 import { useToast } from './ui/use-toast';
 import { useRouter } from 'next/navigation';
