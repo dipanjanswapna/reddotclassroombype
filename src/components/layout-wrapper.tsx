@@ -45,11 +45,10 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
     <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
         <div className={cn(
             "min-h-screen flex flex-col",
-            isHomePage ? "bg-[#FFFDF6] dark:bg-[#1a1a2e]" : "bg-background",
             isDashboardPage && "bg-background"
         )}>
             <Header />
-            <main className={cn("flex-grow", isDashboardPage && "flex-grow")}>
+            <main className={cn("flex-grow")}>
               {children}
             </main>
             {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}

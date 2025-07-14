@@ -78,118 +78,19 @@
 }
 
 @layer components {
-  /* Added rule to hide header and footer for the 404 page */
   .body-is-404 header,
   .body-is-404 footer,
   .body-is-404 a[href*="wa.me"] {
     display: none !important;
   }
 
-  .hero-carousel-container {
-    @apply relative bg-secondary/50 py-16 overflow-hidden;
+  .glassmorphism-card {
+    @apply bg-card/60 dark:bg-card/40 backdrop-blur-lg border border-white/10 rounded-2xl shadow-lg;
   }
+}
 
-  .hero-carousel .embla__viewport {
-    @apply overflow-hidden;
-  }
-
-  .hero-carousel .embla__container {
-    backface-visibility: hidden;
-  }
-
-  .hero-carousel .embla__slide {
-    @apply opacity-40 transition-all duration-500 ease-in-out;
-    transform: scale(0.85);
-  }
-
-  .hero-carousel .embla__slide.is-active {
-    @apply opacity-100;
-    transform: scale(1);
-    z-index: 10;
-  }
-
-  .carousel-image-wrapper {
-    @apply relative;
-    -webkit-box-reflect: below 2px linear-gradient(
-      to bottom,
-      transparent 60%,
-      rgba(255, 255, 255, 0.3)
-    );
-  }
-  .dark .carousel-image-wrapper {
-    -webkit-box-reflect: below 2px linear-gradient(
-      to bottom,
-      transparent 60%,
-      rgba(0, 0, 0, 0.2)
-    );
-  }
-
-  .hero-carousel-arrow {
-    @apply absolute top-1/2 -translate-y-1/2 z-20 text-foreground bg-background/50 hover:bg-background/80 h-10 w-10 sm:h-12 sm:w-12 rounded-full;
-  }
-  .hero-carousel-prev {
-    @apply left-2 sm:left-4 md:left-6 lg:left-8;
-  }
-  .hero-carousel-next {
-    @apply right-2 sm:right-4 md:right-6 lg:right-8;
-  }
-
-  .hero-carousel-dots {
-    @apply absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20;
-  }
-
-  .hero-carousel-dot {
-    @apply w-2 h-2 rounded-full bg-primary/50 transition-all cursor-pointer;
-  }
-
-  .hero-carousel-dot.active {
-    @apply w-4 bg-primary;
-  }
-
-  .google-spinner {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    border: 3px solid;
-    border-color: hsl(var(--primary)) transparent hsl(var(--destructive)) transparent;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-  }
-  .google-spinner::after {
-    content: '';  
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    border: 3px solid;
-    border-color: transparent hsl(var(--warning)) transparent hsl(var(--accent));
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    animation: rotationBack 0.5s linear infinite;
-    transform-origin: center center;
-  }
-  
-  @keyframes rotation {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  @keyframes rotationBack {
-    0% {
-      transform: rotate(-360deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   }
 }

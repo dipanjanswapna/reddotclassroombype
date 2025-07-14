@@ -28,7 +28,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg bg-gray-800 text-white border-gray-700 group">
+    <Card className="glassmorphism-card flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group">
       <CardHeader className="p-0 overflow-hidden relative">
         <Link href={coursePageUrl} className="block overflow-hidden">
           <Image
@@ -46,29 +46,29 @@ const CourseCardComponent = (props: CourseCardProps) => {
         {type === 'Exam' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="destructive">Exam Batch</Badge>}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        {category && <Badge variant="secondary" className="mb-2 bg-gray-700 text-gray-300">{category}</Badge>}
+        {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}
         <Link href={coursePageUrl}>
           <h3 className="font-headline text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</h3>
         </Link>
         {provider ? (
            <div className="flex items-center gap-2 mt-2">
             <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
-            <p className="text-xs text-gray-400">By {provider.name}</p>
+            <p className="text-xs text-muted-foreground">By {provider.name}</p>
           </div>
         ) : (
-          instructors && instructors.length > 0 && <p className="text-gray-400 text-sm mt-2">By {instructors[0].name}</p>
+          instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
         {isPrebookingActive ? (
           <div className="flex flex-col items-start w-full">
-            <p className="text-sm text-gray-400 line-through">{price}</p>
+            <p className="text-sm text-muted-foreground line-through">{price}</p>
             <p className="font-headline text-lg font-bold text-primary">{prebookingPrice}</p>
           </div>
         ) : hasDiscount ? (
           <div className="flex items-baseline gap-2">
             <p className="font-headline text-lg font-bold text-primary">{discountPrice}</p>
-            <p className="text-sm text-gray-400 line-through">{price}</p>
+            <p className="text-sm text-muted-foreground line-through">{price}</p>
           </div>
         ) : isArchived ? (
             null

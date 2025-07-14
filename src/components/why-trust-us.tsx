@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -30,19 +31,19 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className={cn("py-16 overflow-hidden", isHomePage ? "bg-transparent" : "bg-background")}>
+    <section className="py-16 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className={cn("rounded-3xl p-8 md:p-12", isHomePage ? "bg-[#f5f3ef]" : "bg-primary/5")}>
+        <div className="glassmorphism-card p-8 md:p-12">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-                <h2 className="font-headline text-4xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
+                <h2 className="font-headline text-4xl font-bold" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
                 <p className="text-lg text-muted-foreground">
                 {data.description?.[language] || data.description?.['bn']}
                 </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
                 {(data.features || []).map((feature, index) => (
-                <div key={feature.id || `feature-${index}`} className="bg-background/50 border p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors backdrop-blur-sm">
+                <div key={feature.id || `feature-${index}`} className="bg-background/50 border border-white/10 p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors backdrop-blur-sm">
                     <div className="bg-primary/10 p-2 rounded-lg border-2 border-primary/50">
                         <Image src={feature.iconUrl} alt={feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="w-10 h-10"/>
                     </div>
@@ -62,7 +63,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             <CarouselContent>
               {(data.testimonials || []).map((testimonial, index) => (
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
-                  <Card className="bg-card shadow-lg rounded-2xl border border-primary/20">
+                  <Card className="glassmorphism-card">
                     <CardContent className="p-8 grid md:grid-cols-3 gap-8 items-center">
                         <div className="md:col-span-2">
                             <Quote className="text-5xl text-primary/20" fill="currentColor" />

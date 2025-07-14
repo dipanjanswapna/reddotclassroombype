@@ -65,9 +65,9 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("sticky top-0 z-50 w-full py-2", wrapperClassName)}>
+    <header className={cn("sticky top-0 z-50 w-full py-3", wrapperClassName)}>
       <div className="container">
-        <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/80 px-4 shadow-lg backdrop-blur-md border", containerClassName)}>
+        <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/60 dark:bg-card/40 backdrop-blur-lg border border-white/10 px-4 shadow-lg", containerClassName)}>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center space-x-2">
                 <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 md:h-10 w-auto" priority />
@@ -128,7 +128,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                       <Menu className="h-5 w-5" />
                   </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col">
+                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
                       <SheetHeader className="sr-only">
                           <SheetTitle>Mobile Menu</SheetTitle>
                           <SheetDescription>Main navigation links for the Red Dot Classroom website.</SheetDescription>

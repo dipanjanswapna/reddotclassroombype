@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,7 +47,7 @@ export function NoticeBoard() {
   return (
     <div className="my-8">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
-            <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20">
+            <Card className="glassmorphism-card">
                 <CardHeader>
                     <div className="flex items-center gap-3 text-primary">
                         <Megaphone className="w-6 h-6" />
