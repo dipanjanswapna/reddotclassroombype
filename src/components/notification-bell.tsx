@@ -11,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup
+  DropdownMenuGroup,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
