@@ -136,12 +136,20 @@ export default function Home() {
     fetchData();
   }, []);
 
-  if (loading || !homepageConfig) {
+  if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingSpinner className="h-12 w-12" />
       </div>
     );
+  }
+  
+  if (!homepageConfig) {
+      return (
+          <div className="flex h-screen items-center justify-center">
+              <p>Could not load homepage content. Please try again later.</p>
+          </div>
+      )
   }
   
   return (
