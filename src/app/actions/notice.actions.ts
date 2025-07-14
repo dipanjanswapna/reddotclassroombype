@@ -24,6 +24,7 @@ export async function saveNoticeAction(noticeData: Partial<Notice>) {
       const existingDoc = await getDoc(noticeRef);
       const existingData = existingDoc.data();
       
+      // Check if a draft is being published for the first time
       if (cleanData.isPublished && !existingData?.isPublished) {
           cleanData.publishedAt = Timestamp.now();
           isNewlyPublished = true;

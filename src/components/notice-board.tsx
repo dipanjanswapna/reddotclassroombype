@@ -10,6 +10,7 @@ import type { Notice } from '@/lib/types';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Skeleton } from './ui/skeleton';
 
 export function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -30,6 +31,18 @@ export function NoticeBoard() {
     fetchNotices();
   }, []);
 
+  const NoticeBoardSkeleton = () => (
+    <div className="space-y-2">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="flex items-center gap-2 p-2">
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-4/5" />
+          <Skeleton className="h-4 w-1/5 ml-auto" />
+        </div>
+      ))}
+    </div>
+  )
+
   return (
     <div className="my-8">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
@@ -42,9 +55,7 @@ export function NoticeBoard() {
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="flex items-center justify-center h-10">
-                            <Loader2 className="w-5 h-5 animate-spin"/>
-                        </div>
+                       <NoticeBoardSkeleton />
                     ) : notices.length > 0 ? (
                          <div className="space-y-2">
                             {notices.map((notice) => (
@@ -70,10 +81,12 @@ export function NoticeBoard() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{selectedNotice?.title}</DialogTitle>
-                    <DialogDescription className="flex items-center gap-2 pt-2">
-                        <Calendar className="w-4 h-4"/>
-                        Published on {selectedNotice && format(safeToDate(selectedNotice.publishedAt), 'PPP')}
-                    </DialogDescription>
+                    {selectedNotice?.publishedAt && (
+                      <DialogDescription className="flex items-center gap-2 pt-2">
+                          <Calendar className="w-4 h-4"/>
+                          Published on {format(safeToDate(selectedNotice.publishedAt), 'PPP')}
+                      </DialogDescription>
+                    )}
                 </DialogHeader>
                 <div className="py-4 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto">
                     {selectedNotice?.content}
