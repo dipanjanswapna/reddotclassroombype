@@ -15,6 +15,7 @@ import {
   setDoc,
   writeBatch,
   orderBy,
+  limit,
 } from 'firebase/firestore';
 import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice } from '../types';
 
@@ -357,7 +358,7 @@ export const getCallbackRequests = () => getCollection<CallbackRequest>('callbac
 
 // Notices
 export const getNotices = async (options?: { limit?: number; includeDrafts?: boolean }): Promise<Notice[]> => {
-    const { limit, includeDrafts } = options || {};
+    const { limit: queryLimit, includeDrafts } = options || {};
     const constraints = [];
 
     if (!includeDrafts) {
@@ -366,8 +367,8 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
     
     constraints.push(orderBy("publishedAt", "desc"));
 
-    if (limit) {
-        constraints.push(where("limit", "==", limit));
+    if (queryLimit) {
+        constraints.push(limit(queryLimit));
     }
 
     const q = query(collection(db, 'notices'), ...constraints);

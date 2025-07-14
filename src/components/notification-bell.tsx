@@ -11,17 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuGroup
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
 import { db } from '@/lib/firebase/config';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { Notification } from '@/lib/types';
 import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { Skeleton } from './ui/skeleton';
+import { safeToDate } from '@/lib/utils';
 
 const iconMap: { [key in Notification['icon']]: React.ElementType } = {
     Award,
@@ -35,7 +35,7 @@ const iconMap: { [key in Notification['icon']]: React.ElementType } = {
 // Function to group notifications by date
 const groupNotifications = (notifications: Notification[]) => {
     return notifications.reduce((acc, notification) => {
-        const date = notification.date.toDate();
+        const date = safeToDate(notification.date);
         let groupTitle = format(date, 'PPP');
         if (isToday(date)) {
             groupTitle = 'Today';
@@ -65,7 +65,8 @@ export function NotificationBell() {
 
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", userInfo.uid)
+        where("userId", "==", userInfo.uid),
+        orderBy("date", "desc")
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -73,8 +74,6 @@ export function NotificationBell() {
       querySnapshot.forEach((doc) => {
         fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
       });
-      // Sort notifications on the client side to avoid needing a composite index
-      fetchedNotifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
       setNotifications(fetchedNotifications);
     }, (error) => {
       console.error("Error fetching notifications:", error);
@@ -101,6 +100,8 @@ export function NotificationBell() {
       return null;
   }
 
+  const groupedNotifications = groupNotifications(notifications);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -124,40 +125,43 @@ export function NotificationBell() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ScrollArea className="h-[300px]">
-            <DropdownMenuGroup>
-                {notifications.length > 0 ? (
-                    notifications.map(notification => {
-                        const Icon = iconMap[notification.icon] || Megaphone;
-                        const DropdownItemContent = (
-                            <div className={`w-full flex items-start gap-3 p-2 h-auto ${!notification.read ? 'bg-accent/50' : ''}`}>
-                                 {!notification.read && <div className="h-2 w-2 rounded-full bg-primary mt-2"></div>}
-                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 shrink-0">
-                                    <Icon className="h-4 w-4 text-primary" />
+            {notifications.length > 0 ? (
+                Object.entries(groupedNotifications).map(([date, group]) => (
+                    <DropdownMenuGroup key={date}>
+                        <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1">{date}</DropdownMenuLabel>
+                        {group.map(notification => {
+                            const Icon = iconMap[notification.icon] || Megaphone;
+                            const DropdownItemContent = (
+                                <div className={`w-full flex items-start gap-3 p-2 h-auto ${!notification.read ? 'bg-accent/50' : ''}`}>
+                                     {!notification.read && <div className="h-2 w-2 rounded-full bg-primary mt-2"></div>}
+                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 shrink-0">
+                                        <Icon className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium leading-tight whitespace-normal">{notification.title}</p>
+                                        <p className="text-xs text-muted-foreground whitespace-normal">{notification.description}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{formatDistanceToNow(safeToDate(notification.date), { addSuffix: true })}</p>
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium leading-tight whitespace-normal">{notification.title}</p>
-                                    <p className="text-xs text-muted-foreground whitespace-normal">{notification.description}</p>
-                                    <p className="text-xs text-muted-foreground mt-1">{formatDistanceToNow(notification.date.toDate(), { addSuffix: true })}</p>
-                                </div>
-                            </div>
-                        );
+                            );
 
-                        return (
-                            <DropdownMenuItem key={notification.id} asChild className="p-0 cursor-pointer">
-                                {notification.link ? (
-                                    <Link href={notification.link} className="w-full">
-                                        {DropdownItemContent}
-                                    </Link>
-                                ) : (
-                                    DropdownItemContent
-                                )}
-                            </DropdownMenuItem>
-                        )
-                    })
-                ) : (
-                    <p className="text-sm text-center text-muted-foreground p-4">No recent notifications.</p>
-                )}
-            </DropdownMenuGroup>
+                            return (
+                                <DropdownMenuItem key={notification.id} asChild className="p-0 cursor-pointer">
+                                    {notification.link ? (
+                                        <Link href={notification.link} className="w-full">
+                                            {DropdownItemContent}
+                                        </Link>
+                                    ) : (
+                                        DropdownItemContent
+                                    )}
+                                </DropdownMenuItem>
+                            )
+                        })}
+                    </DropdownMenuGroup>
+                ))
+            ) : (
+                <p className="text-sm text-center text-muted-foreground p-4">No recent notifications.</p>
+            )}
         </ScrollArea>
         <DropdownMenuSeparator />
          <DropdownMenuItem asChild>

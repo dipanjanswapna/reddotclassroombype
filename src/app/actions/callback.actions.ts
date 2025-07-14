@@ -1,7 +1,7 @@
 
 'use server';
 
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { z } from "zod";
 import { revalidatePath } from 'next/cache';
@@ -40,6 +40,34 @@ export async function addCallbackRequest(data: FormData): Promise<{ success: boo
     }
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.';
     console.error("Error adding callback request: ", errorMessage);
+    return { success: false, message: errorMessage };
+  }
+}
+
+
+export async function updateCallbackRequestAction(
+  id: string,
+  data: { status: 'Pending' | 'Contacted' | 'Completed'; notes: string },
+  adminId: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const callbackRef = doc(db, 'callbacks', id);
+    
+    const updateData: Partial<CallbackRequest> = {
+      status: data.status,
+      notes: data.notes,
+      contactedBy: adminId,
+      contactedAt: Timestamp.now(),
+    };
+
+    await updateDoc(callbackRef, updateData);
+    
+    revalidatePath('/admin/callback-requests');
+
+    return { success: true, message: "Callback request updated successfully." };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    console.error("Error updating callback request: ", errorMessage);
     return { success: false, message: errorMessage };
   }
 }

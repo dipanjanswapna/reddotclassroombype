@@ -2,11 +2,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, deleteDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, Timestamp, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import type { Notice } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
-
+import { getUsers, addNotification } from '@/lib/firebase/firestore';
 
 export async function saveNoticeAction(noticeData: Partial<Notice>) {
   try {
@@ -17,26 +17,46 @@ export async function saveNoticeAction(noticeData: Partial<Notice>) {
       updatedAt: Timestamp.now(),
     });
 
+    let isNewlyPublished = false;
+
     if (id) {
-      // Update existing notice
       const noticeRef = doc(db, 'notices', id);
       const existingDoc = await getDoc(noticeRef);
       const existingData = existingDoc.data();
       
-      // If a draft is being published for the first time, set publishedAt
       if (cleanData.isPublished && !existingData?.isPublished) {
           cleanData.publishedAt = Timestamp.now();
+          isNewlyPublished = true;
       }
 
       await updateDoc(noticeRef, cleanData);
     } else {
-      // Create new notice
       cleanData.createdAt = Timestamp.now();
       if(cleanData.isPublished) {
         cleanData.publishedAt = Timestamp.now();
+        isNewlyPublished = true;
       }
       await addDoc(collection(db, 'notices'), cleanData);
     }
+    
+    // If a notice was just published for the first time, notify all students.
+    if (isNewlyPublished && cleanData.title) {
+        const users = await getUsers();
+        const students = users.filter(u => u.role === 'Student');
+        
+        const notificationPromises = students.map(student => 
+            addNotification({
+                userId: student.uid,
+                icon: 'Megaphone',
+                title: 'New Notice Published',
+                description: cleanData.title!,
+                date: Timestamp.now(),
+                read: false,
+            })
+        );
+        await Promise.all(notificationPromises);
+    }
+
 
     revalidatePath('/');
     revalidatePath('/admin/notices');
