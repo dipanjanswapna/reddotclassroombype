@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -628,7 +629,7 @@ export type CallbackRequest = {
   requestedAt: Timestamp;
   status: 'Pending' | 'Contacted' | 'Completed';
   contactedAt?: Timestamp;
-  contactedBy?: string;
+  contactedBy?: string; // Admin UID
   notes?: string;
 };
 

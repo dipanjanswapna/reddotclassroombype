@@ -353,8 +353,6 @@ export const updateReportedContent = (id: string, data: Partial<ReportedContent>
 
 // Callback Requests
 export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
-export const updateCallbackRequest = (id: string, data: Partial<CallbackRequest>) => updateDoc(doc(db, 'callbacks', id), data);
-
 
 // Homepage Configuration
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');

@@ -123,7 +123,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                     <FormItem>
                                     <FormLabel>Mobile Number*</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: +8801700000000" {...field} />
+                                        <Input placeholder="Ex: +919876543210" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                     </FormItem>
