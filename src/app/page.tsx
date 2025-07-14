@@ -405,6 +405,22 @@ export default function Home() {
             </div>
           </section>
         )}
+        
+        {homepageConfig.statsSection?.display && (
+          <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
+            <div className="container mx-auto px-4 text-center">
+                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {homepageConfig.statsSection?.stats.map((stat, index) => (
+                        <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
+                            <p className="font-headline text-5xl font-bold">{stat.value}</p>
+                            <p className="mt-2 text-lg opacity-90">{stat.label?.[language]}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </section>
+        )}
 
         {homepageConfig.notesBanner?.display && (
           <section className="bg-gray-900 text-white" aria-labelledby="notes-banner-heading">
@@ -428,22 +444,6 @@ export default function Home() {
             </div>
         </section>
         
-        {homepageConfig.statsSection?.display && (
-          <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
-            <div className="container mx-auto px-4 text-center">
-                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {homepageConfig.statsSection?.stats.map((stat, index) => (
-                        <div key={index} className="text-center bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                            <p className="font-headline text-5xl font-bold">{stat.value}</p>
-                            <p className="mt-2 text-lg opacity-90">{stat.label?.[language]}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-          </section>
-        )}
-
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading" className="bg-white text-gray-800">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
