@@ -74,8 +74,8 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
-  // The main student layout should not handle course-specific pages directly.
-  // The new layout at /student/my-courses/[courseId]/layout.tsx will handle that.
+  // This layout handles the main student dashboard pages.
+  // A nested layout at /student/my-courses/[courseId]/layout.tsx will handle course-specific navigation.
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
       return <>{children}</>;
   }
