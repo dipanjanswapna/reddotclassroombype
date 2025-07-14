@@ -14,8 +14,9 @@ import {
   deleteDoc,
   setDoc,
   writeBatch,
+  orderBy,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -353,6 +354,26 @@ export const updateReportedContent = (id: string, data: Partial<ReportedContent>
 
 // Callback Requests
 export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
+
+// Notices
+export const getNotices = async (options?: { limit?: number; includeDrafts?: boolean }): Promise<Notice[]> => {
+    const { limit, includeDrafts } = options || {};
+    const constraints = [];
+
+    if (!includeDrafts) {
+        constraints.push(where("isPublished", "==", true));
+    }
+    
+    constraints.push(orderBy("publishedAt", "desc"));
+
+    if (limit) {
+        constraints.push(where("limit", "==", limit));
+    }
+
+    const q = query(collection(db, 'notices'), ...constraints);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notice));
+}
 
 // Homepage Configuration
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
