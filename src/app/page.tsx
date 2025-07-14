@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { cn } from '@/lib/utils';
+import { cn, getYoutubeVideoId } from '@/lib/utils';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
@@ -253,7 +253,7 @@ export default function Home() {
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
-                      const videoId = cn(video.videoUrl);
+                      const videoId = getYoutubeVideoId(video.videoUrl);
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
                       
                       return (
