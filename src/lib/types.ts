@@ -747,7 +747,7 @@ export type HomepageConfig = {
     centersTitle: { [key: string]: string };
     contactSection: OfflineHubContactSection;
   };
-  collaborations: {
+  collaborations?: {
     display: boolean;
     title: { [key: string]: string };
     organizationIds: string[];

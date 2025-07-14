@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -36,6 +37,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
+import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
@@ -45,11 +47,6 @@ const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-li
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
     loading: () => <Skeleton className="h-[250px] w-full" />,
-    ssr: false,
-});
-
-const DynamicCollaborationsCarousel = dynamic(() => import('@/components/dynamic-collaborations-carousel').then(mod => mod.DynamicCollaborationsCarousel), {
-    loading: () => <Skeleton className="h-[200px] w-full" />,
     ssr: false,
 });
 
@@ -330,7 +327,7 @@ export default function Home() {
         )}
 
         <WhyTrustUs data={homepageConfig.whyChooseUs} />
-
+        
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
           <section aria-labelledby="collaborations-heading" className="bg-background">
             <div className="container mx-auto px-4">
@@ -341,7 +338,7 @@ export default function Home() {
             </div>
           </section>
         )}
-        
+
         {homepageConfig.partnersSection?.display && (
           <section aria-labelledby="partners-heading" className="bg-background">
             <div className="container mx-auto px-4">
