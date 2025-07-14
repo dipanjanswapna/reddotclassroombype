@@ -12,22 +12,30 @@ export async function saveNoticeAction(noticeData: Partial<Notice>) {
   try {
     const { id, ...data } = noticeData;
 
-    const cleanData = removeUndefinedValues({
+    const cleanData: Partial<Notice> = removeUndefinedValues({
       ...data,
       updatedAt: Timestamp.now(),
     });
-    
+
     if (id) {
       // Update existing notice
       const noticeRef = doc(db, 'notices', id);
+      const existingDoc = await getDoc(noticeRef);
+      const existingData = existingDoc.data();
+      
+      // If a draft is being published for the first time, set publishedAt
+      if (cleanData.isPublished && !existingData?.isPublished) {
+          cleanData.publishedAt = Timestamp.now();
+      }
+
       await updateDoc(noticeRef, cleanData);
     } else {
       // Create new notice
-      const noticeRef = collection(db, 'notices');
-      await addDoc(noticeRef, {
-        ...cleanData,
-        createdAt: Timestamp.now(),
-      });
+      cleanData.createdAt = Timestamp.now();
+      if(cleanData.isPublished) {
+        cleanData.publishedAt = Timestamp.now();
+      }
+      await addDoc(collection(db, 'notices'), cleanData);
     }
 
     revalidatePath('/');

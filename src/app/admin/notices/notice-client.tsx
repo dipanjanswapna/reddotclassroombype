@@ -59,7 +59,7 @@ export function NoticeClient({ initialNotices }: NoticeClientProps) {
     const [noticeToDelete, setNoticeToDelete] = useState<Notice | null>(null);
 
     const handleOpenDialog = (notice: Notice | null) => {
-        setEditingNotice(notice ? { ...notice } : { title: '', content: '', isPublished: true });
+        setEditingNotice(notice ? { ...notice } : { title: '', content: '', isPublished: true, publishedAt: new Date() as any });
         setIsDialogOpen(true);
     };
 
@@ -129,7 +129,7 @@ export function NoticeClient({ initialNotices }: NoticeClientProps) {
                             {notices.map(notice => (
                                 <TableRow key={notice.id}>
                                     <TableCell className="font-medium">{notice.title}</TableCell>
-                                    <TableCell>{format(safeToDate(notice.publishedAt), 'PPP')}</TableCell>
+                                    <TableCell>{notice.publishedAt ? format(safeToDate(notice.publishedAt), 'PPP') : 'Not Published'}</TableCell>
                                     <TableCell><Badge variant={notice.isPublished ? "accent" : "secondary"}>{notice.isPublished ? 'Published' : 'Draft'}</Badge></TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
