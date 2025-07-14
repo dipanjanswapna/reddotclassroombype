@@ -14,6 +14,7 @@ import {
   Video,
   ThumbsUp,
   ArrowRight,
+  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';

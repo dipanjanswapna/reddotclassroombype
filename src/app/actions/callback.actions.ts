@@ -43,29 +43,3 @@ export async function addCallbackRequest(data: FormData): Promise<{ success: boo
     return { success: false, message: errorMessage };
   }
 }
-
-export async function updateCallbackRequestAction(
-  id: string, 
-  data: { status: 'Pending' | 'Contacted' | 'Completed'; notes?: string },
-  adminId: string,
-): Promise<{ success: boolean; message: string }> {
-    try {
-        if (!id) throw new Error("Callback request ID is required.");
-        
-        const updateData: Partial<CallbackRequest> = {
-            status: data.status,
-            notes: data.notes || '',
-            contactedBy: adminId,
-            contactedAt: Timestamp.now(),
-        };
-
-        await updateDoc(doc(db, 'callbacks', id), updateData);
-        
-        revalidatePath('/admin/callback-requests');
-        return { success: true, message: "Callback request updated successfully." };
-
-    } catch(error: any) {
-        console.error("Error updating callback request: ", error);
-        return { success: false, message: error.message || 'An unexpected error occurred.' };
-    }
-}
