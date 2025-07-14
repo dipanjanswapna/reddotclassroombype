@@ -20,7 +20,7 @@ import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
 import { cn } from '@/lib/utils';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
