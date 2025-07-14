@@ -422,14 +422,12 @@ export default function Home() {
           </section>
         )}
         
-        {homepageConfig.requestCallbackSection?.display && (
-            <section className="bg-background">
-                <div className="container mx-auto px-4">
-                    <RequestCallbackForm homepageConfig={homepageConfig} />
-                </div>
-            </section>
-        )}
-
+        <section className="bg-background">
+            <div className="container mx-auto px-4">
+                <RequestCallbackForm homepageConfig={homepageConfig} />
+            </div>
+        </section>
+        
         {homepageConfig.statsSection?.display && (
           <section className="bg-primary text-primary-foreground" aria-labelledby="stats-heading">
             <div className="container mx-auto px-4 text-center">
