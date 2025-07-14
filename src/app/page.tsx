@@ -150,7 +150,7 @@ export default function Home() {
   }
   
   return (
-    <div className="bg-[#FFFDF6] dark:bg-[#1a1a2e] text-foreground [&>div>section:last-child]:pb-0">
+    <div className="text-foreground [&>div>section:last-child]:pb-0">
       {homepageConfig.welcomeSection?.display && (
         <section className="bg-primary/5 dark:bg-transparent py-12 text-center">
             <div className="container mx-auto px-4">
