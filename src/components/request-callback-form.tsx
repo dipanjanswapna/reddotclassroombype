@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader } from "./ui/card";
 import Link from "next/link";
 import { useState } from "react";
 import { useToast } from "./ui/use-toast";
