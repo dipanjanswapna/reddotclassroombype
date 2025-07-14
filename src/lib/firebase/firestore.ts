@@ -632,6 +632,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     description: { bn: "যেকোনো সময়, যেকোনো স্থানে আপনার পড়াশোনা চালিয়ে যান। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন আপনার হাতের মুঠোয়।", en: "Continue your studies anytime, anywhere. Live classes, quizzes, and much more are now at your fingertips." },
     googlePlayUrl: "#",
     appStoreUrl: "#",
+    googlePlayImageUrl: "https://placehold.co/180x60.png",
+    appStoreImageUrl: "https://placehold.co/180x60.png",
+    promoImageUrl: "https://i.imgur.com/uR1Y6o6.png",
+    promoImageDataAiHint: "mobile app screenshot",
   },
   floatingWhatsApp: {
       display: true,

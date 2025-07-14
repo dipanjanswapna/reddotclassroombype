@@ -30,7 +30,6 @@ import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import downloadAppImage from '@/public/download.jpg';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -457,15 +456,15 @@ export default function Home() {
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
-                            <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                            <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
-                            <Image src="https://placehold.co/180x60.png" width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                            <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
                         </Link>
                     </div>
                   </div>
                   <div className="flex justify-center">
-                      <Image src={downloadAppImage} width={350} height={500} alt="RDC App" className='object-contain' placeholder="blur" />
+                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
                   </div>
               </div>
           </section>

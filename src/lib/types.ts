@@ -823,6 +823,10 @@ export type HomepageConfig = {
     description: { [key: string]: string };
     googlePlayUrl: string;
     appStoreUrl: string;
+    googlePlayImageUrl?: string;
+    appStoreImageUrl?: string;
+    promoImageUrl?: string;
+    promoImageDataAiHint?: string;
   };
   floatingWhatsApp: {
       display: boolean;

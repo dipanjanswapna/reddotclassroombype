@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -661,9 +662,19 @@ export default function AdminHomepageManagementPage() {
             </Card>
             <Card>
                 <CardHeader><CardTitle>App Promo Section</CardTitle></CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="space-y-1"><Label>Title (BN)</Label><Input value={config.appPromo?.title?.bn || ''} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo?.title, bn: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>Description (BN)</Label><Textarea value={config.appPromo?.description?.bn || ''} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo?.description, bn: e.target.value })} /></div>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.appPromo?.title?.bn || ''} onChange={(e) => handleAppPromoChange('title', { ...config.appPromo?.title, bn: e.target.value })} /></div>
+                    <div className="space-y-2"><Label>Description (BN)</Label><Textarea value={config.appPromo?.description?.bn || ''} onChange={(e) => handleAppPromoChange('description', { ...config.appPromo?.description, bn: e.target.value })} /></div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Google Play Button Image URL</Label>
+                            <Input value={config.appPromo?.googlePlayImageUrl || ''} onChange={(e) => handleAppPromoChange('googlePlayImageUrl', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>App Store Button Image URL</Label>
+                            <Input value={config.appPromo?.appStoreImageUrl || ''} onChange={(e) => handleAppPromoChange('appStoreImageUrl', e.target.value)} />
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
             <Card>
