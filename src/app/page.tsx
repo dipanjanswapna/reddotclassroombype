@@ -35,12 +35,8 @@ import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import logoSrc from '@/public/logo.png';
+import WhyTrustUs from '@/components/why-trust-us';
 
-
-const WhyTrustUs = dynamic(() => import('@/components/why-trust-us'), {
-    loading: () => <Skeleton className="h-[400px] w-full" />,
-    ssr: false,
-});
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
     loading: () => <Skeleton className="h-[380px] w-full" />,
@@ -333,9 +329,7 @@ export default function Home() {
           </section>
         )}
 
-        {homepageConfig.whyChooseUs?.display && (
-          <WhyTrustUs data={homepageConfig.whyChooseUs} />
-        )}
+        <WhyTrustUs data={homepageConfig.whyChooseUs} />
 
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
           <section aria-labelledby="collaborations-heading" className="bg-background">
