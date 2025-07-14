@@ -183,7 +183,7 @@ export async function submitExamAction(
             grade: hasManualGrading ? '' : grade,
             answers, 
             submissionDate: Timestamp.now(),
-            submissionText: hasManualGrading ? Object.values(answers).join('\n\n---\n\n') : ''
+            submissionText: hasManualGrading ? Object.values(answers).join('\\n\\n---\\n\\n') : ''
           }
         : e
     );
