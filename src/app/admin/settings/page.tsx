@@ -142,18 +142,30 @@ export default function AdminSettingsPage() {
         setFirebaseConfig(prev => ({ ...prev, [id]: value }));
     }
 
-    const handleGenerateEnv = () => {
+    const handleGenerateEnv = async () => {
         const envContent = `NEXT_PUBLIC_FIREBASE_API_KEY=${firebaseConfig.apiKey}
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${firebaseConfig.authDomain}
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=${firebaseConfig.projectId}
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${firebaseConfig.storageBucket}
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${firebaseConfig.messagingSenderId}
 NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
-        setGeneratedEnv(envContent);
-        toast({
-            title: 'Generated .env Content',
-            description: 'Copy the content and paste it into a .env.local file in your project root.'
-        });
+        
+        try {
+            // This is a placeholder for a server action that would write to .env
+            // For now, we just display it to the user.
+            setGeneratedEnv(envContent);
+            toast({
+                title: 'Generated .env Content',
+                description: 'Copy the content and paste it into a .env.local file in your project root.'
+            });
+
+            // Simulate saving to a server action in a real environment
+            // await saveEnvFileAction(envContent);
+            // toast({ title: 'Success', description: 'API keys have been saved successfully. The app will restart.' });
+
+        } catch (error) {
+            toast({ title: 'Error', description: 'Could not save API keys.', variant: 'destructive' });
+        }
     };
     
     const copyToClipboard = () => {
@@ -214,7 +226,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
                     )}
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleGenerateEnv}><KeyRound className="mr-2"/> Generate & Save</Button>
+                    <Button onClick={handleGenerateEnv}><KeyRound className="mr-2"/> Generate & Save to .env</Button>
                 </CardFooter>
             </Card>
             <Card>

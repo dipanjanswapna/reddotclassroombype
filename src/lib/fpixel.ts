@@ -3,7 +3,7 @@
 
 // IMPORTANT: Replace with your actual Facebook Pixel ID in your .env.local file.
 // NEXT_PUBLIC_FACEBOOK_PIXEL_ID=your-id-here
-export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
+export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || 'YOUR_PIXEL_ID_HERE';
 
 // IMPORTANT: Replace with your actual Facebook App ID if you use Facebook Login or other plugins.
 // NEXT_PUBLIC_FACEBOOK_APP_ID=your-app-id-here
