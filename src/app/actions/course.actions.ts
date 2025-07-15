@@ -1,6 +1,7 @@
 
 
 'use server';
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { addDoc, collection, doc, updateDoc, runTransaction, arrayUnion, writeBatch, getDoc, getDocs, query, where } from 'firebase/firestore';
@@ -15,11 +16,12 @@ import {
     getInstructorBySlug
 } from '@/lib/firebase/firestore';
 import { Course, User, PromoCode, Instructor, Enrollment } from '@/lib/types';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
+  const db = getDbInstance();
   try {
     const { id, ...data } = courseData;
 
@@ -70,6 +72,7 @@ export async function saveCourseAction(courseData: Partial<Course>) {
 }
 
 export async function deleteCourseAction(courseId: string) {
+    const db = getDbInstance();
     try {
         const batch = writeBatch(db);
 
@@ -109,6 +112,7 @@ export async function deleteCourseAction(courseId: string) {
 }
 
 export async function launchPrebookingCourseAction(courseId: string) {
+    const db = getDbInstance();
     try {
         const course = await getCourse(courseId);
         if (!course || !course.isPrebooking) {
@@ -184,6 +188,7 @@ export async function addLessonReactionAction(
   lessonId: string,
   reactionType: 'likes' | 'loves' | 'helpfuls'
 ) {
+  const db = getDbInstance();
   try {
     const userRef = doc(db, 'users', userId);
     const courseRef = doc(db, 'courses', courseId);

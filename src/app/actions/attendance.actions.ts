@@ -1,7 +1,6 @@
 
 'use server';
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { saveAttendanceRecords, getUserByOfflineRoll, getBatch, getAttendanceRecordForStudentByDate, updateAttendanceRecord } from '@/lib/firebase/firestore';

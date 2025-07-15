@@ -1,14 +1,17 @@
 
 'use server';
 
+import 'dotenv/config';
+
 import { revalidatePath } from 'next/cache';
 import { collection, addDoc, deleteDoc, doc, updateDoc, Timestamp, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import type { Notice } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
 import { getUsers, addNotification } from '@/lib/firebase/firestore';
 
 export async function saveNoticeAction(noticeData: Partial<Notice>) {
+  const db = getDbInstance();
   try {
     const { id, ...data } = noticeData;
 
@@ -70,6 +73,7 @@ export async function saveNoticeAction(noticeData: Partial<Notice>) {
 }
 
 export async function deleteNoticeAction(noticeId: string) {
+    const db = getDbInstance();
     try {
         await deleteDoc(doc(db, 'notices', noticeId));
         revalidatePath('/');

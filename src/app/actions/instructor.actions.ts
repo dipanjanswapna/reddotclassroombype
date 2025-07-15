@@ -1,6 +1,7 @@
 
 
 'use server';
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { 
@@ -15,7 +16,7 @@ import {
 import { Instructor, User } from '@/lib/types';
 import { generateRegistrationNumber, removeUndefinedValues } from '@/lib/utils';
 import { writeBatch, doc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 
 export async function createInstructorAction(data: Partial<Omit<Instructor, 'status' | 'slug'>> & { uid: string }) {
     try {
@@ -63,6 +64,7 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
 }
 
 export async function saveInstructorProfileAction(id: string, data: Partial<Instructor>) {
+    const db = getDbInstance();
     try {
         const currentInstructor = await getInstructor(id);
         if (!currentInstructor) {
@@ -159,6 +161,7 @@ export async function adminInviteInstructorAction(data: Partial<Instructor>) {
 }
 
 export async function deleteInstructorAction(id: string) {
+    const db = getDbInstance();
     try {
         const instructor = await getInstructor(id);
         if (!instructor) {

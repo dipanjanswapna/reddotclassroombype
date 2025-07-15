@@ -1,11 +1,10 @@
 
 'use server';
 
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
 import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import { z } from "zod";
 import { revalidatePath } from 'next/cache';
 import type { CallbackRequest } from '@/lib/types';
@@ -24,6 +23,7 @@ type FormData = z.infer<typeof CallbackRequestSchema>;
 export async function addCallbackRequest(data: FormData): Promise<{ success: boolean; message: string }> {
   try {
     const validatedData = CallbackRequestSchema.parse(data);
+    const db = getDbInstance();
     
     const newRequest: Omit<CallbackRequest, 'id'> = {
       ...validatedData,
@@ -54,6 +54,7 @@ export async function updateCallbackRequestAction(
   adminId: string
 ): Promise<{ success: boolean; message: string }> {
   try {
+    const db = getDbInstance();
     const callbackRef = doc(db, 'callbacks', id);
     
     const updateData: Partial<CallbackRequest> = {

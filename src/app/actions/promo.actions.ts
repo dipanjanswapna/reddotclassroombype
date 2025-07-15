@@ -1,6 +1,7 @@
 
 
 'use server';
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { addPromoCode, deletePromoCode, getCourse, getPromoCodeByCode, updatePromoCode, getInstructor, getCourses } from '@/lib/firebase/firestore';

@@ -1,14 +1,14 @@
 
 'use server';
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 
 export async function markLessonAsCompleteAction(userId: string, courseId: string, lessonId: string) {
+    const db = getDbInstance();
     try {
         const enrollments = await getEnrollmentsByUserId(userId);
         const enrollment = enrollments.find(e => e.courseId === courseId);

@@ -1,6 +1,8 @@
 
 'use server';
 
+import 'dotenv/config';
+
 import { revalidatePath } from 'next/cache';
 import {
   addUser,
@@ -14,7 +16,7 @@ import {
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc, query, collection, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
 import { generateRegistrationNumber } from '@/lib/utils';
@@ -62,6 +64,7 @@ export async function saveUserAction(userData: Partial<User>) {
 }
 
 export async function deleteUserAction(id: string) {
+    const db = getDbInstance();
     // Note: Deleting a user from Firebase Authentication requires the Admin SDK
     // and is best handled in a secure backend environment like Firebase Functions.
     // This action will delete the user's data from Firestore but not their auth entry.
@@ -189,6 +192,7 @@ export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent
 }
 
 export async function findUserByRegistrationOrRoll(id: string): Promise<{ userId: string | null }> {
+    const db = getDbInstance();
     try {
         // Search by registration number first (more unique)
         let q = query(collection(db, 'users'), where('registrationNumber', '==', id));

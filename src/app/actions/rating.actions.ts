@@ -1,11 +1,10 @@
 
 'use server';
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { doc, runTransaction, arrayUnion } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import type { User, Course } from '@/lib/types';
 
 export async function addRatingAction(
@@ -13,6 +12,7 @@ export async function addRatingAction(
   courseId: string,
   newRating: number
 ) {
+  const db = getDbInstance();
   if (newRating < 1 || newRating > 5) {
     return { success: false, message: 'Invalid rating value.' };
   }

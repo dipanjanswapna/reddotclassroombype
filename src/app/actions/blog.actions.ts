@@ -1,7 +1,6 @@
 
 'use server';
-import { config } from 'dotenv';
-config();
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { addBlogPost, deleteBlogPost, updateBlogPost } from '@/lib/firebase/firestore';

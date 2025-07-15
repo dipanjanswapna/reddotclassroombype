@@ -15,7 +15,7 @@ import {
     signInWithPopup,
     User as FirebaseUser
 } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config';
+import { auth as getAuthInstance, db as getDbInstance } from '@/lib/firebase/config';
 import { getUser, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
@@ -46,6 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const { toast } = useToast();
+    const auth = getAuthInstance();
+    const db = getDbInstance();
 
     const fetchAndSetUser = useCallback(async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
@@ -65,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return () => unsubscribeAuth();
-    }, [fetchAndSetUser]);
+    }, [fetchAndSetUser, auth]);
     
     // Single device login listener
     useEffect(() => {
@@ -94,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return () => unsubscribeFirestore();
-    }, [userInfo]);
+    }, [userInfo, db]);
 
     const refreshUserInfo = useCallback(async () => {
         const currentUser = auth.currentUser;
@@ -102,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setLoading(true);
             await fetchAndSetUser(currentUser);
         }
-    }, [fetchAndSetUser]);
+    }, [fetchAndSetUser, auth]);
     
     const getDashboardLink = (role: User['role']) => {
         switch (role) {

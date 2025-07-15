@@ -1,6 +1,6 @@
 
 
-import { db } from './config';
+import { db as getDbInstance } from './config';
 import {
   collection,
   doc,
@@ -22,6 +22,7 @@ import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, Supp
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
+  const db = getDbInstance();
   const querySnapshot = await getDocs(collection(db, collectionName));
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
 }
@@ -29,6 +30,7 @@ async function getCollection<T>(collectionName: string): Promise<T[]> {
 // Generic function to fetch a document by ID
 export async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
   if (!id) return null;
+  const db = getDbInstance();
   const docRef = doc(db, collectionName, id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
@@ -39,9 +41,9 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
 
 // Question Bank
 export const getQuestionBank = () => getCollection<Question>('question_bank');
-export const addQuestionToBank = (question: Omit<Question, 'id'>) => addDoc(collection(db, 'question_bank'), question);
-export const updateQuestionInBank = (id: string, question: Partial<Question>) => updateDoc(doc(db, 'question_bank', id), question);
-export const deleteQuestionFromBank = (id: string) => deleteDoc(doc(db, 'question_bank', id));
+export const addQuestionToBank = (question: Omit<Question, 'id'>) => addDoc(collection(getDbInstance(), 'question_bank'), question);
+export const updateQuestionInBank = (id: string, question: Partial<Question>) => updateDoc(doc(getDbInstance(), 'question_bank', id), question);
+export const deleteQuestionFromBank = (id: string) => deleteDoc(doc(getDbInstance(), 'question_bank', id));
 
 // Courses
 export const getCourses = async (filters: {
@@ -51,7 +53,7 @@ export const getCourses = async (filters: {
   status?: Course['status'];
 } = {}): Promise<Course[]> => {
   const { category, subCategory, provider, status } = filters;
-  const coursesRef = collection(db, 'courses');
+  const coursesRef = collection(getDbInstance(), 'courses');
   const constraints = [];
 
   if (status) {
@@ -74,20 +76,20 @@ export const getCourses = async (filters: {
 export const getCourse = (id: string) => getDocument<Course>('courses', id);
 export const getCoursesByIds = async (ids: string[]): Promise<Course[]> => {
   if (!ids || ids.length === 0) return [];
-  const coursesRef = collection(db, 'courses');
+  const coursesRef = collection(getDbInstance(), 'courses');
   const q = query(coursesRef, where(documentId(), 'in', ids));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
 }
-export const addCourse = (course: Partial<Course>) => addDoc(collection(db, 'courses'), course);
-export const updateCourse = (id: string, course: Partial<Course>) => updateDoc(doc(db, 'courses', id), course);
-export const deleteCourse = (id: string) => deleteDoc(doc(db, 'courses', id));
+export const addCourse = (course: Partial<Course>) => addDoc(collection(getDbInstance(), 'courses'), course);
+export const updateCourse = (id: string, course: Partial<Course>) => updateDoc(doc(getDbInstance(), 'courses', id), course);
+export const deleteCourse = (id: string) => deleteDoc(doc(getDbInstance(), 'courses', id));
 
 // Instructors
 export const getInstructors = () => getCollection<Instructor>('instructors');
 export const getInstructor = (id: string) => getDocument<Instructor>('instructors', id);
 export const getInstructorBySlug = async (slug: string): Promise<Instructor | null> => {
-    const q = query(collection(db, "instructors"), where("slug", "==", slug));
+    const q = query(collection(getDbInstance(), "instructors"), where("slug", "==", slug));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -97,7 +99,7 @@ export const getInstructorBySlug = async (slug: string): Promise<Instructor | nu
 }
 export const getInstructorByUid = async (uid: string): Promise<Instructor | null> => {
     if (!uid) return null;
-    const q = query(collection(db, "instructors"), where("userId", "==", uid));
+    const q = query(collection(getDbInstance(), "instructors"), where("userId", "==", uid));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -107,21 +109,21 @@ export const getInstructorByUid = async (uid: string): Promise<Instructor | null
 }
 export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> => {
     if (!ids || ids.length === 0) return [];
-    const instructorsRef = collection(db, 'instructors');
+    const instructorsRef = collection(getDbInstance(), 'instructors');
     const q = query(instructorsRef, where(documentId(), 'in', ids));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Instructor));
 }
-export const addInstructor = (instructor: Partial<Instructor>) => addDoc(collection(db, 'instructors'), instructor);
-export const updateInstructor = (id: string, instructor: Partial<Instructor>) => updateDoc(doc(db, 'instructors', id), instructor);
-export const deleteInstructor = (id: string) => deleteDoc(doc(db, 'instructors', id));
+export const addInstructor = (instructor: Partial<Instructor>) => addDoc(collection(getDbInstance(), 'instructors'), instructor);
+export const updateInstructor = (id: string, instructor: Partial<Instructor>) => updateDoc(doc(getDbInstance(), 'instructors', id), instructor);
+export const deleteInstructor = (id: string) => deleteDoc(doc(getDbInstance(), 'instructors', id));
 
 
 // Users
 export const getUsers = () => getCollection<User>('users');
 export const getUser = (id: string) => getDocument<User>('users', id);
 export const getUserByClassRoll = async (classRoll: string): Promise<User | null> => {
-    const q = query(collection(db, 'users'), where('classRoll', '==', classRoll));
+    const q = query(collection(getDbInstance(), 'users'), where('classRoll', '==', classRoll));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -130,7 +132,7 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     return { id: doc.id, ...doc.data() } as User;
 }
 export const getUserByRegistrationNumber = async (registrationNumber: string): Promise<User | null> => {
-    const q = query(collection(db, 'users'), where('registrationNumber', '==', registrationNumber));
+    const q = query(collection(getDbInstance(), 'users'), where('registrationNumber', '==', registrationNumber));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -139,7 +141,7 @@ export const getUserByRegistrationNumber = async (registrationNumber: string): P
     return { id: doc.id, ...doc.data() } as User;
 }
 export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
-    const q = query(collection(db, 'users'), where('offlineRollNo', '==', rollNo));
+    const q = query(collection(getDbInstance(), 'users'), where('offlineRollNo', '==', rollNo));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -148,7 +150,7 @@ export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null>
     return { id: doc.id, ...doc.data() } as User;
 };
 export const getUserByEmailAndRole = async (email: string, role: User['role']): Promise<User | null> => {
-    const q = query(collection(db, 'users'), where('email', '==', email), where('role', '==', role));
+    const q = query(collection(getDbInstance(), 'users'), where('email', '==', email), where('role', '==', role));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -157,21 +159,21 @@ export const getUserByEmailAndRole = async (email: string, role: User['role']): 
     return { id: doc.id, ...doc.data() } as User;
 }
 export const getUsersByBatchId = async (batchId: string): Promise<User[]> => {
-    const q = query(collection(db, "users"), where("assignedBatchId", "==", batchId));
+    const q = query(collection(getDbInstance(), "users"), where("assignedBatchId", "==", batchId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
 }
-export const addUser = (user: Partial<User>) => addDoc(collection(db, 'users'), user);
-export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(db, 'users', id), user);
-export const deleteUser = (id: string) => deleteDoc(doc(db, 'users', id));
+export const addUser = (user: Partial<User>) => addDoc(collection(getDbInstance(), 'users'), user);
+export const updateUser = (id: string, user: Partial<User>) => updateDoc(doc(getDbInstance(), 'users', id), user);
+export const deleteUser = (id: string) => deleteDoc(doc(getDbInstance(), 'users', id));
 
 
 // Organizations
 export const getOrganizations = () => getCollection<Organization>('organizations');
 export const getOrganization = (id: string) => getDocument<Organization>('organizations', id);
-export const addOrganization = (org: Partial<Organization>) => addDoc(collection(db, 'organizations'), org);
+export const addOrganization = (org: Partial<Organization>) => addDoc(collection(getDbInstance(), 'organizations'), org);
 export const getPartnerBySubdomain = async (subdomain: string): Promise<Organization | null> => {
-    const q = query(collection(db, "organizations"), where("subdomain", "==", subdomain), where("status", "==", "approved"));
+    const q = query(collection(getDbInstance(), "organizations"), where("subdomain", "==", subdomain), where("status", "==", "approved"));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0];
@@ -181,15 +183,15 @@ export const getPartnerBySubdomain = async (subdomain: string): Promise<Organiza
 }
 export const getOrganizationsByIds = async (ids: string[]): Promise<Organization[]> => {
   if (!ids || ids.length === 0) return [];
-  const orgsRef = collection(db, 'organizations');
+  const orgsRef = collection(getDbInstance(), 'organizations');
   const q = query(orgsRef, where(documentId(), 'in', ids));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Organization));
 }
-export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(db, 'organizations', id), organization);
-export const deleteOrganization = (id: string) => deleteDoc(doc(db, 'organizations', id));
+export const updateOrganization = (id: string, organization: Partial<Organization>) => updateDoc(doc(getDbInstance(), 'organizations', id), organization);
+export const deleteOrganization = (id: string) => deleteDoc(doc(getDbInstance(), 'organizations', id));
 export const getOrganizationByUserId = async (userId: string): Promise<Organization | null> => {
-    const q = query(collection(db, 'organizations'), where('contactUserId', '==', userId));
+    const q = query(collection(getDbInstance(), 'organizations'), where('contactUserId', '==', userId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -202,13 +204,13 @@ export const getOrganizationByUserId = async (userId: string): Promise<Organizat
 // Support Tickets
 export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
 export const getSupportTicketsByUserId = async (userId: string): Promise<SupportTicket[]> => {
-    const q = query(collection(db, "support_tickets"), where("userId", "==", userId));
+    const q = query(collection(getDbInstance(), "support_tickets"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SupportTicket));
 };
 export const getSupportTicket = (id: string) => getDocument<SupportTicket>('support_tickets', id);
-export const addSupportTicket = (ticket: Partial<SupportTicket>) => addDoc(collection(db, 'support_tickets'), ticket);
-export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) => updateDoc(doc(db, 'support_tickets', id), ticket);
+export const addSupportTicket = (ticket: Partial<SupportTicket>) => addDoc(collection(getDbInstance(), 'support_tickets'), ticket);
+export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) => updateDoc(doc(getDbInstance(), 'support_tickets', id), ticket);
 
 // Categories
 export const getCategories = async (): Promise<string[]> => {
@@ -220,7 +222,7 @@ export const getCategories = async (): Promise<string[]> => {
 // Invoices
 export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<Invoice | null> => {
     if (!enrollmentId) return null;
-    const q = query(collection(db, "invoices"), where("enrollmentId", "==", enrollmentId));
+    const q = query(collection(getDbInstance(), "invoices"), where("enrollmentId", "==", enrollmentId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -232,14 +234,14 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
 // Enrollments
 export const getEnrollments = () => getCollection<Enrollment>('enrollments');
 export const getEnrollmentsByUserId = async (userId: string): Promise<Enrollment[]> => {
-    const q = query(collection(db, "enrollments"), where("userId", "==", userId));
+    const q = query(collection(getDbInstance(), "enrollments"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
 }
 
 export const getEnrollmentByInvoiceId = async (invoiceId: string): Promise<Enrollment | null> => {
     if (!invoiceId) return null;
-    const q = query(collection(db, "enrollments"), where("invoiceId", "==", invoiceId));
+    const q = query(collection(getDbInstance(), "enrollments"), where("invoiceId", "==", invoiceId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         // Fallback for older data structure where enrollmentId is the access code
@@ -250,20 +252,20 @@ export const getEnrollmentByInvoiceId = async (invoiceId: string): Promise<Enrol
 };
 
 export const getEnrollmentsByCourseId = async (courseId: string): Promise<Enrollment[]> => {
-    const q = query(collection(db, "enrollments"), where("courseId", "==", courseId));
+    const q = query(collection(getDbInstance(), "enrollments"), where("courseId", "==", courseId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
 }
 
-export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(db, 'enrollments'), enrollment);
-export const updateEnrollment = (id: string, data: Partial<Enrollment>) => updateDoc(doc(db, 'enrollments', id), data);
+export const addEnrollment = (enrollment: Omit<Enrollment, 'id'>) => addDoc(collection(getDbInstance(), 'enrollments'), enrollment);
+export const updateEnrollment = (id: string, data: Partial<Enrollment>) => updateDoc(doc(getDbInstance(), 'enrollments', id), data);
 
 
 // Pre-bookings
-export const addPrebooking = (prebooking: Omit<Prebooking, 'id'>) => addDoc(collection(db, 'prebookings'), prebooking);
+export const addPrebooking = (prebooking: Omit<Prebooking, 'id'>) => addDoc(collection(getDbInstance(), 'prebookings'), prebooking);
 
 export const getPrebookingForUser = async (courseId: string, userId: string): Promise<Prebooking | null> => {
-    const q = query(collection(db, 'prebookings'), where('courseId', '==', courseId), where('userId', '==', userId));
+    const q = query(collection(getDbInstance(), 'prebookings'), where('courseId', '==', courseId), where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -273,20 +275,20 @@ export const getPrebookingForUser = async (courseId: string, userId: string): Pr
 };
 
 export const getPrebookingsByCourseId = async (courseId: string): Promise<Prebooking[]> => {
-    const q = query(collection(db, "prebookings"), where("courseId", "==", courseId));
+    const q = query(collection(getDbInstance(), "prebookings"), where("courseId", "==", courseId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
 }
 
 export const getPrebookingsByUserId = async (userId: string): Promise<Prebooking[]> => {
-    const q = query(collection(db, "prebookings"), where("userId", "==", userId));
+    const q = query(collection(getDbInstance(), "prebookings"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
 }
 
 // Payouts
 export const getPayoutsByUserId = async (userId: string): Promise<Payout[]> => {
-    const q = query(collection(db, "payouts"), where("userId", "==", userId));
+    const q = query(collection(getDbInstance(), "payouts"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Payout));
 }
@@ -294,23 +296,23 @@ export const getPayoutsByUserId = async (userId: string): Promise<Payout[]> => {
 // Branches (for Offline Hub)
 export const getBranches = () => getCollection<Branch>('branches');
 export const getBranch = (id: string) => getDocument<Branch>('branches', id);
-export const addBranch = (branch: Branch) => addDoc(collection(db, 'branches'), branch);
-export const updateBranch = (id: string, branch: Partial<Branch>) => updateDoc(doc(db, 'branches', id), branch);
-export const deleteBranch = (id: string) => deleteDoc(doc(db, 'branches', id));
+export const addBranch = (branch: Branch) => addDoc(collection(getDbInstance(), 'branches'), branch);
+export const updateBranch = (id: string, branch: Partial<Branch>) => updateDoc(doc(getDbInstance(), 'branches', id), branch);
+export const deleteBranch = (id: string) => deleteDoc(doc(getDbInstance(), 'branches', id));
 
 // Batches (for Offline Hub)
 export const getBatches = () => getCollection<Batch>('batches');
 export const getBatch = (id: string) => getDocument<Batch>('batches', id);
-export const addBatch = (batch: Partial<Batch>) => addDoc(collection(db, 'batches'), batch);
-export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(db, 'batches', id), batch);
-export const deleteBatch = (id: string) => deleteDoc(doc(db, 'batches', id));
+export const addBatch = (batch: Partial<Batch>) => addDoc(collection(getDbInstance(), 'batches'), batch);
+export const updateBatch = (id: string, batch: Partial<Batch>) => updateDoc(doc(getDbInstance(), 'batches', id), batch);
+export const deleteBatch = (id: string) => deleteDoc(doc(getDbInstance(), 'batches', id));
 
 // Attendance
 export const getAttendanceRecords = () => getCollection<AttendanceRecord>('attendance');
-export const updateAttendanceRecord = (id: string, data: Partial<AttendanceRecord>) => updateDoc(doc(db, 'attendance', id), data);
+export const updateAttendanceRecord = (id: string, data: Partial<AttendanceRecord>) => updateDoc(doc(getDbInstance(), 'attendance', id), data);
 
 export const getAttendanceRecordForStudentByDate = async (studentId: string, date: string): Promise<AttendanceRecord | null> => {
-    const q = query(collection(db, 'attendance'), where('studentId', '==', studentId), where('date', '==', date));
+    const q = query(collection(getDbInstance(), 'attendance'), where('studentId', '==', studentId), where('date', '==', date));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         return null;
@@ -319,6 +321,7 @@ export const getAttendanceRecordForStudentByDate = async (studentId: string, dat
 };
 
 export const saveAttendanceRecords = async (records: ({ create: Omit<AttendanceRecord, 'id'> } | { id: string, update: Partial<AttendanceRecord> })[]) => {
+    const db = getDbInstance();
     const batch = writeBatch(db);
     const attendanceCol = collection(db, 'attendance');
     
@@ -335,24 +338,24 @@ export const saveAttendanceRecords = async (records: ({ create: Omit<AttendanceR
     await batch.commit();
 };
 export const getAttendanceForStudentInCourse = async (studentId: string, courseId: string): Promise<AttendanceRecord[]> => {
-    const q = query(collection(db, 'attendance'), where("studentId", "==", studentId), where("courseId", "==", courseId));
+    const q = query(collection(getDbInstance(), 'attendance'), where("studentId", "==", studentId), where("courseId", "==", courseId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 }
 export const getAttendanceForStudent = async (studentId: string): Promise<AttendanceRecord[]> => {
-    const q = query(collection(db, 'attendance'), where("studentId", "==", studentId));
+    const q = query(collection(getDbInstance(), 'attendance'), where("studentId", "==", studentId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 }
 
 // Reported Content
-export const addReportedContent = (report: Omit<ReportedContent, 'id'>) => addDoc(collection(db, 'reported_content'), report);
+export const addReportedContent = (report: Omit<ReportedContent, 'id'>) => addDoc(collection(getDbInstance(), 'reported_content'), report);
 export const getPendingReports = async (): Promise<ReportedContent[]> => {
-    const q = query(collection(db, 'reported_content'), where('status', '==', 'pending'));
+    const q = query(collection(getDbInstance(), 'reported_content'), where('status', '==', 'pending'));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportedContent));
 };
-export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => updateDoc(doc(db, 'reported_content', id), data);
+export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => updateDoc(doc(getDbInstance(), 'reported_content', id), data);
 
 // Callback Requests
 export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
@@ -372,7 +375,7 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
         constraints.push(limit(queryLimit));
     }
 
-    const q = query(collection(db, 'notices'), ...constraints);
+    const q = query(collection(getDbInstance(), 'notices'), ...constraints);
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notice));
 }
@@ -380,7 +383,7 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
 // Homepage Configuration
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
 export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
-    const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
+    const q = query(collection(getDbInstance(), "blog_posts"), where("slug", "==", slug));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0];
@@ -388,9 +391,9 @@ export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> 
     }
     return null;
 }
-export const addBlogPost = (post: Partial<BlogPost>) => addDoc(collection(db, 'blog_posts'), post);
-export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(db, 'blog_posts', id), post);
-export const deleteBlogPost = (id: string) => deleteDoc(doc(db, 'blog_posts', id));
+export const addBlogPost = (post: Partial<BlogPost>) => addDoc(collection(getDbInstance(), 'blog_posts'), post);
+export const updateBlogPost = (id: string, post: Partial<BlogPost>) => updateDoc(doc(getDbInstance(), 'blog_posts', id), post);
+export const deleteBlogPost = (id: string) => deleteDoc(doc(getDbInstance(), 'blog_posts', id));
 
 const defaultPlatformSettings: PlatformSettings = {
     Student: { signupEnabled: true, loginEnabled: true },
@@ -675,6 +678,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
 
 // Function to get the homepage configuration
 export const getHomepageConfig = async (): Promise<HomepageConfig> => {
+    const db = getDbInstance();
     const docRef = doc(db, 'single_documents', 'homepage_config');
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -690,6 +694,7 @@ export const getHomepageConfig = async (): Promise<HomepageConfig> => {
 }
 
 export const updateHomepageConfig = async (config: Partial<HomepageConfig>) => {
+    const db = getDbInstance();
     const docRef = doc(db, 'single_documents', 'homepage_config');
     return updateDoc(docRef, config);
 }
@@ -698,7 +703,7 @@ export const updateHomepageConfig = async (config: Partial<HomepageConfig>) => {
 // Promo Codes
 export const getPromoCodes = () => getCollection<PromoCode>('promo_codes');
 export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null> => {
-    const q = query(collection(db, 'promo_codes'), where('code', '==', code));
+    const q = query(collection(getDbInstance(), 'promo_codes'), where('code', '==', code));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
     const doc = snapshot.docs[0];
@@ -706,7 +711,7 @@ export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null
 };
 export const getPromoCodeForUserAndCourse = async (userId: string, courseId: string): Promise<PromoCode | null> => {
     if (!userId) return null;
-    const q = query(collection(db, 'promo_codes'), 
+    const q = query(collection(getDbInstance(), 'promo_codes'), 
         where('restrictedToUserId', '==', userId), 
         where('applicableCourseIds', 'array-contains', courseId),
         where('isActive', '==', true)
@@ -717,18 +722,19 @@ export const getPromoCodeForUserAndCourse = async (userId: string, courseId: str
     const doc = snapshot.docs[0];
     return { id: doc.id, ...doc.data() } as PromoCode;
 }
-export const addPromoCode = (code: Partial<PromoCode>) => addDoc(collection(db, 'promo_codes'), code);
-export const updatePromoCode = (id: string, code: Partial<PromoCode>) => updateDoc(doc(db, 'promo_codes', id), code);
-export const deletePromoCode = (id: string) => deleteDoc(doc(db, 'promo_codes', id));
+export const addPromoCode = (code: Partial<PromoCode>) => addDoc(collection(getDbInstance(), 'promo_codes'), code);
+export const updatePromoCode = (id: string, code: Partial<PromoCode>) => updateDoc(doc(getDbInstance(), 'promo_codes', id), code);
+export const deletePromoCode = (id: string) => deleteDoc(doc(getDbInstance(), 'promo_codes', id));
 
 // Notifications
-export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(db, 'notifications'), notification);
+export const addNotification = (notification: Omit<Notification, 'id'>) => addDoc(collection(getDbInstance(), 'notifications'), notification);
 export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
-    const q = query(collection(db, "notifications"), where("userId", "==", userId));
+    const q = query(collection(getDbInstance(), "notifications"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
 }
 export const markAllNotificationsAsRead = async (userId: string) => {
+    const db = getDbInstance();
     const q = query(collection(db, "notifications"), where("userId", "==", userId), where("read", "==", false));
     const snapshot = await getDocs(q);
     const batch = writeBatch(db);

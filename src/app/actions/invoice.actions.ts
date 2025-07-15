@@ -1,8 +1,9 @@
 
 'use server';
+import 'dotenv/config';
 
 import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { db as getDbInstance } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
 
@@ -15,6 +16,7 @@ function generateInvoiceNumber(): string {
 }
 
 export async function createInvoiceAction(enrollment: Enrollment, user: User, course: Course): Promise<{ success: boolean; invoiceId?: string; message?: string }> {
+    const db = getDbInstance();
     try {
         const netPayable = (enrollment.totalFee || 0) - (enrollment.discount || 0);
         const isCycleEnrollment = !!enrollment.cycleId;

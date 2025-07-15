@@ -1,6 +1,7 @@
 
 
 'use server';
+import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { addOrganization, deleteOrganization, getOrganization, getUser, updateOrganization, updateUser } from '@/lib/firebase/firestore';
