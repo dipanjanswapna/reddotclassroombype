@@ -16,7 +16,7 @@ import {
 import { Instructor, User } from '@/lib/types';
 import { generateRegistrationNumber, removeUndefinedValues } from '@/lib/utils';
 import { writeBatch, doc } from 'firebase/firestore';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 
 export async function createInstructorAction(data: Partial<Omit<Instructor, 'status' | 'slug'>> & { uid: string }) {
     try {
@@ -65,6 +65,9 @@ export async function updateInstructorStatusAction(id: string, status: Instructo
 
 export async function saveInstructorProfileAction(id: string, data: Partial<Instructor>) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const currentInstructor = await getInstructor(id);
         if (!currentInstructor) {
@@ -162,6 +165,9 @@ export async function adminInviteInstructorAction(data: Partial<Instructor>) {
 
 export async function deleteInstructorAction(id: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const instructor = await getInstructor(id);
         if (!instructor) {

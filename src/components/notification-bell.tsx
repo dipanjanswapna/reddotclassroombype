@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
-import { db } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { Notification } from '@/lib/types';
 import { markAllNotificationsAsRead } from '@/lib/firebase/firestore';
@@ -63,6 +63,9 @@ export function NotificationBell() {
         setNotifications([]);
         return;
     };
+    
+    const db = getDbInstance();
+    if (!db) return;
 
     const q = query(
         collection(db, "notifications"), 

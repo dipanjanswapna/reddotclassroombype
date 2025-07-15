@@ -1,4 +1,5 @@
 
+
 'use server';
 import 'dotenv/config';
 
@@ -6,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { addReportedContent, getCourse, updateCourse, updateReportedContent } from '@/lib/firebase/firestore';
 import { ReportedContent, Review, Course } from '@/lib/types';
 import { Timestamp, doc, writeBatch } from 'firebase/firestore';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 
 export async function reportReviewAction(
     courseId: string,
@@ -69,6 +70,9 @@ export async function dismissReportAction(reportId: string, moderatorId: string)
 
 export async function deleteReportedReviewAction(reportId: string, courseId: string, reviewId: string, moderatorId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
      try {
         const course = await getCourse(courseId);
         if (!course) throw new Error("Course not found.");

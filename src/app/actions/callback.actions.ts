@@ -5,7 +5,7 @@
 import 'dotenv/config';
 
 import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { getDbInstance } from '@/lib/firebase/firestore';
+import { getDbInstance } from '@/lib/firebase/config';
 import { z } from "zod";
 import { revalidatePath } from 'next/cache';
 import type { CallbackRequest } from '@/lib/types';

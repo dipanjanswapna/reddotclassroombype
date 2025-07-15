@@ -1,10 +1,11 @@
 
+
 'use server';
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { doc, runTransaction, arrayUnion } from 'firebase/firestore';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 import type { User, Course } from '@/lib/types';
 
 export async function addRatingAction(
@@ -13,6 +14,9 @@ export async function addRatingAction(
   newRating: number
 ) {
   const db = getDbInstance();
+  if (!db) {
+    throw new Error('Database service is currently unavailable.');
+  }
   if (newRating < 1 || newRating > 5) {
     return { success: false, message: 'Invalid rating value.' };
   }

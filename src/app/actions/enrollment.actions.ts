@@ -7,11 +7,14 @@ import { revalidatePath } from 'next/cache';
 import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam, Invoice, User } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc } from 'firebase/firestore';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
 export async function prebookCourseAction(courseId: string, userId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const [course, existingPrebooking, student] = await Promise.all([
             getCourse(courseId),
@@ -70,6 +73,9 @@ type ManualEnrollmentDetails = {
 export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
     const { courseId, userId, paymentDetails, cycleId } = details;
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const student = await getUser(userId);
         if (!student) {
@@ -235,6 +241,9 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
 export async function verifyGroupAccessCodeAction(accessCode: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         let enrollment = await getDocument<Enrollment>('enrollments', accessCode);
         if (!enrollment) {
@@ -283,6 +292,9 @@ export async function verifyGroupAccessCodeAction(accessCode: string) {
 
 export async function markAsGroupAccessedAction(enrollmentId: string, adminId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const enrollmentDoc = await getDoc(doc(db, 'enrollments', enrollmentId));
         if (!enrollmentDoc.exists()) {

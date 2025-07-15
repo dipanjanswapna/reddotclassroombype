@@ -1,14 +1,18 @@
 
+
 'use server';
 import 'dotenv/config';
 
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 
 export async function markLessonAsCompleteAction(userId: string, courseId: string, lessonId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const enrollments = await getEnrollmentsByUserId(userId);
         const enrollment = enrollments.find(e => e.courseId === courseId);

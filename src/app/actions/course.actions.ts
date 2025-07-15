@@ -16,12 +16,15 @@ import {
     getInstructorBySlug
 } from '@/lib/firebase/firestore';
 import { Course, User, PromoCode, Instructor, Enrollment } from '@/lib/types';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
 
 export async function saveCourseAction(courseData: Partial<Course>) {
   const db = getDbInstance();
+  if (!db) {
+    throw new Error('Database service is currently unavailable.');
+  }
   try {
     const { id, ...data } = courseData;
 
@@ -73,6 +76,9 @@ export async function saveCourseAction(courseData: Partial<Course>) {
 
 export async function deleteCourseAction(courseId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const batch = writeBatch(db);
 
@@ -113,6 +119,9 @@ export async function deleteCourseAction(courseId: string) {
 
 export async function launchPrebookingCourseAction(courseId: string) {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
     try {
         const course = await getCourse(courseId);
         if (!course || !course.isPrebooking) {
@@ -189,6 +198,9 @@ export async function addLessonReactionAction(
   reactionType: 'likes' | 'loves' | 'helpfuls'
 ) {
   const db = getDbInstance();
+  if (!db) {
+    throw new Error('Database service is currently unavailable.');
+  }
   try {
     const userRef = doc(db, 'users', userId);
     const courseRef = doc(db, 'courses', courseId);
