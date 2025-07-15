@@ -31,7 +31,6 @@ import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
 import { NotificationBell } from "./notification-bell";
-import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import Image from "next/image";
@@ -39,16 +38,11 @@ import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header({ containerClassName, variant = "light", wrapperClassName }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string }) {
+export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
-  const [config, setConfig] = useState<HomepageConfig | null>(null);
   const { user, loading } = useAuth();
   const isDark = variant === 'dark';
-
-  useEffect(() => {
-    getHomepageConfig().then(setConfig);
-  }, []);
 
   const mainNavLinks = [
     { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },

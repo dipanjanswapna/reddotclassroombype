@@ -47,7 +47,7 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
             "min-h-screen flex flex-col",
             isDashboardPage && "bg-background"
         )}>
-            <Header />
+            <Header homepageConfig={homepageConfig} />
             <main className={cn("flex-grow")}>
               {children}
             </main>
