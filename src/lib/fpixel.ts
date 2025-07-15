@@ -1,13 +1,13 @@
 
 'use client';
 
-// IMPORTANT: Replace with your actual Facebook Pixel ID.
-// This is the most crucial step for the setup to work.
-export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || 'YOUR_PIXEL_ID';
+// IMPORTANT: Replace with your actual Facebook Pixel ID in your .env.local file.
+// NEXT_PUBLIC_FACEBOOK_PIXEL_ID=your-id-here
+export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 // IMPORTANT: Replace with your actual Facebook App ID if you use Facebook Login or other plugins.
-// This is required for the Facebook Comments plugin to work.
-export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || 'YOUR_APP_ID';
+// NEXT_PUBLIC_FACEBOOK_APP_ID=your-app-id-here
+export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
 
 
 declare global {
