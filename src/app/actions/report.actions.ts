@@ -1,4 +1,7 @@
+
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { revalidatePath } from 'next/cache';
 import { addReportedContent, getCourse, updateCourse, updateReportedContent } from '@/lib/firebase/firestore';

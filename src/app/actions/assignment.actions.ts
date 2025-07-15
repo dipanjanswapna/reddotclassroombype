@@ -1,6 +1,7 @@
 
-
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { revalidatePath } from 'next/cache';
 import { getCourse, updateCourse, addNotification, getInstructor } from '@/lib/firebase/firestore';

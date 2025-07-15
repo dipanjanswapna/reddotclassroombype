@@ -1,5 +1,7 @@
 
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { revalidatePath } from 'next/cache';
 import { Timestamp } from 'firebase/firestore';

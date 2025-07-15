@@ -1,5 +1,7 @@
 
 'use server';
+import { config } from 'dotenv';
+config();
 
 import { db } from '@/lib/firebase/config';
 import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
