@@ -1,6 +1,5 @@
 
-
-import { db as getDbInstance } from './config';
+import { getDbInstance } from './config';
 import {
   collection,
   doc,

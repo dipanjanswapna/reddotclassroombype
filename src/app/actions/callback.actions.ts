@@ -1,10 +1,11 @@
 
+
 'use server';
 
 import 'dotenv/config';
 
 import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
-import { db as getDbInstance } from '@/lib/firebase/config';
+import { getDbInstance } from '@/lib/firebase/firestore';
 import { z } from "zod";
 import { revalidatePath } from 'next/cache';
 import type { CallbackRequest } from '@/lib/types';
@@ -24,6 +25,10 @@ export async function addCallbackRequest(data: FormData): Promise<{ success: boo
   try {
     const validatedData = CallbackRequestSchema.parse(data);
     const db = getDbInstance();
+    
+    if (!db) {
+        throw new Error("Database service is currently unavailable.");
+    }
     
     const newRequest: Omit<CallbackRequest, 'id'> = {
       ...validatedData,
@@ -55,6 +60,9 @@ export async function updateCallbackRequestAction(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const db = getDbInstance();
+    if (!db) {
+        throw new Error("Database service is currently unavailable.");
+    }
     const callbackRef = doc(db, 'callbacks', id);
     
     const updateData: Partial<CallbackRequest> = {

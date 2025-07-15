@@ -15,7 +15,7 @@ import {
     signInWithPopup,
     User as FirebaseUser
 } from 'firebase/auth';
-import { auth as getAuthInstance, db as getDbInstance } from '@/lib/firebase/config';
+import { getAuthInstance, getDbInstance } from '@/lib/firebase/config';
 import { getUser, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
 import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot } from 'firebase/firestore';
 import { User } from '@/lib/types';
@@ -62,6 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
+        if (!auth) {
+            setLoading(false);
+            return;
+        }
         const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
             fetchAndSetUser(firebaseUser);
         });
@@ -71,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     // Single device login listener
     useEffect(() => {
-        if (!userInfo || userInfo.role !== 'Student') {
+        if (!userInfo || userInfo.role !== 'Student' || !db) {
             return;
         }
 
@@ -99,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [userInfo, db]);
 
     const refreshUserInfo = useCallback(async () => {
+        if (!auth) return;
         const currentUser = auth.currentUser;
         if (currentUser) {
             setLoading(true);
@@ -126,6 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleStudentLoginSession = async (uid: string) => {
+        if (!db) return;
         const newSessionId = uuidv4();
         await updateDoc(doc(db, 'users', uid), {
             currentSessionId: newSessionId,
@@ -135,6 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const login = async (email: string, pass: string, role?: User['role']) => {
+        if (!auth) throw new Error("Authentication service is not available.");
         const config = await getHomepageConfig();
         if (!config) {
             throw new Error("Platform configuration is not available. Please try again later.");
@@ -214,6 +221,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const loginWithClassRoll = async (classRoll: string, pass: string) => {
+        if (!auth) throw new Error("Authentication service is not available.");
         let studentInfo = await getUserByClassRoll(classRoll);
         if (!studentInfo) {
             throw new Error("No student found with this class roll.");
@@ -248,6 +256,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     
     const loginWithStaffId = async (staffId: string, pass: string) => {
+        if (!auth) throw new Error("Authentication service is not available.");
         let staffInfo = await getUserByRegistrationNumber(staffId);
         if (!staffInfo) {
             throw new Error("No staff member found with this ID.");
@@ -273,6 +282,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
+        if (!auth || !db) throw new Error("Firebase services are not available.");
         const config = await getHomepageConfig();
         if (!config) {
             throw new Error("Platform configuration is not available. Please try again later.");
@@ -373,6 +383,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     
     const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
+        if (!auth || !db) throw new Error("Firebase services are not available.");
         const config = await getHomepageConfig();
         if (!config) {
             throw new Error("Platform configuration is not available. Please try again later.");
@@ -427,6 +438,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = () => {
+        if (!auth) return;
         signOut(auth).then(() => {
             localStorage.removeItem('rdc_session_id');
             router.push('/login');
@@ -434,6 +446,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const resetPassword = (email: string) => {
+        if (!auth) throw new Error("Authentication service is not available.");
         return sendPasswordResetEmail(auth, email);
     }
 

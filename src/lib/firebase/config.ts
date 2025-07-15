@@ -13,48 +13,46 @@ const firebaseConfig = {
 };
 
 let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
-let db: Firestore | null = null;
+let authInstance: Auth | null = null;
+let dbInstance: Firestore | null = null;
 
 function getFirebaseApp(): FirebaseApp | null {
   if (app) return app;
 
+  // Check for configuration availability
   if (!firebaseConfig.apiKey) {
-    console.error("Firebase API Key is missing. Please check your environment variables.");
-    return null;
+    if (typeof window === "undefined") {
+      // Don't throw on server during build, but log an error.
+      console.error("Firebase API Key is missing. Check your environment variables.");
+    }
+    // On client, or if config is missing, we cannot proceed.
+    return null; 
   }
-  
+
   if (getApps().length > 0) {
     app = getApp();
   } else {
-    try {
-      app = initializeApp(firebaseConfig);
-    } catch (e) {
-      console.error("Firebase initialization failed:", e);
-      return null;
-    }
+    app = initializeApp(firebaseConfig);
   }
   return app;
 }
 
 function getDbInstance(): Firestore | null {
-  if (db) return db;
   const firebaseApp = getFirebaseApp();
-  if (firebaseApp) {
-    db = getFirestore(firebaseApp);
-    return db;
+  if (!firebaseApp) return null;
+  if (!dbInstance) {
+    dbInstance = getFirestore(firebaseApp);
   }
-  return null;
+  return dbInstance;
 }
 
 function getAuthInstance(): Auth | null {
-  if (auth) return auth;
   const firebaseApp = getFirebaseApp();
-  if (firebaseApp) {
-    auth = getAuth(firebaseApp);
-    return auth;
+  if (!firebaseApp) return null;
+  if (!authInstance) {
+    authInstance = getAuth(firebaseApp);
   }
-  return null;
+  return authInstance;
 }
 
-export { getDbInstance as db, getAuthInstance as auth };
+export { getDbInstance, getAuthInstance };
