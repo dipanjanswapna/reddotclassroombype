@@ -3,7 +3,6 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,57 +12,49 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Singleton instances for Firebase services
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
-/**
- * Initializes and returns the Firebase app instance, ensuring it's created only once.
- * This function is robust and safe for both client and server-side rendering.
- * @returns {FirebaseApp} The initialized Firebase app instance.
- */
-function getFirebaseApp(): FirebaseApp {
-  if (app) {
-    return app;
+function getFirebaseApp(): FirebaseApp | null {
+  if (app) return app;
+
+  if (!firebaseConfig.apiKey) {
+    console.error("Firebase API Key is missing. Please check your environment variables.");
+    return null;
   }
-
+  
   if (getApps().length > 0) {
     app = getApp();
   } else {
-    if (!firebaseConfig.apiKey) {
-      throw new Error("Firebase API Key is missing. Please check your environment variables.");
+    try {
+      app = initializeApp(firebaseConfig);
+    } catch (e) {
+      console.error("Firebase initialization failed:", e);
+      return null;
     }
-    app = initializeApp(firebaseConfig);
   }
   return app;
 }
 
-/**
- * Returns a singleton instance of the Firestore database.
- * Lazily initializes the Firestore service when first called.
- * @returns {Firestore} The Firestore database instance.
- */
-function getDbInstance(): Firestore {
-  if (!db) {
-    const firebaseApp = getFirebaseApp();
+function getDbInstance(): Firestore | null {
+  if (db) return db;
+  const firebaseApp = getFirebaseApp();
+  if (firebaseApp) {
     db = getFirestore(firebaseApp);
+    return db;
   }
-  return db;
+  return null;
 }
 
-/**
- * Returns a singleton instance of the Firebase Auth service.
- * Lazily initializes the Auth service when first called.
- * @returns {Auth} The Firebase Auth instance.
- */
-function getAuthInstance(): Auth {
-  if (!auth) {
-    const firebaseApp = getFirebaseApp();
+function getAuthInstance(): Auth | null {
+  if (auth) return auth;
+  const firebaseApp = getFirebaseApp();
+  if (firebaseApp) {
     auth = getAuth(firebaseApp);
+    return auth;
   }
-  return auth;
+  return null;
 }
 
-// Export the getter functions for use throughout the application
 export { getDbInstance as db, getAuthInstance as auth };
