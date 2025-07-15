@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -20,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle, User, Bookmark } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { safeToDate } from '@/lib/utils';
+import { trackPurchase } from '@/lib/fpixel';
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
@@ -115,6 +115,8 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     const result = await action({ courseId: course.id!, userId: userInfo.uid, cycleId: cycleId || undefined });
     
     if (result.success) {
+        const finalPrice = parseFloat(price.replace(/[^0-9.]/g, '')) - discount;
+        trackPurchase(finalPrice, 'BDT', [{id: course.id!, quantity: 1}]);
         toast({
             title: 'Success!',
             description: result.message
@@ -148,14 +150,13 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const selectedCycle = cycleId ? course.cycles?.find(c => c.id === cycleId) : null;
   const itemTitle = selectedCycle ? `${course.title} - ${selectedCycle.title}` : course.title;
   
+  const price = selectedCycle 
+    ? selectedCycle.price 
+    : (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price));
+  
   const listPrice = parseFloat((selectedCycle ? selectedCycle.price : course.price)?.replace(/[^0-9.]/g, '') || '0');
   
-  const effectivePrice = parseFloat(
-      (selectedCycle 
-        ? selectedCycle.price
-        : (isPrebooking ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price))!
-      )?.replace(/[^0-9.]/g, '') || '0'
-  );
+  const effectivePrice = parseFloat(price?.replace(/[^0-9.]/g, '') || '0');
 
   const courseDiscount = listPrice - effectivePrice;
   const finalPrice = effectivePrice - discount;

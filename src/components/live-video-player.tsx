@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { LiveClass } from '@/lib/types';
+import { FACEBOOK_APP_ID } from '@/lib/fpixel';
 
 
 // Make sure FB object is available on window
@@ -15,10 +16,6 @@ declare global {
     FB?: any;
   }
 }
-
-// IMPORTANT: Replace with your actual Facebook App ID
-const FACEBOOK_APP_ID = '1260770405611208';
-
 
 const initializeFacebookSDK = () => {
   if (window.FB) {
@@ -90,7 +87,7 @@ const FacebookPlayer = ({ url }: { url:string }) => {
                 <AlertTriangle className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
                 <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
                 <AlertDescription>
-                    The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/components/live-video-player.tsx</code> file.
+                    The Facebook Live player is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/lib/fpixel.ts</code> file.
                 </AlertDescription>
             </Alert>
         </div>

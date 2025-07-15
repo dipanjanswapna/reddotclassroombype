@@ -7,6 +7,8 @@ import { LayoutWrapper } from '@/components/layout-wrapper';
 import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
+import FacebookPixel from '@/components/facebook-pixel';
+import { Suspense } from 'react';
 
 
 const fontInter = Inter({
@@ -55,6 +57,9 @@ export default async function RootLayout({
         <LayoutWrapper homepageConfig={homepageConfig}>
             {children}
         </LayoutWrapper>
+         <Suspense fallback={null}>
+            <FacebookPixel />
+        </Suspense>
       </body>
     </html>
   );

@@ -29,6 +29,7 @@ import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { addCallbackRequest } from "@/app/actions/callback.actions";
 import { HomepageConfig } from "@/lib/types";
+import { trackLead } from "@/lib/fpixel";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -65,6 +66,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
         try {
             const result = await addCallbackRequest(values);
             if (result.success) {
+                trackLead('callback_request', { class: values.class, goals: values.goals });
                 toast({
                     title: "Request Submitted!",
                     description: "Our team will get back to you shortly.",

@@ -4,15 +4,13 @@
 import React, { useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { FACEBOOK_APP_ID } from '@/lib/fpixel';
 
 declare global {
   interface Window {
     FB?: any;
   }
 }
-
-// IMPORTANT: Replace with your actual Facebook App ID
-const FACEBOOK_APP_ID = 'YOUR_APP_ID';
 
 const FacebookComments = ({ href }: { href: string }) => {
   useEffect(() => {
@@ -53,7 +51,7 @@ const FacebookComments = ({ href }: { href: string }) => {
         <AlertTriangle className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
         <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
         <AlertDescription>
-          The Facebook Comments plugin is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/components/facebook-comments.tsx</code> file.
+          The Facebook Comments plugin is not fully configured. To make it work, you must replace <code>'YOUR_APP_ID'</code> with a real Facebook App ID in the <code>src/lib/fpixel.ts</code> file.
         </AlertDescription>
       </Alert>
     );
