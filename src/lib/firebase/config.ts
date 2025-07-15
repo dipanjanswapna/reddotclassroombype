@@ -1,4 +1,3 @@
-
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
@@ -13,25 +12,27 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Singleton instances
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-function getFirebaseApp(): FirebaseApp {
-  if (getApps().length > 0) {
-    return getApp();
+function initializeFirebase() {
+  if (!app) {
+    if (getApps().length > 0) {
+      app = getApp();
+    } else {
+      if (!firebaseConfig.apiKey) {
+        throw new Error("Firebase API Key is missing. Please check your environment variables.");
+      }
+      app = initializeApp(firebaseConfig);
+    }
   }
-  
-  if (!firebaseConfig.apiKey) {
-    throw new Error("Firebase API Key is missing. Please check your environment variables.");
-  }
-  
-  return initializeApp(firebaseConfig);
 }
 
 function getDbInstance(): Firestore {
   if (!db) {
-    app = getFirebaseApp();
+    initializeFirebase();
     db = getFirestore(app);
   }
   return db;
@@ -39,11 +40,10 @@ function getDbInstance(): Firestore {
 
 function getAuthInstance(): Auth {
   if (!auth) {
-    app = getFirebaseApp();
+    initializeFirebase();
     auth = getAuth(app);
   }
   return auth;
 }
 
-// We are renaming the exports to db and auth for cleaner imports elsewhere.
-export { getFirebaseApp as app, getDbInstance as db, getAuthInstance as auth };
+export { getDbInstance as db, getAuthInstance as auth };
