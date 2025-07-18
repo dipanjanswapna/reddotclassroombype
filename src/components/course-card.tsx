@@ -44,6 +44,8 @@ const CourseCardComponent = (props: CourseCardProps) => {
         <CourseCardWishlistButton courseId={id} />
         {isPrebookingActive && <Badge className="absolute top-2 left-2" variant="warning">Pre-booking</Badge>}
         {type === 'Exam' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="destructive">Exam Batch</Badge>}
+        {type === 'Offline' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Offline</Badge>}
+        {type === 'Hybrid' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Hybrid</Badge>}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}

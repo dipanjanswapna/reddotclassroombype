@@ -70,13 +70,12 @@ export default async function CoursesPage({
         )}
         <div className="container mx-auto px-4 py-8">
             {shopBanner?.display && (
-                 <div className="relative mb-8 rounded-lg overflow-hidden">
+                 <div className="relative mb-8 rounded-lg overflow-hidden aspect-[16/6] sm:aspect-[21/6]">
                      <Image
                          src={shopBanner.imageUrl}
                          alt="RDC Shop Banner"
-                         width={1200}
-                         height={250}
-                         className="w-full h-auto object-cover"
+                         fill
+                         className="w-full h-full object-cover"
                          data-ai-hint={shopBanner.dataAiHint}
                      />
                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">

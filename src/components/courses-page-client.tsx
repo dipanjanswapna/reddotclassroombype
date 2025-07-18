@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { CourseCard } from '@/components/course-card';
 import { CourseFilterBar } from '@/components/course-filter-bar';
 import { Course, Organization } from '@/lib/types';
@@ -50,21 +50,21 @@ export function CoursesPageClient({
 }: CoursesPageClientProps) {
   const [loading] = useState(false); 
 
-  const coursesByCategory = groupCoursesByCategory(initialCourses);
+  const coursesByCategory = useMemo(() => groupCoursesByCategory(initialCourses), [initialCourses]);
 
-  const sortedCategories = Object.keys(coursesByCategory).sort((a, b) => {
+  const sortedCategories = useMemo(() => Object.keys(coursesByCategory).sort((a, b) => {
     const indexA = categoryOrder.indexOf(a);
     const indexB = categoryOrder.indexOf(b);
     if (indexA === -1 && indexB === -1) return a.localeCompare(b);
     if (indexA === -1) return 1;
     if (indexB === -1) return -1;
     return indexA - indexB;
-  });
+  }), [coursesByCategory]);
 
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12" id="courses-start">
             <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl font-headline">
               All Courses
             </h1>

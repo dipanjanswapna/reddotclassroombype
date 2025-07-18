@@ -941,7 +941,7 @@ export const addNotification = (notification: Omit<Notification, 'id'>) => {
 export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
     const db = getDbInstance();
     if (!db) return [];
-    const q = query(collection(db, "notifications"), where("userId", "==", userId));
+    const q = query(collection(db, "notifications"), where("userId", "==", userId), orderBy("date", "desc"));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
 }

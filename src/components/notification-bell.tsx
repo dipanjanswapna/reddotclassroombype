@@ -73,7 +73,7 @@ export function NotificationBell() {
     // and sort the results on the client side.
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", userInfo.uid)
+        where("userId", "==", userInfo.uid),
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
