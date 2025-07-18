@@ -3,6 +3,18 @@
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
+export type Product = {
+    id: string;
+    name: string;
+    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook';
+    price: number;
+    oldPrice?: number;
+    imageUrl: string;
+    dataAiHint?: string;
+    description?: string;
+    sellerId?: string; // Admin or Seller Organization ID
+};
+
 export type QuestionOption = {
   id: string;
   text: string;
@@ -849,3 +861,5 @@ export type HomepageConfig = {
     slides: OfflineHubHeroSlide[];
   };
 };
+
+    
