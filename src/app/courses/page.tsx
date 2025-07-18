@@ -1,6 +1,4 @@
-
-
-import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
+import { getCourses, getCategories, getOrganizations } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
@@ -8,8 +6,8 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 
 
 export const metadata: Metadata = {
-  title: 'RDC SHOP - All Courses',
-  description: 'Browse all courses available on the RDC SHOP. Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development at Red Dot Classroom to advance your learning journey.',
+  title: 'All Courses - Red Dot Classroom',
+  description: 'Browse all available courses on Red Dot Classroom. Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development.',
 };
 
 async function CoursesPageContent({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) {
@@ -17,10 +15,9 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   const selectedSubCategory = searchParams?.subCategory;
   const selectedProvider = searchParams?.provider;
 
-  const [providers, allCoursesData, homepageConfig] = await Promise.all([
+  const [providers, allCoursesData] = await Promise.all([
     getOrganizations(),
     getCourses({ status: 'Published' }), // Fetch all published for filters
-    getHomepageConfig(),
   ]);
   
   const allCategories = [...new Set(allCoursesData.map(c => c.category).filter(Boolean))] as string[];
@@ -48,7 +45,6 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
         allSubCategories={allSubCategories}
         allProviders={approvedProviders}
         hasFilters={hasFilters}
-        homepageConfig={homepageConfig}
     />
   );
 }

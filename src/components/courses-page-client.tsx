@@ -1,18 +1,11 @@
 
-
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { CourseCard } from '@/components/course-card';
-import { Button } from '@/components/ui/button';
-import { Sparkles, BookOpenText } from 'lucide-react';
 import { CourseFilterBar } from '@/components/course-filter-bar';
-import { Course, HomepageConfig, Organization } from '@/lib/types';
+import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import Link from 'next/link';
-import { useLanguage } from '@/context/language-context';
-import { OfflineHubCarousel } from './offline-hub-carousel';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -21,12 +14,11 @@ type CoursesPageClientProps = {
     allSubCategories: string[];
     allProviders: Organization[];
     hasFilters: boolean;
-    homepageConfig: HomepageConfig | null;
 };
 
 const groupCoursesByCategory = (courses: Course[]): { [key: string]: Course[] } => {
   return courses.reduce((acc, course) => {
-    const category = course.category;
+    const category = course.category || 'Uncategorized';
     if (!acc[category]) {
       acc[category] = [];
     }
@@ -55,10 +47,7 @@ export function CoursesPageClient({
     allSubCategories,
     allProviders,
     hasFilters,
-    homepageConfig
 }: CoursesPageClientProps) {
-  const { language } = useLanguage();
-  // Loading state can be simplified as data is pre-fetched and re-fetched by navigation
   const [loading] = useState(false); 
 
   const coursesByCategory = groupCoursesByCategory(initialCourses);
@@ -66,6 +55,7 @@ export function CoursesPageClient({
   const sortedCategories = Object.keys(coursesByCategory).sort((a, b) => {
     const indexA = categoryOrder.indexOf(a);
     const indexB = categoryOrder.indexOf(b);
+    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
     if (indexA === -1) return 1;
     if (indexB === -1) return -1;
     return indexA - indexB;
@@ -73,24 +63,16 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      {homepageConfig?.rdcShopBanner?.display && (
-        <div className="container mx-auto px-4 pt-8">
-          <div className="relative w-full aspect-[16/6]">
-              <Image
-                  src={homepageConfig.rdcShopBanner.imageUrl}
-                  alt="RDC Shop Banner"
-                  fill
-                  className="object-cover rounded-lg"
-                  data-ai-hint={homepageConfig.rdcShopBanner.dataAiHint}
-                  priority
-              />
+      <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl font-headline">
+              All Courses
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Find the perfect course to achieve your learning goals.
+            </p>
           </div>
-        </div>
-      )}
-      <div className="bg-background">
-        <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16">
-          <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
-        </div>
+        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
       <main className="container mx-auto px-4 pt-0 pb-16">
@@ -101,7 +83,7 @@ export function CoursesPageClient({
         ) : hasFilters ? (
             <section className='py-0'>
               <h2 className="font-headline mb-6 text-3xl font-bold">
-                {language === 'bn' ? `ফিল্টার ফলাফল (${initialCourses.length})` : `Filtered Results (${initialCourses.length})`}
+                Filtered Results ({initialCourses.length})
               </h2>
               {initialCourses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -111,7 +93,7 @@ export function CoursesPageClient({
                   })}
                 </div>
               ) : (
-                <p className="text-muted-foreground">{language === 'bn' ? 'আপনার মানদণ্ডের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টারগুলো মুছে ফেলার চেষ্টা করুন।' : 'No courses found matching your criteria. Try clearing the filters.'}</p>
+                <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
               )}
             </section>
         ) : (
@@ -131,9 +113,9 @@ export function CoursesPageClient({
               ))}
 
               {archivedCourses.length > 0 && (
-                <section id="old-is-gold" className='py-0'>
+                <section id="archived-courses" className='py-0'>
                     <h2 className="font-headline mb-6 text-3xl font-bold">
-                        OLD IS GOLD
+                        Archived Courses
                     </h2>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {archivedCourses.map((course) => {

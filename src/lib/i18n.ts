@@ -12,7 +12,7 @@ export const t = {
   nav_class_6_12: { en: 'Class 6-12', bn: 'ক্লাস ৬-১২' },
   nav_skills: { en: 'Skills', bn: 'স্কিলস' },
   nav_admission_test: { en: 'Admission Test', bn: 'ভর্তি পরীক্ষা' },
-  nav_online_batch: { en: 'RDC OFFLINE HUB', bn: 'RDC অফলাইন হাব' },
+  nav_online_batch: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
   nav_more: { en: 'More', bn: 'আরও' },
   nav_blog: { en: 'Blog', bn: 'ব্লগ' },
   nav_faq: { en: 'FAQ', bn: 'জিজ্ঞাসা' },
@@ -32,7 +32,7 @@ export const t = {
   // Footer
   footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },
   quick_links: { en: 'Quick Links', bn: 'কুইক লিঙ্ক' },
-  rdc_shop: { en: 'RDC SHOP', bn: 'RDC SHOP' },
+  rdc_shop: { en: 'Courses', bn: 'কোর্সসমূহ' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
   register: { en: 'Register', bn: 'রেজিস্টার' },
   dashboard: { en: 'Dashboard', bn: 'ড্যাশবোর্ড' },

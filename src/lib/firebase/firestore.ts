@@ -829,16 +829,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       display: true,
       number: "8801700000000"
   },
-  rdcShopBanner: {
-    display: true,
-    imageUrl: "https://placehold.co/1200x200.png",
-    dataAiHint: "students sale offer"
-  },
-  requestCallbackSection: {
-    display: true,
-    imageUrl: "https://i.imgur.com/GZ0gQfN.png",
-    dataAiHint: "student illustration"
-  },
   platformSettings: defaultPlatformSettings,
   topperPageSection: {
       display: true,
@@ -852,13 +842,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
           {id: "card4", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "progress chart", title: "Performance Tracking", description: "Monitor your progress with detailed analytics and customized feedback to stay on track."}
       ]
   },
-  offlineHubHeroCarousel: {
-      display: true,
-      slides: [
-          { id: 1, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'students classroom', title: 'IELTS MASTER', subtitle: 'IELTS MASTERCLASS & MOCK TEST', price: '৳1500', originalPrice: '৳3000', enrollHref: '#' },
-          { id: 2, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'presentation screen', title: 'ADMISSION', subtitle: 'NURSING & MEDICAL ADMISSION', price: '৳2500', originalPrice: '৳4000', enrollHref: '#' },
-      ]
-  }
 };
 
 
