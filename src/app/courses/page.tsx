@@ -1,13 +1,15 @@
-import { getCourses, getCategories, getOrganizations } from '@/lib/firebase/firestore';
+import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
-
+import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'All Courses - Red Dot Classroom',
-  description: 'Browse all available courses on Red Dot Classroom. Explore a wide range of courses on HSC, SSC, Admission Tests, Job Prep, and skills development.',
+  title: 'RDC SHOP - Red Dot Classroom',
+  description: 'Browse all available courses, books, and stationeries on RDC SHOP. Explore a wide range of products for HSC, SSC, Admission Tests, and skills development.',
 };
 
 async function CoursesPageContent({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) {
@@ -49,18 +51,55 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   );
 }
 
-export default function CoursesPage({
+export default async function CoursesPage({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | undefined };
 }) {
+    const homepageConfig = await getHomepageConfig();
+    const shopBanner = homepageConfig?.rdcShopBanner;
+    
   return (
-    <Suspense fallback={
-        <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-            <LoadingSpinner className="w-12 h-12" />
+    <div className="bg-background">
+        {homepageConfig?.offlineHubHeroCarousel?.display && (
+            <div className="bg-gray-900">
+                <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+            </div>
+        )}
+        <div className="container mx-auto px-4 py-8">
+            {shopBanner?.display && (
+                 <div className="relative mb-8 rounded-lg overflow-hidden">
+                     <Image
+                         src={shopBanner.imageUrl}
+                         alt="RDC Shop Banner"
+                         width={1200}
+                         height={250}
+                         className="w-full h-auto object-cover"
+                         data-ai-hint={shopBanner.dataAiHint}
+                     />
+                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                         <div className="text-center text-white p-4">
+                             <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl font-headline text-shadow">
+                               RDC SHOP
+                             </h1>
+                              <p className="mt-4 text-lg max-w-2xl text-shadow">
+                                আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
+                            </p>
+                             <Button asChild className="mt-4 bg-green-500 hover:bg-green-600">
+                                <Link href="#courses-start">আমাদের ফ্রি কোর্সগুলো দেখুন</Link>
+                             </Button>
+                         </div>
+                     </div>
+                 </div>
+            )}
+            <Suspense fallback={
+                <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+                    <LoadingSpinner className="w-12 h-12" />
+                </div>
+            }>
+                <CoursesPageContent searchParams={searchParams} />
+            </Suspense>
         </div>
-    }>
-        <CoursesPageContent searchParams={searchParams} />
-    </Suspense>
+    </div>
   )
 }

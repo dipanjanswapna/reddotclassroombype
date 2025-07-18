@@ -829,6 +829,16 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       display: true,
       number: "8801700000000"
   },
+  rdcShopBanner: {
+    display: true,
+    imageUrl: "https://placehold.co/1200x250.png",
+    dataAiHint: "store banner sale"
+  },
+  requestCallbackSection: {
+    display: true,
+    imageUrl: "https://i.imgur.com/GZ0gQfN.png",
+    dataAiHint: "student illustration",
+  },
   platformSettings: defaultPlatformSettings,
   topperPageSection: {
       display: true,
@@ -841,6 +851,12 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
           {id: "card3", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "community support", title: "24/7 Doubt Clearing", description: "Get your doubts resolved instantly anytime with our dedicated support team and AI."},
           {id: "card4", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "progress chart", title: "Performance Tracking", description: "Monitor your progress with detailed analytics and customized feedback to stay on track."}
       ]
+  },
+  offlineHubHeroCarousel: {
+    display: true,
+    slides: [
+        { id: 1, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'students course banner', title: 'IELTS MASTER', subtitle: 'IELTS MASTERCLASS & MOCK TEST', price: '৳1,200', originalPrice: '৳3,000', enrollHref: '#' }
+    ]
   },
 };
 
