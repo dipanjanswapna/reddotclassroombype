@@ -1,4 +1,5 @@
 
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Product } from '@/lib/types';
@@ -28,7 +29,7 @@ const categories = [
     { name: "প্রিন্টেড বই", icon: Tally4, href: "/store?category=Printed+Book" }
 ];
 
-const ProductCard = ({ product }: { product: Product }) => (
+export const ProductCard = ({ product }: { product: Product }) => (
     <Link href={`/store/product/${product.id}`} className="group">
         <Card className="overflow-hidden transition-all hover:shadow-lg">
             <CardHeader className="p-0">
@@ -139,5 +140,3 @@ export default function RdcStorePage() {
     </div>
   )
 }
-
-    

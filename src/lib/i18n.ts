@@ -9,6 +9,7 @@
  */
 export const t = {
   // Header
+  nav_rdc_store: { en: 'RDC Store', bn: 'RDC স্টোর' },
   nav_class_6_12: { en: 'Class 6-12', bn: 'ক্লাস ৬-১২' },
   nav_skills: { en: 'Skills', bn: 'স্কিলস' },
   nav_admission_test: { en: 'Admission Test', bn: 'ভর্তি পরীক্ষা' },

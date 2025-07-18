@@ -45,7 +45,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   const isDark = variant === 'dark';
 
   const mainNavLinks = [
-    { href: "/store", label: "RDC Store"},
+    { href: "/store", label: t.nav_rdc_store[language] },
     { href: "/courses", label: t.rdc_shop[language]},
     { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
     { href: "/courses?category=skills", label: t.nav_skills[language] },
@@ -207,5 +207,3 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
     </header>
   );
 }
-
-    
