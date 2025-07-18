@@ -6,7 +6,7 @@ import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 export type Product = {
     id: string;
     name: string;
-    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook';
+    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook' | 'Stationery';
     price: number;
     oldPrice?: number;
     imageUrl: string;
@@ -862,4 +862,3 @@ export type HomepageConfig = {
   };
 };
 
-    
