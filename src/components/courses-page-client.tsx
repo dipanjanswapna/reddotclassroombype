@@ -73,38 +73,27 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      {homepageConfig?.offlineHubHeroCarousel?.display && (
-        <div className="bg-secondary/30">
-            <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+      {homepageConfig?.rdcShopBanner?.display && (
+        <div className="container mx-auto px-4 pt-8">
+          <div className="relative w-full aspect-[16/6]">
+              <Image
+                  src={homepageConfig.rdcShopBanner.imageUrl}
+                  alt="RDC Shop Banner"
+                  fill
+                  className="object-cover rounded-lg"
+                  data-ai-hint={homepageConfig.rdcShopBanner.dataAiHint}
+                  priority
+              />
+          </div>
         </div>
       )}
-      <div className="bg-secondary/50 border-b">
-        <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16 md:grid-cols-2">
-          <div>
-            <h1 className="font-headline text-4xl font-bold tracking-tight">RDC SHOP</h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {language === 'bn' ? 'আপনার প্রয়োজনীয় সকল কোর্স এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।' : 'All the courses you need are now at RDC SHOP. Start your learning journey with the best teachers.'}
-            </p>
-            <Button asChild className="mt-6" variant="accent">
-              <Link href="/courses#master-course">
-                 <Sparkles className="mr-2 h-4 w-4" />
-                 {language === 'bn' ? 'আমাদের ফ্রি কোর্সগুলো দেখুন' : 'See Our Free Courses'}
-              </Link>
-            </Button>
-          </div>
-          <div className="hidden items-center justify-center md:flex md:justify-end">
-            <div className="relative flex h-48 w-48 items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse"></div>
-              <div className="relative flex h-40 w-40 items-center justify-center rounded-full bg-background border-2 border-primary">
-                <BookOpenText className="h-20 w-20 text-primary" />
-              </div>
-            </div>
-          </div>
+      <div className="bg-background">
+        <div className="container mx-auto grid grid-cols-1 items-center gap-8 px-4 py-16">
+          <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
         </div>
-        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
-      <main className="container mx-auto px-4 pt-16">
+      <main className="container mx-auto px-4 pt-0 pb-16">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingSpinner className="w-12 h-12" />
@@ -157,21 +146,6 @@ export function CoursesPageClient({
             </div>
         )}
       </main>
-
-      {homepageConfig?.rdcShopBanner?.display && (
-        <div>
-          <div className="relative w-full aspect-[16/6]">
-              <Image
-                  src={homepageConfig.rdcShopBanner.imageUrl}
-                  alt="RDC Shop Banner"
-                  fill
-                  className="object-cover"
-                  data-ai-hint={homepageConfig.rdcShopBanner.dataAiHint}
-                  priority
-              />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
