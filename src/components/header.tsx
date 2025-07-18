@@ -47,13 +47,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   const mainNavLinks = [
     { href: "/store", label: t.nav_rdc_store[language] },
     { href: "/courses", label: t.rdc_shop[language]},
-    { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
-    { href: "/courses?category=skills", label: t.nav_skills[language] },
     { href: "/courses?category=admission", label: t.nav_admission_test[language] },
     { href: "/offline-hub", label: t.nav_online_batch[language] },
   ];
 
   const moreLinks = [
+    { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
+    { href: "/courses?category=skills", label: t.nav_skills[language] },
     { href: "/blog", label: t.nav_blog[language] },
     { href: "/faq", label: t.nav_faq[language] },
     { href: "/about", label: t.nav_about[language] },
