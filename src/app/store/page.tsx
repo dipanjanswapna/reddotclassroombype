@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Product } from '@/lib/types';
 import { ArrowRight, Book, Shirt, Pen, List, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
