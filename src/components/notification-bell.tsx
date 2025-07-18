@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -67,10 +68,12 @@ export function NotificationBell() {
     const db = getDbInstance();
     if (!db) return;
 
+    // Firestore query requires a composite index on (userId, date).
+    // To avoid this requirement for now, we'll query only by userId
+    // and sort the results on the client side.
     const q = query(
         collection(db, "notifications"), 
-        where("userId", "==", userInfo.uid),
-        orderBy("date", "desc")
+        where("userId", "==", userInfo.uid)
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -78,6 +81,8 @@ export function NotificationBell() {
       querySnapshot.forEach((doc) => {
         fetchedNotifications.push({ id: doc.id, ...doc.data() } as Notification);
       });
+      // Sort client-side
+      fetchedNotifications.sort((a,b) => safeToDate(b.date).getTime() - safeToDate(a.date).getTime());
       setNotifications(fetchedNotifications);
     }, (error) => {
       console.error("Error fetching notifications:", error);

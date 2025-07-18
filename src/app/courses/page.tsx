@@ -1,3 +1,4 @@
+
 import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
@@ -6,6 +7,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
   title: 'RDC SHOP - Red Dot Classroom',
