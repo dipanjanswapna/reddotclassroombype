@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -137,7 +138,32 @@ export default function RdcStorePage() {
                     </div>
                 )}
             </section>
-
+            
+            <section>
+                <div className="relative bg-[#0d122b] text-white p-8 md:p-12 rounded-2xl overflow-hidden grid md:grid-cols-2 gap-8 items-center">
+                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/20 rounded-full"></div>
+                    <div className="absolute -bottom-16 -left-10 w-48 h-48 bg-blue-500/20 rounded-full"></div>
+                    <div className="relative z-10">
+                        <h2 className="font-headline text-3xl font-bold leading-tight">৬ষ্ঠ শ্রেণি থেকে SSC-HSC পরীক্ষা এবং এডমিশন প্রিপারেশনের জন্য RDC'র কোর্সগুলো ভিজিট করুন।</h2>
+                        <p className="mt-4 text-white/80">বাসায় বসেই বুয়েট-ঢাবি-মেডিকেল পাস ও ১৭ বছর পর্যন্ত অভিজ্ঞ শিক্ষকদের সাথে পড়াশোনা হোক দেশের সর্বাধুনিক প্রযুক্তির RDC অ্যাপ এবং ওয়েব-অ্যাপে।</p>
+                        <Button asChild className="mt-6 bg-blue-500 hover:bg-blue-600 font-bengali font-bold">
+                            <Link href="/courses">
+                                ভিজিট করুন <ArrowRight className="ml-2 w-4 h-4" />
+                            </Link>
+                        </Button>
+                    </div>
+                    <div className="relative hidden md:block">
+                        <Image
+                            src="https://placehold.co/400x300.png"
+                            alt="Student studying with laptop"
+                            width={400}
+                            height={300}
+                            className="object-contain"
+                            data-ai-hint="student studying illustration"
+                        />
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
   )
