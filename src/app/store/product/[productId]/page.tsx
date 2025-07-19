@@ -1,51 +1,27 @@
 
-import { notFound } from 'next/navigation';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Product } from '@/lib/types';
 import { Star, ShieldCheck, CheckCircle, Video, BookOpen } from 'lucide-react';
 import Link from 'next/link';
-
-// Dummy data fetching function to simulate getting product details.
-// In a real application, this would fetch from Firestore.
-const getProductById = (id: string): Product | undefined => {
-  const products: Product[] = [
-    { id: 'prod_calculator_1', name: 'Casio (fx-991CW) Scientific Calculator-Black', category: 'Stationery', subCategory: 'Calculator', price: 2500, oldPrice: 3000, imageUrl: 'https://placehold.co/600x600.png', description: 'The Casio fx-991CW is a new high-performance scientific calculator with a high-resolution display and a wide range of functions.', dataAiHint: 'scientific calculator' },
-    { id: 'prod_hoodie_1', name: 'Hoodie', category: 'Apparel', subCategory: 'Hoodie', price: 1200, oldPrice: 1500, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'hoodie black' },
-    { id: 'prod_jersey_1', name: 'Jersey', category: 'Apparel', subCategory: 'Jersey', price: 800, oldPrice: 950, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'jersey dark blue' },
-    { id: 'prod_tshirt_1', name: 'Original Tee', category: 'Apparel', subCategory: 'T-Shirt', price: 550, oldPrice: 650, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 't-shirt black' },
-    { id: 'prod_notebook_1', name: 'HSC Physics Note', category: 'Stationery', subCategory: 'Notebook', price: 250, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'notebook journal' },
-    { id: 'prod_pen_1', name: 'RDC Premium Gel Pen', category: 'Stationery', subCategory: 'Pen', price: 50, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'pen black' },
-    { id: 'prod_ebook_1', name: 'HSC Physics E-Book', category: 'E-Book', price: 150, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'ebook physics' },
-    { id: 'prod_printed_book_1', name: 'HSC Physics Printed Book', category: 'Printed Book', price: 550, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'book physics' },
-  ];
-  return products.find(p => p.id === id);
-};
-
-const getRelatedProducts = (currentProduct?: Product): Product[] => {
-    const products: Product[] = [
-        { id: 'prod_tshirt_1', name: 'RDC Original Tee', category: 'T-Shirt', price: 550, oldPrice: 650, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 't-shirt black' },
-        { id: 'prod_book_1', name: 'HSC Physics 1st Paper', category: 'Printed Book', price: 750, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'book physics' },
-        { id: 'prod_tshirt_2', name: 'RDC Classic Hoodie', category: 'Hoodie', price: 1200, oldPrice: 1500, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'hoodie black' },
-        { id: 'prod_book_2', name: 'Admission Test Question Bank', category: 'Printed Book', price: 900, imageUrl: 'https://placehold.co/400x400.png', dataAiHint: 'book question bank' },
-    ];
-    if (!currentProduct) return products;
-    return products.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id);
-}
+import { useEffect, useState } from 'react';
+import { getProduct } from '@/lib/firebase/firestore';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const ProductCard = ({ product }: { product: Product }) => (
     <Link href={`/store/product/${product.id}`} className="group">
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white dark:bg-gray-800">
-            <CardHeader className="p-0">
-                <div className="aspect-square bg-muted flex items-center justify-center">
-                    <Image src={product.imageUrl} alt={product.name} width={400} height={400} className="object-cover group-hover:scale-105 transition-transform" data-ai-hint={product.dataAiHint} />
-                </div>
-            </CardHeader>
-            <CardContent className="p-4">
-                <h3 className="font-semibold truncate">{product.name}</h3>
-                <div className="flex items-baseline gap-2 mt-1">
+        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white dark:bg-gray-800 h-full flex flex-col">
+            <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                <Image src={product.imageUrl} alt={product.name} width={400} height={400} className="object-cover group-hover:scale-105 transition-transform w-full h-full" data-ai-hint={product.dataAiHint} />
+            </div>
+            <CardContent className="p-4 flex-grow flex flex-col">
+                <h3 className="font-semibold truncate flex-grow">{product.name}</h3>
+                <div className="flex items-baseline gap-2 mt-2">
                     <p className="text-primary font-bold">৳{product.price}</p>
                     {product.oldPrice && <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>}
                 </div>
@@ -75,9 +51,35 @@ const additionalBenefits = [
 ];
 
 
-export default function ProductDetailPage({ params }: { params: { productId: string } }) {
-  const product = getProductById('prod_calculator_1'); // Forcing a specific product for styling
-  const relatedProducts = getRelatedProducts(product);
+export default function ProductDetailPage() {
+  const params = useParams();
+  const productId = params.productId as string;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      if (!productId) return;
+      const fetchProduct = async () => {
+          try {
+              const fetchedProduct = await getProduct(productId);
+              if (fetchedProduct) {
+                  setProduct(fetchedProduct);
+              } else {
+                  notFound();
+              }
+          } catch (error) {
+              console.error("Failed to fetch product:", error);
+              notFound();
+          } finally {
+              setLoading(false);
+          }
+      };
+      fetchProduct();
+  }, [productId]);
+
+  if (loading) {
+      return <div className="flex h-screen items-center justify-center"><LoadingSpinner /></div>
+  }
 
   if (!product) {
     notFound();
@@ -88,15 +90,8 @@ export default function ProductDetailPage({ params }: { params: { productId: str
         <div className="container mx-auto px-4 py-12">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div>
-                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4 sticky top-20">
                         <Image src={product.imageUrl} alt={product.name} width={600} height={600} className="w-full object-cover rounded-md aspect-square" data-ai-hint={product.dataAiHint} />
-                    </div>
-                    <div className="flex gap-2 justify-center">
-                        {[1,2,3,4,5].map(i => (
-                            <div key={i} className="w-16 h-16 bg-white dark:bg-gray-800 p-1 rounded-md border-2 border-transparent hover:border-primary transition-all cursor-pointer">
-                                 <Image src={product.imageUrl} alt={`${product.name} thumbnail ${i}`} width={64} height={64} className="w-full h-full object-cover rounded-sm"/>
-                            </div>
-                        ))}
                     </div>
                 </div>
                 <div>
@@ -108,9 +103,8 @@ export default function ProductDetailPage({ params }: { params: { productId: str
                     </div>
 
                     <div className="flex gap-2">
-                        <Button className="bg-orange-500 hover:bg-orange-600">0 Year</Button>
-                        <Button className="bg-red-500 hover:bg-red-600">In Stock</Button>
-                        <Button className="bg-green-500 hover:bg-green-600">৳325</Button>
+                        <Badge variant="outline" className="border-orange-400 text-orange-600">0 Year Warranty</Badge>
+                        <Badge variant="outline" className="border-green-400 text-green-600">In Stock</Badge>
                     </div>
 
                     <div className="my-4">
@@ -183,4 +177,3 @@ export default function ProductDetailPage({ params }: { params: { productId: str
     </div>
   );
 }
-

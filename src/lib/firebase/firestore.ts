@@ -17,7 +17,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -39,6 +39,10 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
   }
   return null;
 }
+
+// Products
+export const getProducts = () => getCollection<Product>('products');
+export const getProduct = (id: string) => getDocument<Product>('products', id);
 
 // Question Bank
 export const getQuestionBank = () => getCollection<Question>('question_bank');
