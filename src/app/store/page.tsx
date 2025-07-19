@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 };
 
 async function StoreContent({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
-    const selectedCategorySlug = searchParams?.category as string | undefined;
+    const selectedCategorySlug = searchParams?.category;
+    const selectedSubCategorySlug = searchParams?.subCategory;
 
     const [homepageConfig, allProducts, allCategories] = await Promise.all([
         getHomepageConfig(),

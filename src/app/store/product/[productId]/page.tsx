@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import { getProduct, getProducts } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
@@ -9,7 +10,8 @@ import Link from 'next/link';
 import { ProductReviewSystem } from '@/components/product-review-system';
 
 export async function generateMetadata({ params }: { params: { productId: string } }): Promise<Metadata> {
-  const product = await getProduct(params.productId);
+  const { productId } = params;
+  const product = await getProduct(productId);
 
   if (!product || !product.isPublished) {
     return {
@@ -29,7 +31,8 @@ export async function generateMetadata({ params }: { params: { productId: string
 }
 
 export default async function ProductDetailPage({ params }: { params: { productId: string } }) {
-  const product = await getProduct(params.productId);
+  const { productId } = params;
+  const product = await getProduct(productId);
 
   if (!product || !product.isPublished) {
     notFound();
@@ -86,4 +89,5 @@ export default async function ProductDetailPage({ params }: { params: { productI
     </div>
   );
 }
+
 
