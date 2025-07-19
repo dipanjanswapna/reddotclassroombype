@@ -4,6 +4,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { consoleLoggingIntegration } from "@sentry/core";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -27,7 +28,8 @@ Sentry.init({
       maskAllText: true,
       blockAllMedia: true,
     }),
-    Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn", "debug", "info", "trace", "fatal"] }),
+    consoleLoggingIntegration({ levels: ["log", "error", "warn", "debug", "info", "trace", "fatal"] }),
+    Sentry.browserTracingIntegration(),
   ],
    _experiments: {
     enableLogs: true,
