@@ -1,19 +1,31 @@
 
+
 'use client';
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { HomepageConfig } from "@/lib/types";
 
-export function FreeCoursesBanner() {
+type BannerConfig = HomepageConfig['rdcShopBanner'];
+
+interface FreeCoursesBannerProps {
+  bannerConfig?: BannerConfig;
+}
+
+export function FreeCoursesBanner({ bannerConfig }: FreeCoursesBannerProps) {
+    if (!bannerConfig || !bannerConfig.display) {
+        return null;
+    }
+
     return (
         <div className="relative rounded-2xl overflow-hidden p-8 text-white bg-black flex flex-col items-center justify-center text-center aspect-video md:aspect-[21/6]">
             <Image
-                src="https://placehold.co/1200x400.png"
-                alt="Community and learning banner"
+                src={bannerConfig.imageUrl}
+                alt="RDC Shop Banner"
                 fill
                 className="object-cover opacity-30"
-                data-ai-hint="protest hands love"
+                data-ai-hint={bannerConfig.dataAiHint || "sale background"}
             />
             <div className="relative z-10 max-w-2xl">
                 <h2 className="text-4xl md:text-5xl font-extrabold font-headline">RDC SHOP</h2>

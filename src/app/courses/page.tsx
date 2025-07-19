@@ -85,9 +85,11 @@ export default async function CoursesPage({
                 <CoursesPageContent searchParams={searchParams} />
             </Suspense>
         </div>
-        <div className="container mx-auto px-4 pb-12">
-            <FreeCoursesBanner />
-        </div>
+        {homepageConfig?.rdcShopBanner?.display && (
+            <div className="container mx-auto px-4 pb-12">
+                <FreeCoursesBanner bannerConfig={homepageConfig.rdcShopBanner} />
+            </div>
+        )}
     </div>
   )
 }
