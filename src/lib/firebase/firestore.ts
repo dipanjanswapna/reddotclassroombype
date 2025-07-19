@@ -1,5 +1,6 @@
 
 
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -18,7 +19,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -59,6 +60,22 @@ export const deleteProduct = (id: string) => {
     if (!db) throw new Error("Firestore is not initialized.");
     return deleteDoc(doc(db, 'products', id));
 }
+
+// Orders
+export const getOrders = () => getCollection<Order>('orders');
+export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "orders"), where("userId", "==", userId), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+}
+export const updateOrder = (id: string, data: Partial<Order>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'orders', id), data);
+}
+
 
 // Question Bank
 export const getQuestionBank = () => getCollection<Question>('question_bank');

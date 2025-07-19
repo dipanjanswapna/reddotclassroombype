@@ -26,6 +26,7 @@ import {
   Users2,
   Megaphone,
   Store,
+  ShoppingCart,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -62,6 +63,7 @@ export default function AdminLayout({
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
         { href: "/admin/store/products", icon: Store, label: "Store Products" },
+        { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/group-access", icon: Users2, label: "Group Access" },
