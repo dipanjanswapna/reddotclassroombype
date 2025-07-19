@@ -29,6 +29,12 @@ export const t = {
   staff_id: { en: 'Staff ID', bn: 'স্টাফ আইডি' },
   email_login: { en: 'Login with Email', bn: 'ইমেইল লগইন' },
 
+  // New Store Nav
+  nav_home: { en: 'Home', bn: 'হোম' },
+  nav_academic_prep: { en: 'Academic Preparation', bn: 'একাডেমিক প্রস্তুতি' },
+  nav_ebook: { en: 'E-Book', bn: 'ই-বুক' },
+  nav_stationery: { en: 'Stationery', bn: 'স্টেশনারী' },
+
 
   // Footer
   footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },

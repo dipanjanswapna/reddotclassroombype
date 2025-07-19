@@ -13,11 +13,20 @@ import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { Toaster } from './ui/toaster';
 import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
+import { StoreHeader } from './store-header';
+import { StoreFooter } from './store-footer';
+import { getStoreCategories } from '@/lib/firebase/firestore';
+import React from 'react';
 
 
 const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) => {
   const pathname = usePathname();
   const { language } = useLanguage();
+  const [categories, setCategories] = React.useState([]);
+
+  React.useEffect(() => {
+    getStoreCategories().then(setCategories as any);
+  }, []);
 
   const isFullPageLayout =
     pathname.startsWith('/sites/') ||
@@ -30,8 +39,20 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
   const isOfflineHub = pathname.startsWith('/offline-hub');
   const isStore = pathname.startsWith('/store');
 
-  if (isFullPageLayout || isOfflineHub || isStore) {
+  if (isFullPageLayout || isOfflineHub) {
     return <>{children}</>;
+  }
+
+  if (isStore) {
+    return (
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
+        <StoreHeader categories={categories} />
+        <main className="flex-grow">
+            {children}
+        </main>
+        <StoreFooter categories={categories} />
+      </div>
+    );
   }
   
   const isDashboardPage = 

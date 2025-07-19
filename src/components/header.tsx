@@ -107,12 +107,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                   <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
-                  <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
-                     <ShoppingCart className="h-5 w-5" />
-                     {itemCount > 0 && (
-                        <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-xs">{itemCount}</Badge>
-                     )}
-                  </Button>
                   {!user && (
                     <>
                     <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
