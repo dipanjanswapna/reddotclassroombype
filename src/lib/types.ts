@@ -709,12 +709,21 @@ export type CallbackRequest = {
   notes?: string;
 };
 
+export type SubCategory = {
+    name: string;
+};
+
+export type SubCategoryGroup = {
+    title: string;
+    subCategories: SubCategory[];
+};
+
 export type StoreCategory = {
     id?: string;
     name: string;
     slug: string;
     order?: number;
-    subCategories?: { name: string }[];
+    subCategoryGroups?: SubCategoryGroup[];
 };
 
 export type StoreHomepageHero = {

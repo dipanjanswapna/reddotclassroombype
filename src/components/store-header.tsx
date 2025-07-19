@@ -4,7 +4,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, X, ChevronDown, ShoppingCart, Receipt, Truck } from "lucide-react";
+import { Menu, Search, X, ChevronDown, ShoppingCart, Receipt, Truck, BookUser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,18 +13,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { UserNav } from "./user-nav";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
-import { StoreCategory, Order } from "@/lib/types";
+import { StoreCategory, Order, SubCategoryGroup } from "@/lib/types";
 import { usePathname, useRouter } from "next/navigation";
 import { RhombusLogo } from "./rhombus-logo";
 import { Input } from "./ui/input";
@@ -41,6 +35,14 @@ import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 
 const OrderTrackingModal = () => {
     const [orderId, setOrderId] = useState('');
@@ -118,6 +120,33 @@ const OrderTrackingModal = () => {
     );
 }
 
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"
+
+
 export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
@@ -135,7 +164,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
         </div>
         
         <div className="flex items-center justify-end space-x-2">
-            <div className="hidden sm:flex">
+            <div className="hidden sm:flex items-center">
                  <Input className="h-9 w-64" placeholder="Search for products..." />
             </div>
              <Dialog>
@@ -146,6 +175,9 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                 </DialogTrigger>
                 <OrderTrackingModal />
              </Dialog>
+            <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
+                <BookUser className="h-6 w-6" />
+            </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
              <ShoppingCart className="h-6 w-6" />
              {itemCount > 0 && (
@@ -167,47 +199,84 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                         </SheetHeader>
                          <nav className="flex flex-col gap-4 mt-8">
-                             <Link href="/store" className="font-medium hover:text-primary" onClick={() => setMenuOpen(false)}>Home</Link>
                             <h3 className="font-semibold pt-4 border-t">All Categories</h3>
-                            {categories.map(category => (
-                                <Link
-                                    key={category.id}
-                                    href={`/store?category=${category.slug}`}
-                                    className="text-muted-foreground hover:text-primary"
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    {category.name}
-                                </Link>
-                            ))}
+                            <Accordion type="multiple" className="w-full">
+                                {categories.map(category => (
+                                    <AccordionItem key={category.id} value={category.id!}>
+                                        <AccordionTrigger>
+                                             <Link
+                                                href={`/store?category=${category.slug}`}
+                                                className="font-medium hover:text-primary"
+                                                onClick={() => setMenuOpen(false)}
+                                            >
+                                                {category.name}
+                                            </Link>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="flex flex-col space-y-2 pl-4">
+                                                {category.subCategoryGroups?.flatMap(group =>
+                                                    group.subCategories.map(sc => (
+                                                        <Link
+                                                            key={sc.name}
+                                                            href={`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                                            className="text-muted-foreground hover:text-primary"
+                                                            onClick={() => setMenuOpen(false)}
+                                                        >
+                                                            {sc.name}
+                                                        </Link>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
                         </nav>
                     </SheetContent>
                 </Sheet>
             </div>
         </div>
       </div>
-       <nav className="hidden lg:flex container h-12 items-center justify-between border-t bg-gray-800 text-white">
-          <div className="flex items-center gap-1">
-            {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
-                <DropdownMenu key={category.id}>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="hover:bg-gray-700">
-                           {category.name} <ChevronDown className="ml-2 h-4 w-4"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={() => router.push(`/store?category=${category.slug}`)}>
-                            All {category.name}
-                        </DropdownMenuItem>
-                        {(category.subCategories || []).map(sc => (
-                             <DropdownMenuItem key={sc.name} onSelect={() => router.push(`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`)}>
-                                {sc.name}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            ))}
-          </div>
-          <Button variant="success" onClick={() => router.push('/student/payments')}>My Orders</Button>
+       <nav className="hidden lg:flex container h-12 items-center justify-start border-t">
+          <NavigationMenu>
+            <NavigationMenuList>
+              {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
+                <NavigationMenuItem key={category.id}>
+                  <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-3 p-4 md:w-[600px] lg:w-[700px] lg:grid-cols-3">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
+                          <a
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            href={`/store?category=${category.slug}`}
+                          >
+                            <RhombusLogo className="h-6 w-6"/>
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              {category.name}
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              View all products in the {category.name} category.
+                            </p>
+                          </a>
+                        </NavigationMenuLink>
+                      </div>
+                      {(category.subCategoryGroups || []).map(group => (
+                          <div key={group.title} className="flex flex-col">
+                               <p className="font-semibold text-primary px-3">{group.title} &rarr;</p>
+                               <ul className="flex flex-col">
+                                   {group.subCategories.map(sub => (
+                                       <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
+                                   ))}
+                               </ul>
+                          </div>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
       </nav>
     </header>
   );

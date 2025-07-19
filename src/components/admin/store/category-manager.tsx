@@ -31,11 +31,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { StoreCategory } from '@/lib/types';
+import { StoreCategory, SubCategoryGroup } from '@/lib/types';
 import { saveStoreCategoryAction, deleteStoreCategoryAction } from '@/app/actions/store.actions';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Textarea } from '../ui/textarea';
@@ -94,27 +94,58 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
         setEditingCategory(prev => prev ? { ...prev, [field]: value } : null);
     };
     
-    const updateSubCategory = (index: number, value: string) => {
+    const updateGroupTitle = (groupIndex: number, title: string) => {
         setEditingCategory(prev => {
             if (!prev) return null;
-            const newSubCategories = [...(prev.subCategories || [])];
-            newSubCategories[index] = { name: value };
-            return { ...prev, subCategories: newSubCategories };
+            const newGroups = [...(prev.subCategoryGroups || [])];
+            newGroups[groupIndex] = { ...newGroups[groupIndex], title };
+            return { ...prev, subCategoryGroups: newGroups };
+        });
+    };
+
+    const updateSubCategory = (groupIndex: number, subIndex: number, value: string) => {
+        setEditingCategory(prev => {
+            if (!prev) return null;
+            const newGroups = [...(prev.subCategoryGroups || [])];
+            const newSubCategories = [...(newGroups[groupIndex].subCategories || [])];
+            newSubCategories[subIndex] = { name: value };
+            newGroups[groupIndex] = { ...newGroups[groupIndex], subCategories: newSubCategories };
+            return { ...prev, subCategoryGroups: newGroups };
         });
     };
     
-    const addSubCategory = () => {
+    const addSubCategoryGroup = () => {
+         setEditingCategory(prev => ({
+            ...prev,
+            subCategoryGroups: [...(prev?.subCategoryGroups || []), { title: 'New Group', subCategories: [{ name: '' }] }]
+        }));
+    };
+
+    const addSubCategory = (groupIndex: number) => {
+        setEditingCategory(prev => {
+            if (!prev) return null;
+            const newGroups = [...(prev.subCategoryGroups || [])];
+            const newSubCategories = [...(newGroups[groupIndex].subCategories || []), { name: '' }];
+            newGroups[groupIndex] = { ...newGroups[groupIndex], subCategories: newSubCategories };
+            return { ...prev, subCategoryGroups: newGroups };
+        });
+    };
+
+    const removeSubCategoryGroup = (groupIndex: number) => {
         setEditingCategory(prev => ({
             ...prev,
-            subCategories: [...(prev?.subCategories || []), { name: '' }]
+            subCategoryGroups: prev?.subCategoryGroups?.filter((_, i) => i !== groupIndex)
         }));
     };
     
-    const removeSubCategory = (index: number) => {
-        setEditingCategory(prev => ({
-            ...prev,
-            subCategories: prev?.subCategories?.filter((_, i) => i !== index)
-        }));
+    const removeSubCategory = (groupIndex: number, subIndex: number) => {
+        setEditingCategory(prev => {
+            if (!prev) return null;
+            const newGroups = [...(prev.subCategoryGroups || [])];
+            const newSubCategories = newGroups[groupIndex].subCategories.filter((_, i) => i !== subIndex);
+            newGroups[groupIndex] = { ...newGroups[groupIndex], subCategories: newSubCategories };
+            return { ...prev, subCategoryGroups: newGroups };
+        });
     };
 
     return (
@@ -147,8 +178,8 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                                 <TableRow key={category.id}>
                                     <TableCell className="font-medium">{category.name}</TableCell>
                                     <TableCell>
-                                        <div className="flex flex-wrap gap-1">
-                                            {category.subCategories?.map(sc => <span key={sc.name} className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">{sc.name}</span>)}
+                                        <div className="flex flex-wrap gap-1 max-w-md">
+                                            {category.subCategoryGroups?.flatMap(g => g.subCategories).map(sc => <span key={sc.name} className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">{sc.name}</span>)}
                                         </div>
                                     </TableCell>
                                     <TableCell>{category.order ?? 'N/A'}</TableCell>
@@ -188,20 +219,35 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                                 <Input id="order" type="number" value={editingCategory.order || ''} onChange={e => updateField('order', Number(e.target.value))} placeholder="e.g., 1"/>
                             </div>
                             <div className="space-y-4 pt-4 border-t">
-                                <Label className="font-semibold">Sub-categories</Label>
-                                <div className="space-y-2">
-                                    {(editingCategory.subCategories || []).map((sc, index) => (
-                                        <div key={index} className="flex items-center gap-2">
+                                <Label className="font-semibold">Sub-category Groups</Label>
+                                <div className="space-y-4">
+                                {(editingCategory.subCategoryGroups || []).map((group, groupIndex) => (
+                                    <div key={groupIndex} className="p-3 border rounded-md bg-muted/50 space-y-3">
+                                        <div className="flex items-center justify-between">
                                             <Input 
-                                                value={sc.name}
-                                                onChange={(e) => updateSubCategory(index, e.target.value)}
-                                                placeholder={`Sub-category ${index + 1}`}
+                                                className="font-semibold text-base flex-grow" 
+                                                value={group.title} 
+                                                onChange={e => updateGroupTitle(groupIndex, e.target.value)}
                                             />
-                                            <Button variant="ghost" size="icon" onClick={() => removeSubCategory(index)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => removeSubCategoryGroup(groupIndex)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
                                         </div>
-                                    ))}
+                                        <div className="space-y-2 pl-2">
+                                        {(group.subCategories || []).map((sc, subIndex) => (
+                                            <div key={subIndex} className="flex items-center gap-2">
+                                                <Input 
+                                                    value={sc.name}
+                                                    onChange={(e) => updateSubCategory(groupIndex, subIndex, e.target.value)}
+                                                    placeholder={`Sub-category ${subIndex + 1}`}
+                                                />
+                                                <Button variant="ghost" size="icon" onClick={() => removeSubCategory(groupIndex, subIndex)}><X className="h-4 w-4 text-destructive"/></Button>
+                                            </div>
+                                        ))}
+                                        <Button variant="outline" size="sm" onClick={() => addSubCategory(groupIndex)}>Add Sub-category</Button>
+                                        </div>
+                                    </div>
+                                ))}
                                 </div>
-                                <Button variant="outline" size="sm" onClick={addSubCategory}>Add Sub-category</Button>
+                                <Button variant="outline" size="sm" onClick={addSubCategoryGroup}>Add Sub-category Group</Button>
                             </div>
                         </div>
                     )}
