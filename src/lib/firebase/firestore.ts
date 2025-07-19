@@ -1,6 +1,5 @@
 
 
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -587,25 +586,27 @@ export const getCallbackRequests = () => getCollection<CallbackRequest>('callbac
 
 // Notices
 export const getNotices = async (options?: { limit?: number; includeDrafts?: boolean }): Promise<Notice[]> => {
-    const { limit: queryLimit, includeDrafts } = options || {};
-    const db = getDbInstance();
-    if (!db) return [];
-    const constraints = [];
+  const { limit: queryLimit, includeDrafts } = options || {};
+  const db = getDbInstance();
+  if (!db) return [];
 
-    if (!includeDrafts) {
-        constraints.push(where("isPublished", "==", true));
-    }
-    
-    constraints.push(orderBy("createdAt", "desc"));
+  // Fetch all notices first
+  const q = query(collection(db, 'notices'), orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  let allNotices = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notice));
 
-    if (queryLimit) {
-        constraints.push(limit(queryLimit));
-    }
+  // Filter on the client-side
+  if (!includeDrafts) {
+    allNotices = allNotices.filter(notice => notice.isPublished === true);
+  }
+  
+  if (queryLimit) {
+    allNotices = allNotices.slice(0, queryLimit);
+  }
 
-    const q = query(collection(db, 'notices'), ...constraints);
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notice));
-}
+  return allNotices;
+};
+
 
 // Homepage Configuration
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
@@ -1019,3 +1020,5 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
+
+    
