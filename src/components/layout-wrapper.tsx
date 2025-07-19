@@ -28,8 +28,9 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
     pathname.startsWith('/password-reset');
     
   const isOfflineHub = pathname.startsWith('/offline-hub');
+  const isStore = pathname.startsWith('/store');
 
-  if (isFullPageLayout || isOfflineHub) {
+  if (isFullPageLayout || isOfflineHub || isStore) {
     return <>{children}</>;
   }
   
