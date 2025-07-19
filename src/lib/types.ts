@@ -20,6 +20,28 @@ export type Product = {
     isPublished?: boolean;
 };
 
+export type OrderItem = {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    imageUrl: string;
+};
+
+export type Order = {
+    id?: string;
+    userId: string;
+    items: OrderItem[];
+    totalAmount: number;
+    status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+    shippingDetails: {
+        name: string;
+        address: string;
+        phone: string;
+    };
+    createdAt: Timestamp;
+};
+
 export type QuestionOption = {
   id: string;
   text: string;

@@ -18,6 +18,7 @@ import {
     AccordionTrigger,
   } from "@/components/ui/accordion"
 import { useToast } from './ui/use-toast';
+import { useCart } from '@/context/cart-context';
 
 interface ProductClientPageProps {
   product: Product;
@@ -27,12 +28,20 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   const [selectedImage, setSelectedImage] = useState(product.imageUrl);
   const [quantity, setQuantity] = useState(1);
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
   const handleQuantityChange = (amount: number) => {
     setQuantity((prev) => Math.max(1, prev + amount));
   };
   
   const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      imageUrl: product.imageUrl,
+    });
     toast({
         title: "Added to Cart!",
         description: `${quantity} x ${product.name} has been added to your cart.`,

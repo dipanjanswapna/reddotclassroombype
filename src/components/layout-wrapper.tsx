@@ -11,6 +11,8 @@ import { ThemeProvider } from './theme-provider';
 import { AuthProvider } from '@/context/auth-context';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { Toaster } from './ui/toaster';
+import { CartProvider } from '@/context/cart-context';
+import { CartSheet } from './cart-sheet';
 
 
 const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) => {
@@ -78,12 +80,15 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
         disableTransitionOnChange
     >
       <AuthProvider>
-        <LanguageProvider>
-          <InnerLayout homepageConfig={homepageConfig}>
-            {children}
-          </InnerLayout>
-          <Toaster />
-        </LanguageProvider>
+        <CartProvider>
+            <LanguageProvider>
+            <InnerLayout homepageConfig={homepageConfig}>
+                {children}
+            </InnerLayout>
+            <CartSheet />
+            <Toaster />
+            </LanguageProvider>
+        </CartProvider>
       </AuthProvider>
     </ThemeProvider>
  )

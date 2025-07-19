@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, Search, X, ChevronDown, Phone } from "lucide-react";
+import { Menu, Search, X, ChevronDown, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -37,12 +37,17 @@ import Image from "next/image";
 import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { useCart } from "@/context/cart-context";
+import { Badge } from "./ui/badge";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
   const { user, loading } = useAuth();
+  const { items, setIsCartOpen } = useCart();
   const isDark = variant === 'dark';
+
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const mainNavLinks = [
     { href: "/store", label: t.nav_rdc_store[language] },
@@ -102,6 +107,12 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                   <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
+                  <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
+                     <ShoppingCart className="h-5 w-5" />
+                     {itemCount > 0 && (
+                        <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-xs">{itemCount}</Badge>
+                     )}
+                  </Button>
                   {!user && (
                     <>
                     <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
