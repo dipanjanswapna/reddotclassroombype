@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, Search, X, ChevronDown, ShoppingCart } from "lucide-react";
@@ -162,4 +163,3 @@ const ListItem = React.forwardRef<
   )
 })
 ListItem.displayName = "ListItem"
-
