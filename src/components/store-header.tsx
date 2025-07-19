@@ -32,6 +32,7 @@ import { usePathname } from "next/navigation";
 import { RhombusLogo } from "./rhombus-logo";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
+import { Input } from "./ui/input";
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
