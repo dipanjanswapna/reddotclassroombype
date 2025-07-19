@@ -31,7 +31,7 @@ export async function applyPromoCodeAction(courseId: string, promoCode: string, 
             return { success: false, message: 'This promo code has reached its usage limit.' };
         }
 
-        if (!matchedCode.applicableCourseIds.includes('all') && !matchedCode.applicableCourseIds.includes(courseId)) {
+        if (matchedCode.applicableCourseIds && !matchedCode.applicableCourseIds.includes('all') && !matchedCode.applicableCourseIds.includes(courseId)) {
             return { success: false, message: 'This code is not valid for this course.' };
         }
         
@@ -110,5 +110,38 @@ export async function deletePromoCodeAction(id: string) {
         return { success: true, message: 'Promo code deleted successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
+    }
+}
+
+export async function applyStoreCouponAction(code: string, currentTotal: number) {
+    try {
+        const promoCode = await getPromoCodeByCode(code);
+        if (!promoCode) {
+            return { success: false, message: 'Invalid coupon code.' };
+        }
+
+        if (!promoCode.isActive || (promoCode.expiresAt && new Date(promoCode.expiresAt) < new Date())) {
+            return { success: false, message: 'This coupon has expired.' };
+        }
+
+        if (promoCode.usageCount >= promoCode.usageLimit) {
+            return { success: false, message: 'This coupon has reached its usage limit.' };
+        }
+
+        // Assuming store coupons apply to the whole cart for now
+        if (promoCode.applicableCourseIds && !promoCode.applicableCourseIds.includes('all_store_products')) {
+             return { success: false, message: 'This coupon is not valid for store purchases.' };
+        }
+        
+        let discount = 0;
+        if (promoCode.type === 'fixed') {
+            discount = promoCode.value;
+        } else { // percentage
+            discount = (currentTotal * promoCode.value) / 100;
+        }
+
+        return { success: true, discount };
+    } catch (error: any) {
+        return { success: false, message: 'An unexpected error occurred.' };
     }
 }

@@ -124,6 +124,22 @@ export default function AdminSettingsPage() {
             return { ...prevConfig, platformSettings: newSettings };
         });
     };
+    
+    const handleStoreSettingChange = (field: 'deliveryCharge' | 'freeDeliveryThreshold', value: string) => {
+        const numValue = Number(value);
+        if (isNaN(numValue)) return;
+        setConfig(prev => {
+            if (!prev) return null;
+            const storeSettings = { ...(prev.storeSettings || { deliveryCharge: 40, freeDeliveryThreshold: 2 }) };
+            return {
+                ...prev,
+                storeSettings: {
+                    ...storeSettings,
+                    [field]: numValue
+                }
+            }
+        });
+    };
 
     const handlePlatformSave = async () => {
         if (!config) return;
@@ -275,35 +291,56 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
         <div className="md:col-span-1 space-y-8">
            <Card>
                 <CardHeader>
-                    <CardTitle>Registration & Login Control</CardTitle>
-                    <CardDescription>Enable or disable sign-ups and logins for different user roles.</CardDescription>
+                    <CardTitle>Platform Settings</CardTitle>
+                    <CardDescription>Manage global settings for the platform.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {loadingConfig ? <div className="flex justify-center"><LoadingSpinner/></div> : managedRoles.map(role => (
-                        <div key={role} className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                            <div className="space-y-0.5">
-                                <Label htmlFor={`${role}-signup`} className="text-base">{role}</Label>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <Switch
-                                        id={`${role}-signup`}
-                                        checked={config?.platformSettings[role]?.signupEnabled ?? false}
-                                        onCheckedChange={(value) => handleSettingChange(role, 'signupEnabled', value)}
-                                    />
-                                    <Label htmlFor={`${role}-signup`} className="text-sm">Sign-up</Label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Switch
-                                        id={`${role}-login`}
-                                        checked={config?.platformSettings[role]?.loginEnabled ?? false}
-                                        onCheckedChange={(value) => handleSettingChange(role, 'loginEnabled', value)}
-                                    />
-                                    <Label htmlFor={`${role}-login`} className="text-sm">Login</Label>
+                    {loadingConfig ? <div className="flex justify-center"><LoadingSpinner/></div> : (
+                        <>
+                            <div className="space-y-2">
+                                <Label>Store Settings</Label>
+                                <div className="p-4 border rounded-md space-y-4">
+                                     <div className="space-y-2">
+                                        <Label htmlFor="deliveryCharge">Delivery Charge (BDT)</Label>
+                                        <Input id="deliveryCharge" type="number" value={config?.storeSettings?.deliveryCharge || 40} onChange={e => handleStoreSettingChange('deliveryCharge', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="freeDeliveryThreshold">Free Delivery Threshold (Items)</Label>
+                                        <Input id="freeDeliveryThreshold" type="number" value={config?.storeSettings?.freeDeliveryThreshold || 2} onChange={e => handleStoreSettingChange('freeDeliveryThreshold', e.target.value)} />
+                                        <p className="text-xs text-muted-foreground">Number of items required in cart for free delivery.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                            <div className="space-y-2">
+                                <Label>Registration & Login Control</Label>
+                                {managedRoles.map(role => (
+                                    <div key={role} className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <Label htmlFor={`${role}-signup`} className="text-base">{role}</Label>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    id={`${role}-signup`}
+                                                    checked={config?.platformSettings[role]?.signupEnabled ?? false}
+                                                    onCheckedChange={(value) => handleSettingChange(role, 'signupEnabled', value)}
+                                                />
+                                                <Label htmlFor={`${role}-signup`} className="text-sm">Sign-up</Label>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    id={`${role}-login`}
+                                                    checked={config?.platformSettings[role]?.loginEnabled ?? false}
+                                                    onCheckedChange={(value) => handleSettingChange(role, 'loginEnabled', value)}
+                                                />
+                                                <Label htmlFor={`${role}-login`} className="text-sm">Login</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </CardContent>
                 <CardFooter>
                     <Button onClick={handlePlatformSave} disabled={isSavingPlatform || loadingConfig} className="w-full">

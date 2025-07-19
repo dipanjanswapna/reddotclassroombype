@@ -13,11 +13,14 @@ import { useRouter } from 'next/navigation';
 import { Loader2, ShoppingBag, Info, AlertTriangle, Truck } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { createOrderAction } from '@/app/actions/order.actions';
+import { applyStoreCouponAction } from '@/app/actions/promo.actions';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { HomepageConfig } from '@/lib/types';
 
 // Simplified list for demonstration. In a real app, this would come from a database or a comprehensive library.
 const districts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet", "Barishal", "Rangpur", "Mymensingh"];
@@ -46,6 +49,8 @@ export default function CheckoutPage() {
     thana: '',
     address: '',
   });
+  
+  const [config, setConfig] = useState<HomepageConfig['storeSettings'] | null>(null);
 
   useEffect(() => {
     if (userInfo) {
@@ -56,15 +61,29 @@ export default function CheckoutPage() {
         address: userInfo.address || '',
       }));
     }
+    async function fetchConfig() {
+      const fullConfig = await getHomepageConfig();
+      setConfig(fullConfig.storeSettings || null);
+    }
+    fetchConfig();
   }, [userInfo]);
 
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const deliveryCharge = totalItems >= 2 ? 0 : 40;
+
+  const deliveryCharge = useMemo(() => {
+    if (!config) return 0;
+    if (config.freeDeliveryThreshold && totalItems >= config.freeDeliveryThreshold) {
+      return 0;
+    }
+    return config.deliveryCharge || 0;
+  }, [totalItems, config]);
+
   const totalPayable = total + deliveryCharge - discount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -76,13 +95,17 @@ export default function CheckoutPage() {
     setShippingInfo(prev => ({ ...prev, [name]: value, ...(name === 'district' && { thana: '' }) }));
   };
   
-  const handleApplyCoupon = () => {
-      if(coupon.toUpperCase() === 'RDC10') {
-          setDiscount(total * 0.1);
+  const handleApplyCoupon = async () => {
+      setIsCouponLoading(true);
+      const result = await applyStoreCouponAction(coupon, total);
+      if(result.success) {
+          setDiscount(result.discount!);
           toast({ title: 'Success', description: 'Coupon applied successfully!' });
       } else {
-          toast({ title: 'Invalid Coupon', variant: 'destructive' });
+          setDiscount(0);
+          toast({ title: 'Invalid Coupon', description: result.message, variant: 'destructive' });
       }
+      setIsCouponLoading(false);
   };
 
   const handlePlaceOrder = async () => {
@@ -207,14 +230,19 @@ export default function CheckoutPage() {
                         <span>Delivery Charge:</span>
                         <span>৳{deliveryCharge.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">(Buy 2+ books to get free delivery)</p>
+                    {config?.freeDeliveryThreshold && (
+                        <p className="text-xs text-muted-foreground">(Buy {config.freeDeliveryThreshold}+ items to get free delivery)</p>
+                    )}
                     <div className="flex justify-between items-center text-green-600">
                         <span>Discount:</span>
                         <span>- ৳{discount.toFixed(2)}</span>
                     </div>
                      <div className="flex gap-2">
-                        <Input placeholder="Enter Coupon Code" value={coupon} onChange={e => setCoupon(e.target.value)} />
-                        <Button variant="outline" size="sm" onClick={handleApplyCoupon}>Apply</Button>
+                        <Input placeholder="Enter Coupon Code" value={coupon} onChange={e => setCoupon(e.target.value)} disabled={isCouponLoading}/>
+                        <Button variant="outline" size="sm" onClick={handleApplyCoupon} disabled={isCouponLoading || !coupon}>
+                            {isCouponLoading && <Loader2 className="h-4 w-4 animate-spin"/>}
+                            Apply
+                        </Button>
                     </div>
                 </div>
                 <Separator/>
