@@ -177,7 +177,7 @@ export default function CheckoutPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name*</Label>
+                <Label htmlFor="name">Name*</Label>
                 <Input id="name" placeholder="Full Name" value={shippingInfo.name} onChange={handleInputChange} />
               </div>
                <div className="space-y-2">
