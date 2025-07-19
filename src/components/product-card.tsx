@@ -74,6 +74,7 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
             </div>
             <Button size="sm" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`}>
                 <ShoppingCart className="h-4 w-4"/>
+                <span className="ml-2 hidden sm:inline">Add to Cart</span>
             </Button>
             </div>
         </CardContent>

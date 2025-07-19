@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,65 +12,19 @@ import { Slider } from './ui/slider';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
 import { Filter, X, Search, Book, Pen, Shirt } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Badge } from './ui/badge';
-import { cn } from '@/lib/utils';
-import { useCart } from '@/context/cart-context';
-import { useToast } from './ui/use-toast';
+import { ProductCard } from './product-card';
 
-const ProductCard = ({ product }: { product: Product }) => {
-    const { addToCart } = useCart();
-    const { toast } = useToast();
-
-    const handleAddToCart = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      addToCart({
-        id: product.id!,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        imageUrl: product.imageUrl,
-      });
-      toast({
-          title: "Added to Cart!",
-          description: `"${product.name}" has been added to your cart.`,
-      });
-    };
-
-    return (
-        <Card className="overflow-hidden group flex flex-col">
-          <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
-            <CardHeader className="p-0">
-              <div className="relative aspect-square">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  data-ai-hint={product.dataAiHint || 'product image'}
-                />
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 flex flex-col flex-grow">
-              <p className="text-xs text-muted-foreground">{product.category}</p>
-              <h3 className="font-semibold truncate group-hover:text-primary flex-grow">{product.name}</h3>
-              <div className="flex items-center justify-between gap-2 mt-2">
-                <div className="flex flex-col">
-                  {product.oldPrice && (
-                    <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>
-                  )}
-                  <p className="text-lg font-bold text-primary">৳{product.price}</p>
-                </div>
-                 <Button size="sm" onClick={handleAddToCart}>
-                    Add to Cart
-                 </Button>
-              </div>
-            </CardContent>
-          </Link>
-        </Card>
-    );
+const categoryIcons: { [key: string]: React.ReactNode } = {
+  'T-Shirt': <Shirt className="h-4 w-4" />,
+  'Hoodie': <Shirt className="h-4 w-4" />,
+  'Jersey': <Shirt className="h-4 w-4" />,
+  'Apparel': <Shirt className="h-4 w-4" />,
+  'PDF Book': <Book className="h-4 w-4" />,
+  'Printed Book': <Book className="h-4 w-4" />,
+  'E-Book': <Book className="h-4 w-4" />,
+  'Pen': <Pen className="h-4 w-4" />,
+  'Notebook': <Book className="h-4 w-4" />,
+  'Stationery': <Pen className="h-4 w-4" />,
 };
 
 const FilterSidebar = ({
@@ -103,8 +58,8 @@ const FilterSidebar = ({
                 checked={selectedCategories.includes(category)}
                 onCheckedChange={() => onCategoryChange(category)}
               />
-              <Label htmlFor={category} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                {category}
+              <Label htmlFor={category} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2">
+                 {categoryIcons[category] || <Book className="h-4 w-4" />} {category}
               </Label>
             </div>
           ))}
@@ -177,7 +132,7 @@ export function StorePageClient({ initialProducts, allCategories }: { initialPro
     };
 
     return (
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="container mx-auto px-4 grid lg:grid-cols-4 gap-8">
             <aside className="hidden lg:block lg:col-span-1">
                 <Card>
                     <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
