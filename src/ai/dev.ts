@@ -32,3 +32,4 @@ import '@/app/actions/promo.actions';
 import '@/app/actions/rating.actions';
 import '@/app/actions/report.actions';
 import '@/app/actions/support.actions';
+import '@/app/actions/product.actions';

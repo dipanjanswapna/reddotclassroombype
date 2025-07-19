@@ -14,6 +14,8 @@ export type Product = {
     dataAiHint?: string;
     description?: string;
     sellerId?: string; // Admin or Seller Organization ID
+    stock?: number;
+    isPublished?: boolean;
 };
 
 export type QuestionOption = {
