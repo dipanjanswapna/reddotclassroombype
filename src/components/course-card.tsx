@@ -4,7 +4,7 @@
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
@@ -50,7 +50,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
       <CardContent className="p-4 flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}
         <Link href={coursePageUrl}>
-          <h3 className="font-headline text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</h3>
+          <CardTitle className="text-base leading-snug group-hover:text-primary transition-colors">{title}</CardTitle>
         </Link>
         {provider ? (
            <div className="flex items-center gap-2 mt-2">

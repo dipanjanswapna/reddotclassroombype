@@ -19,6 +19,7 @@ import {
   } from "@/components/ui/accordion"
 import { useToast } from './ui/use-toast';
 import { useCart } from '@/context/cart-context';
+import { Label } from './ui/label';
 
 interface ProductClientPageProps {
   product: Product;
@@ -36,7 +37,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   
   const handleAddToCart = () => {
     addToCart({
-      id: product.id,
+      id: product.id!,
       name: product.name,
       price: product.price,
       quantity: quantity,

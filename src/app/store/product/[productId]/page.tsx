@@ -1,9 +1,11 @@
-
 import { notFound } from 'next/navigation';
 import { getProduct, getProducts } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { ProductClientPage } from '@/components/product-client-page';
 import { CourseCard } from '@/components/course-card';
+import { Card } from '@/components/ui/card';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export async function generateMetadata({ params }: { params: { productId: string } }): Promise<Metadata> {
   const product = await getProduct(params.productId);
@@ -49,7 +51,7 @@ export default async function ProductDetailPage({ params }: { params: { productI
                         {relatedProducts.map(p => (
                             <Card key={p.id} className="overflow-hidden group">
                                 <Link href={`/store/product/${p.id}`} className="block">
-                                    <CardHeader className="p-0">
+                                    <div className="p-0">
                                     <div className="relative aspect-square">
                                         <Image
                                         src={p.imageUrl}
@@ -58,8 +60,8 @@ export default async function ProductDetailPage({ params }: { params: { productI
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                                         />
                                     </div>
-                                    </CardHeader>
-                                    <CardContent className="p-4">
+                                    </div>
+                                    <div className="p-4">
                                     <p className="text-xs text-muted-foreground">{p.category}</p>
                                     <h3 className="font-semibold truncate group-hover:text-primary">{p.name}</h3>
                                     <div className="flex items-center gap-2 mt-2">
@@ -68,7 +70,7 @@ export default async function ProductDetailPage({ params }: { params: { productI
                                         <p className="text-sm text-muted-foreground line-through">৳{p.oldPrice}</p>
                                         )}
                                     </div>
-                                    </CardContent>
+                                    </div>
                                 </Link>
                             </Card>
                         ))}
