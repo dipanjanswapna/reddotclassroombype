@@ -43,6 +43,11 @@ export function NoticeBoard() {
       ))}
     </div>
   )
+  
+  const formatDateSafe = (date: any, formatString: string) => {
+      const d = safeToDate(date);
+      return !isNaN(d.getTime()) ? format(d, formatString) : '';
+  }
 
   return (
     <div className="my-8">
@@ -68,7 +73,7 @@ export function NoticeBoard() {
                                     <div className="flex items-center gap-2 text-sm font-medium">
                                         <Pin className="h-4 w-4 text-primary" />
                                         <span className="truncate">{notice.title}</span>
-                                        <span className="ml-auto text-xs text-muted-foreground shrink-0">{format(safeToDate(notice.publishedAt), 'dd MMM')}</span>
+                                        <span className="ml-auto text-xs text-muted-foreground shrink-0">{formatDateSafe(notice.publishedAt, 'dd MMM')}</span>
                                     </div>
                                 </button>
                             ))}
@@ -85,7 +90,7 @@ export function NoticeBoard() {
                     {selectedNotice?.publishedAt && (
                       <DialogDescription className="flex items-center gap-2 pt-2">
                           <Calendar className="w-4 h-4"/>
-                          Published on {format(safeToDate(selectedNotice.publishedAt), 'PPP')}
+                          Published on {formatDateSafe(selectedNotice.publishedAt, 'PPP')}
                       </DialogDescription>
                     )}
                 </DialogHeader>
