@@ -159,7 +159,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -179,7 +178,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
-        {/* Left Section: Mobile Menu Trigger */}
         <div className="lg:hidden flex-1 flex justify-start">
              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -189,7 +187,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
                     <SheetHeader className="p-4 border-b">
-                        <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                          <Link href="/store" onClick={() => setIsMobileMenuOpen(false)}>
                             <RhombusLogo />
                          </Link>
@@ -227,16 +224,14 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             </Sheet>
         </div>
 
-        {/* Center Section: Logo */}
         <div className="flex-1 flex justify-center lg:justify-start">
             <Link href="/store">
                 <RhombusLogo />
             </Link>
         </div>
         
-        {/* Right Section: Actions */}
         <div className="flex items-center justify-end space-x-2 flex-1">
-            <Button asChild variant="ghost" className="hidden sm:inline-flex">
+             <Button asChild variant="ghost" className="hidden sm:inline-flex">
                 <Link href="/student/payments">My Orders</Link>
             </Button>
              <Dialog>
@@ -265,11 +260,11 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
           variant="ghost"
           size="icon"
           onClick={scrollPrev}
-          className="absolute left-0 z-10 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
+          className="absolute left-0 z-20 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
         >
           <ChevronDown className="h-4 w-4 -rotate-90" />
         </Button>
-        <div className="overflow-hidden w-full" ref={emblaRef}>
+        <div className="w-full" ref={emblaRef}>
           <nav className="flex items-center h-full">
             <NavigationMenu>
               <NavigationMenuList>
@@ -279,7 +274,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                     <NavigationMenuItem key={category.id}>
                       <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <div className="grid gap-3 p-4 md:w-[600px] lg:w-[700px] lg:grid-cols-3">
+                        <div className="grid gap-3 p-4 md:w-[600px] lg:w-[700px] lg:grid-cols-[1fr_2fr]">
                           <div className="row-span-3">
                             <NavigationMenuLink asChild>
                               <Link
@@ -300,16 +295,18 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                               </Link>
                             </NavigationMenuLink>
                           </div>
-                          {(category.subCategoryGroups || []).map(group => (
-                              <div key={group.title} className="flex flex-col">
-                                   <Link href={`/store?category=${category.slug}`} className="font-semibold text-primary px-3 mb-1 hover:underline">{group.title} &rarr;</Link>
-                                   <ul className="flex flex-col">
-                                       {group.subCategories.map(sub => (
-                                           <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
-                                       ))}
-                                   </ul>
-                              </div>
-                          ))}
+                          <div className="grid grid-cols-2 gap-3">
+                            {(category.subCategoryGroups || []).map(group => (
+                                <div key={group.title} className="flex flex-col">
+                                     <Link href={`/store?category=${category.slug}`} className="font-semibold text-primary px-3 mb-1 hover:underline">{group.title} &rarr;</Link>
+                                     <ul className="flex flex-col">
+                                         {group.subCategories.map(sub => (
+                                             <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
+                                         ))}
+                                     </ul>
+                                </div>
+                            ))}
+                          </div>
                         </div>
                       </NavigationMenuContent>
                     </NavigationMenuItem>
@@ -322,7 +319,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
           variant="ghost"
           size="icon"
           onClick={scrollNext}
-          className="absolute right-0 z-10 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
+          className="absolute right-0 z-20 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
         >
           <ChevronDown className="h-4 w-4 rotate-90" />
         </Button>
