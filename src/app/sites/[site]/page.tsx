@@ -1,10 +1,12 @@
 
 import { notFound } from 'next/navigation';
-import { getPartnerBySubdomain, getCourses } from '@/lib/firebase/firestore';
-import type { Organization, Course } from '@/lib/types';
+import { getPartnerBySubdomain, getCourses, getProducts } from '@/lib/firebase/firestore';
+import type { Organization, Course, Product } from '@/lib/types';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { CourseCard } from '@/components/course-card';
+import { ProductCard } from '@/components/product-card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
   const partner = await getPartnerBySubdomain(params.site);
@@ -36,8 +38,18 @@ export default async function PartnerSitePage({ params }: { params: { site: stri
     notFound();
   }
 
-  const allCourses = await getCourses();
+  const [allCourses, allProducts] = await Promise.all([
+    getCourses(),
+    getProducts(),
+  ]);
+
   const partnerCourses = allCourses.filter(c => c.organizationId === partner.id && c.status === 'Published');
+  const partnerProducts = allProducts.filter(p => p.sellerId === partner.id && p.isPublished);
+
+  const hasCourses = partnerCourses.length > 0;
+  const hasProducts = partnerProducts.length > 0;
+
+  const defaultTab = hasCourses ? 'courses' : 'products';
 
   return (
     <div className="flex flex-col">
@@ -71,16 +83,34 @@ export default async function PartnerSitePage({ params }: { params: { site: stri
           </div>
         )}
 
-        <h2 className="font-headline text-3xl font-bold mb-8">{partner.hero ? 'Our Courses' : 'Courses'}</h2>
-        {partnerCourses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {partnerCourses.map((course) => (
-              <CourseCard key={course.id} {...course} partnerSubdomain={siteSlug} />
-            ))}
-          </div>
-        ) : (
+        <Tabs defaultValue={defaultTab}>
+            <TabsList className="grid w-full grid-cols-2">
+                {hasCourses && <TabsTrigger value="courses">Courses</TabsTrigger>}
+                {hasProducts && <TabsTrigger value="products">Store Products</TabsTrigger>}
+            </TabsList>
+            {hasCourses && (
+                 <TabsContent value="courses" className="mt-8">
+                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {partnerCourses.map((course) => (
+                        <CourseCard key={course.id} {...course} partnerSubdomain={siteSlug} provider={partner}/>
+                        ))}
+                    </div>
+                 </TabsContent>
+            )}
+             {hasProducts && (
+                <TabsContent value="products" className="mt-8">
+                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {partnerProducts.map((product) => (
+                           <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                </TabsContent>
+             )}
+        </Tabs>
+
+        { !hasCourses && !hasProducts && (
           <div className="text-center py-16 bg-muted rounded-lg">
-            <p className="text-muted-foreground">No courses available from this seller yet.</p>
+            <p className="text-muted-foreground">No courses or products available from this seller yet.</p>
           </div>
         )}
       </div>

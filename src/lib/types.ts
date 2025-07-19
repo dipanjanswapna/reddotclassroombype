@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -712,4 +711,213 @@ export type StoreCategory = {
     name: string;
     slug: string;
     order?: number;
+};
+
+export type StoreHomepageBanner = {
+    display: boolean;
+    imageUrl: string;
+    altText?: string;
+    linkUrl?: string;
+};
+
+export type StoreHomepageSection = {
+    banner: StoreHomepageBanner;
+};
+
+export type HomepageConfig = {
+    id: string;
+    logoUrl: string;
+    welcomeSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+    };
+    heroBanners: {
+        id: number;
+        href: string;
+        imageUrl: string;
+        alt: string;
+        dataAiHint: string;
+    }[];
+    heroCarousel: {
+        autoplay: boolean;
+        autoplayDelay: number;
+    };
+    strugglingStudentSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        subtitle: { [key: string]: string };
+        imageUrl: string;
+        buttonText: { [key: string]: string };
+    };
+    categoriesSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        categories: {
+            id: number;
+            title: string;
+            imageUrl: string;
+            linkUrl: string;
+            dataAiHint: string;
+        }[];
+    };
+    journeySection: {
+        display: boolean;
+        title: { [key: string]: string };
+        subtitle: { [key: string]: string };
+        courseTitle: { [key: string]: string };
+    };
+    liveCoursesIds: string[];
+    teachersSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        subtitle: { [key: string]: string };
+        buttonText: { [key: string]: string };
+        instructorIds: string[];
+        scrollSpeed?: number;
+    };
+    videoSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+        buttonText: { [key: string]: string };
+        videos: {
+            title: string;
+            videoUrl: string;
+        }[];
+    };
+    sscHscSection: {
+        display: boolean;
+        badge: { [key: string]: string };
+        title: { [key: string]: string };
+    };
+    sscHscCourseIds: string[];
+    masterclassSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        buttonText: { [key: string]: string };
+    };
+    masterClassesIds: string[];
+    admissionSection: {
+        display: boolean;
+        badge: { [key: string]: string };
+        title: { [key: string]: string };
+        buttonText: { [key: string]: string };
+    };
+    admissionCoursesIds: string[];
+    jobPrepSection: {
+        display: boolean;
+        badge: { [key: string]: string };
+        title: { [key: string]: string };
+        buttonText: { [key: string]: string };
+    };
+    jobCoursesIds: string[];
+    whyChooseUs: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+        features: WhyChooseUsFeature[];
+        testimonials: Testimonial[];
+    };
+    freeClassesSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        subtitle: { [key: string]: string };
+        classes: FreeClass[];
+    };
+    aboutUsSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        subtitle: { [key: string]: string };
+        teamMembers: TeamMember[];
+    };
+     offlineHubSection: {
+        display: boolean;
+        programsTitle: { [key: string]: string };
+        centersTitle: { [key: string]: string };
+        contactSection: OfflineHubContactSection;
+    };
+    collaborations: {
+        display: boolean;
+        title: { [key: string]: string };
+        organizationIds: string[];
+    };
+    partnersSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        scrollSpeed?: number;
+        partners: {
+            id: number;
+            name: string;
+            logoUrl: string;
+            href: string;
+            dataAiHint: string;
+        }[];
+    };
+    socialMediaSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+        channels: {
+            id: number;
+            platform: 'YouTube' | 'Facebook Page' | 'Facebook Group';
+            name: { [key: string]: string };
+            handle: string;
+            stat1_value: string;
+            stat1_label: { [key: string]: string };
+            stat2_value: string;
+            stat2_label: { [key: string]: string };
+            description: { [key: string]: string };
+            ctaText: { [key: string]: string };
+            ctaUrl: string;
+        }[];
+    };
+    notesBanner: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+        buttonText: { [key: string]: string };
+    };
+    statsSection: {
+        display: boolean;
+        title: { [key: string]: string };
+        stats: {
+            value: string;
+            label: { [key: string]: string };
+        }[];
+    };
+    appPromo: {
+        display: boolean;
+        title: { [key: string]: string };
+        description: { [key: string]: string };
+        googlePlayUrl?: string;
+        appStoreUrl?: string;
+        googlePlayImageUrl: string;
+        appStoreImageUrl: string;
+        promoImageUrl: string;
+        promoImageDataAiHint: string;
+    };
+    floatingWhatsApp: {
+        display: boolean;
+        number: string;
+    };
+    rdcShopBanner: {
+        display: boolean;
+        imageUrl: string;
+        dataAiHint?: string;
+    };
+    storeHomepageSection?: {
+        banner: StoreHomepageBanner;
+    };
+    requestCallbackSection: {
+        display: boolean;
+        imageUrl: string;
+        dataAiHint: string;
+    };
+    platformSettings: PlatformSettings;
+    topperPageSection: TopperPageSection;
+    offlineHubHeroCarousel: {
+        display: boolean;
+        slides: OfflineHubHeroSlide[];
+    };
 };

@@ -19,7 +19,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -40,6 +40,24 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
     return { id: docSnap.id, ...docSnap.data() } as T;
   }
   return null;
+}
+
+// Store Categories
+export const getStoreCategories = () => getCollection<StoreCategory>('store_categories');
+export const addStoreCategory = (category: Omit<StoreCategory, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'store_categories'), category);
+}
+export const updateStoreCategory = (id: string, category: Partial<StoreCategory>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'store_categories', id), category);
+}
+export const deleteStoreCategory = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'store_categories', id));
 }
 
 // Products
@@ -870,6 +888,14 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     imageUrl: "https://placehold.co/1200x250.png",
     dataAiHint: "store banner sale"
+  },
+  storeHomepageSection: {
+    banner: {
+        display: true,
+        imageUrl: 'https://placehold.co/1200x400.png',
+        altText: 'Special offer on stationery',
+        linkUrl: '/store/category/stationery'
+    }
   },
   requestCallbackSection: {
     display: true,

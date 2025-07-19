@@ -34,7 +34,7 @@ export default async function RdcStorePage() {
                             width={1200} 
                             height={300} 
                             alt={storeBanner.altText || 'RDC Store Banner'} 
-                            className="w-full h-auto" 
+                            className="w-full h-auto object-cover" 
                             data-ai-hint="students learning computer" 
                         />
                     </div>

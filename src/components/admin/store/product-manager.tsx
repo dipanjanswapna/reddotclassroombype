@@ -209,7 +209,7 @@ export function ProductManager({ initialProducts, sellers }: ProductManagerProps
                             </div>
                             <div className="space-y-2">
                                 <Label>Seller (Optional)</Label>
-                                <Select value={editingProduct.sellerId || 'admin'} onValueChange={(v) => updateField('sellerId', v === 'admin' ? undefined : v)}>
+                                <Select value={editingProduct.sellerId} onValueChange={(v) => updateField('sellerId', v === 'admin' ? undefined : v)}>
                                     <SelectTrigger><SelectValue placeholder="Select a seller..."/></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="admin">Admin (RDC)</SelectItem>
