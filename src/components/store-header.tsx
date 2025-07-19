@@ -1,11 +1,10 @@
 
-
 'use client';
 
 import * as React from "react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, X, ChevronDown, ShoppingCart, Receipt } from "lucide-react";
+import { Menu, Search, X, ChevronDown, ShoppingCart, Receipt, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -29,12 +28,25 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
-import { StoreCategory } from "@/lib/types";
+import { StoreCategory, Order } from "@/lib/types";
 import { usePathname } from "next/navigation";
 import { RhombusLogo } from "./rhombus-logo";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
 import { Input } from "./ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "./ui/label";
+import { useToast } from "./ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { safeToDate } from "@/lib/utils";
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
@@ -62,6 +74,82 @@ const ListItem = React.forwardRef<
 })
 ListItem.displayName = "ListItem"
 
+const OrderTrackingModal = () => {
+    const [orderId, setOrderId] = useState('');
+    const [orderData, setOrderData] = useState<Order | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { toast } = useToast();
+
+    const handleTrackOrder = async () => {
+        if (!orderId) {
+            setError("Please enter your Order ID.");
+            return;
+        }
+        setIsLoading(true);
+        setError(null);
+        setOrderData(null);
+
+        try {
+            const response = await fetch(`/api/track-order?orderId=${orderId}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Order not found.");
+            }
+            
+            setOrderData(data);
+            toast({
+                title: "Order Found!",
+                description: `Status for order #${orderId.slice(0, 8)} loaded.`,
+            });
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>Track Your Order</DialogTitle>
+                <DialogDescription>
+                    Enter your order ID to see its current status.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="orderId">Order ID</Label>
+                    <div className="flex gap-2">
+                        <Input
+                            id="orderId"
+                            value={orderId}
+                            onChange={(e) => setOrderId(e.target.value)}
+                            placeholder="e.g., RDC-ORD-..."
+                        />
+                         <Button onClick={handleTrackOrder} disabled={isLoading}>
+                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                            <span className="sr-only">Track</span>
+                        </Button>
+                    </div>
+                </div>
+                
+                {error && <p className="text-destructive text-sm text-center">{error}</p>}
+                
+                {orderData && (
+                    <div className="mt-4 p-4 border rounded-md bg-muted space-y-2">
+                         <h4 className="font-semibold text-lg">Order Status: <span className="text-primary">{orderData.status}</span></h4>
+                        <p className="text-sm"><strong>Order ID:</strong> #{orderData.id?.slice(0,8)}</p>
+                        <p className="text-sm"><strong>Order Date:</strong> {format(safeToDate(orderData.createdAt), 'PPP')}</p>
+                        <p className="text-sm"><strong>Total Amount:</strong> ৳{orderData.totalAmount}</p>
+                    </div>
+                )}
+            </div>
+        </DialogContent>
+    );
+}
+
 
 export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -73,7 +161,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   
   const getDashboardLink = () => {
     if (!user) return '/login';
-    // Simplified, ideally this comes from userInfo
     return '/student/dashboard'; 
   }
 
@@ -90,6 +177,14 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             <div className="hidden sm:flex">
                  <Input className="h-9 w-64" placeholder="Search for products..."/>
             </div>
+             <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Track Order">
+                        <Truck className="h-6 w-6" />
+                    </Button>
+                </DialogTrigger>
+                <OrderTrackingModal />
+             </Dialog>
              <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/student/payments">
                     <Receipt className="h-6 w-6" />
@@ -153,6 +248,13 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                         </NavigationMenuContent>
                      </NavigationMenuItem>
                 ))}
+                 <NavigationMenuItem>
+                    <Link href="/student/payments" legacyBehavior passHref>
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            My Orders
+                        </NavigationMenuLink>
+                    </Link>
+                </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
       </nav>

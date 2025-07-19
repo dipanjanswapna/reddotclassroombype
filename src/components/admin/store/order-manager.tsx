@@ -35,7 +35,7 @@ const getStatusBadgeVariant = (status: Order['status']) => {
   }
 };
 
-const statusIcons = {
+const statusIcons: { [key in Order['status']]: React.ReactNode } = {
     'Pending': <MoreVertical className="h-4 w-4" />,
     'Processing': <Truck className="h-4 w-4" />,
     'Shipped': <Truck className="h-4 w-4" />,
