@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { Product, Organization } from '@/lib/types';
 import { Button } from './ui/button';
-import { Card, CardHeader, CardContent } from './ui/card';
+import { Card, CardHeader, CardContent, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Slider } from './ui/slider';
