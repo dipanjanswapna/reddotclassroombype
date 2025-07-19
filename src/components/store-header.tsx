@@ -159,65 +159,63 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-4">
-            <div className="lg:hidden">
-                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label="Toggle Menu">
-                            <Menu className="h-6 w-6" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
-                        <SheetHeader className="p-4 border-b">
-                            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
-                             <Link href="/store" onClick={() => setIsMobileMenuOpen(false)}>
-                                <RhombusLogo />
-                             </Link>
-                        </SheetHeader>
-                        <div className="flex-grow overflow-y-auto px-2 py-4">
-                             <Accordion type="multiple" className="w-full">
-                                {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
-                                    <AccordionItem value={category.id || category.slug} key={category.id}>
-                                        <AccordionTrigger className="font-semibold">{category.name}</AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="flex flex-col space-y-1 pl-4">
-                                                <Link href={`/store?category=${category.slug}`} onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-sm font-medium hover:text-primary rounded-md">View All {category.name}</Link>
-                                                {(category.subCategoryGroups || []).map(group => (
-                                                    <div key={group.title}>
-                                                        <h4 className="font-semibold text-muted-foreground px-2 py-2">{group.title}</h4>
-                                                        {group.subCategories.map(sub => (
-                                                             <Link
-                                                                key={sub.name}
-                                                                href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`}
-                                                                onClick={() => setIsMobileMenuOpen(false)}
-                                                                className="block px-2 py-2 text-sm transition-colors hover:text-primary rounded-md"
-                                                            >
-                                                                {sub.name}
-                                                            </Link>
-                                                        ))}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
-          <Link href="/store" className="hidden lg:block">
-            <RhombusLogo />
-          </Link>
+        {/* Left Section: Mobile Menu Trigger */}
+        <div className="lg:hidden flex-1 flex justify-start">
+             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Toggle Menu">
+                        <Menu className="h-6 w-6" />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
+                    <SheetHeader className="p-4 border-b">
+                        <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                         <Link href="/store" onClick={() => setIsMobileMenuOpen(false)}>
+                            <RhombusLogo />
+                         </Link>
+                    </SheetHeader>
+                    <div className="flex-grow overflow-y-auto px-2 py-4">
+                         <Accordion type="multiple" className="w-full">
+                            {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
+                                <AccordionItem value={category.id || category.slug} key={category.id}>
+                                    <AccordionTrigger className="font-semibold">{category.name}</AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="flex flex-col space-y-1 pl-4">
+                                            <Link href={`/store?category=${category.slug}`} onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-sm font-medium hover:text-primary rounded-md">View All {category.name}</Link>
+                                            {(category.subCategoryGroups || []).map(group => (
+                                                <div key={group.title}>
+                                                    <h4 className="font-semibold text-muted-foreground px-2 py-2">{group.title}</h4>
+                                                    {group.subCategories.map(sub => (
+                                                         <Link
+                                                            key={sub.name}
+                                                            href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                                            onClick={() => setIsMobileMenuOpen(false)}
+                                                            className="block px-2 py-2 text-sm transition-colors hover:text-primary rounded-md"
+                                                        >
+                                                            {sub.name}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </div>
+
+        {/* Center Section: Logo */}
+        <div className="flex-1 flex justify-center lg:justify-start">
+            <Link href="/store">
+                <RhombusLogo />
+            </Link>
         </div>
         
-        <div className="flex items-center justify-end space-x-2">
-            <div className="hidden sm:flex items-center">
-                 <Input className="h-9 w-64" placeholder="Search for products..." />
-            </div>
-             <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
-                <BookUser className="h-6 w-6" />
-            </Button>
+        {/* Right Section: Actions */}
+        <div className="flex items-center justify-end space-x-2 flex-1">
              <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" aria-label="Track Order">
@@ -235,7 +233,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             {user ? (
                 <UserNav />
             ) : (
-                <Button asChild variant="outline"><Link href="/login">Login</Link></Button>
+                <Button asChild variant="outline" className="hidden sm:inline-flex"><Link href="/login">Login</Link></Button>
             )}
         </div>
       </div>
@@ -282,6 +280,13 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               ))}
+               <NavigationMenuItem>
+                    <Link href="/student/payments" legacyBehavior passHref>
+                        <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-green-600 text-white hover:bg-green-700 hover:text-white")}>
+                            My Orders
+                        </NavigationMenuLink>
+                    </Link>
+                </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </nav>
