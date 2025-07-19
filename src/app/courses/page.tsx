@@ -9,6 +9,7 @@ import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { FreeCoursesBanner } from '@/components/free-courses-banner';
 
 export const metadata: Metadata = {
   title: 'RDC SHOP - Red Dot Classroom',
@@ -83,6 +84,9 @@ export default async function CoursesPage({
             }>
                 <CoursesPageContent searchParams={searchParams} />
             </Suspense>
+        </div>
+        <div className="container mx-auto px-4 pb-12">
+            <FreeCoursesBanner />
         </div>
     </div>
   )
