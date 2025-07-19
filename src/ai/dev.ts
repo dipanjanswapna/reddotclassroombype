@@ -33,3 +33,4 @@ import '@/app/actions/rating.actions';
 import '@/app/actions/report.actions';
 import '@/app/actions/support.actions';
 import '@/app/actions/product.actions';
+import '@/app/actions/order.actions';
