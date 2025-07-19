@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -32,26 +33,24 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
         loop: true,
       }}
     >
-      <CarouselContent>
+      <CarouselContent className="-ml-4">
         {banners.map((banner) => (
-          <CarouselItem key={banner.id} className="md:basis-1/2 lg:basis-1/3">
-            <div className="p-1">
-              <Link href={banner.linkUrl || '#'} className="block rounded-lg overflow-hidden group shadow-md hover:shadow-xl transition-shadow">
-                <div className="relative aspect-[16/9]">
-                  <Image
-                    src={banner.imageUrl}
-                    alt="Promotional banner"
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-              </Link>
-            </div>
+          <CarouselItem key={banner.id} className="pl-4">
+            <Link href={banner.linkUrl || '#'} className="block rounded-lg overflow-hidden group shadow-md hover:shadow-xl transition-shadow">
+              <div className="relative aspect-[16/6]">
+                <Image
+                  src={banner.imageUrl}
+                  alt="Promotional banner"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            </Link>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="left-2" />
-      <CarouselNext className="right-2" />
+      <CarouselPrevious className="hidden md:flex left-2 bg-background/50 hover:bg-background"/>
+      <CarouselNext className="hidden md:flex right-2 bg-background/50 hover:bg-background"/>
     </Carousel>
   );
 }

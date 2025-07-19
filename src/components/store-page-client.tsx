@@ -3,14 +3,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Product, StoreCategory } from '@/lib/types';
+import { Product, StoreCategory, HomepageConfig } from '@/lib/types';
 import { Input } from './ui/input';
 import { Search } from 'lucide-react';
 import { ProductCard } from './product-card';
 import { useSearchParams } from 'next/navigation';
 import { BookBanner } from './book-banner';
 import { StoreBannerCarousel } from './store-banner-carousel';
-import { HomepageConfig } from '@/lib/types';
 
 export function StorePageClient({
     initialProducts,

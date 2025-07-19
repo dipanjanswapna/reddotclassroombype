@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageHero, StoreHomepageBanner } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageHero, StoreHomepageBanner, StoreHomepageProductSection, Product } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getProducts } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -23,7 +23,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
-import { Product } from '@/lib/types';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
@@ -629,11 +628,11 @@ export default function AdminHomepageManagementPage() {
       </div>
 
       <Tabs defaultValue="general" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="hero">Hero & Banners</TabsTrigger>
             <TabsTrigger value="courses">Course Sections</TabsTrigger>
-            <TabsTrigger value="store">Store Sections</TabsTrigger>
+            <TabsTrigger value="store">Store Homepage</TabsTrigger>
             <TabsTrigger value="content">Content Sections</TabsTrigger>
             <TabsTrigger value="pages">Special Pages</TabsTrigger>
         </TabsList>
