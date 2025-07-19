@@ -11,6 +11,8 @@ export type Product = {
     price: number;
     oldPrice?: number;
     imageUrl: string;
+    gallery?: string[];
+    videoUrl?: string;
     dataAiHint?: string;
     description?: string;
     sellerId?: string; // Admin or Seller Organization ID
