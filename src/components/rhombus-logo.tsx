@@ -11,16 +11,13 @@ export function RhombusLogo({ className }: { className?: string }) {
             <path d="M50 30L65 45L50 60L35 45L50 30Z" fill="#D62828"/>
        </svg>
        <div>
-            <svg width="100" height="40" viewBox="0 0 250 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+            <svg width="100" height="40" viewBox="0 0 150 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
                 <text x="0" y="30" fontFamily="Poppins, sans-serif" fontSize="30" fontWeight="bold" fill="black" className="dark:fill-white">
-                    RHMBUS
+                    RDC
                 </text>
                 <text x="0" y="60" fontFamily="Poppins, sans-serif" fontSize="20" letterSpacing="8" fill="gray" className="dark:fill-gray-400">
-                    PUBLICATIONS
+                    STORE
                 </text>
-                 <path d="M185 20 L225 20 L225 30 L185 30 Z" stroke="black" strokeWidth="2" className="dark:stroke-white"/>
-                <path d="M205 20 L205 10 L215 10 L215 20" stroke="black" strokeWidth="2" className="dark:stroke-white"/>
-                <path d="M215 10 L220 15" stroke="black" strokeWidth="2" className="dark:stroke-white"/>
             </svg>
        </div>
     </div>
