@@ -1,4 +1,5 @@
 
+
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
@@ -15,7 +16,7 @@ export type ProductReview = {
 export type Product = {
     id: string;
     name: string;
-    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook' | 'Stationery' | 'Apparel' | 'E-Book';
+    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook' | 'Stationery' | 'Apparel' | 'E-Book' | 'সৃজনশীল' | 'পাঠ্যবই' | 'সহপাঠ' | 'টেস্টপেপারস' | 'প্রি-বুকিং';
     subCategory?: string;
     price: number;
     oldPrice?: number;
@@ -715,15 +716,21 @@ export type StoreCategory = {
     order?: number;
 };
 
-export type StoreHomepageBanner = {
-    display: boolean;
+export type StoreHomepageHero = {
+    title: string;
+    subtitle: string;
     imageUrl: string;
-    altText?: string;
-    linkUrl?: string;
+};
+
+export type StoreHomepageProductSection = {
+    title: string;
+    category: string;
 };
 
 export type StoreHomepageSection = {
-    banner: StoreHomepageBanner;
+    hero?: StoreHomepageHero;
+    featuredProductIds?: string[];
+    productSections?: StoreHomepageProductSection[];
 };
 
 export type HomepageConfig = {
@@ -908,9 +915,7 @@ export type HomepageConfig = {
         imageUrl: string;
         dataAiHint?: string;
     };
-    storeHomepageSection?: {
-        banner: StoreHomepageBanner;
-    };
+    storeHomepageSection: StoreHomepageSection;
     requestCallbackSection: {
         display: boolean;
         imageUrl: string;
