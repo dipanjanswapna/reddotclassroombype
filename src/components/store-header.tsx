@@ -14,25 +14,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { UserNav } from "./user-nav";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
 import { StoreCategory, Order } from "@/lib/types";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { RhombusLogo } from "./rhombus-logo";
-import { useLanguage } from "@/context/language-context";
-import { t } from "@/lib/i18n";
 import { Input } from "./ui/input";
 import {
   Dialog,
@@ -47,32 +41,6 @@ import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  )
-})
-ListItem.displayName = "ListItem"
 
 const OrderTrackingModal = () => {
     const [orderId, setOrderId] = useState('');
@@ -150,19 +118,12 @@ const OrderTrackingModal = () => {
     );
 }
 
-
 export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const pathname = usePathname();
-  const { language } = useLanguage();
-  
-  const getDashboardLink = () => {
-    if (!user) return '/login';
-    return '/student/dashboard'; 
-  }
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
@@ -175,7 +136,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
         
         <div className="flex items-center justify-end space-x-2">
             <div className="hidden sm:flex">
-                 <Input className="h-9 w-64" placeholder="Search for products..."/>
+                 <Input className="h-9 w-64" placeholder="Search for products..." />
             </div>
              <Dialog>
                 <DialogTrigger asChild>
@@ -185,11 +146,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                 </DialogTrigger>
                 <OrderTrackingModal />
              </Dialog>
-             <Button variant="ghost" size="icon" className="relative" asChild>
-                <Link href="/student/payments">
-                    <Receipt className="h-6 w-6" />
-                </Link>
-             </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
              <ShoppingCart className="h-6 w-6" />
              {itemCount > 0 && (
@@ -210,7 +166,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                         <SheetHeader>
                             <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                         </SheetHeader>
-                        <nav className="flex flex-col gap-4 mt-8">
+                         <nav className="flex flex-col gap-4 mt-8">
                              <Link href="/store" className="font-medium hover:text-primary" onClick={() => setMenuOpen(false)}>Home</Link>
                             <h3 className="font-semibold pt-4 border-t">All Categories</h3>
                             {categories.map(category => (
@@ -229,34 +185,29 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             </div>
         </div>
       </div>
-       <nav className="hidden lg:flex container h-12 items-center justify-center border-t bg-background">
-          <NavigationMenu>
-            <NavigationMenuList>
-                {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
-                     <NavigationMenuItem key={category.id}>
-                        <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                            <ListItem href={`/store?category=${category.slug}`} title={category.name}>
-                                View all products in {category.name}.
-                            </ListItem>
-                            {(category.subCategories || []).map(sc => (
-                                <ListItem key={sc.name} href={`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`} title={sc.name}>
-                                </ListItem>
-                            ))}
-                            </ul>
-                        </NavigationMenuContent>
-                     </NavigationMenuItem>
-                ))}
-                 <NavigationMenuItem>
-                    <Link href="/student/payments" legacyBehavior passHref>
-                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            My Orders
-                        </NavigationMenuLink>
-                    </Link>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+       <nav className="hidden lg:flex container h-12 items-center justify-between border-t bg-gray-800 text-white">
+          <div className="flex items-center gap-1">
+            {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
+                <DropdownMenu key={category.id}>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="hover:bg-gray-700">
+                           {category.name} <ChevronDown className="ml-2 h-4 w-4"/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onSelect={() => router.push(`/store?category=${category.slug}`)}>
+                            All {category.name}
+                        </DropdownMenuItem>
+                        {(category.subCategories || []).map(sc => (
+                             <DropdownMenuItem key={sc.name} onSelect={() => router.push(`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`)}>
+                                {sc.name}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ))}
+          </div>
+          <Button variant="success" onClick={() => router.push('/student/payments')}>My Orders</Button>
       </nav>
     </header>
   );

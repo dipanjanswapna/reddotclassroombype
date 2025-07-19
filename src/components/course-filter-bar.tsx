@@ -7,31 +7,41 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, X } from 'lucide-react';
 import React from 'react';
-import { Organization } from '@/lib/types';
+import { StoreCategory } from '@/lib/types';
 
-type CourseFilterBarProps = {
-  categories: string[];
-  subCategories: string[];
-  providers: Organization[];
+type StoreFilterBarProps = {
+  categories: StoreCategory[];
 };
 
-export function CourseFilterBar({ categories, subCategories, providers }: CourseFilterBarProps) {
+export function StoreFilterBar({ categories }: StoreFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const selectedCategory = searchParams.get('category');
-  const selectedSubCategory = searchParams.get('subCategory');
-  const selectedProvider = searchParams.get('provider');
-  const providerName = providers.find(p => p.id === selectedProvider)?.name;
+  const selectedCategorySlug = searchParams.get('category');
+  const selectedSubCategorySlug = searchParams.get('subCategory');
 
-  const handleSelect = (type: 'category' | 'subCategory' | 'provider', value: string) => {
+  const selectedCategory = categories.find(c => c.slug === selectedCategorySlug);
+  const selectedSubCategory = selectedCategory?.subCategories?.find(sc => sc.name.toLowerCase().replace(/\s+/g, '-') === selectedSubCategorySlug);
+
+  const handleSelect = (type: 'category' | 'subCategory', value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-    if (value === 'all') {
-      current.delete(type);
-    } else {
-      current.set(type, value);
+    if (type === 'category') {
+        current.delete('subCategory');
+        if (value === 'all') {
+            current.delete('category');
+        } else {
+            current.set('category', value);
+        }
+    }
+
+    if (type === 'subCategory') {
+        if (value === 'all') {
+            current.delete('subCategory');
+        } else {
+            current.set('subCategory', value);
+        }
     }
 
     const search = current.toString();
@@ -45,67 +55,50 @@ export function CourseFilterBar({ categories, subCategories, providers }: Course
   }
 
   return (
-    <div className="border-t bg-card">
-      <div className="container mx-auto flex flex-wrap items-center gap-2 py-2">
-        <span className="text-sm font-semibold pr-2">ফিল্টার করুন:</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-dashed">
-              {selectedCategory || 'ক্যাটাগরি'}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={() => handleSelect('category', 'all')}>সকল ক্যাটাগরি</DropdownMenuItem>
-            {categories.map((category) => (
-              <DropdownMenuItem key={category} onSelect={() => handleSelect('category', category)}>
-                {category}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-dashed" disabled={!subCategories.length}>
-              {selectedSubCategory || 'সাব-ক্যাটাগরি'}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={() => handleSelect('subCategory', 'all')}>সকল সাব-ক্যাটাগরি</DropdownMenuItem>
-            {subCategories.map((subCategory) => (
-              <DropdownMenuItem key={subCategory} onSelect={() => handleSelect('subCategory', subCategory)}>
-                {subCategory}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-dashed">
-              {providerName || 'Provider'}
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={() => handleSelect('provider', 'all')}>All Providers</DropdownMenuItem>
-            {providers.map((provider) => (
-              <DropdownMenuItem key={provider.id} onSelect={() => handleSelect('provider', provider.id!)}>
-                {provider.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        {(selectedCategory || selectedSubCategory || selectedProvider) && (
-            <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearFilters}>
-                <X className="mr-1 h-4 w-4" />
-                ফিল্টার মুছুন
-            </Button>
-        )}
-      </div>
-    </div>
+    <Card>
+        <CardHeader>
+            <CardTitle>Filters</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-6">
+                <div>
+                    <h3 className="font-semibold mb-4">Categories</h3>
+                    <div className="space-y-2">
+                        {categories.map((category) => (
+                           <div key={category.id} className="flex flex-col items-start space-y-2">
+                                <Button 
+                                    variant="link" 
+                                    className={`p-0 h-auto justify-start ${selectedCategory?.id === category.id ? 'font-bold text-primary' : ''}`}
+                                    onClick={() => handleSelect('category', category.slug)}
+                                >
+                                    {category.name}
+                                </Button>
+                                {selectedCategory?.id === category.id && category.subCategories && (
+                                    <div className="pl-4 space-y-1 border-l">
+                                        {category.subCategories.map(sc => (
+                                             <Button 
+                                                key={sc.name}
+                                                variant="link" 
+                                                className={`p-0 h-auto justify-start text-sm ${selectedSubCategory?.name === sc.name ? 'font-bold text-primary' : 'text-muted-foreground'}`}
+                                                onClick={() => handleSelect('subCategory', sc.name.toLowerCase().replace(/\s+/g, '-'))}
+                                            >
+                                                {sc.name}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                )}
+                           </div>
+                        ))}
+                    </div>
+                </div>
+                {(selectedCategorySlug || selectedSubCategorySlug) && (
+                    <Button variant="ghost" size="sm" className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearFilters}>
+                        <X className="mr-1 h-4 w-4" />
+                        Clear Filters
+                    </Button>
+                )}
+            </div>
+        </CardContent>
+    </Card>
   );
 }

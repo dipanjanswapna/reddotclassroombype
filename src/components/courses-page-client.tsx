@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { CourseCard } from '@/components/course-card';
-import { CourseFilterBar } from '@/components/course-filter-bar';
+import { StoreFilterBar } from '@/components/store-filter-bar';
 import { Course, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
@@ -72,7 +72,6 @@ export function CoursesPageClient({
               Find the perfect course to achieve your learning goals.
             </p>
           </div>
-        <CourseFilterBar categories={allCategories} subCategories={allSubCategories} providers={allProviders}/>
       </div>
 
       <main className="container mx-auto px-4 pt-0 pb-16">
