@@ -76,20 +76,18 @@ export default async function CoursesPage({
                 <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
             </div>
         )}
-        <div className="container mx-auto px-4 py-8">
-            <Suspense fallback={
-                <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-                    <LoadingSpinner className="w-12 h-12" />
-                </div>
-            }>
-                <CoursesPageContent searchParams={searchParams} />
-            </Suspense>
-        </div>
-        {homepageConfig?.rdcShopBanner?.display && (
-            <div className="container mx-auto px-4 pb-12">
-                <FreeCoursesBanner bannerConfig={homepageConfig.rdcShopBanner} />
-            </div>
-        )}
+      <div className="container mx-auto px-4 py-8">
+          <Suspense fallback={
+              <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+                  <LoadingSpinner className="w-12 h-12" />
+              </div>
+          }>
+              <CoursesPageContent searchParams={searchParams} />
+          </Suspense>
+      </div>
+      <div className="container mx-auto px-4 pb-12">
+        <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
+      </div>
     </div>
   )
 }

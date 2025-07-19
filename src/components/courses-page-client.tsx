@@ -7,6 +7,8 @@ import { CourseCard } from '@/components/course-card';
 import { Course, Organization, Instructor } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { CourseFilterBar } from './course-filter-bar';
+import { FreeCoursesBanner } from './free-courses-banner';
+import { HomepageConfig } from '@/lib/types';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -71,6 +73,7 @@ export function CoursesPageClient({
             categories={allCategories}
             subCategories={allSubCategories}
             instructors={allInstructors}
+            providers={allProviders}
           />
       </div>
 
@@ -88,7 +91,7 @@ export function CoursesPageClient({
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                   {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
-                    return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain}/>;
+                    return <CourseCard key={course.id} {...course} provider={provider} />;
                   })}
                 </div>
               ) : (
@@ -105,7 +108,7 @@ export function CoursesPageClient({
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     {coursesByCategory[category].map((course) => {
                        const provider = allProviders.find(p => p.id === course.organizationId);
-                       return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
+                       return <CourseCard key={course.id} {...course} provider={provider} />;
                     })}
                   </div>
                 </section>
@@ -119,7 +122,7 @@ export function CoursesPageClient({
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {archivedCourses.map((course) => {
                             const provider = allProviders.find(p => p.id === course.organizationId);
-                            return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
+                            return <CourseCard key={course.id} {...course} provider={provider} />;
                         })}
                     </div>
                 </section>

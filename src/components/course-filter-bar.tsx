@@ -7,16 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import React, { useMemo } from 'react';
-import { Instructor, Course } from '@/lib/types';
+import { Instructor, Course, Organization } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 type CourseFilterBarProps = {
   categories: string[];
   subCategories: string[];
   instructors: Instructor[];
+  providers: Organization[];
 };
 
-export function CourseFilterBar({ categories, subCategories, instructors }: CourseFilterBarProps) {
+export function CourseFilterBar({ categories, subCategories, instructors, providers }: CourseFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -24,8 +25,9 @@ export function CourseFilterBar({ categories, subCategories, instructors }: Cour
   const selectedCategory = searchParams.get('category') || 'all';
   const selectedSubCategory = searchParams.get('subCategory') || 'all';
   const selectedInstructor = searchParams.get('instructor') || 'all';
+  const selectedProvider = searchParams.get('provider') || 'all';
 
-  const handleSelect = (type: 'category' | 'subCategory' | 'instructor', value: string) => {
+  const handleSelect = (type: 'category' | 'subCategory' | 'instructor' | 'provider', value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     if (value === 'all') {
@@ -44,13 +46,13 @@ export function CourseFilterBar({ categories, subCategories, instructors }: Cour
     router.push(`${pathname}${query}`, { scroll: false });
   };
   
-  const hasFilters = selectedCategory !== 'all' || selectedSubCategory !== 'all' || selectedInstructor !== 'all';
+  const hasFilters = selectedCategory !== 'all' || selectedSubCategory !== 'all' || selectedInstructor !== 'all' || selectedProvider !== 'all';
 
   return (
     <Card className="mb-12">
       <div className="p-4 flex flex-col md:flex-row gap-4 items-center">
             <h3 className="font-semibold text-lg shrink-0">Find a Course</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 <Select value={selectedCategory} onValueChange={(v) => handleSelect('category', v)}>
                     <SelectTrigger><SelectValue placeholder="Select Category..." /></SelectTrigger>
                     <SelectContent>
@@ -72,6 +74,14 @@ export function CourseFilterBar({ categories, subCategories, instructors }: Cour
                         {instructors.map(i => <SelectItem key={i.slug} value={i.slug}>{i.name}</SelectItem>)}
                     </SelectContent>
                 </Select>
+                <Select value={selectedProvider} onValueChange={(v) => handleSelect('provider', v)}>
+                    <SelectTrigger><SelectValue placeholder="Select Provider..." /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Providers</SelectItem>
+                        <SelectItem value="rdc">RDC Originals</SelectItem>
+                        {providers.map(p => <SelectItem key={p.id} value={p.id!}>{p.name}</SelectItem>)}
+                    </SelectContent>
+                </Select>
             </div>
              {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={() => router.push(pathname, { scroll: false })}>
@@ -82,4 +92,3 @@ export function CourseFilterBar({ categories, subCategories, instructors }: Cour
     </Card>
   );
 }
-
