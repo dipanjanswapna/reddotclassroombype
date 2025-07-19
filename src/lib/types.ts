@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
