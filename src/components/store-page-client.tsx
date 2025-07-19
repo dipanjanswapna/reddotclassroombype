@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -8,6 +7,7 @@ import { Input } from './ui/input';
 import { Search } from 'lucide-react';
 import { ProductCard } from './product-card';
 import { useSearchParams } from 'next/navigation';
+import { BookBanner } from './book-banner';
 
 export function StorePageClient({ initialProducts, allCategories, pageTitle }: { initialProducts: Product[], allCategories: StoreCategory[], pageTitle: string }) {
     const [products] = useState(initialProducts);
@@ -30,6 +30,8 @@ export function StorePageClient({ initialProducts, allCategories, pageTitle }: {
             return matchesSearch && matchesCategory && matchesSubCategory;
         });
     }, [products, searchTerm, allCategories, selectedCategorySlug, selectedSubCategorySlug]);
+
+    const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -56,6 +58,8 @@ export function StorePageClient({ initialProducts, allCategories, pageTitle }: {
                         <p className="text-muted-foreground">No products found matching your criteria.</p>
                     </div>
                 )}
+
+                {!hasFilters && <BookBanner />}
             </main>
         </div>
     );
