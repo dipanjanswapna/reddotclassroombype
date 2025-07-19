@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
 import { StoreCategory, Order, SubCategoryGroup } from "@/lib/types";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RhombusLogo } from "./rhombus-logo";
 import { Input } from "./ui/input";
 import {
@@ -136,9 +136,6 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
         </a>
       </NavigationMenuLink>
     </li>
@@ -148,7 +145,6 @@ ListItem.displayName = "ListItem"
 
 
 export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
-  const [isMenuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -189,55 +185,10 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             ) : (
                 <Button asChild variant="outline"><Link href="/login">Login</Link></Button>
             )}
-            <div className="lg:hidden">
-                <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon"><Menu/></Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader className="sr-only">
-                            <SheetTitle>Mobile Menu</SheetTitle>
-                        </SheetHeader>
-                         <nav className="flex flex-col gap-4 mt-8">
-                            <h3 className="font-semibold pt-4 border-t">All Categories</h3>
-                            <Accordion type="multiple" className="w-full">
-                                {categories.map(category => (
-                                    <AccordionItem key={category.id} value={category.id!}>
-                                        <AccordionTrigger>
-                                             <Link
-                                                href={`/store?category=${category.slug}`}
-                                                className="font-medium hover:text-primary"
-                                                onClick={() => setMenuOpen(false)}
-                                            >
-                                                {category.name}
-                                            </Link>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="flex flex-col space-y-2 pl-4">
-                                                {(category.subCategoryGroups || []).flatMap(group =>
-                                                    group.subCategories.map(sc => (
-                                                        <Link
-                                                            key={sc.name}
-                                                            href={`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`}
-                                                            className="text-muted-foreground hover:text-primary"
-                                                            onClick={() => setMenuOpen(false)}
-                                                        >
-                                                            {sc.name}
-                                                        </Link>
-                                                    ))
-                                                )}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
-                        </nav>
-                    </SheetContent>
-                </Sheet>
-            </div>
         </div>
       </div>
-       <nav className="hidden lg:flex container h-12 items-center justify-start border-t bg-background/90 backdrop-blur-sm">
+       <div className="container h-12 items-center justify-start border-t bg-gray-800 text-white overflow-x-auto">
+          <nav className="flex items-center h-full">
           <NavigationMenu>
             <NavigationMenuList>
               {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
@@ -277,7 +228,8 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }
