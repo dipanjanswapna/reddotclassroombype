@@ -24,7 +24,7 @@ export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructor
                 <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]" aria-label={`View profile for ${instructor.name}`}>
                     <div className="relative overflow-hidden rounded-lg">
                         <Image
-                            src={instructor.avatarUrl}
+                            src={instructor.avatarUrl || 'https://placehold.co/250x300.png'}
                             alt={instructor.name}
                             width={250}
                             height={300}
@@ -46,7 +46,7 @@ export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructor
                 <Link href={`/teachers/${instructor.slug}`} className="block group text-center w-[200px]" aria-label={`View profile for ${instructor.name}`}>
                     <div className="relative overflow-hidden rounded-lg">
                         <Image
-                            src={instructor.avatarUrl}
+                            src={instructor.avatarUrl || 'https://placehold.co/250x300.png'}
                             alt={instructor.name}
                             width={250}
                             height={300}
