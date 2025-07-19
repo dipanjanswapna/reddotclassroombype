@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,10 +10,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { Loader2, ShoppingBag } from 'lucide-react';
+import { Loader2, ShoppingBag, Info, AlertTriangle, Truck } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { createOrderAction } from '@/app/actions/order.actions';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
+import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+// Simplified list for demonstration. In a real app, this would come from a database or a comprehensive library.
+const districts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet"];
+const thanas: { [key: string]: string[] } = {
+  "Dhaka": ["Gulshan", "Dhanmondi", "Mirpur", "Uttara"],
+  "Chattogram": ["Kotwali", "Pahartali", "Panchlaish"],
+  "Khulna": ["Kotwali", "Sonadanga"],
+  "Rajshahi": ["Boalia", "Motihar"],
+  "Sylhet": ["Kotwali", "Jalalabad"],
+};
+
 
 export default function CheckoutPage() {
   const { items, clearCart, total } = useCart();
@@ -22,20 +37,57 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [shippingInfo, setShippingInfo] = useState({
-    name: userInfo?.name || '',
-    address: userInfo?.address || '',
-    phone: userInfo?.mobileNumber || '',
+    name: '',
+    phone: '',
+    district: '',
+    thana: '',
+    address: '',
   });
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (userInfo) {
+      setShippingInfo(prev => ({
+        ...prev,
+        name: userInfo.name || '',
+        phone: userInfo.mobileNumber || '',
+        address: userInfo.address || '',
+      }));
+    }
+  }, [userInfo]);
+
+  const [coupon, setCoupon] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const deliveryCharge = items.length >= 2 ? 0 : 40;
+  const totalPayable = total + deliveryCharge - discount;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setShippingInfo(prev => ({ ...prev, [id]: value }));
   };
+  
+  const handleSelectChange = (name: 'district' | 'thana', value: string) => {
+    setShippingInfo(prev => ({ ...prev, [name]: value, ...(name === 'district' && { thana: '' }) }));
+  };
+  
+  const handleApplyCoupon = () => {
+      if(coupon.toUpperCase() === 'RDC10') {
+          setDiscount(total * 0.1);
+          toast({ title: 'Success', description: 'Coupon applied successfully!' });
+      } else {
+          toast({ title: 'Invalid Coupon', variant: 'destructive' });
+      }
+  };
 
   const handlePlaceOrder = async () => {
-    if (!shippingInfo.name || !shippingInfo.address || !shippingInfo.phone) {
+    if (!shippingInfo.name || !shippingInfo.address || !shippingInfo.phone || !shippingInfo.district || !shippingInfo.thana) {
         toast({ title: "Error", description: "Please fill in all shipping details.", variant: "destructive" });
+        return;
+    }
+    if (!termsAccepted) {
+        toast({ title: "Agreement Required", description: "You must agree to the terms and policies.", variant: "destructive" });
         return;
     }
     if (!userInfo) {
@@ -48,7 +100,7 @@ export default function CheckoutPage() {
     const orderDetails = {
       userId: userInfo.uid,
       items: items,
-      totalAmount: total,
+      totalAmount: totalPayable,
       shippingDetails: shippingInfo,
       status: 'Pending' as const
     };
@@ -87,19 +139,43 @@ export default function CheckoutPage() {
           <Card>
             <CardHeader>
               <CardTitle>Shipping Information</CardTitle>
+              <CardDescription>
+                <Alert variant="default" className="mt-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+                    <Truck className="h-4 w-4" />
+                    <AlertDescription>
+                        Inside Dhaka - 3 days & Outside Dhaka - 7 days
+                    </AlertDescription>
+                </Alert>
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" value={shippingInfo.name} onChange={handleInputChange} />
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" placeholder="Full Name" value={shippingInfo.name} onChange={handleInputChange} />
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" type="tel" placeholder="01XXXXXXXXX" value={shippingInfo.phone} onChange={handleInputChange} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="district">District</Label>
+                    <Select value={shippingInfo.district} onValueChange={(v) => handleSelectChange('district', v)}>
+                        <SelectTrigger><SelectValue placeholder="Select District"/></SelectTrigger>
+                        <SelectContent>{districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="thana">Thana</Label>
+                    <Select value={shippingInfo.thana} onValueChange={(v) => handleSelectChange('thana', v)} disabled={!shippingInfo.district}>
+                        <SelectTrigger><SelectValue placeholder="Select Thana"/></SelectTrigger>
+                        <SelectContent>{(thanas[shippingInfo.district] || []).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Full Address</Label>
-                <Input id="address" value={shippingInfo.address} onChange={handleInputChange} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" type="tel" value={shippingInfo.phone} onChange={handleInputChange} />
+                <Label htmlFor="address">Delivery Address</Label>
+                <Input id="address" placeholder="তোমার নিকটস্থ সুন্দরবন কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} />
               </div>
             </CardContent>
           </Card>
@@ -112,25 +188,55 @@ export default function CheckoutPage() {
             <CardContent>
               <div className="space-y-4">
                 {items.map(item => (
-                  <div key={item.id} className="flex items-center justify-between">
-                     <div className="flex items-center gap-4">
-                        <Image src={item.imageUrl} alt={item.name} width={48} height={48} className="rounded-md object-cover"/>
-                        <div>
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                        </div>
+                  <div key={item.id} className="flex items-center justify-between text-sm">
+                     <div className="flex items-center gap-2">
+                        <Image src={item.imageUrl} alt={item.name} width={40} height={40} className="rounded-md object-cover"/>
+                        <p>{item.name} x {item.quantity}</p>
                      </div>
                     <p>৳{(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
                 <Separator />
+                <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span>Total Amount:</span><span>৳{total.toFixed(2)}</span></div>
+                    <div className="flex justify-between">
+                        <span>Delivery Charge:</span>
+                        <span>৳{deliveryCharge.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">(Buy 2+ books to get free delivery)</p>
+                    <div className="flex justify-between items-center">
+                        <span>Discount:</span>
+                        <span>- ৳{discount.toFixed(2)}</span>
+                    </div>
+                     <div className="flex gap-2">
+                        <Input placeholder="Enter Coupon Code" value={coupon} onChange={e => setCoupon(e.target.value)} />
+                        <Button variant="outline" size="sm" onClick={handleApplyCoupon}>Apply</Button>
+                    </div>
+                </div>
+                <Separator/>
                 <div className="flex justify-between font-bold text-lg">
-                  <p>Total</p>
-                  <p>৳{total.toFixed(2)}</p>
+                  <p>Total Payable Amount:</p>
+                  <p>৳{totalPayable.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
-            <div className="p-6 pt-0">
+            <div className='p-6 pt-2 space-y-4'>
+                <div className="items-top flex space-x-2">
+                    <Checkbox id="terms1" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} />
+                    <div className="grid gap-1.5 leading-none">
+                        <label
+                        htmlFor="terms1"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                         Do you agree with all of these?
+                        </label>
+                        <p className="text-sm text-muted-foreground">
+                        <Link href="/terms" className="underline hover:text-primary">Refund Policy</Link>,{' '}
+                        <Link href="/terms" className="underline hover:text-primary">Terms of Service</Link> and{' '}
+                        <Link href="/privacy" className="underline hover:text-primary">Privacy Policy</Link>.
+                        </p>
+                    </div>
+                </div>
                <Button size="lg" className="w-full" onClick={handlePlaceOrder} disabled={isProcessing}>
                 {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Place Order
@@ -142,3 +248,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
