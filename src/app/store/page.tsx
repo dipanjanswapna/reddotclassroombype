@@ -22,9 +22,7 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
     ]);
 
     const publishedProducts = allProducts.filter(p => p.isPublished);
-    const storeConfig = homepageConfig.storeHomepageSection;
     
-    // Determine which products to show
     let displayProducts = publishedProducts;
     let pageTitle = 'All Products';
 
@@ -33,6 +31,13 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
         if (category) {
             displayProducts = publishedProducts.filter(p => p.category === category.name);
             pageTitle = category.name;
+            if(selectedSubCategorySlug) {
+                const subCategory = category.subCategoryGroups?.flatMap(g => g.subCategories).find(sc => sc.name.toLowerCase().replace(/\s+/g, '-') === selectedSubCategorySlug);
+                if (subCategory) {
+                    displayProducts = displayProducts.filter(p => p.subCategory === subCategory.name);
+                    pageTitle = subCategory.name;
+                }
+            }
         }
     }
 
@@ -41,6 +46,7 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
             initialProducts={displayProducts} 
             allCategories={allCategories}
             pageTitle={pageTitle}
+            homepageConfig={homepageConfig}
         />
     );
 }

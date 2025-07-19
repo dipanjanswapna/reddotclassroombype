@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageProductSection, StoreHomepageHero } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageHero, StoreHomepageBanner } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getProducts } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -136,6 +136,31 @@ export default function AdminHomepageManagementPage() {
             };
         });
     };
+    
+    const handleDeepestNestedArrayChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, nestedArrayKey: string, nestedIndex: number, field: string, value: any) => {
+         setConfig(prev => {
+            if (!prev || index < 0 || nestedIndex < 0) return prev;
+
+            const section = { ...(prev[sectionKey] as any) };
+            const array = [...(section[arrayKey] || [])];
+            const item = { ...array[index] };
+            const nestedArray = [...(item[nestedArrayKey] || [])];
+            
+            if (nestedArray[nestedIndex]) {
+                nestedArray[nestedIndex] = { ...nestedArray[nestedIndex], [field]: value };
+                item[nestedArrayKey] = nestedArray;
+                array[index] = item;
+            }
+
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...section,
+                    [arrayKey]: array,
+                },
+            };
+        });
+    }
 
     const handleDeepNestedLangChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
         setConfig(prev => {
@@ -553,6 +578,34 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addStoreBanner = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const newBanner: StoreHomepageBanner = { id: `banner_${Date.now()}`, imageUrl: 'https://placehold.co/600x400.png', linkUrl: '#' };
+        const bannerCarousel = [...(storeSection.bannerCarousel || []), newBanner];
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
+  };
+  
+  const removeStoreBanner = (id: string) => {
+     setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const bannerCarousel = storeSection.bannerCarousel?.filter(b => b.id !== id);
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
+  };
+  
+  const updateStoreBanner = (id: string, field: 'imageUrl' | 'linkUrl', value: string) => {
+      setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const bannerCarousel = storeSection.bannerCarousel?.map(b => b.id === id ? { ...b, [field]: value } : b);
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
+  };
+
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
@@ -832,6 +885,23 @@ export default function AdminHomepageManagementPage() {
                         <Label>Background Image URL</Label>
                         <Input value={config.storeHomepageSection?.hero?.imageUrl || ''} onChange={(e) => handleStoreHeroChange('imageUrl', e.target.value)} />
                     </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Store Banner Carousel</CardTitle>
+                    <CardDescription>Add promotional banners for the store page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     {config.storeHomepageSection?.bannerCarousel?.map((banner, index) => (
+                        <div key={banner.id} className="p-4 border rounded-lg space-y-2 relative">
+                            <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeStoreBanner(banner.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            <h4 className="font-semibold">Banner {index + 1}</h4>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => updateStoreBanner(banner.id, 'imageUrl', e.target.value)} /></div>
+                            <div className="space-y-1"><Label>Link URL (optional)</Label><Input value={banner.linkUrl || ''} onChange={(e) => updateStoreBanner(banner.id, 'linkUrl', e.target.value)} /></div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full border-dashed" onClick={addStoreBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
                 </CardContent>
             </Card>
              <Card>

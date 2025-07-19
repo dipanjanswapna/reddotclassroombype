@@ -739,10 +739,17 @@ export type StoreHomepageProductSection = {
     category: string;
 };
 
+export type StoreHomepageBanner = {
+    id: string;
+    imageUrl: string;
+    linkUrl?: string;
+};
+
 export type StoreHomepageSection = {
     hero?: StoreHomepageHero;
     featuredProductIds?: string[];
     productSections?: StoreHomepageProductSection[];
+    bannerCarousel?: StoreHomepageBanner[];
     banner?: {
         display: boolean;
         imageUrl: string;
