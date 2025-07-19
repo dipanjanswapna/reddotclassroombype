@@ -153,12 +153,60 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const { items, setIsCartOpen } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/store">
+            <div className="lg:hidden">
+                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" aria-label="Toggle Menu">
+                            <Menu className="h-6 w-6" />
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
+                        <SheetHeader className="p-4 border-b">
+                            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                             <Link href="/store" onClick={() => setIsMobileMenuOpen(false)}>
+                                <RhombusLogo />
+                             </Link>
+                        </SheetHeader>
+                        <div className="flex-grow overflow-y-auto px-2 py-4">
+                             <Accordion type="multiple" className="w-full">
+                                {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
+                                    <AccordionItem value={category.id || category.slug} key={category.id}>
+                                        <AccordionTrigger className="font-semibold">{category.name}</AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="flex flex-col space-y-1 pl-4">
+                                                <Link href={`/store?category=${category.slug}`} onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-sm font-medium hover:text-primary rounded-md">View All {category.name}</Link>
+                                                {(category.subCategoryGroups || []).map(group => (
+                                                    <div key={group.title}>
+                                                        <h4 className="font-semibold text-muted-foreground px-2 py-2">{group.title}</h4>
+                                                        {group.subCategories.map(sub => (
+                                                             <Link
+                                                                key={sub.name}
+                                                                href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                                className="block px-2 py-2 text-sm transition-colors hover:text-primary rounded-md"
+                                                            >
+                                                                {sub.name}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+          <Link href="/store" className="hidden lg:block">
             <RhombusLogo />
           </Link>
         </div>
@@ -191,10 +239,10 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             )}
         </div>
       </div>
-       <div className="container h-12 items-center justify-start border-t bg-gray-800 text-white overflow-x-auto">
+       <div className="container h-12 hidden lg:flex items-center justify-start border-t bg-gray-800 text-white">
           <nav className="flex items-center h-full">
           <NavigationMenu>
-            <NavigationMenuList>
+            <NavigationMenuList className="flex-wrap">
               {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
                 <NavigationMenuItem key={category.id}>
                   <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
