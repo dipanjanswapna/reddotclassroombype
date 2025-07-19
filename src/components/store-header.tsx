@@ -43,7 +43,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Image from "next/image";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import useEmblaCarousel from "embla-carousel-react";
 
 const OrderTrackingModal = () => {
     const [orderId, setOrderId] = useState('');
@@ -155,6 +162,19 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+  });
+
+  const scrollPrev = React.useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = React.useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
@@ -216,6 +236,9 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
         
         {/* Right Section: Actions */}
         <div className="flex items-center justify-end space-x-2 flex-1">
+            <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                <Link href="/student/payments">My Orders</Link>
+            </Button>
              <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" aria-label="Track Order">
@@ -237,59 +260,72 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             )}
         </div>
       </div>
-       <div className="container h-12 hidden lg:flex items-center justify-start border-t bg-gray-800 text-white">
+      <div className="container h-12 hidden lg:flex items-center justify-start border-t bg-gray-800 text-white relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={scrollPrev}
+          className="absolute left-0 z-10 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
+        >
+          <ChevronDown className="h-4 w-4 -rotate-90" />
+        </Button>
+        <div className="overflow-hidden w-full" ref={emblaRef}>
           <nav className="flex items-center h-full">
-          <NavigationMenu>
-            <NavigationMenuList className="flex-wrap">
-              {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
-                <NavigationMenuItem key={category.id}>
-                  <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-4 md:w-[600px] lg:w-[700px] lg:grid-cols-3">
-                      <div className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                            href={`/store?category=${category.slug}`}
-                          >
-                            {category.menuImageUrl ? (
-                                <Image src={category.menuImageUrl} alt={category.name} width={200} height={150} className="object-contain" data-ai-hint={category.menuImageAiHint}/>
-                            ) : (
-                                <RhombusLogo/>
-                            )}
-                            <div className="mb-2 mt-4 text-lg font-medium">
-                              {category.name}
-                            </div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              View all products in the {category.name} category.
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </div>
-                      {(category.subCategoryGroups || []).map(group => (
-                          <div key={group.title} className="flex flex-col">
-                               <Link href={`/store?category=${category.slug}`} className="font-semibold text-primary px-3 mb-1 hover:underline">{group.title} &rarr;</Link>
-                               <ul className="flex flex-col">
-                                   {group.subCategories.map(sub => (
-                                       <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
-                                   ))}
-                               </ul>
+            <NavigationMenu>
+              <NavigationMenuList>
+                {categories
+                  .sort((a, b) => (a.order || 99) - (b.order || 99))
+                  .map((category) => (
+                    <NavigationMenuItem key={category.id}>
+                      <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="grid gap-3 p-4 md:w-[600px] lg:w-[700px] lg:grid-cols-3">
+                          <div className="row-span-3">
+                            <NavigationMenuLink asChild>
+                              <Link
+                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                href={`/store?category=${category.slug}`}
+                              >
+                                {category.menuImageUrl ? (
+                                    <Image src={category.menuImageUrl} alt={category.name} width={200} height={150} className="object-contain" data-ai-hint={category.menuImageAiHint}/>
+                                ) : (
+                                    <RhombusLogo/>
+                                )}
+                                <div className="mb-2 mt-4 text-lg font-medium">
+                                  {category.name}
+                                </div>
+                                <p className="text-sm leading-tight text-muted-foreground">
+                                  View all products in the {category.name} category.
+                                </p>
+                              </Link>
+                            </NavigationMenuLink>
                           </div>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              ))}
-               <NavigationMenuItem>
-                    <Link href="/student/payments" legacyBehavior passHref>
-                        <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-green-600 text-white hover:bg-green-700 hover:text-white")}>
-                            My Orders
-                        </NavigationMenuLink>
-                    </Link>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </nav>
+                          {(category.subCategoryGroups || []).map(group => (
+                              <div key={group.title} className="flex flex-col">
+                                   <Link href={`/store?category=${category.slug}`} className="font-semibold text-primary px-3 mb-1 hover:underline">{group.title} &rarr;</Link>
+                                   <ul className="flex flex-col">
+                                       {group.subCategories.map(sub => (
+                                           <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
+                                       ))}
+                                   </ul>
+                              </div>
+                          ))}
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </nav>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={scrollNext}
+          className="absolute right-0 z-10 bg-gray-800/80 hover:bg-gray-700/80 h-full rounded-none"
+        >
+          <ChevronDown className="h-4 w-4 rotate-90" />
+        </Button>
       </div>
     </header>
   );
