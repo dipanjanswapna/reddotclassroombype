@@ -1,4 +1,5 @@
 
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -43,6 +44,21 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
 // Products
 export const getProducts = () => getCollection<Product>('products');
 export const getProduct = (id: string) => getDocument<Product>('products', id);
+export const addProduct = (product: Omit<Product, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'products'), product);
+}
+export const updateProduct = (id: string, product: Partial<Product>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'products', id), product);
+}
+export const deleteProduct = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'products', id));
+}
 
 // Question Bank
 export const getQuestionBank = () => getCollection<Question>('question_bank');
