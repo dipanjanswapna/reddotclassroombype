@@ -16,7 +16,7 @@ export type ProductReview = {
 export type Product = {
     id: string;
     name: string;
-    category: 'T-Shirt' | 'Hoodie' | 'Jersey' | 'PDF Book' | 'Printed Book' | 'Pen' | 'Notebook' | 'Stationery' | 'Apparel' | 'E-Book' | 'সৃজনশীল' | 'পাঠ্যবই' | 'সহপাঠ' | 'টেস্টপেপারস' | 'প্রি-বুকিং';
+    category: string;
     subCategory?: string;
     price: number;
     oldPrice?: number;
@@ -714,6 +714,7 @@ export type StoreCategory = {
     name: string;
     slug: string;
     order?: number;
+    subCategories?: { name: string }[];
 };
 
 export type StoreHomepageHero = {
@@ -731,6 +732,12 @@ export type StoreHomepageSection = {
     hero?: StoreHomepageHero;
     featuredProductIds?: string[];
     productSections?: StoreHomepageProductSection[];
+    banner?: {
+        display: boolean;
+        imageUrl: string;
+        altText: string;
+        linkUrl?: string;
+    };
 };
 
 export type HomepageConfig = {

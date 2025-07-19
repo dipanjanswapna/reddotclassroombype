@@ -38,6 +38,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { StoreCategory } from '@/lib/types';
 import { saveStoreCategoryAction, deleteStoreCategoryAction } from '@/app/actions/store.actions';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Textarea } from '../ui/textarea';
 
 interface CategoryManagerProps {
   initialCategories: StoreCategory[];
@@ -92,13 +93,36 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
     const updateField = (field: keyof StoreCategory, value: any) => {
         setEditingCategory(prev => prev ? { ...prev, [field]: value } : null);
     };
+    
+    const updateSubCategory = (index: number, value: string) => {
+        setEditingCategory(prev => {
+            if (!prev) return null;
+            const newSubCategories = [...(prev.subCategories || [])];
+            newSubCategories[index] = { name: value };
+            return { ...prev, subCategories: newSubCategories };
+        });
+    };
+    
+    const addSubCategory = () => {
+        setEditingCategory(prev => ({
+            ...prev,
+            subCategories: [...(prev?.subCategories || []), { name: '' }]
+        }));
+    };
+    
+    const removeSubCategory = (index: number) => {
+        setEditingCategory(prev => ({
+            ...prev,
+            subCategories: prev?.subCategories?.filter((_, i) => i !== index)
+        }));
+    };
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Store Categories</h1>
-                    <p className="mt-1 text-lg text-muted-foreground">Manage product categories for the RDC Store.</p>
+                    <p className="mt-1 text-lg text-muted-foreground">Manage product categories and sub-categories for the RDC Store.</p>
                 </div>
                 <Button onClick={() => handleOpenDialog(null)}>
                     <PlusCircle className="mr-2"/> Create Category
@@ -113,16 +137,20 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Slug</TableHead>
+                                <TableHead>Sub-categories</TableHead>
                                 <TableHead>Order</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {categories.map(category => (
+                            {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
                                 <TableRow key={category.id}>
                                     <TableCell className="font-medium">{category.name}</TableCell>
-                                    <TableCell className="font-mono text-muted-foreground">/{category.slug}</TableCell>
+                                    <TableCell>
+                                        <div className="flex flex-wrap gap-1">
+                                            {category.subCategories?.map(sc => <span key={sc.name} className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">{sc.name}</span>)}
+                                        </div>
+                                    </TableCell>
                                     <TableCell>{category.order ?? 'N/A'}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
@@ -141,12 +169,12 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
             </Card>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
+                <DialogContent className="max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>{editingCategory?.id ? 'Edit Category' : 'Create New Category'}</DialogTitle>
                     </DialogHeader>
                     {editingCategory && (
-                        <div className="grid gap-4 py-4">
+                        <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Category Name</Label>
                                 <Input id="name" value={editingCategory.name || ''} onChange={e => updateField('name', e.target.value)} />
@@ -158,6 +186,22 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                             <div className="space-y-2">
                                 <Label htmlFor="order">Display Order</Label>
                                 <Input id="order" type="number" value={editingCategory.order || ''} onChange={e => updateField('order', Number(e.target.value))} placeholder="e.g., 1"/>
+                            </div>
+                            <div className="space-y-4 pt-4 border-t">
+                                <Label className="font-semibold">Sub-categories</Label>
+                                <div className="space-y-2">
+                                    {(editingCategory.subCategories || []).map((sc, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <Input 
+                                                value={sc.name}
+                                                onChange={(e) => updateSubCategory(index, e.target.value)}
+                                                placeholder={`Sub-category ${index + 1}`}
+                                            />
+                                            <Button variant="ghost" size="icon" onClick={() => removeSubCategory(index)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <Button variant="outline" size="sm" onClick={addSubCategory}>Add Sub-category</Button>
                             </div>
                         </div>
                     )}
@@ -174,7 +218,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
             <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete the category <strong>{categoryToDelete?.name}</strong>.</AlertDialogDescription>
+                        <AlertDialogDescription>This will permanently delete the category <strong>{categoryToDelete?.name}</strong> and all its sub-categories.</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction></AlertDialogFooter>
                 </AlertDialogContent>

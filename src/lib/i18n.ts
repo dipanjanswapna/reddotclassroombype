@@ -1,4 +1,5 @@
 
+
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * This file contains a central dictionary of translations for the application.
@@ -34,6 +35,7 @@ export const t = {
   nav_academic_prep: { en: 'Academic Preparation', bn: 'একাডেমিক প্রস্তুতি' },
   nav_ebook: { en: 'E-Book', bn: 'ই-বুক' },
   nav_stationery: { en: 'Stationery', bn: 'স্টেশনারী' },
+  nav_my_orders: { en: 'My Orders', bn: 'আমার অর্ডার' },
 
 
   // Footer

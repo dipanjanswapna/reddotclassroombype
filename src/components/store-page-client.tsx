@@ -132,7 +132,7 @@ export function StorePageClient({ initialProducts, allCategories }: { initialPro
     };
 
     return (
-        <div className="container mx-auto px-4 grid lg:grid-cols-4 gap-8">
+        <div className="container mx-auto px-4 grid lg:grid-cols-4 gap-8 py-8">
             <aside className="hidden lg:block lg:col-span-1">
                 <Card>
                     <CardHeader><CardTitle>Filters</CardTitle></CardHeader>

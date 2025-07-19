@@ -1,7 +1,7 @@
 
 
 import type { Metadata } from 'next';
-import { getHomepageConfig, getProducts } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getProducts, getStoreCategories } from '@/lib/firebase/firestore';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import Image from 'next/image';
@@ -10,6 +10,7 @@ import { ProductCard } from '@/components/product-card';
 import { Button } from '@/components/ui/button';
 import { ProductCarousel } from '@/components/product-carousel';
 import { ArrowRight, Book, BookOpen } from 'lucide-react';
+import { StorePageClient } from '@/components/store-page-client';
 
 export const metadata: Metadata = {
   title: 'RDC Store',
@@ -66,7 +67,7 @@ async function StoreContent() {
                     <div className="container mx-auto px-4">
                         <div className="flex justify-between items-center mb-6">
                              <h2 className="text-2xl font-bold font-bengali">নতুন কালেকশন</h2>
-                             <Button variant="ghost">সব দেখুন <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                             <Button variant="ghost" asChild><Link href="/store/all-products">সব দেখুন <ArrowRight className="ml-2 h-4 w-4"/></Link></Button>
                         </div>
                         <ProductCarousel products={newProducts} />
                     </div>
@@ -81,7 +82,7 @@ async function StoreContent() {
                         <div className="container mx-auto px-4">
                              <div className="flex justify-between items-center mb-6">
                                  <h2 className="text-2xl font-bold font-bengali">{section.title}</h2>
-                                 <Button variant="ghost">সব দেখুন <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                                 <Button variant="ghost" asChild><Link href={`/store?category=${section.category}`}>সব দেখুন <ArrowRight className="ml-2 h-4 w-4"/></Link></Button>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {sectionProducts.map(product => <ProductCard key={product.id} product={product} />)}
@@ -95,11 +96,17 @@ async function StoreContent() {
 }
 
 export default async function RdcStorePage() {    
+    const categories = await getStoreCategories();
+    const products = await getProducts();
+    const publishedProducts = products.filter(p => p.isPublished);
+
     return (
-        <div className="py-0">
-            <Suspense fallback={<div className="flex justify-center items-center h-96"><LoadingSpinner/></div>}>
-                <StoreContent />
-            </Suspense>
-        </div>
+        <Suspense fallback={
+            <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        }>
+            <StorePageClient initialProducts={publishedProducts} allCategories={categories} />
+        </Suspense>
     );
 }

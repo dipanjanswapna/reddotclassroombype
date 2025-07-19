@@ -5,7 +5,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, X, ChevronDown, ShoppingCart } from "lucide-react";
+import { Menu, Search, X, ChevronDown, ShoppingCart, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -76,13 +76,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
     // Simplified, ideally this comes from userInfo
     return '/student/dashboard'; 
   }
-  
-  const mainNavLinks = [
-    { href: "/store", label: t.nav_home[language], highlight: true },
-    { href: "/store/academic", label: t.nav_academic_prep[language] },
-    { href: "/store/ebooks", label: t.nav_ebook[language] },
-    { href: "/store/stationery", label: t.nav_stationery[language] },
-  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
@@ -91,32 +84,22 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
           <Link href="/store">
             <RhombusLogo />
           </Link>
-           <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
-                {mainNavLinks.map(link => (
-                    <Button key={link.href} variant="ghost" asChild>
-                        <Link
-                            href={link.href}
-                            className={cn(
-                                "transition-colors hover:text-primary",
-                                pathname === link.href ? "text-primary font-semibold" : "text-muted-foreground"
-                            )}
-                        >
-                            {link.label}
-                        </Link>
-                    </Button>
-                ))}
-            </nav>
         </div>
         
         <div className="flex items-center justify-end space-x-2">
             <div className="hidden sm:flex">
                  <Input className="h-9 w-64" placeholder="Search for products..."/>
             </div>
+             <Button variant="ghost" size="icon" className="relative" asChild>
+                <Link href="/student/payments">
+                    <Receipt className="h-6 w-6" />
+                </Link>
+             </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
-                <ShoppingCart className="h-6 w-6" />
-                {itemCount > 0 && (
+             <ShoppingCart className="h-6 w-6" />
+             {itemCount > 0 && (
                 <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-xs">{itemCount}</Badge>
-                )}
+             )}
             </Button>
             {user ? (
                 <UserNav />
@@ -133,19 +116,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                         </SheetHeader>
                         <nav className="flex flex-col gap-4 mt-8">
-                            {mainNavLinks.map(link => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={cn(
-                                        "font-medium hover:text-primary",
-                                        pathname === link.href ? "text-primary" : ""
-                                    )}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
+                             <Link href="/store" className="font-medium hover:text-primary" onClick={() => setMenuOpen(false)}>Home</Link>
                             <h3 className="font-semibold pt-4 border-t">All Categories</h3>
                             {categories.map(category => (
                                 <Link
@@ -166,7 +137,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
        <nav className="hidden lg:flex container h-12 items-center justify-center border-t bg-background">
           <NavigationMenu>
             <NavigationMenuList>
-                {categories.map(category => (
+                {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
                      <NavigationMenuItem key={category.id}>
                         <NavigationMenuTrigger>{category.name}</NavigationMenuTrigger>
                         <NavigationMenuContent>
@@ -174,7 +145,10 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             <ListItem href={`/store?category=${category.slug}`} title={category.name}>
                                 View all products in {category.name}.
                             </ListItem>
-                            {/* You can map sub-categories here in the future */}
+                            {(category.subCategories || []).map(sc => (
+                                <ListItem key={sc.name} href={`/store?category=${category.slug}&subCategory=${sc.name.toLowerCase().replace(/\s+/g, '-')}`} title={sc.name}>
+                                </ListItem>
+                            ))}
                             </ul>
                         </NavigationMenuContent>
                      </NavigationMenuItem>
