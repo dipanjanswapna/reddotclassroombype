@@ -1,5 +1,6 @@
 
 
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -117,9 +118,10 @@ export const getCourses = async (filters: {
   category?: string;
   subCategory?: string;
   provider?: string;
+  instructorSlug?: string;
   status?: Course['status'];
 } = {}): Promise<Course[]> => {
-  const { category, subCategory, provider, status } = filters;
+  const { category, subCategory, provider, status, instructorSlug } = filters;
   const db = getDbInstance();
   if (!db) return [];
   const coursesRef = collection(db, 'courses');
@@ -136,6 +138,9 @@ export const getCourses = async (filters: {
   }
   if (provider) {
     constraints.push(where("organizationId", "==", provider));
+  }
+  if (instructorSlug) {
+      constraints.push(where("instructors", "array-contains", { slug: instructorSlug }))
   }
 
   const q = constraints.length > 0 ? query(coursesRef, ...constraints) : query(coursesRef);
@@ -891,12 +896,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     dataAiHint: "store banner sale"
   },
   storeHomepageSection: {
-    banner: {
-        display: true,
-        imageUrl: 'https://placehold.co/1200x400.png',
-        altText: 'Special offer on stationery',
-        linkUrl: '/store/category/stationery'
-    }
+    bannerCarousel: []
   },
   requestCallbackSection: {
     display: true,

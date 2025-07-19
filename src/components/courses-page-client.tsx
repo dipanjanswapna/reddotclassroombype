@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
 import { CourseCard } from '@/components/course-card';
-import { StoreFilterBar } from '@/components/store-filter-bar';
-import { Course, Organization } from '@/lib/types';
+import { Course, Organization, Instructor } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { CourseFilterBar } from './course-filter-bar';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -13,6 +14,7 @@ type CoursesPageClientProps = {
     allCategories: string[];
     allSubCategories: string[];
     allProviders: Organization[];
+    allInstructors: Instructor[];
     hasFilters: boolean;
 };
 
@@ -46,6 +48,7 @@ export function CoursesPageClient({
     allCategories,
     allSubCategories,
     allProviders,
+    allInstructors,
     hasFilters,
 }: CoursesPageClientProps) {
   const [loading] = useState(false); 
@@ -64,14 +67,11 @@ export function CoursesPageClient({
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-12" id="courses-start">
-            <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl font-headline">
-              All Courses
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Find the perfect course to achieve your learning goals.
-            </p>
-          </div>
+          <CourseFilterBar
+            categories={allCategories}
+            subCategories={allSubCategories}
+            instructors={allInstructors}
+          />
       </div>
 
       <main className="container mx-auto px-4 pt-0 pb-16">

@@ -4,44 +4,38 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, X } from 'lucide-react';
-import React from 'react';
-import { StoreCategory } from '@/lib/types';
+import { Card } from '@/components/ui/card';
+import { X } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Instructor, Course } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-type StoreFilterBarProps = {
-  categories: StoreCategory[];
+type CourseFilterBarProps = {
+  categories: string[];
+  subCategories: string[];
+  instructors: Instructor[];
 };
 
-export function StoreFilterBar({ categories }: StoreFilterBarProps) {
+export function CourseFilterBar({ categories, subCategories, instructors }: CourseFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const selectedCategorySlug = searchParams.get('category');
-  const selectedSubCategorySlug = searchParams.get('subCategory');
+  const selectedCategory = searchParams.get('category') || 'all';
+  const selectedSubCategory = searchParams.get('subCategory') || 'all';
+  const selectedInstructor = searchParams.get('instructor') || 'all';
 
-  const selectedCategory = categories.find(c => c.slug === selectedCategorySlug);
-  const selectedSubCategory = selectedCategory?.subCategories?.find(sc => sc.name.toLowerCase().replace(/\s+/g, '-') === selectedSubCategorySlug);
-
-  const handleSelect = (type: 'category' | 'subCategory', value: string) => {
+  const handleSelect = (type: 'category' | 'subCategory' | 'instructor', value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-    if (type === 'category') {
-        current.delete('subCategory');
-        if (value === 'all') {
-            current.delete('category');
-        } else {
-            current.set('category', value);
-        }
+    if (value === 'all') {
+        current.delete(type);
+    } else {
+        current.set(type, value);
     }
 
-    if (type === 'subCategory') {
-        if (value === 'all') {
-            current.delete('subCategory');
-        } else {
-            current.set('subCategory', value);
-        }
+    if(type === 'category') {
+        current.delete('subCategory');
     }
 
     const search = current.toString();
@@ -50,55 +44,42 @@ export function StoreFilterBar({ categories }: StoreFilterBarProps) {
     router.push(`${pathname}${query}`, { scroll: false });
   };
   
-  const clearFilters = () => {
-    router.push(pathname, { scroll: false });
-  }
+  const hasFilters = selectedCategory !== 'all' || selectedSubCategory !== 'all' || selectedInstructor !== 'all';
 
   return (
-    <Card>
-        <CardHeader>
-            <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div className="space-y-6">
-                <div>
-                    <h3 className="font-semibold mb-4">Categories</h3>
-                    <div className="space-y-2">
-                        {categories.map((category) => (
-                           <div key={category.id} className="flex flex-col items-start space-y-2">
-                                <Button 
-                                    variant="link" 
-                                    className={`p-0 h-auto justify-start ${selectedCategory?.id === category.id ? 'font-bold text-primary' : ''}`}
-                                    onClick={() => handleSelect('category', category.slug)}
-                                >
-                                    {category.name}
-                                </Button>
-                                {selectedCategory?.id === category.id && category.subCategories && (
-                                    <div className="pl-4 space-y-1 border-l">
-                                        {category.subCategories.map(sc => (
-                                             <Button 
-                                                key={sc.name}
-                                                variant="link" 
-                                                className={`p-0 h-auto justify-start text-sm ${selectedSubCategory?.name === sc.name ? 'font-bold text-primary' : 'text-muted-foreground'}`}
-                                                onClick={() => handleSelect('subCategory', sc.name.toLowerCase().replace(/\s+/g, '-'))}
-                                            >
-                                                {sc.name}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                )}
-                           </div>
-                        ))}
-                    </div>
-                </div>
-                {(selectedCategorySlug || selectedSubCategorySlug) && (
-                    <Button variant="ghost" size="sm" className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={clearFilters}>
-                        <X className="mr-1 h-4 w-4" />
-                        Clear Filters
-                    </Button>
-                )}
+    <Card className="mb-12">
+      <div className="p-4 flex flex-col md:flex-row gap-4 items-center">
+            <h3 className="font-semibold text-lg shrink-0">Find a Course</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                <Select value={selectedCategory} onValueChange={(v) => handleSelect('category', v)}>
+                    <SelectTrigger><SelectValue placeholder="Select Category..." /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+                 <Select value={selectedSubCategory} onValueChange={(v) => handleSelect('subCategory', v)}>
+                    <SelectTrigger><SelectValue placeholder="Select Sub-category..." /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Sub-categories</SelectItem>
+                        {subCategories.map(sc => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+                 <Select value={selectedInstructor} onValueChange={(v) => handleSelect('instructor', v)}>
+                    <SelectTrigger><SelectValue placeholder="Select Instructor..." /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Instructors</SelectItem>
+                        {instructors.map(i => <SelectItem key={i.slug} value={i.slug}>{i.name}</SelectItem>)}
+                    </SelectContent>
+                </Select>
             </div>
-        </CardContent>
+             {hasFilters && (
+                <Button variant="ghost" size="sm" onClick={() => router.push(pathname, { scroll: false })}>
+                    <X className="mr-2 h-4 w-4"/> Clear
+                </Button>
+            )}
+      </div>
     </Card>
   );
 }
+
