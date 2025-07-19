@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
@@ -127,6 +129,9 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                         <Button variant="ghost" size="icon"><Menu/></Button>
                     </SheetTrigger>
                     <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                        </SheetHeader>
                         <nav className="flex flex-col gap-4 mt-8">
                             {mainNavLinks.map(link => (
                                 <Link
