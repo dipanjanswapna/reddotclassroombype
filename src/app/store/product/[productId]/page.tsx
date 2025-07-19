@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { getProduct, getProducts } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
@@ -5,6 +6,7 @@ import { ProductClientPage } from '@/components/product-client-page';
 import { Card } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ProductReviewSystem } from '@/components/product-review-system';
 
 export async function generateMetadata({ params }: { params: { productId: string } }): Promise<Metadata> {
   const product = await getProduct(params.productId);
@@ -43,6 +45,10 @@ export default async function ProductDetailPage({ params }: { params: { productI
         <div className="container mx-auto px-4">
             <ProductClientPage product={product} />
 
+            <div className="mt-12">
+                <ProductReviewSystem product={product} />
+            </div>
+
             {relatedProducts.length > 0 && (
                  <section className="mt-16">
                     <h2 className="font-headline text-3xl font-bold mb-6 text-center">Related Products</h2>
@@ -80,3 +86,4 @@ export default async function ProductDetailPage({ params }: { params: { productI
     </div>
   );
 }
+

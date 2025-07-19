@@ -3,6 +3,16 @@
 import { Timestamp } from "firebase/firestore";
 import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
+export type ProductReview = {
+    id: string;
+    userId: string;
+    userName: string;
+    avatarUrl: string;
+    rating: number;
+    comment: string;
+    createdAt: Timestamp;
+};
+
 export type Product = {
     id: string;
     name: string;
@@ -18,6 +28,9 @@ export type Product = {
     sellerId?: string; // Admin or Seller Organization ID
     stock?: number;
     isPublished?: boolean;
+    ratings?: number; // Average rating
+    reviewsCount?: number;
+    reviews?: ProductReview[];
 };
 
 export type OrderItem = {
@@ -692,4 +705,11 @@ export type CallbackRequest = {
   contactedAt?: Timestamp;
   contactedBy?: string; // Admin UID
   notes?: string;
+};
+
+export type StoreCategory = {
+    id?: string;
+    name: string;
+    slug: string;
+    order?: number;
 };
