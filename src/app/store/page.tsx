@@ -2,7 +2,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProducts } from '@/lib/firebase/firestore';
+import { getProducts, getStoreCategories, getHomepageConfig } from '@/lib/firebase/firestore';
 import { StorePageClient } from '@/components/store-page-client';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -15,17 +15,30 @@ export const metadata: Metadata = {
 
 async function StoreContent() {
     const products = await getProducts();
+    const categories = await getStoreCategories();
     const publishedProducts = products.filter(p => p.isPublished);
-    return <StorePageClient initialProducts={publishedProducts} />;
+    return <StorePageClient initialProducts={publishedProducts} allCategories={categories} />;
 }
 
-export default function RdcStorePage() {
+export default async function RdcStorePage() {
+    const homepageConfig = await getHomepageConfig();
+    const storeBanner = homepageConfig?.storeHomepageSection?.banner;
+
     return (
         <div className="bg-gray-50 dark:bg-gray-900">
             <div className="container mx-auto px-4 py-8">
-                <div className="relative rounded-lg overflow-hidden mb-8">
-                    <Image src="https://placehold.co/1200x300.png" width={1200} height={300} alt="RDC Store Banner" className="w-full h-auto" data-ai-hint="students learning computer" />
-                </div>
+                {storeBanner && storeBanner.display && (
+                    <div className="relative rounded-lg overflow-hidden mb-8">
+                        <Image 
+                            src={storeBanner.imageUrl} 
+                            width={1200} 
+                            height={300} 
+                            alt={storeBanner.altText || 'RDC Store Banner'} 
+                            className="w-full h-auto" 
+                            data-ai-hint="students learning computer" 
+                        />
+                    </div>
+                )}
                 <Suspense fallback={<div className="flex justify-center items-center h-96"><LoadingSpinner/></div>}>
                    <StoreContent />
                 </Suspense>

@@ -27,6 +27,7 @@ import {
   Megaphone,
   Store,
   ShoppingCart,
+  Tags,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -62,7 +63,8 @@ export default function AdminLayout({
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "Homepage" },
-        { href: "/admin/store/products", icon: Store, label: "Store Products" },
+        { href: "/admin/store/products", icon: Store, label: "Products" },
+        { href: "/admin/store/categories", icon: Tags, label: "Categories" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },

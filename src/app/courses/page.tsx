@@ -1,5 +1,5 @@
 
-import { getCourses, getCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
+import { getCourses, getStoreCategories, getOrganizations, getHomepageConfig } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
@@ -19,12 +19,13 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   const selectedSubCategory = searchParams?.subCategory;
   const selectedProvider = searchParams?.provider;
 
-  const [providers, allCoursesData] = await Promise.all([
+  const [providers, allCoursesData, allCategoriesData] = await Promise.all([
     getOrganizations(),
     getCourses({ status: 'Published' }), // Fetch all published for filters
+    getStoreCategories(),
   ]);
   
-  const allCategories = [...new Set(allCoursesData.map(c => c.category).filter(Boolean))] as string[];
+  const allCategories = allCategoriesData.map(c => c.name);
 
   const filteredCourses = await getCourses({
       category: selectedCategory,

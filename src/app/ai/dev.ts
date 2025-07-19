@@ -1,0 +1,37 @@
+
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/virtual-tutor-chatbot.ts';
+import '@/ai/flows/tts-flow.ts';
+import '@/ai/flows/ai-calculator-flow.ts';
+import '@/ai/flows/ai-course-creator-flow.ts';
+import '@/ai/flows/study-plan-flow.ts';
+import '@/ai/flows/ai-quiz-generator-flow.ts';
+import '@/app/actions/batch.actions';
+import '@/app/actions/question-bank.actions';
+import '@/app/actions/progress.actions';
+import '@/app/actions/quiz.actions';
+import '@/app/actions/user.actions';
+import '@/app/actions/notice.actions';
+import '@/app/actions/callback.actions';
+import '@/app/actions/announcement.actions';
+import '@/app/actions/assignment.actions';
+import '@/app/actions/attendance.actions';
+import '@/app/actions/blog.actions';
+import '@/app/actions/course.actions';
+import '@/app/actions/enrollment.actions';
+import '@/app/actions/grading.actions';
+import '@/app/actions/homepage.actions';
+import '@/app/actions/instructor.actions';
+import '@/app/actions/invoice.actions';
+import '@/app/actions/live-class.actions';
+import '@/app/actions/offline.actions';
+import '@/app/actions/organization.actions';
+import '@/app/actions/promo.actions';
+import '@/app/actions/rating.actions';
+import '@/app/actions/report.actions';
+import '@/app/actions/support.actions';
+import '@/app/actions/product.actions';
+import '@/app/actions/order.actions';
+import '@/app/actions/store.actions';

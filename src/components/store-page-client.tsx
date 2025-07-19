@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Product, Organization } from '@/lib/types';
+import { Product, StoreCategory } from '@/lib/types';
 import { Button } from './ui/button';
-import { Card, CardHeader, CardContent, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Slider } from './ui/slider';
@@ -15,34 +15,62 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/context/cart-context';
+import { useToast } from './ui/use-toast';
 
-const ProductCard = ({ product }: { product: Product }) => (
-    <Card className="overflow-hidden group">
-      <Link href={`/store/product/${product.id}`} className="block">
-        <CardHeader className="p-0">
-          <div className="relative aspect-square">
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint={product.dataAiHint || 'product image'}
-            />
-          </div>
-        </CardHeader>
-        <CardContent className="p-4">
-          <p className="text-xs text-muted-foreground">{product.category}</p>
-          <h3 className="font-semibold truncate group-hover:text-primary">{product.name}</h3>
-          <div className="flex items-center gap-2 mt-2">
-            <p className="text-lg font-bold text-primary">৳{product.price}</p>
-            {product.oldPrice && (
-              <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>
-            )}
-          </div>
-        </CardContent>
-      </Link>
-    </Card>
-);
+const ProductCard = ({ product }: { product: Product }) => {
+    const { addToCart } = useCart();
+    const { toast } = useToast();
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      addToCart({
+        id: product.id!,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        imageUrl: product.imageUrl,
+      });
+      toast({
+          title: "Added to Cart!",
+          description: `"${product.name}" has been added to your cart.`,
+      });
+    };
+
+    return (
+        <Card className="overflow-hidden group flex flex-col">
+          <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
+            <CardHeader className="p-0">
+              <div className="relative aspect-square">
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  data-ai-hint={product.dataAiHint || 'product image'}
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 flex flex-col flex-grow">
+              <p className="text-xs text-muted-foreground">{product.category}</p>
+              <h3 className="font-semibold truncate group-hover:text-primary flex-grow">{product.name}</h3>
+              <div className="flex items-center justify-between gap-2 mt-2">
+                <div className="flex flex-col">
+                  {product.oldPrice && (
+                    <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>
+                  )}
+                  <p className="text-lg font-bold text-primary">৳{product.price}</p>
+                </div>
+                 <Button size="sm" onClick={handleAddToCart}>
+                    Add to Cart
+                 </Button>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+    );
+};
 
 const FilterSidebar = ({
   categories,
@@ -114,14 +142,14 @@ const FilterSidebar = ({
   );
 };
 
-export function StorePageClient({ initialProducts }: { initialProducts: Product[] }) {
+export function StorePageClient({ initialProducts, allCategories }: { initialProducts: Product[], allCategories: StoreCategory[] }) {
     const [products] = useState(initialProducts);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
     const [stockStatus, setStockStatus] = useState<'all' | 'in-stock'>('all');
 
-    const categories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
+    const categories = useMemo(() => allCategories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(c => c.name), [allCategories]);
 
     const filteredProducts = useMemo(() => {
         return products.filter((product) => {
@@ -213,4 +241,3 @@ export function StorePageClient({ initialProducts }: { initialProducts: Product[
         </div>
     );
 }
-
