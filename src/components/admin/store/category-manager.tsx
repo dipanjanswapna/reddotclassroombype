@@ -218,6 +218,14 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                                 <Label htmlFor="order">Display Order</Label>
                                 <Input id="order" type="number" value={editingCategory.order || ''} onChange={e => updateField('order', Number(e.target.value))} placeholder="e.g., 1"/>
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="menuImageUrl">Menu Image URL</Label>
+                                <Input id="menuImageUrl" value={editingCategory.menuImageUrl || ''} onChange={e => updateField('menuImageUrl', e.target.value)} placeholder="https://example.com/image.png"/>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="menuImageAiHint">Menu Image AI Hint</Label>
+                                <Input id="menuImageAiHint" value={editingCategory.menuImageAiHint || ''} onChange={e => updateField('menuImageAiHint', e.target.value)} placeholder="e.g., product book stack"/>
+                            </div>
                             <div className="space-y-4 pt-4 border-t">
                                 <Label className="font-semibold">Sub-category Groups</Label>
                                 <div className="space-y-4">

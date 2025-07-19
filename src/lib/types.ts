@@ -723,6 +723,8 @@ export type StoreCategory = {
     name: string;
     slug: string;
     order?: number;
+    menuImageUrl?: string;
+    menuImageAiHint?: string;
     subCategoryGroups?: SubCategoryGroup[];
 };
 

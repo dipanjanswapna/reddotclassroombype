@@ -42,6 +42,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Image from "next/image";
 
 
 const OrderTrackingModal = () => {
@@ -136,6 +137,9 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
         </a>
       </NavigationMenuLink>
     </li>
@@ -163,7 +167,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             <div className="hidden sm:flex items-center">
                  <Input className="h-9 w-64" placeholder="Search for products..." />
             </div>
-            <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
+             <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
                 <BookUser className="h-6 w-6" />
             </Button>
              <Dialog>
@@ -202,7 +206,11 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                             href={`/store?category=${category.slug}`}
                           >
-                            <RhombusLogo/>
+                            {category.menuImageUrl ? (
+                                <Image src={category.menuImageUrl} alt={category.name} width={200} height={150} className="object-contain" data-ai-hint={category.menuImageAiHint}/>
+                            ) : (
+                                <RhombusLogo/>
+                            )}
                             <div className="mb-2 mt-4 text-lg font-medium">
                               {category.name}
                             </div>
@@ -214,7 +222,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                       </div>
                       {(category.subCategoryGroups || []).map(group => (
                           <div key={group.title} className="flex flex-col">
-                               <p className="font-semibold text-primary px-3">{group.title} &rarr;</p>
+                               <Link href={`/store?category=${category.slug}`} className="font-semibold text-primary px-3 mb-1 hover:underline">{group.title} &rarr;</Link>
                                <ul className="flex flex-col">
                                    {group.subCategories.map(sub => (
                                        <ListItem key={sub.name} href={`/store?category=${category.slug}&subCategory=${sub.name.toLowerCase().replace(/\s+/g, '-')}`} title={sub.name} />
