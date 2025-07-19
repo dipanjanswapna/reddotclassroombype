@@ -1,6 +1,6 @@
 
 import { ProductManager } from '@/components/admin/store/product-manager';
-import { getProducts, getOrganizations } from '@/lib/firebase/firestore';
+import { getProducts, getOrganizations, getStoreCategories } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,12 +9,16 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminStoreProductsPage() {
-    const products = await getProducts();
-    const sellers = await getOrganizations();
+    const [products, sellers, categories] = await Promise.all([
+        getProducts(),
+        getOrganizations(),
+        getStoreCategories(),
+    ]);
     const approvedSellers = sellers.filter(s => s.status === 'approved');
     
     return <ProductManager 
         initialProducts={products}
         sellers={approvedSellers}
+        categories={categories}
     />;
 }

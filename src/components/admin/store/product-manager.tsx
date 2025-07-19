@@ -35,7 +35,7 @@ import { PlusCircle, Edit, Trash2, Loader2, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Product, Organization } from '@/lib/types';
+import { Product, Organization, StoreCategory } from '@/lib/types';
 import { saveProductAction, deleteProductAction } from '@/app/actions/product.actions';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -47,13 +47,10 @@ import Image from 'next/image';
 interface ProductManagerProps {
   initialProducts: Product[];
   sellers: Organization[];
+  categories: StoreCategory[];
 }
 
-const productCategories: Product['category'][] = [
-    'T-Shirt', 'Hoodie', 'Jersey', 'PDF Book', 'Printed Book', 'Pen', 'Notebook', 'Stationery', 'Apparel', 'E-Book'
-];
-
-export function ProductManager({ initialProducts, sellers }: ProductManagerProps) {
+export function ProductManager({ initialProducts, sellers, categories }: ProductManagerProps) {
     const { toast } = useToast();
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -76,7 +73,7 @@ export function ProductManager({ initialProducts, sellers }: ProductManagerProps
 
         if (result.success) {
             toast({ title: 'Success', description: result.message });
-            window.location.reload(); // Simplest way to refresh data
+            window.location.reload(); 
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive'});
         }
@@ -97,8 +94,18 @@ export function ProductManager({ initialProducts, sellers }: ProductManagerProps
     };
 
     const updateField = (field: keyof Product, value: any) => {
-        setEditingProduct(prev => prev ? { ...prev, [field]: value } : null);
+        setEditingProduct(prev => {
+            const newState = prev ? { ...prev, [field]: value } : null;
+            if (field === 'category' && newState) {
+                newState.subCategory = ''; // Reset subcategory when category changes
+            }
+            return newState;
+        });
     };
+
+    const availableSubCategories = editingProduct?.category 
+        ? categories.find(c => c.name === editingProduct.category)?.subCategoryGroups?.flatMap(g => g.subCategories) || []
+        : [];
 
     return (
         <>
@@ -179,14 +186,23 @@ export function ProductManager({ initialProducts, sellers }: ProductManagerProps
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Category</Label>
-                                    <Select value={editingProduct.category} onValueChange={(v: Product['category']) => updateField('category', v)}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>{productCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent>
+                                    <Select value={editingProduct.category} onValueChange={(v) => updateField('category', v)}>
+                                        <SelectTrigger><SelectValue placeholder="Select a category..."/></SelectTrigger>
+                                        <SelectContent>{categories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
                                     </Select>
                                 </div>
                                  <div className="space-y-2">
-                                    <Label>Sub-category (Optional)</Label>
-                                    <Input value={editingProduct.subCategory || ''} onChange={e => updateField('subCategory', e.target.value)} />
+                                    <Label>Sub-category</Label>
+                                    <Select 
+                                        value={editingProduct.subCategory} 
+                                        onValueChange={(v) => updateField('subCategory', v)}
+                                        disabled={availableSubCategories.length === 0}
+                                    >
+                                        <SelectTrigger><SelectValue placeholder="Select a sub-category..."/></SelectTrigger>
+                                        <SelectContent>
+                                            {availableSubCategories.map(sub => <SelectItem key={sub.name} value={sub.name}>{sub.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
