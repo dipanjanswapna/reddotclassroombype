@@ -26,7 +26,7 @@ export async function createOrderAction(orderData: Omit<Order, 'id' | 'createdAt
     revalidatePath('/admin/store/orders');
     revalidatePath('/student/payments');
     
-    return { success: true, orderId: orderRef.id };
+    return { success: true, message: `Your order #${orderRef.id.slice(0, 8)} has been placed successfully.`, orderId: orderRef.id };
 
   } catch (error: any) {
     console.error("Error creating order:", error);

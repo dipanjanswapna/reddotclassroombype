@@ -48,8 +48,10 @@ export type Order = {
     status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
     shippingDetails: {
         name: string;
-        address: string;
         phone: string;
+        district: string;
+        thana: string;
+        address: string;
     };
     createdAt: Timestamp;
     updatedAt: Timestamp;

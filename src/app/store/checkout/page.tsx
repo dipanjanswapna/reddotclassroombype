@@ -20,13 +20,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Simplified list for demonstration. In a real app, this would come from a database or a comprehensive library.
-const districts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet"];
+const districts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet", "Barishal", "Rangpur", "Mymensingh"];
 const thanas: { [key: string]: string[] } = {
-  "Dhaka": ["Gulshan", "Dhanmondi", "Mirpur", "Uttara"],
-  "Chattogram": ["Kotwali", "Pahartali", "Panchlaish"],
-  "Khulna": ["Kotwali", "Sonadanga"],
-  "Rajshahi": ["Boalia", "Motihar"],
-  "Sylhet": ["Kotwali", "Jalalabad"],
+  "Dhaka": ["Gulshan", "Dhanmondi", "Mirpur", "Uttara", "Motijheel", "Savar"],
+  "Chattogram": ["Kotwali", "Pahartali", "Panchlaish", "Sitakunda"],
+  "Khulna": ["Kotwali", "Sonadanga", "Daulatpur"],
+  "Rajshahi": ["Boalia", "Motihar", "Paba"],
+  "Sylhet": ["Kotwali", "Jalalabad", "Beanibazar"],
+  "Barishal": ["Kotwali", "Bakerganj"],
+  "Rangpur": ["Kotwali", "Badarganj"],
+  "Mymensingh": ["Kotwali", "Trishal"],
 };
 
 
@@ -60,7 +63,8 @@ export default function CheckoutPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  const deliveryCharge = items.length >= 2 ? 0 : 40;
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const deliveryCharge = totalItems >= 2 ? 0 : 40;
   const totalPayable = total + deliveryCharge - discount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -109,7 +113,7 @@ export default function CheckoutPage() {
     if(result.success) {
       toast({
         title: "Order Placed!",
-        description: `Your order #${result.orderId?.slice(0, 8)} has been placed successfully.`,
+        description: result.message,
       });
       clearCart();
       router.push('/student/dashboard'); // Or an order confirmation page
@@ -150,23 +154,23 @@ export default function CheckoutPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Full Name*</Label>
                 <Input id="name" placeholder="Full Name" value={shippingInfo.name} onChange={handleInputChange} />
               </div>
                <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">Phone*</Label>
                 <Input id="phone" type="tel" placeholder="01XXXXXXXXX" value={shippingInfo.phone} onChange={handleInputChange} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label htmlFor="district">District</Label>
+                    <Label htmlFor="district">District*</Label>
                     <Select value={shippingInfo.district} onValueChange={(v) => handleSelectChange('district', v)}>
                         <SelectTrigger><SelectValue placeholder="Select District"/></SelectTrigger>
                         <SelectContent>{districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                    <div className="space-y-2">
-                    <Label htmlFor="thana">Thana</Label>
+                    <Label htmlFor="thana">Thana*</Label>
                     <Select value={shippingInfo.thana} onValueChange={(v) => handleSelectChange('thana', v)} disabled={!shippingInfo.district}>
                         <SelectTrigger><SelectValue placeholder="Select Thana"/></SelectTrigger>
                         <SelectContent>{(thanas[shippingInfo.district] || []).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
@@ -174,7 +178,7 @@ export default function CheckoutPage() {
                   </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Delivery Address</Label>
+                <Label htmlFor="address">Delivery Address*</Label>
                 <Input id="address" placeholder="তোমার নিকটস্থ সুন্দরবন কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} />
               </div>
             </CardContent>
@@ -204,7 +208,7 @@ export default function CheckoutPage() {
                         <span>৳{deliveryCharge.toFixed(2)}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">(Buy 2+ books to get free delivery)</p>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center text-green-600">
                         <span>Discount:</span>
                         <span>- ৳{discount.toFixed(2)}</span>
                     </div>
@@ -248,4 +252,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
