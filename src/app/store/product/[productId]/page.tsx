@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import { getProduct, getProducts } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { ProductClientPage } from '@/components/product-client-page';
-import { CourseCard } from '@/components/course-card';
 import { Card } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
