@@ -26,7 +26,6 @@ Sentry.init({
       maskAllText: true,
       blockAllMedia: true,
     }),
-    Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn", "debug", "info", "trace", "fatal"] }),
     Sentry.browserTracingIntegration(),
   ],
    _experiments: {
