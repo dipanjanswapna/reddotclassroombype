@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,8 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection } from '@/lib/types';
-import { getHomepageConfig, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner } from '@/lib/types';
+import { getHomepageConfig, getInstructors, getOrganizations, getProducts } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
@@ -497,14 +498,34 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
-  const handleStoreBannerChange = (field: keyof StoreHomepageSection['banner'], value: any) => {
-      setConfig(prev => {
-          if (!prev) return null;
-          const storeSection = prev.storeHomepageSection || { banner: { display: true, imageUrl: '', altText: '' } };
-          const newBanner = { ...storeSection.banner, [field]: value };
-          return { ...prev, storeHomepageSection: { ...storeSection, banner: newBanner } };
-      });
+  const addStoreBanner = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const newBanner: StoreHomepageBanner = { id: `banner_${Date.now()}`, imageUrl: 'https://placehold.co/600x400.png', linkUrl: '#' };
+        const bannerCarousel = [...(storeSection.bannerCarousel || []), newBanner];
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
   };
+  
+  const removeStoreBanner = (id: string) => {
+     setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const bannerCarousel = storeSection.bannerCarousel?.filter(b => b.id !== id);
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
+  };
+  
+  const updateStoreBanner = (id: string, field: 'imageUrl' | 'linkUrl', value: string) => {
+      setConfig(prev => {
+        if (!prev) return null;
+        const storeSection = prev.storeHomepageSection || {};
+        const bannerCarousel = storeSection.bannerCarousel?.map(b => b.id === id ? { ...b, [field]: value } : b);
+        return { ...prev, storeHomepageSection: { ...storeSection, bannerCarousel } };
+    });
+  };
+
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
@@ -528,10 +549,11 @@ export default function AdminHomepageManagementPage() {
       </div>
 
       <Tabs defaultValue="general" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="hero">Hero & Banners</TabsTrigger>
             <TabsTrigger value="courses">Course Sections</TabsTrigger>
+            <TabsTrigger value="store">Store Homepage</TabsTrigger>
             <TabsTrigger value="content">Content Sections</TabsTrigger>
             <TabsTrigger value="pages">Special Pages</TabsTrigger>
         </TabsList>
@@ -596,26 +618,6 @@ export default function AdminHomepageManagementPage() {
                     <Button variant="outline" className="w-full border-dashed" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
                     <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm"><Label htmlFor="autoplay-switch" className="font-medium">Enable Autoplay</Label><Switch id="autoplay-switch" checked={config.heroCarousel?.autoplay ?? true} onCheckedChange={(checked) => handleCarouselSettingChange('autoplay', checked)}/></div>
                     <div className="space-y-2"><Label htmlFor="autoplay-delay">Autoplay Delay (ms)</Label><Input id="autoplay-delay" type="number" value={config.heroCarousel?.autoplayDelay ?? 5000} onChange={(e) => handleCarouselSettingChange('autoplayDelay', parseInt(e.target.value))} disabled={!config.heroCarousel?.autoplay}/></div>
-                </CardContent>
-            </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Store className="h-5 w-5"/>RDC Store Homepage Banner</CardTitle>
-                    <CardDescription>Manage the main banner on the /store page.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="store-banner-url">Banner Image URL</Label>
-                        <Input id="store-banner-url" value={config.storeHomepageSection?.banner.imageUrl || ''} onChange={(e) => handleStoreBannerChange('imageUrl', e.target.value)} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="store-banner-link">Banner Link URL</Label>
-                        <Input id="store-banner-link" value={config.storeHomepageSection?.banner.linkUrl || ''} onChange={(e) => handleStoreBannerChange('linkUrl', e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="store-banner-alt">Alt Text</Label>
-                        <Input id="store-banner-alt" value={config.storeHomepageSection?.banner.altText || ''} onChange={(e) => handleStoreBannerChange('altText', e.target.value)} />
-                    </div>
                 </CardContent>
             </Card>
             <Card>
@@ -781,6 +783,25 @@ export default function AdminHomepageManagementPage() {
                         </div>
                     ))}
                     <Button variant="outline" className="w-full border-dashed" onClick={addFreeClass}><PlusCircle className="mr-2"/>Add Free Class</Button>
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="store" className="mt-6 space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Store Banner Carousel</CardTitle>
+                    <CardDescription>Add promotional banners for the store page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     {config.storeHomepageSection?.bannerCarousel?.map((banner, index) => (
+                        <div key={banner.id} className="p-4 border rounded-lg space-y-2 relative">
+                            <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeStoreBanner(banner.id)}><X className="text-destructive h-4 w-4"/></Button>
+                            <h4 className="font-semibold">Banner {index + 1}</h4>
+                            <div className="space-y-1"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => updateStoreBanner(banner.id, 'imageUrl', e.target.value)} /></div>
+                            <div className="space-y-1"><Label>Link URL (optional)</Label><Input value={banner.linkUrl || ''} onChange={(e) => updateStoreBanner(banner.id, 'linkUrl', e.target.value)} /></div>
+                        </div>
+                    ))}
+                    <Button variant="outline" className="w-full border-dashed" onClick={addStoreBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
                 </CardContent>
             </Card>
         </TabsContent>

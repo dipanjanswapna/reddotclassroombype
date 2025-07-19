@@ -728,17 +728,6 @@ export type StoreCategory = {
     subCategoryGroups?: SubCategoryGroup[];
 };
 
-export type StoreHomepageHero = {
-    title: string;
-    subtitle: string;
-    imageUrl: string;
-};
-
-export type StoreHomepageProductSection = {
-    title: string;
-    category: string;
-};
-
 export type StoreHomepageBanner = {
     id: string;
     imageUrl: string;
@@ -746,16 +735,7 @@ export type StoreHomepageBanner = {
 };
 
 export type StoreHomepageSection = {
-    hero?: StoreHomepageHero;
-    featuredProductIds?: string[];
-    productSections?: StoreHomepageProductSection[];
     bannerCarousel?: StoreHomepageBanner[];
-    banner?: {
-        display: boolean;
-        imageUrl: string;
-        altText: string;
-        linkUrl?: string;
-    };
 };
 
 export type HomepageConfig = {
@@ -940,6 +920,10 @@ export type HomepageConfig = {
         imageUrl: string;
         dataAiHint?: string;
     };
+    storeSettings?: {
+        deliveryCharge: number;
+        freeDeliveryThreshold: number;
+    },
     storeHomepageSection: StoreHomepageSection;
     requestCallbackSection: {
         display: boolean;
