@@ -167,6 +167,9 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             <div className="hidden sm:flex items-center">
                  <Input className="h-9 w-64" placeholder="Search for products..." />
             </div>
+            <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
+                <BookUser className="h-6 w-6" />
+            </Button>
              <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" aria-label="Track Order">
@@ -175,9 +178,6 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                 </DialogTrigger>
                 <OrderTrackingModal />
              </Dialog>
-            <Button variant="ghost" size="icon" aria-label="My Orders" onClick={() => router.push('/student/payments')}>
-                <BookUser className="h-6 w-6" />
-            </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={() => setIsCartOpen(true)}>
              <ShoppingCart className="h-6 w-6" />
              {itemCount > 0 && (
@@ -195,8 +195,8 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                         <Button variant="ghost" size="icon"><Menu/></Button>
                     </SheetTrigger>
                     <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                        <SheetHeader className="sr-only">
+                            <SheetTitle>Mobile Menu</SheetTitle>
                         </SheetHeader>
                          <nav className="flex flex-col gap-4 mt-8">
                             <h3 className="font-semibold pt-4 border-t">All Categories</h3>
@@ -214,7 +214,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                                         </AccordionTrigger>
                                         <AccordionContent>
                                             <div className="flex flex-col space-y-2 pl-4">
-                                                {category.subCategoryGroups?.flatMap(group =>
+                                                {(category.subCategoryGroups || []).flatMap(group =>
                                                     group.subCategories.map(sc => (
                                                         <Link
                                                             key={sc.name}
@@ -237,7 +237,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             </div>
         </div>
       </div>
-       <nav className="hidden lg:flex container h-12 items-center justify-start border-t">
+       <nav className="hidden lg:flex container h-12 items-center justify-start border-t bg-background/90 backdrop-blur-sm">
           <NavigationMenu>
             <NavigationMenuList>
               {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
@@ -251,7 +251,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                             href={`/store?category=${category.slug}`}
                           >
-                            <RhombusLogo className="h-6 w-6"/>
+                            <RhombusLogo/>
                             <div className="mb-2 mt-4 text-lg font-medium">
                               {category.name}
                             </div>
