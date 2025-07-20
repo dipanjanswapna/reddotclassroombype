@@ -508,7 +508,9 @@ export type User = {
   mobileNumber?: string;
   guardianMobileNumber?: string;
   address?: string;
-  referredBy?: string;
+  referredBy?: string; // UID of the referrer
+  referralCode?: string; // This user's unique referral code
+  referralPoints?: number;
   socials?: {
     facebook?: string;
   };
@@ -520,6 +522,17 @@ export type User = {
   offlineRollNo?: string;
   assignedBranchId?: string;
   assignedBatchId?: string;
+};
+
+export type Referral = {
+  id?: string;
+  referrerId: string; // UID of the user who referred
+  referredUserId: string; // UID of the new user who was referred
+  referredUserName: string;
+  courseId: string;
+  courseName: string;
+  rewardedPoints: number;
+  date: Timestamp;
 };
 
 export type Enrollment = {

@@ -17,7 +17,7 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
 import { User, HomepageConfig } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import signupImage from '@/public/signup.jpg';
 
 function GoogleIcon() {
@@ -44,11 +44,13 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
   const { language } = useLanguage();
   const { signup, loginWithGoogle, loginWithFacebook } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<User['role']>('Student');
+  const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +59,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
     setIsLoading(true);
     setError(null);
     try {
-      await signup(email, password, fullName, role);
+      await signup(email, password, fullName, role, 'Active', referralCode);
     } catch (err: any) {
       setError(err.message || 'Failed to create an account.');
     } finally {
@@ -143,6 +145,10 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                   <div className="grid gap-2">
                   <Label htmlFor="password">{t.password[language]}</Label>
                   <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
+                  </div>
+                   <div className="grid gap-2">
+                      <Label htmlFor="referral-code">Referral Code (Optional)</Label>
+                      <Input id="referral-code" placeholder="Enter friend's code" value={referralCode} onChange={e => setReferralCode(e.target.value)} />
                   </div>
                   <div className="grid gap-2">
                       <Label>{t.registering_as[language]}</Label>

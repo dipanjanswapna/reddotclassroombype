@@ -4,9 +4,9 @@
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument } from '@/lib/firebase/firestore';
-import { Enrollment, Assignment, Exam, Invoice, User } from '@/lib/types';
-import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc } from 'firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser } from '@/lib/firebase/firestore';
+import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
+import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
@@ -85,7 +85,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         if (!paymentDetails && (!student.mobileNumber || !student.guardianMobileNumber)) {
             throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
         }
-
+        
         const course = await getCourse(courseId);
         if (!course) {
             throw new Error("Course not found after enrollment.");
@@ -142,6 +142,28 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         
         batch.set(mainEnrollmentRef, enrollmentData);
         
+        // --- Referral Logic ---
+        const studentEnrollments = await getEnrollmentsByUserId(student.uid);
+        if (studentEnrollments.length === 0 && student.referredBy) {
+            const referrer = await getUser(student.referredBy);
+            if(referrer) {
+                const points = 10; // Award 10 points per referral
+                const updatedPoints = (referrer.referralPoints || 0) + points;
+                await updateUser(referrer.id!, { referralPoints: updatedPoints });
+
+                const referralData: Omit<Referral, 'id'> = {
+                    referrerId: referrer.uid,
+                    referredUserId: student.uid,
+                    referredUserName: student.name,
+                    courseId: courseId,
+                    courseName: course.title,
+                    rewardedPoints: points,
+                    date: serverTimestamp() as Timestamp,
+                };
+                await addReferral(referralData);
+            }
+        }
+
         // 2. Create enrollments for bundled courses only if it's a full course purchase
         if (!isCycleEnrollment && course.includedCourseIds && course.includedCourseIds.length > 0) {
             for (const bundledCourseId of course.includedCourseIds) {
