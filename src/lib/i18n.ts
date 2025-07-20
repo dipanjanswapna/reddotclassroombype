@@ -79,6 +79,7 @@ export const t = {
   affiliate: { en: 'Affiliate', bn: 'অ্যাফিলিয়েট' },
   moderator: { en: 'Moderator', bn: 'মডারেটর' },
   seller: { en: 'Seller', bn: 'বিক্রেতা' },
+  doubt_solver: { en: 'Doubt Solver', bn: 'ডাউট সলভার' },
 
   // Signup Page
   create_account: { en: 'Create an Account', bn: 'অ্যাকাউন্ট তৈরি করুন' },

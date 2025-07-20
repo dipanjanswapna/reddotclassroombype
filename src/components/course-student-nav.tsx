@@ -22,6 +22,7 @@ export function CourseStudentNav({ course }: { course: Course }) {
 
   const navItems = [
     { href: `/student/my-courses/${courseId}`, label: 'Lessons', icon: BookCopy },
+    { href: `/student/my-courses/${courseId}/doubt-solve`, label: 'Doubt Solve', icon: HelpCircle },
     { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
     { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
     { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
