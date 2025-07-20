@@ -40,6 +40,12 @@ export type Reward = {
   pointsRequired: number;
   imageUrl: string;
   stock?: number;
+  type: 'physical_gift' | 'promo_code';
+  promoCodeDetails?: {
+      value: number;
+      type: 'percentage' | 'fixed';
+      applicableCourseIds?: string[];
+  };
 }
 
 export type RedemptionRequest = {
@@ -50,8 +56,8 @@ export type RedemptionRequest = {
   rewardTitle: string;
   pointsSpent: number;
   requestedAt: Timestamp;
-  status: 'Pending' | 'Approved' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
-  shippingAddress: {
+  status: 'Pending' | 'Approved' | 'Processing' | 'Shipped' | 'Delivered' | 'Completed' | 'Cancelled';
+  shippingAddress?: {
       fullName: string;
       addressLine1: string;
       city: string;
@@ -61,6 +67,7 @@ export type RedemptionRequest = {
   trackingNumber?: string;
   processedBy?: string; // Admin UID
   processedAt?: Timestamp;
+  generatedPromoCode?: string;
 }
 
 export type OrderItem = {
