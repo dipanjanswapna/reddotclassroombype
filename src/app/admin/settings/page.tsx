@@ -407,3 +407,5 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
     </div>
   );
 }
+
+    

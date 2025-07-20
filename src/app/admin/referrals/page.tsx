@@ -1,11 +1,10 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { DatePicker } from '@/components/ui/date-picker';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { getReferrals, getUsers } from '@/lib/firebase/firestore';
@@ -145,3 +144,5 @@ export default function ReferralsReportPage() {
         </div>
     );
 }
+
+    
