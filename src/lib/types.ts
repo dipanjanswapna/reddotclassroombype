@@ -329,12 +329,13 @@ export type LeaderboardEntry = {
 export type Notification = {
   id?: string;
   userId: string;
-  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp' | 'Users';
+  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp' | 'Users' | 'new_doubt_question' | 'doubt_reopened' | 'doubt_answered' | 'doubt_satisfied';
   title: string;
   description: string;
   date: Timestamp;
   read: boolean;
   link?: string;
+  relatedId?: string;
 };
 
 export type AssignmentTemplate = {
@@ -461,6 +462,7 @@ export type Course = {
   communityUrl?: string;
   videoUrl?: string;
   showStudentCount?: boolean;
+  doubtSolverIds?: string[]; // Array of user IDs for doubt solvers
 };
 
 
@@ -528,7 +530,7 @@ export type User = {
   name: string;
   email: string;
   avatarUrl: string;
-  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller';
+  role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller' | 'Doubt Solver';
   status: 'Active' | 'Suspended' | 'Pending Approval';
   joined: Timestamp;
   className?: string;
@@ -560,6 +562,8 @@ export type User = {
   offlineRollNo?: string;
   assignedBranchId?: string;
   assignedBatchId?: string;
+  // Doubt Solver fields
+  assignedCourses?: string[]; // Array of courseIds
 };
 
 export type Referral = {
@@ -615,6 +619,7 @@ export type PlatformSettings = {
   Seller: PlatformRoleSettings;
   Affiliate: PlatformRoleSettings;
   Moderator: PlatformRoleSettings;
+  DoubtSolver: PlatformRoleSettings;
 };
 
 export type FreeClass = {
@@ -811,6 +816,47 @@ export type ReferralSettings = {
     pointsPerReferral: number;
     referredDiscountPercentage: number;
 };
+
+// Doubt Solve System
+export type DoubtAttachment = {
+  type: 'image' | 'audio' | 'file';
+  url: string;
+  fileName: string;
+};
+
+export type Doubt = {
+  id?: string;
+  sessionId: string;
+  courseId: string;
+  studentId: string;
+  questionText?: string;
+  attachments?: DoubtAttachment[];
+  status: 'Open' | 'Answered' | 'Reopened' | 'Satisfied' | 'Closed';
+  askedAt: Timestamp;
+  lastUpdatedAt: Timestamp;
+  assignedDoubtSolverId?: string;
+  rating?: 1 | 2 | 3 | 4 | 5;
+};
+
+export type DoubtAnswer = {
+  id?: string;
+  doubtId: string;
+  doubtSolverId: string;
+  answerText?: string;
+  attachments?: DoubtAttachment[];
+  answeredAt: Timestamp;
+  isReanswer?: boolean;
+};
+
+export type DoubtSession = {
+  id?: string;
+  courseId: string;
+  sessionName: string;
+  activeStudentIds?: string[];
+  assignedDoubtSolverIds: string[];
+  createdAt: Timestamp;
+};
+
 
 export type HomepageConfig = {
     id: string;

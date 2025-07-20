@@ -30,6 +30,7 @@ import {
   Tags,
   Gift,
   Share2,
+  HelpCircle,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -77,6 +78,7 @@ export default function AdminLayout({
         { href: "/admin/callback-requests", icon: PhoneCall, label: "Callbacks" },
         { href: "/admin/users", icon: UserCog, label: "Staff Users" },
         { href: "/admin/students", icon: Users, label: "Student Users" },
+        { href: "/admin/doubt-solvers", icon: HelpCircle, label: "Doubt Solvers" },
         { href: "/admin/manage-user", icon: Search, label: "Manage User" },
         { href: "/admin/sellers", icon: Handshake, label: "Sellers" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },

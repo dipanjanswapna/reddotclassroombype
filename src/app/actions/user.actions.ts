@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import 'dotenv/config';
@@ -40,6 +41,7 @@ export async function saveUserAction(userData: Partial<User>) {
             await updateUser(id, data);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
+            revalidatePath('/admin/doubt-solvers');
             revalidatePath('/student/profile');
             revalidatePath(`/admin/manage-user/${id}`);
             revalidatePath('/admin/offline-hub');
@@ -56,6 +58,7 @@ export async function saveUserAction(userData: Partial<User>) {
             await addUser(newUser);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
+            revalidatePath('/admin/doubt-solvers');
             return { success: true, message: 'User created successfully.' };
         }
     } catch (error: any) {
@@ -110,6 +113,7 @@ export async function deleteUserAction(id: string) {
 
         revalidatePath('/admin/users');
         revalidatePath('/admin/students');
+        revalidatePath('/admin/doubt-solvers');
         return { success: true, message: 'User and all associated data deleted successfully.' };
     } catch (error: any) {
         console.error("Error deleting user:", error);

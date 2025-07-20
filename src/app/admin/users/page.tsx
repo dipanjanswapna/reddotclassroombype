@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Settings, Search } from 'lucide-react';
+import { Eye, Pencil, Trash2, MoreVertical, Shield, UserCog, GraduationCap, AreaChart, PlusCircle, Loader2, UserCheck, UserX, Handshake, Settings, Search, HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +54,7 @@ const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Affiliate: <UserCheck className="h-4 w-4" />,
   Moderator: <UserX className="h-4 w-4" />,
   Seller: <Handshake className="h-4 w-4" />,
+  'Doubt Solver': <HelpCircle className="h-4 w-4" />,
 };
 
 const roleColors: { [key in User['role']]: string } = {
@@ -63,6 +65,7 @@ const roleColors: { [key in User['role']]: string } = {
   Affiliate: 'border-yellow-300 bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
   Moderator: 'border-orange-300 bg-orange-50 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-700',
   Seller: 'border-indigo-300 bg-indigo-50 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700',
+  'Doubt Solver': 'border-teal-300 bg-teal-50 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 dark:border-teal-700',
 };
 
 const statusColors: { [key in User['status']]: string } = {
