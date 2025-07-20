@@ -789,8 +789,22 @@ export type StoreHomepageBanner = {
     linkUrl?: string;
 };
 
+export type StoreHomepageProductSection = {
+    title: string;
+    category: string;
+}
+
+export type StoreHomepageHero = {
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+}
+
 export type StoreHomepageSection = {
+    hero?: StoreHomepageHero;
     bannerCarousel?: StoreHomepageBanner[];
+    productSections?: StoreHomepageProductSection[];
+    featuredProductIds?: string[];
 };
 
 export type ReferralSettings = {
@@ -983,7 +997,7 @@ export type HomepageConfig = {
     storeSettings?: {
         deliveryCharge: number;
         freeDeliveryThreshold: number;
-    },
+    };
     storeHomepageSection: StoreHomepageSection;
     requestCallbackSection: {
         display: boolean;

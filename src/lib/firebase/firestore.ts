@@ -43,6 +43,7 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
 
 // Rewards
 export const getRewards = () => getCollection<Reward>('rewards');
+export const getReward = (id: string) => getDocument<Reward>('rewards', id);
 export const addReward = (reward: Omit<Reward, 'id'>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
@@ -948,6 +949,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     imageUrl: "https://placehold.co/1200x250.png",
     dataAiHint: "store banner sale"
   },
+  storeSettings: {
+    deliveryCharge: 60,
+    freeDeliveryThreshold: 500
+  },
   storeHomepageSection: {
     bannerCarousel: []
   },
@@ -1077,4 +1082,3 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
-
