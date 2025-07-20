@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -19,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, KeyRound, Copy, Check } from "lucide-react";
+import { Loader2, Upload, KeyRound, Copy, Check, Gift } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { getHomepageConfig } from "@/lib/firebase/firestore";
 import { HomepageConfig, PlatformSettings } from "@/lib/types";
@@ -122,6 +123,22 @@ export default function AdminSettingsPage() {
             const newSettings = { ...prevConfig.platformSettings };
             newSettings[role] = { ...newSettings[role], [type]: value };
             return { ...prevConfig, platformSettings: newSettings };
+        });
+    };
+
+    const handleReferralSettingChange = (field: 'pointsPerReferral' | 'referredDiscountPercentage', value: string) => {
+        const numValue = Number(value);
+        if (isNaN(numValue)) return;
+        setConfig(prev => {
+            if (!prev) return null;
+            const referralSettings = { ...(prev.referralSettings || { pointsPerReferral: 10, referredDiscountPercentage: 10 }) };
+            return {
+                ...prev,
+                referralSettings: {
+                    ...referralSettings,
+                    [field]: numValue
+                }
+            }
         });
     };
     
@@ -297,6 +314,19 @@ NEXT_PUBLIC_FIREBASE_APP_ID=${firebaseConfig.appId}`;
                 <CardContent className="space-y-4">
                     {loadingConfig ? <div className="flex justify-center"><LoadingSpinner/></div> : (
                         <>
+                            <div className="space-y-2">
+                                <Label>Referral Settings</Label>
+                                <div className="p-4 border rounded-md space-y-4">
+                                     <div className="space-y-2">
+                                        <Label htmlFor="pointsPerReferral">Points per Referral</Label>
+                                        <Input id="pointsPerReferral" type="number" value={config?.referralSettings?.pointsPerReferral || 10} onChange={e => handleReferralSettingChange('pointsPerReferral', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="referredDiscountPercentage">Referred User Discount (%)</Label>
+                                        <Input id="referredDiscountPercentage" type="number" value={config?.referralSettings?.referredDiscountPercentage || 10} onChange={e => handleReferralSettingChange('referredDiscountPercentage', e.target.value)} />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="space-y-2">
                                 <Label>Store Settings</Label>
                                 <div className="p-4 border rounded-md space-y-4">

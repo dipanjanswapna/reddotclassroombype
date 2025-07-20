@@ -45,6 +45,7 @@ export type Reward = {
 export type RedemptionRequest = {
   id?: string;
   userId: string;
+  userName?: string;
   rewardId: string;
   rewardTitle: string;
   pointsSpent: number;
@@ -58,7 +59,7 @@ export type RedemptionRequest = {
       phoneNumber: string;
   };
   trackingNumber?: string;
-  processedBy?: string;
+  processedBy?: string; // Admin UID
   processedAt?: Timestamp;
 }
 
@@ -537,6 +538,7 @@ export type User = {
   mobileNumber?: string;
   guardianMobileNumber?: string;
   address?: string;
+  isReferralEnabled?: boolean;
   referredBy?: string; // UID of the referrer
   referralCode?: string; // This user's unique referral code
   referralPoints?: number;
@@ -560,8 +562,11 @@ export type Referral = {
   referredUserName: string;
   courseId: string;
   courseName: string;
+  status: 'Pending' | 'Awarded' | 'Cancelled';
+  discountGiven: number;
   rewardedPoints: number;
   date: Timestamp;
+  awardedAt?: Timestamp;
 };
 
 export type Enrollment = {
@@ -781,6 +786,11 @@ export type StoreHomepageSection = {
     bannerCarousel?: StoreHomepageBanner[];
 };
 
+export type ReferralSettings = {
+    pointsPerReferral: number;
+    referredDiscountPercentage: number;
+};
+
 export type HomepageConfig = {
     id: string;
     logoUrl: string;
@@ -974,6 +984,7 @@ export type HomepageConfig = {
         dataAiHint: string;
     };
     platformSettings: PlatformSettings;
+    referralSettings?: ReferralSettings;
     topperPageSection: TopperPageSection;
     offlineHubHeroCarousel: {
         display: boolean;

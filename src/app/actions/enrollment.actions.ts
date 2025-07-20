@@ -4,13 +4,14 @@
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByCourseId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser } from '@/lib/firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
-export async function prebookCourseAction(courseId: string, userId: string) {
+export async function prebookCourseAction(details: { courseId: string, userId: string, cycleId?: string}) {
+    const { courseId, userId } = details;
     const db = getDbInstance();
     if (!db) {
         throw new Error('Database service is currently unavailable.');
@@ -77,30 +78,24 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         throw new Error('Database service is currently unavailable.');
     }
     try {
-        const student = await getUser(userId);
-        if (!student) {
-            throw new Error("Student user not found.");
-        }
+        const [student, course, config] = await Promise.all([
+            getUser(userId),
+            getCourse(courseId),
+            getHomepageConfig()
+        ]);
         
+        if (!student) throw new Error("Student user not found.");
+        if (!course) throw new Error("Course not found after enrollment.");
         if (!paymentDetails && (!student.mobileNumber || !student.guardianMobileNumber)) {
             throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
-        }
-        
-        const course = await getCourse(courseId);
-        if (!course) {
-            throw new Error("Course not found after enrollment.");
         }
         
         const isCycleEnrollment = !!cycleId;
         const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === cycleId) : null;
         
-        if (isCycleEnrollment && !cycle) {
-            throw new Error("Selected course cycle not found.");
-        }
+        if (isCycleEnrollment && !cycle) throw new Error("Selected course cycle not found.");
 
         const batch = writeBatch(db);
-
-        // 1. Create enrollment document
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
         const enrollmentData: Partial<Enrollment> = {
             id: mainEnrollmentRef.id,
@@ -109,7 +104,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             enrollmentDate: Timestamp.now(),
             progress: 0,
             status: 'in-progress',
-            isGroupAccessed: false, // New field for group access tracking
+            isGroupAccessed: false,
             enrollmentType: isCycleEnrollment ? 'cycle' : 'full_course',
             ...(isCycleEnrollment && { cycleId: cycleId }),
             accessGranted: {
@@ -117,24 +112,28 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             }
         };
 
+        const studentEnrollments = await getEnrollmentsByUserId(student.uid);
+        const isFirstEnrollment = studentEnrollments.length === 0;
+        let referralDiscount = 0;
+
+        if (isFirstEnrollment && student.referredBy && config.referralSettings) {
+            const price = parseFloat((cycle?.price || course.price)?.replace(/[^0-9.]/g, '')) || 0;
+            referralDiscount = price * (config.referralSettings.referredDiscountPercentage / 100);
+        }
+
         if (paymentDetails) {
             enrollmentData.totalFee = paymentDetails.totalFee;
             enrollmentData.paidAmount = paymentDetails.paidAmount;
             enrollmentData.dueAmount = paymentDetails.dueAmount;
             enrollmentData.paymentMethod = paymentDetails.paymentMethod;
-            enrollmentData.discount = paymentDetails.discount;
+            enrollmentData.discount = (paymentDetails.discount || 0) + referralDiscount;
             enrollmentData.enrolledBy = paymentDetails.recordedBy;
             enrollmentData.paymentStatus = paymentDetails.dueAmount > 0 ? 'partial' : 'paid';
-        } else if (isCycleEnrollment && cycle) {
-            enrollmentData.totalFee = parseFloat(cycle.price.replace(/[^0-9.]/g, '')) || 0;
-            enrollmentData.paidAmount = enrollmentData.totalFee;
-            enrollmentData.dueAmount = 0;
-            enrollmentData.paymentStatus = 'paid';
-            enrollmentData.paymentMethod = 'Online';
         } else {
-            const price = parseFloat(course.price?.replace(/[^0-9.]/g, '')) || 0;
+            const price = parseFloat((cycle ? cycle.price : course.price)?.replace(/[^0-9.]/g, '')) || 0;
             enrollmentData.totalFee = price;
-            enrollmentData.paidAmount = price;
+            enrollmentData.discount = referralDiscount;
+            enrollmentData.paidAmount = price - referralDiscount;
             enrollmentData.dueAmount = 0;
             enrollmentData.paymentStatus = 'paid';
             enrollmentData.paymentMethod = 'Online';
@@ -142,12 +141,10 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         
         batch.set(mainEnrollmentRef, enrollmentData);
         
-        // --- Referral Logic ---
-        const studentEnrollments = await getEnrollmentsByUserId(student.uid);
-        if (studentEnrollments.length === 0 && student.referredBy) {
+        if (isFirstEnrollment && student.referredBy && config.referralSettings) {
             const referrer = await getUser(student.referredBy);
             if(referrer) {
-                const points = 10; // Award 10 points per referral
+                const points = config.referralSettings.pointsPerReferral || 10;
                 const updatedPoints = (referrer.referralPoints || 0) + points;
                 await updateUser(referrer.id!, { referralPoints: updatedPoints });
 
@@ -159,12 +156,13 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                     courseName: course.title,
                     rewardedPoints: points,
                     date: serverTimestamp() as Timestamp,
+                    discountGiven: referralDiscount,
+                    status: 'Awarded'
                 };
                 await addReferral(referralData);
             }
         }
 
-        // 2. Create enrollments for bundled courses only if it's a full course purchase
         if (!isCycleEnrollment && course.includedCourseIds && course.includedCourseIds.length > 0) {
             for (const bundledCourseId of course.includedCourseIds) {
                 const bundledEnrollmentRef = doc(collection(db, 'enrollments'));
@@ -172,7 +170,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                     userId,
                     courseId: bundledCourseId,
                     enrollmentDate: Timestamp.now(),
-                    progress: 100, // Mark as completed
+                    progress: 100,
                     status: 'completed',
                     enrollmentType: 'full_course',
                 };
@@ -186,7 +184,6 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                 const assignmentExists = course.assignments?.some(
                     a => a.studentId === userId && a.title === template.title && a.topic === template.topic
                 );
-
                 if (!assignmentExists) {
                     newAssignments.push({
                         id: `${template.id}-${userId}`,
@@ -207,7 +204,6 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                 const examExists = course.exams?.some(
                     e => e.studentId === userId && e.title === template.title && e.topic === template.topic
                 );
-
                 if (!examExists) {
                     newExams.push({
                         id: `${template.id}-${userId}`,
@@ -225,12 +221,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         }
         
         const updates: Partial<any> = {};
-        if (newAssignments.length > 0) {
-            updates.assignments = [...(course.assignments || []), ...newAssignments];
-        }
-        if (newExams.length > 0) {
-            updates.exams = [...(course.exams || []), ...newExams];
-        }
+        if (newAssignments.length > 0) updates.assignments = [...(course.assignments || []), ...newAssignments];
+        if (newExams.length > 0) updates.exams = [...(course.exams || []), ...newExams];
 
         if (Object.keys(updates).length > 0) {
              const courseRef = doc(db, 'courses', courseId);
