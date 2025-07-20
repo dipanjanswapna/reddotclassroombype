@@ -115,7 +115,7 @@ export async function updateAttendanceStatusAction(recordId: string, newStatus: 
 export async function markCallAsCompletedAction(recordId: string) {
     try {
         await updateAttendanceRecord(recordId, { callStatus: 'Called' });
-        revalidatePath('/admin/offline-hub');
+        revalidatePath('/admin/absent-students');
         revalidatePath('/moderator/absent-students');
         revalidatePath('/affiliate/absent-students');
         revalidatePath('/seller/call-center');
