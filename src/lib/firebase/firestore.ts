@@ -190,7 +190,9 @@ export const getCourses = async (filters: {
   if (subCategory) {
     constraints.push(where("subCategory", "==", subCategory));
   }
-  if (provider) {
+  if (provider === 'rdc') {
+      constraints.push(where("organizationId", "==", null));
+  } else if (provider) {
     constraints.push(where("organizationId", "==", provider));
   }
   if (instructorSlug) {
@@ -951,7 +953,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   storeSettings: {
     deliveryCharge: 60,
-    freeDeliveryThreshold: 500
+    freeDeliveryThreshold: 2
   },
   storeHomepageSection: {
     bannerCarousel: []
