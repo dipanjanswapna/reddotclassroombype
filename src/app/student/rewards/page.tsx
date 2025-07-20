@@ -8,13 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Gift, CheckCircle, Clock, Truck } from 'lucide-react';
+import { Gift, CheckCircle, Clock, Truck, Loader2 } from 'lucide-react';
 import { Reward, RedemptionRequest } from '@/lib/types';
 import { getRewards, getRedeemRequestsByUserId, createRedeemRequest } from '@/lib/firebase/firestore';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const getStatusBadgeVariant = (status: RedemptionRequest['status']) => {
   switch (status) {
@@ -22,6 +25,7 @@ const getStatusBadgeVariant = (status: RedemptionRequest['status']) => {
     case 'Shipped': return 'default';
     case 'Processing':
     case 'Approved': return 'warning';
+    case 'Cancelled': return 'destructive';
     case 'Pending':
     default: return 'secondary';
   }
@@ -33,6 +37,7 @@ const statusIcons: { [key in RedemptionRequest['status']]: React.ReactNode } = {
     'Processing': <Truck className="h-4 w-4" />,
     'Shipped': <Truck className="h-4 w-4" />,
     'Delivered': <CheckCircle className="h-4 w-4" />,
+    'Cancelled': <XCircle className="h-4 w-4" />,
 };
 
 
@@ -42,6 +47,10 @@ export default function StudentRewardsPage() {
     const [rewards, setRewards] = useState<Reward[]>([]);
     const [requests, setRequests] = useState<RedemptionRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+    const [shippingAddress, setShippingAddress] = useState({ fullName: '', addressLine1: '', city: '', postalCode: '', phoneNumber: '' });
+    const [isRedeeming, setIsRedeeming] = useState(false);
 
     const fetchRewardsData = async () => {
         if (!userInfo) {
@@ -68,28 +77,42 @@ export default function StudentRewardsPage() {
         fetchRewardsData();
     }, [userInfo, authLoading]);
 
-    const handleRedeem = async (reward: Reward) => {
-        if (!userInfo || (userInfo.referralPoints || 0) < reward.pointsRequired) {
+    const handleRedeemClick = (reward: Reward) => {
+        if ((userInfo?.referralPoints || 0) < reward.pointsRequired) {
             toast({ title: "Not enough points!", variant: "destructive" });
             return;
         }
+        setSelectedReward(reward);
+        setIsDialogOpen(true);
+    };
+
+    const handleRedeemRequest = async () => {
+        if (!userInfo || !selectedReward) return;
         
+        setIsRedeeming(true);
         const result = await createRedeemRequest({
             userId: userInfo.uid,
-            rewardId: reward.id!,
-            rewardTitle: reward.title,
-            pointsSpent: reward.pointsRequired,
+            rewardId: selectedReward.id!,
+            rewardTitle: selectedReward.title,
+            pointsSpent: selectedReward.pointsRequired,
             status: 'Pending',
+            shippingAddress
         });
         
         if (result.success) {
             toast({ title: "Request Submitted!", description: "Your redeem request has been sent for approval." });
             await fetchRewardsData(); // Refresh data
             await refreshUserInfo(); // Refresh points in context
+            setIsDialogOpen(false);
         } else {
              toast({ title: "Error", description: result.message, variant: "destructive" });
         }
+        setIsRedeeming(false);
     };
+    
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setShippingAddress(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }
 
     if (loading || authLoading) {
         return (
@@ -133,7 +156,7 @@ export default function StudentRewardsPage() {
                                 <p className="text-sm text-muted-foreground mt-1 flex-grow">{reward.description}</p>
                                 <div className="mt-4 flex justify-between items-center">
                                     <Badge variant="warning">{reward.pointsRequired} Points</Badge>
-                                    <Button size="sm" onClick={() => handleRedeem(reward)} disabled={(userInfo?.referralPoints || 0) < reward.pointsRequired}>Redeem</Button>
+                                    <Button size="sm" onClick={() => handleRedeemClick(reward)} disabled={(userInfo?.referralPoints || 0) < reward.pointsRequired}>Redeem</Button>
                                 </div>
                             </div>
                         </Card>
@@ -173,6 +196,34 @@ export default function StudentRewardsPage() {
                     </Table>
                 </CardContent>
             </Card>
+
+             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Redemption</DialogTitle>
+                        <DialogDescription>
+                            You are redeeming "{selectedReward?.title}" for {selectedReward?.pointsRequired} points.
+                        </DialogDescription>
+                    </DialogHeader>
+                     <div className="py-4 space-y-4">
+                        <h4 className="font-semibold">Shipping Information</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2 col-span-2"><Label htmlFor="fullName">Full Name</Label><Input id="fullName" name="fullName" value={shippingAddress.fullName} onChange={handleInputChange}/></div>
+                             <div className="space-y-2 col-span-2"><Label htmlFor="addressLine1">Address</Label><Input id="addressLine1" name="addressLine1" value={shippingAddress.addressLine1} onChange={handleInputChange}/></div>
+                             <div className="space-y-2"><Label htmlFor="city">City</Label><Input id="city" name="city" value={shippingAddress.city} onChange={handleInputChange}/></div>
+                             <div className="space-y-2"><Label htmlFor="postalCode">Postal Code</Label><Input id="postalCode" name="postalCode" value={shippingAddress.postalCode} onChange={handleInputChange}/></div>
+                             <div className="space-y-2 col-span-2"><Label htmlFor="phoneNumber">Phone Number</Label><Input id="phoneNumber" name="phoneNumber" type="tel" value={shippingAddress.phoneNumber} onChange={handleInputChange}/></div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleRedeemRequest} disabled={isRedeeming}>
+                            {isRedeeming && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                            Confirm
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
         </div>
     );

@@ -33,6 +33,35 @@ export type Product = {
     reviews?: ProductReview[];
 };
 
+export type Reward = {
+  id?: string;
+  title: string;
+  description: string;
+  pointsRequired: number;
+  imageUrl: string;
+  stock?: number;
+}
+
+export type RedemptionRequest = {
+  id?: string;
+  userId: string;
+  rewardId: string;
+  rewardTitle: string;
+  pointsSpent: number;
+  requestedAt: Timestamp;
+  status: 'Pending' | 'Approved' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  shippingAddress: {
+      fullName: string;
+      addressLine1: string;
+      city: string;
+      postalCode: string;
+      phoneNumber: string;
+  };
+  trackingNumber?: string;
+  processedBy?: string;
+  processedAt?: Timestamp;
+}
+
 export type OrderItem = {
     id: string;
     name: string;
@@ -738,6 +767,7 @@ export type StoreCategory = {
     order?: number;
     menuImageUrl?: string;
     menuImageAiHint?: string;
+    subCategories?: SubCategory[];
     subCategoryGroups?: SubCategoryGroup[];
 };
 

@@ -59,7 +59,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
     setIsLoading(true);
     setError(null);
     try {
-      await signup(email, password, fullName, role, 'Active', referralCode);
+      await signup(email, password, fullName, role, 'Active', referralCode || undefined);
     } catch (err: any) {
       setError(err.message || 'Failed to create an account.');
     } finally {
