@@ -29,6 +29,7 @@ import {
   ShoppingCart,
   Tags,
   Gift,
+  Share2,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -84,6 +85,7 @@ export default function AdminLayout({
         { href: "/admin/blog", icon: Notebook, label: "Blog" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
+        { href: "/admin/referrals", icon: Share2, label: "Referrals" },
         { href: "/admin/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
         { href: "/admin/financials", icon: DollarSign, label: "Financials" },
         { href: "/admin/analytics", icon: BarChartHorizontal, label: "Analytics" },

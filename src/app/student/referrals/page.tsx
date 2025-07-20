@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Gift, Users, Copy, Check, Share2 } from 'lucide-react';
+import { Gift, Users, Copy, Check, Share2, TicketPercent } from 'lucide-react';
 import { Referral } from '@/lib/types';
 import { getReferralsByReferrerId } from '@/lib/firebase/firestore';
 import { format } from 'date-fns';
@@ -131,6 +131,7 @@ export default function StudentReferralsPage() {
                                 <TableHead>Referred Friend</TableHead>
                                 <TableHead>Course Enrolled</TableHead>
                                 <TableHead>Date</TableHead>
+                                <TableHead>Discount Given</TableHead>
                                 <TableHead className="text-right">Points Earned</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -140,13 +141,19 @@ export default function StudentReferralsPage() {
                                     <TableCell>{ref.referredUserName}</TableCell>
                                     <TableCell>{ref.courseName}</TableCell>
                                     <TableCell>{format(safeToDate(ref.date), 'PPP')}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="gap-1">
+                                            <TicketPercent className="h-3 w-3" />
+                                            ৳{ref.discountGiven.toFixed(2)}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <Badge variant="accent">+{ref.rewardedPoints}</Badge>
                                     </TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-24 text-center">
+                                    <TableCell colSpan={5} className="h-24 text-center">
                                         No referral history yet.
                                     </TableCell>
                                 </TableRow>

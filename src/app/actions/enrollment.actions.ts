@@ -235,7 +235,9 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');
+        revalidatePath('/student/referrals');
         revalidatePath(`/admin/manage-user/${student.id}`);
+        revalidatePath(`/admin/referrals`);
         revalidatePath(`/checkout/${courseId}`);
         revalidatePath(`/sites/[site]/checkout/${courseId}`);
         revalidatePath(`/student/my-courses/${courseId}/assignments`);
