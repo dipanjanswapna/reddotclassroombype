@@ -28,6 +28,7 @@ import {
   Store,
   ShoppingCart,
   Tags,
+  Gift,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
@@ -66,6 +67,8 @@ export default function AdminLayout({
         { href: "/admin/store/products", icon: Store, label: "Products" },
         { href: "/admin/store/categories", icon: Tags, label: "Categories" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
+        { href: "/admin/store/rewards", icon: Gift, label: "Rewards" },
+        { href: "/admin/store/redeem-requests", icon: Gift, label: "Redeems" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/group-access", icon: Users2, label: "Group Access" },

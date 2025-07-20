@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2
+  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2, Gift
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -48,6 +48,7 @@ export default function StudentLayout({
     { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/planner", icon: BookMarked, label: "Planner" },
     { href: "/student/referrals", icon: Share2, label: "Referrals" },
+    { href: "/student/rewards", icon: Gift, label: "Rewards" },
     { href: "/student/community", icon: UsersIcon, label: "Community" },
     { href: "/student/leaderboard", icon: Crown, label: "Leaderboard" },
     { href: "/student/achievements", icon: Trophy, label: "Achievements" },
