@@ -1,6 +1,5 @@
 
 
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -19,7 +18,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -40,6 +39,60 @@ export async function getDocument<T>(collectionName: string, id: string): Promis
     return { id: docSnap.id, ...docSnap.data() } as T;
   }
   return null;
+}
+
+// Rewards
+export const getRewards = () => getCollection<Reward>('rewards');
+export const addReward = (reward: Omit<Reward, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'rewards'), reward);
+}
+export const updateReward = (id: string, reward: Partial<Reward>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'rewards', id), reward);
+}
+export const deleteReward = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'rewards', id));
+}
+
+// Redeem Requests
+export const getRedeemRequests = () => getCollection<RedemptionRequest>('redeem_requests');
+export const getRedeemRequestsByUserId = async (userId: string): Promise<RedemptionRequest[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "redeem_requests"), where("userId", "==", userId), orderBy("requestedAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RedemptionRequest));
+}
+export const createRedeemRequest = (request: Omit<RedemptionRequest, 'id' | 'requestedAt'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    const newRequest = { ...request, requestedAt: Timestamp.now() };
+    return addDoc(collection(db, 'redeem_requests'), newRequest);
+}
+export const updateRedeemRequest = (id: string, data: Partial<RedemptionRequest>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'redeem_requests', id), data);
+}
+
+// Referrals
+export const addReferral = (referral: Omit<Referral, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'referrals'), referral);
+}
+export const getReferrals = () => getCollection<Referral>('referrals');
+export const getReferralsByReferrerId = async (referrerId: string): Promise<Referral[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'referrals'), where("referrerId", "==", referrerId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Referral);
 }
 
 // Store Categories
@@ -904,6 +957,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     dataAiHint: "student illustration",
   },
   platformSettings: defaultPlatformSettings,
+  referralSettings: {
+      pointsPerReferral: 10,
+      referredDiscountPercentage: 10
+  },
   topperPageSection: {
       display: true,
       title: "How we help you become a Topper from a Struggler?",
@@ -1021,4 +1078,3 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     await batch.commit();
 }
 
-    
