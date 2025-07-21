@@ -1,5 +1,4 @@
 
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -362,7 +361,9 @@ export const getUsersByBatchId = async (batchId: string): Promise<User[]> => {
 export const addUser = (user: Partial<User>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
-    return addDoc(collection(db, 'users'), user);
+    const { id, ...userData } = user;
+    if (!id) throw new Error("User must have a UID to be added.");
+    return setDoc(doc(db, 'users', id), userData);
 }
 export const updateUser = (id: string, user: Partial<User>) => {
     const db = getDbInstance();

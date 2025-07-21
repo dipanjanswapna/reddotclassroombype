@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { askDoubtAction, reopenDoubtAction, markDoubtAsSatisfiedAction } from '@/app/actions/doubt.actions';
-import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -27,17 +28,23 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
     const [followup, setFollowup] = useState('');
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
+    const [isReopening, setIsReopening] = useState(false);
+    const [isSatisfying, setIsSatisfying] = useState(false);
 
-    const handleReopen = () => {
+    const handleReopen = async () => {
         if (followup.trim()) {
-            onReopen(doubt.id!, followup);
+            setIsReopening(true);
+            await onReopen(doubt.id!, followup);
             setFollowup('');
+            setIsReopening(false);
         }
     }
     
-    const handleSatisfied = () => {
+    const handleSatisfied = async () => {
         if (rating > 0) {
-            onSatisfied(doubt.id!, rating);
+            setIsSatisfying(true);
+            await onSatisfied(doubt.id!, rating);
+            setIsSatisfying(false);
         }
     }
 
@@ -65,8 +72,8 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
             <div>
                  <Label className="font-semibold">Not satisfied? Ask a follow-up question.</Label>
                  <Textarea value={followup} onChange={e => setFollowup(e.target.value)} placeholder="Type your follow-up question here..."/>
-                 <Button onClick={handleReopen} size="sm" className="mt-2" disabled={!followup.trim()}>
-                   <RefreshCw className="mr-2 h-4 w-4"/>
+                 <Button onClick={handleReopen} size="sm" className="mt-2" disabled={!followup.trim() || isReopening}>
+                   {isReopening ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <RefreshCw className="mr-2 h-4 w-4"/>}
                    Re-open Doubt
                 </Button>
             </div>
@@ -77,8 +84,8 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
                         <Star key={star} onClick={() => setRating(star)} onMouseEnter={() => setHoverRating(star)} className={cn("w-6 h-6 cursor-pointer transition-colors", (hoverRating || rating) >= star ? 'text-yellow-400 fill-current' : 'text-gray-300')} />
                     ))}
                 </div>
-                 <Button onClick={handleSatisfied} size="sm" className="mt-2" disabled={rating === 0}>
-                    <CheckCircle className="mr-2 h-4 w-4"/>
+                 <Button onClick={handleSatisfied} size="sm" className="mt-2" disabled={rating === 0 || isSatisfying}>
+                    {isSatisfying ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
                     Mark as Satisfied
                 </Button>
             </div>

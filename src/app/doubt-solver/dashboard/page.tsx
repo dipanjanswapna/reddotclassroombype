@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getInstructorByUid, getCourses, getDoubtsByCourse } from '@/lib/firebase/firestore';
+import { getInstructorByUid, getCourses, getDoubts } from '@/lib/firebase/firestore';
 import type { Course, Doubt } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,23 +29,21 @@ export default function DoubtSolverDashboard() {
 
     const fetchData = async () => {
       try {
-        const doubtSolver = await getInstructorByUid(userInfo.uid);
-        if (!doubtSolver?.assignedCourses || doubtSolver.assignedCourses.length === 0) {
-          setLoading(false);
-          return;
-        }
-
-        const coursesData = await getCourses();
-        const assignedCourses = coursesData.filter(c => doubtSolver.assignedCourses?.includes(c.id!));
+        const [allDoubts, allCourses] = await Promise.all([
+          getDoubts(),
+          getCourses(),
+        ]);
         
-        const allDoubts: DoubtWithCourse[] = [];
-        for (const course of assignedCourses) {
-          const courseDoubts = await getDoubtsByCourse(course.id!);
-          const doubtsWithCourseInfo = courseDoubts.map(d => ({ ...d, courseTitle: course.title }));
-          allDoubts.push(...doubtsWithCourseInfo);
-        }
+        const coursesMap = new Map(allCourses.map(c => [c.id, c.title]));
         
-        setDoubts(allDoubts.sort((a,b) => safeToDate(b.lastUpdatedAt).getTime() - safeToDate(a.lastUpdatedAt).getTime()));
+        const assignedDoubts = allDoubts.filter(d => d.assignedDoubtSolverId === userInfo.uid || (d.status === 'Open' || d.status === 'Reopened'));
+        
+        const doubtsWithCourseInfo = assignedDoubts.map(d => ({
+            ...d,
+            courseTitle: coursesMap.get(d.courseId) || 'Unknown Course'
+        }));
+        
+        setDoubts(doubtsWithCourseInfo.sort((a,b) => safeToDate(b.lastUpdatedAt).getTime() - safeToDate(a.lastUpdatedAt).getTime()));
 
       } catch (error) {
         console.error("Error fetching doubts:", error);

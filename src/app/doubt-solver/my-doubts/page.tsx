@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getInstructorByUid, getDoubts } from '@/lib/firebase/firestore';
+import { getDoubts } from '@/lib/firebase/firestore';
 import type { Doubt } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,12 +25,6 @@ export default function MyDoubtsPage() {
 
     const fetchData = async () => {
       try {
-        const doubtSolver = await getInstructorByUid(userInfo.uid);
-        if (!doubtSolver) {
-          setLoading(false);
-          return;
-        }
-
         const allDoubts = await getDoubts();
         const myDoubts = allDoubts.filter(d => d.assignedDoubtSolverId === userInfo.uid);
         

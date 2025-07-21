@@ -75,7 +75,6 @@ export async function answerDoubtAction(answerData: {
   answerText: string;
   attachments?: any[]; // Simplified
   studentId: string; // Needed for notification
-  courseTitle: string;
   courseId: string;
 }): Promise<{ success: boolean; message: string }> {
   const db = getDbInstance();
@@ -108,10 +107,11 @@ export async function answerDoubtAction(answerData: {
         assignedDoubtSolverId: doubtData.assignedDoubtSolverId || answerData.doubtSolverId,
       });
 
+       const course = await getCourse(answerData.courseId);
        await addNotification({
           userId: answerData.studentId,
           icon: 'MessageSquare',
-          title: `Your question in "${answerData.courseTitle}" was answered!`,
+          title: `Your question in "${course?.title || 'a course'}" was answered!`,
           description: `A doubt solver has replied to your question.`,
           date: Timestamp.now(),
           read: false,

@@ -16,7 +16,6 @@ import { getUsers, deleteUserAction, getDoubts } from '@/lib/firebase/firestore'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { useAuth } from '@/context/auth-context';
 import { saveUserAction } from '@/app/actions/user.actions';
 
 type SolverWithStats = User & {
@@ -26,7 +25,6 @@ type SolverWithStats = User & {
 
 export default function DoubtSolverManagementPage() {
     const { toast } = useToast();
-    const { signup } = useAuth();
     const [solvers, setSolvers] = useState<SolverWithStats[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
