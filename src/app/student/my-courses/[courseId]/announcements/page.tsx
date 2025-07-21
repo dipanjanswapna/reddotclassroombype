@@ -1,13 +1,56 @@
 
-import { notFound } from 'next/navigation';
-import { getCourse } from '@/lib/firebase/firestore';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
+import { getCourse, markAllAnnouncementsAsRead } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Megaphone } from 'lucide-react';
+import { Megaphone, CheckCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { useToast } from '@/components/ui/use-toast';
 
-export default async function AnnouncementsPage({ params }: { params: { courseId: string } }) {
-  const course = await getCourse(params.courseId);
+export default function AnnouncementsPage() {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const { userInfo } = useAuth();
+  const { toast } = useToast();
 
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCourseData() {
+        if (!courseId) return;
+        try {
+            const courseData = await getCourse(courseId);
+            setCourse(courseData);
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchCourseData();
+  }, [courseId]);
+
+  const handleMarkAsRead = async () => {
+    if (!userInfo || !course) return;
+    try {
+        await markAllAnnouncementsAsRead(userInfo.uid, course.id!);
+        toast({ title: 'Success', description: 'All announcements marked as read.' });
+        // Optionally, update the UI state to reflect this change immediately
+    } catch(e) {
+        toast({ title: 'Error', description: 'Could not mark announcements as read.', variant: 'destructive'});
+    }
+  }
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-48"><LoadingSpinner /></div>;
+  }
+  
   if (!course) {
     notFound();
   }
@@ -16,9 +59,15 @@ export default async function AnnouncementsPage({ params }: { params: { courseId
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Course Announcements</h1>
-        <p className="mt-1 text-lg text-muted-foreground">Important updates from your instructor for {course.title}.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">Course Announcements</h1>
+            <p className="mt-1 text-lg text-muted-foreground">Important updates for {course.title}.</p>
+        </div>
+        <Button onClick={handleMarkAsRead} variant="outline" size="sm">
+            <CheckCheck className="mr-2 h-4 w-4"/>
+            Mark All as Read
+        </Button>
       </div>
 
       <div className="space-y-4">
