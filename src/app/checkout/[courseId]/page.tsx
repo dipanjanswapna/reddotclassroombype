@@ -6,7 +6,7 @@ import { notFound, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Course } from '@/lib/types';
-import { getCourse, getPromoCodeForUserAndCourse } from '@/lib/firebase/firestore';
+import { getCourse, getPromoCodeForUserAndCourse, getUserByClassRoll } from '@/lib/firebase/firestore';
 import { applyPromoCodeAction } from '@/app/actions/promo.actions';
 import { prebookCourseAction, enrollInCourseAction } from '@/app/actions/enrollment.actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,10 +16,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, AlertTriangle, User, Bookmark } from 'lucide-react';
+import { Loader2, AlertTriangle, User, Bookmark, TicketPercent } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { safeToDate } from '@/lib/utils';
 import { trackPurchase } from '@/lib/fpixel';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
@@ -33,12 +34,15 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const [loading, setLoading] = useState(true);
   const [promoLoading, setPromoLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [referralDiscount, setReferralDiscount] = useState(0);
 
   const [promoCode, setPromoCode] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState('');
   
   const numbersMissing = !!userInfo && (!userInfo.mobileNumber || !userInfo.guardianMobileNumber);
+  const isFirstEnrollment = userInfo?.enrolledCourses?.length === 0;
 
   const handleApplyPromo = useCallback(async (codeToApply?: string) => {
     const code = codeToApply || promoCode;
@@ -112,10 +116,15 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     setIsProcessing(true);
     
     const action = course.isPrebooking && !cycleId ? prebookCourseAction : enrollInCourseAction;
-    const result = await action({ courseId: course.id!, userId: userInfo.uid, cycleId: cycleId || undefined });
+    const result = await action({ 
+        courseId: course.id!, 
+        userId: userInfo.uid, 
+        cycleId: cycleId || undefined,
+        referralCode: referralCode || undefined
+    });
     
     if (result.success) {
-        const finalPrice = parseFloat(price.replace(/[^0-9.]/g, '')) - discount;
+        const finalPrice = parseFloat(price.replace(/[^0-9.]/g, '')) - discount - referralDiscount;
         trackPurchase(finalPrice, 'BDT', [{id: course.id!, quantity: 1}]);
         toast({
             title: 'Success!',
@@ -159,7 +168,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const effectivePrice = parseFloat(price?.replace(/[^0-9.]/g, '') || '0');
 
   const courseDiscount = listPrice - effectivePrice;
-  const finalPrice = effectivePrice - discount;
+  const finalPrice = effectivePrice - discount - referralDiscount;
 
   return (
     <div className="container mx-auto max-w-4xl py-12">
@@ -178,8 +187,8 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 {selectedCycle && <Badge className="mt-2" variant="secondary">Cycle Enrollment</Badge>}
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className="space-y-4">
+              <div>
                 <h3 className="font-semibold">Promo Code</h3>
                 <div className="flex gap-2">
                   <Input 
@@ -195,6 +204,19 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                  {(!!selectedCycle || isPrebooking) && <p className="text-xs text-muted-foreground">Promo codes cannot be applied to cycle purchases or pre-bookings.</p>}
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
+               {isFirstEnrollment && (
+                <div>
+                    <h3 className="font-semibold">Referral Code</h3>
+                    <p className="text-xs text-muted-foreground mb-2">Know a friend on RDC? Use their Class Roll as a referral code for a discount!</p>
+                    <div className="flex gap-2">
+                        <Input 
+                            placeholder="Enter friend's Class Roll" 
+                            value={referralCode}
+                            onChange={(e) => setReferralCode(e.target.value)}
+                        />
+                    </div>
+                </div>
+               )}
             </CardContent>
           </Card>
         </div>
@@ -218,6 +240,12 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 <div className="flex justify-between text-green-600">
                     <span>Promo Code Discount</span>
                     <span>- ৳{discount.toFixed(2)}</span>
+                </div>
+              )}
+               {referralDiscount > 0 && (
+                <div className="flex justify-between text-green-600">
+                    <span>Referral Discount</span>
+                    <span>- ৳{referralDiscount.toFixed(2)}</span>
                 </div>
               )}
               <hr className="my-2"/>
