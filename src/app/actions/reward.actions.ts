@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { addReward, deleteReward, updateReward, createRedeemRequest as createRequestInDb, updateRedeemRequest, getUser, updateUser, getReward, addPromoCode } from '@/lib/firebase/firestore';
 import { Reward, RedemptionRequest, PromoCode } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
-import { runTransaction, doc, writeBatch } from 'firebase/firestore';
+import { runTransaction, doc, writeBatch, getDoc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 
 export async function saveRewardAction(rewardData: Partial<Reward>) {
