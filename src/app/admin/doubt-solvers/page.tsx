@@ -7,22 +7,27 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { User } from '@/lib/types';
-import { getUsers, deleteUserAction, getInstructorByUid } from '@/lib/firebase/firestore';
+import { User, Doubt } from '@/lib/types';
+import { getUsers, deleteUserAction, getDoubts } from '@/lib/firebase/firestore';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { saveUserAction } from '@/app/actions/user.actions';
 
+type SolverWithStats = User & {
+    doubtsSolved: number;
+    averageRating: number;
+};
+
 export default function DoubtSolverManagementPage() {
     const { toast } = useToast();
     const { signup } = useAuth();
-    const [solvers, setSolvers] = useState<User[]>([]);
+    const [solvers, setSolvers] = useState<SolverWithStats[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -32,10 +37,25 @@ export default function DoubtSolverManagementPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const allUsers = await getUsers();
-            setSolvers(allUsers.filter(u => u.role === 'Doubt Solver'));
+            const [allUsers, allDoubts] = await Promise.all([getUsers(), getDoubts()]);
+            const doubtSolvers = allUsers.filter(u => u.role === 'Doubt Solver');
+
+            const solversWithStats = doubtSolvers.map(solver => {
+                const solved = allDoubts.filter(d => d.assignedDoubtSolverId === solver.uid && (d.status === 'Satisfied' || d.status === 'Closed'));
+                const ratedDoubts = solved.filter(d => d.rating && d.rating > 0);
+                const averageRating = ratedDoubts.length > 0
+                    ? ratedDoubts.reduce((sum, d) => sum + d.rating!, 0) / ratedDoubts.length
+                    : 0;
+                
+                return {
+                    ...solver,
+                    doubtsSolved: solved.length,
+                    averageRating: parseFloat(averageRating.toFixed(2))
+                };
+            });
+            setSolvers(solversWithStats);
         } catch (error) {
-            toast({ title: 'Error', description: 'Failed to load doubt solvers.', variant: 'destructive' });
+            toast({ title: 'Error', description: 'Failed to load data.', variant: 'destructive' });
         } finally {
             setLoading(false);
         }
@@ -56,34 +76,11 @@ export default function DoubtSolverManagementPage() {
             return;
         }
         setIsSaving(true);
-        let result;
-        if (editingSolver.id) {
-            result = await saveUserAction(editingSolver);
-        } else {
-            // New user creation by admin
-            try {
-                if (!editingSolver.password) throw new Error("Password is required for new solvers.");
-                // Create user auth account
-                const userCredential = await signup(editingSolver.email, editingSolver.password, editingSolver.name, 'Doubt Solver');
+        const result = await saveUserAction({
+            ...editingSolver,
+            role: 'Doubt Solver',
+        });
 
-                // Then save the user data using the server action, which doesn't have public checks
-                const userData: Partial<User> = {
-                    ...editingSolver,
-                    uid: userCredential.user.uid,
-                    status: 'Active',
-                    role: 'Doubt Solver'
-                };
-                delete userData.password; // Do not save password in Firestore
-                result = await saveUserAction(userData);
-
-                 if (result.success) {
-                    await getInstructorByUid(userCredential.user.uid); // Ensure instructor profile is created
-                }
-
-            } catch(e: any) {
-                result = { success: false, message: e.message };
-            }
-        }
 
         if (result.success) {
             toast({ title: 'Success', description: result.message || 'Doubt Solver saved successfully.' });
@@ -130,6 +127,8 @@ export default function DoubtSolverManagementPage() {
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
+                                <TableHead>Doubts Solved</TableHead>
+                                <TableHead>Avg. Rating</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -139,6 +138,15 @@ export default function DoubtSolverManagementPage() {
                                 <TableRow key={solver.id}>
                                     <TableCell className="font-medium">{solver.name}</TableCell>
                                     <TableCell>{solver.email}</TableCell>
+                                    <TableCell>{solver.doubtsSolved}</TableCell>
+                                    <TableCell className="flex items-center gap-1">
+                                        {solver.averageRating > 0 ? (
+                                            <>
+                                                <Star className="w-4 h-4 text-yellow-400 fill-current"/>
+                                                {solver.averageRating}
+                                            </>
+                                        ) : 'N/A'}
+                                    </TableCell>
                                     <TableCell><Badge variant={solver.status === 'Active' ? 'accent' : 'destructive'}>{solver.status}</Badge></TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
@@ -170,12 +178,6 @@ export default function DoubtSolverManagementPage() {
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" type="email" value={editingSolver?.email || ''} onChange={e => setEditingSolver(p => ({...p, email: e.target.value}))} disabled={!!editingSolver?.id} />
                         </div>
-                        {!editingSolver?.id && (
-                             <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" onChange={e => setEditingSolver(p => ({...p, password: e.target.value}))} />
-                             </div>
-                        )}
                     </div>
                     <DialogFooter>
                         <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>

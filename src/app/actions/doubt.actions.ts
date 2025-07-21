@@ -1,3 +1,4 @@
+
 'use server';
 
 import {
@@ -12,6 +13,7 @@ import {
   orderBy,
   runTransaction,
   writeBatch,
+  getDoc,
 } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import type { Doubt, DoubtAnswer } from '@/lib/types';

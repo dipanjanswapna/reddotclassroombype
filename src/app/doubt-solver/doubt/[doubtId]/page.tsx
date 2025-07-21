@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { getDoubt, getDoubtAnswers, getStudentForDoubt } from '@/lib/firebase/firestore';
 import type { Doubt, DoubtAnswer, User } from '@/lib/types';
@@ -21,6 +22,7 @@ function DoubtAnswerThread({ doubt, answers, student }: { doubt: Doubt, answers:
     const [answerText, setAnswerText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
+    const router = useRouter();
 
     const handleAnswerSubmit = async () => {
         if (!answerText.trim() || !userInfo) return;
@@ -29,13 +31,14 @@ function DoubtAnswerThread({ doubt, answers, student }: { doubt: Doubt, answers:
             doubtId: doubt.id!,
             doubtSolverId: userInfo.uid,
             answerText,
-            studentId: doubt.studentId
+            studentId: doubt.studentId,
+            courseId: doubt.courseId,
+            courseTitle: 'this course', // Not needed, but part of the action
         });
         if(result.success) {
             toast({ title: 'Success', description: result.message });
             setAnswerText('');
-            // TODO: Refetch data after submission
-            window.location.reload();
+            router.refresh(); // Refetch data
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive' });
         }
@@ -45,13 +48,13 @@ function DoubtAnswerThread({ doubt, answers, student }: { doubt: Doubt, answers:
     return (
         <div className="space-y-4">
             {answers.map(answer => (
-                <div key={answer.id} className={`p-4 rounded-lg ${answer.doubtSolverId === 'student_followup' ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
-                    <p className="font-semibold">{answer.doubtSolverId === 'student_followup' ? 'Student\'s Follow-up' : 'Your Answer'}:</p>
+                <div key={answer.id} className={`p-4 rounded-lg ${answer.doubtSolverId === doubt.studentId ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
+                    <p className="font-semibold">{answer.doubtSolverId === doubt.studentId ? `${student?.name}'s Follow-up` : 'Your Answer'}:</p>
                     <p className="whitespace-pre-wrap">{answer.answerText}</p>
                     <p className="text-xs text-muted-foreground mt-2">Answered {formatDistanceToNow(safeToDate(answer.answeredAt), { addSuffix: true })}</p>
                 </div>
             ))}
-            <div className="p-4 bg-muted rounded-lg">
+             <div className="p-4 bg-muted rounded-lg">
                 <p className="font-semibold">{student?.name || 'Student'}'s Question:</p>
                 <p className="whitespace-pre-wrap">{doubt.questionText}</p>
                 <p className="text-xs text-muted-foreground mt-2">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
@@ -128,7 +131,7 @@ export default function DoubtAnswerPage() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <DoubtAnswerThread doubt={doubt} answers={answers} student={student} onReopen={() => {}} onSatisfied={() => {}}/>
+                    <DoubtAnswerThread doubt={doubt} answers={answers} student={student} />
                 </CardContent>
             </Card>
         </div>
