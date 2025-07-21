@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getCourses } from '@/lib/firebase/firestore';
-import { AdminCoursesClient } from './admin-courses-client';
+import { AdminCoursesClient } from '@/components/admin/courses-client';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 

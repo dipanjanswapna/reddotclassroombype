@@ -9,7 +9,6 @@ import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 import FacebookPixel from '@/components/facebook-pixel';
 import { Suspense } from 'react';
-import * as Sentry from '@sentry/nextjs';
 
 
 const fontInter = Inter({
@@ -54,23 +53,14 @@ export default async function RootLayout({
   const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
-      <Sentry.ErrorBoundary fallback={({ error, eventId }) => (
-        <div>
-          <p>An unexpected error occurred!</p>
-          <p>Error ID: {eventId}</p>
-          <p>{error.toString()}</p>
-          <button onClick={() => Sentry.showReportDialog({ eventId })}>Report error</button>
-        </div>
-      )}>
-        <body className={cn('font-body antialiased bg-gradient-to-br from-indigo-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-red-900/50', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-          <LayoutWrapper homepageConfig={homepageConfig}>
-              {children}
-          </LayoutWrapper>
-          <Suspense fallback={null}>
-              <FacebookPixel />
-          </Suspense>
-        </body>
-      </Sentry.ErrorBoundary>
+      <body className={cn('font-body antialiased bg-gradient-to-br from-indigo-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-red-900/50', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
+        <LayoutWrapper homepageConfig={homepageConfig}>
+            {children}
+        </LayoutWrapper>
+        <Suspense fallback={null}>
+            <FacebookPixel />
+        </Suspense>
+      </body>
     </html>
   );
 }

@@ -1,7 +1,5 @@
 
 
-const { withSentryConfig } = require('@sentry/nextjs');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -88,15 +86,4 @@ const nextConfig = {
   },
 };
 
-const sentryWebpackPluginOptions = {
-  // Additional config options for the Sentry Webpack plugin.
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options.
-  silent: true, // Suppresses all logs from the Sentry Webpack Plugin during build.
-  org: "prangons-ecosystem", // your Sentry organization slug
-  project: "javascript-nextjs", // your Sentry project slug
-  // Sentry CLI token can be set via SENTRY_AUTH_TOKEN env var.
-};
-
-
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+module.exports = nextConfig;
