@@ -547,10 +547,9 @@ export type User = {
   nidNumber?: string;
   mobileNumber?: string;
   guardianMobileNumber?: string;
-  address?: string;
-  isReferralEnabled?: boolean;
   referredBy?: string; // UID of the referrer
-  referralCode?: string; // This user's unique referral code
+  referralCode?: string; // This user's unique referral code (their class roll)
+  hasUsedReferral?: boolean; // To check if they have used a referral code before
   referralPoints?: number;
   socials?: {
     facebook?: string;
@@ -605,6 +604,7 @@ export type Enrollment = {
   isGroupAccessed?: boolean;
   groupAccessedAt?: Timestamp;
   groupAccessedBy?: string; // Admin UID
+  usedReferralCode?: string;
 };
 
 export type PlatformRoleSettings = {

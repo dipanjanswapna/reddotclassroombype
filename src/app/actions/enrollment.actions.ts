@@ -4,7 +4,7 @@
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId } from '@/lib/firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId, getUserByClassRoll } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
@@ -61,18 +61,18 @@ type ManualEnrollmentDetails = {
     paymentDetails?: {
         totalFee: number;
         paidAmount: number;
-        dueAmount: number;
-        paymentMethod: string;
         discount?: number;
+        paymentMethod: string;
         paymentDate: string; // ISO String
         recordedBy: string; // UID of admin/staff
     };
     cycleId?: string; // Optional: for cycle-based enrollment
+    referralCode?: string; // The class roll of the referrer
 };
 
 
 export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
-    const { courseId, userId, paymentDetails, cycleId } = details;
+    const { courseId, userId, paymentDetails, cycleId, referralCode } = details;
     const db = getDbInstance();
     if (!db) {
         throw new Error('Database service is currently unavailable.');
@@ -86,6 +86,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         
         if (!student) throw new Error("Student user not found.");
         if (!course) throw new Error("Course not found after enrollment.");
+        
+        // Mobile number check is only for non-manual enrollments
         if (!paymentDetails && (!student.mobileNumber || !student.guardianMobileNumber)) {
             throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
         }
@@ -97,6 +99,31 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
         const batch = writeBatch(db);
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
+
+        const studentEnrollments = await getEnrollmentsByUserId(student.uid);
+        const isFirstEnrollment = studentEnrollments.length === 0;
+
+        let referralDiscount = 0;
+        let referrer: User | null = null;
+        
+        if (isFirstEnrollment && referralCode) {
+            if (student.hasUsedReferral) {
+                throw new Error("You have already used a referral code for a previous purchase.");
+            }
+            referrer = await getUserByClassRoll(referralCode);
+            if (!referrer) {
+                throw new Error("The referral code you entered is invalid.");
+            }
+            if (referrer.uid === student.uid) {
+                throw new Error("You cannot use your own referral code.");
+            }
+
+            if (config.referralSettings) {
+                const price = parseFloat((cycle?.price || course.price)?.replace(/[^0-9.]/g, '')) || 0;
+                referralDiscount = price * (config.referralSettings.referredDiscountPercentage / 100);
+            }
+        }
+        
         const enrollmentData: Partial<Enrollment> = {
             id: mainEnrollmentRef.id,
             userId,
@@ -109,26 +136,19 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             ...(isCycleEnrollment && { cycleId: cycleId }),
             accessGranted: {
                 moduleIds: isCycleEnrollment ? cycle?.moduleIds : course.syllabus?.map(m => m.id) || []
-            }
+            },
+            ...(referralCode && { usedReferralCode: referralCode }),
         };
 
-        const studentEnrollments = await getEnrollmentsByUserId(student.uid);
-        const isFirstEnrollment = studentEnrollments.length === 0;
-        let referralDiscount = 0;
-
-        if (isFirstEnrollment && student.referredBy && config.referralSettings) {
-            const price = parseFloat((cycle?.price || course.price)?.replace(/[^0-9.]/g, '')) || 0;
-            referralDiscount = price * (config.referralSettings.referredDiscountPercentage / 100);
-        }
-
         if (paymentDetails) {
+            const dueAmount = paymentDetails.totalFee - paymentDetails.paidAmount - (paymentDetails.discount || 0) - referralDiscount;
             enrollmentData.totalFee = paymentDetails.totalFee;
             enrollmentData.paidAmount = paymentDetails.paidAmount;
-            enrollmentData.dueAmount = paymentDetails.dueAmount;
+            enrollmentData.dueAmount = dueAmount;
             enrollmentData.paymentMethod = paymentDetails.paymentMethod;
             enrollmentData.discount = (paymentDetails.discount || 0) + referralDiscount;
             enrollmentData.enrolledBy = paymentDetails.recordedBy;
-            enrollmentData.paymentStatus = paymentDetails.dueAmount > 0 ? 'partial' : 'paid';
+            enrollmentData.paymentStatus = dueAmount > 0 ? 'partial' : 'paid';
         } else {
             const price = parseFloat((cycle ? cycle.price : course.price)?.replace(/[^0-9.]/g, '')) || 0;
             enrollmentData.totalFee = price;
@@ -141,26 +161,26 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         
         batch.set(mainEnrollmentRef, enrollmentData);
         
-        if (isFirstEnrollment && student.referredBy && config.referralSettings) {
-            const referrer = await getUser(student.referredBy);
-            if(referrer) {
-                const points = config.referralSettings.pointsPerReferral || 10;
-                const updatedPoints = (referrer.referralPoints || 0) + points;
-                await updateUser(referrer.id!, { referralPoints: updatedPoints });
+        if (isFirstEnrollment && referrer && config.referralSettings) {
+            const points = config.referralSettings.pointsPerReferral || 10;
+            const updatedPoints = (referrer.referralPoints || 0) + points;
+            batch.update(doc(db, 'users', referrer.id!), { referralPoints: updatedPoints });
 
-                const referralData: Omit<Referral, 'id'> = {
-                    referrerId: referrer.uid,
-                    referredUserId: student.uid,
-                    referredUserName: student.name,
-                    courseId: courseId,
-                    courseName: course.title,
-                    rewardedPoints: points,
-                    date: serverTimestamp() as Timestamp,
-                    discountGiven: referralDiscount,
-                    status: 'Awarded'
-                };
-                await addReferral(referralData);
-            }
+            const referralData: Omit<Referral, 'id'> = {
+                referrerId: referrer.uid,
+                referredUserId: student.uid,
+                referredUserName: student.name,
+                courseId: courseId,
+                courseName: course.title,
+                rewardedPoints: points,
+                date: serverTimestamp() as Timestamp,
+                discountGiven: referralDiscount,
+                status: 'Awarded'
+            };
+            batch.set(doc(collection(db, 'referrals')), referralData);
+            
+            // Mark student as having used a referral
+            batch.update(doc(db, 'users', student.id!), { hasUsedReferral: true });
         }
 
         if (!isCycleEnrollment && course.includedCourseIds && course.includedCourseIds.length > 0) {

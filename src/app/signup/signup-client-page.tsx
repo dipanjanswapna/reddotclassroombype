@@ -148,7 +148,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                   </div>
                    <div className="grid gap-2">
                       <Label htmlFor="referral-code">Referral Code (Optional)</Label>
-                      <Input id="referral-code" placeholder="Enter friend's code" value={referralCode} onChange={e => setReferralCode(e.target.value)} />
+                      <Input id="referral-code" placeholder="Enter friend's class roll" value={referralCode} onChange={e => setReferralCode(e.target.value)} />
                   </div>
                   <div className="grid gap-2">
                       <Label>{t.registering_as[language]}</Label>

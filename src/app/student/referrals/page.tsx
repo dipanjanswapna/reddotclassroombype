@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,7 +24,7 @@ export default function StudentReferralsPage() {
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
-    const referralLink = userInfo?.referralCode ? `${window.location.origin}/signup?ref=${userInfo.referralCode}` : '';
+    const referralLink = userInfo?.classRoll ? `${window.location.origin}/signup?ref=${userInfo.classRoll}` : '';
 
     useEffect(() => {
         if (!userInfo) {
@@ -99,11 +100,11 @@ export default function StudentReferralsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
-                        <Label>Your Code</Label>
+                        <Label>Your Code (Class Roll)</Label>
                         <div className="flex gap-2">
-                            <Input value={userInfo?.referralCode || 'N/A'} readOnly />
-                            <Button variant="outline" onClick={() => handleCopy(userInfo?.referralCode || '')} disabled={!userInfo?.referralCode}>
-                                {copied && userInfo?.referralCode ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                            <Input value={userInfo?.classRoll || 'N/A'} readOnly />
+                            <Button variant="outline" onClick={() => handleCopy(userInfo?.classRoll || '')} disabled={!userInfo?.classRoll}>
+                                {copied && userInfo?.classRoll ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             </Button>
                         </div>
                     </div>
