@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
-import { getCourse, getDoubtsByCourseAndStudent, getDoubtAnswers, createDoubtSession } from '@/lib/firebase/firestore';
+import { notFound, useParams, useRouter } from 'next/navigation';
+import { getCourse, getDoubtsByCourseAndStudent, getDoubtAnswers, createDoubtSession, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { Course, Doubt, DoubtAnswer } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { askDoubtAction, reopenDoubtAction, markDoubtAsSatisfiedAction } from '@/app/actions/doubt.actions';
-import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle, AlertTriangle } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -23,6 +23,8 @@ import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, answers: DoubtAnswer[], onReopen: (doubtId: string, question: string) => void, onSatisfied: (doubtId: string, rating: number) => void }) {
     const [followup, setFollowup] = useState('');
@@ -97,6 +99,7 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
 
 export default function DoubtSolvePage() {
   const params = useParams();
+  const router = useRouter();
   const courseId = params.courseId as string;
   const { userInfo, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -106,16 +109,26 @@ export default function DoubtSolvePage() {
   const [answers, setAnswers] = useState<Record<string, DoubtAnswer[]>>({});
   const [doubtSessionId, setDoubtSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const [newDoubtText, setNewDoubtText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     if (!userInfo) return;
     setLoading(true);
     try {
       const courseData = await getCourse(courseId);
       if (!courseData) return notFound();
       setCourse(courseData);
+
+      const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+      const isEnrolledInCourse = enrollments.some(e => e.courseId === courseId);
+      setIsEnrolled(isEnrolledInCourse);
+
+      if (!isEnrolledInCourse) {
+        setLoading(false);
+        return;
+      }
 
       const sessionId = await createDoubtSession(courseId, courseData.title, courseData.doubtSolverIds || []);
       setDoubtSessionId(sessionId);
@@ -135,15 +148,13 @@ export default function DoubtSolvePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId, userInfo]);
 
   useEffect(() => {
-    if (!userInfo) {
-      if (!authLoading) setLoading(false);
-      return;
+    if (!authLoading) {
+        fetchAllData();
     }
-    fetchAllData();
-  }, [courseId, userInfo, authLoading]);
+  }, [authLoading, fetchAllData]);
 
   const handleAskDoubt = async () => {
     if (!newDoubtText.trim() || !userInfo || !doubtSessionId) return;
@@ -187,12 +198,29 @@ export default function DoubtSolvePage() {
         }
     };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <LoadingSpinner />
       </div>
     );
+  }
+
+  if (!isEnrolled) {
+      return (
+        <div className="space-y-8">
+            <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Access Denied</AlertTitle>
+                <AlertDescription>
+                    You must be enrolled in this course to use the doubt solving feature.
+                    <Button asChild variant="link" className="p-0 h-auto ml-1">
+                        <Link href={`/courses/${courseId}`}>Go to Course Page</Link>
+                    </Button>
+                </AlertDescription>
+            </Alert>
+        </div>
+      )
   }
 
   const getStatusBadgeVariant = (status: Doubt['status']) => {

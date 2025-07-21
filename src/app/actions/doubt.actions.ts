@@ -18,7 +18,7 @@ import {
 import { getDbInstance } from '@/lib/firebase/config';
 import type { Doubt, DoubtAnswer } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
-import { addNotification, getCourse } from '@/lib/firebase/firestore';
+import { addNotification, getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 
 // Function to create a new doubt
 export async function askDoubtAction(doubtData: {
@@ -32,6 +32,14 @@ export async function askDoubtAction(doubtData: {
   if (!db) return { success: false, message: 'Database service is unavailable.' };
 
   try {
+    // Security Check: Verify the student is enrolled in the course.
+    const enrollments = await getEnrollmentsByUserId(doubtData.studentId);
+    const isEnrolled = enrollments.some(e => e.courseId === doubtData.courseId);
+
+    if (!isEnrolled) {
+        return { success: false, message: 'You must be enrolled in this course to ask a doubt.' };
+    }
+
     const newDoubt: Omit<Doubt, 'id'> = {
       ...doubtData,
       status: 'Open',
