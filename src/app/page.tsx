@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React from 'react';
@@ -21,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { cn } from '@/lib/utils';
+import { cn, getYoutubeVideoId } from '@/lib/utils';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
