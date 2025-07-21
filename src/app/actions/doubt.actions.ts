@@ -25,7 +25,7 @@ export async function askDoubtAction(doubtData: {
   sessionId: string;
   courseId: string;
   studentId: string;
-  questionText: string;
+  questionText?: string;
   attachments?: any[]; // Simplified for now
 }): Promise<{ success: boolean; message: string; doubtId?: string }> {
   const db = getDbInstance();
@@ -57,7 +57,7 @@ export async function askDoubtAction(doubtData: {
           userId: solverId,
           icon: 'HelpCircle',
           title: `New Doubt in "${course.title}"`,
-          description: doubtData.questionText.substring(0, 50) + '...',
+          description: (doubtData.questionText || "A new image doubt").substring(0, 50) + '...',
           date: Timestamp.now(),
           read: false,
           link: `/doubt-solver/doubt/${docRef.id}`
@@ -162,10 +162,11 @@ export async function reopenDoubtAction(doubtId: string, followupQuestion: strin
         await addDoc(collection(db, 'doubt_answers'), followupAnswer);
         
         if (doubtData.assignedDoubtSolverId) {
+            const course = await getCourse(doubtData.courseId);
             await addNotification({
                 userId: doubtData.assignedDoubtSolverId,
                 icon: 'HelpCircle',
-                title: 'Doubt Reopened!',
+                title: `Doubt Reopened in "${course?.title || ''}"`,
                 description: `A student has a follow-up question.`,
                 date: Timestamp.now(),
                 read: false,

@@ -1,17 +1,17 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { getCourse, getDoubtsByCourseAndStudent, getDoubtAnswers, createDoubtSession, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
-import { Course, Doubt, DoubtAnswer } from '@/lib/types';
+import { Course, Doubt, DoubtAnswer, DoubtAttachment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { askDoubtAction, reopenDoubtAction, markDoubtAsSatisfiedAction } from '@/app/actions/doubt.actions';
-import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle, AlertTriangle } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle, AlertTriangle, Image as ImageIcon } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -25,6 +25,9 @@ import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
+import Image from 'next/image';
+import { ImageUploader } from '@/components/image-uploader';
+
 
 function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, answers: DoubtAnswer[], onReopen: (doubtId: string, question: string) => void, onSatisfied: (doubtId: string, rating: number) => void }) {
     const [followup, setFollowup] = useState('');
@@ -55,7 +58,8 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
       {/* Original Question */}
       <div className="p-4 bg-muted rounded-lg">
         <p className="font-semibold">Your Question:</p>
-        <p className="whitespace-pre-wrap">{doubt.questionText}</p>
+        {doubt.questionText && <p className="whitespace-pre-wrap">{doubt.questionText}</p>}
+        {doubt.attachments?.[0]?.url && <Image src={doubt.attachments[0].url} alt="Question attachment" width={300} height={200} className="mt-2 rounded-md" />}
         <p className="text-xs text-muted-foreground mt-2">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
       </div>
 
@@ -110,7 +114,9 @@ export default function DoubtSolvePage() {
   const [doubtSessionId, setDoubtSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
+  
   const [newDoubtText, setNewDoubtText] = useState('');
+  const [newDoubtImage, setNewDoubtImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchAllData = useCallback(async () => {
@@ -157,19 +163,30 @@ export default function DoubtSolvePage() {
   }, [authLoading, fetchAllData]);
 
   const handleAskDoubt = async () => {
-    if (!newDoubtText.trim() || !userInfo || !doubtSessionId) return;
+    if ((!newDoubtText.trim() && !newDoubtImage) || !userInfo || !doubtSessionId) return;
     setIsSubmitting(true);
+
+    const attachments: DoubtAttachment[] = [];
+    if (newDoubtImage) {
+        attachments.push({
+            type: 'image',
+            url: newDoubtImage,
+            fileName: 'doubt-image.png'
+        });
+    }
 
     const result = await askDoubtAction({
       sessionId: doubtSessionId,
       courseId,
       studentId: userInfo.uid,
       questionText: newDoubtText,
+      attachments,
     });
 
     if (result.success && result.doubtId) {
         toast({ title: 'Success', description: result.message });
         setNewDoubtText('');
+        setNewDoubtImage(null);
         fetchAllData();
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -255,7 +272,9 @@ export default function DoubtSolvePage() {
             onChange={(e) => setNewDoubtText(e.target.value)}
             rows={4}
             />
-            <Button onClick={handleAskDoubt} disabled={isSubmitting || !newDoubtText.trim()}>
+            <ImageUploader onAnswerChange={setNewDoubtImage} existingImageUrl={newDoubtImage || undefined} />
+
+            <Button onClick={handleAskDoubt} disabled={isSubmitting || (!newDoubtText.trim() && !newDoubtImage)}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
                 Submit Question
             </Button>
@@ -270,7 +289,7 @@ export default function DoubtSolvePage() {
               <AccordionItem key={doubt.id} value={doubt.id!} className="border rounded-lg bg-card overflow-hidden">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex-grow text-left">
-                        <p className="font-medium truncate">{doubt.questionText}</p>
+                        <p className="font-medium truncate">{doubt.questionText || "Image Doubt"}</p>
                         <p className="text-xs text-muted-foreground mt-1">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
                     </div>
                     <Badge variant={getStatusBadgeVariant(doubt.status)} className="ml-4">{doubt.status}</Badge>
