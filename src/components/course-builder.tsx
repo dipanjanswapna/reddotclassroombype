@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -69,8 +68,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization } from '@/lib/types';
-import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getOrganizations } from '@/lib/firebase/firestore';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization, User } from '@/lib/types';
+import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getOrganizations, getUsers } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
@@ -151,7 +150,7 @@ function SortableSyllabusItem({
     item: SyllabusItem, 
     updateItem: (id: string, field: string, value: any) => void, 
     removeItem: (id: string) => void, 
-    onGenerateQuiz: (lesson: LessonData) => void,
+    onGenerateQuiz: (lesson: LessonData) => void, 
 }) {
     const {
         attributes,
@@ -296,6 +295,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
+  const [allDoubtSolvers, setAllDoubtSolvers] = useState<User[]>([]);
   const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
   const [questionBank, setQuestionBank] = useState<Question[]>([]);
 
@@ -314,6 +314,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [syllabus, setSyllabus] = useState<SyllabusItem[]>([]);
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [doubtSolverIds, setDoubtSolverIds] = useState<string[]>([]);
   const [classRoutine, setClassRoutine] = useState<ClassRoutineItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
@@ -391,6 +392,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             return allInstructorsList.find(i => i.slug === courseInst.slug);
         }).filter((i): i is Instructor => !!i) || [];
         setInstructors(courseInstructors);
+        setDoubtSolverIds(courseData.doubtSolverIds || []);
         setClassRoutine(courseData.classRoutine?.map(cr => ({...cr, id: Math.random().toString()})) || []);
         setAnnouncements(courseData.announcements?.map(a => ({...a})) || []);
         setLiveClasses(courseData.liveClasses || []);
@@ -409,16 +411,18 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     async function fetchAllData() {
         setLoading(true);
         try {
-            const [fetchedCategories, fetchedCourses, fetchedInstructors, fetchedQuestionBank, fetchedOrganizations] = await Promise.all([
-                getCategories(), getCourses(), getInstructors(), getQuestionBank(), getOrganizations(),
+            const [fetchedCategories, fetchedCourses, fetchedInstructors, fetchedQuestionBank, fetchedOrganizations, allUsers] = await Promise.all([
+                getCategories(), getCourses(), getInstructors(), getQuestionBank(), getOrganizations(), getUsers()
             ]);
 
             const approvedInstructors = fetchedInstructors.filter(i => i.status === 'Approved');
             const approvedOrgs = fetchedOrganizations.filter(o => o.status === 'approved');
+            const doubtSolvers = allUsers.filter(u => u.role === 'Doubt Solver' && u.status === 'Active');
 
             setAllCategories(fetchedCategories);
             setAllCourses(fetchedCourses);
             setAllInstructors(approvedInstructors);
+            setAllDoubtSolvers(doubtSolvers);
             setAllOrganizations(approvedOrgs);
             setQuestionBank(fetchedQuestionBank);
 
@@ -566,6 +570,15 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     setCycles(prev => prev?.filter(c => c.id !== id));
   };
 
+  const handleDoubtSolverToggle = (solverId: string, add: boolean) => {
+    setDoubtSolverIds(prev => {
+        if (add) {
+            return [...prev, solverId];
+        } else {
+            return prev.filter(id => id !== solverId);
+        }
+    });
+  };
 
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
@@ -632,6 +645,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
           dataAiHint: i.dataAiHint,
           slug: i.slug
         })),
+        doubtSolverIds,
         classRoutine: classRoutine.filter(r => r.day && r.subject && r.time),
         announcements: announcements.filter(a => a.title && a.content),
         liveClasses: liveClasses.filter(lc => lc.topic && lc.joinUrl),
@@ -773,6 +787,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
     { id: 'instructors', label: 'Instructors', icon: Users },
+    { id: 'doubtsolvers', label: 'Doubt Solvers', icon: HelpCircle },
     { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
     { id: 'exams', label: 'Exams', icon: Award },
     { id: 'media', label: 'Media', icon: CloudUpload },
@@ -1089,7 +1104,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
               </CardContent>
             )}
 
-             {activeTab === 'outcomes' && (
+            {activeTab === 'outcomes' && (
               <CardContent className="pt-6 space-y-4">
                   <div className="space-y-2">
                       <Label>What students will learn</Label>
@@ -1141,7 +1156,44 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
               </CardContent>
             )}
 
-             {activeTab === 'assignments' && (
+            {activeTab === 'doubtsolvers' && (
+              <CardContent className="pt-6 space-y-4">
+                   <div className="space-y-2">
+                        <Label>Assigned Doubt Solvers</Label>
+                        <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-12">
+                            {doubtSolverIds.length === 0 && <p className="text-sm text-muted-foreground">No doubt solvers assigned.</p>}
+                            {allDoubtSolvers.filter(ds => doubtSolverIds.includes(ds.uid)).map(solver => (
+                                <Badge key={solver.uid} variant="outline" className="p-2 gap-2">
+                                    <Avatar className="h-6 w-6"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
+                                    {solver.name}
+                                    <Button variant="ghost" size="icon" className="h-4 w-4" onClick={() => handleDoubtSolverToggle(solver.uid, false)}><X className="h-3 w-3"/></Button>
+                                </Badge>
+                            ))}
+                        </div>
+                   </div>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full"><PlusCircle className="mr-2"/>Assign Doubt Solver</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                                <CommandInput placeholder="Search doubt solvers..." />
+                                <CommandEmpty>No doubt solvers found.</CommandEmpty>
+                                <CommandGroup>
+                                    {allDoubtSolvers.filter(solver => !doubtSolverIds.includes(solver.uid)).map(solver => (
+                                        <CommandItem key={solver.id} onSelect={() => handleDoubtSolverToggle(solver.uid, true)}>
+                                            <Avatar className="h-6 w-6 mr-2"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
+                                            {solver.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+              </CardContent>
+            )}
+
+            {activeTab === 'assignments' && (
                 <CardContent className="pt-6 space-y-4">
                     {assignmentTemplates.map((assignment, index) => (
                         <div key={assignment.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
