@@ -11,7 +11,11 @@ import {
   Megaphone,
   Star,
   Users,
-  Video
+  Video,
+  ClipboardEdit,
+  Archive,
+  BarChart2,
+  CalendarCheck
 } from 'lucide-react';
 import { Course } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -25,10 +29,13 @@ export function CourseStudentNav({ course }: { course: Course }) {
     { href: `/student/my-courses/${courseId}/doubt-solve`, label: 'Doubt Solve', icon: HelpCircle },
     { href: `/student/my-courses/${courseId}/quizzes`, label: 'Quizzes', icon: HelpCircle },
     { href: `/student/my-courses/${courseId}/assignments`, label: 'Assignments', icon: FileText },
+    { href: `/student/my-courses/${courseId}/exams`, label: 'Exams', icon: ClipboardEdit },
     { href: `/student/my-courses/${courseId}/live-classes`, label: 'Live Classes', icon: Video },
     { href: `/student/my-courses/${courseId}/announcements`, label: 'Announcements', icon: Megaphone },
     { href: `/student/my-courses/${courseId}/community`, label: 'Community', icon: Users },
     { href: `/student/my-courses/${courseId}/reviews`, label: 'Reviews', icon: Star },
+    { href: `/student/my-courses/${courseId}/attendance`, label: 'Attendance', icon: CalendarCheck },
+    { href: `/student/my-courses/${courseId}/archive`, label: 'Archive', icon: Archive },
   ];
 
   const getIsActive = (href: string) => {

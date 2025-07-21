@@ -43,7 +43,7 @@ export async function askDoubtAction(doubtData: {
 
     // Notify assigned doubt solvers
     const course = await getCourse(doubtData.courseId);
-    if (course && course.doubtSolverIds) {
+    if (course && course.doubtSolverIds && course.doubtSolverIds.length > 0) {
       const notificationPromises = course.doubtSolverIds.map(solverId => 
         addNotification({
           userId: solverId,
@@ -120,6 +120,7 @@ export async function answerDoubtAction(answerData: {
     });
 
     revalidatePath(`/doubt-solver/dashboard`);
+    revalidatePath(`/doubt-solver/doubt/${answerData.doubtId}`);
     revalidatePath(`/student/my-courses/${answerData.courseId}/doubt-solve`);
     
     return { success: true, message: 'Your answer has been submitted.' };
@@ -146,7 +147,7 @@ export async function reopenDoubtAction(doubtId: string, followupQuestion: strin
 
         const followupAnswer: Omit<DoubtAnswer, 'id'> = {
             doubtId,
-            doubtSolverId: studentId,
+            doubtSolverId: studentId, // The student is the author of this "answer"
             answerText: followupQuestion,
             answeredAt: Timestamp.now()
         };
@@ -166,6 +167,7 @@ export async function reopenDoubtAction(doubtId: string, followupQuestion: strin
 
         revalidatePath(`/student/my-courses/${doubtData.courseId}/doubt-solve`);
         revalidatePath(`/doubt-solver/dashboard`);
+        revalidatePath(`/doubt-solver/doubt/${doubtId}`);
         return { success: true, message: "Your followup question has been sent." };
     } catch(error: any) {
         return { success: false, message: error.message || "Failed to reopen doubt." };
@@ -204,6 +206,7 @@ export async function markDoubtAsSatisfiedAction(doubtId: string, rating: number
         
         revalidatePath(`/student/my-courses/${doubtData.courseId}/doubt-solve`);
         revalidatePath(`/doubt-solver/dashboard`);
+        revalidatePath(`/doubt-solver/doubt/${doubtId}`);
         return { success: true, message: "Thank you for your feedback!" };
     } catch (error: any) {
         return { success: false, message: error.message || "Failed to update doubt status." };
