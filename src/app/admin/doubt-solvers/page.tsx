@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/lib/types';
-import { getUsers, deleteUserAction } from '@/lib/firebase/firestore';
+import { getUsers, deleteUserAction, getInstructorByUid } from '@/lib/firebase/firestore';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -75,6 +75,10 @@ export default function DoubtSolverManagementPage() {
                 };
                 delete userData.password; // Do not save password in Firestore
                 result = await saveUserAction(userData);
+
+                 if (result.success) {
+                    await getInstructorByUid(userCredential.user.uid); // Ensure instructor profile is created
+                }
 
             } catch(e: any) {
                 result = { success: false, message: e.message };

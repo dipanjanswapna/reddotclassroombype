@@ -22,7 +22,7 @@ export default function DoubtSolverLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, userInfo, loading } = useAuth();
+  const { user, userInfo, loading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function DoubtSolverLayout({
     { href: "/doubt-solver/profile", icon: User, label: "Profile" },
     { href: "/doubt-solver/id-card", icon: Badge, label: "ID Card" },
     { href: "/doubt-solver/settings", icon: Settings, label: "Settings" },
-    { href: "/", icon: LogOut, label: "Logout" },
+    { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 
   const getIsActive = (href: string) => {
@@ -71,6 +71,7 @@ export default function DoubtSolverLayout({
             <Link
               key={item.href}
               href={item.href}
+              onClick={item.action}
               className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
                   getIsActive(item.href)

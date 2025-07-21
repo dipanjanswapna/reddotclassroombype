@@ -43,6 +43,7 @@ export function UserNav() {
       case 'Seller': return '/seller/dashboard';
       case 'Affiliate': return '/affiliate/dashboard';
       case 'Moderator': return '/moderator/dashboard';
+      case 'Doubt Solver': return '/doubt-solver/dashboard';
       default: return '/';
     }
   };
@@ -56,6 +57,7 @@ export function UserNav() {
       case 'Seller': return '/seller/profile';
       case 'Affiliate': return '/affiliate/profile';
       case 'Moderator': return '/moderator/profile';
+      case 'Doubt Solver': return '/doubt-solver/profile';
       default: return '/';
     }
   }

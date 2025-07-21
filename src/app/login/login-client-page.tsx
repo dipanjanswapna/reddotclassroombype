@@ -50,7 +50,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
   const [studentPassword, setStudentPassword] = useState('');
   const [staffId, setStaffId] = useState('');
   const [staffPassword, setStaffPassword] = useState('');
-  const [role, setRole] = useState<User['role']>('Seller');
+  const [role, setRole] = useState<User['role']>('Teacher');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('student');
@@ -206,6 +206,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                         <SelectItem value="Seller">Seller</SelectItem>
                                         <SelectItem value="Moderator">Moderator</SelectItem>
                                         <SelectItem value="Affiliate">Affiliate</SelectItem>
+                                        <SelectItem value="Doubt Solver">Doubt Solver</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     </div>

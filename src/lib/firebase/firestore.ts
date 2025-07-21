@@ -18,7 +18,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -274,10 +274,34 @@ export const updateInstructor = (id: string, instructor: Partial<Instructor>) =>
     if (!db) throw new Error("Firestore is not initialized.");
     return updateDoc(doc(db, 'instructors', id), instructor);
 }
-export const deleteInstructor = (id: string) => {
+export const deleteInstructorAction = async (id: string) => {
     const db = getDbInstance();
-    if (!db) throw new Error("Firestore is not initialized.");
-    return deleteDoc(doc(db, 'instructors', id));
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
+    try {
+        const instructor = await getInstructor(id);
+        if (!instructor) {
+            throw new Error("Instructor not found.");
+        }
+
+        const batch = writeBatch(db);
+        const instructorRef = doc(db, 'instructors', id);
+        batch.delete(instructorRef);
+
+        if (instructor.userId) {
+            const user = await getUser(instructor.userId);
+            if (user?.id) {
+                const userRef = doc(db, 'users', user.id);
+                batch.delete(userRef);
+            }
+        }
+        await batch.commit();
+        return { success: true, message: 'Instructor and associated user data deleted successfully.' };
+    } catch (error: any) {
+        console.error("Error deleting instructor:", error);
+        return { success: false, message: error.message };
+    }
 }
 
 
@@ -345,10 +369,18 @@ export const updateUser = (id: string, user: Partial<User>) => {
     if (!db) throw new Error("Firestore is not initialized.");
     return updateDoc(doc(db, 'users', id), user);
 }
-export const deleteUser = (id: string) => {
+export const deleteUserAction = async (id: string) => {
     const db = getDbInstance();
-    if (!db) throw new Error("Firestore is not initialized.");
-    return deleteDoc(doc(db, 'users', id));
+    if (!db) {
+        throw new Error('Database service is currently unavailable.');
+    }
+    try {
+        await deleteDoc(doc(db, 'users', id));
+        return { success: true, message: 'User deleted successfully.' };
+    } catch (error: any) {
+        console.error("Error deleting user:", error);
+        return { success: false, message: error.message };
+    }
 }
 
 
@@ -706,6 +738,7 @@ const defaultPlatformSettings: PlatformSettings = {
     Seller: { signupEnabled: true, loginEnabled: true },
     Affiliate: { signupEnabled: true, loginEnabled: true },
     Moderator: { signupEnabled: true, loginEnabled: true },
+    DoubtSolver: { signupEnabled: true, loginEnabled: true },
 };
 
 const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
@@ -987,6 +1020,54 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     ]
   },
 };
+
+// Doubt Solve System
+export const createDoubtSession = async (courseId: string, courseName: string, doubtSolverIds: string[]): Promise<string> => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    
+    const q = query(collection(db, "doubt_sessions"), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].id;
+    } else {
+        const newSession: Omit<DoubtSession, 'id'> = {
+            courseId,
+            sessionName: `${courseName} Doubt Solve`,
+            assignedDoubtSolverIds: doubtSolverIds,
+            createdAt: Timestamp.now(),
+        };
+        const docRef = await addDoc(collection(db, 'doubt_sessions'), newSession);
+        return docRef.id;
+    }
+}
+export const getDoubtsByCourseAndStudent = async (courseId: string, studentId: string): Promise<Doubt[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "doubts"), where("courseId", "==", courseId), where("studentId", "==", studentId), orderBy("lastUpdatedAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
+}
+export const getDoubt = (id: string) => getDocument<Doubt>('doubts', id);
+export const getDoubts = () => getCollection<Doubt>('doubts');
+export const getDoubtAnswers = async (doubtId: string): Promise<DoubtAnswer[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "doubt_answers"), where("doubtId", "==", doubtId), orderBy("answeredAt", "asc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DoubtAnswer));
+}
+export const getDoubtsByCourse = async (courseId: string): Promise<Doubt[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "doubts"), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
+}
+export const getStudentForDoubt = async (studentId: string): Promise<User | null> => {
+    return getUser(studentId);
+}
 
 
 // Function to get the homepage configuration
