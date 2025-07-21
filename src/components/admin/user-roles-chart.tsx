@@ -1,13 +1,13 @@
 
 'use client';
 
-import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip, Legend } from 'recharts';
 
 interface UserRolesChartProps {
   data: { name: string; value: number }[];
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1943'];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1943', '#4CAF50'];
 
 export function UserRolesChart({ data }: UserRolesChartProps) {
   return (
@@ -33,6 +33,7 @@ export function UserRolesChart({ data }: UserRolesChartProps) {
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
+        <Legend />
       </PieChart>
     </ResponsiveContainer>
   );

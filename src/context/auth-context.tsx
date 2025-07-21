@@ -120,6 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             case 'Seller': return '/seller/dashboard';
             case 'Affiliate': return '/affiliate/dashboard';
             case 'Moderator': return '/moderator/dashboard';
+            case 'Doubt Solver': return '/doubt-solver/dashboard';
             default: return '/';
         }
     };
@@ -200,8 +201,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if ((fetchedUserInfo.role as any) === 'Partner') {
             fetchedUserInfo.role = 'Seller';
         }
-
-        if (fetchedUserInfo.role !== 'Admin' && !config.platformSettings[fetchedUserInfo.role]?.loginEnabled) {
+        
+        if ((fetchedUserInfo.role as any) !== 'Doubt Solver' && fetchedUserInfo.role !== 'Admin' && !config.platformSettings[fetchedUserInfo.role]?.loginEnabled) {
             await signOut(auth);
             throw new Error(`Logins for your role ('${fetchedUserInfo.role}') are temporarily disabled.`);
         }
@@ -262,7 +263,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("No staff member found with this ID.");
         }
 
-        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Seller'];
+        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Seller', 'Doubt Solver'];
         if (!staffRoles.includes(staffInfo.role)) {
             throw new Error("This login method is for staff members only.");
         }
@@ -312,7 +313,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 existingUserInfo.registrationNumber = newRegNumber; // Update local object
             }
 
-            if (existingUserInfo.role !== 'Admin' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
+            if (existingUserInfo.role !== 'Admin' && existingUserInfo.role !== 'Doubt Solver' && !config.platformSettings[existingUserInfo.role]?.loginEnabled) {
                 await signOut(auth);
                 throw new Error(`Logins for your role ('${existingUserInfo.role}') are temporarily disabled.`);
             }
@@ -388,7 +389,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!config) {
             throw new Error("Platform configuration is not available. Please try again later.");
         }
-        if (role !== 'Admin' && !config.platformSettings[role]?.signupEnabled) {
+        if (role !== 'Admin' && role !== 'Doubt Solver' && !config.platformSettings[role]?.signupEnabled) {
             throw new Error(`Registrations for the '${role}' role are temporarily disabled.`);
         }
 

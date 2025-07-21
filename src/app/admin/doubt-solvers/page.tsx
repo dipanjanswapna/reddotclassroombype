@@ -12,11 +12,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/lib/types';
-import { getUsers, saveUserAction, deleteUserAction } from '@/lib/firebase/firestore';
+import { getUsers, deleteUserAction } from '@/lib/firebase/firestore';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
+import { saveUserAction } from '@/app/actions/user.actions';
 
 export default function DoubtSolverManagementPage() {
     const { toast } = useToast();
@@ -59,18 +60,29 @@ export default function DoubtSolverManagementPage() {
         if (editingSolver.id) {
             result = await saveUserAction(editingSolver);
         } else {
-            // New user creation
+            // New user creation by admin
             try {
                 if (!editingSolver.password) throw new Error("Password is required for new solvers.");
-                await signup(editingSolver.email, editingSolver.password, editingSolver.name, 'Doubt Solver', 'Active');
-                result = { success: true, message: 'Doubt Solver created successfully.' };
+                // Create user auth account
+                const userCredential = await signup(editingSolver.email, editingSolver.password, editingSolver.name, 'Doubt Solver');
+
+                // Then save the user data using the server action, which doesn't have public checks
+                const userData: Partial<User> = {
+                    ...editingSolver,
+                    uid: userCredential.user.uid,
+                    status: 'Active',
+                    role: 'Doubt Solver'
+                };
+                delete userData.password; // Do not save password in Firestore
+                result = await saveUserAction(userData);
+
             } catch(e: any) {
                 result = { success: false, message: e.message };
             }
         }
 
         if (result.success) {
-            toast({ title: 'Success', description: result.message });
+            toast({ title: 'Success', description: result.message || 'Doubt Solver saved successfully.' });
             fetchData();
             setIsDialogOpen(false);
         } else {
@@ -140,7 +152,7 @@ export default function DoubtSolverManagementPage() {
                 </CardContent>
             </Card>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { if(!open) setEditingSolver(null); setIsDialogOpen(open) }}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>{editingSolver?.id ? 'Edit Doubt Solver' : 'Create Doubt Solver'}</DialogTitle>
@@ -170,7 +182,7 @@ export default function DoubtSolverManagementPage() {
                 </DialogContent>
             </Dialog>
 
-            <AlertDialog open={!!solverToDelete} onOpenChange={setSolverToDelete}>
+            <AlertDialog open={!!solverToDelete} onOpenChange={(open) => !open && setSolverToDelete(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
