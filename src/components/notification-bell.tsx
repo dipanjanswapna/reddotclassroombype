@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bell, CheckCheck, Award, Video, Megaphone, FileCheck2, ThumbsUp, Users } from 'lucide-react';
+import { Bell, CheckCheck, Award, Video, Megaphone, FileCheck2, ThumbsUp, Users, HelpCircle, MessageSquare, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -25,13 +25,16 @@ import { useAuth } from '@/context/auth-context';
 import { Skeleton } from './ui/skeleton';
 import { safeToDate } from '@/lib/utils';
 
-const iconMap: { [key in Notification['icon']]: React.ElementType } = {
+const iconMap: { [key: string]: React.ElementType } = {
     Award,
     Video,
     Megaphone,
     FileCheck2,
     ThumbsUp,
     Users,
+    HelpCircle,
+    MessageSquare,
+    Star,
 };
 
 // Function to group notifications by date

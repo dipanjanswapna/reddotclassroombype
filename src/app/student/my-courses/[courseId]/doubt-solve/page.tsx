@@ -21,6 +21,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, answers: DoubtAnswer[], onReopen: (doubtId: string, question: string) => void, onSatisfied: (doubtId: string, rating: number) => void }) {
     const [followup, setFollowup] = useState('');
@@ -50,9 +51,9 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
       </div>
 
       {/* Answers */}
-      {answers.map(answer => (
-        <div key={answer.id} className={`p-4 rounded-lg ${answer.doubtSolverId === 'student_followup' ? 'bg-blue-50 dark:bg-blue-900/20 ml-6' : 'bg-green-50 dark:bg-green-900/20'}`}>
-          <p className="font-semibold">{answer.doubtSolverId === 'student_followup' ? 'Your Follow-up' : 'Doubt Solver\'s Answer'}:</p>
+      {answers.sort((a,b) => safeToDate(a.answeredAt).getTime() - safeToDate(b.answeredAt).getTime()).map(answer => (
+        <div key={answer.id} className={`p-4 rounded-lg ${answer.doubtSolverId === doubt.studentId ? 'bg-blue-50 dark:bg-blue-900/20 ml-6' : 'bg-green-50 dark:bg-green-900/20'}`}>
+          <p className="font-semibold">{answer.doubtSolverId === doubt.studentId ? 'Your Follow-up' : 'Doubt Solver\'s Answer'}:</p>
           <p className="whitespace-pre-wrap">{answer.answerText}</p>
           <p className="text-xs text-muted-foreground mt-2">Answered {formatDistanceToNow(safeToDate(answer.answeredAt), { addSuffix: true })}</p>
         </div>
@@ -64,7 +65,10 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
             <div>
                  <Label className="font-semibold">Not satisfied? Ask a follow-up question.</Label>
                  <Textarea value={followup} onChange={e => setFollowup(e.target.value)} placeholder="Type your follow-up question here..."/>
-                 <Button onClick={handleReopen} size="sm" className="mt-2" disabled={!followup.trim()}>Re-open Doubt</Button>
+                 <Button onClick={handleReopen} size="sm" className="mt-2" disabled={!followup.trim()}>
+                   <RefreshCw className="mr-2 h-4 w-4"/>
+                   Re-open Doubt
+                </Button>
             </div>
              <div className="border-t pt-4">
                 <Label className="font-semibold">Satisfied with the answer? Please rate the support.</Label>
@@ -73,7 +77,10 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
                         <Star key={star} onClick={() => setRating(star)} onMouseEnter={() => setHoverRating(star)} className={cn("w-6 h-6 cursor-pointer transition-colors", (hoverRating || rating) >= star ? 'text-yellow-400 fill-current' : 'text-gray-300')} />
                     ))}
                 </div>
-                 <Button onClick={handleSatisfied} size="sm" className="mt-2" disabled={rating === 0}>Mark as Satisfied</Button>
+                 <Button onClick={handleSatisfied} size="sm" className="mt-2" disabled={rating === 0}>
+                    <CheckCircle className="mr-2 h-4 w-4"/>
+                    Mark as Satisfied
+                </Button>
             </div>
         </div>
       )}
@@ -95,39 +102,40 @@ export default function DoubtSolvePage() {
   const [newDoubtText, setNewDoubtText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const fetchAllData = async () => {
+    if (!userInfo) return;
+    setLoading(true);
+    try {
+      const courseData = await getCourse(courseId);
+      if (!courseData) return notFound();
+      setCourse(courseData);
+
+      const sessionId = await createDoubtSession(courseId, courseData.title, courseData.doubtSolverIds || []);
+      setDoubtSessionId(sessionId);
+      
+      const studentDoubts = await getDoubtsByCourseAndStudent(courseId, userInfo.uid);
+      setDoubts(studentDoubts.sort((a, b) => safeToDate(b.lastUpdatedAt).getTime() - safeToDate(a.lastUpdatedAt).getTime()));
+
+      const allAnswers: Record<string, DoubtAnswer[]> = {};
+      for (const doubt of studentDoubts) {
+          const doubtAnswers = await getDoubtAnswers(doubt.id!);
+          allAnswers[doubt.id!] = doubtAnswers;
+      }
+      setAnswers(allAnswers);
+
+    } catch (error) {
+      console.error("Error fetching doubt solve data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!userInfo) {
       if (!authLoading) setLoading(false);
       return;
     }
-
-    const fetchInitialData = async () => {
-      try {
-        const courseData = await getCourse(courseId);
-        if (!courseData) return notFound();
-        setCourse(courseData);
-
-        const sessionId = await createDoubtSession(courseId, courseData.title, courseData.doubtSolverIds || []);
-        setDoubtSessionId(sessionId);
-        
-        const studentDoubts = await getDoubtsByCourseAndStudent(courseId, userInfo.uid);
-        setDoubts(studentDoubts);
-
-        const allAnswers: Record<string, DoubtAnswer[]> = {};
-        for (const doubt of studentDoubts) {
-            const doubtAnswers = await getDoubtAnswers(doubt.id!);
-            allAnswers[doubt.id!] = doubtAnswers;
-        }
-        setAnswers(allAnswers);
-
-      } catch (error) {
-        console.error("Error fetching doubt solve data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitialData();
+    fetchAllData();
   }, [courseId, userInfo, authLoading]);
 
   const handleAskDoubt = async () => {
@@ -144,9 +152,7 @@ export default function DoubtSolvePage() {
     if (result.success && result.doubtId) {
         toast({ title: 'Success', description: result.message });
         setNewDoubtText('');
-        // Re-fetch doubts to show the new one
-        const studentDoubts = await getDoubtsByCourseAndStudent(courseId, userInfo.uid);
-        setDoubts(studentDoubts);
+        fetchAllData();
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
     }
@@ -154,10 +160,11 @@ export default function DoubtSolvePage() {
   };
   
     const handleReopen = async (doubtId: string, question: string) => {
-        const result = await reopenDoubtAction(doubtId, question);
+        if (!userInfo) return;
+        const result = await reopenDoubtAction(doubtId, question, userInfo.uid);
         if (result.success) {
             toast({ title: "Success", description: result.message });
-            // Refetch
+            fetchAllData();
         } else {
             toast({ title: "Error", description: result.message, variant: 'destructive' });
         }
@@ -167,7 +174,7 @@ export default function DoubtSolvePage() {
         const result = await markDoubtAsSatisfiedAction(doubtId, rating);
         if (result.success) {
             toast({ title: "Success", description: result.message });
-            // Refetch
+            fetchAllData();
         } else {
             toast({ title: "Error", description: result.message, variant: 'destructive' });
         }
@@ -179,6 +186,22 @@ export default function DoubtSolvePage() {
         <LoadingSpinner />
       </div>
     );
+  }
+
+  const getStatusBadgeVariant = (status: Doubt['status']) => {
+      switch(status) {
+          case 'Open':
+          case 'Reopened':
+              return 'warning';
+          case 'Answered':
+              return 'default';
+          case 'Satisfied':
+              return 'accent';
+          case 'Closed':
+              return 'secondary';
+          default:
+              return 'secondary';
+      }
   }
 
   return (
@@ -215,7 +238,7 @@ export default function DoubtSolvePage() {
                         <p className="font-medium truncate">{doubt.questionText}</p>
                         <p className="text-xs text-muted-foreground mt-1">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
                     </div>
-                    <Badge variant={doubt.status === 'Answered' ? 'accent' : 'secondary'} className="ml-4">{doubt.status}</Badge>
+                    <Badge variant={getStatusBadgeVariant(doubt.status)} className="ml-4">{doubt.status}</Badge>
                 </AccordionTrigger>
                 <AccordionContent className="p-4 border-t bg-muted/50">
                     <DoubtThread doubt={doubt} answers={answers[doubt.id!] || []} onReopen={handleReopen} onSatisfied={handleSatisfied} />

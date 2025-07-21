@@ -241,6 +241,7 @@ export type Instructor = {
     title: string;
     youtubeUrl: string;
   }[];
+  assignedCourses?: string[];
 }
 
 export type QuizQuestion = {
@@ -329,7 +330,7 @@ export type LeaderboardEntry = {
 export type Notification = {
   id?: string;
   userId: string;
-  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp' | 'Users' | 'new_doubt_question' | 'doubt_reopened' | 'doubt_answered' | 'doubt_satisfied';
+  icon: 'Award' | 'Video' | 'Megaphone' | 'FileCheck2' | 'ThumbsUp' | 'Users' | 'HelpCircle' | 'MessageSquare' | 'Star';
   title: string;
   description: string;
   date: Timestamp;

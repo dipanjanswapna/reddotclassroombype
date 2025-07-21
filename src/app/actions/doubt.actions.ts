@@ -16,7 +16,7 @@ import {
 import { getDbInstance } from '@/lib/firebase/config';
 import type { Doubt, DoubtAnswer } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
-import { addNotification } from '@/lib/firebase/firestore';
+import { addNotification, getCourse } from '@/lib/firebase/firestore';
 
 // Function to create a new doubt
 export async function askDoubtAction(doubtData: {
@@ -39,12 +39,26 @@ export async function askDoubtAction(doubtData: {
 
     const docRef = await addDoc(collection(db, 'doubts'), newDoubt);
 
-    // Placeholder for notifying doubt solvers
-    // In a real app, you would get assignedDoubtSolverIds from the session
-    // and create notifications for each of them.
-    console.log(`New doubt created: ${docRef.id}. Need to notify solvers.`);
+    // Notify assigned doubt solvers
+    const course = await getCourse(doubtData.courseId);
+    if (course && course.doubtSolverIds) {
+      const notificationPromises = course.doubtSolverIds.map(solverId => 
+        addNotification({
+          userId: solverId,
+          icon: 'HelpCircle',
+          title: `New Doubt in "${course.title}"`,
+          description: doubtData.questionText.substring(0, 50) + '...',
+          date: Timestamp.now(),
+          read: false,
+          link: `/doubt-solver/doubt/${docRef.id}`
+        })
+      );
+      await Promise.all(notificationPromises);
+    }
+
 
     revalidatePath(`/student/my-courses/${doubtData.courseId}/doubt-solve`);
+    revalidatePath('/doubt-solver/dashboard');
 
     return { success: true, message: 'Your question has been submitted.', doubtId: docRef.id };
   } catch (error: any) {
@@ -59,6 +73,8 @@ export async function answerDoubtAction(answerData: {
   answerText: string;
   attachments?: any[]; // Simplified
   studentId: string; // Needed for notification
+  courseTitle: string;
+  courseId: string;
 }): Promise<{ success: boolean; message: string }> {
   const db = getDbInstance();
   if (!db) return { success: false, message: 'Database service is unavailable.' };
@@ -90,20 +106,19 @@ export async function answerDoubtAction(answerData: {
         assignedDoubtSolverId: doubtData.assignedDoubtSolverId || answerData.doubtSolverId,
       });
 
-      // Notify student
        await addNotification({
           userId: answerData.studentId,
-          icon: 'doubt_answered',
-          title: 'Your question has been answered!',
+          icon: 'MessageSquare',
+          title: `Your question in "${answerData.courseTitle}" was answered!`,
           description: `A doubt solver has replied to your question.`,
           date: Timestamp.now(),
           read: false,
-          link: `/student/my-courses/${doubtData.courseId}/doubt-solve`
+          link: `/student/my-courses/${answerData.courseId}/doubt-solve`
       });
     });
 
     revalidatePath(`/doubt-solver/dashboard`);
-    revalidatePath(`/student/my-courses/*/doubt-solve`);
+    revalidatePath(`/student/my-courses/${answerData.courseId}/doubt-solve`);
     
     return { success: true, message: 'Your answer has been submitted.' };
   } catch (error: any) {
@@ -112,31 +127,42 @@ export async function answerDoubtAction(answerData: {
 }
 
 // Function to reopen a doubt
-export async function reopenDoubtAction(doubtId: string, followupQuestion: string): Promise<{ success: boolean; message: string }> {
+export async function reopenDoubtAction(doubtId: string, followupQuestion: string, studentId: string): Promise<{ success: boolean; message: string }> {
     const db = getDbInstance();
     if (!db) return { success: false, message: 'Database service is unavailable.' };
 
     try {
         const doubtRef = doc(db, 'doubts', doubtId);
-        
+        const doubtSnap = await getDoc(doubtRef);
+        if(!doubtSnap.exists()) throw new Error("Doubt not found");
+        const doubtData = doubtSnap.data();
+
         await updateDoc(doubtRef, {
             status: 'Reopened',
             lastUpdatedAt: Timestamp.now()
         });
 
-        // Add the followup as an "answer" from the student
         const followupAnswer: Omit<DoubtAnswer, 'id'> = {
             doubtId,
-            doubtSolverId: 'student_followup', // Special marker
+            doubtSolverId: studentId,
             answerText: followupQuestion,
             answeredAt: Timestamp.now()
         };
         await addDoc(collection(db, 'doubt_answers'), followupAnswer);
         
-        // Notify the assigned doubt solver
-        // In a real app, you would fetch the doubt, get the assignedDoubtSolverId and notify them.
+        if (doubtData.assignedDoubtSolverId) {
+            await addNotification({
+                userId: doubtData.assignedDoubtSolverId,
+                icon: 'HelpCircle',
+                title: 'Doubt Reopened!',
+                description: `A student has a follow-up question.`,
+                date: Timestamp.now(),
+                read: false,
+                link: `/doubt-solver/doubt/${doubtId}`
+            });
+        }
 
-        revalidatePath(`/student/my-courses/*`);
+        revalidatePath(`/student/my-courses/${doubtData.courseId}/doubt-solve`);
         revalidatePath(`/doubt-solver/dashboard`);
         return { success: true, message: "Your followup question has been sent." };
     } catch(error: any) {
@@ -152,15 +178,29 @@ export async function markDoubtAsSatisfiedAction(doubtId: string, rating: number
     
     try {
         const doubtRef = doc(db, 'doubts', doubtId);
+        const doubtSnap = await getDoc(doubtRef);
+        if(!doubtSnap.exists()) throw new Error("Doubt not found");
+        const doubtData = doubtSnap.data();
+
         await updateDoc(doubtRef, {
             status: 'Satisfied',
             rating: rating,
             lastUpdatedAt: Timestamp.now(),
         });
         
-        // Notify the solver
+        if (doubtData.assignedDoubtSolverId) {
+            await addNotification({
+                userId: doubtData.assignedDoubtSolverId,
+                icon: 'Star',
+                title: 'Answer Rated!',
+                description: `A student rated your answer with ${rating} stars.`,
+                date: Timestamp.now(),
+                read: false,
+                link: `/doubt-solver/doubt/${doubtId}`
+            });
+        }
         
-        revalidatePath(`/student/my-courses/*`);
+        revalidatePath(`/student/my-courses/${doubtData.courseId}/doubt-solve`);
         revalidatePath(`/doubt-solver/dashboard`);
         return { success: true, message: "Thank you for your feedback!" };
     } catch (error: any) {
