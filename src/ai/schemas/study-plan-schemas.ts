@@ -42,5 +42,3 @@ export const StudyPlanOutputSchema = z.object({
     events: z.array(StudyPlanEventSchema).describe('A list of scheduled study events.'),
 });
 export type StudyPlanOutput = z.infer<typeof StudyPlanOutputSchema>;
-
-    

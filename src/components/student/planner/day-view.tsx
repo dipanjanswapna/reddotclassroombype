@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
@@ -11,9 +10,10 @@ interface DayViewProps {
   events: StudyPlanEvent[];
   onEdit: (event: StudyPlanEvent) => void;
   onDelete: (id: string) => void;
+  onTaskUpdate: (event: StudyPlanEvent) => void;
 }
 
-export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps) {
+export function DayView({ selectedDate, events, onEdit, onDelete, onTaskUpdate }: DayViewProps) {
     const allDayEvents = events.filter(e => !e.time);
     const timedEvents = events
         .filter(e => !!e.time)
@@ -28,7 +28,7 @@ export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps
                     <h4 className="font-semibold text-sm text-muted-foreground mb-2">All-day</h4>
                     <div className="space-y-2">
                          {allDayEvents.map(event => (
-                            <TaskItem key={event.id} event={event} onEdit={() => onEdit(event)} onDelete={() => onDelete(event.id!)} />
+                            <TaskItem key={event.id} event={event} onEdit={() => onEdit(event)} onDelete={() => onDelete(event.id!)} onTaskUpdate={onTaskUpdate}/>
                         ))}
                     </div>
                 </div>
@@ -38,7 +38,7 @@ export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps
                     <h4 className="font-semibold text-sm text-muted-foreground mb-2">Scheduled</h4>
                     <div className="space-y-2">
                         {timedEvents.map(event => (
-                            <TaskItem key={event.id} event={event} onEdit={() => onEdit(event)} onDelete={() => onDelete(event.id!)} />
+                            <TaskItem key={event.id} event={event} onEdit={() => onEdit(event)} onDelete={() => onDelete(event.id!)} onTaskUpdate={onTaskUpdate} />
                         ))}
                     </div>
                 </div>
@@ -50,5 +50,3 @@ export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps
     </div>
   );
 }
-
-    

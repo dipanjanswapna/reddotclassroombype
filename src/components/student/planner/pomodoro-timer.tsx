@@ -8,18 +8,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
 
-export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: string, courses: { id: string, title: string }[] }) {
+interface PomodoroTimerProps {
+  tasksForToday: StudyPlanEvent[];
+  onSessionComplete: (taskId: string) => void;
+}
+
+export function PomodoroTimer({ tasksForToday, onSessionComplete }: PomodoroTimerProps) {
   const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
   const [mode, setMode] = useState<PomodoroMode>('work');
   const [minutes, setMinutes] = useState(durations.work);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedTask, setSelectedTask] = useState<string>('general');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (isActive) {
@@ -30,10 +37,16 @@ export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: st
           setMinutes(m => m - 1);
           setSeconds(59);
         } else {
-          // Timer finished, handle mode change, sound alert etc.
-          clearInterval(timerRef.current!);
-          setIsActive(false);
-          // TODO: Add sound notification and auto-switch modes
+          // Timer finished
+          if (audioRef.current) {
+            audioRef.current.play();
+          }
+          if (mode === 'work' && selectedTask !== 'general') {
+            onSessionComplete(selectedTask);
+          }
+          // Automatically switch to the next mode
+          const nextMode = mode === 'work' ? 'shortBreak' : 'work';
+          switchMode(nextMode);
         }
       }, 1000);
     } else {
@@ -42,7 +55,7 @@ export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: st
     return () => {
       if(timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isActive, seconds, minutes]);
+  }, [isActive, seconds, minutes, mode, selectedTask, onSessionComplete]);
   
   const switchMode = (newMode: PomodoroMode) => {
     setMode(newMode);
@@ -96,13 +109,13 @@ export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: st
             </div>
              <div className="w-full space-y-4 pt-4 border-t">
                  <div className="space-y-2">
-                    <Label>Associated Task / Course</Label>
-                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                        <SelectTrigger><SelectValue placeholder="Select a course..." /></SelectTrigger>
+                    <Label>Associated Task</Label>
+                    <Select value={selectedTask} onValueChange={setSelectedTask}>
+                        <SelectTrigger><SelectValue placeholder="Select a task..." /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="general">General Study</SelectItem>
-                            {courses.map(course => (
-                                <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                            {tasksForToday.map(task => (
+                                <SelectItem key={task.id} value={task.id!}>{task.title}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -122,6 +135,7 @@ export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: st
                     </div>
                 </div>
              </div>
+             <audio ref={audioRef} src="/notification.mp3" preload="auto" />
         </CardContent>
     </Card>
   );

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -20,10 +19,9 @@ import {
 } from 'date-fns';
 import { StudyPlanEvent, StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
 import { saveStudyPlanAction } from '@/app/actions/user.actions';
-import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, CheckCircle, BookOpen } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -40,11 +38,9 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const { toast } = useToast();
     const { userInfo, refreshUserInfo } = useAuth();
     const [events, setEvents] = useState<StudyPlanEvent[]>(initialEvents);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
 
-    // Calendar state
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -52,88 +48,69 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
         const start = startOfWeek(firstDayOfMonth);
-        const end = endOfWeek(addDays(firstDayOfMonth, 35)); // Ensure 6 weeks are always rendered
+        const end = endOfWeek(addDays(firstDayOfMonth, 35));
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
 
     const eventsForSelectedDate = useMemo(() => {
-        if (!selectedDate) return [];
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
     
-    const stats = useMemo(() => {
-        const completedTasks = events.filter(e => e.completedPomos && e.estimatedPomos && e.completedPomos >= e.estimatedPomos).length;
-        const totalPomos = events.reduce((sum, e) => sum + (e.estimatedPomos || 0), 0);
-        
-        const sessionsByCourse = events.reduce((acc, e) => {
-            if (e.type === 'study-session' && e.courseTitle) {
-                acc[e.courseTitle] = (acc[e.courseTitle] || 0) + (e.completedPomos || 0);
-            }
-            return acc;
-        }, {} as Record<string, number>);
-
-        const topCourse = Object.entries(sessionsByCourse).sort((a,b) => b[1] - a[1])[0];
-
-        return {
-            completedTasks,
-            totalStudySessions: events.filter(e => e.type === 'study-session').length,
-            topCourse: topCourse ? topCourse[0] : 'N/A'
-        }
-
-    }, [events]);
-    
-    const handleGeneratePlan = async () => {
-        if (!plannerInput) {
-            toast({ title: "Cannot generate plan", description: "Course data is not available.", variant: "destructive" });
-            return;
-        }
-        setIsGenerating(true);
-        try {
-            const result = await generateStudyPlan(plannerInput);
-            setEvents(result.events.map(e => ({ ...e, id: `ai_${Math.random()}` })));
-            if(userInfo) {
-                await saveStudyPlanAction(userInfo.uid, result.events);
-                await refreshUserInfo();
-            }
-            toast({ title: 'Success', description: 'Your new study plan has been generated.' });
-        } catch (error) {
-            toast({ title: 'Error', description: 'Failed to generate study plan.', variant: 'destructive' });
-        }
-        setIsGenerating(false);
-    };
-
-    const handleSavePlan = async () => {
+    const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
-        const result = await saveStudyPlanAction(userInfo.uid, events);
+        const eventsToSave = updatedEvents || events;
+        const result = await saveStudyPlanAction(userInfo.uid, eventsToSave);
         if (result.success) {
-            toast({ title: 'Plan Saved!', description: 'Your study plan has been saved to your profile.'});
+            toast({ title: 'Plan Saved!', description: 'Your study plan has been updated.'});
             await refreshUserInfo();
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive' });
         }
-    }
+    }, [events, userInfo, refreshUserInfo, toast]);
+    
+    const handleTaskUpdate = useCallback((updatedEvent: StudyPlanEvent) => {
+        setEvents(prev => {
+            const newEvents = prev.map(e => e.id === updatedEvent.id ? updatedEvent : e);
+            handleSavePlan(newEvents);
+            return newEvents;
+        });
+    }, [handleSavePlan]);
+
+    const handleSessionComplete = useCallback((taskId: string) => {
+        setEvents(prev => {
+            const newEvents = prev.map(e => {
+                if (e.id === taskId) {
+                    return { ...e, completedPomos: (e.completedPomos || 0) + 1 };
+                }
+                return e;
+            });
+            handleSavePlan(newEvents);
+            return newEvents;
+        });
+    }, [handleSavePlan]);
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1 });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1, completedPomos: 0 });
         setIsTaskDialogOpen(true);
     };
     
     const saveTask = () => {
         if (!editingEvent?.title) return;
         
-        setEvents(prev => {
-            if (editingEvent.id) {
-                return prev.map(e => e.id === editingEvent.id ? editingEvent as StudyPlanEvent : e);
-            } else {
-                return [...prev, { ...editingEvent, id: `manual_${Date.now()}` } as StudyPlanEvent];
-            }
-        });
+        const newEvents = editingEvent.id
+            ? events.map(e => e.id === editingEvent.id ? editingEvent as StudyPlanEvent : e)
+            : [...events, { ...editingEvent, id: `manual_${Date.now()}` } as StudyPlanEvent];
+            
+        setEvents(newEvents);
+        handleSavePlan(newEvents);
         setIsTaskDialogOpen(false);
     }
     
     const deleteTask = (eventId: string) => {
-        setEvents(prev => prev.filter(e => e.id !== eventId));
+        const newEvents = events.filter(e => e.id !== eventId);
+        setEvents(newEvents);
+        handleSavePlan(newEvents);
     };
 
     const handleDateNavigation = (direction: 'prev' | 'next') => {
@@ -153,7 +130,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             case 'week':
                 return <WeekView currentDate={currentDate} events={events} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
-                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} />;
+                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} onTaskUpdate={handleTaskUpdate} />;
             case 'month':
             default:
                 return (
@@ -206,13 +183,6 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                         Organize your study schedule, track your tasks, and stay productive.
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <Button onClick={handleGeneratePlan} disabled={isGenerating || !plannerInput}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Generate with AI
-                    </Button>
-                    <Button onClick={handleSavePlan} variant="outline">Save Plan</Button>
-                </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 <div className="xl:col-span-2 space-y-4">
@@ -248,50 +218,16 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                 </div>
 
                  <div className="xl:col-span-1 space-y-8">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Your Study Snapshot</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                                <div className="flex items-center gap-3">
-                                    <CheckCircle className="h-6 w-6 text-green-500"/>
-                                    <div>
-                                        <p className="font-semibold">Tasks Completed</p>
-                                        <p className="text-sm text-muted-foreground">{stats.completedTasks} tasks</p>
-                                    </div>
-                                </div>
-                            </div>
-                             <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                                <div className="flex items-center gap-3">
-                                    <ListChecks className="h-6 w-6 text-blue-500"/>
-                                    <div>
-                                        <p className="font-semibold">Study Sessions</p>
-                                        <p className="text-sm text-muted-foreground">{stats.totalStudySessions} sessions</p>
-                                    </div>
-                                </div>
-                            </div>
-                              <div className="flex items-center justify-between p-3 bg-muted rounded-md">
-                                <div className="flex items-center gap-3">
-                                    <BookOpen className="h-6 w-6 text-purple-500"/>
-                                    <div>
-                                        <p className="font-semibold">Top Subject</p>
-                                        <p className="text-sm text-muted-foreground">{stats.topCourse}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <PomodoroTimer courses={plannerInput?.courses || []} />
+                    <PomodoroTimer tasksForToday={eventsForSelectedDate} onSessionComplete={handleSessionComplete}/>
                 </div>
             </div>
 
              <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
+                    <div className="grid gap-4 py-4 pr-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />

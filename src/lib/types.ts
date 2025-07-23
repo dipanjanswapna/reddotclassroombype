@@ -1,5 +1,4 @@
 
-
 import { Timestamp } from "firebase/firestore";
 
 export type ProductReview = {
@@ -419,8 +418,8 @@ export type CourseCycle = {
 
 export type StudyPlanEvent = {
     id?: string;
-    date: string;
-    time?: string; // Optional time in HH:mm format
+    date: string; // YYYY-MM-DD format
+    time?: string; // HH:mm format, optional
     title: string;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
     courseTitle?: string;
@@ -430,6 +429,7 @@ export type StudyPlanEvent = {
     estimatedPomos?: number;
     reminders?: number[]; // minutes before event
 };
+
 
 export type Course = {
   id?: string;

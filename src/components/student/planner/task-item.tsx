@@ -1,20 +1,21 @@
 
-
 'use client';
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/ai/schemas/study-plan-schemas";
-import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag } from "lucide-react";
+import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { format, parse } from 'date-fns';
+import { Input } from "@/components/ui/input";
 
 type TaskItemProps = {
   event: StudyPlanEvent;
   onEdit: () => void;
   onDelete: () => void;
+  onTaskUpdate: (event: StudyPlanEvent) => void;
 };
 
 const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
@@ -30,12 +31,18 @@ const priorityColors: { [key: string]: string } = {
     Low: 'text-green-500'
 }
 
-export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
+export function TaskItem({ event, onEdit, onDelete, onTaskUpdate }: TaskItemProps) {
   const { completedPomos = 0, estimatedPomos = 0 } = event;
   const progress = estimatedPomos > 0 ? (completedPomos / estimatedPomos) * 100 : 0;
   const isCompleted = progress >= 100;
 
   const formattedTime = event.time ? format(parse(event.time, 'HH:mm', new Date()), 'h:mm a') : null;
+
+  const handlePomoChange = (amount: number) => {
+    const newCompleted = Math.max(0, completedPomos + amount);
+    onTaskUpdate({ ...event, completedPomos: newCompleted });
+  };
+
 
   return (
     <Card className="p-4">
@@ -62,10 +69,14 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
         </div>
       </div>
       {(event.type === 'study-session' || event.type === 'exam-prep') && estimatedPomos > 0 && (
-        <div className="mt-3 pl-24">
+        <div className="mt-3 pl-14 sm:pl-24">
             <div className="flex justify-between items-center text-xs text-muted-foreground mb-1">
                 <div className="flex items-center gap-1"><Clock className="h-3 w-3"/> Pomodoro Sessions</div>
-                <span>{completedPomos} / {estimatedPomos}</span>
+                 <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => handlePomoChange(-1)}><Minus className="h-3 w-3"/></Button>
+                    <span>{completedPomos} / {estimatedPomos}</span>
+                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => handlePomoChange(1)}><Plus className="h-3 w-3"/></Button>
+                 </div>
             </div>
             <Progress value={progress} className="h-1.5"/>
         </div>
@@ -73,5 +84,3 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
     </Card>
   );
 }
-
-    
