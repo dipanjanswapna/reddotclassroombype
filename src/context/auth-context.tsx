@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return () => unsubscribeFirestore();
-    }, [userInfo, db]);
+    }, [userInfo, db, toast]);
 
     const refreshUserInfo = useCallback(async () => {
         if (!auth) return;
@@ -477,3 +477,5 @@ export const useAuth = (): AuthContextType => {
     }
     return context;
 };
+
+    
