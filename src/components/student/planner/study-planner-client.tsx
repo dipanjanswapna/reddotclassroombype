@@ -31,6 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { WeekView } from './week-view';
 import { DayView } from './day-view';
+import { ProgressChart } from './progress-chart';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -45,6 +46,9 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
 
+    // Pomodoro settings state to be passed to timer and used for calculations
+    const [pomodoroDurations, setPomodoroDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
+
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
         const start = startOfWeek(firstDayOfMonth);
@@ -57,6 +61,19 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
     
+    const weeklyProgressData = useMemo(() => {
+        const last7Days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
+        return last7Days.map(day => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+            const dayEvents = events.filter(e => e.date === dateStr);
+            const totalPomos = dayEvents.reduce((sum, e) => sum + (e.completedPomos || 0), 0);
+            return {
+                name: format(day, 'EEE'),
+                minutes: totalPomos * pomodoroDurations.work,
+            };
+        });
+    }, [events, pomodoroDurations.work]);
+
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
         const eventsToSave = updatedEvents || events;
@@ -218,7 +235,20 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                 </div>
 
                  <div className="xl:col-span-1 space-y-8">
-                    <PomodoroTimer tasksForToday={eventsForSelectedDate} onSessionComplete={handleSessionComplete}/>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Weekly Study Insights</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ProgressChart data={weeklyProgressData} />
+                        </CardContent>
+                    </Card>
+                    <PomodoroTimer 
+                        tasksForToday={eventsForSelectedDate} 
+                        onSessionComplete={handleSessionComplete}
+                        durations={pomodoroDurations}
+                        setDurations={setPomodoroDurations}
+                    />
                 </div>
             </div>
 

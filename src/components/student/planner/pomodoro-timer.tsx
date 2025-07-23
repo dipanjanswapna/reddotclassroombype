@@ -11,14 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
+type Durations = { work: number; shortBreak: number; longBreak: number; };
 
 interface PomodoroTimerProps {
   tasksForToday: StudyPlanEvent[];
   onSessionComplete: (taskId: string) => void;
+  durations: Durations;
+  setDurations: React.Dispatch<React.SetStateAction<Durations>>;
 }
 
-export function PomodoroTimer({ tasksForToday, onSessionComplete }: PomodoroTimerProps) {
-  const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
+export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, setDurations }: PomodoroTimerProps) {
   const [mode, setMode] = useState<PomodoroMode>('work');
   const [minutes, setMinutes] = useState(durations.work);
   const [seconds, setSeconds] = useState(0);
