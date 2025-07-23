@@ -61,6 +61,13 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
     
+    const totalStudyTimeForSelectedDate = useMemo(() => {
+        return eventsForSelectedDate.reduce((total, event) => {
+            return total + (event.completedPomos || 0) * pomodoroDurations.work;
+        }, 0);
+    }, [eventsForSelectedDate, pomodoroDurations.work]);
+
+    
     const weeklyProgressData = useMemo(() => {
         const last7Days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
         return last7Days.map(day => {
@@ -147,7 +154,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             case 'week':
                 return <WeekView currentDate={currentDate} events={events} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
-                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} onTaskUpdate={handleTaskUpdate} />;
+                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} onTaskUpdate={handleTaskUpdate} totalStudyTime={totalStudyTimeForSelectedDate} />;
             case 'month':
             default:
                 return (
