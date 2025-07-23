@@ -946,7 +946,6 @@ export type HomepageConfig = {
         title: { [key: string]: string };
         buttonText: { [key: string]: string };
     };
-    jobCoursesIds: string[];
     whyChooseUs: {
         display: boolean;
         title: { [key: string]: string };
@@ -1059,3 +1058,21 @@ export type HomepageConfig = {
         slides: OfflineHubHeroSlide[];
     };
 };
+
+// NOTICE
+export type Notice = {
+    id?: string;
+    title: string;
+    content: string;
+    publishedAt: Timestamp;
+    authorId: string;
+    authorRole: string;
+    attachments?: NoticeAttachment[];
+    isPublished: boolean;
+    targetAudience?: ('student' | 'teacher' | 'all')[];
+    expiresAt?: Timestamp;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+};
+
+    
