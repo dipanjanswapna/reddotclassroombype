@@ -38,9 +38,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LoadingSpinner } from '../loading-spinner';
+import { LoadingSpinner } from '@/components/loading-spinner';
 import { safeToDate } from '@/lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 
 type ViewMode = 'month' | 'week' | 'day';
