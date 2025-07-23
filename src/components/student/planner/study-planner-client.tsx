@@ -291,7 +291,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
@@ -347,5 +347,3 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         </div>
     );
 }
-
-    
