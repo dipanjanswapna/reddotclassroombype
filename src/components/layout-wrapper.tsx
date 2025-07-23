@@ -17,7 +17,8 @@ import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
 import { StoreFooter } from './store-footer';
 import { getStoreCategories } from '@/lib/firebase/firestore';
-import React from 'react';
+import React, { Suspense } from 'react';
+import FacebookPixel from './facebook-pixel';
 
 
 const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) => {
@@ -110,6 +111,9 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
             </InnerLayout>
             <CartSheet />
             <Toaster />
+            <Suspense fallback={null}>
+                <FacebookPixel />
+            </Suspense>
             </LanguageProvider>
         </CartProvider>
       </AuthProvider>
