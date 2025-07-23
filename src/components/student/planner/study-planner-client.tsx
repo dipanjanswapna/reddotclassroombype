@@ -19,6 +19,7 @@ import {
   getMonth,
   getWeek,
   getYear,
+  lastDayOfWeek,
 } from 'date-fns';
 import { StudyPlanEvent, StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
 import { saveStudyPlanAction } from '@/app/actions/user.actions';
@@ -78,10 +79,15 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             const totalPomos = dayEvents.reduce((sum, e) => sum + (e.completedPomos || 0), 0);
             return totalPomos * pomodoroDurations.work;
         };
+        
+        const referenceDate = viewMode === 'month' ? currentDate : selectedDate;
 
         if (insightView === 'Daily') {
-             const last7Days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
-            return last7Days.map(day => ({
+             const endOfSelectedWeek = endOfWeek(referenceDate);
+             const startOfSelectedWeek = startOfWeek(referenceDate);
+             const weekInterval = eachDayOfInterval({ start: startOfSelectedWeek, end: endOfSelectedWeek });
+
+            return weekInterval.map(day => ({
                 name: format(day, 'EEE'),
                 minutes: getMinutes(events.filter(e => e.date === format(day, 'yyyy-MM-dd'))),
             }));
@@ -89,13 +95,13 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         if (insightView === 'Weekly') {
             const weeklyData: { [key: string]: number } = {};
             for (let i = 3; i >= 0; i--) {
-                const weekStartDate = subDays(new Date(), i * 7);
-                const weekKey = `W${getWeek(weekStartDate)}`;
+                const weekStartDate = subDays(referenceDate, i * 7);
+                const weekKey = `W${getWeek(weekStartDate, { weekStartsOn: 1 })}`;
                 weeklyData[weekKey] = 0;
             }
             events.forEach(e => {
                 const eventDate = new Date(e.date);
-                const weekKey = `W${getWeek(eventDate)}`;
+                const weekKey = `W${getWeek(eventDate, { weekStartsOn: 1 })}`;
                 if(weeklyData[weekKey] !== undefined) {
                     weeklyData[weekKey] += (e.completedPomos || 0) * pomodoroDurations.work;
                 }
@@ -106,7 +112,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             const monthlyData: { [key: string]: number } = {};
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             for (let i = 5; i >= 0; i--) {
-                const monthDate = subMonths(new Date(), i);
+                const monthDate = subMonths(referenceDate, i);
                 const monthKey = monthNames[getMonth(monthDate)];
                 monthlyData[monthKey] = 0;
             }
@@ -120,7 +126,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
              return Object.entries(monthlyData).map(([name, minutes]) => ({ name, minutes }));
         }
         return [];
-    }, [events, pomodoroDurations.work, insightView]);
+    }, [events, pomodoroDurations.work, insightView, currentDate, selectedDate, viewMode]);
 
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
