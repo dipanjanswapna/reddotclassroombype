@@ -1,10 +1,12 @@
 
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/ai/schemas/study-plan-schemas";
-import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle } from "lucide-react";
+import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 type TaskItemProps = {
   event: StudyPlanEvent & { completedPomos?: number, estimatedPomos?: number };
@@ -18,6 +20,12 @@ const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
     'quiz-reminder': <HelpCircle className="h-5 w-5" />,
     'exam-prep': <Calendar className="h-5 w-5" />,
 };
+
+const priorityColors: { [key: string]: string } = {
+    High: 'text-destructive',
+    Medium: 'text-yellow-500',
+    Low: 'text-green-500'
+}
 
 export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
   const { completedPomos = 0, estimatedPomos = 0 } = event as any;
@@ -33,7 +41,10 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
         <div className="flex-grow">
           <p className="font-semibold">{event.title}</p>
           <p className="text-sm text-muted-foreground">{event.description}</p>
-          {event.courseTitle && <Badge variant="secondary" className="mt-1">{event.courseTitle}</Badge>}
+          <div className="flex items-center gap-2 mt-1">
+            {event.courseTitle && <Badge variant="secondary">{event.courseTitle}</Badge>}
+            {event.priority && <Flag className={cn("h-4 w-4", priorityColors[event.priority])}/>}
+          </div>
         </div>
         <div className="flex gap-1">
             <Button variant="ghost" size="icon" onClick={onEdit}><Edit className="h-4 w-4" /></Button>

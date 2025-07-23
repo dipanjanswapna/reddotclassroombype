@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -11,7 +12,7 @@ import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle } from 'lucide-react';
+import { Loader2, Wand2, PlusCircle, BarChart, BookOpen, CheckCircle } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -67,7 +68,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     }
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session' });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium' });
         setIsTaskDialogOpen(true);
     };
     
@@ -87,6 +88,25 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const deleteTask = (eventId: string) => {
         setEvents(prev => prev.filter(e => e.id !== eventId));
     };
+
+    const analytics = useMemo(() => {
+        const totalTasks = events.length;
+        const studySessions = events.filter(e => e.type === 'study-session');
+        const courseCounts = studySessions.reduce((acc, session) => {
+            if (session.courseTitle) {
+                acc[session.courseTitle] = (acc[session.courseTitle] || 0) + 1;
+            }
+            return acc;
+        }, {} as Record<string, number>);
+        
+        const mostStudied = Object.entries(courseCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+
+        return {
+            totalTasks,
+            totalStudySessions: studySessions.length,
+            mostStudied,
+        }
+    }, [events]);
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -109,15 +129,31 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
                     <Card>
-                        <CardContent className="p-2 sm:p-4 flex justify-center">
-                            <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                className="rounded-md"
-                                modifiers={{ events: events.map(e => new Date(e.date)) }}
-                                modifiersClassNames={{ events: "bg-primary/20 rounded-full" }}
-                            />
+                        <CardHeader>
+                            <CardTitle>Your Study Snapshot</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                                <CheckCircle className="h-8 w-8 text-primary"/>
+                                <div>
+                                    <p className="text-2xl font-bold">{analytics.totalTasks}</p>
+                                    <p className="text-sm text-muted-foreground">Total Tasks</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                                <BookOpen className="h-8 w-8 text-primary"/>
+                                <div>
+                                    <p className="text-2xl font-bold">{analytics.totalStudySessions}</p>
+                                    <p className="text-sm text-muted-foreground">Study Sessions</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                                <BarChart className="h-8 w-8 text-primary"/>
+                                <div>
+                                    <p className="text-lg font-bold truncate">{analytics.mostStudied}</p>
+                                    <p className="text-sm text-muted-foreground">Most Studied</p>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -137,7 +173,19 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                         </CardContent>
                     </Card>
                 </div>
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 flex flex-col gap-8">
+                    <Card>
+                         <CardContent className="p-2 sm:p-4 flex justify-center">
+                            <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                className="rounded-md"
+                                modifiers={{ events: events.map(e => new Date(e.date)) }}
+                                modifiersClassNames={{ events: "bg-primary/20 rounded-full" }}
+                            />
+                        </CardContent>
+                    </Card>
                     <PomodoroTimer courses={plannerInput?.courses || []} />
                 </div>
             </div>
@@ -161,6 +209,17 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                                     <SelectItem value="assignment-deadline">Assignment Deadline</SelectItem>
                                     <SelectItem value="quiz-reminder">Quiz Reminder</SelectItem>
                                     <SelectItem value="exam-prep">Exam Prep</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="priority">Priority</Label>
+                            <Select value={editingEvent?.priority} onValueChange={(v) => setEditingEvent(p => ({ ...p, priority: v as any }))}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="High">High</SelectItem>
+                                    <SelectItem value="Medium">Medium</SelectItem>
+                                    <SelectItem value="Low">Low</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -28,6 +28,7 @@ export const StudyPlanEventSchema = z.object({
     type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
+    priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
 });
 export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 
