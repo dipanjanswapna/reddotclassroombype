@@ -135,43 +135,43 @@ export default function DashboardPage() {
               <p className="text-muted-foreground">আপনার পরবর্তী ক্লাস আজ সন্ধ্যা ৭টায়। শুরু করার জন্য প্রস্তুত হন!</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">চলমান কোর্স</CardTitle>
-                      <BookOpen className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                      <div className="text-2xl font-bold">{stats.enrollments.length}</div>
-                      <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
-                  </CardContent>
-              </Card>
-              <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">সামগ্রিক অগ্রগতি</CardTitle>
-                       <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                      <div className="text-2xl font-bold">{stats.overallProgress}%</div>
-                      <Progress value={stats.overallProgress} className="mt-2 h-2 [&>div]:bg-accent" />
-                  </CardContent>
-              </Card>
-              <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">অর্জিত সার্টিফিকেট</CardTitle>
-                      <Award className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                      <div className="text-2xl font-bold">{stats.completedCoursesCount}</div>
-                      <p className="text-xs text-muted-foreground">আপনি সম্প্রতি একটি কোর্স সম্পন্ন করেছেন।</p>
-                  </CardContent>
-              </Card>
-          </div>
+            <Card className="glassmorphism-card bg-primary/10 border-primary/20">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-primary">চলমান কোর্স</CardTitle>
+                    <BookOpen className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold text-primary">{stats.enrollments.length}</div>
+                    <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
+                </CardContent>
+            </Card>
+            <Card className="glassmorphism-card bg-accent/10 border-accent/20">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-accent-foreground">সামগ্রিক অগ্রগতি</CardTitle>
+                     <BarChart3 className="h-4 w-4 text-accent-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold text-accent-foreground">{stats.overallProgress}%</div>
+                    <Progress value={stats.overallProgress} className="mt-2 h-2 [&>div]:bg-accent" />
+                </CardContent>
+            </Card>
+            <Card className="glassmorphism-card bg-yellow-500/10 border-yellow-500/20">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-yellow-600">অর্জিত সার্টিফিকেট</CardTitle>
+                    <Award className="h-4 w-4 text-yellow-600" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold text-yellow-600">{stats.completedCoursesCount}</div>
+                    <p className="text-xs text-muted-foreground">আপনি সম্প্রতি একটি কোর্স সম্পন্ন করেছেন।</p>
+                </CardContent>
+            </Card>
+        </div>
           
           <div>
             <h2 className="font-headline text-2xl font-bold mb-4">আপনার শেখা চালিয়ে যান</h2>
              <div className="grid gap-6 md:grid-cols-2">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="flex flex-col">
+                    <Card key={course.id} className="glassmorphism-card flex flex-col">
                         <CardHeader>
                             <CardTitle>{course.title}</CardTitle>
                             <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: ভৌত বিজ্ঞান প্রথম পত্র</p>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            <Card>
+            <Card className="glassmorphism-card">
               <CardHeader className="flex items-center justify-between">
                 <CardTitle>আসন্ন ডেডলাইন</CardTitle>
                 <Button asChild variant="ghost" size="sm">
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="glassmorphism-card">
               <CardHeader className="flex items-center justify-between">
                 <CardTitle>সাম্প্রতিক অর্জন</CardTitle>
                 <Button asChild variant="ghost" size="sm">
