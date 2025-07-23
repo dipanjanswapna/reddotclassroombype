@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -20,11 +21,11 @@ import {
   getWeek,
   lastDayOfWeek,
 } from 'date-fns';
-import { StudyPlanEvent, StudyPlanInput } from '@/lib/types';
-import { saveStudyPlanAction } from '@/app/actions/user.actions';
+import { StudyPlanEvent, StudyPlanInput, User } from '@/lib/types';
+import { saveUserAction, getUsers } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X } from 'lucide-react';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,10 @@ import { WeekView } from './week-view';
 import { DayView } from './day-view';
 import { ProgressChart } from './progress-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 
 type ViewMode = 'month' | 'week' | 'day';
@@ -46,6 +51,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const [events, setEvents] = useState<StudyPlanEvent[]>(initialEvents);
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
+    const [allUsers, setAllUsers] = useState<User[]>([]);
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -130,7 +136,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
         const eventsToSave = updatedEvents || events;
-        const result = await saveStudyPlanAction(userInfo.uid, eventsToSave);
+        const result = await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
         if (result.success) {
             toast({ title: 'Plan Saved!', description: 'Your study plan has been updated.'});
             await refreshUserInfo();
@@ -182,6 +188,17 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         setEvents(newEvents);
         handleSavePlan(newEvents);
     };
+    
+    const handleParticipantToggle = (userId: string) => {
+        setEditingEvent(prev => {
+            if (!prev) return null;
+            const currentParticipants = prev.participantIds || [];
+            const newParticipants = currentParticipants.includes(userId)
+                ? currentParticipants.filter(id => id !== userId)
+                : [...currentParticipants, userId];
+            return { ...prev, participantIds: newParticipants };
+        });
+    }
 
     const handleDateNavigation = (direction: 'prev' | 'next') => {
         if (viewMode === 'month') {
@@ -380,6 +397,39 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                             <Label>Reminders (minutes before)</Label>
                             <p className="text-xs text-muted-foreground">Note: This feature is for planning. Actual notifications are not yet implemented.</p>
                             <Input placeholder="e.g., 10, 30" onChange={e => setEditingEvent(p => ({ ...p, reminders: e.target.value.split(',').map(Number) }))} />
+                         </div>
+                         <div className="space-y-2">
+                            <Label>Participants</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                        <div className="flex items-center gap-1 flex-wrap">
+                                            <UsersIcon className="h-4 w-4 mr-2" />
+                                            {editingEvent?.participantIds?.length ? (
+                                                editingEvent.participantIds.map(id => {
+                                                    const user = allUsers.find(u => u.uid === id);
+                                                    return <Badge key={id} variant="secondary">{user?.name || id.slice(0,6)}</Badge>
+                                                })
+                                            ) : 'Add Participants'}
+                                        </div>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Search friends..." />
+                                        <CommandEmpty>No users found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {allUsers.filter(u => u.uid !== userInfo?.uid).map(user => (
+                                                <CommandItem key={user.uid} onSelect={() => handleParticipantToggle(user.uid)}>
+                                                    <Check className={cn("mr-2 h-4 w-4", editingEvent?.participantIds?.includes(user.uid) ? 'opacity-100' : 'opacity-0')} />
+                                                    <Avatar className="h-6 w-6 mr-2"><AvatarImage src={user.avatarUrl} /><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    {user.name}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                          </div>
                     </div>
                     <DialogFooter>

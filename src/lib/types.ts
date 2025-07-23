@@ -431,6 +431,7 @@ export type StudyPlanEvent = {
     completedPomos?: number;
     estimatedPomos?: number;
     reminders?: number[]; // minutes before event
+    participantIds?: string[];
 };
 
 
@@ -1095,3 +1096,4 @@ export type Notice = {
     
 
     
+

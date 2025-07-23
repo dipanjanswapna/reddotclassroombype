@@ -1,16 +1,18 @@
 
+
 'use client';
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/lib/types";
-import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video, Link as LinkIcon } from "lucide-react";
+import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video, Link as LinkIcon, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { format, parse } from 'date-fns';
 import { Input } from "@/components/ui/input";
 import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 type TaskItemProps = {
@@ -79,6 +81,17 @@ export function TaskItem({ event, onEdit, onDelete, onTaskUpdate }: TaskItemProp
           <div className="flex items-center gap-2 mt-1">
             {event.courseTitle && <Badge variant="secondary">{event.courseTitle}</Badge>}
             {event.priority && <Flag className={cn("h-4 w-4", priorityColors[event.priority])}/>}
+            {event.participantIds && event.participantIds.length > 0 && (
+                <div className="flex items-center -space-x-2">
+                    {event.participantIds.slice(0, 3).map(id => (
+                        <Avatar key={id} className="w-6 h-6 border-2 border-background">
+                            <AvatarImage src={`https://placehold.co/100x100.png`} />
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                    ))}
+                    {event.participantIds.length > 3 && <span className="text-xs text-muted-foreground pl-3">+{event.participantIds.length - 3}</span>}
+                </div>
+            )}
           </div>
         </div>
         <div className="flex gap-1">

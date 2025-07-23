@@ -36,6 +36,7 @@ export const StudyPlanEventSchema = z.object({
     completedPomos: z.number().optional().describe('The number of completed Pomodoro sessions for this task.'),
     estimatedPomos: z.number().optional().describe('The estimated number of Pomodoro sessions for this task.'),
     reminders: z.array(z.number()).optional().describe("A list of reminder times in minutes before the event."),
+    participantIds: z.array(z.string()).optional().describe("A list of user IDs participating in this event."),
 });
 export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 
