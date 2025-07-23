@@ -423,7 +423,7 @@ export type StudyPlanEvent = {
     time?: string; // HH:mm format, optional
     endTime?: string; // HH:mm format, optional
     title: string;
-    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'live-class';
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'live-class' | 'habit';
     courseTitle?: string;
     description?: string;
     resourceLink?: string;

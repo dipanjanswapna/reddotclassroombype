@@ -24,7 +24,7 @@ import { saveUserAction, getUsers, getEnrollmentsByUserId, getCoursesByIds } fro
 import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff, Sparkles } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff, Sparkles, Repeat } from 'lucide-react';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -471,6 +471,7 @@ export function StudyPlannerClient() {
                                 <SelectTrigger><SelectValue/></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="study-session">Study Session</SelectItem>
+                                    <SelectItem value="habit">Habit</SelectItem>
                                     <SelectItem value="assignment-deadline">Assignment Deadline</SelectItem>
                                     <SelectItem value="quiz-reminder">Quiz Reminder</SelectItem>
                                     <SelectItem value="exam-prep">Exam Prep</SelectItem>

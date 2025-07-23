@@ -28,7 +28,7 @@ export const StudyPlanEventSchema = z.object({
     time: z.string().optional().describe('The start time of the event in HH:mm format.'),
     endTime: z.string().optional().describe('The end time of the event in HH:mm format.'),
     title: z.string().describe('A concise title for the study event.'),
-    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'live-class']).describe('The type of event.'),
+    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'live-class', 'habit']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
     resourceLink: z.string().optional().describe('An external URL for a relevant resource.'),
