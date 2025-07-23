@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,7 +11,7 @@ import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle, Trash2, Edit } from 'lucide-react';
+import { Loader2, Wand2, PlusCircle } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -43,7 +43,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         setIsGenerating(true);
         try {
             const result = await generateStudyPlan(plannerInput);
-            setEvents(result.events);
+            setEvents(result.events.map(e => ({ ...e, id: `ai_${Math.random()}` }))); // Add temporary IDs
             if(userInfo) {
                 await saveStudyPlanAction(userInfo.uid, result.events);
                 await refreshUserInfo();
@@ -138,7 +138,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                     </Card>
                 </div>
                 <div className="lg:col-span-1">
-                    <PomodoroTimer />
+                    <PomodoroTimer courses={plannerInput?.courses || []} />
                 </div>
             </div>
 

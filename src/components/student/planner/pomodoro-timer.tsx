@@ -4,13 +4,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export function PomodoroTimer() {
-  const [minutes, setMinutes] = useState(25);
+type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
+
+export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: string, courses: { id: string, title: string }[] }) {
+  const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
+  const [mode, setMode] = useState<PomodoroMode>('work');
+  const [minutes, setMinutes] = useState(durations.work);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [mode, setMode] = useState<'work' | 'shortBreak' | 'longBreak'>('work');
+  const [selectedCourse, setSelectedCourse] = useState('');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -18,15 +25,15 @@ export function PomodoroTimer() {
     if (isActive) {
       timerRef.current = setInterval(() => {
         if (seconds > 0) {
-          setSeconds(seconds - 1);
+          setSeconds(s => s - 1);
+        } else if (minutes > 0) {
+          setMinutes(m => m - 1);
+          setSeconds(59);
         } else {
-          if (minutes === 0) {
-            clearInterval(timerRef.current!);
-            // Handle mode change or alert
-          } else {
-            setMinutes(minutes - 1);
-            setSeconds(59);
-          }
+          // Timer finished, handle mode change, sound alert etc.
+          clearInterval(timerRef.current!);
+          setIsActive(false);
+          // TODO: Add sound notification and auto-switch modes
         }
       }, 1000);
     } else {
@@ -36,54 +43,86 @@ export function PomodoroTimer() {
       if(timerRef.current) clearInterval(timerRef.current);
     };
   }, [isActive, seconds, minutes]);
-
-  const toggleTimer = () => {
-    setIsActive(!isActive);
+  
+  const switchMode = (newMode: PomodoroMode) => {
+    setMode(newMode);
+    setIsActive(false);
+    setMinutes(durations[newMode]);
+    setSeconds(0);
   };
+  
+  const handleDurationChange = (mode: PomodoroMode, value: string) => {
+    const newDuration = parseInt(value, 10);
+    if (!isNaN(newDuration) && newDuration > 0) {
+        setDurations(prev => ({ ...prev, [mode]: newDuration }));
+        if (mode === newMode) {
+            setMinutes(newDuration);
+            setSeconds(0);
+            setIsActive(false);
+        }
+    }
+  }
+
+  const toggleTimer = () => setIsActive(!isActive);
 
   const resetTimer = () => {
     setIsActive(false);
-    switch (mode) {
-      case 'work': setMinutes(25); break;
-      case 'shortBreak': setMinutes(5); break;
-      case 'longBreak': setMinutes(15); break;
-    }
+    setMinutes(durations[mode]);
     setSeconds(0);
   };
 
-  const switchMode = (newMode: 'work' | 'shortBreak' | 'longBreak') => {
-    setMode(newMode);
-    setIsActive(false);
-     switch (newMode) {
-      case 'work': setMinutes(25); break;
-      case 'shortBreak': setMinutes(5); break;
-      case 'longBreak': setMinutes(15); break;
-    }
-    setSeconds(0);
-  }
 
   return (
     <Card className="w-full max-w-sm">
         <CardHeader>
             <CardTitle>Pomodoro Timer</CardTitle>
+            <CardDescription>Stay focused and manage your study sessions effectively.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4">
+        <CardContent className="flex flex-col items-center gap-6">
             <div className="flex gap-2">
-                <Button variant={mode === 'work' ? 'default' : 'outline'} onClick={() => switchMode('work')}>Work</Button>
-                <Button variant={mode === 'shortBreak' ? 'default' : 'outline'} onClick={() => switchMode('shortBreak')}>Short Break</Button>
-                <Button variant={mode === 'longBreak' ? 'default' : 'outline'} onClick={() => switchMode('longBreak')}>Long Break</Button>
+                <Button size="sm" variant={mode === 'work' ? 'default' : 'outline'} onClick={() => switchMode('work')}>Work</Button>
+                <Button size="sm" variant={mode === 'shortBreak' ? 'default' : 'outline'} onClick={() => switchMode('shortBreak')}>Short Break</Button>
+                <Button size="sm" variant={mode === 'longBreak' ? 'default' : 'outline'} onClick={() => switchMode('longBreak')}>Long Break</Button>
             </div>
-            <div className="text-6xl font-bold font-mono">
+            <div className="text-7xl font-bold font-mono text-center bg-muted p-4 rounded-lg w-full">
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             <div className="flex gap-4">
-                <Button onClick={toggleTimer} size="lg" className="w-24">
+                <Button onClick={toggleTimer} size="lg" className="w-28 h-12 text-lg">
                     {isActive ? <Pause /> : <Play />}
                 </Button>
-                 <Button onClick={resetTimer} size="lg" variant="secondary" className="w-24">
+                 <Button onClick={resetTimer} size="lg" variant="secondary" className="w-28 h-12">
                     <RotateCcw />
                 </Button>
             </div>
+             <div className="w-full space-y-4 pt-4 border-t">
+                 <div className="space-y-2">
+                    <Label>Associated Task / Course</Label>
+                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                        <SelectTrigger><SelectValue placeholder="Select a course..." /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="general">General Study</SelectItem>
+                            {courses.map(course => (
+                                <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                 </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    <div>
+                        <Label htmlFor="work-duration" className="text-xs">Work</Label>
+                        <Input id="work-duration" type="number" value={durations.work} onChange={e => handleDurationChange('work', e.target.value)} className="w-full h-9 text-center" />
+                    </div>
+                    <div>
+                        <Label htmlFor="short-break-duration" className="text-xs">Short Break</Label>
+                        <Input id="short-break-duration" type="number" value={durations.shortBreak} onChange={e => handleDurationChange('shortBreak', e.target.value)} className="w-full h-9 text-center" />
+                    </div>
+                    <div>
+                        <Label htmlFor="long-break-duration" className="text-xs">Long Break</Label>
+                        <Input id="long-break-duration" type="number" value={durations.longBreak} onChange={e => handleDurationChange('longBreak', e.target.value)} className="w-full h-9 text-center"/>
+                    </div>
+                </div>
+             </div>
         </CardContent>
     </Card>
   );
