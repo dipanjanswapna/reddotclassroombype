@@ -5,11 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/lib/types";
-import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video } from "lucide-react";
+import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video, Link as LinkIcon } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { format, parse } from 'date-fns';
 import { Input } from "@/components/ui/input";
+import Link from 'next/link';
+
 
 type TaskItemProps = {
   event: StudyPlanEvent;
@@ -65,7 +67,14 @@ export function TaskItem({ event, onEdit, onDelete, onTaskUpdate }: TaskItemProp
             {isCompleted ? <CheckCircle className="h-5 w-5" /> : eventIcons[event.type]}
         </div>
         <div className="flex-grow">
-          <p className="font-semibold">{event.title}</p>
+          <div className="flex items-center gap-2">
+             <p className="font-semibold">{event.title}</p>
+             {event.resourceLink && (
+                <Link href={event.resourceLink} target="_blank" rel="noopener noreferrer">
+                    <LinkIcon className="h-4 w-4 text-muted-foreground hover:text-primary"/>
+                </Link>
+             )}
+          </div>
           <p className="text-sm text-muted-foreground">{event.description}</p>
           <div className="flex items-center gap-2 mt-1">
             {event.courseTitle && <Badge variant="secondary">{event.courseTitle}</Badge>}

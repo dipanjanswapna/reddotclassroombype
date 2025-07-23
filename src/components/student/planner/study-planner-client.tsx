@@ -362,6 +362,10 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                             <Label htmlFor="description">Description (Optional)</Label>
                             <Input id="description" value={editingEvent?.description || ''} onChange={e => setEditingEvent(p => ({ ...p, description: e.target.value }))} />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="resourceLink">Resource Link (Optional)</Label>
+                            <Input id="resourceLink" value={editingEvent?.resourceLink || ''} onChange={e => setEditingEvent(p => ({ ...p, resourceLink: e.target.value }))} placeholder="https://example.com/notes.pdf"/>
+                        </div>
                          <div className="space-y-2">
                             <Label htmlFor="courseTitle">Course (Optional)</Label>
                             <Input id="courseTitle" value={editingEvent?.courseTitle || ''} onChange={e => setEditingEvent(p => ({ ...p, courseTitle: e.target.value }))} />

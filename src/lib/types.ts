@@ -426,6 +426,7 @@ export type StudyPlanEvent = {
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'live-class';
     courseTitle?: string;
     description?: string;
+    resourceLink?: string;
     priority?: 'High' | 'Medium' | 'Low';
     completedPomos?: number;
     estimatedPomos?: number;
@@ -1094,4 +1095,3 @@ export type Notice = {
     
 
     
-

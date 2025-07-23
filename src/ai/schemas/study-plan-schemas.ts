@@ -31,6 +31,7 @@ export const StudyPlanEventSchema = z.object({
     type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'live-class']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
+    resourceLink: z.string().optional().describe('An external URL for a relevant resource.'),
     priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
     completedPomos: z.number().optional().describe('The number of completed Pomodoro sessions for this task.'),
     estimatedPomos: z.number().optional().describe('The estimated number of Pomodoro sessions for this task.'),
