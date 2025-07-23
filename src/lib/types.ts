@@ -559,6 +559,7 @@ export type User = {
   nidNumber?: string;
   mobileNumber?: string;
   guardianMobileNumber?: string;
+  address?: string; // New field for shipping
   referredBy?: string; // UID of the referrer
   referralCode?: string; // This user's unique referral code (their class roll)
   hasUsedReferral?: boolean; // To check if they have used a referral code before

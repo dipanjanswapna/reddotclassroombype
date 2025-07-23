@@ -1,5 +1,6 @@
 
 
+
 import {z} from 'genkit';
 
 const CourseInfoSchema = z.object({
