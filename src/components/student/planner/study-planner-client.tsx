@@ -310,7 +310,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
             </div>
 
              <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-h-[90vh] overflow-y-auto pr-2">
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
@@ -360,6 +360,11 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                                 <Input id="estimatedPomos" type="number" value={editingEvent?.estimatedPomos || 1} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomos: Number(e.target.value) }))} />
                             </div>
                          )}
+                         <div className="space-y-2">
+                            <Label>Reminders (minutes before)</Label>
+                            <p className="text-xs text-muted-foreground">Note: This feature is for planning. Actual notifications are not yet implemented.</p>
+                            <Input placeholder="e.g., 10, 30" onChange={e => setEditingEvent(p => ({ ...p, reminders: e.target.value.split(',').map(Number) }))} />
+                         </div>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
@@ -370,4 +375,3 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         </div>
     );
 }
-
