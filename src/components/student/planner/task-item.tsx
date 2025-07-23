@@ -37,7 +37,15 @@ export function TaskItem({ event, onEdit, onDelete, onTaskUpdate }: TaskItemProp
   const progress = estimatedPomos > 0 ? (completedPomos / estimatedPomos) * 100 : 0;
   const isCompleted = progress >= 100;
 
-  const formattedTime = event.time ? format(parse(event.time, 'HH:mm', new Date()), 'h:mm a') : null;
+  const getEventTime = () => {
+    if (!event.time) return null;
+    const startTime = format(parse(event.time, 'HH:mm', new Date()), 'h:mm a');
+    if (!event.endTime) return startTime;
+    const endTime = format(parse(event.endTime, 'HH:mm', new Date()), 'h:mm a');
+    return `${startTime} - ${endTime}`;
+  };
+
+  const formattedTime = getEventTime();
 
   const handlePomoChange = (amount: number) => {
     const newCompleted = Math.max(0, completedPomos + amount);
@@ -49,7 +57,7 @@ export function TaskItem({ event, onEdit, onDelete, onTaskUpdate }: TaskItemProp
     <Card className="p-4">
       <div className="flex items-start gap-4">
         {formattedTime && (
-            <div className="text-xs font-semibold text-muted-foreground w-16 text-right shrink-0">
+            <div className="text-xs font-semibold text-muted-foreground w-24 text-right shrink-0">
                 {formattedTime}
             </div>
         )}

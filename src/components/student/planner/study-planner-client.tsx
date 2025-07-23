@@ -18,7 +18,6 @@ import {
   subDays,
   getMonth,
   getWeek,
-  getYear,
   lastDayOfWeek,
 } from 'date-fns';
 import { StudyPlanEvent, StudyPlanInput } from '@/lib/types';
@@ -162,7 +161,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     }, [handleSavePlan]);
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1, completedPomos: 0 });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1, completedPomos: 0, time: '', endTime: '' });
         setIsTaskDialogOpen(true);
     };
     
@@ -325,9 +324,15 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="time">Time (Optional)</Label>
-                            <Input id="time" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                                <Label htmlFor="time">Start Time</Label>
+                                <Input id="time" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="endTime">End Time</Label>
+                                <Input id="endTime" type="time" value={editingEvent?.endTime || ''} onChange={e => setEditingEvent(p => ({ ...p, endTime: e.target.value }))} />
+                            </div>
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="type">Type</Label>
