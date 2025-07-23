@@ -1,3 +1,4 @@
+
 'use client';
 
 import { CourseBuilder } from '@/components/course-builder';
