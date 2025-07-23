@@ -39,12 +39,11 @@ export default function DashboardPage() {
         const enrolledCourseIds = enrollments.map(e => e.courseId);
         const enrolledCourses = enrolledCourseIds.length > 0 ? await getCoursesByIds(enrolledCourseIds) : [];
 
-        const upcomingDeadlines = enrolledCourses
-          .flatMap(c => c.assignments || [])
-          .filter(a => a.studentId === userInfo.uid && (a.status === 'Pending' || a.status === 'Late'))
-          .sort((a, b) => new Date(a.deadline as string).getTime() - new Date(b.deadline as string).getTime())
-          .slice(0, 3);
-
+        const upcomingDeadlines = (userInfo.studyPlan || [])
+            .filter(event => new Date(event.date) >= new Date())
+            .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(0, 3);
+            
         const completedCoursesCount = enrollments.filter(e => e.status === 'completed').length;
 
         const inProgressCourses = enrolledCourses
@@ -197,21 +196,21 @@ export default function DashboardPage() {
               <CardHeader className="flex items-center justify-between">
                 <CardTitle>আসন্ন ডেডলাইন</CardTitle>
                 <Button asChild variant="ghost" size="sm">
-                  <Link href="/student/deadlines">
+                  <Link href="/student/planner">
                     সব দেখুন
                   </Link>
                 </Button>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
-                  {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: Assignment, index: number) => (
+                  {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: any, index: number) => (
                     <li key={index} className="flex items-start gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                         <CalendarCheck className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <div>
                         <p className="font-semibold">{deadline.title}</p>
-                        <p className="text-sm text-muted-foreground">Due: {new Date(deadline.deadline as string).toLocaleDateString()}</p>
+                        <p className="text-sm text-muted-foreground">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
                       </div>
                     </li>
                   )) : <p className="text-sm text-muted-foreground">No upcoming deadlines. You're all caught up!</p>}
