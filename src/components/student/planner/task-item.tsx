@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/lib/types";
-import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video, Link as LinkIcon, Users } from "lucide-react";
+import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag, Minus, Plus, Video, Link as LinkIcon, Users, TestTube2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { format, parse } from 'date-fns';
@@ -26,7 +26,7 @@ const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
     'study-session': <BookOpen className="h-5 w-5" />,
     'assignment-deadline': <FileText className="h-5 w-5" />,
     'quiz-reminder': <HelpCircle className="h-5 w-5" />,
-    'exam-prep': <Calendar className="h-5 w-5" />,
+    'exam-prep': <TestTube2 className="h-5 w-5" />,
     'live-class': <Video className="h-5 w-5" />,
 };
 

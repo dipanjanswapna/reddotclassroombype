@@ -19,11 +19,12 @@ import {
   getMonth,
   getWeek,
 } from 'date-fns';
-import { StudyPlanEvent, User } from '@/lib/types';
+import { StudyPlanEvent, User, Course, ExamTemplate } from '@/lib/types';
 import { saveUserAction, getUsers, getEnrollmentsByUserId, getCoursesByIds } from '@/app/actions/user.actions';
+import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff, Sparkles } from 'lucide-react';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -56,13 +57,20 @@ export function StudyPlannerClient() {
     const [isOffline, setIsOffline] = useState(false);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+    const [isPrepDialogOpen, setIsPrepDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
     const [allUsers, setAllUsers] = useState<User[]>([]);
+    const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
     const [insightView, setInsightView] = useState<InsightView>('Daily');
+    
+    // Exam Prep State
+    const [selectedPrepCourse, setSelectedPrepCourse] = useState<Course | null>(null);
+    const [selectedPrepExam, setSelectedPrepExam] = useState<ExamTemplate | null>(null);
+    const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
 
     const [pomodoroDurations, setPomodoroDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
 
@@ -74,52 +82,50 @@ export function StudyPlannerClient() {
     }, [currentDate]);
 
     // This effect handles the initial data loading and offline fallback.
-    useEffect(() => {
-        if (authLoading) return;
-        if (!userInfo) {
-            setLoading(false);
-            return;
-        }
+    const fetchAllData = useCallback(async () => {
+        if (!userInfo) return;
+        setLoading(true);
+        try {
+            // Fetch fresh data from server
+            const [enrollments, allUsersData] = await Promise.all([
+                getEnrollmentsByUserId(userInfo.uid),
+                getUsers(),
+            ]);
+            const courseIds = enrollments.map(e => e.courseId);
+            const courses = await getCoursesByIds(courseIds);
+            setAllUsers(allUsersData);
+            setEnrolledCourses(courses);
+            
+            const assignmentEvents: StudyPlanEvent[] = courses.flatMap(course => (course.assignments || []).filter(a => a.studentId === userInfo.uid && a.deadline).map(a => ({ id: `as_${a.id}`, date: format(safeToDate(a.deadline), 'yyyy-MM-dd'), title: `Deadline: ${a.title}`, type: 'assignment-deadline' as const, courseTitle: course.title, priority: 'High' })));
+            const examEvents: StudyPlanEvent[] = courses.flatMap(course => (course.exams || []).filter(e => e.studentId === userInfo.uid && e.examDate).map(e => ({ id: `ex_${e.id}`, date: format(safeToDate(e.examDate), 'yyyy-MM-dd'), title: `Exam: ${e.title}`, type: 'exam-prep' as const, courseTitle: course.title, priority: 'High' })));
+            const liveClassEvents: StudyPlanEvent[] = courses.flatMap(course => (course.liveClasses || []).filter(lc => lc.date).map(lc => ({ id: `lc_${lc.id}`, date: lc.date, time: lc.time, title: `Live Class: ${lc.topic}`, type: 'live-class' as const, courseTitle: course.title, priority: 'Medium' })));
+            
+            const manualEvents = (userInfo.studyPlan || []);
+            const allEvents = [...manualEvents, ...assignmentEvents, ...examEvents, ...liveClassEvents];
+            const uniqueEvents = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
+            
+            setEvents(uniqueEvents);
+            localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(uniqueEvents));
+            setIsOffline(false);
 
-        const fetchPlannerData = async () => {
-            setLoading(true);
-            try {
-                // Fetch fresh data from server
-                const [enrollments, allUsersData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo.uid),
-                    getUsers(),
-                ]);
-                const courseIds = enrollments.map(e => e.courseId);
-                const courses = await getCoursesByIds(courseIds);
-                setAllUsers(allUsersData);
-                
-                const assignmentEvents: StudyPlanEvent[] = courses.flatMap(course => (course.assignments || []).filter(a => a.studentId === userInfo.uid && a.deadline).map(a => ({ id: `as_${a.id}`, date: format(safeToDate(a.deadline), 'yyyy-MM-dd'), title: `Deadline: ${a.title}`, type: 'assignment-deadline' as const, courseTitle: course.title, priority: 'High' })));
-                const examEvents: StudyPlanEvent[] = courses.flatMap(course => (course.exams || []).filter(e => e.studentId === userInfo.uid && e.examDate).map(e => ({ id: `ex_${e.id}`, date: format(safeToDate(e.examDate), 'yyyy-MM-dd'), title: `Exam: ${e.title}`, type: 'exam-prep' as const, courseTitle: course.title, priority: 'High' })));
-                const liveClassEvents: StudyPlanEvent[] = courses.flatMap(course => (course.liveClasses || []).filter(lc => lc.date).map(lc => ({ id: `lc_${lc.id}`, date: lc.date, time: lc.time, title: `Live Class: ${lc.topic}`, type: 'live-class' as const, courseTitle: course.title, priority: 'Medium' })));
-                
-                const manualEvents = (userInfo.studyPlan || []);
-                const allEvents = [...manualEvents, ...assignmentEvents, ...examEvents, ...liveClassEvents];
-                const uniqueEvents = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
-                
-                setEvents(uniqueEvents);
-                localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(uniqueEvents));
-                setIsOffline(false);
-
-            } catch (error) {
-                console.warn("Failed to fetch planner data, attempting to load from cache.", error);
-                const cachedData = localStorage.getItem(`studyPlan_${userInfo.uid}`);
-                if (cachedData) {
-                    setEvents(JSON.parse(cachedData));
-                    toast({ title: "Offline Mode", description: "Displaying cached data. Your changes will sync when you're back online."});
-                }
-                setIsOffline(true);
-            } finally {
-                setLoading(false);
+        } catch (error) {
+            console.warn("Failed to fetch planner data, attempting to load from cache.", error);
+            const cachedData = localStorage.getItem(`studyPlan_${userInfo.uid}`);
+            if (cachedData) {
+                setEvents(JSON.parse(cachedData));
+                toast({ title: "Offline Mode", description: "Displaying cached data. Your changes will sync when you're back online."});
             }
-        };
-
-        fetchPlannerData();
-    }, [userInfo, authLoading, toast]);
+            setIsOffline(true);
+        } finally {
+            setLoading(false);
+        }
+    }, [userInfo, toast]);
+    
+    useEffect(() => {
+        if (!authLoading) {
+            fetchAllData();
+        }
+    }, [authLoading, fetchAllData]);
 
 
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
@@ -274,6 +280,33 @@ export function StudyPlannerClient() {
             setCurrentDate(newSelectedDate);
         }
     }
+    
+     const handleGenerateExamPrep = async () => {
+        if (!selectedPrepCourse || !selectedPrepExam) {
+            toast({ title: "Error", description: "Please select a course and an exam.", variant: "destructive" });
+            return;
+        }
+        setIsGeneratingPlan(true);
+        try {
+            const courseContext = `Course: ${selectedPrepCourse.title}. Syllabus: ${selectedPrepCourse.syllabus?.map(m => m.title).join(', ')}`;
+            const result = await generateExamPrepPlan({
+                courseContext: courseContext,
+                examDate: format(safeToDate(selectedPrepExam.examDate), 'yyyy-MM-dd')
+            });
+            const newEvents = [...events, ...result.events.map(e => ({...e, id: `prep_${e.title}_${Math.random()}`}))];
+            setEvents(newEvents);
+            await handleSavePlan(newEvents);
+            toast({ title: "Success!", description: "Your exam prep plan has been added to the calendar." });
+            setIsPrepDialogOpen(false);
+            setSelectedPrepCourse(null);
+            setSelectedPrepExam(null);
+        } catch(error) {
+            toast({ title: "Error", description: "Could not generate the plan. Please try again.", variant: "destructive" });
+            console.error(error);
+        } finally {
+            setIsGeneratingPlan(false);
+        }
+    }
 
     const renderCalendarView = () => {
         switch (viewMode) {
@@ -360,6 +393,9 @@ export function StudyPlannerClient() {
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
                                 </div>
                                 <div className="flex items-center gap-2">
+                                     <Button variant="outline" onClick={() => setIsPrepDialogOpen(true)}>
+                                        <Sparkles className="mr-2 h-4 w-4"/> Exam Prep Mode
+                                    </Button>
                                      <Button variant="outline" onClick={() => openTaskDialog(null)}>
                                         <PlusCircle className="mr-2 h-4 w-4" /> Add Task
                                     </Button>
@@ -513,6 +549,46 @@ export function StudyPlannerClient() {
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
                         <Button onClick={saveTask}>Save Task</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            
+             <Dialog open={isPrepDialogOpen} onOpenChange={setIsPrepDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Exam Preparation Mode</DialogTitle>
+                        <DialogDescription>Let AI create a revision schedule for your upcoming exam.</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Select Course</Label>
+                            <Select onValueChange={(value) => setSelectedPrepCourse(enrolledCourses.find(c => c.id === value) || null)}>
+                                <SelectTrigger><SelectValue placeholder="Choose a course..."/></SelectTrigger>
+                                <SelectContent>
+                                    {enrolledCourses.map(c => <SelectItem key={c.id} value={c.id!}>{c.title}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        {selectedPrepCourse && (
+                             <div className="space-y-2">
+                                <Label>Select Exam</Label>
+                                <Select onValueChange={(value) => setSelectedPrepExam(selectedPrepCourse.examTemplates?.find(et => et.id === value) || null)}>
+                                    <SelectTrigger><SelectValue placeholder="Choose an exam..."/></SelectTrigger>
+                                    <SelectContent>
+                                        {(selectedPrepCourse.examTemplates || []).map(et => (
+                                            <SelectItem key={et.id} value={et.id}>{et.title} ({format(safeToDate(et.examDate), 'PPP')})</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsPrepDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleGenerateExamPrep} disabled={!selectedPrepExam || isGeneratingPlan}>
+                            {isGeneratingPlan ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                            Generate Plan
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
