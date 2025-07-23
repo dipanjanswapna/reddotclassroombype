@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { LayoutWrapper } from '@/components/layout-wrapper';
-import { Inter, Poppins, Hind_Siliguri } from 'next/font/google';
+import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 
@@ -50,7 +50,7 @@ export default async function RootLayout({
   const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-body antialiased bg-gradient-to-br from-indigo-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-red-900/50', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
+      <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
         <LayoutWrapper homepageConfig={homepageConfig}>
             {children}
         </LayoutWrapper>

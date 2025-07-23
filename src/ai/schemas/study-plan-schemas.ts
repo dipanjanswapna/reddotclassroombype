@@ -22,6 +22,7 @@ export const StudyPlanInputSchema = z.object({
 export type StudyPlanInput = z.infer<typeof StudyPlanInputSchema>;
 
 export const StudyPlanEventSchema = z.object({
+    id: z.string().optional(),
     date: z.string().describe('The date of the event in YYYY-MM-DD format.'),
     title: z.string().describe('A concise title for the study event.'),
     type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),

@@ -13,7 +13,9 @@ import {
   updateUser,
   getEnrollmentsByUserId,
   getPrebookingsByUserId,
-  getSupportTicketsByUserId
+  getSupportTicketsByUserId,
+  getUserByClassRoll,
+  getUserByRegistrationNumber,
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc, query, collection, where, getDocs } from 'firebase/firestore';
