@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
@@ -19,13 +18,12 @@ import {
   subDays,
   getMonth,
   getWeek,
-  lastDayOfWeek,
 } from 'date-fns';
-import { StudyPlanEvent, StudyPlanInput, User } from '@/lib/types';
-import { saveUserAction, getUsers } from '@/app/actions/user.actions';
+import { StudyPlanEvent, User } from '@/lib/types';
+import { saveUserAction, getUsers, getEnrollmentsByUserId, getCoursesByIds } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff } from 'lucide-react';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -40,15 +38,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSpinner } from '../loading-spinner';
+import { safeToDate } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 
 type ViewMode = 'month' | 'week' | 'day';
 type InsightView = 'Daily' | 'Weekly' | 'Monthly';
 
-export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEvents: StudyPlanEvent[], plannerInput: StudyPlanInput | null }) {
+export function StudyPlannerClient() {
     const { toast } = useToast();
-    const { userInfo, refreshUserInfo } = useAuth();
-    const [events, setEvents] = useState<StudyPlanEvent[]>(initialEvents);
+    const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
+    
+    const [events, setEvents] = useState<StudyPlanEvent[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isOffline, setIsOffline] = useState(false);
+    
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
     const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -66,6 +71,76 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         const end = endOfWeek(addDays(firstDayOfMonth, 35));
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
+
+    // This effect handles the initial data loading and offline fallback.
+    useEffect(() => {
+        if (authLoading) return;
+        if (!userInfo) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchPlannerData = async () => {
+            setLoading(true);
+            try {
+                // Fetch fresh data from server
+                const [enrollments, allUsersData] = await Promise.all([
+                    getEnrollmentsByUserId(userInfo.uid),
+                    getUsers(),
+                ]);
+                const courseIds = enrollments.map(e => e.courseId);
+                const courses = await getCoursesByIds(courseIds);
+                setAllUsers(allUsersData);
+                
+                const assignmentEvents: StudyPlanEvent[] = courses.flatMap(course => (course.assignments || []).filter(a => a.studentId === userInfo.uid && a.deadline).map(a => ({ id: `as_${a.id}`, date: format(safeToDate(a.deadline), 'yyyy-MM-dd'), title: `Deadline: ${a.title}`, type: 'assignment-deadline' as const, courseTitle: course.title, priority: 'High' })));
+                const examEvents: StudyPlanEvent[] = courses.flatMap(course => (course.exams || []).filter(e => e.studentId === userInfo.uid && e.examDate).map(e => ({ id: `ex_${e.id}`, date: format(safeToDate(e.examDate), 'yyyy-MM-dd'), title: `Exam: ${e.title}`, type: 'exam-prep' as const, courseTitle: course.title, priority: 'High' })));
+                const liveClassEvents: StudyPlanEvent[] = courses.flatMap(course => (course.liveClasses || []).filter(lc => lc.date).map(lc => ({ id: `lc_${lc.id}`, date: lc.date, time: lc.time, title: `Live Class: ${lc.topic}`, type: 'live-class' as const, courseTitle: course.title, priority: 'Medium' })));
+                
+                const manualEvents = (userInfo.studyPlan || []);
+                const allEvents = [...manualEvents, ...assignmentEvents, ...examEvents, ...liveClassEvents];
+                const uniqueEvents = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
+                
+                setEvents(uniqueEvents);
+                localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(uniqueEvents));
+                setIsOffline(false);
+
+            } catch (error) {
+                console.warn("Failed to fetch planner data, attempting to load from cache.", error);
+                const cachedData = localStorage.getItem(`studyPlan_${userInfo.uid}`);
+                if (cachedData) {
+                    setEvents(JSON.parse(cachedData));
+                    toast({ title: "Offline Mode", description: "Displaying cached data. Your changes will sync when you're back online."});
+                }
+                setIsOffline(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPlannerData();
+    }, [userInfo, authLoading, toast]);
+
+
+    const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
+        if (!userInfo) return;
+        const eventsToSave = updatedEvents || events;
+        
+        // Always save to local storage immediately for offline resilience
+        localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(eventsToSave));
+        
+        try {
+            await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
+            if (isOffline) {
+                toast({ title: 'Back Online!', description: 'Your changes have been successfully synced.' });
+                setIsOffline(false);
+            }
+            // No success toast in online mode to avoid being too noisy
+            await refreshUserInfo();
+        } catch (error) {
+            setIsOffline(true);
+            toast({ title: 'Offline Mode', description: "Your changes are saved locally and will sync when you're back online.", variant: 'default' });
+        }
+    }, [events, userInfo, isOffline, refreshUserInfo, toast]);
 
     const eventsForSelectedDate = useMemo(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
@@ -133,38 +208,23 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         return [];
     }, [events, pomodoroDurations.work, insightView, currentDate, selectedDate, viewMode]);
 
-    const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
-        if (!userInfo) return;
-        const eventsToSave = updatedEvents || events;
-        const result = await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
-        if (result.success) {
-            toast({ title: 'Plan Saved!', description: 'Your study plan has been updated.'});
-            await refreshUserInfo();
-        } else {
-            toast({ title: 'Error', description: result.message, variant: 'destructive' });
-        }
-    }, [events, userInfo, refreshUserInfo, toast]);
     
     const handleTaskUpdate = useCallback((updatedEvent: StudyPlanEvent) => {
-        setEvents(prev => {
-            const newEvents = prev.map(e => e.id === updatedEvent.id ? updatedEvent : e);
-            handleSavePlan(newEvents);
-            return newEvents;
-        });
-    }, [handleSavePlan]);
+        const newEvents = events.map(e => e.id === updatedEvent.id ? updatedEvent : e);
+        setEvents(newEvents);
+        handleSavePlan(newEvents);
+    }, [events, handleSavePlan]);
 
     const handleSessionComplete = useCallback((taskId: string) => {
-        setEvents(prev => {
-            const newEvents = prev.map(e => {
-                if (e.id === taskId) {
-                    return { ...e, completedPomos: (e.completedPomos || 0) + 1 };
-                }
-                return e;
-            });
-            handleSavePlan(newEvents);
-            return newEvents;
+        const newEvents = events.map(e => {
+            if (e.id === taskId) {
+                return { ...e, completedPomos: (e.completedPomos || 0) + 1 };
+            }
+            return e;
         });
-    }, [handleSavePlan]);
+        setEvents(newEvents);
+        handleSavePlan(newEvents);
+    }, [events, handleSavePlan]);
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
         setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1, completedPomos: 0, time: '', endTime: '' });
@@ -204,7 +264,9 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         if (viewMode === 'month') {
             setCurrentDate(direction === 'prev' ? subMonths(currentDate, 1) : addMonths(currentDate, 1));
         } else if (viewMode === 'week') {
-            setCurrentDate(direction === 'prev' ? subDays(currentDate, 7) : addDays(currentDate, 7));
+            const newDate = direction === 'prev' ? subDays(currentDate, 7) : addDays(currentDate, 7);
+            setCurrentDate(newDate);
+            setSelectedDate(newDate);
         } else {
             const newSelectedDate = direction === 'prev' ? subDays(selectedDate, 1) : addDays(selectedDate, 1);
             setSelectedDate(newSelectedDate);
@@ -261,6 +323,14 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         }
     }
 
+    if (loading) {
+        return <div className="flex h-[calc(100vh-8rem)] items-center justify-center"><LoadingSpinner /></div>;
+    }
+
+    if (!userInfo) {
+        return <div>Please log in to use the planner.</div>;
+    }
+    
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
              <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
@@ -270,6 +340,13 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                         Organize your schedule, track your tasks, and stay productive.
                     </p>
                 </div>
+                {isOffline && (
+                    <Alert variant="destructive" className="w-fit">
+                        <WifiOff className="h-4 w-4" />
+                        <AlertTitle>You are offline!</AlertTitle>
+                        <AlertDescription>Your changes are being saved locally.</AlertDescription>
+                    </Alert>
+                )}
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 <div className="xl:col-span-2 space-y-4">
