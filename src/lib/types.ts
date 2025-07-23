@@ -569,6 +569,8 @@ export type User = {
   referralCode?: string; // This user's unique referral code (their class roll)
   hasUsedReferral?: boolean; // To check if they have used a referral code before
   referralPoints?: number;
+  studyPoints?: number;
+  achievements?: string[]; // Array of achievement IDs
   socials?: {
     facebook?: string;
   };
@@ -621,7 +623,7 @@ export type Enrollment = {
   };
   isGroupAccessed?: boolean;
   groupAccessedAt?: Timestamp;
-  groupAccessedBy?: string; // Admin UID
+  groupAccessedBy?: string;
   usedReferralCode?: string;
 };
 
@@ -1096,4 +1098,5 @@ export type Notice = {
     
 
     
+
 
