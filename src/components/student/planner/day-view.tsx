@@ -1,0 +1,28 @@
+
+'use client';
+
+import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { TaskItem } from './task-item';
+import { format } from 'date-fns';
+
+interface DayViewProps {
+  selectedDate: Date;
+  events: StudyPlanEvent[];
+  onEdit: (event: StudyPlanEvent) => void;
+  onDelete: (id: string) => void;
+}
+
+export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps) {
+  return (
+    <div className="p-4">
+        <h3 className="text-lg font-semibold mb-4">{format(selectedDate, 'PPP')}</h3>
+        <div className="space-y-2">
+            {events.length > 0 ? events.map(event => (
+                <TaskItem key={event.id} event={event} onEdit={() => onEdit(event)} onDelete={() => onDelete(event.id!)} />
+            )) : (
+                <p className="text-muted-foreground text-center py-8">No tasks scheduled for this day.</p>
+            )}
+        </div>
+    </div>
+  );
+}
