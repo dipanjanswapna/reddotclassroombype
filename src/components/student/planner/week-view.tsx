@@ -2,7 +2,7 @@
 'use client';
 
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns';
-import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { StudyPlanEvent } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
