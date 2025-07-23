@@ -23,7 +23,7 @@ import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Percent, CheckCircle, BookOpen } from 'lucide-react';
+import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, CheckCircle, BookOpen } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -52,7 +52,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
         const start = startOfWeek(firstDayOfMonth);
-        const end = endOfWeek(addMonths(firstDayOfMonth, 1));
+        const end = endOfWeek(addDays(firstDayOfMonth, 35)); // Ensure 6 weeks are always rendered
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
 
@@ -142,8 +142,9 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         } else if (viewMode === 'week') {
             setCurrentDate(direction === 'prev' ? subDays(currentDate, 7) : addDays(currentDate, 7));
         } else {
-            setCurrentDate(direction === 'prev' ? subDays(currentDate, 1) : addDays(currentDate, 1));
-            setSelectedDate(direction === 'prev' ? subDays(currentDate, 1) : addDays(currentDate, 1));
+            const newSelectedDate = direction === 'prev' ? subDays(selectedDate, 1) : addDays(selectedDate, 1);
+            setSelectedDate(newSelectedDate);
+            setCurrentDate(newSelectedDate);
         }
     }
 
@@ -160,7 +161,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                         <div className="grid grid-cols-7 text-center font-semibold text-muted-foreground text-sm">
                             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <div key={day} className="py-2">{day}</div>)}
                         </div>
-                        <div className="grid grid-cols-7 gap-1 mt-2 border-t border-l">
+                        <div className="grid grid-cols-7 gap-1 mt-2">
                             {calendarDays.map(day => {
                                 const dateStr = format(day, 'yyyy-MM-dd');
                                 const eventsOnDay = events.filter(e => e.date === dateStr);
@@ -168,21 +169,24 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                                     <div 
                                         key={day.toString()} 
                                         className={cn(
-                                            "h-32 border-b border-r p-2 text-sm flex flex-col cursor-pointer overflow-hidden",
+                                            "h-28 border rounded-md p-2 text-sm flex flex-col cursor-pointer overflow-hidden",
                                             isSameMonth(day, currentDate) ? 'bg-background hover:bg-muted/50' : 'bg-muted/50 text-muted-foreground hover:bg-muted',
                                             isSameDay(day, new Date()) && 'bg-blue-100 dark:bg-blue-900/30',
                                             isSameDay(day, selectedDate) && 'border-2 border-primary'
                                         )}
-                                        onClick={() => setSelectedDate(day)}
+                                        onClick={() => {
+                                            setSelectedDate(day);
+                                            setViewMode('day');
+                                        }}
                                     >
                                         <span className="font-semibold">{format(day, 'd')}</span>
                                         <div className="flex-grow overflow-y-auto text-xs mt-1 space-y-1 no-scrollbar">
-                                            {eventsOnDay.slice(0, 3).map(e => (
+                                            {eventsOnDay.slice(0, 2).map(e => (
                                                 <div key={e.id} className="p-1 bg-primary/10 text-primary rounded truncate">
                                                     {e.title}
                                                 </div>
                                             ))}
-                                            {eventsOnDay.length > 3 && <div className="text-xs text-muted-foreground">+{eventsOnDay.length - 3} more</div>}
+                                            {eventsOnDay.length > 2 && <div className="text-xs text-muted-foreground">+{eventsOnDay.length - 2} more</div>}
                                         </div>
                                     </div>
                                 )
@@ -210,27 +214,31 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                     <Button onClick={handleSavePlan} variant="outline">Save Plan</Button>
                 </div>
             </div>
-
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div className="xl:col-span-2">
+                <div className="xl:col-span-2 space-y-4">
                     <Card>
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-4">
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('prev')}><ChevronLeft/></Button>
-                                    <h2 className="text-xl font-bold text-center w-48">{viewMode === 'month' ? format(currentDate, 'MMMM yyyy') : format(currentDate, 'PPP')}</h2>
+                                    <h2 className="text-xl font-bold text-center w-48">{format(currentDate, viewMode === 'month' ? 'MMMM yyyy' : 'PPP')}</h2>
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
                                 </div>
-                                <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-                                    <SelectTrigger className="w-[150px]">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="month"><CalendarDays className="mr-2 h-4 w-4"/>Month</SelectItem>
-                                        <SelectItem value="week"><Calendar className="mr-2 h-4 w-4"/>Week</SelectItem>
-                                        <SelectItem value="day"><ListChecks className="mr-2 h-4 w-4"/>Day</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <div className="flex items-center gap-2">
+                                     <Button variant="outline" onClick={() => openTaskDialog(null)}>
+                                        <PlusCircle className="mr-2 h-4 w-4" /> Add Task
+                                    </Button>
+                                    <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+                                        <SelectTrigger className="w-[150px]">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="month"><CalendarDays className="mr-2 h-4 w-4"/>Month</SelectItem>
+                                            <SelectItem value="week"><Calendar className="mr-2 h-4 w-4"/>Week</SelectItem>
+                                            <SelectItem value="day"><ListChecks className="mr-2 h-4 w-4"/>Day</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -239,7 +247,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                     </Card>
                 </div>
 
-                <div className="xl:col-span-1 space-y-8">
+                 <div className="xl:col-span-1 space-y-8">
                      <Card>
                         <CardHeader>
                             <CardTitle>Your Study Snapshot</CardTitle>
@@ -278,7 +286,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                 </div>
             </div>
 
-            <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
+             <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
@@ -287,6 +295,10 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="time">Time (Optional)</Label>
+                            <Input id="time" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="type">Type</Label>
@@ -335,3 +347,5 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         </div>
     );
 }
+
+    

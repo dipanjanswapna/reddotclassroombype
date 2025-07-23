@@ -9,6 +9,7 @@ import { StudyPlanEvent } from "@/ai/schemas/study-plan-schemas";
 import { BookOpen, Calendar, Edit, FileText, HelpCircle, Trash2, Clock, CheckCircle, Flag } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { format, parse } from 'date-fns';
 
 type TaskItemProps = {
   event: StudyPlanEvent;
@@ -34,10 +35,17 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
   const progress = estimatedPomos > 0 ? (completedPomos / estimatedPomos) * 100 : 0;
   const isCompleted = progress >= 100;
 
+  const formattedTime = event.time ? format(parse(event.time, 'HH:mm', new Date()), 'h:mm a') : null;
+
   return (
     <Card className="p-4">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+        {formattedTime && (
+            <div className="text-xs font-semibold text-muted-foreground w-16 text-right shrink-0">
+                {formattedTime}
+            </div>
+        )}
+        <div className={cn("flex-shrink-0 w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center", !formattedTime && 'ml-4')}>
             {isCompleted ? <CheckCircle className="h-5 w-5" /> : eventIcons[event.type]}
         </div>
         <div className="flex-grow">
@@ -54,7 +62,7 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
         </div>
       </div>
       {(event.type === 'study-session' || event.type === 'exam-prep') && estimatedPomos > 0 && (
-        <div className="mt-3 pl-14">
+        <div className="mt-3 pl-24">
             <div className="flex justify-between items-center text-xs text-muted-foreground mb-1">
                 <div className="flex items-center gap-1"><Clock className="h-3 w-3"/> Pomodoro Sessions</div>
                 <span>{completedPomos} / {estimatedPomos}</span>
@@ -65,3 +73,5 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
     </Card>
   );
 }
+
+    

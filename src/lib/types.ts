@@ -420,6 +420,7 @@ export type CourseCycle = {
 export type StudyPlanEvent = {
     id?: string;
     date: string;
+    time?: string; // Optional time in HH:mm format
     title: string;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
     courseTitle?: string;
@@ -1087,5 +1088,7 @@ export type Notice = {
     createdAt: Timestamp;
     updatedAt: Timestamp;
 };
+
+    
 
     
