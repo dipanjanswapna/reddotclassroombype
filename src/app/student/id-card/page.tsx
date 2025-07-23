@@ -7,9 +7,9 @@ import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEnrollmentsByUserId, getCoursesByIds } from "@/lib/firebase/firestore";
+import { getEnrollmentsByUserId, getCoursesByIds, getBranch, getBatch } from "@/lib/firebase/firestore";
 import { useState, useEffect } from "react";
-import type { Course } from "@/lib/types";
+import type { Course, Branch, Batch } from "@/lib/types";
 
 const IdCardView = dynamic(() => import('@/components/id-card-view').then(mod => mod.IdCardView), {
   loading: () => <Skeleton className="h-[525px] w-full max-w-[330px] rounded-2xl" />,
@@ -20,19 +20,43 @@ const IdCardView = dynamic(() => import('@/components/id-card-view').then(mod =>
 export default function StudentIdCardPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+    const [branch, setBranch] = useState<Branch | null>(null);
+    const [batch, setBatch] = useState<Batch | null>(null);
     const [loadingCourses, setLoadingCourses] = useState(true);
 
     useEffect(() => {
         if (!userInfo) return;
 
-        const fetchCourses = async () => {
+        const fetchExtraData = async () => {
             try {
                 const enrollments = await getEnrollmentsByUserId(userInfo.uid);
                 const courseIds = enrollments.map(e => e.courseId);
+                const promises: Promise<any>[] = [];
+
                 if (courseIds.length > 0) {
-                    const courses = await getCoursesByIds(courseIds);
-                    setEnrolledCourses(courses);
+                    promises.push(getCoursesByIds(courseIds));
+                } else {
+                    promises.push(Promise.resolve([]));
                 }
+
+                if (userInfo.assignedBranchId) {
+                    promises.push(getBranch(userInfo.assignedBranchId));
+                } else {
+                    promises.push(Promise.resolve(null));
+                }
+
+                if (userInfo.assignedBatchId) {
+                    promises.push(getBatch(userInfo.assignedBatchId));
+                } else {
+                    promises.push(Promise.resolve(null));
+                }
+
+                const [courses, branchData, batchData] = await Promise.all(promises);
+
+                setEnrolledCourses(courses);
+                setBranch(branchData);
+                setBatch(batchData);
+                
             } catch (error) {
                 console.error("Failed to fetch courses:", error);
             } finally {
@@ -40,7 +64,7 @@ export default function StudentIdCardPage() {
             }
         };
 
-        fetchCourses();
+        fetchExtraData();
 
     }, [userInfo]);
 
@@ -82,8 +106,8 @@ export default function StudentIdCardPage() {
                 mobileNumber={userInfo.mobileNumber}
                 address={"Mirpur DOHS, Dhaka"}
                 enrolledCourses={enrolledCourses}
-                branchName={userInfo.assignedBranchId || 'Online'}
-                batchName={userInfo.assignedBatchId || 'N/A'}
+                branchName={branch?.name || 'Online'}
+                batchName={batch?.name || 'N/A'}
             />
         </div>
     );

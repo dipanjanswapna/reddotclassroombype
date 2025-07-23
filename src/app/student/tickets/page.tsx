@@ -158,7 +158,7 @@ export default function StudentTicketsPage() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
                     <Button onClick={handleCreateTicket} disabled={isSubmitting}>
                         {isSubmitting && <Loader2 className="animate-spin mr-2"/>}
                         Submit Ticket

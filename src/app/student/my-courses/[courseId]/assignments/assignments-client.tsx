@@ -23,6 +23,7 @@ import { useAuth } from '@/context/auth-context';
 import type { Course, Assignment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { safeToDate } from '@/lib/utils';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 const getStatusBadgeVariant = (status: Assignment['status']): VariantProps<typeof badgeVariants>['variant'] => {
   switch (status) {
