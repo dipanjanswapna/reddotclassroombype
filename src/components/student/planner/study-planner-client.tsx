@@ -21,7 +21,7 @@ import {
   getYear,
   lastDayOfWeek,
 } from 'date-fns';
-import { StudyPlanEvent, StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
+import { StudyPlanEvent, StudyPlanInput } from '@/lib/types';
 import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
@@ -338,6 +338,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                                     <SelectItem value="assignment-deadline">Assignment Deadline</SelectItem>
                                     <SelectItem value="quiz-reminder">Quiz Reminder</SelectItem>
                                     <SelectItem value="exam-prep">Exam Prep</SelectItem>
+                                    <SelectItem value="live-class">Live Class</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

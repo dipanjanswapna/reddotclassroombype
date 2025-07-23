@@ -7,63 +7,87 @@ import { getEnrollmentsByUserId, getCoursesByIds } from '@/lib/firebase/firestor
 import { Course } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
+import { StudyPlanEvent } from '@/lib/types';
+import { safeToDate } from '@/lib/utils';
+import { format } from 'date-fns';
 
 export default function StudentPlannerPage() {
-    const { userInfo } = useAuth();
+    const { userInfo, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [plannerInput, setPlannerInput] = useState<StudyPlanInput | null>(null);
+    const [events, setEvents] = useState<StudyPlanEvent[]>([]);
 
     useEffect(() => {
-        if (userInfo) {
-            const fetchCourseData = async () => {
-                setLoading(true);
-                try {
-                    const enrollments = await getEnrollmentsByUserId(userInfo.uid);
-                    const courseIds = enrollments.map(e => e.courseId);
-                    const courses = await getCoursesByIds(courseIds);
-                    
-                    const deadlines = courses.flatMap(course => [
-                        ...(course.assignments || []).filter(a => a.studentId === userInfo.uid).map(a => ({
-                            courseTitle: course.title,
-                            assignmentTitle: a.title,
-                            deadline: a.deadline as string,
-                        })),
-                        ...(course.exams || []).filter(e => e.studentId === userInfo.uid).map(e => ({
-                            courseTitle: course.title,
-                            assignmentTitle: `Exam: ${e.title}`,
-                            deadline: e.examDate as string,
-                        }))
-                    ]).filter(d => d.deadline);
-
-                    const coursesInfo = courses.map(c => ({
-                        id: c.id!,
-                        title: c.title,
-                        topics: c.syllabus?.map(s => s.title) || [],
-                    }));
-                    
-                    const today = new Date();
-                    const endDate = new Date();
-                    endDate.setDate(today.getDate() + 30);
-                    
-                    setPlannerInput({
-                        courses: coursesInfo,
-                        deadlines: deadlines,
-                        startDate: today.toISOString().split('T')[0],
-                        endDate: endDate.toISOString().split('T')[0]
-                    });
-
-                } catch (error) {
-                    console.error("Failed to fetch data for planner:", error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchCourseData();
-        } else {
+        if (authLoading) return;
+        if (!userInfo) {
             setLoading(false);
+            return;
         }
-    }, [userInfo]);
+
+        const fetchCourseData = async () => {
+            setLoading(true);
+            try {
+                const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                const courseIds = enrollments.map(e => e.courseId);
+                const courses = await getCoursesByIds(courseIds);
+                
+                // Events from course data
+                const assignmentEvents: StudyPlanEvent[] = courses.flatMap(course => 
+                    (course.assignments || [])
+                    .filter(a => a.studentId === userInfo.uid && a.deadline)
+                    .map(a => ({
+                        id: `as_${a.id}`,
+                        date: format(safeToDate(a.deadline), 'yyyy-MM-dd'),
+                        title: `Deadline: ${a.title}`,
+                        type: 'assignment-deadline' as const,
+                        courseTitle: course.title,
+                        priority: 'High'
+                    }))
+                );
+
+                const examEvents: StudyPlanEvent[] = courses.flatMap(course => 
+                    (course.exams || [])
+                    .filter(e => e.studentId === userInfo.uid && e.examDate)
+                    .map(e => ({
+                        id: `ex_${e.id}`,
+                        date: format(safeToDate(e.examDate), 'yyyy-MM-dd'),
+                        title: `Exam: ${e.title}`,
+                        type: 'exam-prep' as const,
+                        courseTitle: course.title,
+                        priority: 'High'
+                    }))
+                );
+
+                const liveClassEvents: StudyPlanEvent[] = courses.flatMap(course => 
+                    (course.liveClasses || [])
+                    .filter(lc => lc.date)
+                    .map(lc => ({
+                        id: `lc_${lc.id}`,
+                        date: lc.date,
+                        time: lc.time,
+                        title: `Live Class: ${lc.topic}`,
+                        type: 'live-class' as const,
+                        courseTitle: course.title,
+                        priority: 'Medium'
+                    }))
+                );
+                
+                // User's manually created events (study sessions)
+                const manualEvents = (userInfo.studyPlan || []);
+                
+                // Combine and remove duplicates, giving preference to manual events
+                const allEvents = [...manualEvents, ...assignmentEvents, ...examEvents, ...liveClassEvents];
+                const uniqueEvents = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
+                
+                setEvents(uniqueEvents);
+
+            } catch (error) {
+                console.error("Failed to fetch data for planner:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourseData();
+    }, [userInfo, authLoading]);
 
     if (loading) {
         return <div className="flex h-[calc(100vh-8rem)] items-center justify-center"><LoadingSpinner /></div>;
@@ -73,5 +97,5 @@ export default function StudentPlannerPage() {
         return <div>Please log in to use the planner.</div>;
     }
     
-    return <StudyPlannerClient initialEvents={userInfo.studyPlan || []} plannerInput={plannerInput} />;
+    return <StudyPlannerClient initialEvents={events} plannerInput={null} />;
 }

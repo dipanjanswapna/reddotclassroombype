@@ -421,7 +421,7 @@ export type StudyPlanEvent = {
     date: string; // YYYY-MM-DD format
     time?: string; // HH:mm format, optional
     title: string;
-    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'live-class';
     courseTitle?: string;
     description?: string;
     priority?: 'High' | 'Medium' | 'Low';
