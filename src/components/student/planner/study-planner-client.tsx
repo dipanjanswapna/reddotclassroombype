@@ -1,41 +1,60 @@
 
-
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  startOfWeek,
+  endOfWeek,
+  isSameMonth,
+  isSameDay,
+  addMonths,
+  subMonths,
+} from 'date-fns';
 import { StudyPlanEvent, StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
 import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle, BarChart, BookOpen, CheckCircle } from 'lucide-react';
+import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEvents: StudyPlanEvent[], plannerInput: StudyPlanInput | null }) {
     const { toast } = useToast();
     const { userInfo, refreshUserInfo } = useAuth();
     const [events, setEvents] = useState<StudyPlanEvent[]>(initialEvents);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
     const [isGenerating, setIsGenerating] = useState(false);
-
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
+
+    // Calendar state
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    const firstDayOfMonth = startOfMonth(currentMonth);
+    const lastDayOfMonth = endOfMonth(currentMonth);
+    const daysInMonth = eachDayOfInterval({ start: firstDayOfMonth, end: lastDayOfMonth });
+    const startingDayOfWeek = startOfWeek(firstDayOfMonth);
+    const endingDayOfWeek = endOfWeek(lastDayOfMonth);
+    const calendarDays = eachDayOfInterval({ start: startingDayOfWeek, end: endingDayOfWeek });
 
     const eventsForSelectedDate = useMemo(() => {
         if (!selectedDate) return [];
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
-
+    
     const handleGeneratePlan = async () => {
         if (!plannerInput) {
             toast({ title: "Cannot generate plan", description: "Course data is not available.", variant: "destructive" });
@@ -89,24 +108,8 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         setEvents(prev => prev.filter(e => e.id !== eventId));
     };
 
-    const analytics = useMemo(() => {
-        const totalTasks = events.length;
-        const studySessions = events.filter(e => e.type === 'study-session');
-        const courseCounts = studySessions.reduce((acc, session) => {
-            if (session.courseTitle) {
-                acc[session.courseTitle] = (acc[session.courseTitle] || 0) + 1;
-            }
-            return acc;
-        }, {} as Record<string, number>);
-        
-        const mostStudied = Object.entries(courseCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
-
-        return {
-            totalTasks,
-            totalStudySessions: studySessions.length,
-            mostStudied,
-        }
-    }, [events]);
+    const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+    const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -126,71 +129,77 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                 </div>
             </div>
 
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                         <div className="flex items-center gap-4">
+                            <Button variant="outline" size="icon" onClick={prevMonth}><ChevronLeft/></Button>
+                            <h2 className="text-xl font-bold text-center w-48">{format(currentMonth, 'MMMM yyyy')}</h2>
+                            <Button variant="outline" size="icon" onClick={nextMonth}><ChevronRight/></Button>
+                         </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-7 text-center font-semibold text-muted-foreground text-sm">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => <div key={day} className="py-2">{day}</div>)}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 mt-2 border-t border-l">
+                        {calendarDays.map(day => {
+                            const dateStr = format(day, 'yyyy-MM-dd');
+                            const eventsOnDay = events.filter(e => e.date === dateStr);
+                            return (
+                                <div 
+                                    key={day.toString()} 
+                                    className={cn(
+                                        "h-32 border-b border-r p-2 text-sm flex flex-col cursor-pointer overflow-hidden",
+                                        isSameMonth(day, currentMonth) ? 'bg-background hover:bg-muted/50' : 'bg-muted/50 text-muted-foreground hover:bg-muted',
+                                        isSameDay(day, new Date()) && 'bg-blue-100 dark:bg-blue-900/30',
+                                        isSameDay(day, selectedDate) && 'border-2 border-primary'
+                                    )}
+                                    onClick={() => setSelectedDate(day)}
+                                >
+                                    <span className="font-semibold">{format(day, 'd')}</span>
+                                    <div className="flex-grow overflow-y-auto text-xs mt-1 space-y-1 no-scrollbar">
+                                        {eventsOnDay.slice(0, 3).map(e => (
+                                            <div key={e.id} className="p-1 bg-primary/10 text-primary rounded truncate">
+                                                {e.title}
+                                            </div>
+                                        ))}
+                                        {eventsOnDay.length > 3 && <div className="text-xs text-muted-foreground">+{eventsOnDay.length - 3} more</div>}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </CardContent>
+            </Card>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <Card>
+                 <div className="lg:col-span-2">
+                     <Card>
                         <CardHeader>
-                            <CardTitle>Your Study Snapshot</CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
-                                <CheckCircle className="h-8 w-8 text-primary"/>
-                                <div>
-                                    <p className="text-2xl font-bold">{analytics.totalTasks}</p>
-                                    <p className="text-sm text-muted-foreground">Total Tasks</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
-                                <BookOpen className="h-8 w-8 text-primary"/>
-                                <div>
-                                    <p className="text-2xl font-bold">{analytics.totalStudySessions}</p>
-                                    <p className="text-sm text-muted-foreground">Study Sessions</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
-                                <BarChart className="h-8 w-8 text-primary"/>
-                                <div>
-                                    <p className="text-lg font-bold truncate">{analytics.mostStudied}</p>
-                                    <p className="text-sm text-muted-foreground">Most Studied</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Plan for {selectedDate ? format(selectedDate, 'PPP') : 'Today'}</CardTitle>
+                            <CardTitle>Agenda for {selectedDate ? format(selectedDate, 'PPP') : 'Today'}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {eventsForSelectedDate.map(event => (
+                                {eventsForSelectedDate.length > 0 ? eventsForSelectedDate.map(event => (
                                     <TaskItem key={event.id} event={event} onEdit={() => openTaskDialog(event)} onDelete={() => deleteTask(event.id!)}/>
-                                ))}
-                                {eventsForSelectedDate.length === 0 && <p className="text-muted-foreground">No plans for this day.</p>}
+                                )) : (
+                                    <p className="text-muted-foreground text-center py-8">No plans for this day.</p>
+                                )}
                             </div>
                              <Button variant="outline" className="w-full mt-4" onClick={() => openTaskDialog(null)}>
                                 <PlusCircle className="mr-2 h-4 w-4"/> Add Task
                             </Button>
                         </CardContent>
                     </Card>
-                </div>
-                <div className="lg:col-span-1 flex flex-col gap-8">
-                    <Card>
-                         <CardContent className="p-2 sm:p-4 flex justify-center">
-                            <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                className="rounded-md"
-                                modifiers={{ events: events.map(e => new Date(e.date)) }}
-                                modifiersClassNames={{ events: "bg-primary/20 rounded-full" }}
-                            />
-                        </CardContent>
-                    </Card>
+                 </div>
+                 <div className="lg:col-span-1">
                     <PomodoroTimer courses={plannerInput?.courses || []} />
-                </div>
+                 </div>
             </div>
 
-             <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
+            <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
