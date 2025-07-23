@@ -29,6 +29,8 @@ export const StudyPlanEventSchema = z.object({
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
     priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
+    completedPomos: z.number().optional().describe('The number of completed Pomodoro sessions for this task.'),
+    estimatedPomos: z.number().optional().describe('The estimated number of Pomodoro sessions for this task.'),
 });
 export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 

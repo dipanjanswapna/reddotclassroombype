@@ -1,7 +1,6 @@
 
 
 import { Timestamp } from "firebase/firestore";
-import type { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 
 export type ProductReview = {
     id: string;
@@ -416,6 +415,18 @@ export type CourseCycle = {
   order: number;
   moduleIds: string[]; // List of syllabus module IDs included in this cycle
   communityUrl?: string;
+};
+
+export type StudyPlanEvent = {
+    id: string;
+    date: string;
+    title: string;
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
+    courseTitle?: string;
+    description?: string;
+    priority?: 'High' | 'Medium' | 'Low';
+    completedPomos?: number;
+    estimatedPomos?: number;
 };
 
 export type Course = {
