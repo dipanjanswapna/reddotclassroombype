@@ -427,6 +427,7 @@ export type StudyPlanEvent = {
     priority?: 'High' | 'Medium' | 'Low';
     completedPomos?: number;
     estimatedPomos?: number;
+    reminders?: number[]; // minutes before event
 };
 
 export type Course = {

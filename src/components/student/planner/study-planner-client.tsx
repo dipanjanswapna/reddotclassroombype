@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -22,7 +23,7 @@ import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays } from 'lucide-react';
+import { Loader2, Wand2, PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Percent, CheckCircle, BookOpen } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -60,6 +61,27 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
+    
+    const stats = useMemo(() => {
+        const completedTasks = events.filter(e => e.completedPomos && e.estimatedPomos && e.completedPomos >= e.estimatedPomos).length;
+        const totalPomos = events.reduce((sum, e) => sum + (e.estimatedPomos || 0), 0);
+        
+        const sessionsByCourse = events.reduce((acc, e) => {
+            if (e.type === 'study-session' && e.courseTitle) {
+                acc[e.courseTitle] = (acc[e.courseTitle] || 0) + (e.completedPomos || 0);
+            }
+            return acc;
+        }, {} as Record<string, number>);
+
+        const topCourse = Object.entries(sessionsByCourse).sort((a,b) => b[1] - a[1])[0];
+
+        return {
+            completedTasks,
+            totalStudySessions: events.filter(e => e.type === 'study-session').length,
+            topCourse: topCourse ? topCourse[0] : 'N/A'
+        }
+
+    }, [events]);
     
     const handleGeneratePlan = async () => {
         if (!plannerInput) {
@@ -189,54 +211,71 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                 </div>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-center">
-                         <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" onClick={() => handleDateNavigation('prev')}><ChevronLeft/></Button>
-                            <h2 className="text-xl font-bold text-center w-48">{viewMode === 'month' ? format(currentDate, 'MMMM yyyy') : format(currentDate, 'PPP')}</h2>
-                            <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
-                         </div>
-                          <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-                            <SelectTrigger className="w-[150px]">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="month"><CalendarDays className="mr-2 h-4 w-4"/>Month</SelectItem>
-                                <SelectItem value="week"><Calendar className="mr-2 h-4 w-4"/>Week</SelectItem>
-                                <SelectItem value="day"><ListChecks className="mr-2 h-4 w-4"/>Day</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                   {renderCalendarView()}
-                </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                 <div className="lg:col-span-2">
-                     <Card>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2">
+                    <Card>
                         <CardHeader>
-                            <CardTitle>Agenda for {selectedDate ? format(selectedDate, 'PPP') : 'Today'}</CardTitle>
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-4">
+                                    <Button variant="outline" size="icon" onClick={() => handleDateNavigation('prev')}><ChevronLeft/></Button>
+                                    <h2 className="text-xl font-bold text-center w-48">{viewMode === 'month' ? format(currentDate, 'MMMM yyyy') : format(currentDate, 'PPP')}</h2>
+                                    <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
+                                </div>
+                                <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+                                    <SelectTrigger className="w-[150px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="month"><CalendarDays className="mr-2 h-4 w-4"/>Month</SelectItem>
+                                        <SelectItem value="week"><Calendar className="mr-2 h-4 w-4"/>Week</SelectItem>
+                                        <SelectItem value="day"><ListChecks className="mr-2 h-4 w-4"/>Day</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4 max-h-[500px] overflow-y-auto">
-                                {eventsForSelectedDate.length > 0 ? eventsForSelectedDate.map(event => (
-                                    <TaskItem key={event.id} event={event} onEdit={() => openTaskDialog(event)} onDelete={() => deleteTask(event.id!)}/>
-                                )) : (
-                                    <p className="text-muted-foreground text-center py-8">No plans for this day.</p>
-                                )}
-                            </div>
-                             <Button variant="outline" className="w-full mt-4" onClick={() => openTaskDialog(null)}>
-                                <PlusCircle className="mr-2 h-4 w-4"/> Add Task
-                            </Button>
+                        {renderCalendarView()}
                         </CardContent>
                     </Card>
-                 </div>
-                 <div className="lg:col-span-1">
+                </div>
+
+                <div className="xl:col-span-1 space-y-8">
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Your Study Snapshot</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between p-3 bg-muted rounded-md">
+                                <div className="flex items-center gap-3">
+                                    <CheckCircle className="h-6 w-6 text-green-500"/>
+                                    <div>
+                                        <p className="font-semibold">Tasks Completed</p>
+                                        <p className="text-sm text-muted-foreground">{stats.completedTasks} tasks</p>
+                                    </div>
+                                </div>
+                            </div>
+                             <div className="flex items-center justify-between p-3 bg-muted rounded-md">
+                                <div className="flex items-center gap-3">
+                                    <ListChecks className="h-6 w-6 text-blue-500"/>
+                                    <div>
+                                        <p className="font-semibold">Study Sessions</p>
+                                        <p className="text-sm text-muted-foreground">{stats.totalStudySessions} sessions</p>
+                                    </div>
+                                </div>
+                            </div>
+                              <div className="flex items-center justify-between p-3 bg-muted rounded-md">
+                                <div className="flex items-center gap-3">
+                                    <BookOpen className="h-6 w-6 text-purple-500"/>
+                                    <div>
+                                        <p className="font-semibold">Top Subject</p>
+                                        <p className="text-sm text-muted-foreground">{stats.topCourse}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                     <PomodoroTimer courses={plannerInput?.courses || []} />
-                 </div>
+                </div>
             </div>
 
             <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
