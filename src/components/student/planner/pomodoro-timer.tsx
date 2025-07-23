@@ -29,6 +29,15 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // Update timer when durations prop changes (e.g., from parent)
+  useEffect(() => {
+    if (!isActive) {
+      setMinutes(durations[mode]);
+      setSeconds(0);
+    }
+  }, [durations, mode, isActive]);
+
 
   useEffect(() => {
     if (isActive) {
@@ -70,10 +79,6 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
     const newDuration = parseInt(value, 10);
     if (!isNaN(newDuration) && newDuration > 0) {
         setDurations(prev => ({ ...prev, [mode]: newDuration }));
-        if (mode === 'work' && !isActive) { // only update current timer if not active
-            setMinutes(newDuration);
-            setSeconds(0);
-        }
     }
   }
 
