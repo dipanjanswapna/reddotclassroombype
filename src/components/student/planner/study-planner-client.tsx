@@ -68,7 +68,7 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     }
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium' });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1 });
         setIsTaskDialogOpen(true);
     };
     
@@ -231,6 +231,12 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                             <Label htmlFor="courseTitle">Course (Optional)</Label>
                             <Input id="courseTitle" value={editingEvent?.courseTitle || ''} onChange={e => setEditingEvent(p => ({ ...p, courseTitle: e.target.value }))} />
                         </div>
+                         {(editingEvent?.type === 'study-session' || editingEvent?.type === 'exam-prep') && (
+                             <div className="space-y-2">
+                                <Label htmlFor="estimatedPomos">Estimated Pomodoros</Label>
+                                <Input id="estimatedPomos" type="number" value={editingEvent?.estimatedPomos || 1} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomos: Number(e.target.value) }))} />
+                            </div>
+                         )}
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>

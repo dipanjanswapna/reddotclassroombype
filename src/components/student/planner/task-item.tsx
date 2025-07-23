@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 type TaskItemProps = {
-  event: StudyPlanEvent & { completedPomos?: number, estimatedPomos?: number };
+  event: StudyPlanEvent;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -28,7 +28,7 @@ const priorityColors: { [key: string]: string } = {
 }
 
 export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
-  const { completedPomos = 0, estimatedPomos = 0 } = event as any;
+  const { completedPomos = 0, estimatedPomos = 0 } = event;
   const progress = estimatedPomos > 0 ? (completedPomos / estimatedPomos) * 100 : 0;
   const isCompleted = progress >= 100;
 

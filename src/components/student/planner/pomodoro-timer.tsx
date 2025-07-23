@@ -55,10 +55,9 @@ export function PomodoroTimer({ associatedTask, courses }: { associatedTask?: st
     const newDuration = parseInt(value, 10);
     if (!isNaN(newDuration) && newDuration > 0) {
         setDurations(prev => ({ ...prev, [mode]: newDuration }));
-        if (mode === newMode) {
+        if (mode === 'work' && !isActive) { // only update current timer if not active
             setMinutes(newDuration);
             setSeconds(0);
-            setIsActive(false);
         }
     }
   }

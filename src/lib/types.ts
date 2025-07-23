@@ -418,7 +418,7 @@ export type CourseCycle = {
 };
 
 export type StudyPlanEvent = {
-    id: string;
+    id?: string;
     date: string;
     title: string;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
