@@ -16,13 +16,15 @@ import {
   isSameDay,
   addDays,
   subDays,
+  getMonth,
+  getWeek,
+  getYear,
 } from 'date-fns';
 import { StudyPlanEvent, StudyPlanInput } from '@/ai/schemas/study-plan-schemas';
 import { saveStudyPlanAction } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays } from 'lucide-react';
-import { TaskItem } from './task-item';
 import { PomodoroTimer } from './pomodoro-timer';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -32,8 +34,11 @@ import { cn } from '@/lib/utils';
 import { WeekView } from './week-view';
 import { DayView } from './day-view';
 import { ProgressChart } from './progress-chart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 type ViewMode = 'month' | 'week' | 'day';
+type InsightView = 'Daily' | 'Weekly' | 'Monthly';
 
 export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEvents: StudyPlanEvent[], plannerInput: StudyPlanInput | null }) {
     const { toast } = useToast();
@@ -45,8 +50,8 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
+    const [insightView, setInsightView] = useState<InsightView>('Daily');
 
-    // Pomodoro settings state to be passed to timer and used for calculations
     const [pomodoroDurations, setPomodoroDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
 
     const firstDayOfMonth = startOfMonth(currentDate);
@@ -68,18 +73,54 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
     }, [eventsForSelectedDate, pomodoroDurations.work]);
 
     
-    const weeklyProgressData = useMemo(() => {
-        const last7Days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
-        return last7Days.map(day => {
-            const dateStr = format(day, 'yyyy-MM-dd');
-            const dayEvents = events.filter(e => e.date === dateStr);
+    const progressData = useMemo(() => {
+        const getMinutes = (dayEvents: StudyPlanEvent[]) => {
             const totalPomos = dayEvents.reduce((sum, e) => sum + (e.completedPomos || 0), 0);
-            return {
+            return totalPomos * pomodoroDurations.work;
+        };
+
+        if (insightView === 'Daily') {
+             const last7Days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
+            return last7Days.map(day => ({
                 name: format(day, 'EEE'),
-                minutes: totalPomos * pomodoroDurations.work,
-            };
-        });
-    }, [events, pomodoroDurations.work]);
+                minutes: getMinutes(events.filter(e => e.date === format(day, 'yyyy-MM-dd'))),
+            }));
+        }
+        if (insightView === 'Weekly') {
+            const weeklyData: { [key: string]: number } = {};
+            for (let i = 3; i >= 0; i--) {
+                const weekStartDate = subDays(new Date(), i * 7);
+                const weekKey = `W${getWeek(weekStartDate)}`;
+                weeklyData[weekKey] = 0;
+            }
+            events.forEach(e => {
+                const eventDate = new Date(e.date);
+                const weekKey = `W${getWeek(eventDate)}`;
+                if(weeklyData[weekKey] !== undefined) {
+                    weeklyData[weekKey] += (e.completedPomos || 0) * pomodoroDurations.work;
+                }
+            });
+            return Object.entries(weeklyData).map(([name, minutes]) => ({ name, minutes }));
+        }
+        if (insightView === 'Monthly') {
+            const monthlyData: { [key: string]: number } = {};
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            for (let i = 5; i >= 0; i--) {
+                const monthDate = subMonths(new Date(), i);
+                const monthKey = monthNames[getMonth(monthDate)];
+                monthlyData[monthKey] = 0;
+            }
+            events.forEach(e => {
+                 const eventDate = new Date(e.date);
+                 const monthKey = monthNames[getMonth(eventDate)];
+                 if(monthlyData[monthKey] !== undefined) {
+                    monthlyData[monthKey] += (e.completedPomos || 0) * pomodoroDurations.work;
+                 }
+            });
+             return Object.entries(monthlyData).map(([name, minutes]) => ({ name, minutes }));
+        }
+        return [];
+    }, [events, pomodoroDurations.work, insightView]);
 
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
@@ -202,9 +243,9 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
              <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                 <div>
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">AI Study Planner</h1>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
                     <p className="mt-1 text-lg text-muted-foreground">
-                        Organize your study schedule, track your tasks, and stay productive.
+                        Organize your schedule, track your tasks, and stay productive.
                     </p>
                 </div>
             </div>
@@ -244,10 +285,19 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
                  <div className="xl:col-span-1 space-y-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Weekly Study Insights</CardTitle>
+                           <CardTitle>Study Insights</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <ProgressChart data={weeklyProgressData} />
+                         <CardContent>
+                            <Tabs value={insightView} onValueChange={(v) => setInsightView(v as InsightView)}>
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="Daily">Daily</TabsTrigger>
+                                    <TabsTrigger value="Weekly">Weekly</TabsTrigger>
+                                    <TabsTrigger value="Monthly">Monthly</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value={insightView} className="mt-4">
+                                     <ProgressChart data={progressData} />
+                                </TabsContent>
+                            </Tabs>
                         </CardContent>
                     </Card>
                     <PomodoroTimer 
@@ -320,3 +370,4 @@ export function StudyPlannerClient({ initialEvents, plannerInput }: { initialEve
         </div>
     );
 }
+
