@@ -39,23 +39,16 @@ export type Reward = {
   pointsRequired: number;
   imageUrl: string;
   stock?: number;
-  type: 'physical_gift' | 'promo_code';
-  promoCodeDetails?: {
-      value: number;
-      type: 'percentage' | 'fixed';
-      applicableCourseIds?: string[];
-  };
 }
 
 export type RedemptionRequest = {
   id?: string;
   userId: string;
-  userName?: string;
   rewardId: string;
   rewardTitle: string;
   pointsSpent: number;
   requestedAt: Timestamp;
-  status: 'Pending' | 'Approved' | 'Processing' | 'Shipped' | 'Delivered' | 'Completed' | 'Cancelled';
+  status: 'Pending' | 'Approved' | 'Shipped' | 'Delivered' | 'Cancelled';
   shippingAddress?: {
       fullName: string;
       addressLine1: string;
@@ -66,7 +59,6 @@ export type RedemptionRequest = {
   trackingNumber?: string;
   processedBy?: string; // Admin UID
   processedAt?: Timestamp;
-  generatedPromoCode?: string;
 }
 
 export type OrderItem = {
@@ -421,17 +413,11 @@ export type StudyPlanEvent = {
     id?: string;
     date: string; // YYYY-MM-DD format
     time?: string; // HH:mm format, optional
-    endTime?: string; // HH:mm format, optional
     title: string;
-    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'live-class' | 'habit';
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
     courseTitle?: string;
     description?: string;
-    resourceLink?: string;
     priority?: 'High' | 'Medium' | 'Low';
-    completedPomos?: number;
-    estimatedPomos?: number;
-    reminders?: number[]; // minutes before event
-    participantIds?: string[];
 };
 
 
@@ -569,15 +555,11 @@ export type User = {
   referralCode?: string; // This user's unique referral code (their class roll)
   hasUsedReferral?: boolean; // To check if they have used a referral code before
   referralPoints?: number;
-  studyPoints?: number;
   achievements?: string[]; // Array of achievement IDs
   socials?: {
     facebook?: string;
   };
   studyPlan?: StudyPlanEvent[];
-  currentSessionId?: string;
-  lastLoginAt?: Timestamp;
-  lastCounseledAt?: Timestamp;
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;
@@ -836,245 +818,4 @@ export type StoreHomepageSection = {
 export type ReferralSettings = {
     pointsPerReferral: number;
     referredDiscountPercentage: number;
-};
-
-// Doubt Solve System
-export type DoubtAttachment = {
-  type: 'image' | 'audio' | 'file';
-  url: string;
-  fileName: string;
-};
-
-export type Doubt = {
-  id?: string;
-  sessionId: string;
-  courseId: string;
-  studentId: string;
-  questionText?: string;
-  attachments?: DoubtAttachment[];
-  status: 'Open' | 'Answered' | 'Reopened' | 'Satisfied' | 'Closed';
-  askedAt: Timestamp;
-  lastUpdatedAt: Timestamp;
-  assignedDoubtSolverId?: string;
-  rating?: 1 | 2 | 3 | 4 | 5;
-};
-
-export type DoubtAnswer = {
-  id?: string;
-  doubtId: string;
-  doubtSolverId: string;
-  answerText?: string;
-  attachments?: DoubtAttachment[];
-  answeredAt: Timestamp;
-  isReanswer?: boolean;
-};
-
-export type DoubtSession = {
-  id?: string;
-  courseId: string;
-  sessionName: string;
-  activeStudentIds?: string[];
-  assignedDoubtSolverIds: string[];
-  createdAt: Timestamp;
-};
-
-
-export type HomepageConfig = {
-    id: string;
-    logoUrl: string;
-    welcomeSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-    };
-    heroBanners: {
-        id: number;
-        href: string;
-        imageUrl: string;
-        alt: string;
-        dataAiHint: string;
-    }[];
-    heroCarousel: {
-        autoplay: boolean;
-        autoplayDelay: number;
-    };
-    strugglingStudentSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        subtitle: { [key: string]: string };
-        imageUrl: string;
-        buttonText: { [key: string]: string };
-    };
-    categoriesSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        categories: {
-            id: number;
-            title: string;
-            imageUrl: string;
-            linkUrl: string;
-            dataAiHint: string;
-        }[];
-    };
-    journeySection: {
-        display: boolean;
-        title: { [key: string]: string };
-        subtitle: { [key: string]: string };
-        courseTitle: { [key: string]: string };
-    };
-    liveCoursesIds: string[];
-    teachersSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        subtitle: { [key: string]: string };
-        buttonText: { [key: string]: string };
-        instructorIds: string[];
-        scrollSpeed?: number;
-    };
-    videoSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-        buttonText: { [key: string]: string };
-        videos: {
-            title: string;
-            videoUrl: string;
-        }[];
-    };
-    sscHscSection: {
-        display: boolean;
-        badge: { [key: string]: string };
-        title: { [key: string]: string };
-    };
-    sscHscCourseIds: string[];
-    masterclassSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        buttonText: { [key: string]: string };
-    };
-    masterClassesIds: string[];
-    admissionSection: {
-        display: boolean;
-        badge: { [key: string]: string };
-        title: { [key: string]: string };
-        buttonText: { [key: string]: string };
-    };
-    admissionCoursesIds: string[];
-    jobPrepSection: {
-        display: boolean;
-        badge: { [key: string]: string };
-        title: { [key: string]: string };
-        buttonText: { [key: string]: string };
-    };
-    whyChooseUs: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-        features: WhyChooseUsFeature[];
-        testimonials: Testimonial[];
-    };
-    freeClassesSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        subtitle: { [key: string]: string };
-        classes: FreeClass[];
-    };
-    aboutUsSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        subtitle: { [key: string]: string };
-        teamMembers: TeamMember[];
-    };
-     offlineHubSection: {
-        display: boolean;
-        programsTitle: { [key: string]: string };
-        centersTitle: { [key: string]: string };
-        contactSection: OfflineHubContactSection;
-    };
-    collaborations: {
-        display: boolean;
-        title: { [key: string]: string };
-        organizationIds: string[];
-    };
-    partnersSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        scrollSpeed?: number;
-        partners: {
-            id: number;
-            name: string;
-            logoUrl: string;
-            href: string;
-            dataAiHint: string;
-        }[];
-    };
-    socialMediaSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-        channels: {
-            id: number;
-            platform: 'YouTube' | 'Facebook Page' | 'Facebook Group';
-            name: { [key: string]: string };
-            handle: string;
-            stat1_value: string;
-            stat1_label: { [key: string]: string };
-            stat2_value: string;
-            stat2_label: { [key: string]: string };
-            description: { [key: string]: string };
-            ctaText: { [key: string]: string };
-            ctaUrl: string;
-        }[];
-    };
-    notesBanner: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-        buttonText: { [key: string]: string };
-    };
-    statsSection: {
-        display: boolean;
-        title: { [key: string]: string };
-        stats: {
-            value: string;
-            label: { [key: string]: string };
-        }[];
-    };
-    appPromo: {
-        display: boolean;
-        title: { [key: string]: string };
-        description: { [key: string]: string };
-        googlePlayUrl?: string;
-        appStoreUrl?: string;
-        googlePlayImageUrl: string;
-        appStoreImageUrl: string;
-        promoImageUrl: string;
-        promoImageDataAiHint: string;
-    };
-    floatingWhatsApp: {
-        display: boolean;
-        number: string;
-    };
-    rdcShopBanner: {
-        display: boolean;
-        imageUrl: string;
-        dataAiHint?: string;
-    };
-    storeSettings?: {
-        deliveryCharge: number;
-        freeDeliveryThreshold: number;
-    };
-    storeHomepageSection: StoreHomepageSection;
-    requestCallbackSection: {
-        display: boolean;
-        imageUrl: string;
-        dataAiHint: string;
-    };
-    platformSettings: PlatformSettings;
-    referralSettings?: ReferralSettings;
-    topperPageSection: TopperPageSection;
-    offlineHubHeroCarousel: {
-        display: boolean;
-        slides: OfflineHubHeroSlide[];
-    };
 };

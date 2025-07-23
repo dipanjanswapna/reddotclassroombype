@@ -16,16 +16,13 @@ import {
   isSameDay,
   addDays,
   subDays,
-  getMonth,
-  getWeek,
 } from 'date-fns';
-import { StudyPlanEvent, User, Course, ExamTemplate } from '@/lib/types';
+import { StudyPlanEvent } from '@/lib/types';
 import { saveUserAction, getUsers, getEnrollmentsByUserId, getCoursesByIds } from '@/app/actions/user.actions';
-import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, CalendarDays, Check, Users as UsersIcon, X, WifiOff, Sparkles, Repeat } from 'lucide-react';
-import { PomodoroTimer } from './pomodoro-timer';
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, Check, Users as UsersIcon, X } from 'lucide-react';
+import { TaskItem } from './task-item';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,38 +38,23 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { safeToDate } from '@/lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import Link from 'next/link';
-
 
 type ViewMode = 'month' | 'week' | 'day';
-type InsightView = 'Daily' | 'Weekly' | 'Monthly';
 
 export function StudyPlannerClient() {
     const { toast } = useToast();
-    const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
+    const { userInfo, loading: authLoading } = useAuth();
     
     const [events, setEvents] = useState<StudyPlanEvent[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isOffline, setIsOffline] = useState(false);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
-    const [isPrepDialogOpen, setIsPrepDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
     const [allUsers, setAllUsers] = useState<User[]>([]);
-    const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
-    const [insightView, setInsightView] = useState<InsightView>('Daily');
-    
-    // Exam Prep State
-    const [selectedPrepCourse, setSelectedPrepCourse] = useState<Course | null>(null);
-    const [selectedPrepExam, setSelectedPrepExam] = useState<ExamTemplate | null>(null);
-    const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
-
-    const [pomodoroDurations, setPomodoroDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
 
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
@@ -81,160 +63,46 @@ export function StudyPlannerClient() {
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
 
-    // This effect handles the initial data loading and offline fallback.
-    const fetchAllData = useCallback(async () => {
-        if (!userInfo) return;
-        setLoading(true);
-        try {
-            // Fetch fresh data from server
-            const [enrollments, allUsersData] = await Promise.all([
-                getEnrollmentsByUserId(userInfo.uid),
-                getUsers(),
-            ]);
-            const courseIds = enrollments.map(e => e.courseId);
-            const courses = await getCoursesByIds(courseIds);
-            setAllUsers(allUsersData);
-            setEnrolledCourses(courses);
-            
-            const assignmentEvents: StudyPlanEvent[] = courses.flatMap(course => (course.assignments || []).filter(a => a.studentId === userInfo.uid && a.deadline).map(a => ({ id: `as_${a.id}`, date: format(safeToDate(a.deadline), 'yyyy-MM-dd'), title: `Deadline: ${a.title}`, type: 'assignment-deadline' as const, courseTitle: course.title, priority: 'High' })));
-            const examEvents: StudyPlanEvent[] = courses.flatMap(course => (course.exams || []).filter(e => e.studentId === userInfo.uid && e.examDate).map(e => ({ id: `ex_${e.id}`, date: format(safeToDate(e.examDate), 'yyyy-MM-dd'), title: `Exam: ${e.title}`, type: 'exam-prep' as const, courseTitle: course.title, priority: 'High' })));
-            const liveClassEvents: StudyPlanEvent[] = courses.flatMap(course => (course.liveClasses || []).filter(lc => lc.date).map(lc => ({ id: `lc_${lc.id}`, date: lc.date, time: lc.time, title: `Live Class: ${lc.topic}`, type: 'live-class' as const, courseTitle: course.title, priority: 'Medium' })));
-            
-            const manualEvents = (userInfo.studyPlan || []);
-            const allEvents = [...manualEvents, ...assignmentEvents, ...examEvents, ...liveClassEvents];
-            const uniqueEvents = Array.from(new Map(allEvents.map(event => [event.id, event])).values());
-            
-            setEvents(uniqueEvents);
-            localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(uniqueEvents));
-            setIsOffline(false);
-
-        } catch (error) {
-            console.warn("Failed to fetch planner data, attempting to load from cache.", error);
-            const cachedData = localStorage.getItem(`studyPlan_${userInfo.uid}`);
-            if (cachedData) {
-                setEvents(JSON.parse(cachedData));
-                toast({ title: "Offline Mode", description: "Displaying cached data. Your changes will sync when you're back online."});
-            }
-            setIsOffline(true);
-        } finally {
-            setLoading(false);
-        }
-    }, [userInfo, toast]);
-    
+    // This effect handles the initial data loading.
     useEffect(() => {
-        if (!authLoading) {
-            fetchAllData();
-        }
-    }, [authLoading, fetchAllData]);
+        if (!userInfo) {
+            if (!authLoading) setLoading(false);
+            return;
+        };
+
+        const fetchInitialData = async () => {
+            try {
+                const fetchedUsers = await getUsers();
+                setAllUsers(fetchedUsers);
+                
+                // Set events from user's profile
+                setEvents(userInfo.studyPlan || []);
+            } catch (error) {
+                console.error("Failed to load initial planner data:", error);
+                toast({ title: 'Error', description: 'Could not load planner data.' });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInitialData();
+    }, [userInfo, authLoading, toast]);
 
 
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
         const eventsToSave = updatedEvents || events;
-        
-        // Always save to local storage immediately for offline resilience
-        localStorage.setItem(`studyPlan_${userInfo.uid}`, JSON.stringify(eventsToSave));
-        
-        try {
-            await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
-            if (isOffline) {
-                toast({ title: 'Back Online!', description: 'Your changes have been successfully synced.' });
-                setIsOffline(false);
-            }
-            // No success toast in online mode to avoid being too noisy
-            await refreshUserInfo();
-        } catch (error) {
-            setIsOffline(true);
-            toast({ title: 'Offline Mode', description: "Your changes are saved locally and will sync when you're back online.", variant: 'default' });
-        }
-    }, [events, userInfo, isOffline, refreshUserInfo, toast]);
+        await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
+        // No toast on success to avoid being too noisy
+    }, [events, userInfo]);
 
     const eventsForSelectedDate = useMemo(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         return events.filter(e => e.date === dateStr);
     }, [events, selectedDate]);
     
-    const totalStudyTimeForSelectedDate = useMemo(() => {
-        return eventsForSelectedDate.reduce((total, event) => {
-            return total + (event.completedPomos || 0) * pomodoroDurations.work;
-        }, 0);
-    }, [eventsForSelectedDate, pomodoroDurations.work]);
-
-    
-    const progressData = useMemo(() => {
-        const getMinutes = (dayEvents: StudyPlanEvent[]) => {
-            const totalPomos = dayEvents.reduce((sum, e) => sum + (e.completedPomos || 0), 0);
-            return totalPomos * pomodoroDurations.work;
-        };
-        
-        const referenceDate = viewMode === 'month' ? currentDate : selectedDate;
-
-        if (insightView === 'Daily') {
-             const endOfSelectedWeek = endOfWeek(referenceDate);
-             const startOfSelectedWeek = startOfWeek(referenceDate);
-             const weekInterval = eachDayOfInterval({ start: startOfSelectedWeek, end: endOfSelectedWeek });
-
-            return weekInterval.map(day => ({
-                name: format(day, 'EEE'),
-                minutes: getMinutes(events.filter(e => e.date === format(day, 'yyyy-MM-dd'))),
-            }));
-        }
-        if (insightView === 'Weekly') {
-            const weeklyData: { [key: string]: number } = {};
-            for (let i = 3; i >= 0; i--) {
-                const weekStartDate = subDays(referenceDate, i * 7);
-                const weekKey = `W${getWeek(weekStartDate, { weekStartsOn: 1 })}`;
-                weeklyData[weekKey] = 0;
-            }
-            events.forEach(e => {
-                const eventDate = new Date(e.date);
-                const weekKey = `W${getWeek(eventDate, { weekStartsOn: 1 })}`;
-                if(weeklyData[weekKey] !== undefined) {
-                    weeklyData[weekKey] += (e.completedPomos || 0) * pomodoroDurations.work;
-                }
-            });
-            return Object.entries(weeklyData).map(([name, minutes]) => ({ name, minutes }));
-        }
-        if (insightView === 'Monthly') {
-            const monthlyData: { [key: string]: number } = {};
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            for (let i = 5; i >= 0; i--) {
-                const monthDate = subMonths(referenceDate, i);
-                const monthKey = monthNames[getMonth(monthDate)];
-                monthlyData[monthKey] = 0;
-            }
-            events.forEach(e => {
-                 const eventDate = new Date(e.date);
-                 const monthKey = monthNames[getMonth(eventDate)];
-                 if(monthlyData[monthKey] !== undefined) {
-                    monthlyData[monthKey] += (e.completedPomos || 0) * pomodoroDurations.work;
-                 }
-            });
-             return Object.entries(monthlyData).map(([name, minutes]) => ({ name, minutes }));
-        }
-        return [];
-    }, [events, pomodoroDurations.work, insightView, currentDate, selectedDate, viewMode]);
-
-    
-    const handleTaskUpdate = useCallback((updatedEvent: StudyPlanEvent) => {
-        const newEvents = events.map(e => e.id === updatedEvent.id ? updatedEvent : e);
-        setEvents(newEvents);
-        handleSavePlan(newEvents);
-    }, [events, handleSavePlan]);
-
-    const handleSessionComplete = useCallback((taskId: string) => {
-        const newEvents = events.map(e => {
-            if (e.id === taskId) {
-                return { ...e, completedPomos: (e.completedPomos || 0) + 1 };
-            }
-            return e;
-        });
-        setEvents(newEvents);
-        handleSavePlan(newEvents);
-    }, [events, handleSavePlan]);
-    
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', estimatedPomos: 1, completedPomos: 0, time: '', endTime: '' });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium' });
         setIsTaskDialogOpen(true);
     };
     
@@ -280,40 +148,13 @@ export function StudyPlannerClient() {
             setCurrentDate(newSelectedDate);
         }
     }
-    
-     const handleGenerateExamPrep = async () => {
-        if (!selectedPrepCourse || !selectedPrepExam) {
-            toast({ title: "Error", description: "Please select a course and an exam.", variant: "destructive" });
-            return;
-        }
-        setIsGeneratingPlan(true);
-        try {
-            const courseContext = `Course: ${selectedPrepCourse.title}. Syllabus: ${selectedPrepCourse.syllabus?.map(m => m.title).join(', ')}`;
-            const result = await generateExamPrepPlan({
-                courseContext: courseContext,
-                examDate: format(safeToDate(selectedPrepExam.examDate), 'yyyy-MM-dd')
-            });
-            const newEvents = [...events, ...result.events.map(e => ({...e, id: `prep_${e.title}_${Math.random()}`}))];
-            setEvents(newEvents);
-            await handleSavePlan(newEvents);
-            toast({ title: "Success!", description: "Your exam prep plan has been added to the calendar." });
-            setIsPrepDialogOpen(false);
-            setSelectedPrepCourse(null);
-            setSelectedPrepExam(null);
-        } catch(error) {
-            toast({ title: "Error", description: "Could not generate the plan. Please try again.", variant: "destructive" });
-            console.error(error);
-        } finally {
-            setIsGeneratingPlan(false);
-        }
-    }
 
     const renderCalendarView = () => {
         switch (viewMode) {
             case 'week':
                 return <WeekView currentDate={currentDate} events={events} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
-                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} onTaskUpdate={handleTaskUpdate} totalStudyTime={totalStudyTimeForSelectedDate} />;
+                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} />;
             case 'month':
             default:
                 return (
@@ -367,20 +208,13 @@ export function StudyPlannerClient() {
     
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-             <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
                     <p className="mt-1 text-lg text-muted-foreground">
                         Organize your schedule, track your tasks, and stay productive.
                     </p>
                 </div>
-                {isOffline && (
-                    <Alert variant="destructive" className="w-fit">
-                        <WifiOff className="h-4 w-4" />
-                        <AlertTitle>You are offline!</AlertTitle>
-                        <AlertDescription>Your changes are being saved locally.</AlertDescription>
-                    </Alert>
-                )}
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 <div className="xl:col-span-2 space-y-4">
@@ -393,9 +227,6 @@ export function StudyPlannerClient() {
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                     <Button variant="outline" onClick={() => setIsPrepDialogOpen(true)}>
-                                        <Sparkles className="mr-2 h-4 w-4"/> Exam Prep Mode
-                                    </Button>
                                      <Button variant="outline" onClick={() => openTaskDialog(null)}>
                                         <PlusCircle className="mr-2 h-4 w-4" /> Add Task
                                     </Button>
@@ -419,177 +250,24 @@ export function StudyPlannerClient() {
                 </div>
 
                  <div className="xl:col-span-1 space-y-8">
-                    <Card>
-                        <CardHeader>
-                           <CardTitle>Study Insights</CardTitle>
-                        </CardHeader>
-                         <CardContent>
-                            <Tabs value={insightView} onValueChange={(v) => setInsightView(v as InsightView)}>
-                                <TabsList className="grid w-full grid-cols-3">
-                                    <TabsTrigger value="Daily">Daily</TabsTrigger>
-                                    <TabsTrigger value="Weekly">Weekly</TabsTrigger>
-                                    <TabsTrigger value="Monthly">Monthly</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value={insightView} className="mt-4">
-                                     <ProgressChart data={progressData} />
-                                </TabsContent>
-                            </Tabs>
-                        </CardContent>
-                    </Card>
-                    <PomodoroTimer 
-                        tasksForToday={eventsForSelectedDate} 
-                        onSessionComplete={handleSessionComplete}
-                        durations={pomodoroDurations}
-                        setDurations={setPomodoroDurations}
-                    />
+                    {/* Placeholder for Pomodoro and other widgets */}
                 </div>
             </div>
 
              <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto pr-2">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4 pr-4">
+                    <div className="grid gap-4 py-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                             <div className="space-y-2">
-                                <Label htmlFor="time">Start Time</Label>
-                                <Input id="time" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="endTime">End Time</Label>
-                                <Input id="endTime" type="time" value={editingEvent?.endTime || ''} onChange={e => setEditingEvent(p => ({ ...p, endTime: e.target.value }))} />
-                            </div>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="type">Type</Label>
-                            <Select value={editingEvent?.type} onValueChange={(v) => setEditingEvent(p => ({ ...p, type: v as any }))}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="study-session">Study Session</SelectItem>
-                                    <SelectItem value="habit">Habit</SelectItem>
-                                    <SelectItem value="assignment-deadline">Assignment Deadline</SelectItem>
-                                    <SelectItem value="quiz-reminder">Quiz Reminder</SelectItem>
-                                    <SelectItem value="exam-prep">Exam Prep</SelectItem>
-                                    <SelectItem value="live-class">Live Class</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="priority">Priority</Label>
-                            <Select value={editingEvent?.priority} onValueChange={(v) => setEditingEvent(p => ({ ...p, priority: v as any }))}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="High">High</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Low">Low</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description (Optional)</Label>
-                            <Input id="description" value={editingEvent?.description || ''} onChange={e => setEditingEvent(p => ({ ...p, description: e.target.value }))} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="resourceLink">Resource Link (Optional)</Label>
-                            <Input id="resourceLink" value={editingEvent?.resourceLink || ''} onChange={e => setEditingEvent(p => ({ ...p, resourceLink: e.target.value }))} placeholder="https://example.com/notes.pdf"/>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="courseTitle">Course (Optional)</Label>
-                            <Input id="courseTitle" value={editingEvent?.courseTitle || ''} onChange={e => setEditingEvent(p => ({ ...p, courseTitle: e.target.value }))} />
-                        </div>
-                         {(editingEvent?.type === 'study-session' || editingEvent?.type === 'exam-prep') && (
-                             <div className="space-y-2">
-                                <Label htmlFor="estimatedPomos">Estimated Pomodoros</Label>
-                                <Input id="estimatedPomos" type="number" value={editingEvent?.estimatedPomos || 1} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomos: Number(e.target.value) }))} />
-                            </div>
-                         )}
-                         <div className="space-y-2">
-                            <Label>Reminders (minutes before)</Label>
-                            <p className="text-xs text-muted-foreground">Note: This feature is for planning. Actual notifications are not yet implemented.</p>
-                            <Input placeholder="e.g., 10, 30" onChange={e => setEditingEvent(p => ({ ...p, reminders: e.target.value.split(',').map(Number) }))} />
-                         </div>
-                         <div className="space-y-2">
-                            <Label>Participants</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                                        <div className="flex items-center gap-1 flex-wrap">
-                                            <UsersIcon className="h-4 w-4 mr-2" />
-                                            {editingEvent?.participantIds?.length ? (
-                                                editingEvent.participantIds.map(id => {
-                                                    const user = allUsers.find(u => u.uid === id);
-                                                    return <Badge key={id} variant="secondary">{user?.name || id.slice(0,6)}</Badge>
-                                                })
-                                            ) : 'Add Participants'}
-                                        </div>
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                    <Command>
-                                        <CommandInput placeholder="Search friends..." />
-                                        <CommandEmpty>No users found.</CommandEmpty>
-                                        <CommandGroup>
-                                            {allUsers.filter(u => u.uid !== userInfo?.uid).map(user => (
-                                                <CommandItem key={user.uid} onSelect={() => handleParticipantToggle(user.uid)}>
-                                                    <Check className={cn("mr-2 h-4 w-4", editingEvent?.participantIds?.includes(user.uid) ? 'opacity-100' : 'opacity-0')} />
-                                                    <Avatar className="h-6 w-6 mr-2"><AvatarImage src={user.avatarUrl} /><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
-                                                    {user.name}
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
-                         </div>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
                         <Button onClick={saveTask}>Save Task</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            
-             <Dialog open={isPrepDialogOpen} onOpenChange={setIsPrepDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Exam Preparation Mode</DialogTitle>
-                        <DialogDescription>Let AI create a revision schedule for your upcoming exam.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2">
-                            <Label>Select Course</Label>
-                            <Select onValueChange={(value) => setSelectedPrepCourse(enrolledCourses.find(c => c.id === value) || null)}>
-                                <SelectTrigger><SelectValue placeholder="Choose a course..."/></SelectTrigger>
-                                <SelectContent>
-                                    {enrolledCourses.map(c => <SelectItem key={c.id} value={c.id!}>{c.title}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        {selectedPrepCourse && (
-                             <div className="space-y-2">
-                                <Label>Select Exam</Label>
-                                <Select onValueChange={(value) => setSelectedPrepExam(selectedPrepCourse.examTemplates?.find(et => et.id === value) || null)}>
-                                    <SelectTrigger><SelectValue placeholder="Choose an exam..."/></SelectTrigger>
-                                    <SelectContent>
-                                        {(selectedPrepCourse.examTemplates || []).map(et => (
-                                            <SelectItem key={et.id} value={et.id}>{et.title} ({format(safeToDate(et.examDate), 'PPP')})</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        )}
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsPrepDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handleGenerateExamPrep} disabled={!selectedPrepExam || isGeneratingPlan}>
-                            {isGeneratingPlan ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                            Generate Plan
-                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

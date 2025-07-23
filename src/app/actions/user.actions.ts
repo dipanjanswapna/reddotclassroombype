@@ -14,53 +14,29 @@ import {
   getEnrollmentsByUserId,
   getPrebookingsByUserId,
   getSupportTicketsByUserId,
-  getUserByClassRoll,
-  getUserByRegistrationNumber,
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
-import { Timestamp, writeBatch, doc, query, collection, where, getDocs } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
-import { generateRegistrationNumber } from '@/lib/utils';
 
 export async function saveUserAction(userData: Partial<User>) {
     try {
         if (userData.id) {
-            // --- UPDATE LOGIC ---
             const { id, ...data } = userData;
-            const currentUserState = await getUser(id);
-
-            const regNo = String(currentUserState?.registrationNumber);
-            const isInvalidRegNo = currentUserState && 
-                                 currentUserState.role !== 'Guardian' &&
-                                 (!currentUserState.registrationNumber || isNaN(parseInt(regNo)) || regNo.length !== 8);
-
-            if (isInvalidRegNo) {
-                data.registrationNumber = generateRegistrationNumber();
-            }
-
             await updateUser(id, data);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
-            revalidatePath('/admin/doubt-solvers');
             revalidatePath('/student/profile');
             revalidatePath(`/admin/manage-user/${id}`);
             revalidatePath('/admin/offline-hub');
             return { success: true, message: 'User updated successfully.' };
         } else {
-            // --- CREATE LOGIC ---
             const newUser: Partial<User> = { ...userData, joined: Timestamp.now() };
-            if (!newUser.registrationNumber && newUser.role !== 'Guardian') {
-                newUser.registrationNumber = generateRegistrationNumber();
-            }
-            if (!newUser.status) {
-                newUser.status = 'Active';
-            }
             await addUser(newUser);
             revalidatePath('/admin/users');
             revalidatePath('/admin/students');
-            revalidatePath('/admin/doubt-solvers');
             return { success: true, message: 'User created successfully.' };
         }
     } catch (error: any) {
@@ -115,7 +91,6 @@ export async function deleteUserAction(id: string) {
 
         revalidatePath('/admin/users');
         revalidatePath('/admin/students');
-        revalidatePath('/admin/doubt-solvers');
         return { success: true, message: 'User and all associated data deleted successfully.' };
     } catch (error: any) {
         console.error("Error deleting user:", error);
@@ -197,55 +172,5 @@ export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent
         return { success: true, message: 'Study plan saved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
-    }
-}
-
-export async function findUserByRegistrationOrRoll(id: string): Promise<{ userId: string | null }> {
-    const db = getDbInstance();
-    if (!db) {
-        return { userId: null };
-    }
-    try {
-        // Search by registration number first (more unique)
-        let q = query(collection(db, 'users'), where('registrationNumber', '==', id));
-        let querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            return { userId: querySnapshot.docs[0].id };
-        }
-
-        // If not found, search by offline roll number
-        q = query(collection(db, 'users'), where('offlineRollNo', '==', id));
-        querySnapshot = await getDocs(q);
-        
-        if (!querySnapshot.empty) {
-            return { userId: querySnapshot.docs[0].id };
-        }
-
-        // If still not found, search by class roll
-        q = query(collection(db, 'users'), where('classRoll', '==', id));
-        querySnapshot = await getDocs(q);
-        
-        if (!querySnapshot.empty) {
-            return { userId: querySnapshot.docs[0].id };
-        }
-
-        return { userId: null };
-    } catch (error) {
-        console.error("Error finding user:", error);
-        return { userId: null };
-    }
-}
-
-export async function markStudentAsCounseledAction(userId: string) {
-    try {
-        await updateUser(userId, { lastCounseledAt: Timestamp.now() });
-        revalidatePath('/admin/absent-students');
-        revalidatePath('/moderator/absent-students');
-        revalidatePath('/affiliate/absent-students');
-        revalidatePath('/seller/call-center');
-        return { success: true, message: 'Student marked as counseled.' };
-    } catch (error: any) {
-        return { success: false, message: error.message || 'An unexpected error occurred.' };
     }
 }

@@ -26,17 +26,11 @@ export const StudyPlanEventSchema = z.object({
     id: z.string().optional(),
     date: z.string().describe('The date of the event in YYYY-MM-DD format.'),
     time: z.string().optional().describe('The start time of the event in HH:mm format.'),
-    endTime: z.string().optional().describe('The end time of the event in HH:mm format.'),
     title: z.string().describe('A concise title for the study event.'),
-    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'live-class', 'habit']).describe('The type of event.'),
+    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
-    resourceLink: z.string().optional().describe('An external URL for a relevant resource.'),
     priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
-    completedPomos: z.number().optional().describe('The number of completed Pomodoro sessions for this task.'),
-    estimatedPomos: z.number().optional().describe('The estimated number of Pomodoro sessions for this task.'),
-    reminders: z.array(z.number()).optional().describe("A list of reminder times in minutes before the event."),
-    participantIds: z.array(z.string()).optional().describe("A list of user IDs participating in this event."),
 });
 export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 
