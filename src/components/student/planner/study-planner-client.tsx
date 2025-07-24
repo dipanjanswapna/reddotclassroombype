@@ -48,6 +48,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { saveUserAction } from '@/app/actions/user.actions';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -80,8 +81,20 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const [isFolderListOpen, setIsFolderListOpen] = useState(true);
 
-    const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
+    const [durations, setDurations] = useState(userInfo?.pomodoroSettings || { work: 25, shortBreak: 5, longBreak: 15 });
     const [loading, setLoading] = useState(true);
+
+    const [isAiPlanOpen, setIsAiPlanOpen] = useState(false);
+    const [isAiExamPlanOpen, setIsAiExamPlanOpen] = useState(false);
+    const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+
+    // AI Form States
+    const [aiPlanCourses, setAiPlanCourses] = useState<Course[]>([]);
+    const [aiPlanStartDate, setAiPlanStartDate] = useState<Date | undefined>(new Date());
+    const [aiPlanEndDate, setAiPlanEndDate] = useState<Date | undefined>(addDays(new Date(), 7));
+
+    const [aiExamCourseContext, setAiExamCourseContext] = useState('');
+    const [aiExamDate, setAiExamDate] = useState<Date | undefined>(new Date());
 
     useEffect(() => {
         if (!authLoading) {
@@ -114,7 +127,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     
     const openTaskDialog = (event: Partial<PlannerTask> | null) => {
         const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'medium', listId: defaultListId, userId: userInfo?.uid });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'low', listId: defaultListId, userId: userInfo?.uid, status: 'todo' });
         setIsTaskDialogOpen(true);
     };
     
@@ -193,9 +206,10 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         const task = events.find(e => e.id === taskId);
         if (task && userInfo) {
             const newActualPomo = (task.actualPomo || 0) + 1;
-            await saveTask({ ...task, actualPomo: newActualPomo });
-            setEvents(prev => prev.map(e => e.id === taskId ? { ...e, actualPomo: newActualPomo } : e));
-            // await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
+            const updatedTask = { ...task, actualPomo: newActualPomo };
+            await saveTask(updatedTask);
+            setEvents(prev => prev.map(e => e.id === taskId ? updatedTask : e));
+            await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
             await refreshUserInfo();
             toast({ title: "Session Complete!", description: "You've earned 1 study point." });
         }
@@ -210,6 +224,85 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const handleTaskUpdate = (updatedTask: PlannerTask) => {
         setEvents(prev => prev.map(e => e.id === updatedTask.id ? updatedTask : e));
     }
+
+    const handleGenerateAiPlan = async () => {
+        if (!aiPlanStartDate || !aiPlanEndDate || aiPlanCourses.length === 0) {
+            toast({ title: 'Please fill all fields', variant: 'destructive'});
+            return;
+        }
+        setIsGeneratingPlan(true);
+        try {
+            const result = await generateStudyPlan({
+                courses: aiPlanCourses.map(c => ({ id: c.id!, title: c.title, topics: c.syllabus?.map(s => s.title) || [] })),
+                deadlines: [],
+                startDate: format(aiPlanStartDate, 'yyyy-MM-dd'),
+                endDate: format(aiPlanEndDate, 'yyyy-MM-dd'),
+            });
+            const newTasks = result.events.map(e => ({...e, userId: userInfo!.uid, status: 'todo' as const}));
+            for (const task of newTasks) {
+                await saveTask(task);
+            }
+            setEvents(prev => [...prev, ...newTasks as PlannerTask[]]);
+            toast({ title: 'Success', description: 'AI has generated and saved your study plan.'});
+            setIsAiPlanOpen(false);
+        } catch(e) {
+             toast({ title: 'Error', description: 'Failed to generate study plan.', variant: 'destructive' });
+        } finally {
+            setIsGeneratingPlan(false);
+        }
+    };
+    
+     const handleGenerateExamPlan = async () => {
+        if (!aiExamCourseContext || !aiExamDate) {
+             toast({ title: 'Please fill all fields', variant: 'destructive'});
+            return;
+        }
+        setIsGeneratingPlan(true);
+        try {
+            const result = await generateExamPrepPlan({
+                courseContext: aiExamCourseContext,
+                examDate: format(aiExamDate, 'yyyy-MM-dd'),
+                currentDate: format(new Date(), 'yyyy-MM-dd'),
+            });
+            const newTasks = result.events.map(e => ({...e, userId: userInfo!.uid, status: 'todo' as const}));
+            for (const task of newTasks) {
+                await saveTask(task);
+            }
+            setEvents(prev => [...prev, ...newTasks as PlannerTask[]]);
+            toast({ title: 'Success', description: 'AI has generated and saved your exam prep plan.'});
+            setIsAiExamPlanOpen(false);
+        } catch(e) {
+             toast({ title: 'Error', description: 'Failed to generate exam plan.', variant: 'destructive' });
+        } finally {
+            setIsGeneratingPlan(false);
+        }
+    };
+    
+    // Analytics calculation
+    const completedTasksCount = useMemo(() => events.filter(e => e.status === 'completed').length, [events]);
+    const totalPomoSessions = useMemo(() => events.reduce((acc, e) => acc + (e.actualPomo || 0), 0), [events]);
+    const totalTimeSpentMinutes = useMemo(() => {
+        return events.reduce((acc, e) => acc + (e.timeSpentSeconds || 0), 0) / 60;
+    }, [events]);
+
+    const dailyProgress = useMemo(() => {
+        const data: { [key: string]: number } = {};
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const date = subDays(today, i);
+            const dateStr = format(date, 'MMM d');
+            data[dateStr] = 0;
+        }
+        events.forEach(event => {
+            const eventDate = new Date(event.date);
+            const diff = today.getTime() - eventDate.getTime();
+            if (diff >= 0 && diff < 7 * 24 * 60 * 60 * 1000) {
+                 const dateStr = format(eventDate, 'MMM d');
+                 data[dateStr] += (event.timeSpentSeconds || 0) / 60;
+            }
+        });
+        return Object.entries(data).map(([name, minutes]) => ({ name, minutes: Math.round(minutes) }));
+    }, [events]);
 
     const renderCalendarView = () => {
         switch (viewMode) {
@@ -315,6 +408,19 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                             </div>
                         </CardContent>
                      </Card>
+                      <Card>
+                        <CardHeader>
+                            <CardTitle>AI Assistant</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                             <Button variant="outline" className="w-full" onClick={() => setIsAiPlanOpen(true)}>
+                                <BrainCircuit className="mr-2 h-4 w-4"/> Generate Study Plan
+                            </Button>
+                             <Button variant="outline" className="w-full" onClick={() => setIsAiExamPlanOpen(true)}>
+                                <BrainCircuit className="mr-2 h-4 w-4"/> Generate Exam Prep
+                            </Button>
+                        </CardContent>
+                      </Card>
                      <PomodoroTimer tasksForToday={eventsForSelectedDate} onSessionComplete={handlePomoSessionComplete} durations={durations} setDurations={setDurations}/>
                  </aside>
                 <main className="lg:col-span-3">
@@ -350,6 +456,32 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                 </main>
             </div>
             )}
+            
+             {activeView === 'analytics' && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card>
+                        <CardHeader><CardTitle>Tasks Completed</CardTitle></CardHeader>
+                        <CardContent><p className="text-3xl font-bold">{completedTasksCount}</p></CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader><CardTitle>Total Pomodoro Sessions</CardTitle></CardHeader>
+                        <CardContent><p className="text-3xl font-bold">{totalPomoSessions}</p></CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>Total Study Time</CardTitle></CardHeader>
+                        <CardContent><p className="text-3xl font-bold">{totalTimeSpentMinutes.toFixed(0)} <span className="text-lg">minutes</span></p></CardContent>
+                    </Card>
+                    <Card className="md:col-span-3">
+                        <CardHeader>
+                            <CardTitle>Study Progress - Last 7 Days (Minutes)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ProgressChart data={dailyProgress} />
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
             
             {activeView === 'settings' && (
                  <Card>
@@ -484,3 +616,5 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         </div>
     );
 }
+
+    
