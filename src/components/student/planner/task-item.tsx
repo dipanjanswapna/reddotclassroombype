@@ -4,19 +4,20 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StudyPlanEvent } from "@/lib/types";
+import { PlannerTask } from "@/lib/types";
 import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Minus, Plus } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { saveUserAction } from "@/app/actions/user.actions";
+import { saveTask } from "@/app/actions/planner.actions";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 
 type TaskItemProps = {
-  event: StudyPlanEvent;
+  event: PlannerTask;
   onEdit: () => void;
   onDelete: () => void;
 };
 
-const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
+const eventIcons: { [key in PlannerTask['type']]: React.ReactNode } = {
     'study-session': <BookOpen className="h-5 w-5" />,
     'assignment-deadline': <FileText className="h-5 w-5" />,
     'quiz-reminder': <HelpCircle className="h-5 w-5" />,
@@ -24,8 +25,16 @@ const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
     'habit': <Repeat className="h-5 w-5" />,
 };
 
+const priorityColors = {
+    low: 'border-blue-500 bg-blue-50 text-blue-800',
+    medium: 'border-yellow-500 bg-yellow-50 text-yellow-800',
+    high: 'border-orange-500 bg-orange-50 text-orange-800',
+    urgent: 'border-red-500 bg-red-50 text-red-800',
+}
+
 export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
   const { userInfo, refreshUserInfo } = useAuth();
+  const { toast } = useToast();
 
   const handlePomoChange = async (change: number) => {
     if (!userInfo) return;
@@ -33,11 +42,13 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
     const newPomoCount = (event.actualPomo || 0) + change;
     const updatedEvent = { ...event, actualPomo: Math.max(0, newPomoCount) };
     
-    const newStudyPlan = userInfo.studyPlan?.map(e => e.id === event.id ? updatedEvent : e) || [];
-    const newPoints = (userInfo.studyPoints || 0) + change;
+    await saveTask(updatedEvent);
+    // Note: The parent component will handle the state update via re-fetching or manually.
     
-    await saveUserAction({ id: userInfo.uid, studyPlan: newStudyPlan, studyPoints: newPoints });
-    await refreshUserInfo();
+    if (change > 0) {
+      toast({ title: "Session Complete!", description: "You've earned 1 study point." });
+      await refreshUserInfo();
+    }
   };
   
   const progress = event.estimatedPomo && event.estimatedPomo > 0
@@ -55,6 +66,7 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
         <div className="flex items-center gap-2 mt-2 flex-wrap">
             {event.courseTitle && <Badge variant="secondary" className="mt-1">{event.courseTitle}</Badge>}
             {event.time && <Badge variant="outline">{event.time}</Badge>}
+            {event.priority && <Badge className={priorityColors[event.priority]}>{event.priority}</Badge>}
         </div>
          {event.estimatedPomo && (
             <div className="mt-2 space-y-1">

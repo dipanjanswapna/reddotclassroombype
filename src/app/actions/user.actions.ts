@@ -21,9 +21,7 @@ import {
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
-import { PlannerTask } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
-import { Folder, List } from '@/lib/types';
 
 export const getUsers = getUsersFromDb;
 export const findUserByRegistrationOrRoll = findUserFromDb;

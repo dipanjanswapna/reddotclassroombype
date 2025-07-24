@@ -1,14 +1,14 @@
 
 'use client';
 
-import { StudyPlanEvent } from '@/lib/types';
+import { PlannerTask } from '@/lib/types';
 import { TaskItem } from './task-item';
 import { format } from 'date-fns';
 
 interface DayViewProps {
   selectedDate: Date;
-  events: StudyPlanEvent[];
-  onEdit: (event: StudyPlanEvent) => void;
+  events: PlannerTask[];
+  onEdit: (event: PlannerTask) => void;
   onDelete: (id: string) => void;
 }
 

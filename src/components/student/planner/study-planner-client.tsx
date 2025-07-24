@@ -17,7 +17,7 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { StudyPlanEvent, User, Course, Folder, List, PlannerTask } from '@/lib/types';
+import { Course, Folder, List, PlannerTask } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2 } from 'lucide-react';
@@ -34,7 +34,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { WeekView } from '@/components/student/planner/week-view';
 import { DayView } from '@/components/student/planner/day-view';
-import { TaskItem } from '@/components/student/planner/task-item';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
 import { PomodoroTimer } from './pomodoro-timer';
 import { ProgressChart } from './progress-chart';
@@ -45,6 +44,9 @@ import { Check } from 'lucide-react';
 import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { DatePicker } from '@/components/ui/date-picker';
+import { TaskItem } from './task-item';
+import { Textarea } from '@/components/ui/textarea';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -78,7 +80,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const [isFolderListOpen, setIsFolderListOpen] = useState(true);
 
     const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
-    const [loading, setLoading] = useState(true); // Added missing state declaration
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!authLoading) {
@@ -111,7 +113,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     
     const openTaskDialog = (event: Partial<PlannerTask> | null) => {
         const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', listId: defaultListId, userId: userInfo?.uid });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'medium', listId: defaultListId, userId: userInfo?.uid });
         setIsTaskDialogOpen(true);
     };
     
@@ -387,7 +389,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                         </div>
                          <div className="space-y-2">
                             <Label>Type</Label>
-                            <Select value={editingEvent?.type} onValueChange={(v: StudyPlanEvent['type']) => setEditingEvent(p => ({ ...p, type: v }))}>
+                            <Select value={editingEvent?.type} onValueChange={(v: PlannerTask['type']) => setEditingEvent(p => ({ ...p, type: v }))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="study-session">Study Session</SelectItem>
@@ -402,11 +404,31 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
                         </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="description">Description (Optional)</Label>
+                            <Textarea id="description" value={editingEvent?.description || ''} onChange={e => setEditingEvent(p => ({ ...p, description: e.target.value }))} />
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="startTime">Start Time</Label>
+                                <Label htmlFor="startTime">Time</Label>
                                 <Input id="startTime" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
                             </div>
+                             <div className="space-y-2">
+                                <Label>Priority</Label>
+                                <Select value={editingEvent?.priority} onValueChange={(v: PlannerTask['priority']) => setEditingEvent(p => ({ ...p, priority: v }))}>
+                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="low">Low</SelectItem>
+                                        <SelectItem value="medium">Medium</SelectItem>
+                                        <SelectItem value="high">High</SelectItem>
+                                        <SelectItem value="urgent">Urgent</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="estimatedPomo">Estimated Pomodoro Sessions</Label>
+                            <Input id="estimatedPomo" type="number" value={editingEvent?.estimatedPomo || ''} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomo: Number(e.target.value) }))} />
                         </div>
                     </div>
                     <DialogFooter>
