@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -39,6 +40,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { cn } from '@/lib/utils';
 import { CalendarView } from './calendar-view';
 import { ProgressChart } from './progress-chart';
+import { GoalManager } from './goal-manager';
 
 
 interface StudyPlannerClientProps {
@@ -63,6 +65,7 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
     const [tasks, setTasks] = useState<PlannerTask[]>(initialTasks);
     const [folders, setFolders] = useState<Folder[]>(initialFolders);
     const [lists, setLists] = useState<List[]>(initialLists);
+    const [goals, setGoals] = useState<Goal[]>(initialGoals);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
@@ -424,7 +427,7 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
                             </Button>
                         </CardContent>
                       </Card>
-                       <PomodoroTimer tasks={filteredTasks} onSessionComplete={handlePomodoroSessionComplete} durations={pomodoroDurations} onDurationsChange={setPomodoroDurations} />
+                       <PomodoroTimer tasks={tasks} onSessionComplete={handlePomodoroSessionComplete} durations={pomodoroDurations} onDurationsChange={setPomodoroDurations} />
                  </aside>
                 <main className="lg:col-span-3">
                     {viewMode === 'board' ? (

@@ -523,8 +523,8 @@ export type Goal = {
     targetDate?: Timestamp;
     progress: number; // 0-100
     status: 'active' | 'achieved' | 'abandoned';
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
 };
 
 // ===================================
