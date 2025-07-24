@@ -8,7 +8,6 @@ import '@/ai/flows/ai-calculator-flow.ts';
 import '@/ai/flows/ai-course-creator-flow.ts';
 import '@/ai/flows/study-plan-flow.ts';
 import '@/ai/flows/ai-quiz-generator-flow.ts';
-import '@/ai/flows/exam-prep-flow.ts';
 import '@/app/actions/batch.actions';
 import '@/app/actions/question-bank.actions';
 import '@/app/actions/progress.actions';
