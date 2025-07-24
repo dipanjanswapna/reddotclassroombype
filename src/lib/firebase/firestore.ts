@@ -984,15 +984,6 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     description: { bn: "আমাদের ওয়েবসাইটে হাজারো ফ্রি নোটস এবং লেকচার শিট ডাউনলোড করে আপনার প্রস্তুতিকে আরও শক্তিশালী করুন।", en: "Strengthen your preparation by downloading thousands of free notes and lecture sheets from our website." },
     buttonText: { bn: "ডাউনলোড করুন", en: "Download Now" },
   },
-  statsSection: {
-    display: true,
-    title: { bn: "লক্ষাধিক শিক্ষার্থীর পথচলা", en: "Journey of Millions of Students" },
-    stats: [
-      { value: "900K+", label: { bn: "নিবন্ধিত শিক্ষার্থী", en: "Registered Students" } },
-      { value: "120+", label: { bn: "কোর্স সংখ্যা", en: "Number of Courses" } },
-      { value: "50+", label: { bn: "দক্ষ প্রশিক্ষক", en: "Expert Instructors" } },
-    ],
-  },
   appPromo: {
     display: true,
     title: { bn: "RDC অ্যাপ ডাউনলোড করুন", en: "Download the RDC App" },
@@ -1072,7 +1063,7 @@ export const getListsForUser = async (userId: string): Promise<List[]> => {
 export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
     const db = getDbInstance();
     if (!db) return [];
-    const q = query(collection(db, "tasks"), where("userId", "==", userId));
+    const q = query(collection(db, "tasks"), where("userId", "==", userId), orderBy("lastUpdatedAt", "desc"));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
 }

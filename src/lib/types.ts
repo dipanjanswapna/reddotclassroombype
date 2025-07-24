@@ -500,13 +500,13 @@ export type PlannerTask = {
     time?: string; // HH:mm
     endTime?: string;
     status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
     estimatedPomo?: number;
     actualPomo?: number;
     timeSpentSeconds?: number;
     googleCalendarEventId?: string;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
     completedAt?: Timestamp;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
     courseTitle?: string;

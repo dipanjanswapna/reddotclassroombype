@@ -69,10 +69,11 @@ export async function deleteList(listId: string) {
 
 // Tasks
 export async function saveTask(task: PlannerTask) {
+    const dataToSave = { ...task, updatedAt: new Date() };
     if (task.id) {
-        await updateDocument('tasks', task.id, task);
+        await updateDocument('tasks', task.id, dataToSave);
     } else {
-        await addDocument('tasks', task);
+        await addDocument('tasks', { ...dataToSave, createdAt: new Date() });
     }
     revalidatePath('/student/planner');
 }
@@ -84,10 +85,11 @@ export async function deleteTask(taskId: string) {
 
 // Goals
 export async function saveGoal(goal: Partial<Goal>) {
+  const dataToSave = { ...goal, updatedAt: new Date() };
   if (goal.id) {
-    await updateDocument('goals', goal.id, goal);
+    await updateDocument('goals', goal.id, dataToSave);
   } else {
-    await addDocument('goals', goal);
+    await addDocument('goals', { ...dataToSave, createdAt: new Date() });
   }
   revalidatePath('/student/planner');
 }

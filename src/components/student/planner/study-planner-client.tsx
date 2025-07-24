@@ -338,14 +338,9 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                             setViewMode('day');
                                         }}
                                     >
-                                        <span className="font-semibold">{format(day, 'd')}</span>
-                                        <div className="flex-grow overflow-y-auto text-xs mt-1 space-y-1 no-scrollbar">
-                                            {eventsOnDay.slice(0, 2).map(e => (
-                                                <div key={e.id} className="p-1 bg-primary/10 text-primary rounded truncate">
-                                                    {e.title}
-                                                </div>
-                                            ))}
-                                            {eventsOnDay.length > 2 && <div className="text-xs text-muted-foreground">+{eventsOnDay.length - 2} more</div>}
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-semibold">{format(day, 'd')}</span>
+                                            {eventsOnDay.length > 0 && <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>}
                                         </div>
                                     </div>
                                 )
