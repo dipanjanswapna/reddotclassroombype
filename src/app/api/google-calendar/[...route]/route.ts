@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { updateUser } from '@/lib/firebase/firestore';
+import { getAuthInstance } from '@/lib/firebase/config';
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
