@@ -1,5 +1,6 @@
 
 
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -16,18 +17,20 @@ import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
 import { StoreFooter } from './store-footer';
-import { getStoreCategories } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
 import React, { Suspense } from 'react';
 import FacebookPixel from './facebook-pixel';
 
 
-const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) => {
+const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { language } = useLanguage();
   const [categories, setCategories] = React.useState([]);
+  const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
 
   React.useEffect(() => {
     getStoreCategories().then(setCategories as any);
+    getHomepageConfig().then(setHomepageConfig);
   }, []);
 
   const isFullPageLayout =
@@ -95,7 +98,7 @@ const InnerLayout = ({ children, homepageConfig }: { children: React.ReactNode, 
  * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
  * interfaces, to have distinct layouts.
  */
-export function LayoutWrapper({ children, homepageConfig }: { children: React.ReactNode, homepageConfig: HomepageConfig | null }) {
+export function LayoutWrapper({ children }: { children: React.ReactNode }) {
  return (
      <ThemeProvider
         attribute="class"
@@ -106,7 +109,7 @@ export function LayoutWrapper({ children, homepageConfig }: { children: React.Re
       <AuthProvider>
         <CartProvider>
             <LanguageProvider>
-            <InnerLayout homepageConfig={homepageConfig}>
+            <InnerLayout>
                 {children}
             </InnerLayout>
             <CartSheet />

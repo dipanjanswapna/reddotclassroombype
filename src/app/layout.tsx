@@ -4,7 +4,6 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
 import logoSrc from '@/public/logo.png';
 
 
@@ -42,16 +41,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const homepageConfig = await getHomepageConfig();
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
-        <LayoutWrapper homepageConfig={homepageConfig}>
+        <LayoutWrapper>
             {children}
         </LayoutWrapper>
       </body>
