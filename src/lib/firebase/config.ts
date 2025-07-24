@@ -5,12 +5,13 @@ import { getAuth, Auth } from "firebase/auth";
 
 // Hardcoded Firebase configuration object
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyAntk2yVUghwJzR_DmSEHmGqrY5qrUfEpo",
+  authDomain: "rdcshop-53819.firebaseapp.com",
+  projectId: "rdcshop-53819",
+  storageBucket: "rdcshop-53819.appspot.com",
+  messagingSenderId: "497795678957",
+  appId: "1:497795678957:web:10f8842d18f171573402e4",
+  measurementId: "G-HL320LVFPT"
 };
 
 let app: FirebaseApp | null = null;
@@ -19,14 +20,6 @@ let dbInstance: Firestore | null = null;
 
 function getFirebaseApp(): FirebaseApp | null {
   if (app) return app;
-
-  // Since the config is hardcoded, this check is a formality.
-  if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
-    if (typeof window === "undefined") {
-      console.error("Firebase configuration is missing or incomplete. Please replace placeholder values.");
-    }
-    return null; 
-  }
 
   if (getApps().length > 0) {
     app = getApp();
