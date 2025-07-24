@@ -10,6 +10,8 @@ import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Clock } fr
 import { Progress } from "@/components/ui/progress";
 import { format, isPast, isToday } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type TaskItemProps = {
   task: PlannerTask;
@@ -35,25 +37,41 @@ const priorityColors = {
 
 export function TaskItem({ task, onEdit, onDelete, onUpdate }: TaskItemProps) {
     const isOverdue = !isToday(new Date(task.date)) && isPast(new Date(task.date)) && task.status !== 'completed';
+  
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({id: task.id!});
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+    
   return (
-    <Card className="p-3">
-        <div className="flex justify-between items-start">
-            <div className="flex items-center gap-2">
-                {eventIcons[task.type]}
-                <p className="font-semibold text-sm leading-tight">{task.title}</p>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <Card className="p-3 cursor-grab active:cursor-grabbing">
+            <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                    {eventIcons[task.type]}
+                    <p className="font-semibold text-sm leading-tight">{task.title}</p>
+                </div>
+                <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onEdit}><Edit className="h-3 w-3" /></Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onDelete}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                </div>
             </div>
-            <div className="flex gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onEdit}><Edit className="h-3 w-3" /></Button>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onDelete}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+            <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+                {task.courseTitle && <Badge variant="secondary">{task.courseTitle}</Badge>}
+                {task.time && <Badge variant="outline" className="flex items-center gap-1"><Clock className="h-3 w-3"/>{task.time}</Badge>}
+                {task.priority && <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>}
+                {isOverdue && <Badge variant="destructive">Overdue</Badge>}
             </div>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {task.courseTitle && <Badge variant="secondary">{task.courseTitle}</Badge>}
-            {task.time && <Badge variant="outline" className="flex items-center gap-1"><Clock className="h-3 w-3"/>{task.time}</Badge>}
-            {task.priority && <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>}
-            {isOverdue && <Badge variant="destructive">Overdue</Badge>}
-        </div>
-    </Card>
+        </Card>
+    </div>
   );
 }

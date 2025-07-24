@@ -193,8 +193,8 @@ export function StudyPlannerClient() {
                         <Button onClick={handleAddTask}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
-                        <div className="md:col-span-1 space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                        <div className="lg:col-span-1 space-y-6">
                             <FolderListSidebar 
                                 folders={folders} 
                                 lists={lists} 
@@ -208,7 +208,7 @@ export function StudyPlannerClient() {
                                 onDurationsChange={handlePomodoroDurationsChange}
                             />
                         </div>
-                        <div className="md:col-span-3">
+                        <div className="lg:col-span-3">
                             <TabsContent value="board">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <Column id="todo" title="To Do" onAddTask={handleAddTask}>

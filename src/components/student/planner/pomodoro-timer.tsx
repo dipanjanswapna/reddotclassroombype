@@ -97,7 +97,7 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
 
   return (
     <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="text-center">
             <CardTitle>Pomodoro Timer</CardTitle>
             <CardDescription>Stay focused and manage your study sessions effectively.</CardDescription>
         </CardHeader>
@@ -151,4 +151,3 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
     </Card>
   );
 }
-
