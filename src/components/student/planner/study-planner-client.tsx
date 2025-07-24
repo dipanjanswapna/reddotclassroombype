@@ -17,11 +17,10 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { StudyPlanEvent, User, Course, Folder, List } from '@/lib/types';
-import { saveUserAction, updateUser } from '@/app/actions/user.actions';
+import { StudyPlanEvent, User, Course, Folder, List, PlannerTask } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -37,27 +36,36 @@ import { WeekView } from '@/components/student/planner/week-view';
 import { DayView } from '@/components/student/planner/day-view';
 import { TaskItem } from '@/components/student/planner/task-item';
 import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
-import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { PomodoroTimer } from './pomodoro-timer';
 import { ProgressChart } from './progress-chart';
 import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
-import { Exam } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '@/components/ui/command';
+import { Check } from 'lucide-react';
+import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
+import { useRouter } from 'next/navigation';
 
 type ViewMode = 'month' | 'week' | 'day';
 
-export function StudyPlannerClient() {
+interface StudyPlannerClientProps {
+    initialTasks: PlannerTask[];
+    initialFolders: Folder[];
+    initialLists: List[];
+    courses: Course[];
+}
+
+
+export function StudyPlannerClient({ initialTasks, initialFolders, initialLists, courses }: StudyPlannerClientProps) {
     const { toast } = useToast();
+    const router = useRouter();
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     
-    const [events, setEvents] = useState<StudyPlanEvent[]>([]);
-    const [folders, setFolders] = useState<Folder[]>([]);
-    const [lists, setLists] = useState<List[]>([]);
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [events, setEvents] = useState<PlannerTask[]>(initialTasks);
+    const [folders, setFolders] = useState<Folder[]>(initialFolders);
+    const [lists, setLists] = useState<List[]>(initialLists);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
-    const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
+    const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -77,56 +85,13 @@ export function StudyPlannerClient() {
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
     
-    const fetchInitialData = useCallback(async () => {
-        if (!userInfo) {
-            if (!authLoading) setLoading(false);
-            return;
-        }
-        setLoading(true);
-        try {
-            setEvents(userInfo.studyPlan || []);
-            setFolders(userInfo.plannerFolders || []);
-            setLists(userInfo.plannerLists || []);
-
-            const enrollments = await getEnrollmentsByUserId(userInfo.uid);
-            const courseIds = enrollments.map(e => e.courseId);
-            if (courseIds.length > 0) {
-                const fetchedCourses = await getCourses({ ids: courseIds });
-                setCourses(fetchedCourses);
-            }
-        } catch (error) {
-            console.error("Failed to load planner data:", error);
-            toast({ title: 'Error', description: 'Could not load planner data.', variant: 'destructive'});
-        } finally {
-            setLoading(false);
-        }
-    }, [userInfo, authLoading, toast]);
-
-
-    useEffect(() => {
-        fetchInitialData();
-    }, [fetchInitialData]);
-
-
-    const handleSavePlan = useCallback(async (data: { events?: StudyPlanEvent[], folders?: Folder[], lists?: List[] }) => {
-        if (!userInfo) return;
-        
-        const payload: Partial<User> = {};
-        if (data.events) payload.studyPlan = data.events;
-        if (data.folders) payload.plannerFolders = data.folders;
-        if (data.lists) payload.plannerLists = data.lists;
-        
-        await saveUserAction({id: userInfo.uid, ...payload});
-        await refreshUserInfo();
-    }, [userInfo, refreshUserInfo]);
-
     const filteredEvents = useMemo(() => {
         if (!selectedListId) {
              if (!selectedFolderId) {
                 return events; // Show all events if no folder/list is selected
             }
-            const listIdsInFolder = lists.filter(l => l.folderId === selectedFolderId).map(l => l.id);
-            return events.filter(e => listIdsInFolder.includes(e.listId || ''));
+            const listIdsInFolder = lists.filter(l => l.folderId === selectedFolderId).map(l => l.id!);
+            return events.filter(e => e.listId && listIdsInFolder.includes(e.listId));
         }
         return events.filter(e => e.listId === selectedListId);
     }, [events, lists, selectedFolderId, selectedListId]);
@@ -136,32 +101,33 @@ export function StudyPlannerClient() {
         return filteredEvents.filter(e => e.date === dateStr).sort((a,b) => (a.time || '').localeCompare(b.time || ''));
     }, [filteredEvents, selectedDate]);
     
-    const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
+    const openTaskDialog = (event: Partial<PlannerTask> | null) => {
         const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', listId: defaultListId });
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', listId: defaultListId, userId: userInfo?.uid });
         setIsTaskDialogOpen(true);
     };
     
-    const saveTask = () => {
+    const handleSaveTask = async () => {
         if (!editingEvent?.title) {
             toast({ title: 'Title is required', variant: 'destructive'});
             return;
         }
         
+        await saveTask(editingEvent as PlannerTask);
+        
         const newEvents = editingEvent.id
-            ? events.map(e => e.id === editingEvent.id ? editingEvent as StudyPlanEvent : e)
-            : [...events, { ...editingEvent, id: `manual_${Date.now()}` } as StudyPlanEvent];
+            ? events.map(e => e.id === editingEvent!.id ? editingEvent as PlannerTask : e)
+            : [...events, { ...editingEvent, id: `manual_${Date.now()}` } as PlannerTask];
             
         setEvents(newEvents);
-        handleSavePlan({ events: newEvents });
+        
         setIsTaskDialogOpen(false);
         setEditingEvent(null);
     }
     
-    const deleteTask = (eventId: string) => {
-        const newEvents = events.filter(e => e.id !== eventId);
-        setEvents(newEvents);
-        handleSavePlan({ events: newEvents });
+    const handleDeleteTask = async (eventId: string) => {
+        await deleteTask(eventId);
+        setEvents(events.filter(e => e.id !== eventId));
     };
     
     const handleDateNavigation = (direction: 'prev' | 'next') => {
@@ -178,55 +144,64 @@ export function StudyPlannerClient() {
         }
     }
     
-    const addFolder = () => {
+    const handleAddFolder = async () => {
         const newFolderName = prompt("Enter folder name:");
-        if (newFolderName) {
-            const newFolder: Folder = { id: `folder_${Date.now()}`, name: newFolderName, userId: userInfo!.uid, createdAt: new Date() as any, updatedAt: new Date() as any };
-            const newFolders = [...folders, newFolder];
-            setFolders(newFolders);
-            handleSavePlan({ folders: newFolders });
+        if (newFolderName && userInfo) {
+            const newFolder: Partial<Folder> = { name: newFolderName, userId: userInfo.uid, createdAt: new Date() as any, updatedAt: new Date() as any };
+            await saveFolder(newFolder);
+            setFolders(prev => [...prev, newFolder as Folder]);
         }
     };
     
-    const addList = (folderId: string) => {
+    const handleAddList = async (folderId: string) => {
         const newListName = prompt("Enter list name:");
-        if (newListName) {
-            const newList: List = { id: `list_${Date.now()}`, name: newListName, userId: userInfo!.uid, folderId, createdAt: new Date() as any, updatedAt: new Date() as any };
-            const newLists = [...lists, newList];
-            setLists(newLists);
-            handleSavePlan({ lists: newLists });
+        if (newListName && userInfo) {
+            const newList: Partial<List> = { name: newListName, userId: userInfo.uid, folderId, createdAt: new Date() as any, updatedAt: new Date() as any };
+            await saveList(newList);
+            setLists(prev => [...prev, newList as List]);
         }
     };
     
-    const deleteFolder = (folderId: string) => {
+    const handleDeleteFolder = async (folderId: string) => {
         if (!window.confirm("Are you sure you want to delete this folder and all its lists and tasks?")) return;
+        await deleteFolder(folderId);
+        setFolders(folders.filter(f => f.id !== folderId));
         const listsToDelete = lists.filter(l => l.folderId === folderId).map(l => l.id);
-        const newFolders = folders.filter(f => f.id !== folderId);
-        const newLists = lists.filter(l => l.folderId !== folderId);
-        const newEvents = events.filter(e => !listsToDelete.includes(e.listId || ''));
-
-        setFolders(newFolders);
-        setLists(newLists);
-        setEvents(newEvents);
-        handleSavePlan({ folders: newFolders, lists: newLists, events: newEvents });
+        setLists(lists.filter(l => l.folderId !== folderId));
+        setEvents(events.filter(e => e.listId && !listsToDelete.includes(e.listId)));
     }
     
-    const deleteList = (listId: string) => {
+    const handleDeleteList = async (listId: string) => {
         if (!window.confirm("Are you sure you want to delete this list and all its tasks?")) return;
-        const newLists = lists.filter(l => l.id !== listId);
-        const newEvents = events.filter(e => e.listId !== listId);
-
-        setLists(newLists);
-        setEvents(newEvents);
-        handleSavePlan({ lists: newLists, events: newEvents });
+        await deleteList(listId);
+        setLists(lists.filter(l => l.id !== listId));
+        setEvents(events.filter(e => e.listId !== listId));
     }
+    
+    const handlePomoSessionComplete = async (taskId: string) => {
+        const task = events.find(e => e.id === taskId);
+        if (task && userInfo) {
+            const newActualPomo = (task.actualPomo || 0) + 1;
+            await saveTask({ ...task, actualPomo: newActualPomo });
+            setEvents(prev => prev.map(e => e.id === taskId ? { ...e, actualPomo: newActualPomo } : e));
+            await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
+            await refreshUserInfo();
+            toast({ title: "Session Complete!", description: "You've earned 1 study point." });
+        }
+    };
+    
+    const handleGoogleCalendarSync = () => {
+        if (!userInfo) return;
+        const authUrl = `/api/google-calendar/auth?userId=${userInfo.id}`;
+        router.push(authUrl);
+    };
 
     const renderCalendarView = () => {
         switch (viewMode) {
             case 'week':
                 return <WeekView currentDate={currentDate} events={filteredEvents} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
-                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} />;
+                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={handleDeleteTask} />;
             case 'month':
             default:
                 return (
@@ -269,6 +244,10 @@ export function StudyPlannerClient() {
                 );
         }
     }
+    
+    if (loading) {
+        return <div className="flex justify-center items-center h-96"><LoadingSpinner /></div>
+    }
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -282,15 +261,18 @@ export function StudyPlannerClient() {
                  <div className="flex items-center gap-2">
                     <Button variant={activeView === 'planner' ? 'default' : 'outline'} onClick={() => setActiveView('planner')}>Planner</Button>
                     <Button variant={activeView === 'analytics' ? 'default' : 'outline'} onClick={() => setActiveView('analytics')}>Analytics</Button>
+                    <Button variant={activeView === 'settings' ? 'default' : 'outline'} onClick={() => setActiveView('settings')}><Settings className="h-4 w-4"/></Button>
                 </div>
             </div>
+            
+            {activeView === 'planner' && (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                  <aside className="lg:col-span-1 space-y-4">
                      <Card>
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <CardTitle>Folders & Lists</CardTitle>
-                                <Button size="sm" variant="outline" onClick={addFolder}><PlusCircle className="mr-2 h-4 w-4"/>Folder</Button>
+                                <Button size="sm" variant="outline" onClick={handleAddFolder}><PlusCircle className="mr-2 h-4 w-4"/>Folder</Button>
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -298,26 +280,27 @@ export function StudyPlannerClient() {
                             {folders.map(folder => (
                                 <div key={folder.id}>
                                     <div 
-                                        className={cn("flex items-center justify-between p-2 rounded-md cursor-pointer", selectedFolderId === folder.id && 'bg-accent')}
+                                        className={cn("flex items-center justify-between p-2 rounded-md cursor-pointer", selectedFolderId === folder.id && !selectedListId && 'bg-accent')}
                                         onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(null);}}
                                     >
                                         <span className="flex items-center gap-2"><FolderIcon className="h-4 w-4"/> {folder.name}</span>
-                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); deleteFolder(folder.id)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteFolder(folder.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                     </div>
                                     <div className="pl-6 space-y-1 mt-1">
                                         {lists.filter(l => l.folderId === folder.id).map(list => (
-                                            <div key={list.id} className={cn("flex items-center justify-between p-1 rounded-md cursor-pointer text-sm", selectedListId === list.id && 'bg-accent')} onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(list.id);}}>
+                                            <div key={list.id} className={cn("flex items-center justify-between p-1 rounded-md cursor-pointer text-sm", selectedListId === list.id && 'bg-accent')} onClick={() => {setSelectedFolderId(folder.id!); setSelectedListId(list.id!);}}>
                                                  <span className="flex items-center gap-2 text-muted-foreground"><ListIcon className="h-4 w-4"/> {list.name}</span>
-                                                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); deleteList(list.id)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteList(list.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
                                         ))}
-                                        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => addList(folder.id)}><PlusCircle className="mr-2 h-3 w-3"/>Add List</Button>
+                                        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => handleAddList(folder.id!)}><PlusCircle className="mr-2 h-3 w-3"/>Add List</Button>
                                     </div>
                                 </div>
                             ))}
                             </div>
                         </CardContent>
                      </Card>
+                     <PomodoroTimer tasksForToday={eventsForSelectedDate} onSessionComplete={handlePomoSessionComplete} durations={durations} setDurations={setDurations}/>
                  </aside>
                 <main className="lg:col-span-3">
                    <Card>
@@ -351,6 +334,26 @@ export function StudyPlannerClient() {
                     </Card>
                 </main>
             </div>
+            )}
+            
+            {activeView === 'settings' && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Planner Settings</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                         <div className="p-4 border rounded-md space-y-4">
+                             <div className="flex items-center justify-between">
+                                 <div>
+                                     <Label className="font-semibold">Google Calendar Sync</Label>
+                                     <p className="text-xs text-muted-foreground">Sync your study plan with your Google Calendar.</p>
+                                 </div>
+                                 <Button onClick={handleGoogleCalendarSync}><Calendar className="mr-2 h-4 w-4"/>Sync Now</Button>
+                             </div>
+                         </div>
+                    </CardContent>
+                </Card>
+            )}
 
              <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
                 <DialogContent>
@@ -367,7 +370,7 @@ export function StudyPlannerClient() {
                                         <div key={folder.id}>
                                             <Label className="px-2 text-xs text-muted-foreground">{folder.name}</Label>
                                             {lists.filter(l => l.folderId === folder.id).map(list => (
-                                                <SelectItem key={list.id} value={list.id}>{list.name}</SelectItem>
+                                                <SelectItem key={list.id} value={list.id!}>{list.name}</SelectItem>
                                             ))}
                                         </div>
                                     ))}

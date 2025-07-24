@@ -487,46 +487,49 @@ export type Course = {
 export type CheckItem = {
     id: string;
     taskId: string;
+    userId: string;
     text: string;
     isCompleted: boolean;
     reminderTime?: Timestamp;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 };
 
-export type Task = {
-    id: string;
-    listId?: string;
+export type PlannerTask = {
+    id?: string;
     userId: string;
+    listId?: string;
     title: string;
     description?: string;
-    startDate?: Timestamp;
-    endDate?: Timestamp;
+    date: string; // YYYY-MM-DD
+    time?: string; // HH:mm
+    endTime?: string;
     status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     estimatedPomo?: number;
     actualPomo?: number;
     timeSpentSeconds?: number;
     googleCalendarEventId?: string;
-    checkItems?: CheckItem[]; // Sub-tasks
     createdAt: Timestamp;
     updatedAt: Timestamp;
     completedAt?: Timestamp;
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
+    courseTitle?: string;
 };
 
 export type List = {
-    id: string;
+    id?: string;
     folderId?: string;
     userId: string;
     name: string;
-    tasks?: Task[]; // Can be sub-collection
     createdAt: Timestamp;
     updatedAt: Timestamp;
 };
 
 export type Folder = {
-    id: string;
+    id?: string;
     userId: string;
     name: string;
-    lists?: List[]; // Can be sub-collection
     createdAt: Timestamp;
     updatedAt: Timestamp;
 };
@@ -636,8 +639,6 @@ export type User = {
     facebook?: string;
   };
   studyPlan?: StudyPlanEvent[];
-  plannerFolders?: Folder[];
-  plannerLists?: List[];
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;
@@ -647,6 +648,15 @@ export type User = {
   assignedCourses?: string[]; // Array of courseIds
   currentSessionId?: string;
   lastLoginAt?: Timestamp;
+  // Deprecated planner fields
+  plannerFolders?: Folder[];
+  plannerLists?: List[];
+  // Google Calendar Sync
+  googleCalendarTokens?: {
+    accessToken: string;
+    refreshToken: string;
+    expiryDate: number;
+  };
 };
 
 export type Referral = {
