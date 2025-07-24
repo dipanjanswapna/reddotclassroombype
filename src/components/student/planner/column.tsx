@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
@@ -16,6 +15,11 @@ interface ColumnProps {
 export function Column({ id, title, children }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
+  const items = React.useMemo(
+    () => React.Children.toArray(children).map((child: any) => child?.props?.task?.id).filter(Boolean),
+    [children]
+  );
+
   return (
     <div ref={setNodeRef}>
         <Card className={cn("min-h-96", isOver ? 'bg-accent/20' : 'bg-muted/50')}>
@@ -25,7 +29,7 @@ export function Column({ id, title, children }: ColumnProps) {
             <CardContent className="p-4 space-y-4">
                  <SortableContext
                     id={id}
-                    items={React.Children.map(children, (child: any) => child.props.task.id) || []}
+                    items={items}
                     strategy={verticalListSortingStrategy}
                 >
                     <div className="space-y-4">
