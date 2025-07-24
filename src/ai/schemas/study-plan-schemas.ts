@@ -34,7 +34,7 @@ export const StudyPlanEventSchema = z.object({
     type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'habit']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
-    priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().describe('The priority of the task.'),
     listId: z.string().optional(),
     estimatedPomo: z.number().optional(),
     actualPomo: z.number().optional(),

@@ -7,13 +7,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Course, Folder, List, PlannerTask, CheckItem, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target } from 'lucide-react';
+import { PlusCircle, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +25,6 @@ import { ProgressChart } from './progress-chart';
 import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Check } from 'lucide-react';
 import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -36,6 +36,9 @@ import { saveUserAction } from '@/app/actions/user.actions';
 import { GoalManager } from './goal-manager';
 import { CalendarView } from './calendar-view';
 import { format, addDays } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Textarea as TextareaAI } from '@/components/ui/textarea';
+
 
 interface StudyPlannerClientProps {
     initialTasks: PlannerTask[];
@@ -220,7 +223,6 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
             const result = await generateExamPrepPlan({
                 courseContext: aiExamCourseContext,
                 examDate: format(aiExamDate, 'yyyy-MM-dd'),
-                currentDate: format(new Date(), 'yyyy-MM-dd'),
             });
             const newTasks = result.events.map(e => ({...e, userId: userInfo!.uid, status: 'todo' as const}));
             for (const task of newTasks) {
@@ -391,7 +393,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                      <Label className="font-semibold">Google Calendar Sync</Label>
                                      <p className="text-xs text-muted-foreground">Sync your study plan with your Google Calendar.</p>
                                  </div>
-                                 <Button onClick={handleGoogleCalendarSync}><Calendar className="mr-2 h-4 w-4"/>Sync Now</Button>
+                                 <Button onClick={handleGoogleCalendarSync}><CalendarIcon className="mr-2 h-4 w-4"/>Sync Now</Button>
                              </div>
                          </div>
                     </CardContent>
@@ -506,6 +508,76 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
                         <Button onClick={handleSaveTask}>Save Task</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+             <Dialog open={isAiPlanOpen} onOpenChange={setIsAiPlanOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Generate Study Plan with AI</DialogTitle>
+                        <DialogDescription>Select the courses you want to include in your study plan.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Courses to Include</Label>
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start">{aiPlanCourses.length > 0 ? aiPlanCourses.map(c => c.title).join(', ') : 'Select courses...'}</Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-full p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Search courses..." />
+                                        <CommandEmpty>No course found.</CommandEmpty>
+                                        <CommandGroup>
+                                        {courses.map(course => (
+                                            <CommandItem key={course.id} onSelect={() => {
+                                                setAiPlanCourses(prev => prev.some(c => c.id === course.id) ? prev.filter(c => c.id !== course.id) : [...prev, course]);
+                                            }}>
+                                            <Check className={cn("mr-2 h-4 w-4", aiPlanCourses.some(c=>c.id === course.id) ? "opacity-100" : "opacity-0")} />
+                                            {course.title}
+                                            </CommandItem>
+                                        ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                         <div className="grid grid-cols-2 gap-4">
+                            <div><Label>Start Date</Label><DatePicker date={aiPlanStartDate} setDate={setAiPlanStartDate}/></div>
+                            <div><Label>End Date</Label><DatePicker date={aiPlanEndDate} setDate={setAiPlanEndDate}/></div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAiPlanOpen(false)}>Cancel</Button>
+                        <Button onClick={handleGenerateAiPlan} disabled={isGeneratingPlan}>
+                            {isGeneratingPlan && <Loader2 className="mr-2 animate-spin"/>} Generate Plan
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            
+            <Dialog open={isAiExamPlanOpen} onOpenChange={setIsAiExamPlanOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Generate Exam Prep Plan with AI</DialogTitle>
+                        <DialogDescription>Describe the exam syllabus and set the exam date.</DialogDescription>
+                    </DialogHeader>
+                     <div className="space-y-4">
+                        <div>
+                            <Label>Syllabus / Course Context</Label>
+                            <TextareaAI placeholder="e.g., Physics 1st Paper, Chapters 1-5" value={aiExamCourseContext} onChange={e => setAiExamCourseContext(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label>Exam Date</Label>
+                            <DatePicker date={aiExamDate} setDate={setAiExamDate} />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAiExamPlanOpen(false)}>Cancel</Button>
+                        <Button onClick={handleGenerateExamPlan} disabled={isGeneratingPlan}>
+                             {isGeneratingPlan && <Loader2 className="mr-2 animate-spin"/>} Generate Plan
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -425,7 +425,7 @@ export type StudyPlanEvent = {
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
     courseTitle?: string;
     description?: string;
-    priority?: 'High' | 'Medium' | 'Low';
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
     listId?: string;
     estimatedPomo?: number;
     actualPomo?: number;
@@ -506,7 +506,7 @@ export type PlannerTask = {
     timeSpentSeconds?: number;
     googleCalendarEventId?: string;
     createdAt?: Timestamp;
-    updatedAt?: Timestamp;
+    lastUpdatedAt?: Timestamp;
     completedAt?: Timestamp;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
     courseTitle?: string;
@@ -631,9 +631,6 @@ export type User = {
   referralPoints?: number;
   studyPoints?: number;
   achievements?: string[]; // Array of achievement IDs
-  socials?: {
-    facebook?: string;
-  };
   studyPlan?: PlannerTask[];
   pomodoroSettings?: { work: number; shortBreak: number; longBreak: number; };
   // Offline fields
