@@ -17,11 +17,12 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { StudyPlanEvent } from '@/lib/types';
-import { saveUserAction, getUsers, getEnrollmentsByUserId, getCoursesByIds } from '@/app/actions/user.actions';
+import { StudyPlanEvent, User } from '@/lib/types';
+import { saveUserAction } from '@/app/actions/user.actions';
+import { getUsers, getEnrollmentsByUserId, getCoursesByIds } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, Calendar, ListChecks, Check, Users as UsersIcon, X } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, CalendarDays, ListChecks, Check, Users as UsersIcon, X, Repeat } from 'lucide-react';
 import { TaskItem } from './task-item';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -38,6 +39,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { safeToDate } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -235,9 +238,9 @@ export function StudyPlannerClient() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="month"><CalendarDays className="mr-2 h-4 w-4"/>Month</SelectItem>
-                                            <SelectItem value="week"><Calendar className="mr-2 h-4 w-4"/>Week</SelectItem>
-                                            <SelectItem value="day"><ListChecks className="mr-2 h-4 w-4"/>Day</SelectItem>
+                                            <SelectItem value="month">Month</SelectItem>
+                                            <SelectItem value="week">Week</SelectItem>
+                                            <SelectItem value="day">Day</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -260,9 +263,71 @@ export function StudyPlannerClient() {
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                         <div className="space-y-2">
+                            <Label>Type</Label>
+                            <Select value={editingEvent?.type} onValueChange={(v: StudyPlanEvent['type']) => setEditingEvent(p => ({ ...p, type: v }))}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="study-session">Study Session</SelectItem>
+                                    <SelectItem value="assignment-deadline">Assignment</SelectItem>
+                                    <SelectItem value="quiz-reminder">Quiz</SelectItem>
+                                    <SelectItem value="exam-prep">Exam Prep</SelectItem>
+                                    <SelectItem value="habit">Habit</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
                             <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="resourceLink">Resource Link (Optional)</Label>
+                            <Input id="resourceLink" value={editingEvent?.resourceLink || ''} onChange={e => setEditingEvent(p => ({ ...p, resourceLink: e.target.value }))} placeholder="https://example.com/notes.pdf" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="startTime">Start Time</Label>
+                                <Input id="startTime" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="endTime">End Time</Label>
+                                <Input id="endTime" type="time" value={editingEvent?.endTime || ''} onChange={e => setEditingEvent(p => ({ ...p, endTime: e.target.value }))} />
+                            </div>
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Add Participants</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start text-left h-auto min-h-10">
+                                        <div className="flex flex-wrap gap-1">
+                                            {(editingEvent?.participantIds || []).length > 0
+                                                ? (editingEvent?.participantIds || []).map(id => {
+                                                    const user = allUsers.find(u => u.uid === id);
+                                                    return user ? <Badge key={id} variant="secondary">{user.name}</Badge> : null;
+                                                })
+                                                : "Select participants..."}
+                                        </div>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Search friends..." />
+                                        <CommandEmpty>No users found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {allUsers.filter(u => u.uid !== userInfo.uid).map(user => (
+                                                <CommandItem
+                                                    key={user.uid}
+                                                    onSelect={() => handleParticipantToggle(user.uid)}
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", (editingEvent?.participantIds || []).includes(user.uid) ? "opacity-100" : "opacity-0")} />
+                                                    <Avatar className="h-6 w-6 mr-2"><AvatarImage src={user.avatarUrl} /><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    {user.name}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </div>
                     <DialogFooter>
