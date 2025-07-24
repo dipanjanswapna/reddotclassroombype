@@ -41,33 +41,28 @@ async function getAuthenticatedClient(user: User) {
     return google.calendar({ version: 'v3', auth: oauth2Client });
 }
 
-export async function createGoogleCalendarEvent(user: User, task: PlannerTask) {
+export async function createGoogleCalendarEvent(user: User, task: PlannerTask): Promise<string | null> {
     if (!user.googleCalendarTokens) return null;
 
     const calendar = await getAuthenticatedClient(user);
     
-    const event = {
+    const event: any = {
         summary: task.title,
         description: task.description,
-        start: {
-            date: task.date, // Assumes task.date is 'YYYY-MM-DD'
-            timeZone: 'Asia/Dhaka',
-        },
-        end: {
-            date: task.date,
-            timeZone: 'Asia/Dhaka',
-        },
+        start: {},
+        end: {},
     };
     
-    // If time is provided, use dateTime instead of date
-    if(task.time) {
+    if (task.time) {
         const startTime = new Date(`${task.date}T${task.time}`);
-        const endTime = task.endTime ? new Date(`${task.date}T${task.endTime}`) : new Date(startTime.getTime() + 60 * 60 * 1000); // Default to 1 hour if no end time
-        
+        const endTime = task.endTime ? new Date(`${task.date}T${task.endTime}`) : new Date(startTime.getTime() + 60 * 60 * 1000);
         event.start.dateTime = startTime.toISOString();
         event.end.dateTime = endTime.toISOString();
-        delete event.start.date;
-        delete event.end.date;
+        event.start.timeZone = 'Asia/Dhaka';
+        event.end.timeZone = 'Asia/Dhaka';
+    } else {
+        event.start.date = task.date;
+        event.end.date = task.date;
     }
 
     try {
@@ -75,7 +70,7 @@ export async function createGoogleCalendarEvent(user: User, task: PlannerTask) {
             calendarId: 'primary',
             requestBody: event,
         });
-        return res.data.id;
+        return res.data.id || null;
     } catch (error) {
         console.error('Error creating Google Calendar event:', error);
         throw error;
@@ -87,27 +82,23 @@ export async function updateGoogleCalendarEvent(user: User, task: PlannerTask) {
     
     const calendar = await getAuthenticatedClient(user);
     
-     const event = {
+    const event: any = {
         summary: task.title,
         description: task.description,
-        start: {
-            date: task.date,
-            timeZone: 'Asia/Dhaka',
-        },
-        end: {
-            date: task.date,
-            timeZone: 'Asia/Dhaka',
-        },
+        start: {},
+        end: {},
     };
 
-    if(task.time) {
+    if (task.time) {
         const startTime = new Date(`${task.date}T${task.time}`);
         const endTime = task.endTime ? new Date(`${task.date}T${task.endTime}`) : new Date(startTime.getTime() + 60 * 60 * 1000);
-        
         event.start.dateTime = startTime.toISOString();
         event.end.dateTime = endTime.toISOString();
-        delete event.start.date;
-        delete event.end.date;
+        event.start.timeZone = 'Asia/Dhaka';
+        event.end.timeZone = 'Asia/Dhaka';
+    } else {
+        event.start.date = task.date;
+        event.end.date = task.date;
     }
     
     try {
@@ -135,7 +126,7 @@ export async function deleteGoogleCalendarEvent(user: User, eventId: string) {
     } catch (error) {
         console.error('Error deleting Google Calendar event:', error);
         // Don't throw error if event is not found, it might have been deleted manually
-        if ((error as any).code !== 404) {
+        if ((error as any).code !== 404 && (error as any).code !== 410) {
             throw error;
         }
     }

@@ -88,7 +88,7 @@ export async function saveTask(task: PlannerTask) {
         }
     }
     
-    const dataToSave = { ...task, googleCalendarEventId: eventId, updatedAt: new Date() };
+    const dataToSave = { ...task, googleCalendarEventId: eventId, lastUpdatedAt: new Date() };
     if (task.id) {
         await updateDocument('tasks', task.id, dataToSave);
     } else {

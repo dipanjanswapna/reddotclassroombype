@@ -488,7 +488,7 @@ export type PlannerTask = {
     estimatedPomo?: number;
     actualPomo?: number;
     timeSpentSeconds?: number;
-    googleCalendarEventId?: string;
+    googleCalendarEventId?: string | null;
     createdAt?: Timestamp;
     lastUpdatedAt?: Timestamp;
     completedAt?: Timestamp;
@@ -632,6 +632,10 @@ export type User = {
     refreshToken: string;
     expiryDate: number;
   };
+  plannerSettings?: {
+    theme: string;
+    whiteNoise: string;
+  }
 };
 
 export type Referral = {

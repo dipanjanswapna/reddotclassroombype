@@ -38,12 +38,17 @@ async function handleCallback(req: NextRequest) {
     const userId = state;
 
     if (!code || !userId) {
-        return NextResponse.redirect('/student/planner?error=auth_failed');
+        return NextResponse.redirect('/student/planner/settings?error=auth_failed');
     }
 
     try {
         const { tokens } = await oauth2Client.getToken(code);
         
+        if (!tokens.refresh_token) {
+             console.warn("No refresh token received. User may have already granted consent.");
+             // Proceed with access_token, but offline access will be limited.
+        }
+
         // Save tokens to the user's document in Firestore
         await updateUser(userId, {
             googleCalendarTokens: {
@@ -53,10 +58,10 @@ async function handleCallback(req: NextRequest) {
             }
         });
         
-        return NextResponse.redirect('/student/planner?success=sync_enabled');
+        return NextResponse.redirect('/student/planner/settings?success=sync_enabled');
     } catch (error) {
         console.error('Error getting tokens:', error);
-        return NextResponse.redirect('/student/planner?error=token_failed');
+        return NextResponse.redirect('/student/planner/settings?error=token_failed');
     }
 }
 

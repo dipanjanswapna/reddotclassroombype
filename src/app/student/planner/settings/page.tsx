@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const themes = [
     { name: 'Default', value: 'default', color: 'bg-primary' },
@@ -28,6 +29,7 @@ const whiteNoises = [
 
 export default function PlannerSettingsPage() {
     const { userInfo, refreshUserInfo } = useAuth();
+    const router = useRouter();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
@@ -57,7 +59,16 @@ export default function PlannerSettingsPage() {
         } finally {
             setIsSaving(false);
         }
-    }
+    };
+
+    const handleGoogleCalendarSync = () => {
+        if (!userInfo?.id) {
+            toast({ title: 'Please log in first', variant: 'destructive'});
+            return;
+        }
+        const authUrl = `/api/google-calendar/auth?userId=${userInfo.id}`;
+        router.push(authUrl);
+    };
     
   return (
     <div className="space-y-8">
@@ -95,7 +106,7 @@ export default function PlannerSettingsPage() {
                         <Label className="font-semibold">Google Calendar Sync</Label>
                         <p className="text-xs text-muted-foreground">Sync your study plan with your Google Calendar.</p>
                     </div>
-                    <Button><CalendarIcon className="mr-2 h-4 w-4"/>Sync Now</Button>
+                    <Button onClick={handleGoogleCalendarSync}><CalendarIcon className="mr-2 h-4 w-4"/>Sync Now</Button>
                 </div>
             </div>
         </CardContent>
@@ -109,4 +120,3 @@ export default function PlannerSettingsPage() {
     </div>
   );
 }
-
