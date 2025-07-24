@@ -60,6 +60,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'scontent.fdac138-1.fna.fbcdn.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdni.iconscout.com',
         port: '',
         pathname: '/**',
