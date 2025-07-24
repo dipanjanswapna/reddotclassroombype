@@ -416,22 +416,6 @@ export type CourseCycle = {
   communityUrl?: string;
 };
 
-export type StudyPlanEvent = {
-    id?: string;
-    date: string; // YYYY-MM-DD format
-    time?: string; // HH:mm format, optional
-    endTime?: string; // HH:mm format, optional
-    title: string;
-    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
-    courseTitle?: string;
-    description?: string;
-    priority?: 'low' | 'medium' | 'high' | 'urgent';
-    listId?: string;
-    estimatedPomo?: number;
-    actualPomo?: number;
-};
-
-
 export type Course = {
   id?: string;
   title: string;
