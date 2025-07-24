@@ -63,7 +63,12 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
     const handleSaveList = async () => {
         if (!newList.name.trim() || !userInfo) return;
 
-        const newListData: Partial<List> = { ...newList, userId: userInfo.uid, createdAt: new Date() as any };
+        const newListData: Partial<List> = { 
+            ...newList, 
+            folderId: newList.folderId === 'none' ? undefined : newList.folderId,
+            userId: userInfo.uid, 
+            createdAt: new Date() as any 
+        };
         await saveList(newListData);
         
         onListsChange(prev => [...prev, { ...newListData, id: `temp-${Date.now()}` }]);
@@ -175,7 +180,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
          <Select value={newList.folderId} onValueChange={(v) => setNewList(p => ({...p, folderId: v}))}>
             <SelectTrigger><SelectValue placeholder="Select a folder (optional)..." /></SelectTrigger>
             <SelectContent>
-                <SelectItem value="">No Folder</SelectItem>
+                <SelectItem value="none">No Folder</SelectItem>
                 {folders.map(f => <SelectItem key={f.id} value={f.id!}>{f.name}</SelectItem>)}
             </SelectContent>
          </Select>
