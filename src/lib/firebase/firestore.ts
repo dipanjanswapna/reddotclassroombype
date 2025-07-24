@@ -18,6 +18,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask, Goal } from '../types';
+import { safeToDate } from '../utils';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -1063,9 +1064,15 @@ export const getListsForUser = async (userId: string): Promise<List[]> => {
 export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
     const db = getDbInstance();
     if (!db) return [];
-    const q = query(collection(db, "tasks"), where("userId", "==", userId), orderBy("lastUpdatedAt", "desc"));
+    const q = query(collection(db, "tasks"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+    const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+    // Sort client-side to avoid needing a composite index
+    return tasks.sort((a, b) => {
+        const dateA = a.lastUpdatedAt ? safeToDate(a.lastUpdatedAt).getTime() : 0;
+        const dateB = b.lastUpdatedAt ? safeToDate(b.lastUpdatedAt).getTime() : 0;
+        return dateB - dateA;
+    });
 }
 export const getGoalsForUser = async (userId: string): Promise<Goal[]> => {
     const db = getDbInstance();
@@ -1234,3 +1241,10 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
+
+export const markStudentAsCounseled = async (studentId: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    const userRef = doc(db, 'users', studentId);
+    return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
+};
