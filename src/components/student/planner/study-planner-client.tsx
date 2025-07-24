@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -35,6 +36,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { saveUserAction } from '@/app/actions/user.actions';
+import Link from 'next/link';
 
 export function StudyPlannerClient() {
     const { toast } = useToast();
@@ -189,6 +191,7 @@ export function StudyPlannerClient() {
                             <TabsTrigger value="calendar">Calendar</TabsTrigger>
                             <TabsTrigger value="analytics">Analytics</TabsTrigger>
                             <TabsTrigger value="goals">Goals</TabsTrigger>
+                            <TabsTrigger value="settings">Settings</TabsTrigger>
                         </TabsList>
                         <Button onClick={handleAddTask}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
                     </div>
@@ -236,6 +239,9 @@ export function StudyPlannerClient() {
                             </TabsContent>
                             <TabsContent value="goals">
                             <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
+                            </TabsContent>
+                            <TabsContent value="settings">
+                                <Link href="/student/planner/settings" className="text-primary underline">Go to full settings page</Link>
                             </TabsContent>
                         </div>
                     </div>

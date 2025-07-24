@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -71,7 +72,13 @@ export default function PlannerSettingsPage() {
     };
     
   return (
-    <div className="space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">Planner Settings</h1>
+            <p className="mt-1 text-lg text-muted-foreground">
+                Customize the appearance and behavior of your study planner.
+            </p>
+        </div>
       <Card>
         <CardHeader>
           <CardTitle>Planner Settings</CardTitle>
