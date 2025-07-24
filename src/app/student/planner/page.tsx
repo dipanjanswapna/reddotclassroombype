@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { StudyPlannerClient } from '@/components/student/planner/study-planner-client';
@@ -8,11 +9,16 @@ import { Suspense, useEffect, useState } from 'react';
 import { getCourses, getEnrollmentsByUserId, getFoldersForUser, getListsForUser, getTasksForUser, getGoalsForUser } from '@/lib/firebase/firestore';
 import { Course, Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
+import { useSearchParams } from 'next/navigation';
+import PlannerSettingsPage from './settings/page';
+import { GoalManager } from '@/components/student/planner/goal-manager';
 
 
 function PlannerPageContent() {
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     const { toast } = useToast();
+    const searchParams = useSearchParams();
+    const initialView = searchParams.get('view') || 'planner';
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [lists, setLists] = useState<List[]>([]);
@@ -20,6 +26,8 @@ function PlannerPageContent() {
     const [goals, setGoals] = useState<Goal[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [loadingData, setLoadingData] = useState(true);
+    const [activeView, setActiveView] = useState(initialView);
+
 
      useEffect(() => {
         if (authLoading) return;
@@ -75,13 +83,36 @@ function PlannerPageContent() {
         );
     }
     
-    return <StudyPlannerClient 
-        initialTasks={tasks} 
-        initialFolders={folders}
-        initialLists={lists}
-        initialGoals={goals}
-        courses={courses}
-    />;
+    return (
+        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
+                    <p className="mt-1 text-lg text-muted-foreground">
+                        Organize your schedule, track your tasks, and stay productive.
+                    </p>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Button variant={activeView === 'planner' ? 'default' : 'outline'} onClick={() => setActiveView('planner')}>Planner</Button>
+                    <Button variant={activeView === 'analytics' ? 'default' : 'outline'} onClick={() => setActiveView('analytics')}>Analytics</Button>
+                    <Button variant={activeView === 'goals' ? 'default' : 'outline'} onClick={() => setActiveView('goals')}>Goals</Button>
+                    <Button variant={activeView === 'settings' ? 'default' : 'outline'} onClick={() => setActiveView('settings')}>Settings</Button>
+                </div>
+            </div>
+
+            {activeView === 'planner' && (
+                <StudyPlannerClient 
+                    initialTasks={tasks} 
+                    initialFolders={folders}
+                    initialLists={lists}
+                    initialGoals={goals}
+                    courses={courses}
+                />
+            )}
+             {activeView === 'goals' && <GoalManager initialGoals={goals} onGoalsChange={setGoals} />}
+             {activeView === 'settings' && <PlannerSettingsPage />}
+        </div>
+    );
 }
 
 
@@ -92,3 +123,4 @@ export default function StudentPlannerPage() {
         </Suspense>
     );
 }
+

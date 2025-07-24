@@ -1,26 +1,28 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { PlannerTask } from '@/lib/types';
+import { useAuth } from '@/context/auth-context';
 
 type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
 type Durations = { work: number; shortBreak: number; longBreak: number; };
 
 interface PomodoroTimerProps {
-  tasksForToday: StudyPlanEvent[];
+  tasks: PlannerTask[];
   onSessionComplete: (taskId: string) => void;
   durations: Durations;
-  setDurations: React.Dispatch<React.SetStateAction<Durations>>;
+  onDurationsChange: (durations: Durations) => void;
 }
 
-export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, setDurations }: PomodoroTimerProps) {
+export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurationsChange }: PomodoroTimerProps) {
+  const { userInfo } = useAuth();
   const [mode, setMode] = useState<PomodoroMode>('work');
   const [minutes, setMinutes] = useState(durations.work);
   const [seconds, setSeconds] = useState(0);
@@ -30,7 +32,6 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   
-  // Update timer when durations prop changes (e.g., from parent)
   useEffect(() => {
     if (!isActive) {
       setMinutes(durations[mode]);
@@ -48,14 +49,12 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
           setMinutes(m => m - 1);
           setSeconds(59);
         } else {
-          // Timer finished
           if (audioRef.current) {
             audioRef.current.play();
           }
           if (mode === 'work' && selectedTask !== 'general') {
             onSessionComplete(selectedTask);
           }
-          // Automatically switch to the next mode
           const nextMode = mode === 'work' ? 'shortBreak' : 'work';
           switchMode(nextMode);
         }
@@ -78,7 +77,7 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
   const handleDurationChange = (mode: PomodoroMode, value: string) => {
     const newDuration = parseInt(value, 10);
     if (!isNaN(newDuration) && newDuration > 0) {
-        setDurations(prev => ({ ...prev, [mode]: newDuration }));
+        onDurationsChange({ ...durations, [mode]: newDuration });
     }
   }
 
@@ -89,6 +88,10 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
     setMinutes(durations[mode]);
     setSeconds(0);
   };
+
+  const tasksForToday = useMemo(() => {
+      return tasks.filter(t => t.status === 'todo' || t.status === 'in_progress');
+  }, [tasks]);
 
 
   return (
@@ -147,3 +150,4 @@ export function PomodoroTimer({ tasksForToday, onSessionComplete, durations, set
     </Card>
   );
 }
+
