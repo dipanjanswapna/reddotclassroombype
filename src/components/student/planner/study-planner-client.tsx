@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { format, addDays } from 'date-fns';
-import { DndContext, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Column } from './column';
 import { LoadingSpinner } from '@/components/loading-spinner';
