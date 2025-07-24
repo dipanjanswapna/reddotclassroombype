@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -81,7 +82,6 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
-    const [isFolderListOpen, setIsFolderListOpen] = useState(true);
 
     const [durations, setDurations] = useState(userInfo?.pomodoroSettings || { work: 25, shortBreak: 5, longBreak: 15 });
     const [loading, setLoading] = useState(true);
@@ -152,7 +152,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     }
     
     const handleDeleteTask = async (eventId: string) => {
-        await deleteTask(eventId);
+        await deleteTask(eventId, userInfo!.uid);
         setEvents(events.filter(e => e.id !== eventId));
     };
     
@@ -296,6 +296,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
             data[dateStr] = 0;
         }
         events.forEach(event => {
+            if (!event.date) return;
             const eventDate = new Date(event.date);
             const diff = today.getTime() - eventDate.getTime();
             if (diff >= 0 && diff < 7 * 24 * 60 * 60 * 1000) {
@@ -390,7 +391,10 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                         onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(null);}}
                                     >
                                         <span className="flex items-center gap-2"><FolderIcon className="h-4 w-4"/> {folder.name}</span>
-                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteFolder(folder.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                        <div className="flex items-center">
+                                            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleAddList(folder.id!);}}><PlusCircle className="h-3 w-3 text-muted-foreground"/></Button>
+                                            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteFolder(folder.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                        </div>
                                     </div>
                                     <div className="pl-6 space-y-1 mt-1">
                                         {lists.filter(l => l.folderId === folder.id).map(list => (
@@ -399,7 +403,6 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                                   <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteList(list.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
                                         ))}
-                                        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => handleAddList(folder.id!)}><PlusCircle className="mr-2 h-3 w-3"/>Add List</Button>
                                     </div>
                                 </div>
                             ))}
