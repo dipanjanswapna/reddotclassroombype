@@ -1,4 +1,3 @@
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -17,7 +16,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -26,6 +25,30 @@ async function getCollection<T>(collectionName: string): Promise<T[]> {
   const querySnapshot = await getDocs(collection(db, collectionName));
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
 }
+
+// Generic function to add a document to a collection
+export async function addDocument<T extends object>(collectionName: string, data: T) {
+  const db = getDbInstance();
+  if (!db) throw new Error("Firestore is not initialized.");
+  return await addDoc(collection(db, collectionName), data);
+}
+
+// Generic function to update a document
+export async function updateDocument<T extends object>(collectionName: string, id: string, data: Partial<T>) {
+  const db = getDbInstance();
+  if (!db) throw new Error("Firestore is not initialized.");
+  const docRef = doc(db, collectionName, id);
+  return await updateDoc(docRef, data);
+}
+
+// Generic function to delete a document
+export async function deleteDocument(collectionName: string, id: string) {
+  const db = getDbInstance();
+  if (!db) throw new Error("Firestore is not initialized.");
+  const docRef = doc(db, collectionName, id);
+  return await deleteDoc(docRef);
+}
+
 
 // Generic function to fetch a document by ID
 export async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
@@ -173,8 +196,9 @@ export const getCourses = async (filters: {
   provider?: string;
   instructorSlug?: string;
   status?: Course['status'];
+  ids?: string[];
 } = {}): Promise<Course[]> => {
-  const { category, subCategory, provider, status, instructorSlug } = filters;
+  const { category, subCategory, provider, status, instructorSlug, ids } = filters;
   const db = getDbInstance();
   if (!db) return [];
   const coursesRef = collection(db, 'courses');
@@ -196,6 +220,9 @@ export const getCourses = async (filters: {
   }
   if (instructorSlug) {
       constraints.push(where("instructors", "array-contains", { slug: instructorSlug }))
+  }
+  if (ids && ids.length > 0) {
+      constraints.push(where(documentId(), 'in', ids));
   }
 
   const q = constraints.length > 0 ? query(coursesRef, ...constraints) : query(coursesRef);
@@ -1021,6 +1048,44 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     ]
   },
 };
+
+// Planner Specific Firestore Functions
+export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "folders"), where("userId", "==", userId), orderBy("createdAt", "asc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+}
+export const getListsForUser = async (userId: string): Promise<List[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "lists"), where("userId", "==", userId), orderBy("createdAt", "asc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+}
+export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "tasks"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+}
+export const getListsInFolder = async (folderId: string): Promise<List[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "lists"), where("folderId", "==", folderId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+}
+export const getTasksInList = async (listId: string): Promise<PlannerTask[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "tasks"), where("listId", "==", listId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+}
+
 
 // Doubt Solve System
 export const createDoubtSession = async (courseId: string, courseName: string, doubtSolverIds: string[]): Promise<string> => {

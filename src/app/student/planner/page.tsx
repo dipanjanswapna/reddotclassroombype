@@ -1,4 +1,3 @@
-
 'use client';
 
 import { StudyPlannerClient } from '@/components/student/planner/study-planner-client';
@@ -82,7 +81,7 @@ function PlannerPageContent() {
 
 export default function StudentPlannerPage() {
     return (
-        <Suspense fallback={<LoadingSpinner />}>
+        <Suspense fallback={<div className="flex items-center justify-center h-[calc(100vh-8rem)]"><LoadingSpinner /></div>}>
             <PlannerPageContent />
         </Suspense>
     );
