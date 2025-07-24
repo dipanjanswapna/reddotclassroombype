@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -25,14 +24,15 @@ import { PomodoroTimer } from './pomodoro-timer';
 import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '@/components/ui/command';
-import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList, getFoldersForUser, getListsForUser, getTasksForUser, getGoalsForUser } from '@/app/actions/planner.actions';
+import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
+import { getFoldersForUser, getListsForUser, getTasksForUser } from '@/lib/firebase/firestore';
 import { DatePicker } from '@/components/ui/date-picker';
 import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { format, addDays } from 'date-fns';
-import { DndContext, closestCenter, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Column } from './column';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -42,6 +42,10 @@ import { CalendarView } from './calendar-view';
 
 interface StudyPlannerClientProps {
     courses: Course[];
+    initialTasks: PlannerTask[];
+    initialFolders: Folder[];
+    initialLists: List[];
+    initialGoals: Goal[];
 }
 
 const statusColumns = [
@@ -51,13 +55,13 @@ const statusColumns = [
 ] as const;
 
 
-export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
+export function StudyPlannerClient({ courses, initialTasks, initialFolders, initialLists, initialGoals }: StudyPlannerClientProps) {
     const { toast } = useToast();
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     
-    const [tasks, setTasks] = useState<PlannerTask[]>([]);
-    const [folders, setFolders] = useState<Folder[]>([]);
-    const [lists, setLists] = useState<List[]>([]);
+    const [tasks, setTasks] = useState<PlannerTask[]>(initialTasks);
+    const [folders, setFolders] = useState<Folder[]>(initialFolders);
+    const [lists, setLists] = useState<List[]>(initialLists);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
