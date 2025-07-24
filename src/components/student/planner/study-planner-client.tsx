@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -230,7 +229,7 @@ export function StudyPlannerClient() {
                                 </div>
                             </TabsContent>
                             <TabsContent value="calendar">
-                            <CalendarView tasks={tasks} onEditEvent={handleEditTask} />
+                                <CalendarView tasks={tasks} onEditEvent={handleEditTask} />
                             </TabsContent>
                             <TabsContent value="analytics">
                             <AnalyticsView tasks={tasks} />
@@ -256,4 +255,3 @@ export function StudyPlannerClient() {
         </DndContext>
     );
 }
-
