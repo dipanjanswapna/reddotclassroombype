@@ -17,7 +17,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask, Goal } from '../types';
 
 // Generic function to fetch a collection
 async function getCollection<T>(collectionName: string): Promise<T[]> {
@@ -1057,6 +1057,7 @@ export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
     const q = query(collection(db, "folders"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const folders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+    // Sort client-side if needed, Firestore requires composite index for this query + orderBy
     return folders.sort((a, b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getListsForUser = async (userId: string): Promise<List[]> => {
@@ -1065,6 +1066,7 @@ export const getListsForUser = async (userId: string): Promise<List[]> => {
     const q = query(collection(db, "lists"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const lists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+    // Sort client-side
     return lists.sort((a,b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
@@ -1073,6 +1075,13 @@ export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> =>
     const q = query(collection(db, "tasks"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+}
+export const getGoalsForUser = async (userId: string): Promise<Goal[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "goals"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Goal));
 }
 export const getListsInFolder = async (folderId: string): Promise<List[]> => {
     const db = getDbInstance();

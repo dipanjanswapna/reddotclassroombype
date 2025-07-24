@@ -8,12 +8,10 @@ import {
   getListsInFolder,
   getTasksInList,
 } from '@/lib/firebase/firestore';
-import { Folder, List, PlannerTask } from '@/lib/types';
+import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { doc, writeBatch } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
-import { getUser } from '@/lib/firebase/firestore';
-
 
 // Folders
 export async function saveFolder(folder: Partial<Folder>) {
@@ -81,5 +79,20 @@ export async function saveTask(task: PlannerTask) {
 
 export async function deleteTask(taskId: string) {
   await deleteDocument('tasks', taskId);
+  revalidatePath('/student/planner');
+}
+
+// Goals
+export async function saveGoal(goal: Partial<Goal>) {
+  if (goal.id) {
+    await updateDocument('goals', goal.id, goal);
+  } else {
+    await addDocument('goals', goal);
+  }
+  revalidatePath('/student/planner');
+}
+
+export async function deleteGoal(goalId: string) {
+  await deleteDocument('goals', goalId);
   revalidatePath('/student/planner');
 }

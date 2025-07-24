@@ -531,16 +531,16 @@ export type Folder = {
 };
 
 export type Goal = {
-  id: string;
-  userId: string;
-  title: string;
-  description?: string;
-  type: 'long_term' | 'short_term';
-  targetDate?: Timestamp;
-  progress: number; // 0-100
-  status: 'active' | 'achieved' | 'abandoned';
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+    id?: string;
+    userId: string;
+    title: string;
+    description?: string;
+    type: 'long_term' | 'short_term';
+    targetDate?: Timestamp;
+    progress: number; // 0-100
+    status: 'active' | 'achieved' | 'abandoned';
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 };
 
 // ===================================
@@ -635,6 +635,7 @@ export type User = {
     facebook?: string;
   };
   studyPlan?: PlannerTask[];
+  pomodoroSettings?: { work: number; shortBreak: number; longBreak: number; };
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;
@@ -644,9 +645,6 @@ export type User = {
   assignedCourses?: string[]; // Array of courseIds
   currentSessionId?: string;
   lastLoginAt?: Timestamp;
-  // Deprecated planner fields
-  plannerFolders?: Folder[];
-  plannerLists?: List[];
   // Google Calendar Sync
   googleCalendarTokens?: {
     accessToken: string;

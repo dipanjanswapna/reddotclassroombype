@@ -17,10 +17,10 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { Course, Folder, List, PlannerTask, CheckItem } from '@/lib/types';
+import { Course, Folder, List, PlannerTask, CheckItem, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2, X } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2, X, Target } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,7 @@ import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Check } from 'lucide-react';
-import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
+import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList, saveGoal } from '@/app/actions/planner.actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -49,6 +49,7 @@ import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
+import { GoalManager } from './goal-manager';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -56,11 +57,12 @@ interface StudyPlannerClientProps {
     initialTasks: PlannerTask[];
     initialFolders: Folder[];
     initialLists: List[];
+    initialGoals: Goal[];
     courses: Course[];
 }
 
 
-export function StudyPlannerClient({ initialTasks, initialFolders, initialLists, courses }: StudyPlannerClientProps) {
+export function StudyPlannerClient({ initialTasks, initialFolders, initialLists, initialGoals, courses }: StudyPlannerClientProps) {
     const { toast } = useToast();
     const router = useRouter();
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
@@ -68,6 +70,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const [events, setEvents] = useState<PlannerTask[]>(initialTasks);
     const [folders, setFolders] = useState<Folder[]>(initialFolders);
     const [lists, setLists] = useState<List[]>(initialLists);
+    const [goals, setGoals] = useState<Goal[]>(initialGoals);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
@@ -369,6 +372,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                  <div className="flex items-center gap-2">
                     <Button variant={activeView === 'planner' ? 'default' : 'outline'} onClick={() => setActiveView('planner')}>Planner</Button>
                     <Button variant={activeView === 'analytics' ? 'default' : 'outline'} onClick={() => setActiveView('analytics')}>Analytics</Button>
+                    <Button variant={activeView === 'goals' ? 'default' : 'outline'} onClick={() => setActiveView('goals')}>Goals</Button>
                     <Button variant={activeView === 'settings' ? 'default' : 'outline'} onClick={() => setActiveView('settings')}><Settings className="h-4 w-4"/></Button>
                 </div>
             </div>
@@ -482,6 +486,9 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                 </div>
             )}
 
+            {activeView === 'goals' && (
+                <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
+            )}
             
             {activeView === 'settings' && (
                  <Card>
@@ -616,5 +623,3 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         </div>
     );
 }
-
-    
