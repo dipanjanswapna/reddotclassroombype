@@ -18,11 +18,10 @@ import {
   subDays,
 } from 'date-fns';
 import { StudyPlanEvent, User } from '@/lib/types';
-import { saveUserAction } from '@/app/actions/user.actions';
-import { getUsers } from '@/lib/firebase/firestore';
+import { saveUserAction, getUsers } from '@/lib/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, CalendarDays, ListChecks, Check, Users as UsersIcon, X, Repeat, Link as LinkIcon, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, CalendarDays, ListChecks } from 'lucide-react';
 import { TaskItem } from '@/components/student/planner/task-item';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -31,11 +30,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { WeekView } from '@/components/student/planner/week-view';
 import { DayView } from '@/components/student/planner/day-view';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -48,7 +42,6 @@ export function StudyPlannerClient() {
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<StudyPlanEvent> | null>(null);
-    const [allUsers, setAllUsers] = useState<User[]>([]);
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -61,29 +54,13 @@ export function StudyPlannerClient() {
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
 
-    // This effect handles the initial data loading.
     useEffect(() => {
         if (!userInfo) {
             if (!authLoading) setLoading(false);
             return;
         };
-
-        const fetchInitialData = async () => {
-            try {
-                const fetchedUsers = await getUsers();
-                setAllUsers(fetchedUsers);
-                
-                // Set events from user's profile
-                setEvents(userInfo.studyPlan || []);
-            } catch (error) {
-                console.error("Failed to load initial planner data:", error);
-                toast({ title: 'Error', description: 'Could not load planner data.' });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchInitialData();
+        setEvents(userInfo.studyPlan || []);
+        setLoading(false);
     }, [userInfo, authLoading, toast]);
 
 
@@ -91,7 +68,6 @@ export function StudyPlannerClient() {
         if (!userInfo) return;
         const eventsToSave = updatedEvents || events;
         await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
-        // No toast on success to avoid being too noisy
     }, [events, userInfo]);
 
     const eventsForSelectedDate = useMemo(() => {
@@ -185,14 +161,6 @@ export function StudyPlannerClient() {
         }
     }
 
-    if (loading) {
-        return <div className="flex h-[calc(100vh-8rem)] items-center justify-center"><LoadingSpinner /></div>;
-    }
-
-    if (!userInfo) {
-        return <div>Please log in to use the planner.</div>;
-    }
-    
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
              <div className="flex justify-between items-center">
@@ -204,7 +172,7 @@ export function StudyPlannerClient() {
                 </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div className="xl:col-span-2 space-y-4">
+                <div className="xl:col-span-3 space-y-4">
                     <Card>
                         <CardHeader>
                             <div className="flex justify-between items-center">
@@ -234,10 +202,6 @@ export function StudyPlannerClient() {
                         {renderCalendarView()}
                         </CardContent>
                     </Card>
-                </div>
-
-                 <div className="xl:col-span-1 space-y-8">
-                    {/* Placeholder for Pomodoro and other widgets */}
                 </div>
             </div>
 

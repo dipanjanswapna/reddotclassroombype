@@ -413,6 +413,7 @@ export type StudyPlanEvent = {
     id?: string;
     date: string; // YYYY-MM-DD format
     time?: string; // HH:mm format, optional
+    endTime?: string; // HH:mm format, optional
     title: string;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
     courseTitle?: string;
@@ -469,6 +470,71 @@ export type Course = {
   doubtSolverIds?: string[]; // Array of user IDs for doubt solvers
 };
 
+// ===================================
+// Study Planner Specific Types
+// ===================================
+
+export type CheckItem = {
+    id: string;
+    taskId: string;
+    text: string;
+    isCompleted: boolean;
+    reminderTime?: Timestamp;
+};
+
+export type Task = {
+    id: string;
+    listId?: string;
+    userId: string;
+    title: string;
+    description?: string;
+    startDate?: Timestamp;
+    endDate?: Timestamp;
+    status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    estimatedPomo?: number;
+    actualPomo?: number;
+    timeSpentSeconds?: number;
+    googleCalendarEventId?: string;
+    checkItems?: CheckItem[]; // Sub-tasks
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+    completedAt?: Timestamp;
+};
+
+export type List = {
+    id: string;
+    folderId?: string;
+    userId: string;
+    name: string;
+    tasks?: Task[]; // Can be sub-collection
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+};
+
+export type Folder = {
+    id: string;
+    userId: string;
+    name: string;
+    lists?: List[]; // Can be sub-collection
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+};
+
+export type Goal = {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  type: 'long_term' | 'short_term';
+  targetDate?: Timestamp;
+  progress: number; // 0-100
+  status: 'active' | 'achieved' | 'abandoned';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
+// ===================================
 
 export type BlogPost = {
   id?: string;
@@ -818,4 +884,40 @@ export type StoreHomepageSection = {
 export type ReferralSettings = {
     pointsPerReferral: number;
     referredDiscountPercentage: number;
+};
+export type DoubtAttachment = {
+  type: 'image' | 'file';
+  url: string;
+  fileName: string;
+};
+
+export type Doubt = {
+  id?: string;
+  sessionId: string;
+  courseId: string;
+  studentId: string;
+  questionText?: string;
+  attachments?: DoubtAttachment[];
+  status: 'Open' | 'Answered' | 'Reopened' | 'Satisfied' | 'Closed';
+  askedAt: Timestamp;
+  lastUpdatedAt: Timestamp;
+  assignedDoubtSolverId?: string;
+  rating?: number; // 1-5
+};
+
+export type DoubtAnswer = {
+  id?: string;
+  doubtId: string;
+  doubtSolverId: string; // This could be a solver OR the student for follow-ups
+  answerText: string;
+  attachments?: DoubtAttachment[];
+  answeredAt: Timestamp;
+};
+
+export type DoubtSession = {
+    id?: string;
+    courseId: string;
+    sessionName: string;
+    assignedDoubtSolverIds: string[];
+    createdAt: Timestamp;
 };
