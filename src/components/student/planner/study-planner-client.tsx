@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -575,8 +574,8 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                 {editingEvent?.checkItems?.map((item, index) => (
                                     <div key={item.id} className="flex items-center gap-2">
                                         <Checkbox 
-                                            id={`check-${item.id}`}
-                                            checked={item.isCompleted}
+                                            id={`check-${item.id}`} 
+                                            checked={item.isCompleted} 
                                             onCheckedChange={(checked) => {
                                                 const newCheckItems = [...(editingEvent?.checkItems || [])];
                                                 newCheckItems[index].isCompleted = !!checked;
