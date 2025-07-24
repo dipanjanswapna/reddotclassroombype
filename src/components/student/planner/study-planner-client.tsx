@@ -296,25 +296,14 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         setSelectedListId(null);
         setSelectedCourseId(null);
     }
+    
+    const onDurationsChange = (newDurations: typeof durations) => {
+        if (!userInfo?.id) return;
+        setDurations(newDurations);
+        saveUserAction({ id: userInfo.id, pomodoroSettings: newDurations });
+    };
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
-                    <p className="mt-1 text-lg text-muted-foreground">
-                        Organize your schedule, track your tasks, and stay productive.
-                    </p>
-                </div>
-                 <div className="flex items-center gap-2">
-                    <Button variant={activeView === 'planner' ? 'default' : 'outline'} onClick={() => setActiveView('planner')}>Planner</Button>
-                    <Button variant={activeView === 'analytics' ? 'default' : 'outline'} onClick={() => setActiveView('analytics')}>Analytics</Button>
-                    <Button variant={activeView === 'goals' ? 'default' : 'outline'} onClick={() => setActiveView('goals')}>Goals</Button>
-                    <Button variant={activeView === 'settings' ? 'default' : 'outline'} onClick={() => setActiveView('settings')}><Settings className="h-4 w-4"/></Button>
-                </div>
-            </div>
-            
-            {activeView === 'planner' && (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                  <aside className="lg:col-span-1 space-y-4">
                      <Card>
@@ -379,7 +368,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                             </Button>
                         </CardContent>
                       </Card>
-                     <PomodoroTimer tasksForToday={[]} onSessionComplete={handlePomoSessionComplete} durations={durations} setDurations={setDurations}/>
+                     <PomodoroTimer tasks={events} onSessionComplete={handlePomoSessionComplete} durations={durations} onDurationsChange={onDurationsChange}/>
                  </aside>
                 <main className="lg:col-span-3">
                    <Card>
@@ -407,249 +396,6 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                     </Card>
                 </main>
             </div>
-            )}
-            
-             {activeView === 'analytics' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card>
-                        <CardHeader><CardTitle>Tasks Completed</CardTitle></CardHeader>
-                        <CardContent><p className="text-3xl font-bold">{completedTasksCount}</p></CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader><CardTitle>Total Pomodoro Sessions</CardTitle></CardHeader>
-                        <CardContent><p className="text-3xl font-bold">{totalPomoSessions}</p></CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader><CardTitle>Total Study Time</CardTitle></CardHeader>
-                        <CardContent><p className="text-3xl font-bold">{totalTimeSpentMinutes.toFixed(0)} <span className="text-lg">minutes</span></p></CardContent>
-                    </Card>
-                    <Card className="md:col-span-3">
-                        <CardHeader>
-                            <CardTitle>Study Progress - Last 7 Days (Minutes)</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ProgressChart data={dailyProgress} />
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-
-            {activeView === 'goals' && (
-                <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
-            )}
-            
-            {activeView === 'settings' && (
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Planner Settings</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                         <div className="p-4 border rounded-md space-y-4">
-                             <div className="flex items-center justify-between">
-                                 <div>
-                                     <Label className="font-semibold">Google Calendar Sync</Label>
-                                     <p className="text-xs text-muted-foreground">Sync your study plan with your Google Calendar.</p>
-                                 </div>
-                                 <Button onClick={handleGoogleCalendarSync}><CalendarIcon className="mr-2 h-4 w-4"/>Sync Now</Button>
-                             </div>
-                         </div>
-                    </CardContent>
-                </Card>
-            )}
-
-             <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
-                         <div className="space-y-2">
-                            <Label>List</Label>
-                            <Select value={editingEvent?.listId} onValueChange={(v) => setEditingEvent(p => ({ ...p, listId: v }))}>
-                                <SelectTrigger><SelectValue placeholder="Select a list..."/></SelectTrigger>
-                                <SelectContent>
-                                    {folders.map(folder => (
-                                        <div key={folder.id}>
-                                            <Label className="px-2 text-xs text-muted-foreground">{folder.name}</Label>
-                                            {lists.filter(l => l.folderId === folder.id).map(list => (
-                                                <SelectItem key={list.id} value={list.id!}>{list.name}</SelectItem>
-                                            ))}
-                                        </div>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="space-y-2">
-                            <Label>Course (Optional)</Label>
-                            <Select value={editingEvent?.courseTitle} onValueChange={(v) => setEditingEvent(p => ({ ...p, courseTitle: v }))}>
-                                <SelectTrigger><SelectValue placeholder="Select a course..."/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="">None</SelectItem>
-                                    {courses.map(course => (
-                                        <SelectItem key={course.id} value={course.title}>{course.title}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="space-y-2">
-                            <Label>Type</Label>
-                            <Select value={editingEvent?.type} onValueChange={(v: PlannerTask['type']) => setEditingEvent(p => ({ ...p, type: v }))}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="study-session">Study Session</SelectItem>
-                                    <SelectItem value="assignment-deadline">Assignment</SelectItem>
-                                    <SelectItem value="quiz-reminder">Quiz</SelectItem>
-                                    <SelectItem value="exam-prep">Exam Prep</SelectItem>
-                                    <SelectItem value="habit">Habit</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
-                            <Input id="title" value={editingEvent?.title || ''} onChange={e => setEditingEvent(p => ({ ...p, title: e.target.value }))} />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="description">Description (Optional)</Label>
-                            <Textarea id="description" value={editingEvent?.description || ''} onChange={e => setEditingEvent(p => ({ ...p, description: e.target.value }))} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="startTime">Time</Label>
-                                <Input id="startTime" type="time" value={editingEvent?.time || ''} onChange={e => setEditingEvent(p => ({ ...p, time: e.target.value }))} />
-                            </div>
-                             <div className="space-y-2">
-                                <Label>Priority</Label>
-                                <Select value={editingEvent?.priority} onValueChange={(v: PlannerTask['priority']) => setEditingEvent(p => ({ ...p, priority: v }))}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="low">Low</SelectItem>
-                                        <SelectItem value="medium">Medium</SelectItem>
-                                        <SelectItem value="high">High</SelectItem>
-                                        <SelectItem value="urgent">Urgent</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="estimatedPomo">Estimated Pomodoro Sessions</Label>
-                            <Input id="estimatedPomo" type="number" value={editingEvent?.estimatedPomo || ''} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomo: Number(e.target.value) }))} />
-                        </div>
-                        <div className="space-y-2 pt-4 border-t">
-                            <Label>Checklist / Sub-tasks</Label>
-                            <div className="space-y-2">
-                                {editingEvent?.checkItems?.map((item, index) => (
-                                    <div key={item.id} className="flex items-center gap-2">
-                                        <Checkbox 
-                                            id={`check-${item.id}`} 
-                                            checked={item.isCompleted} 
-                                            onCheckedChange={(checked) => {
-                                                const newCheckItems = [...(editingEvent?.checkItems || [])];
-                                                newCheckItems[index].isCompleted = !!checked;
-                                                setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
-                                            }}
-                                        />
-                                        <Input 
-                                            value={item.text}
-                                            onChange={(e) => {
-                                                const newCheckItems = [...(editingEvent?.checkItems || [])];
-                                                newCheckItems[index].text = e.target.value;
-                                                setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
-                                            }}
-                                            className="h-8"
-                                        />
-                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                                            const newCheckItems = (editingEvent?.checkItems || []).filter(ci => ci.id !== item.id);
-                                            setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
-                                        }}>
-                                            <X className="h-4 w-4 text-destructive"/>
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                            <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => {
-                                const newCheckItem: CheckItem = { id: `new_${Date.now()}`, text: '', isCompleted: false };
-                                setEditingEvent(p => ({ ...p, checkItems: [...(p?.checkItems || []), newCheckItem] }));
-                            }}>
-                                Add Sub-task
-                            </Button>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handleSaveTask}>Save Task</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-             <Dialog open={isAiPlanOpen} onOpenChange={setIsAiPlanOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Generate Study Plan with AI</DialogTitle>
-                        <DialogDescription>Select the courses you want to include in your study plan.</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        <div>
-                            <Label>Courses to Include</Label>
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start">{aiPlanCourses.length > 0 ? aiPlanCourses.map(c => c.title).join(', ') : 'Select courses...'}</Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-full p-0">
-                                    <Command>
-                                        <CommandInput placeholder="Search courses..." />
-                                        <CommandEmpty>No course found.</CommandEmpty>
-                                        <CommandGroup>
-                                        {courses.map(course => (
-                                            <CommandItem key={course.id} onSelect={() => {
-                                                setAiPlanCourses(prev => prev.some(c => c.id === course.id) ? prev.filter(c => c.id !== course.id) : [...prev, course]);
-                                            }}>
-                                            <Check className={cn("mr-2 h-4 w-4", aiPlanCourses.some(c=>c.id === course.id) ? "opacity-100" : "opacity-0")} />
-                                            {course.title}
-                                            </CommandItem>
-                                        ))}
-                                        </CommandGroup>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                         <div className="grid grid-cols-2 gap-4">
-                            <div><Label>Start Date</Label><DatePicker date={aiPlanStartDate} setDate={setAiPlanStartDate}/></div>
-                            <div><Label>End Date</Label><DatePicker date={aiPlanEndDate} setDate={setAiPlanEndDate}/></div>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsAiPlanOpen(false)}>Cancel</Button>
-                        <Button onClick={handleGenerateAiPlan} disabled={isGeneratingPlan}>
-                            {isGeneratingPlan && <Loader2 className="mr-2 animate-spin"/>} Generate Plan
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            
-            <Dialog open={isAiExamPlanOpen} onOpenChange={setIsAiExamPlanOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Generate Exam Prep Plan with AI</DialogTitle>
-                        <DialogDescription>Describe the exam syllabus and set the exam date.</DialogDescription>
-                    </DialogHeader>
-                     <div className="space-y-4">
-                        <div>
-                            <Label>Syllabus / Course Context</Label>
-                            <TextareaAI placeholder="e.g., Physics 1st Paper, Chapters 1-5" value={aiExamCourseContext} onChange={e => setAiExamCourseContext(e.target.value)} />
-                        </div>
-                        <div>
-                            <Label>Exam Date</Label>
-                            <DatePicker date={aiExamDate} setDate={setAiExamDate} />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsAiExamPlanOpen(false)}>Cancel</Button>
-                        <Button onClick={handleGenerateExamPlan} disabled={isGeneratingPlan}>
-                             {isGeneratingPlan && <Loader2 className="mr-2 animate-spin"/>} Generate Plan
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
-    );
+            );
 }
+
