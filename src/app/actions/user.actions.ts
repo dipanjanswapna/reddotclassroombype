@@ -14,12 +14,17 @@ import {
   getEnrollmentsByUserId,
   getPrebookingsByUserId,
   getSupportTicketsByUserId,
+  getUsers,
+  findUserByRegistrationOrRoll,
+  markStudentAsCounseled,
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
+
+export { getUsers, findUserByRegistrationOrRoll };
 
 export async function saveUserAction(userData: Partial<User>) {
     try {
@@ -172,5 +177,19 @@ export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent
         return { success: true, message: 'Study plan saved successfully.' };
     } catch (error: any) {
         return { success: false, message: error.message };
+    }
+}
+
+
+export async function markStudentAsCounseledAction(studentId: string) {
+    try {
+        await markStudentAsCounseled(studentId);
+        revalidatePath('/admin/absent-students');
+        revalidatePath('/moderator/absent-students');
+        revalidatePath('/affiliate/absent-students');
+        revalidatePath('/seller/call-center');
+        return { success: true, message: 'Student marked as counseled for this month.' };
+    } catch (error: any) {
+        return { success: false, message: 'Failed to update counseling status.' };
     }
 }

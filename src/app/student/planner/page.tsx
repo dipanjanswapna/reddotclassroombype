@@ -5,6 +5,6 @@ import { StudyPlannerClient } from '@/components/student/planner/study-planner-c
 
 export default function StudentPlannerPage() {
     // All data fetching and logic is now handled client-side in StudyPlannerClient
-    // to better support offline functionality.
+    // to better support offline functionality and a more interactive experience.
     return <StudyPlannerClient />;
 }

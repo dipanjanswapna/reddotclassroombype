@@ -1,7 +1,7 @@
 
 'use client';
 
-import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { StudyPlanEvent } from '@/lib/types';
 import { TaskItem } from './task-item';
 import { format } from 'date-fns';
 

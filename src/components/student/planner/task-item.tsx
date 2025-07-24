@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/lib/types";
-import { BookOpen, FileText, HelpCircle, Edit, Trash2 } from "lucide-react";
+import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award } from "lucide-react";
 
 type TaskItemProps = {
   event: StudyPlanEvent;
@@ -17,6 +17,7 @@ const eventIcons: { [key in StudyPlanEvent['type']]: React.ReactNode } = {
     'study-session': <BookOpen className="h-5 w-5" />,
     'assignment-deadline': <FileText className="h-5 w-5" />,
     'quiz-reminder': <HelpCircle className="h-5 w-5" />,
+    'exam-prep': <Award className="h-5 w-5" />,
 };
 
 export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
