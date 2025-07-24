@@ -13,6 +13,7 @@ import { useSearchParams } from 'next/navigation';
 import PlannerSettingsPage from './settings/page';
 import { GoalManager } from '@/components/student/planner/goal-manager';
 import { Button } from '@/components/ui/button';
+import { AnalyticsView } from '@/components/student/planner/analytics-view';
 
 
 function PlannerPageContent() {
@@ -112,6 +113,7 @@ function PlannerPageContent() {
             )}
              {activeView === 'goals' && <GoalManager initialGoals={goals} onGoalsChange={setGoals} />}
              {activeView === 'settings' && <PlannerSettingsPage />}
+             {activeView === 'analytics' && <AnalyticsView tasks={tasks} />}
         </div>
     );
 }

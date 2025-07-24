@@ -31,13 +31,14 @@ import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
-import { format, addDays } from 'date-fns';
+import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, subDays } from 'date-fns';
 import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Column } from './column';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { cn } from '@/lib/utils';
 import { CalendarView } from './calendar-view';
+import { ProgressChart } from './progress-chart';
 
 
 interface StudyPlannerClientProps {
@@ -78,6 +79,7 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
     const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
     
     const [viewMode, setViewMode] = useState<'board' | 'calendar'>('board');
+    const [pomodoroDurations, setPomodoroDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
 
     // AI Form States
     const [aiPlanCourses, setAiPlanCourses] = useState<Course[]>([]);
@@ -281,7 +283,6 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
             
             let newTasks;
             if (overIsColumn) {
-                // Task dropped on a column
                 const taskToUpdate = tasks[activeIndex];
                 if (taskToUpdate && taskToUpdate.status !== overId) {
                     newTasks = tasks.map((t, index) => 
@@ -292,12 +293,66 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
                     return tasks;
                 }
             } else {
-                // Task dropped on another task (reordering)
                 newTasks = arrayMove(tasks, activeIndex, overIndex);
             }
             return newTasks;
         });
     };
+    
+    const handlePomodoroSessionComplete = async (taskId: string, durationSeconds: number) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (task && userInfo) {
+            const updatedTask: PlannerTask = {
+                ...task,
+                actualPomo: (task.actualPomo || 0) + 1,
+                timeSpentSeconds: (task.timeSpentSeconds || 0) + durationSeconds,
+            };
+            
+            const studyPoints = userInfo.studyPoints || 0;
+            
+            await Promise.all([
+                saveTask(updatedTask),
+                saveUserAction({ id: userInfo.id, studyPoints: studyPoints + 1 })
+            ]);
+            
+            onTaskUpdate(updatedTask);
+            await refreshUserInfo();
+        }
+    };
+
+    const onTaskUpdate = (updatedTask: PlannerTask) => {
+        setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
+    };
+    
+    // Analytics Data Processing
+    const analyticsData = useMemo(() => {
+        const completedTasks = tasks.filter(t => t.status === 'completed' && t.completedAt);
+        const last7Days = Array(7).fill(0).map((_, i) => subDays(new Date(), i)).reverse();
+
+        const chartData = last7Days.map(date => {
+            const dateStr = format(date, 'yyyy-MM-dd');
+            const tasksOnDay = completedTasks.filter(t => format(new Date(t.completedAt!.toDate()), 'yyyy-MM-dd') === dateStr);
+            return {
+                name: format(date, 'EEE'),
+                tasks: tasksOnDay.length,
+                minutes: Math.round(tasksOnDay.reduce((sum, t) => sum + (t.timeSpentSeconds || 0), 0) / 60),
+            };
+        });
+
+        const totalCompleted = completedTasks.length;
+        const totalMinutes = completedTasks.reduce((sum, t) => sum + (t.timeSpentSeconds || 0), 0) / 60;
+        
+        let mostProductiveDay = 'N/A';
+        if (chartData.length > 0) {
+            const topDay = chartData.reduce((max, day) => day.minutes > max.minutes ? day : max, chartData[0]);
+            if (topDay.minutes > 0) {
+                mostProductiveDay = topDay.name;
+            }
+        }
+        
+        return { chartData, totalCompleted, totalMinutes: Math.round(totalMinutes), mostProductiveDay };
+    }, [tasks]);
+
 
     if (loading) {
         return <div className="flex justify-center items-center h-96"><LoadingSpinner /></div>
@@ -305,15 +360,6 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
 
     return (
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-            <div className="flex justify-end mb-4 gap-2">
-                <Button variant={viewMode === 'board' ? 'default' : 'outline'} onClick={() => setViewMode('board')}>
-                    <LayoutGrid className="mr-2 h-4 w-4"/> Board
-                </Button>
-                <Button variant={viewMode === 'calendar' ? 'default' : 'outline'} onClick={() => setViewMode('calendar')}>
-                    <CalendarIcon className="mr-2 h-4 w-4"/> Calendar
-                </Button>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                  <aside className="lg:col-span-1 space-y-4 sticky top-24">
                      <Card>
@@ -378,6 +424,7 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
                             </Button>
                         </CardContent>
                       </Card>
+                       <PomodoroTimer tasks={filteredTasks} onSessionComplete={handlePomodoroSessionComplete} durations={pomodoroDurations} onDurationsChange={setPomodoroDurations} />
                  </aside>
                 <main className="lg:col-span-3">
                     {viewMode === 'board' ? (
@@ -390,7 +437,7 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
                                             task={task} 
                                             onEdit={() => openTaskDialog(task)}
                                             onDelete={() => handleDeleteTask(task.id!)}
-                                            onUpdate={handleTaskUpdate}
+                                            onUpdate={onTaskUpdate}
                                          />
                                     ))}
                                     <Button variant="outline" className="w-full mt-4 border-dashed" onClick={() => openTaskDialog(null, column.id)}>
@@ -399,9 +446,9 @@ export function StudyPlannerClient({ courses, initialTasks, initialFolders, init
                                 </Column>
                             ))}
                         </div>
-                    ) : (
+                    ) : viewMode === 'calendar' ? (
                         <CalendarView tasks={filteredTasks} onEditEvent={(task) => openTaskDialog(task)} />
-                    )}
+                    ): null}
                 </main>
             </div>
             {typeof document !== "undefined" && (
