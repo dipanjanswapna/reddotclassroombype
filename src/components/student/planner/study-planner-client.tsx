@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -36,10 +35,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { GoalManager } from './goal-manager';
 import { CalendarView } from './calendar-view';
-import { format, addDays } from 'date-fns';
+import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Textarea as TextareaAI } from '@/components/ui/textarea';
-
+import { DayView } from './day-view';
+import { WeekView } from './week-view';
 
 interface StudyPlannerClientProps {
     initialTasks: PlannerTask[];
@@ -64,6 +64,8 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
 
     const [activeView, setActiveView] = useState('planner');
+    const [calendarView, setCalendarView] = useState('month'); // month, week, day
+    const [currentDate, setCurrentDate] = useState(new Date());
     
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
@@ -102,7 +104,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     
     const openTaskDialog = (event: Partial<PlannerTask> | null) => {
         const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
-        const selectedDate = event?.date ? new Date(event.date) : new Date();
+        const selectedDate = event?.date ? new Date(event.date) : currentDate;
         setEditingEvent(event ? {...event} : { date: format(selectedDate, 'yyyy-MM-dd'), type: 'study-session', priority: 'low', listId: defaultListId, userId: userInfo?.uid, status: 'todo' });
         setIsTaskDialogOpen(true);
     };
@@ -266,6 +268,10 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         return Object.entries(data).map(([name, minutes]) => ({ name, minutes: Math.round(minutes) }));
     }, [events]);
 
+    const eventsForDayView = useMemo(() => {
+        const dateStr = format(currentDate, 'yyyy-MM-dd');
+        return filteredEvents.filter(e => e.date === dateStr);
+    }, [currentDate, filteredEvents]);
     
     if (loading) {
         return <div className="flex justify-center items-center h-96"><LoadingSpinner /></div>
@@ -343,10 +349,25 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                 <main className="lg:col-span-3">
                    <Card>
                         <CardHeader>
-                           <Button onClick={() => openTaskDialog(null)}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
+                            <div className="flex justify-between items-center flex-wrap gap-4">
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" onClick={() => setCurrentDate(new Date())}>Today</Button>
+                                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(prev => addDays(prev, calendarView === 'month' ? -30 : calendarView === 'week' ? -7 : -1))}>&lt;</Button>
+                                    <Button variant="ghost" size="icon" onClick={() => setCurrentDate(prev => addDays(prev, calendarView === 'month' ? 30 : calendarView === 'week' ? 7 : 1))}>&gt;</Button>
+                                    <h2 className="text-xl font-semibold">{format(currentDate, 'MMMM yyyy')}</h2>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                     <Button size="sm" variant={calendarView === 'month' ? 'default' : 'outline'} onClick={() => setCalendarView('month')}>Month</Button>
+                                     <Button size="sm" variant={calendarView === 'week' ? 'default' : 'outline'} onClick={() => setCalendarView('week')}>Week</Button>
+                                     <Button size="sm" variant={calendarView === 'day' ? 'default' : 'outline'} onClick={() => setCalendarView('day')}>Day</Button>
+                                     <Button size="sm" variant="accent" onClick={() => openTaskDialog(null)}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
+                                </div>
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <CalendarView events={filteredEvents} onEditEvent={openTaskDialog}/>
+                            {calendarView === 'month' && <CalendarView events={filteredEvents} onEditEvent={openTaskDialog}/>}
+                            {calendarView === 'week' && <WeekView currentDate={currentDate} events={filteredEvents} selectedDate={currentDate} onSelectDate={setCurrentDate} />}
+                            {calendarView === 'day' && <DayView selectedDate={currentDate} events={eventsForDayView} onEdit={openTaskDialog} onDelete={handleDeleteTask} onTaskUpdate={handleTaskUpdate}/>}
                         </CardContent>
                     </Card>
                 </main>
