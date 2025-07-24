@@ -1,4 +1,7 @@
 
+/**
+ * @fileOverview Schemas for the AI-powered Study Planner flow.
+ */
 
 import {z} from 'genkit';
 
@@ -28,13 +31,18 @@ export const StudyPlanEventSchema = z.object({
     time: z.string().optional().describe('The start time of the event in HH:mm format.'),
     endTime: z.string().optional().describe('The end time of the event in HH:mm format.'),
     title: z.string().describe('A concise title for the study event.'),
-    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),
+    type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep', 'habit']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
     description: z.string().optional().describe('A brief description of the study session or reminder.'),
     priority: z.enum(['High', 'Medium', 'Low']).optional().describe('The priority of the task.'),
+    listId: z.string().optional(),
+    estimatedPomo: z.number().optional(),
+    actualPomo: z.number().optional(),
 });
 export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 
 
 export const StudyPlanOutputSchema = z.object({
-    events: z.array(StudyPlanEvent
+    events: z.array(StudyPlanEventSchema).describe('A list of scheduled study and preparation events.'),
+});
+export type StudyPlanOutput = z.infer<typeof StudyPlanOutputSchema>;
