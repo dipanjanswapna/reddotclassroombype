@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlannerTask, CheckItem } from "@/lib/types";
-import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Minus, Plus } from "lucide-react";
+import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Minus, Plus, GripVertical } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { saveTask } from "@/app/actions/planner.actions";
 import { Progress } from "@/components/ui/progress";
@@ -14,10 +14,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 
 type TaskItemProps = {
-  event: PlannerTask;
+  task: PlannerTask;
   onEdit: () => void;
   onDelete: () => void;
   onUpdate: (task: PlannerTask) => void;
@@ -38,9 +40,24 @@ const priorityColors = {
     urgent: 'border-red-500 bg-red-50 text-red-800',
 }
 
-export function TaskItem({ event, onEdit, onDelete, onUpdate }: TaskItemProps) {
+export function TaskItem({ task: event, onEdit, onDelete, onUpdate }: TaskItemProps) {
   const { userInfo, refreshUserInfo } = useAuth();
   const { toast } = useToast();
+  
+   const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({id: event.id!});
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
   const handlePomoChange = async (change: number) => {
     if (!userInfo) return;
@@ -72,52 +89,55 @@ export function TaskItem({ event, onEdit, onDelete, onUpdate }: TaskItemProps) {
     : 0;
 
   return (
-    <Card className="p-4 flex items-start gap-4">
-      <div className="flex-shrink-0 w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
-        {eventIcons[event.type]}
-      </div>
-      <div className="flex-grow">
-        <p className="font-semibold">{event.title}</p>
-        <p className="text-sm text-muted-foreground">{event.description}</p>
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {event.courseTitle && <Badge variant="secondary" className="mt-1">{event.courseTitle}</Badge>}
-            {event.time && <Badge variant="outline">{event.time}</Badge>}
-            {event.priority && <Badge className={priorityColors[event.priority]}>{event.priority}</Badge>}
+    <div ref={setNodeRef} style={style} {...attributes}>
+        <Card className="p-4 flex items-start gap-4">
+        <div {...listeners} className="flex-shrink-0 w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing">
+            {eventIcons[event.type]}
         </div>
-         {event.estimatedPomo && (
-            <div className="mt-2 space-y-1">
-                <div className="flex justify-between items-center">
-                     <p className="text-xs text-muted-foreground">Pomodoro Sessions</p>
-                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(-1)}><Minus className="h-4 w-4"/></Button>
-                        <span className="text-sm font-medium">{event.actualPomo || 0} / {event.estimatedPomo}</span>
-                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(1)}><Plus className="h-4 w-4"/></Button>
+        <div className="flex-grow">
+            <p className="font-semibold">{event.title}</p>
+            <p className="text-sm text-muted-foreground">{event.description}</p>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+                {event.courseTitle && <Badge variant="secondary" className="mt-1">{event.courseTitle}</Badge>}
+                {event.time && <Badge variant="outline">{event.time}</Badge>}
+                {event.priority && <Badge className={priorityColors[event.priority]}>{event.priority}</Badge>}
+            </div>
+            {event.estimatedPomo && (
+                <div className="mt-2 space-y-1">
+                    <div className="flex justify-between items-center">
+                        <p className="text-xs text-muted-foreground">Pomodoro Sessions</p>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(-1)}><Minus className="h-4 w-4"/></Button>
+                            <span className="text-sm font-medium">{event.actualPomo || 0} / {event.estimatedPomo}</span>
+                            <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(1)}><Plus className="h-4 w-4"/></Button>
+                        </div>
                     </div>
+                    <Progress value={progress} className="h-1.5"/>
                 </div>
-                <Progress value={progress} className="h-1.5"/>
-            </div>
-         )}
-         {event.checkItems && event.checkItems.length > 0 && (
-            <div className="mt-4 pt-4 border-t space-y-2">
-                {event.checkItems.map(item => (
-                    <div key={item.id} className="flex items-center gap-2">
-                        <Checkbox 
-                            id={`check-${event.id}-${item.id}`} 
-                            checked={item.isCompleted} 
-                            onCheckedChange={(checked) => handleToggleCheckItem(item.id, !!checked)}
-                        />
-                        <Label htmlFor={`check-${event.id}-${item.id}`} className={cn("text-sm", item.isCompleted && "line-through text-muted-foreground")}>
-                            {item.text}
-                        </Label>
-                    </div>
-                ))}
-            </div>
-        )}
-      </div>
-      <div className="flex gap-1">
-        <Button variant="ghost" size="icon" onClick={onEdit}><Edit className="h-4 w-4" /></Button>
-        <Button variant="ghost" size="icon" onClick={onDelete} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-      </div>
-    </Card>
+            )}
+            {event.checkItems && event.checkItems.length > 0 && (
+                <div className="mt-4 pt-4 border-t space-y-2">
+                    {event.checkItems.map(item => (
+                        <div key={item.id} className="flex items-center gap-2">
+                            <Checkbox 
+                                id={`check-${event.id}-${item.id}`} 
+                                checked={item.isCompleted} 
+                                onCheckedChange={(checked) => handleToggleCheckItem(item.id, !!checked)}
+                            />
+                            <Label htmlFor={`check-${event.id}-${item.id}`} className={cn("text-sm", item.isCompleted && "line-through text-muted-foreground")}>
+                                {item.text}
+                            </Label>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+        <div className="flex gap-1">
+            <Button variant="ghost" size="icon" onClick={onEdit}><Edit className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" onClick={onDelete} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+        </div>
+        </Card>
+    </div>
   );
 }
+

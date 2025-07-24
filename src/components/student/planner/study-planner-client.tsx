@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Course, Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check, BookOpen } from 'lucide-react';
+import { PlusCircle, BrainCircuit, BarChart, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check, BookOpen, Settings } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -31,10 +31,12 @@ import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { saveUserAction } from '@/app/actions/user.actions';
-import { format } from 'date-fns';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { format, addDays } from 'date-fns';
+import { DndContext, closestCenter, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Column } from './column';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { cn } from '@/lib/utils';
 
 
 interface StudyPlannerClientProps {
@@ -55,7 +57,6 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
     const [tasks, setTasks] = useState<PlannerTask[]>([]);
     const [folders, setFolders] = useState<Folder[]>([]);
     const [lists, setLists] = useState<List[]>([]);
-    const [goals, setGoals] = useState<Goal[]>([]);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Partial<PlannerTask> | null>(null);
@@ -63,8 +64,8 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+    const [activeTask, setActiveTask] = useState<PlannerTask | null>(null);
 
-    const [durations, setDurations] = useState(userInfo?.pomodoroSettings || { work: 25, shortBreak: 5, longBreak: 15 });
     const [loading, setLoading] = useState(true);
 
     const [isAiPlanOpen, setIsAiPlanOpen] = useState(false);
@@ -90,17 +91,14 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
                 userFolders,
                 userLists,
                 userTasks,
-                userGoals,
             ] = await Promise.all([
                 getFoldersForUser(userInfo.uid),
                 getListsForUser(userInfo.uid),
                 getTasksForUser(userInfo.uid),
-                getGoalsForUser(userInfo.uid),
             ]);
             setFolders(userFolders);
             setLists(userLists);
             setTasks(userTasks);
-            setGoals(userGoals);
         } catch(e) {
             console.error(e);
             toast({ title: 'Error loading planner data', variant: 'destructive'});
@@ -150,12 +148,13 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
         }
         
         await saveTask(editingEvent as PlannerTask);
-        fetchAllData(); // Refetch all data to get the new ID
+        await fetchAllData(); 
         setIsTaskDialogOpen(false);
         setEditingEvent(null);
     }
     
     const handleDeleteTask = async (eventId: string) => {
+        if (!window.confirm("Are you sure you want to delete this task?")) return;
         await deleteTask(eventId, userInfo!.uid);
         setTasks(tasks.filter(e => e.id !== eventId));
     };
@@ -189,21 +188,6 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
         await deleteList(listId);
         fetchAllData();
     }
-    
-    const handlePomoSessionComplete = async (taskId: string, durationSeconds: number) => {
-        const task = tasks.find(e => e.id === taskId);
-        if (task && userInfo) {
-            const newActualPomo = (task.actualPomo || 0) + 1;
-            const newTimeSpent = (task.timeSpentSeconds || 0) + durationSeconds;
-            const updatedTask = { ...task, actualPomo: newActualPomo, timeSpentSeconds: newTimeSpent };
-            
-            handleTaskUpdate(updatedTask);
-            await saveTask(updatedTask);
-            await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
-            await refreshUserInfo();
-            toast({ title: "Session Complete!", description: "You've earned 1 study point." });
-        }
-    };
     
     const handleTaskUpdate = (updatedTask: PlannerTask) => {
         setTasks(prev => prev.map(e => e.id === updatedTask.id ? updatedTask : e));
@@ -246,6 +230,7 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
             const result = await generateExamPrepPlan({
                 courseContext: aiExamCourseContext,
                 examDate: format(aiExamDate, 'yyyy-MM-dd'),
+                currentDate: format(new Date(), 'yyyy-MM-dd'),
             });
             const newTasks = result.events.map(e => ({...e, userId: userInfo!.uid, status: 'todo' as const}));
             for (const task of newTasks) {
@@ -260,12 +245,6 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
             setIsGeneratingPlan(false);
         }
     };
-    
-    const onDurationsChange = (newDurations: typeof durations) => {
-        if (!userInfo?.id) return;
-        setDurations(newDurations);
-        saveUserAction({ id: userInfo.id, pomodoroSettings: newDurations });
-    };
 
     const clearFilters = () => {
         setSelectedFolderId(null);
@@ -273,7 +252,12 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
         setSelectedCourseId(null);
     }
     
-    const handleDragEnd = (event: any) => {
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveTask(tasks.find(t => t.id === event.active.id) || null);
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        setActiveTask(null);
         const { active, over } = event;
         if (!over) return;
     
@@ -284,22 +268,28 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
 
         const overIsColumn = statusColumns.some(c => c.id === overId);
 
-        if (overIsColumn) {
-            // Dropped on a column
-            const task = tasks.find(t => t.id === activeId);
-            if (task && task.status !== overId) {
-                const updatedTask = { ...task, status: overId };
-                handleTaskUpdate(updatedTask);
-                saveTask(updatedTask);
+        setTasks((tasks) => {
+            const activeIndex = tasks.findIndex((t) => t.id === activeId);
+            const overIndex = tasks.findIndex((t) => t.id === overId);
+            
+            let newTasks;
+            if (overIsColumn) {
+                // Task dropped on a column
+                const taskToUpdate = tasks[activeIndex];
+                if (taskToUpdate && taskToUpdate.status !== overId) {
+                    newTasks = tasks.map((t, index) => 
+                        index === activeIndex ? { ...t, status: overId as PlannerTask['status'] } : t
+                    );
+                    saveTask(newTasks[activeIndex]);
+                } else {
+                    return tasks;
+                }
+            } else {
+                // Task dropped on another task (reordering)
+                newTasks = arrayMove(tasks, activeIndex, overIndex);
             }
-        } else {
-            // Dropped on another task (reordering)
-            setTasks((tasks) => {
-              const oldIndex = tasks.findIndex((t) => t.id === activeId);
-              const newIndex = tasks.findIndex((t) => t.id === overId);
-              return arrayMove(tasks, oldIndex, newIndex);
-            });
-        }
+            return newTasks;
+        });
     };
 
     if (loading) {
@@ -307,7 +297,7 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
     }
 
     return (
-        <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                  <aside className="lg:col-span-1 space-y-4 sticky top-24">
                      <Card>
@@ -375,7 +365,6 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
                  </aside>
                 <main className="lg:col-span-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                       <SortableContext items={filteredTasks.map(t => t.id!)}>
                          {statusColumns.map(column => (
                             <Column key={column.id} id={column.id} title={column.title}>
                                 {filteredTasks.filter(t => t.status === column.id).map(task => (
@@ -392,13 +381,17 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
                                 </Button>
                             </Column>
                         ))}
-                       </SortableContext>
                     </div>
                 </main>
             </div>
-            {/* Task Dialog */}
+            {typeof document !== "undefined" && (
+                <DragOverlay>
+                    {activeTask ? (
+                        <TaskItem task={activeTask} onEdit={() => {}} onDelete={() => {}} onUpdate={() => {}} />
+                    ) : null}
+                </DragOverlay>
+            )}
         </DndContext>
     );
 }
 
-```
