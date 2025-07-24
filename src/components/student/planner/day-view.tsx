@@ -27,4 +27,3 @@ export function DayView({ selectedDate, events, onEdit, onDelete }: DayViewProps
         </div>
     </div>
   );
-}

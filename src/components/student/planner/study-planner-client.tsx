@@ -18,18 +18,24 @@ import {
   subDays,
 } from 'date-fns';
 import { StudyPlanEvent, User } from '@/lib/types';
-import { saveUserAction, getUsers } from '@/lib/firebase/firestore';
+import { saveUserAction } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, CalendarDays, ListChecks } from 'lucide-react';
-import { TaskItem } from '@/components/student/planner/task-item';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { WeekView } from '@/components/student/planner/week-view';
 import { DayView } from '@/components/student/planner/day-view';
+import { TaskItem } from '@/components/student/planner/task-item';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -61,18 +67,19 @@ export function StudyPlannerClient() {
         };
         setEvents(userInfo.studyPlan || []);
         setLoading(false);
-    }, [userInfo, authLoading, toast]);
+    }, [userInfo, authLoading]);
 
 
     const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
         if (!userInfo) return;
         const eventsToSave = updatedEvents || events;
         await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
-    }, [events, userInfo]);
+        await refreshUserInfo(); // Refresh user data after saving
+    }, [events, userInfo, refreshUserInfo]);
 
     const eventsForSelectedDate = useMemo(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
-        return events.filter(e => e.date === dateStr);
+        return events.filter(e => e.date === dateStr).sort((a,b) => (a.time || '').localeCompare(b.time || ''));
     }, [events, selectedDate]);
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
@@ -81,7 +88,10 @@ export function StudyPlannerClient() {
     };
     
     const saveTask = () => {
-        if (!editingEvent?.title) return;
+        if (!editingEvent?.title) {
+            toast({ title: 'Title is required', variant: 'destructive'});
+            return;
+        }
         
         const newEvents = editingEvent.id
             ? events.map(e => e.id === editingEvent.id ? editingEvent as StudyPlanEvent : e)
@@ -90,6 +100,7 @@ export function StudyPlannerClient() {
         setEvents(newEvents);
         handleSavePlan(newEvents);
         setIsTaskDialogOpen(false);
+        setEditingEvent(null);
     }
     
     const deleteTask = (eventId: string) => {
@@ -178,7 +189,7 @@ export function StudyPlannerClient() {
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-4">
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('prev')}><ChevronLeft/></Button>
-                                    <h2 className="text-xl font-bold text-center w-48">{format(currentDate, viewMode === 'month' ? 'MMMM yyyy' : 'PPP')}</h2>
+                                    <h2 className="text-xl font-bold text-center w-48">{format(viewMode === 'day' ? selectedDate : currentDate, viewMode === 'month' ? 'MMMM yyyy' : 'PPP')}</h2>
                                     <Button variant="outline" size="icon" onClick={() => handleDateNavigation('next')}><ChevronRight/></Button>
                                 </div>
                                 <div className="flex items-center gap-2">

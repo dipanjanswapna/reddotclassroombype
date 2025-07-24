@@ -1,4 +1,3 @@
-
 'use client';
 
 import { StudyPlannerClient } from '@/components/student/planner/study-planner-client';

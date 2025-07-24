@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudyPlanEvent } from "@/lib/types";
@@ -35,6 +35,4 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
         <Button variant="ghost" size="icon" onClick={onEdit}><Edit className="h-4 w-4" /></Button>
         <Button variant="ghost" size="icon" onClick={onDelete} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
       </div>
-    </Card>
-  );
-}
+    </

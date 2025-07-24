@@ -26,6 +26,7 @@ export const StudyPlanEventSchema = z.object({
     id: z.string().optional(),
     date: z.string().describe('The date of the event in YYYY-MM-DD format.'),
     time: z.string().optional().describe('The start time of the event in HH:mm format.'),
+    endTime: z.string().optional().describe('The end time of the event in HH:mm format.'),
     title: z.string().describe('A concise title for the study event.'),
     type: z.enum(['study-session', 'assignment-deadline', 'quiz-reminder', 'exam-prep']).describe('The type of event.'),
     courseTitle: z.string().optional().describe('The course this event is related to.'),
@@ -36,6 +37,4 @@ export type StudyPlanEvent = z.infer<typeof StudyPlanEventSchema>;
 
 
 export const StudyPlanOutputSchema = z.object({
-    events: z.array(StudyPlanEventSchema).describe('A list of scheduled study events.'),
-});
-export type StudyPlanOutput = z.infer<typeof StudyPlanOutputSchema>;
+    events: z.array(StudyPlanEvent

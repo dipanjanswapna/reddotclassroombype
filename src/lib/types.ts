@@ -920,4 +920,3 @@ export type DoubtSession = {
     sessionName: string;
     assignedDoubtSolverIds: string[];
     createdAt: Timestamp;
-};
