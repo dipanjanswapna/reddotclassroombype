@@ -1,6 +1,6 @@
 
 
-'use client';
+'use server';
 
 import {
   addDocument,
@@ -98,3 +98,4 @@ export async function deleteGoal(goalId: string) {
   await deleteDocument('goals', goalId);
   revalidatePath('/student/planner');
 }
+

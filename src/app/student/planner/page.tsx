@@ -1,8 +1,8 @@
 
+
 'use client';
 
 import { Suspense } from 'react';
-import { Button } from '@/components/ui/button';
 import { StudyPlannerClient } from '@/components/student/planner/study-planner-client';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
