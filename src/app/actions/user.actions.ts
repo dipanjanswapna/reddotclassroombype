@@ -14,18 +14,19 @@ import {
   getEnrollmentsByUserId,
   getPrebookingsByUserId,
   getSupportTicketsByUserId,
-  getUsers,
-  findUserByRegistrationOrRoll,
+  getUsers as getUsersFromDb,
+  findUserByRegistrationOrRoll as findUserFromDb,
   markStudentAsCounseled,
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
-import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
+import { PlannerTask } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Folder, List } from '@/lib/types';
 
-export { getUsers, findUserByRegistrationOrRoll };
+export const getUsers = getUsersFromDb;
+export const findUserByRegistrationOrRoll = findUserFromDb;
 
 export async function saveUserAction(userData: Partial<User>) {
     try {
@@ -169,23 +170,6 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
       return { success: false, message: error.message };
     }
 }
-
-
-export async function saveStudyPlanAction(userId: string, data: { events?: StudyPlanEvent[], folders?: Folder[], lists?: List[] }) {
-    try {
-        const payload: Partial<User> = {};
-        if (data.events) payload.studyPlan = removeUndefinedValues(data.events);
-        if (data.folders) payload.plannerFolders = removeUndefinedValues(data.folders);
-        if (data.lists) payload.plannerLists = removeUndefinedValues(data.lists);
-        
-        await updateUser(userId, payload);
-        revalidatePath('/student/planner');
-        return { success: true, message: 'Study plan saved successfully.' };
-    } catch (error: any) {
-        return { success: false, message: error.message };
-    }
-}
-
 
 export async function markStudentAsCounseledAction(studentId: string) {
     try {
