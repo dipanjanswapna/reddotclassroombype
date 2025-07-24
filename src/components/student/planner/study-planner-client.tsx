@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -180,13 +181,15 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         setEvents(events.filter(e => e.listId !== listId));
     }
     
-    const handlePomoSessionComplete = async (taskId: string) => {
+    const handlePomoSessionComplete = async (taskId: string, durationSeconds: number) => {
         const task = events.find(e => e.id === taskId);
         if (task && userInfo) {
             const newActualPomo = (task.actualPomo || 0) + 1;
-            const updatedTask = { ...task, actualPomo: newActualPomo };
+            const newTimeSpent = (task.timeSpentSeconds || 0) + durationSeconds;
+            const updatedTask = { ...task, actualPomo: newActualPomo, timeSpentSeconds: newTimeSpent };
+            
+            onTaskUpdate(updatedTask); // Update local state immediately
             await saveTask(updatedTask);
-            setEvents(prev => prev.map(e => e.id === taskId ? updatedTask : e));
             await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
             await refreshUserInfo();
             toast({ title: "Session Complete!", description: "You've earned 1 study point." });
@@ -259,7 +262,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const completedTasksCount = useMemo(() => events.filter(e => e.status === 'completed').length, [events]);
     const totalPomoSessions = useMemo(() => events.reduce((acc, e) => acc + (e.actualPomo || 0), 0), [events]);
     const totalTimeSpentMinutes = useMemo(() => {
-        return events.reduce((acc, e) => acc + (e.timeSpentSeconds || 0), 0) / 60;
+        return Math.round(events.reduce((acc, e) => acc + (e.timeSpentSeconds || 0), 0) / 60);
     }, [events]);
 
     const dailyProgress = useMemo(() => {
@@ -398,4 +401,3 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
             </div>
             );
 }
-

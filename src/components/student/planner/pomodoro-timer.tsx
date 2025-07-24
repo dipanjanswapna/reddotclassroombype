@@ -16,7 +16,7 @@ type Durations = { work: number; shortBreak: number; longBreak: number; };
 
 interface PomodoroTimerProps {
   tasks: PlannerTask[];
-  onSessionComplete: (taskId: string) => void;
+  onSessionComplete: (taskId: string, durationSeconds: number) => void;
   durations: Durations;
   onDurationsChange: (durations: Durations) => void;
 }
@@ -53,7 +53,8 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
             audioRef.current.play();
           }
           if (mode === 'work' && selectedTask !== 'general') {
-            onSessionComplete(selectedTask);
+            const sessionDurationSeconds = durations.work * 60;
+            onSessionComplete(selectedTask, sessionDurationSeconds);
           }
           const nextMode = mode === 'work' ? 'shortBreak' : 'work';
           switchMode(nextMode);
@@ -65,7 +66,7 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
     return () => {
       if(timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isActive, seconds, minutes, mode, selectedTask, onSessionComplete]);
+  }, [isActive, seconds, minutes, mode, selectedTask, onSessionComplete, durations.work]);
   
   const switchMode = (newMode: PomodoroMode) => {
     setMode(newMode);
@@ -150,4 +151,3 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
     </Card>
   );
 }
-
