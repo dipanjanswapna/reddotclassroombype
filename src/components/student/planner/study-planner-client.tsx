@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Course, Folder, List, PlannerTask, CheckItem, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check } from 'lucide-react';
+import { PlusCircle, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check, BookOpen } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -68,6 +69,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
+    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
     const [durations, setDurations] = useState(userInfo?.pomodoroSettings || { work: 25, shortBreak: 5, longBreak: 15 });
     const [loading, setLoading] = useState(true);
@@ -91,20 +93,33 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     }, [authLoading]);
     
     const filteredEvents = useMemo(() => {
-        if (!selectedListId) {
-             if (!selectedFolderId) {
-                return events; // Show all events if no folder/list is selected
-            }
+        let tempEvents = events;
+        if (selectedCourseId) {
+            const course = courses.find(c => c.id === selectedCourseId);
+            tempEvents = events.filter(e => e.courseTitle === course?.title);
+        } else if (selectedListId) {
+            tempEvents = events.filter(e => e.listId === selectedListId);
+        } else if (selectedFolderId) {
             const listIdsInFolder = lists.filter(l => l.folderId === selectedFolderId).map(l => l.id!);
-            return events.filter(e => e.listId && listIdsInFolder.includes(e.listId));
+            tempEvents = events.filter(e => e.listId && listIdsInFolder.includes(e.listId));
         }
-        return events.filter(e => e.listId === selectedListId);
-    }, [events, lists, selectedFolderId, selectedListId]);
+        return tempEvents;
+    }, [events, lists, selectedFolderId, selectedListId, selectedCourseId, courses]);
     
     const openTaskDialog = (event: Partial<PlannerTask> | null) => {
         const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
         const selectedDate = event?.date ? new Date(event.date) : currentDate;
-        setEditingEvent(event ? {...event} : { date: format(selectedDate, 'yyyy-MM-dd'), type: 'study-session', priority: 'low', listId: defaultListId, userId: userInfo?.uid, status: 'todo' });
+        const defaultCourseTitle = selectedCourseId ? courses.find(c => c.id === selectedCourseId)?.title : undefined;
+
+        setEditingEvent(event ? {...event} : { 
+            date: format(selectedDate, 'yyyy-MM-dd'), 
+            type: 'study-session', 
+            priority: 'low', 
+            listId: defaultListId, 
+            userId: userInfo?.uid, 
+            status: 'todo',
+            courseTitle: defaultCourseTitle
+        });
         setIsTaskDialogOpen(true);
     };
     
@@ -276,6 +291,12 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         return <div className="flex justify-center items-center h-96"><LoadingSpinner /></div>
     }
 
+    const clearFilters = () => {
+        setSelectedFolderId(null);
+        setSelectedListId(null);
+        setSelectedCourseId(null);
+    }
+
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div className="flex justify-between items-center">
@@ -297,6 +318,21 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                  <aside className="lg:col-span-1 space-y-4">
                      <Card>
+                        <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
+                        <CardContent>
+                             <Button variant={!selectedFolderId && !selectedListId && !selectedCourseId ? 'secondary' : 'ghost'} className="w-full justify-start" onClick={clearFilters}>All Tasks</Button>
+                             <h4 className="font-semibold text-sm mt-4 mb-2">Courses</h4>
+                             <div className="space-y-1">
+                                {courses.map(course => (
+                                    <Button key={course.id} variant={selectedCourseId === course.id ? 'secondary' : 'ghost'} className="w-full justify-start" onClick={() => {setSelectedCourseId(course.id); setSelectedFolderId(null); setSelectedListId(null);}}>
+                                        <BookOpen className="mr-2 h-4 w-4"/>
+                                        {course.title}
+                                    </Button>
+                                ))}
+                             </div>
+                        </CardContent>
+                     </Card>
+                     <Card>
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <CardTitle>Folders & Lists</CardTitle>
@@ -308,8 +344,8 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                             {folders.map(folder => (
                                 <div key={folder.id}>
                                     <div 
-                                        className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedFolderId === folder.id && !selectedListId ? 'bg-accent' : ''}`}
-                                        onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(null);}}
+                                        className={cn('flex items-center justify-between p-2 rounded-md cursor-pointer', selectedFolderId === folder.id && !selectedListId ? 'bg-accent' : '')}
+                                        onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(null); setSelectedCourseId(null);}}
                                     >
                                         <span className="flex items-center gap-2"><FolderIcon className="h-4 w-4"/> {folder.name}</span>
                                         <div className="flex items-center">
@@ -319,7 +355,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                     </div>
                                     <div className="pl-6 space-y-1 mt-1">
                                         {lists.filter(l => l.folderId === folder.id).map(list => (
-                                            <div key={list.id} className={`flex items-center justify-between p-1 rounded-md cursor-pointer text-sm ${selectedListId === list.id ? 'bg-accent' : ''}`} onClick={() => {setSelectedFolderId(folder.id!); setSelectedListId(list.id!);}}>
+                                            <div key={list.id} className={cn('flex items-center justify-between p-1 rounded-md cursor-pointer text-sm', selectedListId === list.id ? 'bg-accent' : '')} onClick={() => {setSelectedFolderId(folder.id!); setSelectedListId(list.id!); setSelectedCourseId(null);}}>
                                                  <span className="flex items-center gap-2 text-muted-foreground"><ListIcon className="h-4 w-4"/> {list.name}</span>
                                                   <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); handleDeleteList(list.id!)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
                                             </div>
@@ -439,6 +475,18 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                                                 <SelectItem key={list.id} value={list.id!}>{list.name}</SelectItem>
                                             ))}
                                         </div>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Course (Optional)</Label>
+                            <Select value={editingEvent?.courseTitle} onValueChange={(v) => setEditingEvent(p => ({ ...p, courseTitle: v }))}>
+                                <SelectTrigger><SelectValue placeholder="Select a course..."/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">None</SelectItem>
+                                    {courses.map(course => (
+                                        <SelectItem key={course.id} value={course.title}>{course.title}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
