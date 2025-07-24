@@ -57,7 +57,8 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
       const dataToSave = {
           ...task,
           userId: userInfo.uid,
-          date: task.date ? format(task.date as Date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
+          date: task.date ? format(task.date as Date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+          listId: task.listId === 'none' ? undefined : task.listId,
       };
       
       await saveTask(dataToSave);
@@ -88,10 +89,10 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label>List</Label>
-                    <Select value={task.listId || ''} onValueChange={v => updateField('listId', v)}>
+                    <Select value={task.listId || 'none'} onValueChange={v => updateField('listId', v)}>
                         <SelectTrigger><SelectValue placeholder="Select a list..."/></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">No List</SelectItem>
+                            <SelectItem value="none">No List</SelectItem>
                             {lists.map(list => <SelectItem key={list.id} value={list.id!}>{list.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
