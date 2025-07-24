@@ -44,6 +44,7 @@ import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '
 import { Check } from 'lucide-react';
 import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
 import { useRouter } from 'next/navigation';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -77,6 +78,13 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
     const [isFolderListOpen, setIsFolderListOpen] = useState(true);
 
     const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
+    const [loading, setLoading] = useState(true); // Added missing state declaration
+
+    useEffect(() => {
+        if (!authLoading) {
+            setLoading(false);
+        }
+    }, [authLoading]);
 
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
@@ -166,7 +174,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         if (!window.confirm("Are you sure you want to delete this folder and all its lists and tasks?")) return;
         await deleteFolder(folderId);
         setFolders(folders.filter(f => f.id !== folderId));
-        const listsToDelete = lists.filter(l => l.folderId === folderId).map(l => l.id);
+        const listsToDelete = lists.filter(l => l.folderId === folderId).map(l => l.id!);
         setLists(lists.filter(l => l.folderId !== folderId));
         setEvents(events.filter(e => e.listId && !listsToDelete.includes(e.listId)));
     }
@@ -403,7 +411,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={saveTask}>Save Task</Button>
+                        <Button onClick={handleSaveTask}>Save Task</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
