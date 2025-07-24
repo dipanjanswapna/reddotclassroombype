@@ -22,7 +22,7 @@ export function DayView({ selectedDate, events, onEdit, onDelete, onTaskUpdate }
                  events.map(event => (
                     <TaskItem 
                         key={event.id} 
-                        event={event} 
+                        task={event} 
                         onEdit={() => onEdit(event)} 
                         onDelete={() => onDelete(event.id!)}
                         onUpdate={onTaskUpdate} 

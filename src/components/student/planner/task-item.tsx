@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Card } from "@/components/ui/card";
@@ -40,7 +39,7 @@ const priorityColors = {
     urgent: 'border-red-500 bg-red-50 text-red-800',
 }
 
-export function TaskItem({ task: event, onEdit, onDelete, onUpdate }: TaskItemProps) {
+export function TaskItem({ task, onEdit, onDelete, onUpdate }: TaskItemProps) {
   const { userInfo, refreshUserInfo } = useAuth();
   const { toast } = useToast();
   
@@ -51,7 +50,7 @@ export function TaskItem({ task: event, onEdit, onDelete, onUpdate }: TaskItemPr
     transform,
     transition,
     isDragging,
-  } = useSortable({id: event.id!});
+  } = useSortable({id: task.id!});
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -62,8 +61,8 @@ export function TaskItem({ task: event, onEdit, onDelete, onUpdate }: TaskItemPr
   const handlePomoChange = async (change: number) => {
     if (!userInfo) return;
 
-    const newPomoCount = (event.actualPomo || 0) + change;
-    const updatedEvent = { ...event, actualPomo: Math.max(0, newPomoCount) };
+    const newPomoCount = (task.actualPomo || 0) + change;
+    const updatedEvent = { ...task, actualPomo: Math.max(0, newPomoCount) };
     
     onUpdate(updatedEvent);
     await saveTask(updatedEvent);
@@ -75,56 +74,56 @@ export function TaskItem({ task: event, onEdit, onDelete, onUpdate }: TaskItemPr
   };
   
   const handleToggleCheckItem = async (checkItemId: string, isCompleted: boolean) => {
-    const updatedCheckItems = event.checkItems?.map(item =>
+    const updatedCheckItems = task.checkItems?.map(item =>
       item.id === checkItemId ? { ...item, isCompleted } : item
     ) || [];
 
-    const updatedEvent = { ...event, checkItems: updatedCheckItems };
+    const updatedEvent = { ...task, checkItems: updatedCheckItems };
     onUpdate(updatedEvent);
     await saveTask(updatedEvent);
   };
   
-  const progress = event.estimatedPomo && event.estimatedPomo > 0
-    ? Math.round(((event.actualPomo || 0) / event.estimatedPomo) * 100)
+  const progress = task.estimatedPomo && task.estimatedPomo > 0
+    ? Math.round(((task.actualPomo || 0) / task.estimatedPomo) * 100)
     : 0;
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
         <Card className="p-4 flex items-start gap-4">
         <div {...listeners} className="flex-shrink-0 w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing">
-            {eventIcons[event.type]}
+            {eventIcons[task.type]}
         </div>
         <div className="flex-grow">
-            <p className="font-semibold">{event.title}</p>
-            <p className="text-sm text-muted-foreground">{event.description}</p>
+            <p className="font-semibold">{task.title}</p>
+            <p className="text-sm text-muted-foreground">{task.description}</p>
             <div className="flex items-center gap-2 mt-2 flex-wrap">
-                {event.courseTitle && <Badge variant="secondary" className="mt-1">{event.courseTitle}</Badge>}
-                {event.time && <Badge variant="outline">{event.time}</Badge>}
-                {event.priority && <Badge className={priorityColors[event.priority]}>{event.priority}</Badge>}
+                {task.courseTitle && <Badge variant="secondary" className="mt-1">{task.courseTitle}</Badge>}
+                {task.time && <Badge variant="outline">{task.time}</Badge>}
+                {task.priority && <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>}
             </div>
-            {event.estimatedPomo && (
+            {task.estimatedPomo && (
                 <div className="mt-2 space-y-1">
                     <div className="flex justify-between items-center">
                         <p className="text-xs text-muted-foreground">Pomodoro Sessions</p>
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(-1)}><Minus className="h-4 w-4"/></Button>
-                            <span className="text-sm font-medium">{event.actualPomo || 0} / {event.estimatedPomo}</span>
+                            <span className="text-sm font-medium">{task.actualPomo || 0} / {task.estimatedPomo}</span>
                             <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handlePomoChange(1)}><Plus className="h-4 w-4"/></Button>
                         </div>
                     </div>
                     <Progress value={progress} className="h-1.5"/>
                 </div>
             )}
-            {event.checkItems && event.checkItems.length > 0 && (
+            {task.checkItems && task.checkItems.length > 0 && (
                 <div className="mt-4 pt-4 border-t space-y-2">
-                    {event.checkItems.map(item => (
+                    {task.checkItems.map(item => (
                         <div key={item.id} className="flex items-center gap-2">
                             <Checkbox 
-                                id={`check-${event.id}-${item.id}`} 
+                                id={`check-${task.id}-${item.id}`} 
                                 checked={item.isCompleted} 
                                 onCheckedChange={(checked) => handleToggleCheckItem(item.id, !!checked)}
                             />
-                            <Label htmlFor={`check-${event.id}-${item.id}`} className={cn("text-sm", item.isCompleted && "line-through text-muted-foreground")}>
+                            <Label htmlFor={`check-${task.id}-${item.id}`} className={cn("text-sm", item.isCompleted && "line-through text-muted-foreground")}>
                                 {item.text}
                             </Label>
                         </div>

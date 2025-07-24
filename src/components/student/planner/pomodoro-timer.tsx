@@ -91,12 +91,12 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
   };
 
   const tasksForToday = useMemo(() => {
-      return tasks.filter(t => t.status === 'todo' || t.status === 'in_progress');
+      return (tasks || []).filter(t => t.status === 'todo' || t.status === 'in_progress');
   }, [tasks]);
 
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full">
         <CardHeader>
             <CardTitle>Pomodoro Timer</CardTitle>
             <CardDescription>Stay focused and manage your study sessions effectively.</CardDescription>
@@ -151,3 +151,4 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
     </Card>
   );
 }
+
