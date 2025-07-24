@@ -8,6 +8,7 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { PlannerTask } from '@/lib/types';
+import { useMemo } from 'react';
 
 const locales = {
   'en-US': require('date-fns/locale/en-US'),
@@ -22,29 +23,29 @@ const localizer = dateFnsLocalizer({
 });
 
 interface CalendarViewProps {
-    events: PlannerTask[];
+    tasks: PlannerTask[];
     onEditEvent: (event: PlannerTask) => void;
 }
 
-export function CalendarView({ events, onEditEvent }: CalendarViewProps) {
+export function CalendarView({ tasks, onEditEvent }: CalendarViewProps) {
 
-  const calendarEvents = events.map(event => {
-    const startDateTime = new Date(`${event.date}T${event.time || '00:00:00'}`);
-    const endDateTime = event.endTime
-      ? new Date(`${event.date}T${event.endTime}`)
+  const calendarEvents = useMemo(() => tasks.map(task => {
+    const startDateTime = new Date(`${task.date}T${task.time || '00:00:00'}`);
+    const endDateTime = task.endTime
+      ? new Date(`${task.date}T${task.endTime}`)
       : new Date(startDateTime.getTime() + 60 * 60 * 1000); // Default to 1 hour duration
 
     return {
-      title: event.title,
+      title: task.title,
       start: startDateTime,
       end: endDateTime,
-      allDay: !event.time,
-      resource: event, // Keep original event data
+      allDay: !task.time,
+      resource: task, // Keep original event data
     };
-  });
+  }), [tasks]);
 
   return (
-    <div className="h-[70vh]">
+    <div className="h-[70vh] bg-background p-4 rounded-lg">
       <Calendar
         localizer={localizer}
         events={calendarEvents}

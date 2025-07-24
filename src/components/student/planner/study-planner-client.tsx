@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Course, Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, BrainCircuit, BarChart, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check, BookOpen, Settings } from 'lucide-react';
+import { PlusCircle, BrainCircuit, BarChart, Folder as FolderIcon, List as ListIcon, Edit, Trash2, X, Target, Calendar as CalendarIcon, ChevronsUpDown, Check, BookOpen, Settings, LayoutGrid, ListTodo } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -37,6 +37,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-ki
 import { Column } from './column';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { cn } from '@/lib/utils';
+import { CalendarView } from './calendar-view';
 
 
 interface StudyPlannerClientProps {
@@ -71,6 +72,8 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
     const [isAiPlanOpen, setIsAiPlanOpen] = useState(false);
     const [isAiExamPlanOpen, setIsAiExamPlanOpen] = useState(false);
     const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+    
+    const [viewMode, setViewMode] = useState<'board' | 'calendar'>('board');
 
     // AI Form States
     const [aiPlanCourses, setAiPlanCourses] = useState<Course[]>([]);
@@ -298,6 +301,15 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
 
     return (
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+            <div className="flex justify-end mb-4 gap-2">
+                <Button variant={viewMode === 'board' ? 'default' : 'outline'} onClick={() => setViewMode('board')}>
+                    <LayoutGrid className="mr-2 h-4 w-4"/> Board
+                </Button>
+                <Button variant={viewMode === 'calendar' ? 'default' : 'outline'} onClick={() => setViewMode('calendar')}>
+                    <CalendarIcon className="mr-2 h-4 w-4"/> Calendar
+                </Button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                  <aside className="lg:col-span-1 space-y-4 sticky top-24">
                      <Card>
@@ -364,24 +376,28 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
                       </Card>
                  </aside>
                 <main className="lg:col-span-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                         {statusColumns.map(column => (
-                            <Column key={column.id} id={column.id} title={column.title}>
-                                {filteredTasks.filter(t => t.status === column.id).map(task => (
-                                     <TaskItem 
-                                        key={task.id} 
-                                        task={task} 
-                                        onEdit={() => openTaskDialog(task)}
-                                        onDelete={() => handleDeleteTask(task.id!)}
-                                        onUpdate={handleTaskUpdate}
-                                     />
-                                ))}
-                                <Button variant="outline" className="w-full mt-4 border-dashed" onClick={() => openTaskDialog(null, column.id)}>
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Task
-                                </Button>
-                            </Column>
-                        ))}
-                    </div>
+                    {viewMode === 'board' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                             {statusColumns.map(column => (
+                                <Column key={column.id} id={column.id} title={column.title}>
+                                    {filteredTasks.filter(t => t.status === column.id).map(task => (
+                                         <TaskItem 
+                                            key={task.id} 
+                                            task={task} 
+                                            onEdit={() => openTaskDialog(task)}
+                                            onDelete={() => handleDeleteTask(task.id!)}
+                                            onUpdate={handleTaskUpdate}
+                                         />
+                                    ))}
+                                    <Button variant="outline" className="w-full mt-4 border-dashed" onClick={() => openTaskDialog(null, column.id)}>
+                                        <PlusCircle className="mr-2 h-4 w-4" /> Add Task
+                                    </Button>
+                                </Column>
+                            ))}
+                        </div>
+                    ) : (
+                        <CalendarView tasks={filteredTasks} onEditEvent={(task) => openTaskDialog(task)} />
+                    )}
                 </main>
             </div>
             {typeof document !== "undefined" && (
@@ -394,4 +410,3 @@ export function StudyPlannerClient({ courses }: StudyPlannerClientProps) {
         </DndContext>
     );
 }
-
