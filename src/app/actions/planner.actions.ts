@@ -7,7 +7,8 @@ import {
   deleteDocument,
   getListsInFolder,
   getTasksInList,
-  getUser
+  getUser,
+  getDocument
 } from '@/lib/firebase/firestore';
 import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
@@ -118,7 +119,7 @@ export async function saveGoal(goal: Partial<Goal>) {
   if (goal.id) {
     await updateDocument('goals', goal.id, dataToSave);
   } else {
-    await addDocument('goals', { ...dataToSave, createdAt: new Date() });
+    await addDocument('goals', { ...goal, createdAt: new Date(), updatedAt: new Date() });
   }
   revalidatePath('/student/planner');
 }

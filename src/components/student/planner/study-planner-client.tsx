@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -25,7 +24,7 @@ import { ProgressChart } from './progress-chart';
 import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandInput, CommandGroup, CommandItem } from '@/components/ui/command';
-import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList } from '@/app/actions/planner.actions';
+import { saveFolder, saveList, deleteTask, saveTask, deleteFolder, deleteList, saveGoal, deleteGoal } from '@/app/actions/planner.actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { DatePicker } from '@/components/ui/date-picker';

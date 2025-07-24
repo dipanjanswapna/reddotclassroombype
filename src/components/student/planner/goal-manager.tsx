@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -61,9 +60,11 @@ export function GoalManager({ initialGoals, onGoalsChange }: GoalManagerProps) {
     }
     setIsSaving(true);
     
-    const result = await saveGoal(editingGoal);
+    await saveGoal(editingGoal);
+    
+    // Optimistic UI update
     if (editingGoal.id) {
-        onGoalsChange(prev => prev.map(g => g.id === editingGoal.id ? editingGoal as Goal : g));
+        onGoalsChange(prev => prev.map(g => g.id === editingGoal!.id ? editingGoal as Goal : g));
     } else {
         // This is a simplification. A proper implementation would refetch or get the ID back.
         onGoalsChange(prev => [...prev, {...editingGoal, id: `new_${Date.now()}`} as Goal]);
@@ -186,4 +187,3 @@ export function GoalManager({ initialGoals, onGoalsChange }: GoalManagerProps) {
     </div>
   );
 }
-
