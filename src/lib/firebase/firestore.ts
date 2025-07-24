@@ -1054,16 +1054,18 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
 export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
     const db = getDbInstance();
     if (!db) return [];
-    const q = query(collection(db, "folders"), where("userId", "==", userId), orderBy("createdAt", "asc"));
+    const q = query(collection(db, "folders"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+    const folders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+    return folders.sort((a, b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getListsForUser = async (userId: string): Promise<List[]> => {
     const db = getDbInstance();
     if (!db) return [];
-    const q = query(collection(db, "lists"), where("userId", "==", userId), orderBy("createdAt", "asc"));
+    const q = query(collection(db, "lists"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+    const lists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+    return lists.sort((a,b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
     const db = getDbInstance();
