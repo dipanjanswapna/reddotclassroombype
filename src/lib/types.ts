@@ -66,7 +66,7 @@ export type RedemptionRequest = {
   processedBy?: string; // Admin UID
   processedAt?: Timestamp;
   generatedPromoCode?: string;
-}
+};
 
 export type OrderItem = {
     id: string;
@@ -486,13 +486,8 @@ export type Course = {
 
 export type CheckItem = {
     id: string;
-    taskId: string;
-    userId: string;
     text: string;
     isCompleted: boolean;
-    reminderTime?: Timestamp;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
 };
 
 export type PlannerTask = {
@@ -515,6 +510,7 @@ export type PlannerTask = {
     completedAt?: Timestamp;
     type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
     courseTitle?: string;
+    checkItems?: CheckItem[];
 };
 
 export type List = {
@@ -638,7 +634,7 @@ export type User = {
   socials?: {
     facebook?: string;
   };
-  studyPlan?: StudyPlanEvent[];
+  studyPlan?: PlannerTask[];
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;

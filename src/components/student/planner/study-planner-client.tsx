@@ -17,10 +17,10 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { Course, Folder, List, PlannerTask } from '@/lib/types';
+import { Course, Folder, List, PlannerTask, CheckItem } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2 } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2, Calendar, Settings2, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { DatePicker } from '@/components/ui/date-picker';
 import { TaskItem } from './task-item';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -194,7 +195,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
             const newActualPomo = (task.actualPomo || 0) + 1;
             await saveTask({ ...task, actualPomo: newActualPomo });
             setEvents(prev => prev.map(e => e.id === taskId ? { ...e, actualPomo: newActualPomo } : e));
-            await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
+            // await saveUserAction({ id: userInfo.uid, studyPoints: (userInfo.studyPoints || 0) + 1 });
             await refreshUserInfo();
             toast({ title: "Session Complete!", description: "You've earned 1 study point." });
         }
@@ -206,12 +207,16 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
         router.push(authUrl);
     };
 
+    const handleTaskUpdate = (updatedTask: PlannerTask) => {
+        setEvents(prev => prev.map(e => e.id === updatedTask.id ? updatedTask : e));
+    }
+
     const renderCalendarView = () => {
         switch (viewMode) {
             case 'week':
                 return <WeekView currentDate={currentDate} events={filteredEvents} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
-                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={handleDeleteTask} />;
+                return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={handleDeleteTask} onTaskUpdate={handleTaskUpdate} />;
             case 'month':
             default:
                 return (
@@ -370,7 +375,7 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                     <DialogHeader>
                         <DialogTitle>{editingEvent?.id ? 'Edit Task' : 'Add New Task'}</DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
                          <div className="space-y-2">
                             <Label>List</Label>
                             <Select value={editingEvent?.listId} onValueChange={(v) => setEditingEvent(p => ({ ...p, listId: v }))}>
@@ -429,6 +434,45 @@ export function StudyPlannerClient({ initialTasks, initialFolders, initialLists,
                          <div className="space-y-2">
                             <Label htmlFor="estimatedPomo">Estimated Pomodoro Sessions</Label>
                             <Input id="estimatedPomo" type="number" value={editingEvent?.estimatedPomo || ''} onChange={e => setEditingEvent(p => ({ ...p, estimatedPomo: Number(e.target.value) }))} />
+                        </div>
+                        <div className="space-y-2 pt-4 border-t">
+                            <Label>Checklist / Sub-tasks</Label>
+                            <div className="space-y-2">
+                                {editingEvent?.checkItems?.map((item, index) => (
+                                    <div key={item.id} className="flex items-center gap-2">
+                                        <Checkbox 
+                                            id={`check-${item.id}`}
+                                            checked={item.isCompleted}
+                                            onCheckedChange={(checked) => {
+                                                const newCheckItems = [...(editingEvent?.checkItems || [])];
+                                                newCheckItems[index].isCompleted = !!checked;
+                                                setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
+                                            }}
+                                        />
+                                        <Input 
+                                            value={item.text}
+                                            onChange={(e) => {
+                                                const newCheckItems = [...(editingEvent?.checkItems || [])];
+                                                newCheckItems[index].text = e.target.value;
+                                                setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
+                                            }}
+                                            className="h-8"
+                                        />
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                                            const newCheckItems = (editingEvent?.checkItems || []).filter(ci => ci.id !== item.id);
+                                            setEditingEvent(p => ({ ...p, checkItems: newCheckItems }));
+                                        }}>
+                                            <X className="h-4 w-4 text-destructive"/>
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => {
+                                const newCheckItem: CheckItem = { id: `new_${Date.now()}`, text: '', isCompleted: false };
+                                setEditingEvent(p => ({ ...p, checkItems: [...(p?.checkItems || []), newCheckItem] }));
+                            }}>
+                                Add Sub-task
+                            </Button>
                         </div>
                     </div>
                     <DialogFooter>

@@ -4,17 +4,22 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PlannerTask } from "@/lib/types";
+import { PlannerTask, CheckItem } from "@/lib/types";
 import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Minus, Plus } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { saveTask } from "@/app/actions/planner.actions";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
 
 type TaskItemProps = {
   event: PlannerTask;
   onEdit: () => void;
   onDelete: () => void;
+  onUpdate: (task: PlannerTask) => void;
 };
 
 const eventIcons: { [key in PlannerTask['type']]: React.ReactNode } = {
@@ -32,7 +37,7 @@ const priorityColors = {
     urgent: 'border-red-500 bg-red-50 text-red-800',
 }
 
-export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
+export function TaskItem({ event, onEdit, onDelete, onUpdate }: TaskItemProps) {
   const { userInfo, refreshUserInfo } = useAuth();
   const { toast } = useToast();
 
@@ -42,13 +47,23 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
     const newPomoCount = (event.actualPomo || 0) + change;
     const updatedEvent = { ...event, actualPomo: Math.max(0, newPomoCount) };
     
+    onUpdate(updatedEvent);
     await saveTask(updatedEvent);
-    // Note: The parent component will handle the state update via re-fetching or manually.
     
     if (change > 0) {
       toast({ title: "Session Complete!", description: "You've earned 1 study point." });
       await refreshUserInfo();
     }
+  };
+  
+  const handleToggleCheckItem = async (checkItemId: string, isCompleted: boolean) => {
+    const updatedCheckItems = event.checkItems?.map(item =>
+      item.id === checkItemId ? { ...item, isCompleted } : item
+    ) || [];
+
+    const updatedEvent = { ...event, checkItems: updatedCheckItems };
+    onUpdate(updatedEvent);
+    await saveTask(updatedEvent);
   };
   
   const progress = event.estimatedPomo && event.estimatedPomo > 0
@@ -81,6 +96,22 @@ export function TaskItem({ event, onEdit, onDelete }: TaskItemProps) {
                 <Progress value={progress} className="h-1.5"/>
             </div>
          )}
+         {event.checkItems && event.checkItems.length > 0 && (
+            <div className="mt-4 pt-4 border-t space-y-2">
+                {event.checkItems.map(item => (
+                    <div key={item.id} className="flex items-center gap-2">
+                        <Checkbox 
+                            id={`check-${event.id}-${item.id}`} 
+                            checked={item.isCompleted} 
+                            onCheckedChange={(checked) => handleToggleCheckItem(item.id, !!checked)}
+                        />
+                        <Label htmlFor={`check-${event.id}-${item.id}`} className={cn("text-sm", item.isCompleted && "line-through text-muted-foreground")}>
+                            {item.text}
+                        </Label>
+                    </div>
+                ))}
+            </div>
+        )}
       </div>
       <div className="flex gap-1">
         <Button variant="ghost" size="icon" onClick={onEdit}><Edit className="h-4 w-4" /></Button>
