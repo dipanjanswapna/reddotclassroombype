@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useSearchParams } from 'next/navigation';
 import PlannerSettingsPage from './settings/page';
 import { GoalManager } from '@/components/student/planner/goal-manager';
+import { Button } from '@/components/ui/button';
 
 
 function PlannerPageContent() {
@@ -123,4 +124,3 @@ export default function StudentPlannerPage() {
         </Suspense>
     );
 }
-
