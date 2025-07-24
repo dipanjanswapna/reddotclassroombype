@@ -23,6 +23,7 @@ import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
 import { removeUndefinedValues } from '@/lib/utils';
+import { Folder, List } from '@/lib/types';
 
 export { getUsers, findUserByRegistrationOrRoll };
 
@@ -170,9 +171,14 @@ export async function toggleWishlistAction(userId: string, courseId: string) {
 }
 
 
-export async function saveStudyPlanAction(userId: string, events: StudyPlanEvent[]) {
+export async function saveStudyPlanAction(userId: string, data: { events?: StudyPlanEvent[], folders?: Folder[], lists?: List[] }) {
     try {
-        await updateUser(userId, { studyPlan: removeUndefinedValues(events) });
+        const payload: Partial<User> = {};
+        if (data.events) payload.studyPlan = removeUndefinedValues(data.events);
+        if (data.folders) payload.plannerFolders = removeUndefinedValues(data.folders);
+        if (data.lists) payload.plannerLists = removeUndefinedValues(data.lists);
+        
+        await updateUser(userId, payload);
         revalidatePath('/student/planner');
         return { success: true, message: 'Study plan saved successfully.' };
     } catch (error: any) {

@@ -17,11 +17,11 @@ import {
   addDays,
   subDays,
 } from 'date-fns';
-import { StudyPlanEvent, User } from '@/lib/types';
-import { saveUserAction } from '@/app/actions/user.actions';
+import { StudyPlanEvent, User, Course, Folder, List } from '@/lib/types';
+import { saveUserAction, updateUser } from '@/app/actions/user.actions';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, BrainCircuit, BarChart, Settings, Folder as FolderIcon, List as ListIcon, Edit, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,13 @@ import { cn } from '@/lib/utils';
 import { WeekView } from '@/components/student/planner/week-view';
 import { DayView } from '@/components/student/planner/day-view';
 import { TaskItem } from '@/components/student/planner/task-item';
+import { generateStudyPlan } from '@/ai/flows/study-plan-flow';
+import { getCourses, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { PomodoroTimer } from './pomodoro-timer';
+import { ProgressChart } from './progress-chart';
+import { generateExamPrepPlan } from '@/ai/flows/exam-prep-flow';
+import { Exam } from '@/lib/types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type ViewMode = 'month' | 'week' | 'day';
 
@@ -44,6 +51,9 @@ export function StudyPlannerClient() {
     const { userInfo, loading: authLoading, refreshUserInfo } = useAuth();
     
     const [events, setEvents] = useState<StudyPlanEvent[]>([]);
+    const [folders, setFolders] = useState<Folder[]>([]);
+    const [lists, setLists] = useState<List[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     
     const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
@@ -52,6 +62,13 @@ export function StudyPlannerClient() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
+    const [activeView, setActiveView] = useState('planner');
+    
+    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+    const [selectedListId, setSelectedListId] = useState<string | null>(null);
+    const [isFolderListOpen, setIsFolderListOpen] = useState(true);
+
+    const [durations, setDurations] = useState({ work: 25, shortBreak: 5, longBreak: 15 });
 
     const firstDayOfMonth = startOfMonth(currentDate);
     const calendarDays = useMemo(() => {
@@ -59,31 +76,69 @@ export function StudyPlannerClient() {
         const end = endOfWeek(addDays(firstDayOfMonth, 35));
         return eachDayOfInterval({ start, end });
     }, [currentDate]);
-
-    useEffect(() => {
+    
+    const fetchInitialData = useCallback(async () => {
         if (!userInfo) {
             if (!authLoading) setLoading(false);
             return;
-        };
-        setEvents(userInfo.studyPlan || []);
-        setLoading(false);
-    }, [userInfo, authLoading]);
+        }
+        setLoading(true);
+        try {
+            setEvents(userInfo.studyPlan || []);
+            setFolders(userInfo.plannerFolders || []);
+            setLists(userInfo.plannerLists || []);
+
+            const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+            const courseIds = enrollments.map(e => e.courseId);
+            if (courseIds.length > 0) {
+                const fetchedCourses = await getCourses({ ids: courseIds });
+                setCourses(fetchedCourses);
+            }
+        } catch (error) {
+            console.error("Failed to load planner data:", error);
+            toast({ title: 'Error', description: 'Could not load planner data.', variant: 'destructive'});
+        } finally {
+            setLoading(false);
+        }
+    }, [userInfo, authLoading, toast]);
 
 
-    const handleSavePlan = useCallback(async (updatedEvents?: StudyPlanEvent[]) => {
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
+
+
+    const handleSavePlan = useCallback(async (data: { events?: StudyPlanEvent[], folders?: Folder[], lists?: List[] }) => {
         if (!userInfo) return;
-        const eventsToSave = updatedEvents || events;
-        await saveUserAction({id: userInfo.uid, studyPlan: eventsToSave});
-        await refreshUserInfo(); // Refresh user data after saving
-    }, [events, userInfo, refreshUserInfo]);
+        
+        const payload: Partial<User> = {};
+        if (data.events) payload.studyPlan = data.events;
+        if (data.folders) payload.plannerFolders = data.folders;
+        if (data.lists) payload.plannerLists = data.lists;
+        
+        await saveUserAction({id: userInfo.uid, ...payload});
+        await refreshUserInfo();
+    }, [userInfo, refreshUserInfo]);
+
+    const filteredEvents = useMemo(() => {
+        if (!selectedListId) {
+             if (!selectedFolderId) {
+                return events; // Show all events if no folder/list is selected
+            }
+            const listIdsInFolder = lists.filter(l => l.folderId === selectedFolderId).map(l => l.id);
+            return events.filter(e => listIdsInFolder.includes(e.listId || ''));
+        }
+        return events.filter(e => e.listId === selectedListId);
+    }, [events, lists, selectedFolderId, selectedListId]);
 
     const eventsForSelectedDate = useMemo(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
-        return events.filter(e => e.date === dateStr).sort((a,b) => (a.time || '').localeCompare(b.time || ''));
-    }, [events, selectedDate]);
+        return filteredEvents.filter(e => e.date === dateStr).sort((a,b) => (a.time || '').localeCompare(b.time || ''));
+    }, [filteredEvents, selectedDate]);
     
     const openTaskDialog = (event: Partial<StudyPlanEvent> | null) => {
-        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium' });
+        const defaultListId = selectedListId || lists.find(l => l.folderId === selectedFolderId)?.id || lists[0]?.id;
+        setEditingEvent(event ? {...event} : { date: format(selectedDate || new Date(), 'yyyy-MM-dd'), type: 'study-session', priority: 'Medium', listId: defaultListId });
         setIsTaskDialogOpen(true);
     };
     
@@ -98,7 +153,7 @@ export function StudyPlannerClient() {
             : [...events, { ...editingEvent, id: `manual_${Date.now()}` } as StudyPlanEvent];
             
         setEvents(newEvents);
-        handleSavePlan(newEvents);
+        handleSavePlan({ events: newEvents });
         setIsTaskDialogOpen(false);
         setEditingEvent(null);
     }
@@ -106,7 +161,7 @@ export function StudyPlannerClient() {
     const deleteTask = (eventId: string) => {
         const newEvents = events.filter(e => e.id !== eventId);
         setEvents(newEvents);
-        handleSavePlan(newEvents);
+        handleSavePlan({ events: newEvents });
     };
     
     const handleDateNavigation = (direction: 'prev' | 'next') => {
@@ -122,11 +177,54 @@ export function StudyPlannerClient() {
             setCurrentDate(newSelectedDate);
         }
     }
+    
+    const addFolder = () => {
+        const newFolderName = prompt("Enter folder name:");
+        if (newFolderName) {
+            const newFolder: Folder = { id: `folder_${Date.now()}`, name: newFolderName, userId: userInfo!.uid, createdAt: new Date() as any, updatedAt: new Date() as any };
+            const newFolders = [...folders, newFolder];
+            setFolders(newFolders);
+            handleSavePlan({ folders: newFolders });
+        }
+    };
+    
+    const addList = (folderId: string) => {
+        const newListName = prompt("Enter list name:");
+        if (newListName) {
+            const newList: List = { id: `list_${Date.now()}`, name: newListName, userId: userInfo!.uid, folderId, createdAt: new Date() as any, updatedAt: new Date() as any };
+            const newLists = [...lists, newList];
+            setLists(newLists);
+            handleSavePlan({ lists: newLists });
+        }
+    };
+    
+    const deleteFolder = (folderId: string) => {
+        if (!window.confirm("Are you sure you want to delete this folder and all its lists and tasks?")) return;
+        const listsToDelete = lists.filter(l => l.folderId === folderId).map(l => l.id);
+        const newFolders = folders.filter(f => f.id !== folderId);
+        const newLists = lists.filter(l => l.folderId !== folderId);
+        const newEvents = events.filter(e => !listsToDelete.includes(e.listId || ''));
+
+        setFolders(newFolders);
+        setLists(newLists);
+        setEvents(newEvents);
+        handleSavePlan({ folders: newFolders, lists: newLists, events: newEvents });
+    }
+    
+    const deleteList = (listId: string) => {
+        if (!window.confirm("Are you sure you want to delete this list and all its tasks?")) return;
+        const newLists = lists.filter(l => l.id !== listId);
+        const newEvents = events.filter(e => e.listId !== listId);
+
+        setLists(newLists);
+        setEvents(newEvents);
+        handleSavePlan({ lists: newLists, events: newEvents });
+    }
 
     const renderCalendarView = () => {
         switch (viewMode) {
             case 'week':
-                return <WeekView currentDate={currentDate} events={events} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
+                return <WeekView currentDate={currentDate} events={filteredEvents} onSelectDate={setSelectedDate} selectedDate={selectedDate}/>;
             case 'day':
                 return <DayView selectedDate={selectedDate} events={eventsForSelectedDate} onEdit={openTaskDialog} onDelete={deleteTask} />;
             case 'month':
@@ -139,7 +237,7 @@ export function StudyPlannerClient() {
                         <div className="grid grid-cols-7 gap-1 mt-2">
                             {calendarDays.map(day => {
                                 const dateStr = format(day, 'yyyy-MM-dd');
-                                const eventsOnDay = events.filter(e => e.date === dateStr);
+                                const eventsOnDay = filteredEvents.filter(e => e.date === dateStr);
                                 return (
                                     <div 
                                         key={day.toString()} 
@@ -174,17 +272,55 @@ export function StudyPlannerClient() {
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-             <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center">
                 <div>
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Study Planner</h1>
                     <p className="mt-1 text-lg text-muted-foreground">
                         Organize your schedule, track your tasks, and stay productive.
                     </p>
                 </div>
+                 <div className="flex items-center gap-2">
+                    <Button variant={activeView === 'planner' ? 'default' : 'outline'} onClick={() => setActiveView('planner')}>Planner</Button>
+                    <Button variant={activeView === 'analytics' ? 'default' : 'outline'} onClick={() => setActiveView('analytics')}>Analytics</Button>
+                </div>
             </div>
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div className="xl:col-span-3 space-y-4">
-                    <Card>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                 <aside className="lg:col-span-1 space-y-4">
+                     <Card>
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <CardTitle>Folders & Lists</CardTitle>
+                                <Button size="sm" variant="outline" onClick={addFolder}><PlusCircle className="mr-2 h-4 w-4"/>Folder</Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                            {folders.map(folder => (
+                                <div key={folder.id}>
+                                    <div 
+                                        className={cn("flex items-center justify-between p-2 rounded-md cursor-pointer", selectedFolderId === folder.id && 'bg-accent')}
+                                        onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(null);}}
+                                    >
+                                        <span className="flex items-center gap-2"><FolderIcon className="h-4 w-4"/> {folder.name}</span>
+                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); deleteFolder(folder.id)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                    </div>
+                                    <div className="pl-6 space-y-1 mt-1">
+                                        {lists.filter(l => l.folderId === folder.id).map(list => (
+                                            <div key={list.id} className={cn("flex items-center justify-between p-1 rounded-md cursor-pointer text-sm", selectedListId === list.id && 'bg-accent')} onClick={() => {setSelectedFolderId(folder.id); setSelectedListId(list.id);}}>
+                                                 <span className="flex items-center gap-2 text-muted-foreground"><ListIcon className="h-4 w-4"/> {list.name}</span>
+                                                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={(e) => {e.stopPropagation(); deleteList(list.id)}}><Trash2 className="h-3 w-3 text-destructive"/></Button>
+                                            </div>
+                                        ))}
+                                        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => addList(folder.id)}><PlusCircle className="mr-2 h-3 w-3"/>Add List</Button>
+                                    </div>
+                                </div>
+                            ))}
+                            </div>
+                        </CardContent>
+                     </Card>
+                 </aside>
+                <main className="lg:col-span-3">
+                   <Card>
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-4">
@@ -213,7 +349,7 @@ export function StudyPlannerClient() {
                         {renderCalendarView()}
                         </CardContent>
                     </Card>
-                </div>
+                </main>
             </div>
 
              <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
@@ -223,6 +359,22 @@ export function StudyPlannerClient() {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                          <div className="space-y-2">
+                            <Label>List</Label>
+                            <Select value={editingEvent?.listId} onValueChange={(v) => setEditingEvent(p => ({ ...p, listId: v }))}>
+                                <SelectTrigger><SelectValue placeholder="Select a list..."/></SelectTrigger>
+                                <SelectContent>
+                                    {folders.map(folder => (
+                                        <div key={folder.id}>
+                                            <Label className="px-2 text-xs text-muted-foreground">{folder.name}</Label>
+                                            {lists.filter(l => l.folderId === folder.id).map(list => (
+                                                <SelectItem key={list.id} value={list.id}>{list.name}</SelectItem>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div className="space-y-2">
                             <Label>Type</Label>
                             <Select value={editingEvent?.type} onValueChange={(v: StudyPlanEvent['type']) => setEditingEvent(p => ({ ...p, type: v }))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -231,6 +383,7 @@ export function StudyPlannerClient() {
                                     <SelectItem value="assignment-deadline">Assignment</SelectItem>
                                     <SelectItem value="quiz-reminder">Quiz</SelectItem>
                                     <SelectItem value="exam-prep">Exam Prep</SelectItem>
+                                    <SelectItem value="habit">Habit</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

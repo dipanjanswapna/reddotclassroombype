@@ -39,6 +39,12 @@ export type Reward = {
   pointsRequired: number;
   imageUrl: string;
   stock?: number;
+  type: 'physical_gift' | 'promo_code';
+  promoCodeDetails?: {
+    type: 'percentage' | 'fixed';
+    value: number;
+    applicableCourseIds?: string[];
+  }
 }
 
 export type RedemptionRequest = {
@@ -48,7 +54,7 @@ export type RedemptionRequest = {
   rewardTitle: string;
   pointsSpent: number;
   requestedAt: Timestamp;
-  status: 'Pending' | 'Approved' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: 'Pending' | 'Approved' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   shippingAddress?: {
       fullName: string;
       addressLine1: string;
@@ -59,6 +65,7 @@ export type RedemptionRequest = {
   trackingNumber?: string;
   processedBy?: string; // Admin UID
   processedAt?: Timestamp;
+  generatedPromoCode?: string;
 }
 
 export type OrderItem = {
@@ -415,10 +422,13 @@ export type StudyPlanEvent = {
     time?: string; // HH:mm format, optional
     endTime?: string; // HH:mm format, optional
     title: string;
-    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep';
+    type: 'study-session' | 'assignment-deadline' | 'quiz-reminder' | 'exam-prep' | 'habit';
     courseTitle?: string;
     description?: string;
     priority?: 'High' | 'Medium' | 'Low';
+    listId?: string;
+    estimatedPomo?: number;
+    actualPomo?: number;
 };
 
 
@@ -618,20 +628,25 @@ export type User = {
   guardianMobileNumber?: string;
   address?: string; // New field for shipping
   referredBy?: string; // UID of the referrer
-  referralCode?: string; // This user's unique referral code (their class roll)
   hasUsedReferral?: boolean; // To check if they have used a referral code before
   referralPoints?: number;
+  studyPoints?: number;
   achievements?: string[]; // Array of achievement IDs
   socials?: {
     facebook?: string;
   };
   studyPlan?: StudyPlanEvent[];
+  plannerFolders?: Folder[];
+  plannerLists?: List[];
   // Offline fields
   offlineRollNo?: string;
   assignedBranchId?: string;
   assignedBatchId?: string;
+  lastCounseledAt?: Timestamp;
   // Doubt Solver fields
   assignedCourses?: string[]; // Array of courseIds
+  currentSessionId?: string;
+  lastLoginAt?: Timestamp;
 };
 
 export type Referral = {
@@ -920,3 +935,4 @@ export type DoubtSession = {
     sessionName: string;
     assignedDoubtSolverIds: string[];
     createdAt: Timestamp;
+};
