@@ -3,25 +3,34 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getEnrollmentsByUserId, getOrdersByUserId, getCourses } from '@/lib/firebase/firestore';
-import type { Enrollment, Order, Course } from '@/lib/types';
+import { getEnrollmentsByUserId, getOrdersByUserId, getCourses, getInvoiceByEnrollmentId, getDocument, getCourse } from '@/lib/firebase/firestore';
+import type { Enrollment, Order, Course, Invoice } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye } from 'lucide-react';
+import { Eye, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { InvoiceView } from '@/components/invoice-view';
+import { createInvoiceAction } from '@/app/actions/invoice.actions';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [loadingInvoice, setLoadingInvoice] = useState(false);
 
     useEffect(() => {
         if (!userInfo) {
@@ -47,6 +56,38 @@ export default function StudentPaymentsPage() {
         }
         fetchData();
     }, [userInfo, authLoading]);
+    
+    const handleViewInvoice = async (enrollment: Enrollment) => {
+        if (!userInfo) return;
+        setIsInvoiceOpen(true);
+        setLoadingInvoice(true);
+        try {
+            let invoice: Invoice | null = null;
+            if (enrollment.invoiceId) {
+                invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
+            }
+            if (!invoice) {
+                invoice = await getInvoiceByEnrollmentId(enrollment.id!);
+            }
+            if (!invoice) {
+                const course = courses.find(c => c.id === enrollment.courseId);
+                if (course) {
+                    const result = await createInvoiceAction(enrollment, userInfo, course);
+                    if (result.success && result.invoiceId) {
+                        invoice = await getDocument<Invoice>('invoices', result.invoiceId);
+                    } else {
+                        throw new Error(result.message || "Failed to create invoice.");
+                    }
+                }
+            }
+            setSelectedInvoice(invoice);
+        } catch (error: any) {
+            toast({ title: 'Error', description: `Could not load invoice: ${error.message}`, variant: 'destructive' });
+            setIsInvoiceOpen(false);
+        } finally {
+            setLoadingInvoice(false);
+        }
+    };
 
     if (loading || authLoading) {
         return (
@@ -94,7 +135,7 @@ export default function StudentPaymentsPage() {
                                             <TableCell>{format(safeToDate(e.enrollmentDate), 'PPP')}</TableCell>
                                             <TableCell>৳{e.totalFee?.toFixed(2) || '0.00'}</TableCell>
                                             <TableCell>
-                                                <Button variant="outline" size="sm" disabled>
+                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e)}>
                                                     <Eye className="mr-2 h-4 w-4"/> View
                                                 </Button>
                                             </TableCell>
@@ -136,6 +177,17 @@ export default function StudentPaymentsPage() {
                      </Card>
                 </TabsContent>
             </Tabs>
+             <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
+                <DialogContent className="max-w-4xl p-0">
+                   <div className="max-h-[80vh] overflow-y-auto">
+                        {loadingInvoice ? (
+                            <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+                        ) : selectedInvoice ? (
+                            <InvoiceView invoice={selectedInvoice} />
+                        ) : null}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

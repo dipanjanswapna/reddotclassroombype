@@ -481,7 +481,7 @@ export type PlannerTask = {
     listId?: string;
     title: string;
     description?: string;
-    date: string; // YYYY-MM-DD
+    date: string | Date; // Allow both for component state and DB
     time?: string; // HH:mm
     endTime?: string;
     status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
@@ -521,7 +521,7 @@ export type Goal = {
     title: string;
     description?: string;
     type: 'long_term' | 'short_term';
-    targetDate?: Timestamp;
+    targetDate?: Timestamp | Date;
     progress: number; // 0-100
     status: 'active' | 'achieved' | 'abandoned';
     createdAt?: Timestamp;
@@ -596,7 +596,7 @@ export type User = {
   avatarUrl: string;
   role: 'Student' | 'Teacher' | 'Guardian' | 'Admin' | 'Affiliate' | 'Moderator' | 'Seller' | 'Doubt Solver';
   status: 'Active' | 'Suspended' | 'Pending Approval';
-  joined: Timestamp;
+  joined: Timestamp | Date | string;
   className?: string;
   classRoll?: string;
   registrationNumber?: string;
