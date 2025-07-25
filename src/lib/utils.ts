@@ -97,5 +97,3 @@ export function getYoutubeVideoId(url: string): string | null {
   }
   return videoId;
 }
-
-    

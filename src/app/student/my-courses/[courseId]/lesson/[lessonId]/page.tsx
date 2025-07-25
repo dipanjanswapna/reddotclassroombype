@@ -18,6 +18,7 @@ import { LessonFeedback } from '@/components/lesson-feedback';
 import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { getYoutubeVideoId } from '@/lib/utils';
 
 const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
     ssr: false,
@@ -144,6 +145,7 @@ export default function LessonPage() {
   }
   
   const lessonUrl = `${window.location.origin}/student/my-courses/${courseId}/lesson/${lessonId}`;
+  const videoId = getYoutubeVideoId(lesson.videoId || '');
 
   return (
     <div className="space-y-8">
@@ -155,14 +157,20 @@ export default function LessonPage() {
       </div>
 
       <div className="aspect-video">
-        <iframe
-          className="w-full h-full rounded-lg"
-          src={`https://www.youtube.com/embed/${lesson.videoId}`}
-          title={lesson.title}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
+        {videoId ? (
+            <iframe
+            className="w-full h-full rounded-lg"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title={lesson.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            ></iframe>
+        ) : (
+            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+                <p>Could not load video.</p>
+            </div>
+        )}
       </div>
       
       <div className="grid md:grid-cols-3 gap-6">

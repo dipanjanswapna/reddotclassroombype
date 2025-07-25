@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -96,7 +97,7 @@ import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
 import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
-import { removeUndefinedValues, cn } from '@/lib/utils';
+import { removeUndefinedValues, cn, getYoutubeVideoId } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -245,7 +246,7 @@ function SortableSyllabusItem({
                     {item.type === 'video' && (
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor={`videoId-${item.id}`}>YouTube Video ID</Label>
+                                <Label htmlFor={`videoId-${item.id}`}>YouTube Video URL or ID</Label>
                                 <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} />
                             </div>
                              <div className="space-y-2">
