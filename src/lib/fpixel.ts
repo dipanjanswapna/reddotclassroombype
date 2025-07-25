@@ -67,5 +67,3 @@ export const trackLead = (leadType: string, options: Record<string, any> = {}) =
         lead_type: leadType,
     });
 };
-
-    

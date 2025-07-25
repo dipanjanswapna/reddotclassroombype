@@ -52,7 +52,7 @@ const FacebookComments = ({ href }: { href: string }) => {
         <AlertTriangle className="h-4 w-4 !text-blue-600 dark:!text-blue-400" />
         <AlertTitle className="text-blue-800 dark:text-blue-300">Developer Notice: Configuration Required</AlertTitle>
         <AlertDescription>
-          The Facebook Comments plugin is not fully configured. To make it work, you must replace ` + "`'YOUR_APP_ID'`" + ` with a real Facebook App ID in the <code>src/lib/fpixel.ts</code> file.
+          The Facebook Comments plugin is not fully configured. To make it work, you must replace `YOUR_APP_ID` with a real Facebook App ID in your <code>.env</code> file.
         </AlertDescription>
       </Alert>
     );
@@ -64,5 +64,3 @@ const FacebookComments = ({ href }: { href: string }) => {
 };
 
 export default FacebookComments;
-
-    
