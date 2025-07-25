@@ -23,7 +23,7 @@ interface TaskDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   editingTask: Partial<PlannerTask> | null;
-  onTaskSaved: (task: PlannerTask) => void;
+  onTaskSaved: () => void;
   lists: List[];
 }
 
@@ -70,7 +70,7 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
       
       await saveTask(dataToSave);
 
-      onTaskSaved(dataToSave as PlannerTask);
+      onTaskSaved();
       
       setIsSaving(false);
       setIsOpen(false);

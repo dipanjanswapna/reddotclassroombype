@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -51,7 +52,7 @@ export function StudyPlannerClient() {
     const [editingTask, setEditingTask] = useState<Partial<PlannerTask> | null>(null);
 
     const [activeTask, setActiveTask] = useState<PlannerTask | null>(null);
-    const [activeListId, setActiveListId] = useState<string | 'all'>('all');
+    const [activeListId, setActiveListId] = useState<string>('all');
     
     const [pomodoroDurations, setPomodoroDurations] = useState({
         work: 25,
@@ -85,15 +86,15 @@ export function StudyPlannerClient() {
     }, [userInfo, toast]);
 
     useEffect(() => {
-        fetchAllData();
-    }, [fetchAllData]);
-
-    const handleTaskSaved = (savedTask: PlannerTask) => {
-        if (savedTask.id && tasks.some(t => t.id === savedTask.id)) {
-            setTasks(prev => prev.map(t => t.id === savedTask.id ? savedTask : t));
-        } else {
-            fetchAllData(); // Refetch to get new item with real ID
+        if (!userInfo?.uid) {
+            setLoading(false);
+            return;
         }
+        fetchAllData();
+    }, [userInfo?.uid, fetchAllData]);
+
+    const handleTaskSaved = () => {
+        fetchAllData(); 
     }
     
     const handleEditTask = (task: PlannerTask) => {
@@ -102,7 +103,7 @@ export function StudyPlannerClient() {
     };
 
     const handleAddTask = (status: PlannerTask['status']) => {
-        setEditingTask({ status });
+        setEditingTask({ status, listId: activeListId === 'all' ? undefined : activeListId });
         setIsTaskDialogOpen(true);
     };
     

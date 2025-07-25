@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -29,15 +30,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface FolderListSidebarProps {
   folders: Folder[];
   lists: List[];
   onFoldersChange: React.Dispatch<React.SetStateAction<Folder[]>>;
   onListsChange: React.Dispatch<React.SetStateAction<List[]>>;
+  onSelectList: (listId: string) => void;
+  activeListId: string;
 }
 
-export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChange }: FolderListSidebarProps) {
+export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChange, onSelectList, activeListId }: FolderListSidebarProps) {
     const { userInfo } = useAuth();
     const { toast } = useToast();
     const [newFolderName, setNewFolderName] = useState('');
@@ -53,6 +57,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
         const newFolder: Partial<Folder> = { name: newFolderName, userId: userInfo.uid, createdAt: new Date() as any };
         await saveFolder(newFolder);
         
+        // This is a temporary update. A proper implementation would refetch or get the ID back.
         onFoldersChange(prev => [...prev, { ...newFolder, id: `temp-${Date.now()}` }]);
         
         setNewFolderName('');
@@ -64,7 +69,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
         if (!newList.name.trim() || !userInfo) return;
 
         const newListData: Partial<List> = { 
-            ...newList, 
+            name: newList.name,
             folderId: newList.folderId === 'none' ? undefined : newList.folderId,
             userId: userInfo.uid, 
             createdAt: new Date() as any 
@@ -108,6 +113,8 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
             <Button variant="outline" className="w-full" onClick={() => setIsFolderDialogOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> New Folder</Button>
             <Button variant="outline" className="w-full" onClick={() => setIsListDialogOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> New List</Button>
         </div>
+
+        <Button onClick={() => onSelectList('all')} variant={activeListId === 'all' ? 'secondary' : 'ghost'} className="w-full justify-start gap-2">All Tasks</Button>
         
         <Accordion type="multiple" className="w-full">
           {folders.map(folder => (
@@ -130,7 +137,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
                  <div className="space-y-1">
                     {lists.filter(l => l.folderId === folder.id).map(list => (
                         <div key={list.id} className="flex items-center group">
-                            <Button variant="ghost" className="w-full justify-start gap-2 h-8 flex-grow">
+                            <Button variant={activeListId === list.id ? 'secondary' : 'ghost'} className="w-full justify-start gap-2 h-8 flex-grow" onClick={() => onSelectList(list.id!)}>
                                 <ListIcon className="h-4 w-4"/> {list.name}
                             </Button>
                              <DropdownMenu>
@@ -153,7 +160,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
         <div className="space-y-1 pt-4 border-t">
            {unassignedLists.map(list => (
                 <div key={list.id} className="flex items-center group">
-                    <Button variant="ghost" className="w-full justify-start gap-2 h-8 flex-grow">
+                    <Button variant={activeListId === list.id ? 'secondary' : 'ghost'} className="w-full justify-start gap-2 h-8 flex-grow" onClick={() => onSelectList(list.id!)}>
                         <ListIcon className="h-4 w-4"/> {list.name}
                     </Button>
                      <DropdownMenu>
