@@ -8,7 +8,7 @@ export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || 'Y
 
 // IMPORTANT: Replace with your actual Facebook App ID if you use Facebook Login or other plugins.
 // NEXT_PUBLIC_FACEBOOK_APP_ID=your-app-id-here
-export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || 'YOUR_APP_ID';
+export const FACEBOOK_APP_ID = "1260770405611208";
 
 
 declare global {
