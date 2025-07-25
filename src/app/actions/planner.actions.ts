@@ -13,18 +13,18 @@ import {
 } from '@/lib/firebase/firestore';
 import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
-import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { doc, writeBatch, Timestamp } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { createGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent } from '@/lib/google-calendar';
 
 
 // Folders
 export async function saveFolder(folder: Partial<Folder>) {
-  const dataToSave = { ...folder, updatedAt: serverTimestamp() };
+  const dataToSave = { ...folder, updatedAt: Timestamp.now() };
   if (folder.id) {
     await updateDocument('folders', folder.id, dataToSave);
   } else {
-    await addDocument('folders', { ...dataToSave, createdAt: serverTimestamp() });
+    await addDocument('folders', { ...dataToSave, createdAt: Timestamp.now() });
   }
   revalidatePath('/student/planner');
 }
@@ -51,11 +51,11 @@ export async function deleteFolder(folderId: string) {
 
 // Lists
 export async function saveList(list: Partial<List>) {
-  const dataToSave = { ...list, updatedAt: serverTimestamp() };
+  const dataToSave = { ...list, updatedAt: Timestamp.now() };
   if (list.id) {
     await updateDocument('lists', list.id, dataToSave);
   } else {
-    await addDocument('lists', { ...dataToSave, createdAt: serverTimestamp() });
+    await addDocument('lists', { ...dataToSave, createdAt: Timestamp.now() });
   }
   revalidatePath('/student/planner');
 }
@@ -76,7 +76,7 @@ export async function deleteList(listId: string) {
 
 // Tasks
 export async function saveTask(task: Partial<PlannerTask>) {
-  let dataToSave = { ...task, lastUpdatedAt: serverTimestamp() };
+  let dataToSave = { ...task, lastUpdatedAt: Timestamp.now() };
   const user = await getUser(task.userId!);
 
   if (user?.googleCalendarTokens?.refreshToken && task.date) {
@@ -100,7 +100,7 @@ export async function saveTask(task: Partial<PlannerTask>) {
   if (task.id) {
     await updateDocument('tasks', task.id, dataToSave);
   } else {
-    await addDocument('tasks', { ...dataToSave, createdAt: serverTimestamp() });
+    await addDocument('tasks', { ...dataToSave, createdAt: Timestamp.now() });
   }
   revalidatePath('/student/planner');
 }
@@ -124,11 +124,11 @@ export async function deleteTask(taskId: string, userId: string) {
 
 // Goals
 export async function saveGoal(goal: Partial<Goal>) {
-  const dataToSave = { ...goal, updatedAt: serverTimestamp() };
+  const dataToSave = { ...goal, updatedAt: Timestamp.now() };
   if (goal.id) {
     await updateDocument('goals', goal.id, dataToSave);
   } else {
-    await addDocument('goals', { ...goal, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    await addDocument('goals', { ...goal, createdAt: Timestamp.now(), updatedAt: Timestamp.now() });
   }
   revalidatePath('/student/planner');
 }
