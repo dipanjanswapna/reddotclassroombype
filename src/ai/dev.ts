@@ -36,6 +36,5 @@ import '@/app/actions/product.actions';
 import '@/app/actions/order.actions';
 import '@/app/actions/store.actions';
 import '@/app/actions/reward.actions';
+import '@/app/actions/auth.actions';
 import '@/app/actions/planner.actions';
-
-    

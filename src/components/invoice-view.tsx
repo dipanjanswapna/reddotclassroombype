@@ -291,5 +291,3 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
     </div>
   );
 }
-
-    

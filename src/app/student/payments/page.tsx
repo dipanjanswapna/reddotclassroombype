@@ -41,16 +41,15 @@ export default function StudentPaymentsPage() {
     const [loadingInvoice, setLoadingInvoice] = useState(false);
 
     useEffect(() => {
-        if (!userInfo) {
-            if (!authLoading) setLoading(false);
-            return;
-        }
-
-        async function fetchData() {
+        const fetchData = async () => {
+            if (!userInfo) {
+                setLoading(false);
+                return;
+            }
             try {
                 const [enrollmentsData, ordersData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo!.uid),
-                    getOrdersByUserId(userInfo!.uid),
+                    getEnrollmentsByUserId(userInfo.uid),
+                    getOrdersByUserId(userInfo.uid),
                 ]);
 
                 if (enrollmentsData.length > 0) {
@@ -78,8 +77,12 @@ export default function StudentPaymentsPage() {
             } finally {
                 setLoading(false);
             }
+        };
+        
+        if (!authLoading) {
+            fetchData();
         }
-        fetchData();
+
     }, [userInfo, authLoading, toast]);
     
     const handleViewInvoice = async (enrollment: Enrollment) => {
@@ -95,15 +98,18 @@ export default function StudentPaymentsPage() {
                 throw new Error("Could not find course details to generate invoice.");
             }
 
-            let invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId || enrollment.id);
+            let invoice: Invoice | null = null;
+            if(enrollment.invoiceId) {
+                invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
+            }
             
             if (!invoice) {
-                invoice = await createInvoiceAction(enrollment, userInfo, course).then(async (res) => {
-                    if (res.success && res.invoiceId) {
-                        return await getDocument<Invoice>('invoices', res.invoiceId);
-                    }
-                    throw new Error(res.message || "Failed to create invoice");
-                });
+                const creationResult = await createInvoiceAction(enrollment, userInfo, course);
+                if (creationResult.success && creationResult.invoiceId) {
+                    invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
+                } else {
+                    throw new Error(creationResult.message || "Failed to create invoice");
+                }
             }
 
             if (invoice) {
@@ -166,7 +172,7 @@ export default function StudentPaymentsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {transactions.map(t => (
+                                {transactions.length > 0 ? transactions.map(t => (
                                     <TableRow key={t.id}>
                                         <TableCell>{t.courseName}</TableCell>
                                         <TableCell>{format(t.date, 'PPP')}</TableCell>
@@ -177,12 +183,11 @@ export default function StudentPaymentsPage() {
                                             </Button>
                                         </TableCell>
                                     </TableRow>
-                                ))}
-                                 {transactions.length === 0 && (
+                                )) : (
                                     <TableRow>
                                         <TableCell colSpan={4} className="h-24 text-center">No course enrollments found.</TableCell>
                                     </TableRow>
-                                 )}
+                                )}
                                 </TableBody>
                             </Table>
                         </CardContent>
@@ -237,5 +242,3 @@ export default function StudentPaymentsPage() {
         </div>
     );
 }
-
-    

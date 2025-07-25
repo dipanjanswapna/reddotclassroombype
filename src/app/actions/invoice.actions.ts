@@ -90,5 +90,3 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         return { success: false, message: error.message };
     }
 }
-
-    

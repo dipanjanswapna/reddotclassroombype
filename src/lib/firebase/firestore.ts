@@ -420,9 +420,9 @@ export const getUsersByBatchId = async (batchId: string): Promise<User[]> => {
 export const addUser = (user: Partial<User>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
-    const { id, ...userData } = user;
-    if (!id) throw new Error("User must have a UID to be added.");
-    return setDoc(doc(db, 'users', id), userData);
+    const { uid, ...userData } = user;
+    if (!uid) throw new Error("User must have a UID to be added.");
+    return setDoc(doc(db, 'users', uid), userData);
 }
 export const updateUser = (id: string, user: Partial<User>) => {
     const db = getDbInstance();
@@ -1288,7 +1288,3 @@ export const markStudentAsCounseled = async (studentId: string) => {
     const userRef = doc(db, 'users', studentId);
     return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
 };
-
-    
-
-    
