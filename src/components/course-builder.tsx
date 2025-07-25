@@ -54,6 +54,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragOverlay,
+  Active,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -94,7 +96,7 @@ import {
     CommandItem,
 } from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
-import { generateQuizForLesson } from '@/ai/flows/ai-quiz-generator-flow';
+import { generateQuizForLesson, AiQuizGeneratorInput } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { removeUndefinedValues, cn, getYoutubeVideoId } from '@/lib/utils';
@@ -759,7 +761,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   
   const handleGenerateQuiz = async (lesson: LessonData) => {
     try {
-      const input = {
+      const input: AiQuizGeneratorInput = {
         lessonTitle: lesson.title,
         courseContext: `This lesson is part of the course "${courseTitle}". The course is about: ${description}.`,
       };

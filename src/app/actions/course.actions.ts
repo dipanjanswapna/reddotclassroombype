@@ -15,7 +15,7 @@ import {
     getPromoCodes,
     getInstructorBySlug
 } from '@/lib/firebase/firestore';
-import { Course, User, PromoCode, Instructor, Enrollment } from '@/lib/types';
+import { Course, User, PromoCode, Instructor, Enrollment, QuizTemplate } from '@/lib/types';
 import { getDbInstance } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
@@ -46,6 +46,22 @@ export async function saveCourseAction(courseData: Partial<Course>) {
             }
         }
     }
+    
+    // Auto-save new quiz templates before saving the course
+    const quizTemplatesToSave: QuizTemplate[] = [];
+    if(data.quizTemplates && Array.isArray(data.quizTemplates)) {
+        for (const template of data.quizTemplates) {
+            if (!template.id.startsWith('quiz_')) { 
+                const { id, ...newQuizData } = template;
+                const newQuizRef = await addDoc(collection(db, 'quiz_templates'), newQuizData);
+                quizTemplatesToSave.push({ ...template, id: newQuizRef.id });
+            } else {
+                quizTemplatesToSave.push(template);
+            }
+        }
+        data.quizTemplates = quizTemplatesToSave;
+    }
+
 
     // Clean the object of any undefined values before sending to Firestore
     const cleanData = removeUndefinedValues(data);
