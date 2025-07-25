@@ -348,17 +348,28 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
-export const getUserByRegistrationNumber = async (registrationNumber: string): Promise<User | null> => {
-    const db = getDbInstance();
-    if (!db) return null;
-    const q = query(collection(db, 'users'), where('registrationNumber', '==', registrationNumber));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
-    const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() } as User;
-}
+export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId: string | null}> => {
+  const db = getDbInstance();
+  if (!db) return { userId: null };
+  
+  // Try searching by registration number first
+  let q = query(collection(db, 'users'), where('registrationNumber', '==', id));
+  let querySnapshot = await getDocs(q);
+  
+  if (!querySnapshot.empty) {
+    return { userId: querySnapshot.docs[0].id };
+  }
+  
+  // If not found, try searching by class roll
+  q = query(collection(db, 'users'), where('classRoll', '==', id));
+  querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    return { userId: querySnapshot.docs[0].id };
+  }
+  
+  return { userId: null };
+};
 export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
     const db = getDbInstance();
     if (!db) return null;
@@ -1249,3 +1260,5 @@ export const markStudentAsCounseled = async (studentId: string) => {
     const userRef = doc(db, 'users', studentId);
     return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
 };
+
+    
