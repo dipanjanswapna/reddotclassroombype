@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -52,6 +51,7 @@ export function StudyPlannerClient() {
     const [editingTask, setEditingTask] = useState<Partial<PlannerTask> | null>(null);
 
     const [activeTask, setActiveTask] = useState<PlannerTask | null>(null);
+    const [activeListId, setActiveListId] = useState<string | 'all'>('all');
     
     const [pomodoroDurations, setPomodoroDurations] = useState({
         work: 25,
@@ -101,8 +101,8 @@ export function StudyPlannerClient() {
         setIsTaskDialogOpen(true);
     };
 
-    const handleAddTask = () => {
-        setEditingTask(null);
+    const handleAddTask = (status: PlannerTask['status']) => {
+        setEditingTask({ status });
         setIsTaskDialogOpen(true);
     };
     
@@ -122,13 +122,18 @@ export function StudyPlannerClient() {
         setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
     };
 
+    const filteredTasks = useMemo(() => {
+        if (activeListId === 'all') return tasks;
+        return tasks.filter(t => t.listId === activeListId);
+    }, [tasks, activeListId]);
+
     const columns = useMemo(() => {
         return {
-            todo: tasks.filter(t => t.status === 'todo'),
-            in_progress: tasks.filter(t => t.status === 'in_progress'),
-            completed: tasks.filter(t => t.status === 'completed'),
+            todo: filteredTasks.filter(t => t.status === 'todo'),
+            in_progress: filteredTasks.filter(t => t.status === 'in_progress'),
+            completed: filteredTasks.filter(t => t.status === 'completed'),
         };
-    }, [tasks]);
+    }, [filteredTasks]);
     
      const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -201,7 +206,7 @@ export function StudyPlannerClient() {
                             <TabsTrigger value="goals">Goals</TabsTrigger>
                             <TabsTrigger value="settings">Settings</TabsTrigger>
                         </TabsList>
-                        <Button onClick={handleAddTask}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
+                        <Button onClick={() => handleAddTask('todo')}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
@@ -211,6 +216,8 @@ export function StudyPlannerClient() {
                                 lists={lists} 
                                 onFoldersChange={setFolders}
                                 onListsChange={setLists}
+                                onSelectList={setActiveListId}
+                                activeListId={activeListId}
                             />
                             <PomodoroTimer 
                                 tasks={tasks}
@@ -222,17 +229,17 @@ export function StudyPlannerClient() {
                         <div className="lg:col-span-3">
                             <TabsContent value="board">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <Column id="todo" title="To Do" onAddTask={handleAddTask}>
+                                    <Column id="todo" title="To Do" onAddTask={() => handleAddTask('todo')}>
                                         <SortableContext items={columns.todo.map(t => t.id!)} strategy={verticalListSortingStrategy}>
                                             {columns.todo.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                         </SortableContext>
                                     </Column>
-                                    <Column id="in_progress" title="In Progress" onAddTask={handleAddTask}>
+                                    <Column id="in_progress" title="In Progress" onAddTask={() => handleAddTask('in_progress')}>
                                         <SortableContext items={columns.in_progress.map(t => t.id!)} strategy={verticalListSortingStrategy}>
                                              {columns.in_progress.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                         </SortableContext>
                                     </Column>
-                                    <Column id="completed" title="Completed" onAddTask={handleAddTask}>
+                                    <Column id="completed" title="Completed" onAddTask={() => handleAddTask('completed')}>
                                         <SortableContext items={columns.completed.map(t => t.id!)} strategy={verticalListSortingStrategy}>
                                              {columns.completed.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                         </SortableContext>

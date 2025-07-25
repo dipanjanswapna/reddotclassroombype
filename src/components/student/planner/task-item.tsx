@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlannerTask } from "@/lib/types";
-import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Clock } from "lucide-react";
+import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Clock, GripVertical } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { format, isPast, isToday } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -52,20 +52,23 @@ export function TaskItem({ task, onEdit, onDelete, onUpdate }: TaskItemProps) {
     };
     
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes}>
         <Card className="p-3 cursor-grab active:cursor-grabbing">
-            <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2">
-                    {eventIcons[task.type]}
-                    <p className="font-semibold text-sm leading-tight">{task.title}</p>
+             <div className="flex justify-between items-start">
+                <div className="flex items-start gap-2">
+                     <div {...listeners} className="cursor-grab pt-0.5">
+                        <GripVertical className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="font-semibold text-sm leading-tight flex-grow">{task.title}</p>
                 </div>
                 <div className="flex gap-1">
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onEdit}><Edit className="h-3 w-3" /></Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onDelete}><Trash2 className="h-3 w-3 text-destructive" /></Button>
                 </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {task.description && <p className="text-xs text-muted-foreground mt-1 ml-7">{task.description}</p>}
+            <div className="flex items-center gap-2 mt-2 flex-wrap ml-7">
+                {eventIcons[task.type]}
                 {task.courseTitle && <Badge variant="secondary">{task.courseTitle}</Badge>}
                 {task.time && <Badge variant="outline" className="flex items-center gap-1"><Clock className="h-3 w-3"/>{task.time}</Badge>}
                 {task.priority && <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>}
