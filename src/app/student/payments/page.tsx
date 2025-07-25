@@ -47,7 +47,12 @@ export default function StudentPaymentsPage() {
                     getCourses()
                 ]);
 
-                setEnrollments(enrollmentsData.sort((a,b) => safeToDate(b.enrollmentDate).getTime() - safeToDate(a.enrollmentDate).getTime()));
+                const processedEnrollments = enrollmentsData.map(e => ({
+                    ...e,
+                    enrollmentDate: safeToDate(e.enrollmentDate) // Ensure it's a Date object
+                })).sort((a,b) => b.enrollmentDate.getTime() - a.enrollmentDate.getTime());
+                
+                setEnrollments(processedEnrollments);
                 setOrders(ordersData);
                 setCourses(coursesData);
             } catch (error) {
@@ -152,7 +157,7 @@ export default function StudentPaymentsPage() {
                                     return (
                                         <TableRow key={e.id}>
                                             <TableCell>{course?.title || 'Unknown Course'}</TableCell>
-                                            <TableCell>{format(safeToDate(e.enrollmentDate), 'PPP')}</TableCell>
+                                            <TableCell>{format(e.enrollmentDate, 'PPP')}</TableCell>
                                             <TableCell>৳{e.totalFee?.toFixed(2) || '0.00'}</TableCell>
                                             <TableCell>
                                                 <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e)}>
