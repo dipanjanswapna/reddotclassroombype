@@ -39,53 +39,52 @@ export default function StudentPaymentsPage() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [loadingInvoice, setLoadingInvoice] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!userInfo) {
-                setLoading(false);
-                return;
+    const fetchData = useCallback(async () => {
+        if (!userInfo) return;
+        
+        setLoading(true);
+        try {
+            const [enrollmentsData, ordersData] = await Promise.all([
+                getEnrollmentsByUserId(userInfo.uid),
+                getOrdersByUserId(userInfo.uid),
+            ]);
+            
+            if (enrollmentsData.length > 0) {
+                const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
+                const coursesData = await getCoursesByIds(courseIds);
+                const coursesMap = new Map(coursesData.map(c => [c.id, c]));
+
+                const processedTransactions = enrollmentsData.map(e => {
+                    const course = coursesMap.get(e.courseId);
+                    return {
+                        id: e.id!,
+                        courseName: course?.title || 'Unknown Course',
+                        date: safeToDate(e.enrollmentDate),
+                        amount: e.totalFee || 0,
+                        enrollment: e,
+                    };
+                }).sort((a,b) => b.date.getTime() - a.date.getTime());
+                setTransactions(processedTransactions);
+            } else {
+                setTransactions([]);
             }
             
-            setLoading(true);
-            try {
-                const [enrollmentsData, ordersData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo.uid),
-                    getOrdersByUserId(userInfo.uid),
-                ]);
-                
-                if (enrollmentsData.length > 0) {
-                    const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
-                    const coursesData = await getCoursesByIds(courseIds);
-                    const coursesMap = new Map(coursesData.map(c => [c.id, c]));
-
-                    const processedTransactions = enrollmentsData.map(e => {
-                        const course = coursesMap.get(e.courseId);
-                        return {
-                            id: e.id!,
-                            courseName: course?.title || 'Unknown Course',
-                            date: safeToDate(e.enrollmentDate),
-                            amount: e.totalFee || 0,
-                            enrollment: e,
-                        };
-                    }).sort((a,b) => b.date.getTime() - a.date.getTime());
-                    setTransactions(processedTransactions);
-                } else {
-                    setTransactions([]);
-                }
-                
-                setOrders(ordersData.sort((a, b) => safeToDate(b.createdAt).getTime() - safeToDate(a.createdAt).getTime()));
-            } catch (error) {
-                console.error("Error fetching payment data:", error);
-                toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive'});
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        if (!authLoading) {
-            fetchData();
+            setOrders(ordersData.sort((a, b) => safeToDate(b.createdAt).getTime() - safeToDate(a.createdAt).getTime()));
+        } catch (error) {
+            console.error("Error fetching payment data:", error);
+            toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive'});
+        } finally {
+            setLoading(false);
         }
-    }, [authLoading, userInfo, toast]);
+    }, [userInfo, toast]);
+    
+    useEffect(() => {
+        if (!authLoading && userInfo) {
+            fetchData();
+        } else if (!authLoading && !userInfo) {
+            setLoading(false);
+        }
+    }, [authLoading, userInfo, fetchData]);
     
     const handleViewInvoice = async (enrollment: Enrollment) => {
         if (!userInfo || !enrollment.id) return;
