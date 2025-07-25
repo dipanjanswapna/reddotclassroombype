@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -23,11 +21,18 @@ const FacebookComments = ({ href }: { href: string }) => {
       }
     };
     
+    // If the SDK is already loaded, just parse the new comments plugin
+    if (typeof window.FB !== 'undefined') {
+        window.FB.XFBML.parse();
+        return;
+    }
+    
+    // If the script is already in the DOM, it might be loading, so just wait
     if (document.getElementById('facebook-jssdk')) {
-      initializeFacebookSDK();
       return;
     }
 
+    // Otherwise, create and load the script
     if (!document.getElementById('fb-root')) {
       const fbRoot = document.createElement('div');
       fbRoot.id = 'fb-root';
