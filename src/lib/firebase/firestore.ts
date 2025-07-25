@@ -536,12 +536,6 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as Invoice;
   }
-
-  // Fallback for older data where the invoiceId might be the same as enrollmentId
-  const directInvoiceDoc = await getDocument<Invoice>('invoices', enrollmentId);
-    if (directInvoiceDoc) {
-        return directInvoiceDoc;
-    }
   
   return null;
 };

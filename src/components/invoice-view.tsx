@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -153,23 +152,21 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
 
   return (
     <div className={`flex flex-col items-center gap-6 p-4 bg-gray-100 dark:bg-gray-900 ${className}`}>
-        <style jsx global>{`
-            @media print {
-                body * {
-                    visibility: hidden;
-                }
-                #printable-invoice, #printable-invoice * {
-                    visibility: visible;
-                }
-                #printable-invoice {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                }
-            }
-        `}</style>
-        <div id="printable-invoice" ref={printAreaRef} className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border">
+        <div className="flex justify-end w-full max-w-4xl gap-2 print:hidden">
+            <Button onClick={handleDownload} disabled={isDownloading} size="sm">
+                {isDownloading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                )}
+                Download
+            </Button>
+             <Button variant="outline" onClick={handlePrint} size="sm">
+                <Printer className="mr-2 h-4 w-4" />
+                Print
+            </Button>
+        </div>
+        <div id="printable-invoice" ref={printAreaRef} className="bg-white p-6 sm:p-8 rounded-lg w-full max-w-4xl text-gray-800 shadow-lg border print-container">
             <header className="flex flex-col sm:flex-row justify-between items-start pb-6 gap-4">
                 <div className="flex items-center gap-4">
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
@@ -273,21 +270,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                  <p className="mt-1 font-mono">{invoice.invoiceNumber}</p>
             </footer>
         </div>
-        
-        <div className="flex gap-4">
-            <Button onClick={handleDownload} disabled={isDownloading}>
-                {isDownloading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Download className="mr-2 h-4 w-4" />
-                )}
-                Download
-            </Button>
-             <Button variant="outline" onClick={handlePrint}>
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-            </Button>
-        </div>
     </div>
   );
 }
+
