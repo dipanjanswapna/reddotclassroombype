@@ -1,4 +1,5 @@
 
+
 declare namespace NodeJS {
   interface ProcessEnv {
     NEXT_PUBLIC_FIREBASE_API_KEY: string;
@@ -11,3 +12,5 @@ declare namespace NodeJS {
     NEXT_PUBLIC_FACEBOOK_APP_ID: string;
   }
 }
+
+    

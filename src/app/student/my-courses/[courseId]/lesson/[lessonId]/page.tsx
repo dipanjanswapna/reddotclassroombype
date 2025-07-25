@@ -1,4 +1,5 @@
 
+
 'use client'; 
 
 import { notFound, useParams } from 'next/navigation';
@@ -13,6 +14,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { markLessonAsCompleteAction } from '@/app/actions/progress.actions';
+import { LessonFeedback } from '@/components/lesson-feedback';
+import dynamic from 'next/dynamic';
+
+const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
+    ssr: false,
+    loading: () => <Skeleton className="h-24 w-full" />,
+});
+
 
 export default function LessonPage() {
   const params = useParams();
@@ -93,6 +102,8 @@ export default function LessonPage() {
   if (!course || !lesson) {
     notFound();
   }
+  
+  const lessonUrl = `${window.location.origin}/student/my-courses/${courseId}/lesson/${lessonId}`;
 
   return (
     <div className="space-y-8">
@@ -114,24 +125,44 @@ export default function LessonPage() {
         ></iframe>
       </div>
       
-      <div className="flex flex-wrap gap-4 items-center">
-        {lesson.lectureSheetUrl && (
-          <Button asChild>
-            <a
-              href={lesson.lectureSheetUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Download className="mr-2" />
-              Download Lecture Sheet
-            </a>
-          </Button>
-        )}
-        <Button onClick={handleMarkComplete} disabled={!!isCompleted || isCompleting} variant={isCompleted ? 'secondary' : 'default'}>
-          {isCompleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-          {isCompleted ? 'Completed' : 'Mark as Complete'}
-        </Button>
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 flex flex-col gap-4">
+             <div className="flex flex-wrap gap-4 items-center">
+                {lesson.lectureSheetUrl && (
+                <Button asChild>
+                    <a
+                    href={lesson.lectureSheetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >
+                    <Download className="mr-2" />
+                    Download Lecture Sheet
+                    </a>
+                </Button>
+                )}
+                <Button onClick={handleMarkComplete} disabled={!!isCompleted || isCompleting} variant={isCompleted ? 'secondary' : 'default'}>
+                {isCompleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                {isCompleted ? 'Completed' : 'Mark as Complete'}
+                </Button>
+            </div>
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <MessageSquare />
+                        Lesson Discussion
+                    </CardTitle>
+                </CardHeader>
+                 <CardContent>
+                    <FacebookComments href={lessonUrl} />
+                </CardContent>
+            </Card>
+        </div>
+        <div className="md:col-span-1">
+             <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lessonId} />
+        </div>
       </div>
     </div>
   );
 }
+
+    

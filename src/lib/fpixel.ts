@@ -1,4 +1,5 @@
 
+
 'use client';
 
 // IMPORTANT: Replace with your actual Facebook Pixel ID in your .env.local file.
@@ -7,7 +8,7 @@ export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || 'Y
 
 // IMPORTANT: Replace with your actual Facebook App ID if you use Facebook Login or other plugins.
 // NEXT_PUBLIC_FACEBOOK_APP_ID=your-app-id-here
-export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
+export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || 'YOUR_APP_ID';
 
 
 declare global {
@@ -66,3 +67,5 @@ export const trackLead = (leadType: string, options: Record<string, any> = {}) =
         lead_type: leadType,
     });
 };
+
+    
