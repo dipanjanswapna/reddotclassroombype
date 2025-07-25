@@ -44,7 +44,7 @@ export default function StudentPaymentsPage() {
             setLoading(false);
             return;
         }
-        setLoading(true);
+        
         try {
             const [enrollmentsData, ordersData] = await Promise.all([
                 getEnrollmentsByUserId(userInfo.uid),
@@ -71,7 +71,7 @@ export default function StudentPaymentsPage() {
                 setTransactions([]);
             }
             
-            setOrders(ordersData);
+            setOrders(ordersData.sort((a, b) => safeToDate(b.createdAt).getTime() - safeToDate(a.createdAt).getTime()));
         } catch (error) {
             console.error("Error fetching payment data:", error);
             toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive'});
@@ -81,10 +81,12 @@ export default function StudentPaymentsPage() {
     }, [userInfo, toast]);
     
     useEffect(() => {
-        if (!authLoading) {
+        if (!authLoading && userInfo) {
             fetchData();
+        } else if (!authLoading) {
+            setLoading(false);
         }
-    }, [authLoading, fetchData]);
+    }, [authLoading, userInfo, fetchData]);
     
     const handleViewInvoice = async (enrollment: Enrollment) => {
         if (!userInfo || !enrollment.id) return;
@@ -105,12 +107,7 @@ export default function StudentPaymentsPage() {
             }
             
             if (!invoice) {
-                const creationResult = await createInvoiceAction(enrollment, userInfo, course);
-                if (creationResult.success && creationResult.invoiceId) {
-                    invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
-                } else {
-                    throw new Error(creationResult.message || "Failed to create invoice");
-                }
+                invoice = await createInvoiceAction(enrollment, userInfo, course).then(res => res.success && res.invoiceId ? getDocument<Invoice>('invoices', res.invoiceId) : null);
             }
 
             if (invoice) {
@@ -210,16 +207,15 @@ export default function StudentPaymentsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {orders.map(order => (
+                                {orders.length > 0 ? orders.map(order => (
                                     <TableRow key={order.id}>
                                         <TableCell className="font-mono">#{order.id?.slice(0,8)}</TableCell>
                                         <TableCell>{format(safeToDate(order.createdAt), 'PPP')}</TableCell>
                                         <TableCell>৳{order.totalAmount.toFixed(2)}</TableCell>
                                         <TableCell><Badge>{order.status}</Badge></TableCell>
                                     </TableRow>
-                                ))}
-                                {orders.length === 0 && (
-                                    <TableRow>
+                                )) : (
+                                     <TableRow>
                                         <TableCell colSpan={4} className="h-24 text-center">No store orders found.</TableCell>
                                     </TableRow>
                                 )}
@@ -243,5 +239,3 @@ export default function StudentPaymentsPage() {
         </div>
     );
 }
-
-    
