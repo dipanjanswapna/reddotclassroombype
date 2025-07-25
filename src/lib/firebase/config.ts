@@ -50,4 +50,4 @@ function getAuthInstance(): Auth | null {
   return authInstance;
 }
 
-export { getDbInstance, getAuthInstance };
+export { getFirebaseApp, getDbInstance, getAuthInstance };
