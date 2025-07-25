@@ -31,10 +31,7 @@ export default function StudentPaymentsPage() {
     const { toast } = useToast();
 
     const fetchData = useCallback(async () => {
-        if (!userInfo) {
-            setLoading(false);
-            return;
-        }
+        if (!userInfo) return;
 
         try {
             const [enrollmentsData, ordersData] = await Promise.all([
@@ -78,10 +75,15 @@ export default function StudentPaymentsPage() {
     }, [userInfo, toast]);
     
     useEffect(() => {
-        if (userInfo) {
-            fetchData();
+        if (!authLoading) {
+            if (userInfo) {
+                fetchData();
+            } else {
+                // If there's no user and auth is not loading, we can stop loading.
+                setLoading(false);
+            }
         }
-    }, [userInfo, fetchData]);
+    }, [userInfo, authLoading, fetchData]);
 
     if (loading || authLoading) {
         return (
