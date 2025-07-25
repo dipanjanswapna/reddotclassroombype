@@ -1,4 +1,5 @@
 
+
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
@@ -16,7 +17,7 @@ let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
 let dbInstance: Firestore | null = null;
 
-function getFirebaseApp(): FirebaseApp | null {
+export function getFirebaseApp(): FirebaseApp | null {
   if (app) return app;
   
   if (!firebaseConfig.apiKey) {
@@ -50,4 +51,4 @@ function getAuthInstance(): Auth | null {
   return authInstance;
 }
 
-export { getFirebaseApp, getDbInstance, getAuthInstance };
+export { getDbInstance, getAuthInstance };

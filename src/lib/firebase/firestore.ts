@@ -17,6 +17,7 @@ import {
   orderBy,
   limit,
   Timestamp,
+  arrayUnion,
 } from 'firebase/firestore';
 import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask, Goal } from '../types';
 import { safeToDate } from '../utils';
@@ -1275,6 +1276,30 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
+
+export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    
+    // In this data model, announcements don't have a user-specific read status.
+    // A more complex system would have a subcollection like /users/{userId}/readAnnouncements
+    // For now, we can update an array field on the user's enrollment document.
+    const enrollments = await getEnrollmentsByUserId(userId);
+    const enrollment = enrollments.find(e => e.courseId === courseId);
+    if (!enrollment || !enrollment.id) {
+        throw new Error("User is not enrolled in this course.");
+    }
+    
+    const course = await getCourse(courseId);
+    if (!course?.announcements) return;
+
+    const announcementIds = course.announcements.map(a => a.id);
+    const enrollmentRef = doc(db, 'enrollments', enrollment.id);
+
+    await updateDoc(enrollmentRef, {
+        readAnnouncements: arrayUnion(...announcementIds)
+    });
+};
 
 export const markStudentAsCounseled = async (studentId: string) => {
     const db = getDbInstance();

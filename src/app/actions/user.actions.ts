@@ -12,11 +12,11 @@ import {
   getUserByEmailAndRole,
   updateUser,
   getEnrollmentsByUserId,
-  getPrebookingsByUserId,
   getSupportTicketsByUserId,
   getUsers as getUsersFromDb,
-  findUserByRegistrationOrRoll as findUserFromDb,
+  findUserByRegistrationOrRoll as findUserByRegistrationOrRollFromDb,
   markStudentAsCounseled,
+  getPrebookingsByUserId,
 } from '@/lib/firebase/firestore';
 import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc } from 'firebase/firestore';
@@ -26,7 +26,7 @@ import { getAuthInstance } from '@/lib/firebase/auth';
 
 
 export const getUsers = getUsersFromDb;
-export const findUserByRegistrationOrRoll = findUserFromDb;
+export const findUserByRegistrationOrRoll = findUserByRegistrationOrRollFromDb;
 
 export async function saveUserAction(userData: Partial<User>) {
     try {

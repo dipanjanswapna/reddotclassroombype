@@ -2,6 +2,8 @@
 import type { Metadata } from 'next';
 import SignupPageClient from './signup-client-page';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { Suspense } from 'react';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 export const metadata: Metadata = {
   title: 'Create an Account',
@@ -10,5 +12,9 @@ export const metadata: Metadata = {
 
 export default async function SignupPage() {
     const homepageConfig = await getHomepageConfig();
-    return <SignupPageClient homepageConfig={homepageConfig} />;
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center h-screen"><LoadingSpinner /></div>}>
+        <SignupPageClient homepageConfig={homepageConfig} />
+      </Suspense>
+    );
 }

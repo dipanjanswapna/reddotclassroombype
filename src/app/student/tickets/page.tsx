@@ -22,7 +22,8 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { getSupportTicketsByUserId, createSupportTicketAction } from '@/app/actions/support.actions';
+import { getSupportTicketsByUserId } from '@/lib/firebase/firestore';
+import { createSupportTicketAction } from '@/app/actions/support.actions';
 import type { SupportTicket } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { Loader2, PlusCircle } from 'lucide-react';
@@ -68,7 +69,11 @@ export default function StudentTicketsPage() {
     };
     
     useEffect(() => {
-        fetchTickets();
+        if (userInfo) {
+            fetchTickets();
+        } else {
+            setLoading(false);
+        }
     }, [userInfo]);
 
     const handleCreateTicket = async () => {
