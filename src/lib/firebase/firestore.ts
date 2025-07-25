@@ -1,4 +1,5 @@
 
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -489,7 +490,7 @@ export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) 
 // Categories
 export const getCategories = async (): Promise<string[]> => {
     const courses = await getCollection<Course>('courses');
-    const categories = new Set(courses.map(c => c.category));
+    const categories = new Set(courses.map(c => c.category).filter(Boolean));
     return Array.from(categories);
 }
 

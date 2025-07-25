@@ -249,19 +249,19 @@ export async function addLessonReactionAction(
         const lesson = courseData.syllabus?.flatMap(m => m.lessons).find(l => l.id === lessonId);
         
         if (lesson) {
-            for (const instructorInfo of courseData.instructors) {
-                const instructor = await getInstructorBySlug(instructorInfo.slug);
-                if (instructor?.userId) {
-                    await addNotification({
-                        userId: instructor.userId,
-                        icon: 'ThumbsUp',
-                        title: `New Reaction in ${courseData.title}`,
-                        description: `${studentName} reacted to your lesson: "${lesson.title}"`,
-                        date: Timestamp.now(),
-                        read: false,
-                        link: `/teacher/courses/builder/${courseId}`
-                    });
-                }
+            const lessonInstructorSlug = lesson.instructorSlug || courseData.instructors[0].slug;
+            const instructor = await getInstructorBySlug(lessonInstructorSlug);
+
+            if (instructor?.userId) {
+                await addNotification({
+                    userId: instructor.userId,
+                    icon: 'ThumbsUp',
+                    title: `New Reaction in ${courseData.title}`,
+                    description: `${studentName} reacted to your lesson: "${lesson.title}"`,
+                    date: Timestamp.now(),
+                    read: false,
+                    link: `/teacher/courses/builder/${courseId}`
+                });
             }
         }
     }
