@@ -48,18 +48,10 @@ export default async function AdminDashboardPage() {
   const enrollments: SerializableEnrollment[] = enrollmentsData.map(enrollment => {
       const { enrollmentDate, groupAccessedAt, ...rest } = enrollment;
 
-      const serializablePaymentDetails = rest.paymentDetails
-        ? {
-            ...rest.paymentDetails,
-            date: safeToDate(rest.paymentDetails.date).toISOString()
-          }
-        : undefined;
-
       return {
         ...rest,
         enrollmentDate: safeToDate(enrollmentDate).toISOString(),
         groupAccessedAt: groupAccessedAt ? safeToDate(groupAccessedAt).toISOString() : undefined,
-        paymentDetails: serializablePaymentDetails,
       } as SerializableEnrollment;
   });
 

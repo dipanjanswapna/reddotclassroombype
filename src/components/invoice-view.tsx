@@ -267,6 +267,10 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
             
             <footer className="mt-12 pt-6 border-t text-center text-xs text-gray-500">
                  <p>This is a digital invoice. You can find this on rdc.vercel.app/student/payments</p>
+                 <div className="flex justify-center items-center gap-4 mt-2">
+                    <Barcode />
+                 </div>
+                 <p className="mt-1 font-mono">{invoice.invoiceNumber}</p>
             </footer>
         </div>
         

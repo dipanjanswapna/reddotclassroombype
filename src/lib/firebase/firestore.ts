@@ -348,6 +348,19 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
+
+export const getUserByRegistrationNumber = async (regNo: string): Promise<User | null> => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'users'), where('registrationNumber', '==', regNo));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as User;
+}
+
 export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId: string | null}> => {
   const db = getDbInstance();
   if (!db) return { userId: null };
@@ -526,7 +539,7 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
         return { id: docSnap.id, ...docSnap.data() } as Invoice;
     }
 
-    // Fallback: Check if there's an older enrollment structure where the invoice might
+    // Fallback: Check if there's an older data structure where the invoice might
     // have used the enrollment ID as its own document ID (less likely, but for robustness).
     // Or if the enrollmentId passed is actually an old invoiceId.
     const directInvoiceDoc = await getDocument<Invoice>('invoices', enrollmentId);

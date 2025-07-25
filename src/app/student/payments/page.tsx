@@ -20,11 +20,12 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
+import { SerializableEnrollment } from '@/app/admin/dashboard/page';
 
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
-    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+    const [enrollments, setEnrollments] = useState<SerializableEnrollment[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
@@ -46,7 +47,13 @@ export default function StudentPaymentsPage() {
                     getOrdersByUserId(userInfo.uid),
                     getCourses()
                 ]);
-                setEnrollments(enrollmentsData.sort((a,b) => safeToDate(b.enrollmentDate).getTime() - safeToDate(a.enrollmentDate).getTime()));
+
+                const serializableEnrollments = enrollmentsData.map(e => ({
+                    ...e,
+                    enrollmentDate: safeToDate(e.enrollmentDate).toISOString(),
+                }));
+
+                setEnrollments(serializableEnrollments.sort((a,b) => new Date(b.enrollmentDate).getTime() - new Date(a.enrollmentDate).getTime()));
                 setOrders(ordersData);
                 setCourses(coursesData);
             } catch (error) {
@@ -143,13 +150,18 @@ export default function StudentPaymentsPage() {
                                             <TableCell>{format(safeToDate(e.enrollmentDate), 'PPP')}</TableCell>
                                             <TableCell>৳{e.totalFee?.toFixed(2) || '0.00'}</TableCell>
                                             <TableCell>
-                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e)}>
+                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e as Enrollment)}>
                                                     <Eye className="mr-2 h-4 w-4"/> View
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
                                     )
                                 })}
+                                 {enrollments.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="h-24 text-center">No course enrollments found.</TableCell>
+                                    </TableRow>
+                                 )}
                                 </TableBody>
                             </Table>
                         </CardContent>

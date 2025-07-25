@@ -63,7 +63,7 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
             },
             paymentDetails: {
                 method: enrollment.paymentMethod || 'Online',
-                date: enrollment.enrollmentDate, // Use enrollment date as payment date
+                date: Timestamp.now(), // Use current time for payment date
                 transactionId: `TRX-${enrollment.id!.slice(0,8).toUpperCase()}`, // Example transaction ID
             },
             financialSummary: {
