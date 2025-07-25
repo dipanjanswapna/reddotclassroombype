@@ -6,7 +6,7 @@ import 'dotenv/config';
 import { revalidatePath } from 'next/cache';
 import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId, getUserByClassRoll } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
-import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
 
@@ -99,6 +99,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
         const batch = writeBatch(db);
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
+        const userRef = doc(db, 'users', student.id!);
 
         const studentEnrollments = await getEnrollmentsByUserId(student.uid);
         const isFirstEnrollment = studentEnrollments.length === 0;
@@ -160,6 +161,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         }
         
         batch.set(mainEnrollmentRef, enrollmentData);
+        batch.update(userRef, { enrolledCourses: arrayUnion(courseId) });
+
         
         if (isFirstEnrollment && referrer && config.referralSettings) {
             const points = config.referralSettings.pointsPerReferral || 10;
@@ -195,6 +198,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                     enrollmentType: 'full_course',
                 };
                 batch.set(bundledEnrollmentRef, bundledEnrollmentData);
+                batch.update(userRef, { enrolledCourses: arrayUnion(bundledCourseId) });
             }
         }
         

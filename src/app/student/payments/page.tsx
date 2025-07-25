@@ -25,7 +25,7 @@ import { SerializableEnrollment } from '@/app/admin/dashboard/page';
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
-    const [enrollments, setEnrollments] = useState<SerializableEnrollment[]>([]);
+    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,12 +48,7 @@ export default function StudentPaymentsPage() {
                     getCourses()
                 ]);
 
-                const serializableEnrollments = enrollmentsData.map(e => ({
-                    ...e,
-                    enrollmentDate: safeToDate(e.enrollmentDate).toISOString(),
-                }));
-
-                setEnrollments(serializableEnrollments.sort((a,b) => new Date(b.enrollmentDate).getTime() - new Date(a.enrollmentDate).getTime()));
+                setEnrollments(enrollmentsData.sort((a,b) => safeToDate(b.enrollmentDate).getTime() - safeToDate(a.enrollmentDate).getTime()));
                 setOrders(ordersData);
                 setCourses(coursesData);
             } catch (error) {

@@ -603,6 +603,7 @@ export type User = {
   linkedStudentId?: string; // For guardians
   linkedGuardianId?: string; // For students
   wishlist?: string[];
+  enrolledCourses?: string[];
   ratedCourses?: string[];
   reactedLessons?: string[];
   fathersName?: string;
