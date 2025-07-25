@@ -29,9 +29,10 @@ export function LessonFeedback({ courseId, courseTitle, lessonId }: LessonFeedba
     const [submittingRating, setSubmittingRating] = useState(false);
     
     const [submittingReaction, setSubmittingReaction] = useState<ReactionType | false>(false);
+    const [reacted, setReacted] = useState(false); // Local state for immediate feedback
     
     const hasRatedCourse = userInfo?.ratedCourses?.includes(courseId);
-    const hasReactedToLesson = userInfo?.reactedLessons?.includes(lessonId);
+    const hasReactedToLesson = userInfo?.reactedLessons?.includes(lessonId) || reacted;
 
     const handleReaction = async (reactionType: ReactionType) => {
         if (hasReactedToLesson || submittingReaction) return;
@@ -45,6 +46,7 @@ export function LessonFeedback({ courseId, courseTitle, lessonId }: LessonFeedba
         
         if (result.success) {
             toast({ title: result.message });
+            setReacted(true); // Set local state for instant feedback
             await refreshUserInfo();
         } else {
             toast({ title: 'Error', description: result.message, variant: 'destructive' });
@@ -89,23 +91,26 @@ export function LessonFeedback({ courseId, courseTitle, lessonId }: LessonFeedba
             <CardContent className="space-y-6">
                 <div>
                     <h4 className="font-semibold text-sm mb-2">React to this lesson:</h4>
-                    <div className="flex gap-2">
-                        <Button variant="outline" size="icon" aria-label="Like" onClick={() => handleReaction('likes')} disabled={!!hasReactedToLesson || !!submittingReaction}>
+                     <div className="flex gap-2">
+                        <Button variant={hasReactedToLesson ? 'secondary' : 'outline'} size="icon" aria-label="Like" onClick={() => handleReaction('likes')} disabled={!!hasReactedToLesson || !!submittingReaction}>
                             {submittingReaction === 'likes' ? <Loader2 className="w-5 h-5 animate-spin" /> : <ThumbsUp className="w-5 h-5" />}
                         </Button>
-                        <Button variant="outline" size="icon" aria-label="Love" onClick={() => handleReaction('loves')} disabled={!!hasReactedToLesson || !!submittingReaction}>
-                            {submittingReaction === 'loves' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className="w-5 h-5" />}
+                        <Button variant={hasReactedToLesson ? 'secondary' : 'outline'} size="icon" aria-label="Love" onClick={() => handleReaction('loves')} disabled={!!hasReactedToLesson || !!submittingReaction}>
+                             {submittingReaction === 'loves' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className="w-5 h-5" />}
                         </Button>
-                        <Button variant="outline" size="icon" aria-label="Helpful" onClick={() => handleReaction('helpfuls')} disabled={!!hasReactedToLesson || !!submittingReaction}>
+                        <Button variant={hasReactedToLesson ? 'secondary' : 'outline'} size="icon" aria-label="Helpful" onClick={() => handleReaction('helpfuls')} disabled={!!hasReactedToLesson || !!submittingReaction}>
                              {submittingReaction === 'helpfuls' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lightbulb className="w-5 h-5" />}
                         </Button>
                     </div>
-                    {hasReactedToLesson && <p className="text-xs text-muted-foreground mt-2">You have already reacted to this lesson.</p>}
+                     {hasReactedToLesson && <p className="text-xs text-green-600 mt-2">Thanks for your reaction!</p>}
                 </div>
                 <div>
                     <h4 className="font-semibold text-sm mb-2">Rate this course:</h4>
                      {hasRatedCourse ? (
-                        <p className="text-green-600 font-semibold">Thank you for rating this course!</p>
+                        <div className="flex items-center gap-2 text-green-600 font-semibold">
+                            <Star className="w-5 h-5 fill-current"/>
+                            <p>Thank you for rating!</p>
+                        </div>
                     ) : (
                         <div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
                             {[1, 2, 3, 4, 5].map((star) => (
@@ -135,5 +140,3 @@ export function LessonFeedback({ courseId, courseTitle, lessonId }: LessonFeedba
         </Card>
     );
 }
-
-    
