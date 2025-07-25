@@ -74,6 +74,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization, User } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getOrganizations, getUsers } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
+import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import {
   Dialog,
@@ -566,6 +567,21 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   // Live Class Handlers
   const addLiveClass = () => setLiveClasses(prev => [...prev, { id: `lc_${Date.now()}`, topic: '', date: format(new Date(), 'yyyy-MM-dd'), time: '', platform: 'YouTube Live', joinUrl: '' }]);
+  const handleScheduleLiveClass = async (liveClass: LiveClass) => {
+      if (!liveClass.topic || !liveClass.date || !liveClass.time || !liveClass.joinUrl) {
+          toast({ title: 'Error', description: 'Please fill all fields for the live class.', variant: 'destructive'});
+          return;
+      }
+      setIsSaving(true);
+      const result = await scheduleLiveClassAction(courseId, liveClass);
+      if (result.success) {
+          toast({ title: 'Success!', description: result.message });
+          setLiveClasses(prev => prev.map(lc => lc.id === liveClass.id ? result.newLiveClass! : lc));
+      } else {
+          toast({ title: 'Error', description: result.message, variant: 'destructive' });
+      }
+      setIsSaving(false);
+  }
   const updateLiveClass = (id: string, field: keyof Omit<LiveClass, 'id'>, value: string) => {
       setLiveClasses(prev => prev.map(lc => lc.id === id ? { ...lc, [field]: value } : lc));
   };
@@ -1339,6 +1355,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </Select>
                                 </div>
                                 <div className="space-y-2"><Label>Join URL</Label><Input value={lc.joinUrl} onChange={e => updateLiveClass(lc.id, 'joinUrl', e.target.value)} /></div>
+                                <Button size="sm" onClick={() => handleScheduleLiveClass(lc)} disabled={isSaving}>
+                                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>}
+                                    Schedule & Notify Students
+                                </Button>
                             </CollapsibleContent>
                         </Collapsible>
                     ))}
@@ -1516,3 +1536,5 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     </div>
   );
 }
+
+    
