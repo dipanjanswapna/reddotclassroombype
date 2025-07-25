@@ -164,6 +164,7 @@ export type Lesson = {
   videoId?: string;
   lectureSheetUrl?: string;
   quizId?: string;
+  instructorSlug?: string;
   reactions?: {
     likes?: number;
     loves?: number;
@@ -925,5 +926,3 @@ export type DoubtSession = {
     assignedDoubtSolverIds: string[];
     createdAt: Timestamp;
 };
-
-    

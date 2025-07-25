@@ -116,6 +116,7 @@ type LessonData = {
     videoId?: string;
     lectureSheetUrl?: string;
     quizId?: string;
+    instructorSlug?: string;
 };
 
 type ModuleData = {
@@ -146,11 +147,13 @@ function SortableSyllabusItem({
     updateItem, 
     removeItem, 
     onGenerateQuiz, 
+    courseInstructors,
 }: { 
     item: SyllabusItem, 
     updateItem: (id: string, field: string, value: any) => void, 
     removeItem: (id: string) => void, 
     onGenerateQuiz: (lesson: LessonData) => void, 
+    courseInstructors: Instructor[],
 }) {
     const {
         attributes,
@@ -201,7 +204,7 @@ function SortableSyllabusItem({
         <Collapsible ref={setNodeRef} style={style} className="bg-background rounded-md border ml-6">
             <div className="flex items-center gap-2 p-2">
                 <div {...attributes} {...listeners} className="cursor-grab p-1">
-                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                    <GripVertical className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <Badge variant='secondary' className="capitalize select-none">{item.type}</Badge>
                 <Input 
@@ -258,6 +261,27 @@ function SortableSyllabusItem({
                             <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} />
                         </div>
                     )}
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor={`instructor-${item.id}`}>Lesson Instructor</Label>
+                        <Select
+                            value={item.instructorSlug || ''}
+                            onValueChange={(value) => updateItem(item.id, 'instructorSlug', value === 'default' ? '' : value)}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select an instructor..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="default">Default (First Instructor)</SelectItem>
+                                {courseInstructors.map((inst: Instructor) => (
+                                    <SelectItem key={inst.slug} value={inst.slug}>
+                                        {inst.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                         <CardDescription className="text-xs">Assign a specific instructor. If not set, the first course instructor is shown.</CardDescription>
+                    </div>
                     
                      {item.type !== 'quiz' && (
                         <div className="mt-2">
@@ -611,7 +635,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 duration: item.duration || '',
                 videoId: item.videoId || '',
                 lectureSheetUrl: item.lectureSheetUrl || '',
-                quizId: item.quizId || ''
+                quizId: item.quizId || '',
+                instructorSlug: item.instructorSlug || '',
             });
         }
     });
@@ -986,6 +1011,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                  updateItem={updateSyllabusItem}
                                  removeItem={removeSyllabusItem}
                                  onGenerateQuiz={handleGenerateQuiz}
+                                 courseInstructors={instructors}
                                />
                            ))}
                         </div>

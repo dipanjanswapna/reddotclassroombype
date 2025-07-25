@@ -3,12 +3,12 @@
 'use client'; 
 
 import { notFound, useParams } from 'next/navigation';
-import { getCourse, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getCourse, getEnrollmentsByUserId, getInstructorBySlug } from '@/lib/firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Download, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
+import { Download, MessageSquare, CheckCircle, Loader2, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import type { Course, Lesson, Enrollment } from '@/lib/types';
+import type { Course, Lesson, Enrollment, Instructor } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
@@ -16,11 +16,39 @@ import { useToast } from '@/components/ui/use-toast';
 import { markLessonAsCompleteAction } from '@/app/actions/progress.actions';
 import { LessonFeedback } from '@/components/lesson-feedback';
 import dynamic from 'next/dynamic';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 const FacebookComments = dynamic(() => import('@/components/facebook-comments'), {
     ssr: false,
     loading: () => <Skeleton className="h-24 w-full" />,
 });
+
+function InstructorCard({ instructor }: { instructor: Instructor | null }) {
+    if (!instructor) return null;
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Our Instructor</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                        <AvatarImage src={instructor.avatarUrl} />
+                        <AvatarFallback>{instructor.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h3 className="font-bold">{instructor.name}</h3>
+                        <p className="text-sm text-muted-foreground">{instructor.title}</p>
+                        <Button variant="link" asChild className="p-0 h-auto mt-1">
+                            <Link href={`/teachers/${instructor.slug}`}>View Profile</Link>
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
 
 
 export default function LessonPage() {
@@ -30,6 +58,7 @@ export default function LessonPage() {
   
   const [course, setCourse] = useState<Course | null>(null);
   const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [instructor, setInstructor] = useState<Instructor | null>(null);
   const [loading, setLoading] = useState(true);
   
   const { userInfo } = useAuth();
@@ -54,13 +83,24 @@ export default function LessonPage() {
           const currentEnrollment = enrollments.find(e => e.courseId === courseId);
           setEnrollment(currentEnrollment || null);
 
+          let foundLesson: Lesson | null = null;
           for (const module of courseData.syllabus || []) {
             const lessonData = module.lessons.find((l) => l.id === lessonId);
             if (lessonData) {
-              setLesson(lessonData);
+              foundLesson = lessonData;
               break;
             }
           }
+           setLesson(foundLesson);
+
+          if (foundLesson) {
+             const instructorSlug = foundLesson.instructorSlug || courseData.instructors[0]?.slug;
+             if (instructorSlug) {
+                 const instructorData = await getInstructorBySlug(instructorSlug);
+                 setInstructor(instructorData);
+             }
+          }
+
         }
       } catch (error) {
         console.error("Failed to fetch lesson data:", error);
@@ -157,12 +197,11 @@ export default function LessonPage() {
                 </CardContent>
             </Card>
         </div>
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 space-y-6">
+             <InstructorCard instructor={instructor} />
              <LessonFeedback courseId={courseId} courseTitle={course.title} lessonId={lessonId} />
         </div>
       </div>
     </div>
   );
 }
-
-    
