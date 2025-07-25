@@ -349,6 +349,33 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     return { id: doc.id, ...doc.data() } as User;
 }
 
+export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId: string | null}> => {
+  const db = getDbInstance();
+  if (!db) return { userId: null };
+
+  let user: User | null = null;
+  
+  // Try searching by registration number first
+  user = await getUserByRegistrationNumber(id);
+  if (user) {
+    return { userId: user.id! };
+  }
+  
+  // If not found, try searching by class roll
+  user = await getUserByClassRoll(id);
+  if (user) {
+    return { userId: user.id! };
+  }
+  
+  // If not found, try searching by offline roll
+  user = await getUserByOfflineRoll(id);
+  if (user) {
+      return { userId: user.id! };
+  }
+  
+  return { userId: null };
+};
+
 export const getUserByRegistrationNumber = async (regNo: string): Promise<User | null> => {
     const db = getDbInstance();
     if (!db) return null;
@@ -361,35 +388,6 @@ export const getUserByRegistrationNumber = async (regNo: string): Promise<User |
     return { id: doc.id, ...doc.data() } as User;
 }
 
-export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId: string | null}> => {
-  const db = getDbInstance();
-  if (!db) return { userId: null };
-  
-  // Try searching by registration number first
-  let q = query(collection(db, 'users'), where('registrationNumber', '==', id));
-  let querySnapshot = await getDocs(q);
-  
-  if (!querySnapshot.empty) {
-    return { userId: querySnapshot.docs[0].id };
-  }
-  
-  // If not found, try searching by class roll
-  q = query(collection(db, 'users'), where('classRoll', '==', id));
-  querySnapshot = await getDocs(q);
-
-  if (!querySnapshot.empty) {
-    return { userId: querySnapshot.docs[0].id };
-  }
-  
-  // If not found, try searching by offline roll
-  q = query(collection(db, 'users'), where('offlineRollNo', '==', id));
-  querySnapshot = await getDocs(q);
-  if (!querySnapshot.empty) {
-      return { userId: querySnapshot.docs[0].id };
-  }
-  
-  return { userId: null };
-};
 export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
     const db = getDbInstance();
     if (!db) return null;
@@ -527,27 +525,25 @@ export const getCategories = async (): Promise<string[]> => {
 
 // Invoices
 export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<Invoice | null> => {
-    if (!enrollmentId) return null;
-    const db = getDbInstance();
-    if (!db) return null;
-    
-    // First, try to find an invoice directly matching the enrollmentId.
-    const q = query(collection(db, "invoices"), where("enrollmentId", "==", enrollmentId));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-        const docSnap = querySnapshot.docs[0];
-        return { id: docSnap.id, ...docSnap.data() } as Invoice;
-    }
+  if (!enrollmentId) return null;
+  const db = getDbInstance();
+  if (!db) return null;
 
-    // Fallback: Check if there's an older data structure where the invoice might
-    // have used the enrollment ID as its own document ID (less likely, but for robustness).
-    // Or if the enrollmentId passed is actually an old invoiceId.
-    const directInvoiceDoc = await getDocument<Invoice>('invoices', enrollmentId);
+  const q = query(collection(db, 'invoices'), where('enrollmentId', '==', enrollmentId));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Invoice;
+  }
+
+  // Fallback for older data where the invoiceId might be the same as enrollmentId
+  const directInvoiceDoc = await getDocument<Invoice>('invoices', enrollmentId);
     if (directInvoiceDoc) {
         return directInvoiceDoc;
     }
-
-    return null;
+  
+  return null;
 };
 
 
@@ -1292,5 +1288,7 @@ export const markStudentAsCounseled = async (studentId: string) => {
     const userRef = doc(db, 'users', studentId);
     return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
 };
+
+    
 
     

@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getEnrollmentsByUserId, getOrdersByUserId, getCourses, getInvoiceByEnrollmentId, getDocument, getCourse } from '@/lib/firebase/firestore';
+import { getEnrollmentsByUserId, getOrdersByUserId, getCoursesByIds, getDocument, getCourse } from '@/lib/firebase/firestore';
 import type { Enrollment, Order, Course, Invoice } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,12 +21,19 @@ import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
 
+type Transaction = {
+  id: string;
+  courseName: string;
+  date: Date;
+  amount: number;
+  enrollment: Enrollment;
+};
+
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
-    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
-    const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
@@ -41,28 +48,39 @@ export default function StudentPaymentsPage() {
 
         async function fetchData() {
             try {
-                const [enrollmentsData, ordersData, coursesData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo.uid),
-                    getOrdersByUserId(userInfo.uid),
-                    getCourses()
+                const [enrollmentsData, ordersData] = await Promise.all([
+                    getEnrollmentsByUserId(userInfo!.uid),
+                    getOrdersByUserId(userInfo!.uid),
                 ]);
 
-                const processedEnrollments = enrollmentsData.map(e => ({
-                    ...e,
-                    enrollmentDate: safeToDate(e.enrollmentDate) // Ensure it's a Date object
-                })).sort((a,b) => b.enrollmentDate.getTime() - a.enrollmentDate.getTime());
+                if (enrollmentsData.length > 0) {
+                    const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
+                    const coursesData = await getCoursesByIds(courseIds);
+                    const coursesMap = new Map(coursesData.map(c => [c.id, c]));
+
+                    const processedTransactions = enrollmentsData.map(e => {
+                        const course = coursesMap.get(e.courseId);
+                        return {
+                            id: e.id!,
+                            courseName: course?.title || 'Unknown Course',
+                            date: safeToDate(e.enrollmentDate),
+                            amount: e.totalFee || 0,
+                            enrollment: e,
+                        };
+                    }).sort((a,b) => b.date.getTime() - a.date.getTime());
+                    setTransactions(processedTransactions);
+                }
                 
-                setEnrollments(processedEnrollments);
                 setOrders(ordersData);
-                setCourses(coursesData);
             } catch (error) {
                 console.error("Error fetching payment data:", error);
+                toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive'});
             } finally {
                 setLoading(false);
             }
         }
         fetchData();
-    }, [userInfo, authLoading]);
+    }, [userInfo, authLoading, toast]);
     
     const handleViewInvoice = async (enrollment: Enrollment) => {
         if (!userInfo || !enrollment.id) return;
@@ -72,33 +90,29 @@ export default function StudentPaymentsPage() {
         setSelectedInvoice(null);
         
         try {
-            let invoice = await getInvoiceByEnrollmentId(enrollment.id);
+            const course = await getCourse(enrollment.courseId);
+            if (!course) {
+                throw new Error("Could not find course details to generate invoice.");
+            }
 
+            let invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId || enrollment.id);
+            
             if (!invoice) {
-                const course = courses.find(c => c.id === enrollment.courseId);
-                if (course) {
-                    toast({ title: 'Invoice not found', description: 'Generating a new one for you...' });
-                    const result = await createInvoiceAction(enrollment, userInfo, course);
-                    if (result.success && result.invoiceId) {
-                        invoice = await getDocument<Invoice>('invoices', result.invoiceId);
-                    } else {
-                        throw new Error(result.message || "Failed to create invoice.");
+                invoice = await createInvoiceAction(enrollment, userInfo, course).then(async (res) => {
+                    if (res.success && res.invoiceId) {
+                        return await getDocument<Invoice>('invoices', res.invoiceId);
                     }
-                } else {
-                    throw new Error("Could not find course details to generate invoice.");
-                }
+                    throw new Error(res.message || "Failed to create invoice");
+                });
             }
 
             if (invoice) {
                 if (!invoice.courseDetails.communityUrl) {
-                    const course = await getCourse(invoice.courseId);
-                    if(course) {
-                        const isCycleEnrollment = !!invoice.courseDetails.cycleName;
-                        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.title === invoice.courseDetails.cycleName) : null;
-                        const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
-                        if (communityUrl) {
-                            invoice.courseDetails.communityUrl = communityUrl;
-                        }
+                    const isCycleEnrollment = !!invoice.courseDetails.cycleName;
+                    const cycle = isCycleEnrollment ? course.cycles?.find(c => c.title === invoice.courseDetails.cycleName) : null;
+                    const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
+                    if (communityUrl) {
+                        invoice.courseDetails.communityUrl = communityUrl;
                     }
                 }
                 setSelectedInvoice(invoice);
@@ -152,22 +166,19 @@ export default function StudentPaymentsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {enrollments.map(e => {
-                                    const course = courses.find(c => c.id === e.courseId);
-                                    return (
-                                        <TableRow key={e.id}>
-                                            <TableCell>{course?.title || 'Unknown Course'}</TableCell>
-                                            <TableCell>{format(e.enrollmentDate, 'PPP')}</TableCell>
-                                            <TableCell>৳{e.totalFee?.toFixed(2) || '0.00'}</TableCell>
-                                            <TableCell>
-                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e)}>
-                                                    <Eye className="mr-2 h-4 w-4"/> View
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                                 {enrollments.length === 0 && (
+                                {transactions.map(t => (
+                                    <TableRow key={t.id}>
+                                        <TableCell>{t.courseName}</TableCell>
+                                        <TableCell>{format(t.date, 'PPP')}</TableCell>
+                                        <TableCell>৳{t.amount.toFixed(2)}</TableCell>
+                                        <TableCell>
+                                            <Button variant="outline" size="sm" onClick={() => handleViewInvoice(t.enrollment)}>
+                                                <Eye className="mr-2 h-4 w-4"/> View
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                 {transactions.length === 0 && (
                                     <TableRow>
                                         <TableCell colSpan={4} className="h-24 text-center">No course enrollments found.</TableCell>
                                     </TableRow>
@@ -201,6 +212,11 @@ export default function StudentPaymentsPage() {
                                         <TableCell><Badge>{order.status}</Badge></TableCell>
                                     </TableRow>
                                 ))}
+                                {orders.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="h-24 text-center">No store orders found.</TableCell>
+                                    </TableRow>
+                                )}
                                 </TableBody>
                             </Table>
                         </CardContent>
@@ -221,3 +237,5 @@ export default function StudentPaymentsPage() {
         </div>
     );
 }
+
+    

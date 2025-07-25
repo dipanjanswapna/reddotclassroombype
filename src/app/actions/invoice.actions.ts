@@ -24,7 +24,7 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
     }
     
     if (!enrollment.id) {
-         throw new Error('Cannot create invoice for an enrollment without an ID.');
+         return { success: false, message: 'Cannot create invoice for an enrollment without an ID.' };
     }
 
     try {
@@ -90,3 +90,5 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         return { success: false, message: error.message };
     }
 }
+
+    
