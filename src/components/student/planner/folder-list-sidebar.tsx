@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 interface FolderListSidebarProps {
   folders: Folder[];
@@ -43,9 +44,10 @@ interface FolderListSidebarProps {
 
 export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChange, onSelectList, activeListId }: FolderListSidebarProps) {
     const { userInfo } = useAuth();
+    const router = useRouter();
     const { toast } = useToast();
     const [newFolderName, setNewFolderName] = useState('');
-    const [newList, setNewList] = useState({ name: '', folderId: '' });
+    const [newList, setNewList] = useState<{ name: string; folderId: string }>({ name: '', folderId: 'none' });
     
     const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
     const [isListDialogOpen, setIsListDialogOpen] = useState(false);
@@ -54,33 +56,27 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
     const handleSaveFolder = async () => {
         if (!newFolderName.trim() || !userInfo) return;
         
-        const newFolder: Partial<Folder> = { name: newFolderName, userId: userInfo.uid, createdAt: new Date() as any };
-        await saveFolder(newFolder);
-        
-        // This is a temporary update. A proper implementation would refetch or get the ID back.
-        onFoldersChange(prev => [...prev, { ...newFolder, id: `temp-${Date.now()}` }]);
+        await saveFolder({ name: newFolderName, userId: userInfo.uid });
         
         setNewFolderName('');
         setIsFolderDialogOpen(false);
         toast({ title: "Folder Created!" });
+        router.refresh();
     };
     
     const handleSaveList = async () => {
         if (!newList.name.trim() || !userInfo) return;
 
-        const newListData: Partial<List> = { 
+        await saveList({ 
             name: newList.name,
             folderId: newList.folderId === 'none' ? undefined : newList.folderId,
-            userId: userInfo.uid, 
-            createdAt: new Date() as any 
-        };
-        await saveList(newListData);
-        
-        onListsChange(prev => [...prev, { ...newListData, id: `temp-${Date.now()}` }]);
+            userId: userInfo.uid
+        });
 
-        setNewList({ name: '', folderId: '' });
+        setNewList({ name: '', folderId: 'none' });
         setIsListDialogOpen(false);
         toast({ title: "List Created!" });
+        router.refresh();
     };
     
     const handleDelete = async () => {
