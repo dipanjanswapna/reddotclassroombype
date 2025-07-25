@@ -1,15 +1,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getEnrollmentsByUserId, getCoursesByIds, getOrdersByUserId, getCourse, getDocument } from '@/lib/firebase/firestore';
-import type { Enrollment, Order, Course, Invoice } from '@/lib/types';
+import { getEnrollmentsByUserId, getCoursesByIds, getOrdersByUserId } from '@/lib/firebase/firestore';
+import type { Enrollment, Order, Course } from '@/lib/types';
 import { PaymentsClient } from './payments-client';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { safeToDate } from '@/lib/utils';
-import { createInvoiceAction } from '@/app/actions/invoice.actions';
 
 type Transaction = {
   id: string;
@@ -31,55 +30,58 @@ export default function StudentPaymentsPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
+    const fetchData = useCallback(async () => {
+        if (!userInfo) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const [enrollmentsData, ordersData] = await Promise.all([
+                getEnrollmentsByUserId(userInfo.uid),
+                getOrdersByUserId(userInfo.uid)
+            ]);
+
+            if (enrollmentsData.length > 0) {
+                const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
+                const coursesData = await getCoursesByIds(courseIds);
+                const coursesMap = new Map(coursesData.map(c => [c.id, c]));
+
+                const transactionList = enrollmentsData.map(e => {
+                    const course = coursesMap.get(e.courseId);
+                    return {
+                        id: e.id!,
+                        courseName: course?.title || 'Unknown Course',
+                        date: safeToDate(e.enrollmentDate).toISOString(),
+                        amount: e.totalFee || 0,
+                        enrollment: e,
+                    };
+                }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                setTransactions(transactionList);
+            } else {
+                setTransactions([]);
+            }
+
+            const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
+                ...order,
+                createdAt: safeToDate(order.createdAt).toISOString(),
+                updatedAt: safeToDate(order.updatedAt).toISOString(),
+            }));
+            setOrders(serializedOrders);
+
+        } catch (error) {
+            console.error("Failed to fetch payment history:", error);
+            toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    }, [userInfo, toast]);
+    
     useEffect(() => {
-        const fetchData = async () => {
-            if (!userInfo) {
-                if (!authLoading) setLoading(false);
-                return;
-            }
-
-            try {
-                const [enrollmentsData, ordersData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo.uid),
-                    getOrdersByUserId(userInfo.uid)
-                ]);
-
-                if (enrollmentsData.length > 0) {
-                    const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
-                    const coursesData = await getCoursesByIds(courseIds);
-                    const coursesMap = new Map(coursesData.map(c => [c.id, c]));
-
-                    const transactionList = enrollmentsData.map(e => {
-                        const course = coursesMap.get(e.courseId);
-                        return {
-                            id: e.id!,
-                            courseName: course?.title || 'Unknown Course',
-                            date: safeToDate(e.enrollmentDate).toISOString(),
-                            amount: e.totalFee || 0,
-                            enrollment: e,
-                        };
-                    }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                    setTransactions(transactionList);
-                }
-
-                const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
-                    ...order,
-                    createdAt: safeToDate(order.createdAt).toISOString(),
-                    updatedAt: safeToDate(order.updatedAt).toISOString(),
-                }));
-                setOrders(serializedOrders);
-
-            } catch (error) {
-                console.error("Failed to fetch payment history:", error);
-                toast({ title: 'Error', description: 'Could not load your payment history.', variant: 'destructive' });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [userInfo, authLoading, toast]);
-
+        if (userInfo) {
+            fetchData();
+        }
+    }, [userInfo, fetchData]);
 
     if (loading || authLoading) {
         return (
