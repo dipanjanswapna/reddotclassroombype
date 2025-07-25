@@ -17,6 +17,7 @@ import { saveTask } from '@/app/actions/planner.actions';
 import { Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
+import { safeToDate } from '@/lib/utils';
 
 interface TaskDialogProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
 
   useEffect(() => {
     if (editingTask) {
-      setTask({ ...editingTask, date: editingTask.date ? new Date(editingTask.date) : new Date() });
+      setTask({ ...editingTask, date: editingTask.date ? safeToDate(editingTask.date) : new Date() });
     } else {
       setTask({
         title: '',
@@ -44,6 +45,7 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
         date: new Date(),
         checkItems: [],
         estimatedPomo: 1,
+        type: 'study-session',
       });
     }
   }, [editingTask]);
@@ -68,7 +70,6 @@ export function TaskDialog({ isOpen, setIsOpen, editingTask, onTaskSaved, lists 
       
       await saveTask(dataToSave);
 
-      // This is a simplification. In a real app, the action would return the saved object with its new ID.
       onTaskSaved(dataToSave as PlannerTask);
       
       setIsSaving(false);

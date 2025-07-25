@@ -20,7 +20,7 @@ import { CalendarView } from './calendar-view';
 import { GoalManager } from './goal-manager';
 import { PomodoroTimer } from './pomodoro-timer';
 import { WhiteNoisePlayer } from './white-noise-player';
-import { saveTask } from '@/app/actions/planner.actions';
+import { saveTask, deleteTask } from '@/app/actions/planner.actions';
 import {
   DndContext,
   closestCenter,
@@ -107,7 +107,15 @@ export function StudyPlannerClient() {
     };
     
      const handleDeleteTask = async (taskId: string) => {
+        if (!userInfo) return;
+        const originalTasks = tasks;
         setTasks(prev => prev.filter(t => t.id !== taskId));
+        try {
+          await deleteTask(taskId, userInfo.uid);
+        } catch (error) {
+          toast({ title: "Error", description: "Failed to delete task.", variant: "destructive"});
+          setTasks(originalTasks);
+        }
     };
     
     const handleUpdateTask = (updatedTask: PlannerTask) => {
@@ -185,8 +193,8 @@ export function StudyPlannerClient() {
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
             <div className="mt-8">
                 <Tabs defaultValue="board" className="w-full">
-                    <div className="flex justify-between items-center mb-4">
-                        <TabsList>
+                    <div className="flex flex-wrap gap-4 justify-between items-center mb-4">
+                        <TabsList className="grid grid-cols-3 sm:grid-cols-5 w-full sm:w-auto">
                             <TabsTrigger value="board">Board</TabsTrigger>
                             <TabsTrigger value="calendar">Calendar</TabsTrigger>
                             <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -241,7 +249,12 @@ export function StudyPlannerClient() {
                             <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
                             </TabsContent>
                             <TabsContent value="settings">
-                                <Link href="/student/planner/settings" className="text-primary underline">Go to full settings page</Link>
+                                 <div className="text-center p-8 bg-muted rounded-lg">
+                                    <p>More settings are available on the dedicated settings page.</p>
+                                    <Button asChild className="mt-4">
+                                        <Link href="/student/planner/settings">Go to Settings</Link>
+                                    </Button>
+                                 </div>
                             </TabsContent>
                         </div>
                     </div>
