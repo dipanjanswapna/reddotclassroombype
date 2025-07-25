@@ -368,6 +368,13 @@ export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId:
     return { userId: querySnapshot.docs[0].id };
   }
   
+  // If not found, try searching by offline roll
+  q = query(collection(db, 'users'), where('offlineRollNo', '==', id));
+  querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+      return { userId: querySnapshot.docs[0].id };
+  }
+  
   return { userId: null };
 };
 export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
@@ -510,14 +517,26 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
     if (!enrollmentId) return null;
     const db = getDbInstance();
     if (!db) return null;
+    
+    // First, try to find an invoice directly matching the enrollmentId.
     const q = query(collection(db, "invoices"), where("enrollmentId", "==", enrollmentId));
     const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
+    if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        return { id: docSnap.id, ...docSnap.data() } as Invoice;
     }
-    const docSnap = querySnapshot.docs[0];
-    return { id: docSnap.id, ...docSnap.data() } as Invoice;
+
+    // Fallback: Check if there's an older enrollment structure where the invoice might
+    // have used the enrollment ID as its own document ID (less likely, but for robustness).
+    // Or if the enrollmentId passed is actually an old invoiceId.
+    const directInvoiceDoc = await getDocument<Invoice>('invoices', enrollmentId);
+    if (directInvoiceDoc) {
+        return directInvoiceDoc;
+    }
+
+    return null;
 };
+
 
 // Enrollments
 export const getEnrollments = () => getCollection<Enrollment>('enrollments');

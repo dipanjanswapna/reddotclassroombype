@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -58,29 +59,36 @@ export default function StudentPaymentsPage() {
     }, [userInfo, authLoading]);
     
     const handleViewInvoice = async (enrollment: Enrollment) => {
-        if (!userInfo) return;
+        if (!userInfo || !enrollment.id) return;
+
         setIsInvoiceOpen(true);
         setLoadingInvoice(true);
+        setSelectedInvoice(null);
+        
         try {
-            let invoice: Invoice | null = null;
-            if (enrollment.invoiceId) {
-                invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
-            }
-            if (!invoice) {
-                invoice = await getInvoiceByEnrollmentId(enrollment.id!);
-            }
+            let invoice = await getInvoiceByEnrollmentId(enrollment.id);
+
             if (!invoice) {
                 const course = courses.find(c => c.id === enrollment.courseId);
                 if (course) {
+                    toast({ title: 'Invoice not found', description: 'Generating a new one for you...' });
                     const result = await createInvoiceAction(enrollment, userInfo, course);
                     if (result.success && result.invoiceId) {
                         invoice = await getDocument<Invoice>('invoices', result.invoiceId);
                     } else {
                         throw new Error(result.message || "Failed to create invoice.");
                     }
+                } else {
+                    throw new Error("Could not find course details to generate invoice.");
                 }
             }
-            setSelectedInvoice(invoice);
+
+            if (invoice) {
+                setSelectedInvoice(invoice);
+            } else {
+                throw new Error("Invoice could not be loaded or created.");
+            }
+
         } catch (error: any) {
             toast({ title: 'Error', description: `Could not load invoice: ${error.message}`, variant: 'destructive' });
             setIsInvoiceOpen(false);

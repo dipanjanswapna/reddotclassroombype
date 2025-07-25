@@ -7,6 +7,7 @@ import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestor
 import { getDbInstance } from '@/lib/firebase/config';
 import type { Invoice, Enrollment, User, Course } from '@/lib/types';
 import { removeUndefinedValues } from '@/lib/utils';
+import { getCourse } from '@/lib/firebase/firestore';
 
 function generateInvoiceNumber(): string {
     const date = new Date();
@@ -21,16 +22,21 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
     if (!db) {
         throw new Error('Database service is currently unavailable.');
     }
+    
+    if (!enrollment.id) {
+         throw new Error('Cannot create invoice for an enrollment without an ID.');
+    }
+
     try {
         const netPayable = (enrollment.totalFee || 0) - (enrollment.discount || 0);
         const isCycleEnrollment = !!enrollment.cycleId;
-        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === enrollment.cycleId) : null;
+        
+        // Ensure we have the latest course data to find cycle info
+        const freshCourseData = await getCourse(course.id!);
+        const cycle = isCycleEnrollment ? freshCourseData?.cycles?.find(c => c.id === enrollment.cycleId) : null;
         
         // Determine the correct community URL
-        // 1. Check for a cycle-specific URL first.
-        // 2. If not found or not a cycle enrollment, use the main course community URL.
-        const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
-
+        const communityUrl = isCycleEnrollment ? cycle?.communityUrl : freshCourseData?.communityUrl;
 
         const newInvoiceData: Omit<Invoice, 'id'> = {
             enrollmentId: enrollment.id!,
