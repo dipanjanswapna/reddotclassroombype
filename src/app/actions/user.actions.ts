@@ -7,7 +7,7 @@ import 'dotenv/config';
 import { revalidatePath } from 'next/cache';
 import {
   addUser,
-  deleteUser,
+  deleteUser as deleteUserFromDb,
   getUser,
   getUserByEmailAndRole,
   updateUser,
@@ -22,6 +22,8 @@ import { User } from '@/lib/types';
 import { Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { removeUndefinedValues } from '@/lib/utils';
+import { getAuthInstance } from '@/lib/firebase/auth';
+
 
 export const getUsers = getUsersFromDb;
 export const findUserByRegistrationOrRoll = findUserFromDb;
