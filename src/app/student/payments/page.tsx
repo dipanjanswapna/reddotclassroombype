@@ -20,7 +20,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
-import { SerializableEnrollment } from '@/app/admin/dashboard/page';
 
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
@@ -86,6 +85,17 @@ export default function StudentPaymentsPage() {
             }
 
             if (invoice) {
+                if (!invoice.courseDetails.communityUrl) {
+                    const course = await getCourse(invoice.courseId);
+                    if(course) {
+                        const isCycleEnrollment = !!invoice.courseDetails.cycleName;
+                        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.title === invoice.courseDetails.cycleName) : null;
+                        const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
+                        if (communityUrl) {
+                            invoice.courseDetails.communityUrl = communityUrl;
+                        }
+                    }
+                }
                 setSelectedInvoice(invoice);
             } else {
                 throw new Error("Invoice could not be loaded or created.");
@@ -145,7 +155,7 @@ export default function StudentPaymentsPage() {
                                             <TableCell>{format(safeToDate(e.enrollmentDate), 'PPP')}</TableCell>
                                             <TableCell>৳{e.totalFee?.toFixed(2) || '0.00'}</TableCell>
                                             <TableCell>
-                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e as Enrollment)}>
+                                                <Button variant="outline" size="sm" onClick={() => handleViewInvoice(e)}>
                                                     <Eye className="mr-2 h-4 w-4"/> View
                                                 </Button>
                                             </TableCell>
