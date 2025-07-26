@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { PaymentsClient } from '@/components/student/payments/payments-client';
+import { PaymentsClient } from './payments-client';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
