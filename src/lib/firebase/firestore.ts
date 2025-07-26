@@ -1,5 +1,4 @@
 
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -1276,7 +1275,6 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
-
 export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
@@ -1293,3 +1291,6 @@ export const markStudentAsCounseled = async (studentId: string) => {
     const userRef = doc(db, 'users', studentId);
     return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
 };
+
+// Course Cycles
+export const getCourseCycles = (courseId: string) => getCollection<CourseCycle>(`courses/${courseId}/cycles`);

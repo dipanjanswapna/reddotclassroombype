@@ -1,7 +1,7 @@
 
 
 
-'use server';
+'use client';
 
 import 'dotenv/config';
 
@@ -15,7 +15,7 @@ import {
   getEnrollmentsByUserId,
   getSupportTicketsByUserId,
   getUsers as getUsersFromDb,
-  findUserByRegistrationOrRoll as findUserByRegistrationOrRollFromDb,
+  findUserByRegistrationOrRoll as findUserFromDb,
   markStudentAsCounseled,
   getPrebookingsByUserId,
 } from '@/lib/firebase/firestore';
@@ -27,7 +27,7 @@ import { getAuthInstance } from '@/lib/firebase/auth';
 
 
 export const getUsers = getUsersFromDb;
-export const findUserByRegistrationOrRoll = findUserByRegistrationOrRollFromDb;
+export const findUserByRegistrationOrRoll = findUserFromDb;
 
 export async function saveUserAction(userData: Partial<User>) {
     try {

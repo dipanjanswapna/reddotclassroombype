@@ -17,7 +17,7 @@ let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
 let dbInstance: Firestore | null = null;
 
-export function getFirebaseApp(): FirebaseApp | null {
+function getFirebaseApp(): FirebaseApp | null {
   if (app) return app;
   
   if (!firebaseConfig.apiKey) {
@@ -51,4 +51,4 @@ function getAuthInstance(): Auth | null {
   return authInstance;
 }
 
-export { getDbInstance, getAuthInstance };
+export { getFirebaseApp, getDbInstance, getAuthInstance };
