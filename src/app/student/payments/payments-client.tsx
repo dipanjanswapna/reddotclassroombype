@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { getCourse, getDocument } from '@/lib/firebase/firestore';
 import type { Enrollment, Order, Invoice } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { InvoiceView } from '@/components/invoice-view';
-import { createInvoiceAction } from '@/app/actions/invoice.actions';
+import { createInvoiceAction, updateInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
 
 type Transaction = {
@@ -61,7 +61,7 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
             }
 
             let invoice: Invoice | null = null;
-            if(enrollment.invoiceId) {
+            if (enrollment.invoiceId) {
                 invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
             }
             
@@ -80,10 +80,15 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
                     const cycle = isCycleEnrollment ? course.cycles?.find(c => c.title === invoice.courseDetails.cycleName) : null;
                     const communityUrl = isCycleEnrollment ? cycle?.communityUrl : course.communityUrl;
                     if (communityUrl) {
-                        invoice.courseDetails.communityUrl = communityUrl;
+                         const updatedInvoice = { ...invoice, courseDetails: { ...invoice.courseDetails, communityUrl } };
+                         await updateInvoiceAction(invoice.id!, { courseDetails: updatedInvoice.courseDetails });
+                         setSelectedInvoice(updatedInvoice);
+                    } else {
+                        setSelectedInvoice(invoice);
                     }
+                } else {
+                    setSelectedInvoice(invoice);
                 }
-                setSelectedInvoice(invoice);
             } else {
                 throw new Error("Invoice could not be loaded or created.");
             }
@@ -103,7 +108,7 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
                     <TabsTrigger value="courses">Course Enrollments</TabsTrigger>
                     <TabsTrigger value="store">Store Orders</TabsTrigger>
                 </TabsList>
-                <TabsContent value="courses">
+                <TabsContent value="courses" className="mt-4">
                      <Card>
                         <CardHeader>
                             <CardTitle>Course Enrollment History</CardTitle>
@@ -140,7 +145,7 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
                         </CardContent>
                      </Card>
                 </TabsContent>
-                <TabsContent value="store">
+                <TabsContent value="store" className="mt-4">
                      <Card>
                         <CardHeader>
                             <CardTitle>RDC Store Order History</CardTitle>

@@ -90,3 +90,17 @@ export async function createInvoiceAction(enrollment: Enrollment, user: User, co
         return { success: false, message: error.message };
     }
 }
+
+export async function updateInvoiceAction(invoiceId: string, data: Partial<Invoice>): Promise<{ success: boolean; message?: string }> {
+    const db = getDbInstance();
+    if (!db) throw new Error('Database service is currently unavailable.');
+    
+    try {
+        const invoiceRef = doc(db, 'invoices', invoiceId);
+        await updateDoc(invoiceRef, data);
+        return { success: true, message: 'Invoice updated successfully.' };
+    } catch(error: any) {
+        console.error("Error updating invoice:", error);
+        return { success: false, message: error.message };
+    }
+}
