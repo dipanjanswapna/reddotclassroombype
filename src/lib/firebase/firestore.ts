@@ -1,5 +1,6 @@
 
 
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -536,14 +537,6 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
   if (!querySnapshot.empty) {
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as Invoice;
-  }
-  
-  // Fallback for older data structure where enrollmentId is the invoice ID itself
-  // This helps with backwards compatibility but can be removed later.
-  const docRef = doc(db, 'invoices', enrollmentId);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    return { id: docSnap.id, ...docSnap.data() } as Invoice;
   }
   
   return null;

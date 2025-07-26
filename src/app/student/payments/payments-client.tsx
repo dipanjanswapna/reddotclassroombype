@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { getCourse, getDocument } from '@/lib/firebase/firestore';
+import { getCourse, getDocument, getOrdersByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
 import type { Enrollment, Order, Invoice } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,6 +17,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction, updateInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 type Transaction = {
   id: string;
@@ -33,19 +34,40 @@ type HydratedOrder = Omit<Order, 'createdAt' | 'updatedAt'> & {
 
 interface PaymentsClientProps {
     initialTransactions: Transaction[];
-    initialOrders: HydratedOrder[];
 }
 
-export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsClientProps) {
+export function PaymentsClient({ initialTransactions }: PaymentsClientProps) {
     const { userInfo } = useAuth();
     const { toast } = useToast();
     
-    const [transactions] = useState<Transaction[]>(initialTransactions);
-    const [orders] = useState<HydratedOrder[]>(initialOrders);
+    const [orders, setOrders] = useState<HydratedOrder[]>([]);
+    const [loadingOrders, setLoadingOrders] = useState(true);
 
     const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [loadingInvoice, setLoadingInvoice] = useState(false);
+
+    useEffect(() => {
+        if (userInfo) {
+            getOrdersByUserId(userInfo.uid)
+                .then(ordersData => {
+                    const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
+                        ...order,
+                        createdAt: safeToDate(order.createdAt).toISOString(),
+                        updatedAt: safeToDate(order.updatedAt).toISOString(),
+                    }));
+                    setOrders(serializedOrders);
+                })
+                .catch(err => {
+                    console.error("Failed to load store orders", err);
+                    toast({ title: "Error", description: "Could not load store order history.", variant: "destructive" });
+                })
+                .finally(() => setLoadingOrders(false));
+        } else {
+             setLoadingOrders(false);
+        }
+    }, [userInfo, toast]);
+
 
     const handleViewInvoice = async (enrollment: Enrollment) => {
         if (!userInfo || !enrollment.id) return;
@@ -63,9 +85,7 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
             let invoice: Invoice | null = null;
             if (enrollment.invoiceId) {
                 invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
-            }
-            
-            if (!invoice) {
+            } else {
                 invoice = await getInvoiceByEnrollmentId(enrollment.id);
             }
             
@@ -128,7 +148,7 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {transactions.length > 0 ? transactions.map(t => (
+                                {initialTransactions.length > 0 ? initialTransactions.map(t => (
                                     <TableRow key={t.id}>
                                         <TableCell>{t.courseName}</TableCell>
                                         <TableCell>{format(safeToDate(t.date), 'PPP')}</TableCell>
@@ -155,30 +175,32 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
                             <CardTitle>RDC Store Order History</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Order ID</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Total</TableHead>
-                                        <TableHead>Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                {orders.length > 0 ? orders.map(order => (
-                                    <TableRow key={order.id}>
-                                        <TableCell className="font-mono">#{order.id?.slice(0,8)}</TableCell>
-                                        <TableCell>{format(safeToDate(order.createdAt), 'PPP')}</TableCell>
-                                        <TableCell>৳{order.totalAmount.toFixed(2)}</TableCell>
-                                        <TableCell><Badge>{order.status}</Badge></TableCell>
-                                    </TableRow>
-                                )) : (
-                                     <TableRow>
-                                        <TableCell colSpan={4} className="h-24 text-center">No store orders found.</TableCell>
-                                    </TableRow>
-                                )}
-                                </TableBody>
-                            </Table>
+                            {loadingOrders ? <div className="flex justify-center h-24 items-center"><LoadingSpinner /></div> : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Order ID</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Total</TableHead>
+                                            <TableHead>Status</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                    {orders.length > 0 ? orders.map(order => (
+                                        <TableRow key={order.id}>
+                                            <TableCell className="font-mono">#{order.id?.slice(0,8)}</TableCell>
+                                            <TableCell>{format(safeToDate(order.createdAt), 'PPP')}</TableCell>
+                                            <TableCell>৳{order.totalAmount.toFixed(2)}</TableCell>
+                                            <TableCell><Badge>{order.status}</Badge></TableCell>
+                                        </TableRow>
+                                    )) : (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="h-24 text-center">No store orders found.</TableCell>
+                                        </TableRow>
+                                    )}
+                                    </TableBody>
+                                </Table>
+                            )}
                         </CardContent>
                      </Card>
                 </TabsContent>

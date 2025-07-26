@@ -1,11 +1,14 @@
 
+
 'use server';
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
-import { addSupportTicket, getSupportTicket, updateSupportTicket } from '@/lib/firebase/firestore';
+import { addSupportTicket, getSupportTicket, updateSupportTicket, getSupportTicketsByUserId } from '@/lib/firebase/firestore';
 import { SupportTicket } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
+
+export { getSupportTicketsByUserId };
 
 export async function createSupportTicketAction(data: { subject: string, description: string, userId: string, userName: string, category?: SupportTicket['category'], recipient?: string }) {
     try {

@@ -1,101 +1,48 @@
 
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/context/auth-context';
-import { getCoursesByIds, getEnrollmentsByUserId, getOrdersByUserId } from '@/lib/firebase/firestore';
-import type { Enrollment, Order, Course } from '@/lib/types';
-import { PaymentsClient } from './payments-client';
+import { getCoursesByIds, getEnrollmentsByUserId } from "@/lib/firebase/firestore";
+import type { Course, Enrollment } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { safeToDate } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
+import { PaymentsClient } from './payments-client';
+import { getCurrentUser } from "@/lib/firebase/auth";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { safeToDate } from "@/lib/utils";
 
-type Transaction = {
-  id: string;
-  courseName: string;
-  date: string; 
-  amount: number;
-  enrollment: Enrollment;
-};
+// Make the page itself a Server Component to fetch initial data
+async function PaymentsPageContent() {
+    const user = await getCurrentUser();
 
-type HydratedOrder = Omit<Order, 'createdAt' | 'updatedAt'> & {
-    createdAt: string;
-    updatedAt: string;
-}
-
-export default function StudentPaymentsPage() {
-    const { userInfo, loading: authLoading } = useAuth();
-    const { toast } = useToast();
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [orders, setOrders] = useState<HydratedOrder[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchPaymentData = useCallback(async () => {
-        if (!userInfo) {
-            toast({ title: "Authentication Error", description: "Could not verify user.", variant: "destructive" });
-            setLoading(false);
-            return;
-        }
-
-        try {
-            const [enrollmentsData, ordersData] = await Promise.all([
-                getEnrollmentsByUserId(userInfo.uid),
-                getOrdersByUserId(userInfo.uid)
-            ]);
-            
-            let processedTransactions: Transaction[] = [];
-            if (enrollmentsData.length > 0) {
-                const courseIds = [...new Set(enrollmentsData.map(e => e.courseId))];
-                const coursesData = await getCoursesByIds(courseIds);
-                const coursesMap = new Map(coursesData.map(c => [c.id, c]));
-
-                processedTransactions = enrollmentsData.map(e => {
-                    const course = coursesMap.get(e.courseId);
-                    return {
-                        id: e.id!,
-                        courseName: course?.title || 'Unknown Course',
-                        date: safeToDate(e.enrollmentDate).toISOString(),
-                        amount: e.totalFee || 0,
-                        enrollment: e,
-                    };
-                }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            }
-            setTransactions(processedTransactions);
-
-            const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
-                ...order,
-                createdAt: safeToDate(order.createdAt).toISOString(),
-                updatedAt: safeToDate(order.updatedAt).toISOString(),
-            }));
-            setOrders(serializedOrders);
-
-        } catch (error) {
-            console.error("Failed to fetch payment data:", error);
-            toast({ title: "Error", description: "Could not load payment history.", variant: "destructive" });
-        } finally {
-            setLoading(false);
-        }
-    }, [userInfo, toast]);
-    
-    useEffect(() => {
-        if (!authLoading) {
-            if (userInfo) {
-                fetchPaymentData();
-            } else {
-                setLoading(false);
-            }
-        }
-    }, [userInfo, authLoading, fetchPaymentData]);
-
-
-    if (authLoading || loading) {
-        return (
-            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
-                <LoadingSpinner />
-            </div>
-        );
+    if (!user) {
+        // This is a server component, so redirect is appropriate
+        redirect('/login?redirect=/student/payments');
     }
 
+    const enrollmentsData = await getEnrollmentsByUserId(user.uid);
+    const courseIds = enrollmentsData.map(e => e.courseId);
+    
+    let coursesData: Course[] = [];
+    if (courseIds.length > 0) {
+        coursesData = await getCoursesByIds(courseIds);
+    }
+    
+    const transactions = enrollmentsData.map(enrollment => {
+        const course = coursesData.find(c => c.id === enrollment.courseId);
+        return {
+            id: enrollment.id!,
+            courseName: course?.title || 'Unknown Course',
+            date: safeToDate(enrollment.enrollmentDate).toISOString(),
+            amount: enrollment.totalFee || parseFloat(course?.price.replace(/[^0-9.]/g, '') || '0'),
+            enrollment: enrollment,
+        };
+    }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // We no longer need to fetch orders here as it's handled in the client
+
+    return <PaymentsClient initialTransactions={transactions} />;
+}
+
+
+export default function StudentPaymentsPage() {
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div>
@@ -104,7 +51,13 @@ export default function StudentPaymentsPage() {
                     A record of all your transactions on the platform.
                 </p>
             </div>
-            <PaymentsClient initialTransactions={transactions} initialOrders={orders} />
+             <Suspense fallback={
+                <div className="flex items-center justify-center h-[calc(100vh-20rem)]">
+                    <LoadingSpinner className="w-12 h-12" />
+                </div>
+             }>
+                <PaymentsPageContent />
+             </Suspense>
         </div>
     );
 }
