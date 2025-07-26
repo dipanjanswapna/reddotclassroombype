@@ -1,6 +1,5 @@
 
 
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -1277,6 +1276,16 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
+
+export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    const userRef = doc(db, 'users', userId);
+    // This assumes a simple structure. A more robust way would be a subcollection.
+    return updateDoc(userRef, {
+        [`readAnnouncements.${courseId}`]: true
+    });
+};
 
 export const markStudentAsCounseled = async (studentId: string) => {
     const db = getDbInstance();
