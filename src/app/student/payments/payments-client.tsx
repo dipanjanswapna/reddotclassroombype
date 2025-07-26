@@ -66,6 +66,10 @@ export function PaymentsClient({ initialTransactions, initialOrders }: PaymentsC
             }
             
             if (!invoice) {
+                invoice = await getInvoiceByEnrollmentId(enrollment.id);
+            }
+            
+            if (!invoice) {
                 const creationResult = await createInvoiceAction(enrollment, userInfo, course);
                  if (creationResult.success && creationResult.invoiceId) {
                     invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);

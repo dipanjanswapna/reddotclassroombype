@@ -538,6 +538,14 @@ export const getInvoiceByEnrollmentId = async (enrollmentId: string): Promise<In
     return { id: doc.id, ...doc.data() } as Invoice;
   }
   
+  // Fallback for older data structure where enrollmentId is the invoice ID itself
+  // This helps with backwards compatibility but can be removed later.
+  const docRef = doc(db, 'invoices', enrollmentId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return { id: docSnap.id, ...docSnap.data() } as Invoice;
+  }
+  
   return null;
 };
 
@@ -1276,30 +1284,6 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     });
     await batch.commit();
 }
-
-export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
-    const db = getDbInstance();
-    if (!db) throw new Error("Firestore is not initialized.");
-    
-    // In this data model, announcements don't have a user-specific read status.
-    // A more complex system would have a subcollection like /users/{userId}/readAnnouncements
-    // For now, we can update an array field on the user's enrollment document.
-    const enrollments = await getEnrollmentsByUserId(userId);
-    const enrollment = enrollments.find(e => e.courseId === courseId);
-    if (!enrollment || !enrollment.id) {
-        throw new Error("User is not enrolled in this course.");
-    }
-    
-    const course = await getCourse(courseId);
-    if (!course?.announcements) return;
-
-    const announcementIds = course.announcements.map(a => a.id);
-    const enrollmentRef = doc(db, 'enrollments', enrollment.id);
-
-    await updateDoc(enrollmentRef, {
-        readAnnouncements: arrayUnion(...announcementIds)
-    });
-};
 
 export const markStudentAsCounseled = async (studentId: string) => {
     const db = getDbInstance();
