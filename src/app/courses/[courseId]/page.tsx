@@ -35,7 +35,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Course, CourseCycle } from '@/lib/types';
-import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations, getCourseCycles } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
@@ -115,6 +115,7 @@ export default async function CourseDetailPage({
   const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
   const enrollments = await getEnrollmentsByCourseId(courseId);
   const studentCount = enrollments.length;
+  const courseCycles = await getCourseCycles(courseId);
 
   const allCourses = await getCourses();
   const allOrgs = await getOrganizations();
@@ -243,14 +244,14 @@ export default async function CourseDetailPage({
               </section>
             )}
 
-             {course.cycles && course.cycles.length > 0 && (
+             {courseCycles && courseCycles.length > 0 && (
                 <section id="cycles" className="scroll-mt-24 py-0">
                     <h2 className="font-headline text-3xl font-bold mb-6 flex items-center gap-3">
                         <Layers />
                         Cycle based enrollment
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
+                        {courseCycles.sort((a,b) => a.order - b.order).map((cycle) => (
                             <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} isPrebookingActive={isPrebookingActive}/>
                         ))}
                     </div>
@@ -472,3 +473,5 @@ export default async function CourseDetailPage({
     </div>
   );
 }
+
+      

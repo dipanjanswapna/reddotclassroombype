@@ -4,7 +4,7 @@
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
-import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId, getUserByClassRoll } from '@/lib/firebase/firestore';
+import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId, getUserByClassRoll, getCourseCycles } from '@/lib/firebase/firestore';
 import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
@@ -93,7 +93,8 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         }
         
         const isCycleEnrollment = !!cycleId;
-        const cycle = isCycleEnrollment ? course.cycles?.find(c => c.id === cycleId) : null;
+        const cycles = await getCourseCycles(courseId);
+        const cycle = isCycleEnrollment ? cycles.find(c => c.id === cycleId) : null;
         
         if (isCycleEnrollment && !cycle) throw new Error("Selected course cycle not found.");
 
@@ -379,3 +380,5 @@ export async function markAsGroupAccessedAction(enrollmentId: string, adminId: s
         return { success: false, message: error.message };
     }
 }
+
+      
