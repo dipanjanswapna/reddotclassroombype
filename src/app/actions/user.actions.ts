@@ -1,8 +1,5 @@
 
 
-
-'use client';
-
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';

@@ -17,7 +17,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction, updateInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
-import { LoadingSpinner } from '@/components/loading-spinner';
 
 type Transaction = {
   id: string;

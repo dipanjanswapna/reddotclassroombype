@@ -1,59 +1,92 @@
 
+
+'use client';
+
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { PaymentsClient, HydratedOrder } from '@/app/student/payments/payments-client';
+import { PaymentsClient, HydratedOrder } from './payments-client';
 import { getCurrentUser } from '@/lib/firebase/auth';
 import { getCoursesByIds, getEnrollmentsByUserId, getOrdersByUserId } from '@/lib/firebase/firestore';
 import type { Course, Enrollment, Order } from '@/lib/types';
 import { safeToDate } from '@/lib/utils';
 import { redirect } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
-type Transaction = {
-  id: string;
-  courseName: string;
-  date: string;
-  amount: number;
-  enrollment: Enrollment;
-};
 
-async function PaymentsPageContent() {
-    const user = await getCurrentUser();
+export default function StudentPaymentsPage() {
+    const { userInfo, loading: authLoading } = useAuth();
+    const { toast } = useToast();
 
-    if (!user) {
-        // This should ideally not happen if the layout protects the route,
-        // but as a safeguard, we redirect.
-        redirect('/login');
-    }
-
-    const [enrollmentsData, ordersData] = await Promise.all([
-        getEnrollmentsByUserId(user.uid),
-        getOrdersByUserId(user.uid)
-    ]);
-
-    const courseIds = enrollmentsData.map(e => e.courseId);
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [orders, setOrders] = useState<HydratedOrder[]>([]);
+    const [loading, setLoading] = useState(true);
     
-    let coursesData: Course[] = [];
-    if (courseIds.length > 0) {
-        coursesData = await getCoursesByIds(courseIds);
-    }
+    useEffect(() => {
+        if (authLoading) return;
+        if (!userInfo) {
+            setLoading(false);
+            redirect('/login');
+            return;
+        }
 
-    const transactionData = enrollmentsData.map(enrollment => {
-        const course = coursesData.find(c => c.id === enrollment.courseId);
-        return {
-            id: enrollment.id!,
-            courseName: course?.title || 'Unknown Course',
-            date: safeToDate(enrollment.enrollmentDate).toISOString(),
-            amount: enrollment.totalFee || parseFloat(course?.price?.replace(/[^0-9.]/g, '') || '0'),
-            enrollment: enrollment,
+        const fetchData = async () => {
+            try {
+                const [enrollmentsData, ordersData] = await Promise.all([
+                    getEnrollmentsByUserId(userInfo.uid),
+                    getOrdersByUserId(userInfo.uid)
+                ]);
+
+                const courseIds = enrollmentsData.map(e => e.courseId);
+                let coursesData: Course[] = [];
+                if (courseIds.length > 0) {
+                    coursesData = await getCoursesByIds(courseIds);
+                }
+
+                const transactionData = enrollmentsData.map(enrollment => {
+                    const course = coursesData.find(c => c.id === enrollment.courseId);
+                    return {
+                        id: enrollment.id!,
+                        courseName: course?.title || 'Unknown Course',
+                        date: safeToDate(enrollment.enrollmentDate).toISOString(),
+                        amount: enrollment.totalFee || parseFloat(course?.price?.replace(/[^0-9.]/g, '') || '0'),
+                        enrollment: enrollment,
+                    };
+                }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+                const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
+                    ...order,
+                    createdAt: safeToDate(order.createdAt).toISOString(),
+                    updatedAt: safeToDate(order.updatedAt).toISOString(),
+                })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+                setTransactions(transactionData);
+                setOrders(serializedOrders);
+            } catch(e) {
+                toast({
+                    title: 'Error',
+                    description: 'Could not fetch payment history.',
+                    variant: 'destructive',
+                });
+            } finally {
+                setLoading(false);
+            }
         };
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
-        ...order,
-        createdAt: safeToDate(order.createdAt).toISOString(),
-        updatedAt: safeToDate(order.updatedAt).toISOString(),
-    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        fetchData();
 
+    }, [userInfo, authLoading, toast]);
+
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[calc(100vh-20rem)]">
+                <LoadingSpinner className="w-12 h-12" />
+            </div>
+        );
+    }
+    
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <div>
@@ -62,20 +95,7 @@ async function PaymentsPageContent() {
                     A record of all your transactions on the platform.
                 </p>
             </div>
-            <PaymentsClient initialTransactions={transactionData} initialOrders={serializedOrders} />
+            <PaymentsClient initialTransactions={transactions} initialOrders={orders} />
         </div>
-    );
-}
-
-
-export default function StudentPaymentsPage() {
-    return (
-        <Suspense fallback={
-            <div className="flex items-center justify-center h-[calc(100vh-20rem)]">
-                <LoadingSpinner className="w-12 h-12" />
-            </div>
-        }>
-            <PaymentsPageContent />
-        </Suspense>
     );
 }
