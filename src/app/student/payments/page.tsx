@@ -3,17 +3,26 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { PaymentsClient } from './payments-client';
+import { PaymentsClient, HydratedOrder } from '@/components/student/payments/payments-client';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getCoursesByIds, getEnrollmentsByUserId, getOrdersByUserId } from '@/lib/firebase/firestore';
 import type { Course } from '@/lib/types';
 import { safeToDate } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 
+type Transaction = {
+  id: string;
+  courseName: string;
+  date: string;
+  amount: number;
+  enrollment: any;
+};
+
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
-    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [orders, setOrders] = useState<HydratedOrder[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,7 +34,11 @@ export default function StudentPaymentsPage() {
 
         const fetchInitialData = async () => {
             try {
-                const enrollmentsData = await getEnrollmentsByUserId(userInfo.uid);
+                const [enrollmentsData, ordersData] = await Promise.all([
+                    getEnrollmentsByUserId(userInfo.uid),
+                    getOrdersByUserId(userInfo.uid)
+                ]);
+
                 const courseIds = enrollmentsData.map(e => e.courseId);
                 
                 let coursesData: Course[] = [];
@@ -45,6 +58,15 @@ export default function StudentPaymentsPage() {
                 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
                 setTransactions(transactionData);
+
+                const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
+                    ...order,
+                    createdAt: safeToDate(order.createdAt).toISOString(),
+                    updatedAt: safeToDate(order.updatedAt).toISOString(),
+                })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                
+                setOrders(serializedOrders);
+
             } catch (error) {
                 console.error("Failed to fetch payment data:", error);
                 toast({ title: 'Error', description: 'Could not load payment history.', variant: 'destructive' });
@@ -72,7 +94,7 @@ export default function StudentPaymentsPage() {
                     A record of all your transactions on the platform.
                 </p>
             </div>
-            <PaymentsClient initialTransactions={transactions} />
+            <PaymentsClient initialTransactions={transactions} initialOrders={orders} />
         </div>
     );
 }
