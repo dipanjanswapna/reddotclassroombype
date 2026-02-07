@@ -189,6 +189,38 @@ export const deleteQuestionFromBank = (id: string) => {
     return deleteDoc(doc(db, 'question_bank', id));
 }
 
+// Doubts
+export const getDoubts = () => getCollection<Doubt>('doubts');
+export const getDoubt = (id: string) => getDocument<Doubt>('doubts', id);
+export const getDoubtsByCourseAndStudent = async (courseId: string, studentId: string): Promise<Doubt[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'doubts'), where('courseId', '==', courseId), where('studentId', '==', studentId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
+}
+export const getDoubtAnswers = async (doubtId: string): Promise<DoubtAnswer[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'doubt_answers'), where('doubtId', '==', doubtId), orderBy('answeredAt', 'asc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DoubtAnswer));
+}
+export const getStudentForDoubt = async (studentId: string): Promise<User | null> => {
+    return getUser(studentId);
+}
+export const createDoubtSession = async (courseId: string, sessionName: string, assignedDoubtSolverIds: string[]): Promise<string> => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore not initialized.");
+    const q = query(collection(db, 'doubt_sessions'), where('courseId', '==', courseId));
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+        return snapshot.docs[0].id;
+    }
+    const res = await addDoc(collection(db, 'doubt_sessions'), { courseId, sessionName, assignedDoubtSolverIds, createdAt: Timestamp.now() });
+    return res.id;
+}
+
 // Courses
 export const getCourses = async (filters: {
   category?: string;
@@ -239,6 +271,10 @@ export const getCoursesByIds = async (ids: string[]): Promise<Course[]> => {
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
 }
+export const getCourseCycles = async (courseId: string): Promise<CourseCycle[]> => {
+    const course = await getCourse(courseId);
+    return course?.cycles || [];
+}
 export const addCourse = (course: Partial<Course>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
@@ -281,15 +317,6 @@ export const getInstructorByUid = async (uid: string): Promise<Instructor | null
     const docSnap = querySnapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Instructor;
 }
-export const getInstructorsByIds = async (ids: string[]): Promise<Instructor[]> => {
-    if (!ids || ids.length === 0) return [];
-    const db = getDbInstance();
-    if (!db) return [];
-    const instructorsRef = collection(db, 'instructors');
-    const q = query(instructorsRef, where(documentId(), 'in', ids));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Instructor));
-}
 export const addInstructor = (instructor: Partial<Instructor>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
@@ -300,6 +327,11 @@ export const updateInstructor = (id: string, instructor: Partial<Instructor>) =>
     if (!db) throw new Error("Firestore is not initialized.");
     return updateDoc(doc(db, 'instructors', id), instructor);
 }
+export const deleteInstructor = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'instructors', id));
+}
 
 // Users
 export const getUsers = () => getCollection<User>('users');
@@ -309,30 +341,21 @@ export const getUserByClassRoll = async (classRoll: string): Promise<User | null
     if (!db) return null;
     const q = query(collection(db, 'users'), where('classRoll', '==', classRoll));
     const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-        return null;
-    }
+    if (querySnapshot.empty) return null;
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
-
 export const findUserByRegistrationOrRoll = async (id: string): Promise<{userId: string | null}> => {
   const db = getDbInstance();
   if (!db) return { userId: null };
-
-  let user: User | null = null;
-  user = await getUserByRegistrationNumber(id);
+  let user: User | null = await getUserByRegistrationNumber(id);
   if (user) return { userId: user.id! };
-  
   user = await getUserByClassRoll(id);
   if (user) return { userId: user.id! };
-  
   user = await getUserByOfflineRoll(id);
   if (user) return { userId: user.id! };
-  
   return { userId: null };
 };
-
 export const getUserByRegistrationNumber = async (regNo: string): Promise<User | null> => {
     const db = getDbInstance();
     if (!db) return null;
@@ -342,7 +365,6 @@ export const getUserByRegistrationNumber = async (regNo: string): Promise<User |
     const doc = querySnapshot.docs[0];
     return { id: doc.id, ...doc.data() } as User;
 }
-
 export const getUserByOfflineRoll = async (rollNo: string): Promise<User | null> => {
     const db = getDbInstance();
     if (!db) return null;
@@ -380,6 +402,38 @@ export const updateUser = (id: string, user: Partial<User>) => {
     if (!db) throw new Error("Firestore is not initialized.");
     return updateDoc(doc(db, 'users', id), user);
 }
+export const deleteUser = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'users', id));
+}
+
+// Blog Posts
+export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost | null> => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, "blog_posts"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    const docSnap = querySnapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as BlogPost;
+}
+export const addBlogPost = (post: Omit<BlogPost, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'blog_posts'), post);
+}
+export const updateBlogPost = (id: string, post: Partial<BlogPost>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'blog_posts', id), post);
+}
+export const deleteBlogPost = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'blog_posts', id));
+}
 
 // Organizations
 export const getOrganizations = () => getCollection<Organization>('organizations');
@@ -388,6 +442,16 @@ export const addOrganization = (org: Partial<Organization>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
     return addDoc(collection(db, 'organizations'), org);
+}
+export const updateOrganization = (id: string, org: Partial<Organization>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'organizations', id), org);
+}
+export const deleteOrganization = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'organizations', id));
 }
 export const getPartnerBySubdomain = async (subdomain: string): Promise<Organization | null> => {
     const db = getDbInstance();
@@ -420,10 +484,49 @@ export const getSupportTicketsByUserId = async (userId: string): Promise<Support
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SupportTicket));
 };
 export const getSupportTicket = (id: string) => getDocument<SupportTicket>('support_tickets', id);
+export const addSupportTicket = (ticket: Omit<SupportTicket, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'support_tickets'), ticket);
+}
 export const updateSupportTicket = (id: string, ticket: Partial<SupportTicket>) => {
     const db = getDbInstance();
     if (!db) throw new Error("Firestore is not initialized.");
     return updateDoc(doc(db, 'support_tickets', id), ticket);
+}
+
+// Promo Codes
+export const getPromoCodes = () => getCollection<PromoCode>('promo_codes');
+export const getPromoCodeByCode = async (code: string): Promise<PromoCode | null> => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'promo_codes'), where('code', '==', code), where('isActive', '==', true));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as PromoCode;
+}
+export const getPromoCodeForUserAndCourse = async (userId: string, courseId: string): Promise<PromoCode | null> => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'promo_codes'), where('restrictedToUserId', '==', userId), where('applicableCourseIds', 'array-contains', courseId), where('isActive', '==', true));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as PromoCode;
+}
+export const addPromoCode = (promo: Partial<PromoCode>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'promo_codes'), promo);
+}
+export const updatePromoCode = (id: string, promo: Partial<PromoCode>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'promo_codes', id), promo);
+}
+export const deletePromoCode = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'promo_codes', id));
 }
 
 // Categories
@@ -476,7 +579,7 @@ export const getPrebookingForUser = async (courseId: string, userId: string): Pr
     const q = query(collection(db, 'prebookings'), where('courseId', '==', courseId), where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return null;
-    return { id: doc.id, ...querySnapshot.docs[0].data() } as Prebooking;
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as Prebooking;
 };
 export const getPrebookingsByUserId = async (userId: string): Promise<Prebooking[]> => {
     const db = getDbInstance();
@@ -484,6 +587,18 @@ export const getPrebookingsByUserId = async (userId: string): Promise<Prebooking
     const q = query(collection(db, "prebookings"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
+export const getPrebookingsByCourseId = async (courseId: string): Promise<Prebooking[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "prebookings"), where("courseId", "==", courseId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
+export const addPrebooking = (pre: Omit<Prebooking, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'prebookings'), pre);
 }
 
 // Payouts
@@ -498,8 +613,39 @@ export const getPayoutsByUserId = async (userId: string): Promise<Payout[]> => {
 // Branches & Batches
 export const getBranches = () => getCollection<Branch>('branches');
 export const getBranch = (id: string) => getDocument<Branch>('branches', id);
+export const addBranch = (br: Omit<Branch, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'branches'), br);
+}
+export const updateBranch = (id: string, br: Partial<Branch>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'branches', id), br);
+}
+export const deleteBranch = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'branches', id));
+}
+
 export const getBatches = () => getCollection<Batch>('batches');
 export const getBatch = (id: string) => getDocument<Batch>('batches', id);
+export const addBatch = (b: Omit<Batch, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'batches'), b);
+}
+export const updateBatch = (id: string, b: Partial<Batch>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'batches', id), b);
+}
+export const deleteBatch = (id: string) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return deleteDoc(doc(db, 'batches', id));
+}
 
 // Attendance
 export const getAttendanceRecords = () => getCollection<AttendanceRecord>('attendance');
@@ -517,6 +663,32 @@ export const getAttendanceForStudent = async (studentId: string): Promise<Attend
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
 }
+export const getAttendanceRecordForStudentByDate = async (studentId: string, date: string): Promise<AttendanceRecord | null> => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'attendance'), where("studentId", "==", studentId), where("date", "==", date));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as AttendanceRecord;
+}
+export const updateAttendanceRecord = (id: string, data: Partial<AttendanceRecord>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'attendance', id), data);
+}
+export const saveAttendanceRecords = async (records: ({ id: string, update: Partial<AttendanceRecord> } | { create: Omit<AttendanceRecord, 'id'> })[]) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    const batch = writeBatch(db);
+    records.forEach(r => {
+        if ('create' in r) {
+            batch.set(doc(collection(db, 'attendance')), r.create);
+        } else {
+            batch.update(doc(db, 'attendance', r.id), r.update);
+        }
+    });
+    return batch.commit();
+}
 
 // Reported Content
 export const getPendingReports = async (): Promise<ReportedContent[]> => {
@@ -526,6 +698,77 @@ export const getPendingReports = async (): Promise<ReportedContent[]> => {
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportedContent));
 };
+export const addReportedContent = (report: Omit<ReportedContent, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'reported_content'), report);
+}
+export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return updateDoc(doc(db, 'reported_content', id), data);
+}
+
+// Notifications
+export const getNotificationsByUserId = async (userId: string): Promise<Notification[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, "notifications"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+};
+export const addNotification = (notif: Omit<Notification, 'id'>) => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore is not initialized.");
+    return addDoc(collection(db, 'notifications'), notif);
+}
+
+// Planner
+export const getFoldersForUser = async (userId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'folders'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+}
+export const getListsForUser = async (userId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'lists'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+}
+export const getTasksForUser = async (userId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'tasks'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+}
+export const getGoalsForUser = async (userId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'goals'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Goal));
+}
+export const getListsInFolder = async (folderId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'lists'), where('folderId', '==', folderId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+}
+export const getTasksInList = async (listId: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'tasks'), where('listId', '==', listId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+}
+
+// Callback Requests
+export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
 
 // Notices
 export const getNotices = async (options?: { limit?: number; includeDrafts?: boolean }): Promise<Notice[]> => {
@@ -745,7 +988,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
 
 export const getHomepageConfig = async (): Promise<HomepageConfig> => {
     const db = getDbInstance();
-    if (!db) return { id: 'default', ...defaultHomepageConfig };
+    if (!db) return { id: 'default', ...defaultHomepageConfig } as HomepageConfig;
     const docRef = doc(db, 'single_documents', 'homepage_config');
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -776,6 +1019,19 @@ export const markAllNotificationsAsRead = async (userId: string) => {
     const db = getDbInstance();
     if (!db) return;
     const q = query(collection(db, "notifications"), where("userId", "==", userId), where("read", "==", false));
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { read: true });
+    });
+    return batch.commit();
+}
+
+export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
+    // Logic to mark course-specific notifications as read for the user
+    const db = getDbInstance();
+    if (!db) return;
+    const q = query(collection(db, "notifications"), where("userId", "==", userId), where("read", "==", false), where("link", "==", `/student/my-courses/${courseId}/announcements`));
     const querySnapshot = await getDocs(q);
     const batch = writeBatch(db);
     querySnapshot.forEach((doc) => {
