@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -155,7 +156,7 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground pt-16">
+    <div className="text-foreground">
         <section className="py-2 px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
@@ -395,9 +396,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="social-media-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
               <div className="mb-6">
-                <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
-                  {homepageConfig.socialMediaSection?.title?.[language]}
-                </h2>
+                <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.socialMediaSection?.title?.[language]}</h2>
                 <p className="text-muted-foreground mb-2 max-w-2xl mx-auto">
                   {homepageConfig.socialMediaSection?.description?.[language]}
                 </p>

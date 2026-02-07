@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -59,9 +60,12 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full py-2 bg-transparent pointer-events-none", wrapperClassName)}>
-      <div className="container pointer-events-auto">
-        <div className={cn("flex h-12 items-center justify-between rounded-xl bg-background/95 dark:bg-card/90 backdrop-blur-md border border-primary px-4 sm:px-6 shadow-xl", containerClassName)}>
+    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center py-2 bg-transparent pointer-events-none", wrapperClassName)}>
+      <div className="container max-w-7xl pointer-events-auto">
+        <div className={cn(
+          "flex h-12 items-center justify-between rounded-xl bg-background/95 dark:bg-card/90 backdrop-blur-md border border-primary px-4 sm:px-6 shadow-xl overflow-hidden",
+          containerClassName
+        )}>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center space-x-2 shrink-0">
                 <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-7 w-auto" priority />
@@ -98,7 +102,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-2">
                   <ThemeToggle className={cn("h-8 w-8", isDark && "text-white hover:bg-white/20 hover:text-white")} />
-                  <Button variant="ghost" className={cn("h-8 hidden xl:inline-flex text-xs", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-1 h-3 w-3"/> {t.hotline[language]}: 01641035736</Button>
                   {!user && (
                     <>
                     <Button asChild variant="outline" size="sm" className={cn("h-8 text-xs", isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>

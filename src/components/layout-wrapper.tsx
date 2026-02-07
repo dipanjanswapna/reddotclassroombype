@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -67,7 +68,6 @@ const NetworkStatus = () => {
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  const { language } = useLanguage();
   const [categories, setCategories] = React.useState([]);
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
 
@@ -76,24 +76,25 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     getHomepageConfig().then(setHomepageConfig);
   }, []);
 
-  const isFullPageLayout =
-    pathname.startsWith('/sites/') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/auth/') ||
-    pathname.startsWith('/signup') ||
-    pathname.startsWith('/seller-program/apply') ||
-    pathname.startsWith('/password-reset');
-    
-  const isOfflineHub = pathname.startsWith('/offline-hub');
+  const isPartnerSite = pathname.startsWith('/sites/');
   const isStore = pathname.startsWith('/store');
+  const isDashboardPage = 
+    pathname.startsWith('/student') ||
+    pathname.startsWith('/teacher') ||
+    pathname.startsWith('/guardian') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/moderator') ||
+    pathname.startsWith('/seller') ||
+    pathname.startsWith('/affiliate') ||
+    pathname.startsWith('/doubt-solver');
 
-  if (isFullPageLayout || isOfflineHub) {
+  if (isPartnerSite) {
     return <>{children}</>;
   }
 
   if (isStore) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col pt-16">
         <StoreHeader categories={categories} />
         <main className="flex-grow">
             {children}
@@ -103,27 +104,20 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  const isDashboardPage = 
-    pathname.startsWith('/student') ||
-    pathname.startsWith('/teacher') ||
-    pathname.startsWith('/guardian') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/moderator') ||
-    pathname.startsWith('/seller');
-    
   return (
     <div className={cn(
-        "min-h-screen flex flex-col",
-        isDashboardPage && "bg-background"
+        "min-h-screen flex flex-col pt-16",
+        isDashboardPage ? "bg-background" : "bg-gray-50/30"
     )}>
         <Header homepageConfig={homepageConfig} />
-        <main className={cn("flex-grow")}>
+        <main className="flex-grow">
           {children}
         </main>
         {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
-          {homepageConfig?.floatingWhatsApp?.display && (
+        {homepageConfig?.floatingWhatsApp?.display && (
             <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
         )}
+        <CartSheet />
     </div>
   );
 }
