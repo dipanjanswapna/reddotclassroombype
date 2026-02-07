@@ -70,7 +70,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const isHomePage = pathname === '/';
 
   return (
-    <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
+    <div lang={language} dir="ltr">
         <div className={cn(
             "min-h-screen flex flex-col",
             isDashboardPage && "bg-background"
@@ -117,7 +117,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                 </InnerLayout>
             </LenisProvider>
             <CartSheet />
-            <Toaster position="bottom-right" richColors />
+            <Toaster position="bottom-right" richColors closeButton />
             <Suspense fallback={null}>
                 <FacebookPixel />
             </Suspense>
