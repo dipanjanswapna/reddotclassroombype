@@ -21,7 +21,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
 
   return (
     <footer className="bg-[#1a0505] text-gray-300 font-sans border-t border-primary/20">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           
           {/* Brand Column */}
@@ -112,7 +112,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
       </div>
       
       <div className="border-t border-white/5 bg-black/20">
-        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs relative">
+        <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs relative">
           <div className="flex items-center gap-4">
             <p className="text-gray-500">&copy; {new Date().getFullYear()} RED DOT CLASSROOM (RDC). All rights reserved.</p>
             <div className="hidden md:block h-4 w-px bg-white/10" />
