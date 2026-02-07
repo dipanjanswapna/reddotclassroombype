@@ -31,7 +31,8 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.fbcdn.net' },
       { protocol: 'https', hostname: 'cdni.iconscout.com' },
       { protocol: 'https', hostname: 'static.vecteezy.com' },
-      { protocol: 'https', hostname: 'png.pngtree.com' }
+      { protocol: 'https', hostname: 'png.pngtree.com' },
+      { protocol: 'https', hostname: 'picsum.photos' }
     ],
   },
 };
