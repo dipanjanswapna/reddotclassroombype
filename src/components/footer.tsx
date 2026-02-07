@@ -122,17 +122,6 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-             <Image
-                src="https://mir-s3-cdn-cf.behance.net/projects/max_808/ed1f18226284187.Y3JvcCwxMDI0LDgwMCwwLDM2Nw.png"
-                alt="DBID Certified"
-                width={80}
-                height={40}
-                className="opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer"
-                data-ai-hint="DBID logo"
-            />
-          </div>
-
           <Button 
             size="icon" 
             className="bg-primary hover:bg-primary/90 rounded-full absolute -top-6 right-4 shadow-2xl h-12 w-12 group transition-transform hover:-translate-y-1" 
