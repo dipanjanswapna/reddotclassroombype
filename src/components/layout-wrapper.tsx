@@ -84,7 +84,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (isStore) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col pt-16">
+      <div className="bg-background min-h-screen flex flex-col pt-16">
         <StoreHeader categories={categories} />
         <main className="flex-grow">
             {children}
@@ -96,8 +96,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   
   return (
     <div className={cn(
-        "min-h-screen flex flex-col pt-16",
-        isDashboardPage ? "bg-background" : "bg-gray-50/30"
+        "min-h-screen flex flex-col pt-16 bg-background"
     )}>
         <Header homepageConfig={homepageConfig} />
         <main className="flex-grow">
