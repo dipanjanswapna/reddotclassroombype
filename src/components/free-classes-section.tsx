@@ -52,7 +52,8 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
           <h2 id="free-classes-heading" className="font-headline text-2xl font-bold text-primary">{title.bn}</h2>
-          <p className="mt-1 text-sm text-muted-foreground max-w-xl mx-auto">{subtitle.bn}</p>
+          <div className="h-1 w-16 bg-primary mx-auto mt-2 rounded-full" />
+          <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">{subtitle.bn}</p>
         </div>
 
         <div className="flex items-center justify-center flex-wrap gap-2 mb-6">
