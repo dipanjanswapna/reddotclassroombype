@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -20,6 +17,7 @@ import { StoreFooter } from './store-footer';
 import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
 import React, { Suspense } from 'react';
 import FacebookPixel from './facebook-pixel';
+import { LenisProvider } from './lenis-provider';
 
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
@@ -109,9 +107,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <CartProvider>
             <LanguageProvider>
-            <InnerLayout>
-                {children}
-            </InnerLayout>
+            <LenisProvider>
+                <InnerLayout>
+                    {children}
+                </InnerLayout>
+            </LenisProvider>
             <CartSheet />
             <Toaster />
             <Suspense fallback={null}>

@@ -69,10 +69,10 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <motion.section
-    initial={{ opacity: 0, y: 30 }}
+    initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     className={cn("py-12 sm:py-16 lg:py-20", className)}
   >
     {children}
@@ -158,9 +158,14 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground">
+    <div className="text-foreground overflow-x-hidden">
         {homepageConfig.welcomeSection?.display && (
-            <SectionWrapper className="py-12 text-center">
+            <motion.section 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="py-12 text-center"
+            >
                 <div className="container mx-auto px-4 md:px-8">
                      <h1 className="text-4xl flex flex-wrap justify-center items-center gap-4">
                         <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 md:h-16 w-auto" priority />
@@ -170,7 +175,7 @@ export default function Home() {
                         {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['bn']}
                     </p>
                 </div>
-            </SectionWrapper>
+            </motion.section>
         )}
 
         <section className="py-0 px-4 md:px-8">
