@@ -14,21 +14,12 @@ import { Toaster } from '@/components/ui/sonner';
 import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
-import { StoreFooter } from './store-footer';
 import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
 import React, { Suspense, useState, useEffect } from 'react';
 import FacebookPixel from './facebook-pixel';
 import { LenisProvider } from './lenis-provider';
 import { NextProgressBar } from './next-progress-bar';
 import { WifiOff } from 'lucide-react';
-import { scan } from 'react-scan';
-
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  scan({
-    enabled: true,
-    log: true,
-  });
-}
 
 function useIsOnline() {
   const [isOnline, setIsOnline] = useState(true);
@@ -99,7 +90,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
         <main className="flex-grow">
             {children}
         </main>
-        <StoreFooter categories={categories} />
+        <Footer homepageConfig={homepageConfig} />
       </div>
     );
   }
@@ -113,7 +104,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
         <main className="flex-grow">
           {children}
         </main>
-        {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+        {!isDashboardPage && <Footer homepageConfig={homepageConfig} />}
         {homepageConfig?.floatingWhatsApp?.display && (
             <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
         )}

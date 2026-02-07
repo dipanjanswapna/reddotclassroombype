@@ -1,16 +1,19 @@
 
 import React from 'react';
-import { OfflineHubFooter } from '@/components/offline-hub-footer';
+import { Footer } from '@/components/footer';
+import { getHomepageConfig } from '@/lib/firebase/firestore';
 
-export default function OfflineHubLayout({
+export default async function OfflineHubLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const homepageConfig = await getHomepageConfig();
+
   return (
     <div className="bg-gray-900 text-white font-bengali">
         <main>{children}</main>
-        <OfflineHubFooter />
+        <Footer homepageConfig={homepageConfig} />
     </div>
   );
 }
