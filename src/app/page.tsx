@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -158,26 +159,7 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground overflow-x-hidden">
-        {homepageConfig.welcomeSection?.display && (
-            <motion.section 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="py-12 text-center"
-            >
-                <div className="container mx-auto px-4 md:px-8">
-                     <h1 className="text-4xl flex flex-wrap justify-center items-center gap-4">
-                        <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 md:h-16 w-auto" priority />
-                        <p className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</p>
-                    </h1>
-                    <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['bn']}
-                    </p>
-                </div>
-            </motion.section>
-        )}
-
+    <div className="text-foreground overflow-x-hidden pt-12">
         <section className="py-0 px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
