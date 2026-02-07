@@ -25,7 +25,7 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --chart-1: 340 80% 55%;
     --chart-2: 142 76% 36%;
     --chart-3: 240 5% 45%;
@@ -68,12 +68,10 @@
     @apply border-border;
   }
   html {
-    overflow-x: hidden;
     scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
   }
   section {
     @apply py-4 sm:py-6 lg:py-8;
@@ -143,4 +141,16 @@ html.lenis {
   box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary));
   opacity: 1.0;
   transform: rotate(3deg) translate(0px, -4px);
+}
+
+.hero-carousel-dots {
+  @apply flex justify-center gap-2;
+}
+
+.hero-carousel-dot {
+  @apply w-2 h-2 rounded-full bg-muted transition-all duration-300;
+}
+
+.hero-carousel-dot.active {
+  @apply w-6 bg-primary;
 }

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -516,12 +515,12 @@ export default function Home() {
                     <div className="flex justify-center md:justify-start gap-4 mt-6 flex-wrap">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                              <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                              <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://picsum.photos/seed/gp/180/60'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
                             </motion.div>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                              <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                              <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://picsum.photos/seed/as/180/60'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
                             </motion.div>
                         </Link>
                     </div>
