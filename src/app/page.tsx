@@ -178,7 +178,7 @@ export default function Home() {
                               data-ai-hint="student family studying"
                           />
                           <div>
-                              <h3 className="font-headline text-xl font-bold">
+                              <h3 className="font-headline text-xl font-bold text-green-700 dark:text-green-500">
                                   {homepageConfig.strugglingStudentSection?.title?.[language]}
                               </h3>
                               <p className="text-muted-foreground">
@@ -201,7 +201,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
               <div className="text-center mb-4">
-                <h2 id="categories-heading" className="font-headline text-2xl font-bold">
+                <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.categoriesSection?.title?.[language]}
                 </h2>
                 <HeadingUnderline />
@@ -219,7 +219,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="hero-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
               <div className="text-center mb-4">
-                <h2 id="hero-heading" className="font-headline text-2xl font-bold">{homepageConfig.journeySection?.title?.[language]}</h2>
+                <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">{homepageConfig.journeySection?.subtitle?.[language]}</p>
                 <HeadingUnderline />
               </div>
@@ -236,7 +236,7 @@ export default function Home() {
             <div className="container mx-auto">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <div className="text-center sm:text-left">
-                      <h2 id="teachers-heading" className="font-headline text-2xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <h2 id="teachers-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.teachersSection?.title?.[language]}</h2>
                       <div className="h-1 w-16 bg-primary mt-2 rounded-full hidden sm:block" />
                       <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
@@ -253,7 +253,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="video-section-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
                 <div className="mb-4">
-                  <h2 id="video-section-heading" className="font-headline text-2xl font-bold">{homepageConfig.videoSection?.title?.[language]}</h2>
+                  <h2 id="video-section-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.videoSection?.title?.[language]}</h2>
                   <p className="text-muted-foreground mb-2 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                   <HeadingUnderline />
                 </div>
@@ -291,7 +291,7 @@ export default function Home() {
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <div className="mb-4">
-                    <h2 id="ssc-hsc-heading" className="font-headline text-2xl font-bold">{homepageConfig.sscHscSection?.title?.[language]}</h2>
+                    <h2 id="ssc-hsc-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <div className="flex flex-wrap justify-center gap-6">
@@ -305,7 +305,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="masterclass-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
                   <div className="mb-4">
-                    <h2 id="masterclass-heading" className="font-headline text-2xl font-bold">{homepageConfig.masterclassSection?.title?.[language]}</h2>
+                    <h2 id="masterclass-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
@@ -321,7 +321,7 @@ export default function Home() {
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <div className="mb-4">
-                    <h2 id="admission-heading" className="font-headline text-2xl font-bold">{homepageConfig.admissionSection?.title?.[language]}</h2>
+                    <h2 id="admission-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.admissionSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <div className="flex flex-wrap justify-center gap-6">
@@ -339,7 +339,7 @@ export default function Home() {
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
                   <div className="mb-4">
-                    <h2 id="job-prep-heading" className="font-headline text-2xl font-bold">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
+                    <h2 id="job-prep-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <div className="flex flex-wrap justify-center gap-6">
@@ -364,7 +364,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="collaborations-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
               <div className="mb-6">
-                <h2 id="collaborations-heading" className="font-headline text-2xl font-bold">
+                <h2 id="collaborations-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.collaborations?.title?.[language]}
                 </h2>
                 <HeadingUnderline />
@@ -378,7 +378,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="partners-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
               <div className="mb-4">
-                <h2 id="partners-heading" className="font-headline text-2xl font-bold">
+                <h2 id="partners-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.partnersSection?.title?.[language]}
                 </h2>
                 <HeadingUnderline />
@@ -395,7 +395,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="social-media-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
               <div className="mb-6">
-                <h2 id="social-media-heading" className="font-headline text-2xl font-bold">
+                <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.socialMediaSection?.title?.[language]}
                 </h2>
                 <p className="text-muted-foreground mb-2 max-w-2xl mx-auto">
@@ -457,7 +457,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="stats-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
                 <div className="mb-6">
-                  <h2 id="stats-heading" className="font-headline text-2xl font-bold">{homepageConfig.statsSection?.title?.[language]}</h2>
+                  <h2 id="stats-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.statsSection?.title?.[language]}</h2>
                   <HeadingUnderline />
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
@@ -484,7 +484,7 @@ export default function Home() {
             <div className="container mx-auto">
               <div className="glassmorphism-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                     <div className='text-center md:text-left'>
-                        <h3 id="notes-banner-heading" className="font-headline text-xl font-bold">{homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <h3 id="notes-banner-heading" className="font-headline text-xl font-bold text-green-700 dark:text-green-500">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-1">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
                     <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg">
@@ -509,7 +509,7 @@ export default function Home() {
                       initial={{ x: -20, opacity: 0 }}
                       whileInView={{ x: 0, opacity: 1 }}
                       viewport={{ once: true }}
-                      className="font-headline text-3xl font-bold text-primary"
+                      className="font-headline text-3xl font-bold text-green-700 dark:text-green-500"
                     >
                       {homepageConfig.appPromo?.title?.[language]}
                     </motion.h2>

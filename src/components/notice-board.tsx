@@ -52,10 +52,10 @@ export function NoticeBoard() {
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
             <Card className="glassmorphism-card">
                 <CardHeader>
-                    <div className="flex flex-col items-center gap-1 text-primary">
+                    <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-3">
-                          <Megaphone className="w-6 h-6" />
-                          <CardTitle className="text-xl font-bold text-foreground">নোটিশ বোর্ড</CardTitle>
+                          <Megaphone className="w-6 h-6 text-primary" />
+                          <CardTitle className="text-xl font-bold text-green-700 dark:text-green-500">নোটিশ বোর্ড</CardTitle>
                         </div>
                         <div className="h-1 w-12 bg-primary mt-1 rounded-full" />
                     </div>
@@ -87,7 +87,7 @@ export function NoticeBoard() {
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{selectedNotice?.title}</DialogTitle>
+                    <DialogTitle className="text-green-700 dark:text-green-500">{selectedNotice?.title}</DialogTitle>
                     {selectedNotice?.publishedAt && (
                       <DialogDescription className="flex items-center gap-2 pt-2">
                           <Calendar className="w-4 h-4"/>

@@ -34,7 +34,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
         <div className="glassmorphism-card p-6 md:p-8">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-4 text-center lg:text-left">
-                <h2 className="font-headline text-3xl font-bold" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
+                <h2 className="font-headline text-3xl font-bold text-green-700 dark:text-green-500" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
                 <div className="h-1 w-16 bg-primary mt-2 rounded-full mx-auto lg:mx-0" />
                 <p className="text-md text-muted-foreground max-w-2xl mx-auto lg:mx-0 mt-4">
                 {data.description?.[language] || data.description?.['bn']}
