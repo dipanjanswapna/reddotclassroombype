@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,7 +86,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
     }
 
   return (
-    <Card className="shadow-lg overflow-hidden border-none">
+    <Card className="shadow-2xl overflow-hidden border-2 border-primary">
         <CardContent className="p-0">
             <div className="grid md:grid-cols-2">
                 <div className="hidden md:flex items-center justify-center bg-[#eef5ff] dark:bg-gray-800 p-8">

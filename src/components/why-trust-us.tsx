@@ -31,7 +31,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   return (
     <section className="py-6 sm:py-8 overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="glassmorphism-card p-6 md:p-8">
+        <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 shadow-xl">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-4 text-center lg:text-left">
                 <h2 className="font-headline text-3xl font-bold text-green-700 dark:text-green-500" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
@@ -62,7 +62,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             <CarouselContent>
               {(data.testimonials || []).map((testimonial, index) => (
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
-                  <Card className="glassmorphism-card">
+                  <Card className="glassmorphism-card border-2 border-primary shadow-lg">
                     <CardContent className="p-6 grid md:grid-cols-3 gap-6 items-center">
                         <div className="md:col-span-2 text-center md:text-left">
                             <Quote className="text-4xl text-primary/20 mx-auto md:ml-0" fill="currentColor" />

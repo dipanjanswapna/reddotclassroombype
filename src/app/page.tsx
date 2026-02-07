@@ -165,7 +165,7 @@ export default function Home() {
               <div className="container mx-auto">
                   <motion.div 
                     whileHover={{ scale: 1.01 }}
-                    className="group relative glassmorphism-card p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden"
+                    className="group relative glassmorphism-card border-2 border-primary p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden shadow-xl"
                   >
                       <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-center md:text-left z-10">
@@ -482,7 +482,7 @@ export default function Home() {
         {homepageConfig.notesBanner?.display && (
           <SectionWrapper aria-labelledby="notes-banner-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <div className="glassmorphism-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+              <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                     <div className='text-center md:text-left'>
                         <h3 id="notes-banner-heading" className="font-headline text-xl font-bold text-green-700 dark:text-green-500">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-1">{homepageConfig.notesBanner?.description?.[language]}</p>
