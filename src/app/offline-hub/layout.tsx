@@ -1,19 +1,18 @@
-
 import React from 'react';
-import { Footer } from '@/components/footer';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
 
+/**
+ * @fileOverview Layout for the Offline Hub section.
+ * The footer and header are handled globally by LayoutWrapper.
+ * This layout primarily sets the section-specific font and base background.
+ */
 export default async function OfflineHubLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const homepageConfig = await getHomepageConfig();
-
   return (
     <div className="bg-gray-900 text-white font-bengali">
         <main>{children}</main>
-        <Footer homepageConfig={homepageConfig} />
     </div>
   );
 }
