@@ -10,7 +10,7 @@ import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { Button } from "./ui/button";
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -39,35 +39,50 @@ const CourseCardComponent = (props: CourseCardProps) => {
       className="h-full min-w-[280px] flex-1 max-w-[400px]"
     >
       <Card className={cn(
-          "glassmorphism-card flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl group",
+          "glassmorphism-card flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl group border-white/5",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
           <Link href={coursePageUrl} className="block overflow-hidden bg-muted">
-            <Image
-              src={imageUrl}
-              alt={title}
-              width={600}
-              height={400}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className={cn(
-                "w-full h-auto object-cover aspect-[16/10] transition-all duration-500 group-hover:scale-110",
-                isImageLoading ? "scale-105 blur-sm grayscale" : "scale-100 blur-0 grayscale-0"
-              )}
-              onLoadingComplete={() => setIsImageLoading(false)}
-              data-ai-hint={dataAiHint}
-            />
+            <div className={cn(
+                "relative aspect-[16/10] overflow-hidden",
+                isImageLoading && "animate-pulse"
+            )}>
+                <Image
+                src={imageUrl}
+                alt={title}
+                width={600}
+                height={400}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className={cn(
+                    "w-full h-auto object-cover aspect-[16/10] transition-all duration-700 group-hover:scale-110",
+                    isImageLoading ? "scale-105 blur-lg grayscale opacity-50" : "scale-100 blur-0 grayscale-0 opacity-100"
+                )}
+                onLoadingComplete={() => setIsImageLoading(false)}
+                data-ai-hint={dataAiHint}
+                />
+            </div>
           </Link>
           <CourseCardWishlistButton courseId={id} />
-          {isPrebookingActive && <Badge className="absolute top-2 left-2" variant="warning">Pre-booking</Badge>}
-          {type === 'Exam' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="destructive">Exam Batch</Badge>}
-          {type === 'Offline' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Offline</Badge>}
-          {type === 'Hybrid' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Hybrid</Badge>}
+          <AnimatePresence>
+            {!isImageLoading && (
+                <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="absolute top-2 left-2 flex flex-col gap-1 z-10"
+                >
+                    {isPrebookingActive && <Badge variant="warning">Pre-booking</Badge>}
+                    {type === 'Exam' && !isPrebookingActive && <Badge variant="destructive">Exam Batch</Badge>}
+                    {type === 'Offline' && !isPrebookingActive && <Badge variant="secondary">Offline</Badge>}
+                    {type === 'Hybrid' && !isPrebookingActive && <Badge variant="secondary">Hybrid</Badge>}
+                </motion.div>
+            )}
+          </AnimatePresence>
         </CardHeader>
         <CardContent className="p-4 flex flex-col flex-grow">
           {category && <Badge variant="secondary" className="mb-2 w-fit">{category}</Badge>}
           <Link href={coursePageUrl}>
-            <CardTitle className="text-base font-bold leading-snug group-hover:text-primary transition-colors">{title}</CardTitle>
+            <CardTitle className="text-base font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">{title}</CardTitle>
           </Link>
           {provider ? (
              <div className="flex items-center gap-2 mt-2">
@@ -90,14 +105,14 @@ const CourseCardComponent = (props: CourseCardProps) => {
               <p className="text-sm text-muted-foreground line-through">{price}</p>
             </div>
           ) : isArchived ? (
-              null
+              <p className="text-sm text-muted-foreground italic">Registration Closed</p>
           ) : (
               price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
           )}
         </CardFooter>
         <div className="p-4 pt-0">
            {isArchived ? (
-              <Badge variant="outline" className="w-full justify-center">Enrollment Closed</Badge>
+              <Button disabled variant="outline" className="w-full">Closed</Button>
            ) : (
               <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700 shadow-md active:shadow-inner transition-all">
                    <Link href={coursePageUrl}>View Details</Link>

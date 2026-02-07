@@ -1,5 +1,7 @@
+
 'use client';
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +26,7 @@ type EnrolledCourseCardProps = {
 export function EnrolledCourseCard({ course, status, provider, className }: EnrolledCourseCardProps) {
   const { toast } = useToast();
   const { userInfo, refreshUserInfo } = useAuth();
+  const [isImageLoading, setIsImageLoading] = useState(true);
   
   const courseLink = (status === 'in-progress' || status === 'archived' || status === 'prebooked') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
@@ -57,32 +60,43 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
       className="h-full min-w-[280px] flex-1 max-w-[400px]"
     >
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-lg bg-card group enrolled-course-card",
+          "flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-xl bg-card border-white/5 group enrolled-course-card",
           className
       )}>
         <CardHeader className="p-0 relative">
           <Link href={courseLink}>
-            <Image
-              src={course.imageUrl}
-              alt={course.title}
-              width={600}
-              height={400}
-              className="w-full h-auto object-cover aspect-[16/10] transition-transform duration-500 group-hover:scale-110"
-              data-ai-hint={course.dataAiHint}
-            />
+            <div className={cn(
+                "relative aspect-[16/10] overflow-hidden bg-muted",
+                isImageLoading && "animate-pulse"
+            )}>
+                <Image
+                src={course.imageUrl}
+                alt={course.title}
+                width={600}
+                height={400}
+                className={cn(
+                    "w-full h-auto object-cover aspect-[16/10] transition-all duration-700 group-hover:scale-110",
+                    isImageLoading ? "scale-105 blur-lg grayscale opacity-50" : "scale-100 blur-0 grayscale-0 opacity-100"
+                )}
+                onLoadingComplete={() => setIsImageLoading(false)}
+                data-ai-hint={course.dataAiHint}
+                />
+            </div>
           </Link>
-          {status === 'in-progress' && course.lastViewed && (
-               <Badge variant="secondary" className="absolute top-2 left-2 flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  Last viewed: {course.lastViewed}
-               </Badge>
-          )}
-          {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 flex items-center gap-1">Pre-booked</Badge>}
+          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+            {status === 'in-progress' && course.lastViewed && (
+                <Badge variant="secondary" className="flex items-center gap-1 bg-background/80 backdrop-blur-sm">
+                    <Clock className="h-3 w-3" />
+                    Last: {course.lastViewed}
+                </Badge>
+            )}
+            {status === 'prebooked' && <Badge variant="warning">Pre-booked</Badge>}
+          </div>
         </CardHeader>
 
         <CardContent className="p-4 flex flex-col flex-grow">
           <Link href={courseLink}>
-            <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
+            <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
           </Link>
           {provider ? (
              <div className="flex items-center gap-2 mt-2">
@@ -95,17 +109,20 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
 
           <div className="mt-auto pt-4">
               {status === 'in-progress' && typeof course.progress === 'number' && (
-              <div>
-                  <div className="flex justify-between items-center mb-1">
-                      <p className="text-sm font-medium">Progress</p>
-                      <p className="text-sm font-medium text-primary">{course.progress}%</p>
+              <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Course Progress</p>
+                      <p className="text-sm font-bold text-primary">{course.progress}%</p>
                   </div>
-                  <Progress value={course.progress} className="h-2 [&>div]:bg-accent" />
+                  <Progress value={course.progress} className="h-1.5 [&>div]:bg-accent" />
               </div>
               )}
 
               {status === 'completed' && course.completedDate && (
-                  <p className="text-sm text-green-600 font-medium">Completed on: {course.completedDate}</p>
+                  <div className="flex items-center gap-2 text-green-600">
+                      <CheckCircle className="h-4 w-4" />
+                      <p className="text-xs font-bold uppercase tracking-wider">Completed</p>
+                  </div>
               )}
               
               {status === 'wishlisted' && (
@@ -132,10 +149,10 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
           )}
            {status === 'wishlisted' && (
              <div className="w-full flex items-center gap-2">
-               <Button asChild className="w-full font-bold shadow-md">
+               <Button asChild className="w-full font-bold shadow-md flex-grow">
                       <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
                </Button>
-               <Button variant="outline" size="icon" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
+               <Button variant="outline" size="icon" className="shrink-0" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
                   <Trash2 className="h-4 w-4" />
                </Button>
              </div>

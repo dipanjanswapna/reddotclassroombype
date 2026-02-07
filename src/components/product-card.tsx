@@ -53,19 +53,22 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
       className="h-full min-w-[280px] flex-1 max-w-[400px]"
     >
       <Card className={cn(
-          "overflow-hidden group flex flex-col h-full transition-shadow duration-300 hover:shadow-2xl",
+          "overflow-hidden group flex flex-col h-full transition-shadow duration-300 hover:shadow-2xl bg-card border-white/5",
           className
       )}>
           <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
           <CardHeader className="p-0 overflow-hidden bg-muted">
-              <div className="relative aspect-square">
+              <div className={cn(
+                  "relative aspect-square overflow-hidden",
+                  isImageLoading && "animate-pulse"
+              )}>
               <Image
                   src={product.imageUrl}
                   alt={product.name}
                   fill
                   className={cn(
-                    "object-cover transition-all duration-500 group-hover:scale-110",
-                    isImageLoading ? "scale-105 blur-sm grayscale" : "scale-100 blur-0 grayscale-0"
+                    "object-cover transition-all duration-700 group-hover:scale-110",
+                    isImageLoading ? "scale-105 blur-lg grayscale opacity-50" : "scale-100 blur-0 grayscale-0 opacity-100"
                   )}
                   onLoadingComplete={() => setIsImageLoading(false)}
                   data-ai-hint={product.dataAiHint || 'product image'}
