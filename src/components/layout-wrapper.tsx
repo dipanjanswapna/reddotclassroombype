@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from './theme-provider';
 import { AuthProvider } from '@/context/auth-context';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
-import { Toaster } from './ui/toaster';
+import { Toaster } from 'sonner';
 import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
@@ -18,6 +18,7 @@ import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore'
 import React, { Suspense } from 'react';
 import FacebookPixel from './facebook-pixel';
 import { LenisProvider } from './lenis-provider';
+import { NextProgressBar } from './next-progress-bar';
 
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
@@ -108,12 +109,15 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         <CartProvider>
             <LanguageProvider>
             <LenisProvider>
+                <Suspense fallback={null}>
+                    <NextProgressBar />
+                </Suspense>
                 <InnerLayout>
                     {children}
                 </InnerLayout>
             </LenisProvider>
             <CartSheet />
-            <Toaster />
+            <Toaster position="bottom-right" richColors />
             <Suspense fallback={null}>
                 <FacebookPixel />
             </Suspense>
