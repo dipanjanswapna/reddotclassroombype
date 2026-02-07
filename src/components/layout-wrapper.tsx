@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from './theme-provider';
 import { AuthProvider } from '@/context/auth-context';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
-import { Toaster } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
@@ -19,10 +19,9 @@ import React, { Suspense, useState, useEffect } from 'react';
 import FacebookPixel from './facebook-pixel';
 import { LenisProvider } from './lenis-provider';
 import { NextProgressBar } from './next-progress-bar';
-import { AlertCircle, WifiOff } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 import { scan } from 'react-scan';
 
-// Initialize react-scan in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   scan({
     enabled: true,
@@ -30,7 +29,6 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   });
 }
 
-// Local hook to avoid react-use barrel optimization issues in Next.js 15
 function useIsOnline() {
   const [isOnline, setIsOnline] = useState(true);
 
@@ -40,7 +38,6 @@ function useIsOnline() {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
-    // Initial check
     setIsOnline(navigator.onLine);
 
     window.addEventListener('online', handleOnline);
@@ -153,7 +150,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                     {children}
                 </InnerLayout>
             </LenisProvider>
-            <CartSheet />
             <Toaster position="bottom-right" richColors closeButton />
             <Suspense fallback={null}>
                 <FacebookPixel />

@@ -102,14 +102,13 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 2, // Higher scale for better quality
+            scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff'
         });
         
         const imgData = canvas.toDataURL('image/png');
         
-        // A4 size in points: 595.28 x 841.89
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'pt',
@@ -123,7 +122,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
         const imgHeight = canvas.height;
         const ratio = imgWidth / imgHeight;
 
-        let finalWidth = pdfWidth - 40; // 20pt margin on each side
+        let finalWidth = pdfWidth - 40;
         let finalHeight = finalWidth / ratio;
 
         if (finalHeight > pdfHeight - 40) {
@@ -132,7 +131,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
         }
 
         const x = (pdfWidth - finalWidth) / 2;
-        const y = 20; // 20pt margin from top
+        const y = 20;
         
         pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
         pdf.save(`${invoice.invoiceNumber}.pdf`);

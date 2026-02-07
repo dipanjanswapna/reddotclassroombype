@@ -61,51 +61,53 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         plugins={plugins}
         className="w-full hero-carousel"
       >
-        <CarouselContent className="-ml-8">
-          {banners.map((banner, index) => (
-            <CarouselItem
-              key={banner.id}
-              className="pl-8 basis-full md:basis-[50%] lg:basis-[40%]"
-            >
-              <Link
-                href={banner.href}
-                className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
-              >
-                <div className="carousel-image-wrapper relative">
-                  <Image
-                    src={banner.imageUrl}
-                    alt={banner.alt}
-                    width={800}
-                    height={450}
-                    priority={index === 0}
-                    className="rounded-xl object-cover"
-                    data-ai-hint={banner.dataAiHint}
-                  />
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        
-        {/* Centered Scroll Buttons - Adjusted to be within the image area */}
-        <Button
-          onClick={() => api?.scrollPrev()}
-          variant="outline"
-          size="icon"
-          className="absolute left-12 top-[40%] -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="w-8 h-8" />
-        </Button>
-        <Button
-          onClick={() => api?.scrollNext()}
-          variant="outline"
-          size="icon"
-          className="absolute right-12 top-[40%] -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="w-8 h-8" />
-        </Button>
+        <div className="relative">
+            <CarouselContent className="-ml-8">
+            {banners.map((banner, index) => (
+                <CarouselItem
+                key={banner.id}
+                className="pl-8 basis-full md:basis-[50%] lg:basis-[40%]"
+                >
+                <Link
+                    href={banner.href}
+                    className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+                >
+                    <div className="carousel-image-wrapper relative group/image">
+                    <Image
+                        src={banner.imageUrl}
+                        alt={banner.alt}
+                        width={800}
+                        height={450}
+                        priority={index === 0}
+                        className="rounded-xl object-cover"
+                        data-ai-hint={banner.dataAiHint}
+                    />
+                    
+                    {/* Centered Scroll Buttons nested inside image wrapper for perfect alignment */}
+                    <Button
+                        onClick={(e) => { e.preventDefault(); api?.scrollPrev(); }}
+                        variant="outline"
+                        size="icon"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        aria-label="Previous slide"
+                    >
+                        <ChevronLeft className="w-8 h-8" />
+                    </Button>
+                    <Button
+                        onClick={(e) => { e.preventDefault(); api?.scrollNext(); }}
+                        variant="outline"
+                        size="icon"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        aria-label="Next slide"
+                    >
+                        <ChevronRight className="w-8 h-8" />
+                    </Button>
+                    </div>
+                </Link>
+                </CarouselItem>
+            ))}
+            </CarouselContent>
+        </div>
       </Carousel>
       
       <div className="hero-carousel-dots mt-4">

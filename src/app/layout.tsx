@@ -5,7 +5,6 @@ import { LayoutWrapper } from '@/components/layout-wrapper';
 import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
 import logoSrc from '@/public/logo.png';
 
-
 const fontInter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',

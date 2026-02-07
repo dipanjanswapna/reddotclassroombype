@@ -7,13 +7,11 @@ import {
   BookOpen,
   PlayCircle,
   Users,
-  Trophy,
   Youtube,
   Facebook,
   Video,
   ThumbsUp,
   ArrowRight,
-  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -29,15 +27,12 @@ import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/context/language-context';
-import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
-import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
 import { motion } from 'framer-motion';
-
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
     loading: () => <Skeleton className="h-[380px] w-full" />,
@@ -53,7 +48,6 @@ const DynamicMasterclassCarousel = dynamic(() => import('@/components/dynamic-ma
     loading: () => <Skeleton className="h-[380px] w-full" />,
     ssr: false,
 });
-
 
 const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
   switch (platform) {
@@ -365,7 +359,6 @@ export default function Home() {
             </div>
           </SectionWrapper>
         )}
-
 
         {homepageConfig.socialMediaSection?.display && (
           <SectionWrapper aria-labelledby="social-media-heading" className="px-4 md:px-8">
