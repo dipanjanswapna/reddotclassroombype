@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -172,7 +171,6 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
                     <div>
                          <h1 className="font-bold text-2xl text-gray-800">RED DOT CLASSROOM</h1>
-                         <p className="text-xs text-gray-500">powered by prangons ecosystem</p>
                          <p className="text-xl font-semibold mt-2">Invoice</p>
                     </div>
                 </div>

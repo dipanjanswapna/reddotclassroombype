@@ -815,8 +815,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     title: { bn: "RDC SHOP", en: "RDC SHOP" },
     description: { 
-      bn: "The 'Request a callback' feature will be added to your RDC web app, which will collect contact information and topics of interest from potential students, so that your team can communicate with them.",
-      en: "The 'Request a callback' feature will be added to your RDC web app, which will collect contact information and topics of interest from potential students, so that your team can communicate with them."
+      bn: "Welcome to RED DOT CLASSROOM. Start your learning journey with the best resources.",
+      en: "Welcome to RED DOT CLASSROOM. Start your learning journey with the best resources."
     }
   },
   heroBanners: [
@@ -945,10 +945,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
         id: "member2",
         name: "Fairoz Khaled Ohi",
         title: "Founder & CEO",
-        imageUrl: "https://scontent.fdac138-1.fna.fbcdn.net/v/t39.30808-6/487076226_1889375535134421_6130098570179736415_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=thUcU8J7ROoQ7kNvwHydEuI&_nc_oc=AdkINDyf5C7UuRWfgDQyNEz_HhUDKaJST56WCdAl3zayEO_cE2al7Ql8zuHafoE7Ffo&_nc_zt=23&_nc_ht=scontent.fdac138-1.fna&_nc_gid=sqmiXKg937KPft7-jqGDjw&oh=00_AfS2Es-aZsQKwAQAGcDuKtslTnT_8yswe3d9swIMUJkyUw&oe=6872D6A4",
+        imageUrl: "https://placehold.co/100x100.png",
         dataAiHint: "founder person",
         socialLinks: [
-          { platform: 'facebook', url: 'https://www.facebook.com/dipanjanswapna2' }
+          { platform: 'facebook', url: '#' }
         ]
       }
     ]
@@ -977,11 +977,11 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     title: { bn: "Our Partners", en: "Our Partners" },
     scrollSpeed: 25,
     partners: [
-      { id: 1, name: "Prangon", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 2, name: "BD IT", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 3, name: "MediShark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 4, name: "Skill Shark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 5, name: "Spark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
+      { id: 1, name: "Partner 1", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
+      { id: 2, name: "Partner 2", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
+      { id: 3, name: "Partner 3", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
+      { id: 4, name: "Partner 4", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
+      { id: 5, name: "Partner 5", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
     ],
   },
   socialMediaSection: {

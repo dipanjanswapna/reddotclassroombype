@@ -1,5 +1,3 @@
-
-
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * This file contains a central dictionary of translations for the application.
@@ -39,7 +37,7 @@ export const t = {
 
 
   // Footer
-  footer_tagline: { en: 'Empowering learners across Bangladesh with quality education. Powered by PRANGONS ECOSYSTEM.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন। Powered by PRANGONS ECOSYSTEM.' },
+  footer_tagline: { en: 'Empowering learners across Bangladesh with quality education.', bn: 'গুণগত শিক্ষা দিয়ে শিক্ষার্থীদের ক্ষমতায়ন।' },
   quick_links: { en: 'Quick Links', bn: 'কুইক লিঙ্ক' },
   rdc_shop: { en: 'Courses', bn: 'কোর্সসমূহ' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
@@ -97,7 +95,7 @@ export const t = {
   
   // Teacher Signup
   teacher_signup_desc: { en: "Apply to become an instructor on our platform.", bn: "আমাদের প্ল্যাটফর্মে একজন প্রশিক্ষক হতে আবেদন করুন।" },
-  confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
+  confirm_password: { en: 'Confirm Password', bn: 'পাসword নিশ্চিত করুন' },
   expertise_title: { en: 'Expertise / Title', bn: 'দক্ষতা / পদবি' },
   your_bio: { en: 'Your Bio', bn: 'আপনার বায়ো' },
   submit_application: { en: 'Submit Application', bn: 'আবেদন জমা দিন' },

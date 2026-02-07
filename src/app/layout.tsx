@@ -29,10 +29,10 @@ const fontHindSiliguri = Hind_Siliguri({
 export const metadata: Metadata = {
   metadataBase: new URL('https://rdc.vercel.app'),
   title: {
-    default: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM',
+    default: 'RED DOT CLASSROOM (RDC)',
     template: '%s | RED DOT CLASSROOM (RDC)',
   },
-  description: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
+  description: 'RED DOT CLASSROOM (RDC). A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
   icons: {
     icon: logoSrc.src,
     shortcut: logoSrc.src,

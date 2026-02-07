@@ -83,7 +83,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig }) {
           </div>
         </div>
         <div className="mt-8 border-t border-gray-200 pt-6 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. {t.copyright[language]}</p>
+          <p>&copy; {new Date().getFullYear()} RED DOT CLASSROOM (RDC). {t.copyright[language]}</p>
         </div>
       </div>
     </footer>

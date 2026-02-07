@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'About Us | RED DOT CLASSROOM (RDC)',
-  description: "Learn more about RED DOT CLASSROOM (RDC)'s mission, vision, and the team behind our online learning platform, powered by PRANGONS ECOSYSTEM.",
+  description: "Learn more about RED DOT CLASSROOM (RDC)'s mission, vision, and the team behind our online learning platform.",
 };
 
 const socialIconMap = {

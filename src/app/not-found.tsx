@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -40,7 +39,7 @@ export default function NotFound() {
             OOOPS!!
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            This is not the page you are looking for. - stay with RED DOT CLASSROOM (RDC) powered by Prangons Ecosystem
+            This is not the page you are looking for. - stay with RED DOT CLASSROOM (RDC)
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <a href="/" className="inline-flex items-center justify-center rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline">
