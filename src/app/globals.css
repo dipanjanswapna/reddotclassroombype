@@ -67,9 +67,13 @@
   * {
     @apply border-border;
   }
+  html,
+  body {
+    height: auto;
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
   }
   section {
     @apply py-12 sm:py-16 lg:py-20;
@@ -92,6 +96,28 @@
   .text-shadow {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   }
+}
+
+/* Lenis Recommended Styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* NProgress Styles */

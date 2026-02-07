@@ -112,20 +112,18 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/seller');
     
   return (
-    <div lang={language} dir="ltr">
-        <div className={cn(
-            "min-h-screen flex flex-col",
-            isDashboardPage && "bg-background"
-        )}>
-            <Header homepageConfig={homepageConfig} />
-            <main className={cn("flex-grow")}>
-              {children}
-            </main>
-            {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
-             {homepageConfig?.floatingWhatsApp?.display && (
-                <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
-            )}
-        </div>
+    <div className={cn(
+        "min-h-screen flex flex-col",
+        isDashboardPage && "bg-background"
+    )}>
+        <Header homepageConfig={homepageConfig} />
+        <main className={cn("flex-grow")}>
+          {children}
+        </main>
+        {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+          {homepageConfig?.floatingWhatsApp?.display && (
+            <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
+        )}
     </div>
   );
 }
