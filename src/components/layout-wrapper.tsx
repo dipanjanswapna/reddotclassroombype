@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -15,11 +16,57 @@ import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
 import { StoreFooter } from './store-footer';
 import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import FacebookPixel from './facebook-pixel';
 import { LenisProvider } from './lenis-provider';
 import { NextProgressBar } from './next-progress-bar';
+import { AlertCircle, WifiOff } from 'lucide-react';
+import { scan } from 'react-scan';
 
+// Initialize react-scan in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  scan({
+    enabled: true,
+    log: true,
+  });
+}
+
+// Local hook to avoid react-use barrel optimization issues in Next.js 15
+function useIsOnline() {
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    setIsOnline(navigator.onLine);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return isOnline;
+}
+
+const NetworkStatus = () => {
+  const isOnline = useIsOnline();
+  
+  if (isOnline) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-destructive text-destructive-foreground py-2 px-4 flex items-center justify-center gap-2 text-sm font-bold animate-in slide-in-from-top duration-300">
+      <WifiOff className="h-4 w-4" />
+      <span>You are currently offline. Some features may not work correctly.</span>
+    </div>
+  );
+};
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -67,8 +114,6 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/moderator') ||
     pathname.startsWith('/seller');
     
-  const isHomePage = pathname === '/';
-
   return (
     <div lang={language} dir="ltr">
         <div className={cn(
@@ -88,15 +133,6 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   );
 }
 
-
-/**
- * @fileOverview LayoutWrapper component.
- * This component acts as a conditional layout manager for the entire application.
- * It inspects the current URL pathname to decide whether to render the main
- * Header and Footer components. This allows for different page types, such as
- * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
- * interfaces, to have distinct layouts.
- */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
  return (
      <ThemeProvider
@@ -112,6 +148,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                 <Suspense fallback={null}>
                     <NextProgressBar />
                 </Suspense>
+                <NetworkStatus />
                 <InnerLayout>
                     {children}
                 </InnerLayout>

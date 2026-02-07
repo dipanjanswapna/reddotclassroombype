@@ -21,12 +21,33 @@ import { useAuth } from '@/context/auth-context';
 import { safeToDate } from '@/lib/utils';
 import { trackPurchase } from '@/lib/fpixel';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
+import Confetti from 'react-confetti';
+
+// Local hook to avoid react-use optimization issues
+function useWindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleResize = () => {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}
 
 export default function CheckoutPage({ params }: { params: { courseId: string } }) {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userInfo } = useAuth();
+  const { width, height } = useWindowSize();
   
   const cycleId = searchParams.get('cycleId');
 
@@ -35,6 +56,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
   const [promoLoading, setPromoLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [referralDiscount, setReferralDiscount] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const [promoCode, setPromoCode] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -124,13 +146,14 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
     });
     
     if (result.success) {
+        setShowConfetti(true);
         const finalPrice = parseFloat(price.replace(/[^0-9.]/g, '')) - discount - referralDiscount;
         trackPurchase(finalPrice, 'BDT', [{id: course.id!, quantity: 1}]);
         toast({
-            title: 'Success!',
+            title: "Success!",
             description: result.message
         });
-        setTimeout(() => router.push('/student/my-courses'), 2000);
+        setTimeout(() => router.push('/student/my-courses'), 4000);
     } else {
         toast({
             title: 'Action Failed',
@@ -172,12 +195,13 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
 
   return (
     <div className="container mx-auto max-w-4xl py-12">
-      <h1 className="font-headline text-3xl font-bold mb-8">
+      {showConfetti && <Confetti width={width} height={height} numberOfPieces={200} recycle={false} gravity={0.2} />}
+      <h1 className="font-headline text-3xl font-bold mb-8 text-center sm:text-left">
         Complete Your Purchase
       </h1>
       <div className="grid md:grid-cols-2 gap-8">
         <div>
-          <Card>
+          <Card className="glassmorphism-card">
             <CardHeader className="flex flex-row gap-4 items-start">
               <Image src={course.imageUrl} alt={course.title} width={120} height={80} className="rounded-md object-cover aspect-video" />
               <div>
@@ -195,9 +219,9 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                     placeholder="Enter promo code" 
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    disabled={promoLoading || !!selectedCycle || isPrebooking}
+                    disabled={promoLoading || !!selectedCycle || isPrebooking || showConfetti}
                   />
-                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode || !!selectedCycle || isPrebooking}>
+                  <Button onClick={() => handleApplyPromo()} variant="outline" disabled={promoLoading || !promoCode || !!selectedCycle || isPrebooking || showConfetti}>
                     {promoLoading ? <Loader2 className="animate-spin" /> : 'Apply'}
                   </Button>
                 </div>
@@ -213,6 +237,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                             placeholder="Enter friend's Class Roll" 
                             value={referralCode}
                             onChange={(e) => setReferralCode(e.target.value)}
+                            disabled={showConfetti}
                         />
                     </div>
                 </div>
@@ -221,7 +246,7 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
           </Card>
         </div>
         <div>
-          <Card>
+          <Card className="glassmorphism-card">
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
@@ -240,12 +265,6 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                 <div className="flex justify-between text-green-600">
                     <span>Promo Code Discount</span>
                     <span>- ৳{discount.toFixed(2)}</span>
-                </div>
-              )}
-               {referralDiscount > 0 && (
-                <div className="flex justify-between text-green-600">
-                    <span>Referral Discount</span>
-                    <span>- ৳{referralDiscount.toFixed(2)}</span>
                 </div>
               )}
               <hr className="my-2"/>
@@ -267,15 +286,9 @@ export default function CheckoutPage({ params }: { params: { courseId: string } 
                         </AlertDescription>
                     </Alert>
                 )}
-                <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing}>
-                    {isProcessing ? <Loader2 className="mr-2 animate-spin" /> : null}
-                    {isPrebooking && !cycleId ? (
-                        <>
-                            <Bookmark className="mr-2 h-4 w-4"/> Pre-book Now
-                        </>
-                    ) : (
-                        'Proceed to Payment'
-                    )}
+                <Button onClick={handlePayment} className="w-full" size="lg" disabled={isProcessing || numbersMissing || showConfetti}>
+                    {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {showConfetti ? 'Successful!' : (isPrebooking && !cycleId ? 'Pre-book Now' : 'Proceed to Payment')}
                 </Button>
             </div>
           </Card>
