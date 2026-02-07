@@ -12,6 +12,7 @@ import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
+import { motion } from 'framer-motion';
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
@@ -49,102 +50,109 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
   };
 
   return (
-    <Card className={cn(
-        "flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group enrolled-course-card min-w-[280px] flex-1 max-w-[400px]",
-        className
-    )}>
-      <CardHeader className="p-0 relative">
-        <Link href={courseLink}>
-          <Image
-            src={course.imageUrl}
-            alt={course.title}
-            width={600}
-            height={400}
-            className="w-full h-auto object-cover aspect-[16/10]"
-            data-ai-hint={course.dataAiHint}
-          />
-        </Link>
-        {status === 'in-progress' && course.lastViewed && (
-             <Badge variant="secondary" className="absolute top-2 left-2 flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                Last viewed: {course.lastViewed}
-             </Badge>
-        )}
-        {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 flex items-center gap-1">Pre-booked</Badge>}
-      </CardHeader>
+    <motion.div
+      whileHover={{ y: -8 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="h-full min-w-[280px] flex-1 max-w-[400px]"
+    >
+      <Card className={cn(
+          "flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-lg bg-card group enrolled-course-card",
+          className
+      )}>
+        <CardHeader className="p-0 relative">
+          <Link href={courseLink}>
+            <Image
+              src={course.imageUrl}
+              alt={course.title}
+              width={600}
+              height={400}
+              className="w-full h-auto object-cover aspect-[16/10] transition-transform duration-500 group-hover:scale-110"
+              data-ai-hint={course.dataAiHint}
+            />
+          </Link>
+          {status === 'in-progress' && course.lastViewed && (
+               <Badge variant="secondary" className="absolute top-2 left-2 flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Last viewed: {course.lastViewed}
+               </Badge>
+          )}
+          {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 flex items-center gap-1">Pre-booked</Badge>}
+        </CardHeader>
 
-      <CardContent className="p-4 flex flex-col flex-grow">
-        <Link href={courseLink}>
-          <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
-        </Link>
-        {provider ? (
-           <div className="flex items-center gap-2 mt-2">
-            <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
-            <p className="text-xs text-muted-foreground">By {provider.name}</p>
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
-        )}
-
-        <div className="mt-auto pt-4">
-            {status === 'in-progress' && typeof course.progress === 'number' && (
-            <div>
-                <div className="flex justify-between items-center mb-1">
-                    <p className="text-sm font-medium">Progress</p>
-                    <p className="text-sm font-medium text-primary">{course.progress}%</p>
-                </div>
-                <Progress value={course.progress} className="h-2 [&>div]:bg-accent" />
+        <CardContent className="p-4 flex flex-col flex-grow">
+          <Link href={courseLink}>
+            <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
+          </Link>
+          {provider ? (
+             <div className="flex items-center gap-2 mt-2">
+              <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
+              <p className="text-xs text-muted-foreground">By {provider.name}</p>
             </div>
-            )}
+          ) : (
+            <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
+          )}
 
-            {status === 'completed' && course.completedDate && (
-                <p className="text-sm text-green-600 font-medium">Completed on: {course.completedDate}</p>
-            )}
-            
-            {status === 'wishlisted' && (
-                <p className="font-headline text-lg font-bold text-primary">{course.price}</p>
-            )}
-        </div>
-      </CardContent>
+          <div className="mt-auto pt-4">
+              {status === 'in-progress' && typeof course.progress === 'number' && (
+              <div>
+                  <div className="flex justify-between items-center mb-1">
+                      <p className="text-sm font-medium">Progress</p>
+                      <p className="text-sm font-medium text-primary">{course.progress}%</p>
+                  </div>
+                  <Progress value={course.progress} className="h-2 [&>div]:bg-accent" />
+              </div>
+              )}
 
-      <CardFooter className="p-4 pt-0">
-        {status === 'in-progress' && (
-           <Button asChild className="w-full font-bold">
-                <Link href={continueLink}>Continue Learning</Link>
-           </Button>
-        )}
-        {status === 'completed' && (
-           <div className="w-full flex flex-col gap-2">
-             <Button asChild className="w-full font-bold" variant="accent">
-                    <Link href="/student/certificates">View Certificate</Link>
+              {status === 'completed' && course.completedDate && (
+                  <p className="text-sm text-green-600 font-medium">Completed on: {course.completedDate}</p>
+              )}
+              
+              {status === 'wishlisted' && (
+                  <p className="font-headline text-lg font-bold text-primary">{course.price}</p>
+              )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="p-4 pt-0">
+          {status === 'in-progress' && (
+             <Button asChild className="w-full font-bold shadow-md active:shadow-inner">
+                  <Link href={continueLink}>Continue Learning</Link>
              </Button>
+          )}
+          {status === 'completed' && (
+             <div className="w-full flex flex-col gap-2">
+               <Button asChild className="w-full font-bold shadow-md" variant="accent">
+                      <Link href="/student/certificates">View Certificate</Link>
+               </Button>
+               <Button asChild className="w-full" variant="outline">
+                      <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>Rate Course</Link>
+               </Button>
+             </div>
+          )}
+           {status === 'wishlisted' && (
+             <div className="w-full flex items-center gap-2">
+               <Button asChild className="w-full font-bold shadow-md">
+                      <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
+               </Button>
+               <Button variant="outline" size="icon" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
+                  <Trash2 className="h-4 w-4" />
+               </Button>
+             </div>
+          )}
+          {status === 'archived' && (
              <Button asChild className="w-full" variant="outline">
-                    <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>Rate Course</Link>
+                  <Link href={courseLink}>View Archived Content</Link>
              </Button>
-           </div>
-        )}
-         {status === 'wishlisted' && (
-           <div className="w-full flex items-center gap-2">
-             <Button asChild className="w-full font-bold">
-                    <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
+          )}
+          {status === 'prebooked' && (
+             <Button disabled className="w-full font-bold opacity-80">
+                  <BookmarkCheck className="mr-2 h-4 w-4" />
+                  Pre-booked
              </Button>
-             <Button variant="outline" size="icon" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
-                <Trash2 className="h-4 w-4" />
-             </Button>
-           </div>
-        )}
-        {status === 'archived' && (
-           <Button asChild className="w-full" variant="outline">
-                <Link href={courseLink}>View Archived Content</Link>
-           </Button>
-        )}
-        {status === 'prebooked' && (
-           <Button disabled className="w-full font-bold">
-                <BookmarkCheck className="mr-2 h-4 w-4" />
-                Pre-booked
-           </Button>
-        )}
-      </CardFooter>
-    </Card>
+          )}
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }
