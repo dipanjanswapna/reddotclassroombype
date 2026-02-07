@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -55,7 +54,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
   }, [api]);
 
   return (
-    <div className="hero-carousel-container">
+    <div className="hero-carousel-container group relative">
       <Carousel
         setApi={setApi}
         opts={{ align: 'center', loop: true }}
@@ -87,26 +86,29 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
             </CarouselItem>
           ))}
         </CarouselContent>
+        
+        {/* Centered Scroll Buttons */}
         <Button
           onClick={() => api?.scrollPrev()}
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="hero-carousel-arrow hero-carousel-prev"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-8 h-8" />
         </Button>
         <Button
           onClick={() => api?.scrollNext()}
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="hero-carousel-arrow hero-carousel-next"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
           aria-label="Next slide"
         >
           <ChevronRight className="w-8 h-8" />
         </Button>
       </Carousel>
-      <div className="hero-carousel-dots">
+      
+      <div className="hero-carousel-dots mt-4">
         {banners.map((_, index) => (
           <button
             key={index}

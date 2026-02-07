@@ -813,10 +813,10 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   logoUrl: "",
   welcomeSection: {
     display: true,
-    title: { bn: "RDC SHOP", en: "RDC SHOP" },
+    title: { bn: "RED DOT CLASSROOM", en: "RED DOT CLASSROOM" },
     description: { 
-      bn: "Welcome to RED DOT CLASSROOM. Start your learning journey with the best resources.",
-      en: "Welcome to RED DOT CLASSROOM. Start your learning journey with the best resources."
+      bn: "আপনার প্রিয় অনলাইন শিক্ষা প্ল্যাটফর্ম। আমরা দিচ্ছি মানসম্মত শিক্ষা উপকরণ এবং অভিজ্ঞ শিক্ষক মন্ডলী।",
+      en: "Your favorite online learning platform. We provide quality educational resources and experienced instructors."
     }
   },
   heroBanners: [
