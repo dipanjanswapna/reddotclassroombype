@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React from 'react';
@@ -12,13 +10,15 @@ import { Button } from "./ui/button";
 import { useCart } from '@/context/cart-context';
 import { useToast } from './ui/use-toast';
 import { ShoppingCart } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type ProductCardProps = {
   product: Product;
   provider?: Organization | null;
+  className?: string;
 };
 
-const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
+const ProductCardComponent = ({ product, provider, className }: ProductCardProps) => {
     const { addToCart } = useCart();
     const { toast } = useToast();
 
@@ -43,7 +43,10 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
   }
   
   return (
-    <Card className="overflow-hidden group flex flex-col h-full">
+    <Card className={cn(
+        "overflow-hidden group flex flex-col h-full min-w-[280px] flex-1 max-w-[400px]",
+        className
+    )}>
         <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
         <CardHeader className="p-0">
             <div className="relative aspect-square">
@@ -65,7 +68,7 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
                     <p className="text-xs text-muted-foreground">By {provider.name}</p>
                 </div>
             )}
-            <div className="flex items-center justify-between gap-2 mt-2">
+            <div className="flex items-center justify-between gap-2 mt-4">
             <div className="flex flex-col">
                 {product.oldPrice && (
                 <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>

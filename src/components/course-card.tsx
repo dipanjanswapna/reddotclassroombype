@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -9,14 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { Button } from "./ui/button";
+import { cn } from '@/lib/utils';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
   provider?: Organization | null;
+  className?: string;
 };
 
 const CourseCardComponent = (props: CourseCardProps) => {
-  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
+  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type, className } = props;
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -28,7 +29,10 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <Card className="glassmorphism-card flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group">
+    <Card className={cn(
+        "glassmorphism-card flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group min-w-[280px] flex-1 max-w-[400px]",
+        className
+    )}>
       <CardHeader className="p-0 overflow-hidden relative">
         <Link href={coursePageUrl} className="block overflow-hidden">
           <Image

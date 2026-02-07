@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -128,25 +127,26 @@ export default function DashboardPage() {
   }
 
   return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-12">
           <div className="mb-6">
-              <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {userInfo?.name || 'Student'}!</h1>
-              <p className="text-muted-foreground">আপনার পরবর্তী ক্লাস আজ সন্ধ্যা ৭টায়। শুরু করার জন্য প্রস্তুত হন!</p>
+              <h1 className="font-headline text-3xl font-bold tracking-tight">Welcome back, {userInfo?.name || 'Student'}!</h1>
+              <p className="text-muted-foreground">You have 1 class scheduled for this evening. Ready to dive back in?</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="glassmorphism-card bg-primary/10 border-primary/20">
+
+          <div className="flex flex-wrap justify-center gap-6">
+            <Card className="glassmorphism-card bg-primary/10 border-primary/20 flex-1 min-w-[280px] max-w-[400px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-primary">চলমান কোর্স</CardTitle>
+                    <CardTitle className="text-sm font-medium text-primary">Active Courses</CardTitle>
                     <BookOpen className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold text-primary">{stats.enrollments.length}</div>
-                    <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
+                    <p className="text-xs text-muted-foreground">Courses you are currently learning</p>
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card bg-accent/10 border-accent/20">
+            <Card className="glassmorphism-card bg-accent/10 border-accent/20 flex-1 min-w-[280px] max-w-[400px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-accent-foreground">সামগ্রিক অগ্রগতি</CardTitle>
+                    <CardTitle className="text-sm font-medium text-accent-foreground">Overall Progress</CardTitle>
                      <BarChart3 className="h-4 w-4 text-accent-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -154,92 +154,97 @@ export default function DashboardPage() {
                     <Progress value={stats.overallProgress} className="mt-2 h-2 [&>div]:bg-accent" />
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card bg-yellow-500/10 border-yellow-500/20">
+            <Card className="glassmorphism-card bg-yellow-500/10 border-yellow-500/20 flex-1 min-w-[280px] max-w-[400px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-yellow-600">অর্জিত সার্টিফিকেট</CardTitle>
+                    <CardTitle className="text-sm font-medium text-yellow-600">Certificates Earned</CardTitle>
                     <Award className="h-4 w-4 text-yellow-600" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold text-yellow-600">{stats.completedCoursesCount}</div>
-                    <p className="text-xs text-muted-foreground">আপনি সম্প্রতি একটি কোর্স সম্পন্ন করেছেন।</p>
+                    <p className="text-xs text-muted-foreground">Milestones achieved on your journey</p>
                 </CardContent>
             </Card>
         </div>
           
           <div>
-            <h2 className="font-headline text-2xl font-bold mb-4">আপনার শেখা চালিয়ে যান</h2>
-             <div className="grid gap-6 md:grid-cols-2">
+            <h2 className="font-headline text-2xl font-bold mb-6 text-center sm:text-left">Pick Up Where You Left Off</h2>
+             <div className="flex flex-wrap justify-center sm:justify-start gap-8">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="glassmorphism-card flex flex-col">
+                    <Card key={course.id} className="glassmorphism-card flex flex-col flex-1 min-w-[280px] max-w-[450px]">
                         <CardHeader>
                             <CardTitle>{course.title}</CardTitle>
-                            <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: ভৌত বিজ্ঞান প্রথম পত্র</p>
+                            <p className="text-sm text-muted-foreground pt-1">Continue your next lesson to stay on track</p>
                         </CardHeader>
                         <CardContent className="flex-grow">
                             <Progress value={course.progress} className="mb-2 h-2 [&>div]:bg-accent" />
-                            <p className="text-sm font-medium">{course.progress}% সম্পন্ন</p>
+                            <p className="text-sm font-medium">{course.progress}% Completed</p>
                         </CardContent>
                         <div className="p-6 pt-0">
-                          <Button asChild className="w-full">
-                            <Link href={`/student/my-courses/${course.id}`}>কোর্স চালিয়ে যান</Link>
+                          <Button asChild className="w-full font-bold">
+                            <Link href={`/student/my-courses/${course.id}`}>Resume Course</Link>
                           </Button>
                         </div>
                     </Card>
                 )) : (
-                    <p className="text-muted-foreground col-span-2 text-center py-8">You are not enrolled in any courses yet.</p>
+                    <div className="w-full text-center py-12 bg-muted/50 rounded-xl border-2 border-dashed">
+                        <p className="text-muted-foreground">You haven't started any courses yet. Explore our shop to find something interesting!</p>
+                        <Button asChild variant="link" className="mt-4">
+                            <Link href="/courses">Browse Courses &rarr;</Link>
+                        </Button>
+                    </div>
                 )}
              </div>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2">
-            <Card className="glassmorphism-card">
-              <CardHeader className="flex items-center justify-between">
-                <CardTitle>আসন্ন ডেডলাইন</CardTitle>
+          <div className="flex flex-wrap justify-center gap-8">
+            <Card className="glassmorphism-card flex-1 min-w-[280px] max-w-[600px]">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Upcoming Deadlines</CardTitle>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/student/planner">
-                    সব দেখুন
+                    View Planner
                   </Link>
                 </Button>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
                   {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: any, index: number) => (
-                    <li key={index} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <CalendarCheck className="h-5 w-5 text-muted-foreground" />
+                    <li key={index} className="flex items-start gap-4 p-3 hover:bg-muted/50 rounded-lg transition-colors border border-transparent hover:border-border">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <CalendarCheck className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="font-semibold">{deadline.title}</p>
-                        <p className="text-sm text-muted-foreground">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
+                        <p className="text-sm text-muted-foreground">Due Date: {new Date(deadline.date as string).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                     </li>
-                  )) : <p className="text-sm text-muted-foreground">No upcoming deadlines. You're all caught up!</p>}
+                  )) : <p className="text-sm text-center text-muted-foreground py-8">All caught up! No immediate deadlines.</p>}
                 </ul>
               </CardContent>
             </Card>
 
-            <Card className="glassmorphism-card">
-              <CardHeader className="flex items-center justify-between">
-                <CardTitle>সাম্প্রতিক অর্জন</CardTitle>
+            <Card className="glassmorphism-card flex-1 min-w-[280px] max-w-[600px]">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Recent Achievements</CardTitle>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/student/achievements">
-                    সব দেখুন
+                    Full Profile
                   </Link>
                 </Button>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
                   {stats.recentAchievements.length > 0 ? stats.recentAchievements.map((ach: any) => (
-                    <li key={ach.id} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <ach.icon className="h-5 w-5 text-muted-foreground" />
+                    <li key={ach.id} className="flex items-start gap-4 p-3 hover:bg-muted/50 rounded-lg transition-colors border border-transparent hover:border-border">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/10">
+                        <ach.icon className="h-5 w-5 text-yellow-600" />
                       </div>
                       <div>
                         <p className="font-semibold">{ach.title}</p>
                         <p className="text-sm text-muted-foreground">{ach.description}</p>
                       </div>
                     </li>
-                  )) : <p className="text-sm text-muted-foreground">No recent achievements yet.</p>}
+                  )) : <p className="text-sm text-center text-muted-foreground py-8">Keep learning to unlock your first achievement!</p>}
                 </ul>
               </CardContent>
             </Card>

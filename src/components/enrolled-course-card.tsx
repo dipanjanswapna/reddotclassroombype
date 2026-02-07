@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from "next/image";
@@ -12,14 +11,16 @@ import { Clock, Star, Trash2, BookmarkCheck } from "lucide-react";
 import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
+import { cn } from "@/lib/utils";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
   status: 'in-progress' | 'completed' | 'wishlisted' | 'archived' | 'prebooked';
   provider?: Organization | null;
+  className?: string;
 };
 
-export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseCardProps) {
+export function EnrolledCourseCard({ course, status, provider, className }: EnrolledCourseCardProps) {
   const { toast } = useToast();
   const { userInfo, refreshUserInfo } = useAuth();
   
@@ -48,7 +49,10 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group enrolled-course-card">
+    <Card className={cn(
+        "flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 rounded-lg bg-card group enrolled-course-card min-w-[280px] flex-1 max-w-[400px]",
+        className
+    )}>
       <CardHeader className="p-0 relative">
         <Link href={courseLink}>
           <Image
@@ -69,7 +73,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 flex items-center gap-1">Pre-booked</Badge>}
       </CardHeader>
 
-      <CardContent className="p-4 flex-grow">
+      <CardContent className="p-4 flex flex-col flex-grow">
         <Link href={courseLink}>
           <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors">{course.title}</h3>
         </Link>
@@ -82,46 +86,47 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
           <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
         )}
 
-        {status === 'in-progress' && typeof course.progress === 'number' && (
-          <div className="mt-4">
-            <div className="flex justify-between items-center mb-1">
-                <p className="text-sm font-medium">Progress</p>
-                <p className="text-sm font-medium text-primary">{course.progress}%</p>
+        <div className="mt-auto pt-4">
+            {status === 'in-progress' && typeof course.progress === 'number' && (
+            <div>
+                <div className="flex justify-between items-center mb-1">
+                    <p className="text-sm font-medium">Progress</p>
+                    <p className="text-sm font-medium text-primary">{course.progress}%</p>
+                </div>
+                <Progress value={course.progress} className="h-2 [&>div]:bg-accent" />
             </div>
-            <Progress value={course.progress} className="h-2 [&>div]:bg-accent" />
-          </div>
-        )}
+            )}
 
-        {status === 'completed' && course.completedDate && (
-            <p className="text-sm text-green-600 mt-4 font-medium">Completed on: {course.completedDate}</p>
-        )}
-        
-        {status === 'wishlisted' && (
-            <p className="font-headline text-lg font-bold text-primary mt-4">{course.price}</p>
-        )}
-
+            {status === 'completed' && course.completedDate && (
+                <p className="text-sm text-green-600 font-medium">Completed on: {course.completedDate}</p>
+            )}
+            
+            {status === 'wishlisted' && (
+                <p className="font-headline text-lg font-bold text-primary">{course.price}</p>
+            )}
+        </div>
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
         {status === 'in-progress' && (
            <Button asChild className="w-full font-bold">
-                <Link href={continueLink}>কোর্স চালিয়ে যান</Link>
+                <Link href={continueLink}>Continue Learning</Link>
            </Button>
         )}
         {status === 'completed' && (
            <div className="w-full flex flex-col gap-2">
              <Button asChild className="w-full font-bold" variant="accent">
-                    <Link href="/student/certificates">সার্টিফিকেট দেখুন</Link>
+                    <Link href="/student/certificates">View Certificate</Link>
              </Button>
              <Button asChild className="w-full" variant="outline">
-                    <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>রিভিউ দিন</Link>
+                    <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>Rate Course</Link>
              </Button>
            </div>
         )}
          {status === 'wishlisted' && (
            <div className="w-full flex items-center gap-2">
              <Button asChild className="w-full font-bold">
-                    <Link href={`/checkout/${course.id}`}>এখনই এনরোল করুন</Link>
+                    <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
              </Button>
              <Button variant="outline" size="icon" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
                 <Trash2 className="h-4 w-4" />
