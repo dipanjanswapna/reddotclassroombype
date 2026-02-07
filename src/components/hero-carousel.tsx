@@ -71,7 +71,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                 href={banner.href}
                 className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
               >
-                <div className="carousel-image-wrapper">
+                <div className="carousel-image-wrapper relative">
                   <Image
                     src={banner.imageUrl}
                     alt={banner.alt}
@@ -87,12 +87,12 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
           ))}
         </CarouselContent>
         
-        {/* Centered Scroll Buttons */}
+        {/* Centered Scroll Buttons - Adjusted to be within the image area */}
         <Button
           onClick={() => api?.scrollPrev()}
           variant="outline"
           size="icon"
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
+          className="absolute left-12 top-[40%] -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-8 h-8" />
@@ -101,7 +101,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
           onClick={() => api?.scrollNext()}
           variant="outline"
           size="icon"
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
+          className="absolute right-12 top-[40%] -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
           aria-label="Next slide"
         >
           <ChevronRight className="w-8 h-8" />

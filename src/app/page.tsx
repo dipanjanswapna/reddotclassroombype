@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -159,7 +158,7 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground overflow-x-hidden pt-12">
+    <div className="text-foreground overflow-x-hidden pt-4">
         <section className="py-0 px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
