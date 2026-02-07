@@ -75,7 +75,7 @@
     @apply bg-background text-foreground min-h-screen;
   }
   section {
-    @apply py-8 sm:py-10 lg:py-12;
+    @apply py-4 sm:py-6 lg:py-8;
   }
 }
 

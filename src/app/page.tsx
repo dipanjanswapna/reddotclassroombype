@@ -66,7 +66,7 @@ const SectionWrapper = ({ children, className }: { children: React.ReactNode, cl
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-50px" }}
     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-    className={cn("py-8 sm:py-10 lg:py-12", className)}
+    className={cn("py-4 sm:py-6 lg:py-8", className)}
   >
     {children}
   </motion.section>
@@ -152,12 +152,12 @@ export default function Home() {
   
   return (
     <div className="text-foreground pt-16">
-        <section className="py-4 px-4 md:px-8">
+        <section className="py-2 px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <SectionWrapper className="py-4 px-4 md:px-8">
+          <SectionWrapper className="py-2 px-4 md:px-8">
               <div className="container mx-auto">
                   <motion.div 
                     whileHover={{ scale: 1.01 }}
@@ -196,7 +196,7 @@ export default function Home() {
         {homepageConfig.categoriesSection?.display && (
           <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-6">
+              <h2 id="categories-heading" className="font-headline text-2xl font-bold text-center mb-4">
                 {homepageConfig.categoriesSection?.title?.[language]}
               </h2>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
@@ -204,17 +204,17 @@ export default function Home() {
           </SectionWrapper>
         )}
 
-        <div className="container mx-auto px-4 md:px-8">
+        <div className="container mx-auto px-4 md:px-8 my-2">
             <NoticeBoard />
         </div>
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
-              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+              <h2 id="hero-heading" className="font-headline text-2xl font-bold text-center mb-2">{homepageConfig.journeySection?.title?.[language]}</h2>
+              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-4">{homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
-                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                <h3 className="font-headline text-xl font-bold text-center mb-4">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
             </div>
@@ -224,12 +224,12 @@ export default function Home() {
         {homepageConfig.teachersSection?.display && (
           <SectionWrapper aria-labelledby="teachers-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <div className="text-center sm:text-left">
-                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <h2 id="teachers-heading" className="font-headline text-2xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
                       <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
-                  <Button asChild variant="outline">
+                  <Button asChild variant="outline" size="sm">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -241,9 +241,9 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <SectionWrapper aria-labelledby="video-section-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
-                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
-                <div className="flex flex-wrap justify-center gap-8">
+                <h2 id="video-section-heading" className="font-headline text-2xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
+                <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                <div className="flex flex-wrap justify-center gap-6">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
@@ -265,7 +265,7 @@ export default function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all">
+                <Button asChild variant="default" size="lg" className="mt-8 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all">
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
@@ -275,9 +275,9 @@ export default function Home() {
         {homepageConfig.sscHscSection?.display && (
           <SectionWrapper aria-labelledby="ssc-hsc-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
-                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.sscHscSection?.title?.[language]}</h2>
-                  <div className="flex flex-wrap justify-center gap-8">
+                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <h2 id="ssc-hsc-heading" className="font-headline text-2xl font-bold mb-4">{homepageConfig.sscHscSection?.title?.[language]}</h2>
+                  <div className="flex flex-wrap justify-center gap-6">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
               </div>
@@ -287,9 +287,9 @@ export default function Home() {
         {homepageConfig.masterclassSection?.display && (
           <SectionWrapper aria-labelledby="masterclass-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
-                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.masterclassSection?.title?.[language]}</h2>
+                  <h2 id="masterclass-heading" className="font-headline text-2xl font-bold mb-4">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-8 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -299,12 +299,12 @@ export default function Home() {
         {homepageConfig.admissionSection?.display && (
           <SectionWrapper aria-labelledby="admission-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
-                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.admissionSection?.title?.[language]}</h2>
-                  <div className="flex flex-wrap justify-center gap-8">
+                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <h2 id="admission-heading" className="font-headline text-2xl font-bold mb-4">{homepageConfig.admissionSection?.title?.[language]}</h2>
+                  <div className="flex flex-wrap justify-center gap-6">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-8 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -314,12 +314,12 @@ export default function Home() {
         {homepageConfig.jobPrepSection?.display && (
           <SectionWrapper aria-labelledby="job-prep-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
-                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
-                  <div className="flex flex-wrap justify-center gap-8">
+                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <h2 id="job-prep-heading" className="font-headline text-2xl font-bold mb-4">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
+                  <div className="flex flex-wrap justify-center gap-6">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-8 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -337,7 +337,7 @@ export default function Home() {
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
           <SectionWrapper aria-labelledby="collaborations-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-10">
+              <h2 id="collaborations-heading" className="font-headline text-2xl font-bold text-center mb-6">
                 {homepageConfig.collaborations?.title?.[language]}
               </h2>
               <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
@@ -348,7 +348,7 @@ export default function Home() {
         {homepageConfig.partnersSection?.display && (
           <SectionWrapper aria-labelledby="partners-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-8">
+              <h2 id="partners-heading" className="font-headline text-2xl font-bold text-center mb-4">
                 {homepageConfig.partnersSection?.title?.[language]}
               </h2>
               <PartnersLogoScroll 
@@ -362,10 +362,10 @@ export default function Home() {
         {homepageConfig.socialMediaSection?.display && (
           <SectionWrapper aria-labelledby="social-media-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
-              <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
+              <h2 id="social-media-heading" className="font-headline text-2xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language]}
               </h2>
-              <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                 {homepageConfig.socialMediaSection?.description?.[language]}
               </p>
               <div className="flex flex-wrap justify-center gap-6">
@@ -421,8 +421,8 @@ export default function Home() {
         {homepageConfig.statsSection?.display && (
           <SectionWrapper aria-labelledby="stats-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
-                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.statsSection?.title?.[language]}</h2>
-                <div className="flex flex-wrap justify-center gap-8">
+                <h2 id="stats-heading" className="font-headline text-2xl font-bold mb-6">{homepageConfig.statsSection?.title?.[language]}</h2>
+                <div className="flex flex-wrap justify-center gap-6">
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
                         <motion.div 
                           key={index}
@@ -432,8 +432,8 @@ export default function Home() {
                           transition={{ delay: index * 0.1 }}
                           className="text-center glassmorphism-card p-6 flex-1 min-w-[250px] max-w-[350px] shadow-lg"
                         >
-                            <p className="font-headline text-5xl font-bold text-primary">{stat.value}</p>
-                            <p className="mt-2 text-lg text-muted-foreground">{stat.label?.[language]}</p>
+                            <p className="font-headline text-4xl font-bold text-primary">{stat.value}</p>
+                            <p className="mt-2 text-md text-muted-foreground">{stat.label?.[language]}</p>
                         </motion.div>
                     ))}
                 </div>
@@ -444,10 +444,10 @@ export default function Home() {
         {homepageConfig.notesBanner?.display && (
           <SectionWrapper aria-labelledby="notes-banner-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <div className="glassmorphism-card p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+              <div className="glassmorphism-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                     <div className='text-center md:text-left'>
-                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold">{homepageConfig.notesBanner?.title?.[language]}</h3>
-                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
+                        <h3 id="notes-banner-heading" className="font-headline text-xl font-bold">{homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <p className="text-muted-foreground mt-1">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
                     <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg">
                       {homepageConfig.notesBanner?.buttonText?.[language]}
@@ -471,12 +471,12 @@ export default function Home() {
                       initial={{ x: -20, opacity: 0 }}
                       whileInView={{ x: 0, opacity: 1 }}
                       viewport={{ once: true }}
-                      className="font-headline text-4xl font-bold text-primary"
+                      className="font-headline text-3xl font-bold text-primary"
                     >
                       {homepageConfig.appPromo?.title?.[language]}
                     </motion.h2>
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
-                    <div className="flex justify-center md:justify-start gap-4 mt-8 flex-wrap">
+                    <div className="flex justify-center md:justify-start gap-4 mt-6 flex-wrap">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                               <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
@@ -495,7 +495,7 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="flex justify-center"
                   >
-                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
+                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={300} height={450} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
                   </motion.div>
               </div>
           </SectionWrapper>
