@@ -4,14 +4,13 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  BookOpen,
-  PlayCircle,
-  Users,
   Youtube,
   Facebook,
   Video,
   ThumbsUp,
   ArrowRight,
+  PlayCircle,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -152,8 +151,8 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground pt-4">
-        <section className="py-0 px-4 md:px-8">
+    <div className="text-foreground pt-16">
+        <section className="py-4 px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 

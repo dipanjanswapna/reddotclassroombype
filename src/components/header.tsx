@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Menu, Search, X, ChevronDown, Phone, ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { Menu, ChevronDown, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -35,17 +35,12 @@ import Image from "next/image";
 import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
-import { useCart } from "@/context/cart-context";
-import { Badge } from "./ui/badge";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
-  const { user, loading } = useAuth();
-  const { items, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const isDark = variant === 'dark';
-
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const mainNavLinks = [
     { href: "/store", label: t.nav_rdc_store[language] },
@@ -64,21 +59,21 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("sticky top-0 z-50 w-full py-2", wrapperClassName)}>
-      <div className="container">
-        <div className={cn("flex h-12 items-center justify-between rounded-xl bg-background/90 dark:bg-card/80 backdrop-blur-md border border-primary px-6 shadow-xl", containerClassName)}>
+    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full py-2 bg-transparent pointer-events-none", wrapperClassName)}>
+      <div className="container pointer-events-auto">
+        <div className={cn("flex h-12 items-center justify-between rounded-xl bg-background/95 dark:bg-card/90 backdrop-blur-md border border-primary px-4 sm:px-6 shadow-xl", containerClassName)}>
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center space-x-2">
-                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-7 md:h-8 w-auto" priority />
+            <Link href="/" className="flex items-center space-x-2 shrink-0">
+                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-7 w-auto" priority />
             </Link>
           </div>
           
           <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("h-9", isDark && "text-white hover:bg-white/20")}>
+              <Button key={link.href} variant="ghost" asChild className={cn("h-8 px-3", isDark && "text-white hover:bg-white/20")}>
                   <Link
                   href={link.href}
-                  className="transition-colors hover:text-primary"
+                  className="transition-colors hover:text-primary whitespace-nowrap"
                   >
                   {link.label}
                   </Link>
@@ -86,7 +81,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn("h-9 flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
+                      <Button variant="ghost" className={cn("h-8 px-3 flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
                       {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
                       </Button>
                   </DropdownMenuTrigger>
@@ -102,14 +97,14 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-2">
-                  <ThemeToggle className={cn("h-9 w-9", isDark && "text-white hover:bg-white/20 hover:text-white")} />
-                  <Button variant="ghost" className={cn("h-9 hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2 h-4 w-4"/> {t.hotline[language]}: 01641035736</Button>
+                  <ThemeToggle className={cn("h-8 w-8", isDark && "text-white hover:bg-white/20 hover:text-white")} />
+                  <Button variant="ghost" className={cn("h-8 hidden xl:inline-flex text-xs", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-1 h-3 w-3"/> {t.hotline[language]}: 01641035736</Button>
                   {!user && (
                     <>
-                    <Button asChild variant="outline" size="sm" className={cn("h-9", isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
+                    <Button asChild variant="outline" size="sm" className={cn("h-8 text-xs", isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
                         <Link href="/login">{t.login[language]}</Link>
                     </Button>
-                    <Button asChild size="sm" className={cn("h-9", isDark && "bg-white text-black hover:bg-gray-200")}>
+                    <Button asChild size="sm" className={cn("h-8 text-xs font-bold", isDark && "bg-white text-black hover:bg-gray-200")}>
                         <Link href="/signup">{t.signup[language]}</Link>
                     </Button>
                     </>
@@ -122,7 +117,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("h-9 w-9", isDark && "text-white hover:bg-white/20")}>
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("h-8 w-8", isDark && "text-white hover:bg-white/20")}>
                       <Menu className="h-5 w-5" />
                   </Button>
                   </SheetTrigger>
@@ -195,7 +190,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                           </Button>
                           </div>
                       )}
-                      <div className="pt-2 flex justify-between">
+                      <div className="pt-2 flex justify-between px-2">
                           <ThemeToggle />
                       </div>
                       </div>
