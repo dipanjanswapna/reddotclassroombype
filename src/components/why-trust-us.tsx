@@ -29,7 +29,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-16 overflow-hidden">
+    <section className="py-10 overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         <div className="glassmorphism-card p-8 md:p-12">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -52,7 +52,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             </div>
         </div>
 
-        <div className="mt-12 z-10 relative">
+        <div className="mt-10 z-10 relative">
           <Carousel
             plugins={[plugin.current]}
             className="w-full"

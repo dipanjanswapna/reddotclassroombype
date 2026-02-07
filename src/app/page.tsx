@@ -66,7 +66,7 @@ const SectionWrapper = ({ children, className }: { children: React.ReactNode, cl
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-50px" }}
     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-    className={cn("py-12 sm:py-16 lg:py-20", className)}
+    className={cn("py-8 sm:py-10 lg:py-12", className)}
   >
     {children}
   </motion.section>
@@ -157,7 +157,7 @@ export default function Home() {
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <SectionWrapper className="py-8 px-4 md:px-8">
+          <SectionWrapper className="py-4 px-4 md:px-8">
               <div className="container mx-auto">
                   <motion.div 
                     whileHover={{ scale: 1.01 }}
@@ -196,7 +196,7 @@ export default function Home() {
         {homepageConfig.categoriesSection?.display && (
           <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
+              <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-6">
                 {homepageConfig.categoriesSection?.title?.[language]}
               </h2>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
@@ -212,7 +212,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="hero-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
               <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language]}</h2>
-              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">{homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
                 <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
@@ -224,7 +224,7 @@ export default function Home() {
         {homepageConfig.teachersSection?.display && (
           <SectionWrapper aria-labelledby="teachers-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
                   <div className="text-center sm:text-left">
                       <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language]}</h2>
                       <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
@@ -242,7 +242,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="video-section-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
                 <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                 <div className="flex flex-wrap justify-center gap-8">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
@@ -265,7 +265,7 @@ export default function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all">
+                <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all">
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
@@ -276,7 +276,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="ssc-hsc-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
-                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language]}</h2>
+                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <div className="flex flex-wrap justify-center gap-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
@@ -287,9 +287,9 @@ export default function Home() {
         {homepageConfig.masterclassSection?.display && (
           <SectionWrapper aria-labelledby="masterclass-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
-                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language]}</h2>
+                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -300,11 +300,11 @@ export default function Home() {
           <SectionWrapper aria-labelledby="admission-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
-                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language]}</h2>
+                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="flex flex-wrap justify-center gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -315,11 +315,11 @@ export default function Home() {
           <SectionWrapper aria-labelledby="job-prep-heading" className="px-4 md:px-8">
               <div className="container mx-auto text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
-                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
+                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <div className="flex flex-wrap justify-center gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -337,7 +337,7 @@ export default function Home() {
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
           <SectionWrapper aria-labelledby="collaborations-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-10">
                 {homepageConfig.collaborations?.title?.[language]}
               </h2>
               <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
@@ -348,7 +348,7 @@ export default function Home() {
         {homepageConfig.partnersSection?.display && (
           <SectionWrapper aria-labelledby="partners-heading" className="px-4 md:px-8">
             <div className="container mx-auto">
-              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
+              <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-8">
                 {homepageConfig.partnersSection?.title?.[language]}
               </h2>
               <PartnersLogoScroll 
@@ -365,7 +365,7 @@ export default function Home() {
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language]}
               </h2>
-              <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
+              <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
                 {homepageConfig.socialMediaSection?.description?.[language]}
               </p>
               <div className="flex flex-wrap justify-center gap-6">
@@ -421,7 +421,7 @@ export default function Home() {
         {homepageConfig.statsSection?.display && (
           <SectionWrapper aria-labelledby="stats-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
-                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language]}</h2>
+                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-6">{homepageConfig.statsSection?.title?.[language]}</h2>
                 <div className="flex flex-wrap justify-center gap-8">
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
                         <motion.div 

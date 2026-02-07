@@ -73,10 +73,9 @@
   }
   body {
     @apply bg-background text-foreground min-h-screen;
-    overflow-x: hidden;
   }
   section {
-    @apply py-12 sm:py-16 lg:py-20;
+    @apply py-8 sm:py-10 lg:py-12;
   }
 }
 
