@@ -67,13 +67,12 @@
   * {
     @apply border-border;
   }
-  html,
-  body {
-    height: auto;
+  html {
     overflow-x: hidden;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-screen;
+    overflow-x: hidden;
   }
   section {
     @apply py-12 sm:py-16 lg:py-20;
@@ -99,8 +98,7 @@
 }
 
 /* Lenis Recommended Styles */
-html.lenis,
-html.lenis body {
+html.lenis {
   height: auto;
 }
 
