@@ -91,7 +91,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
                         aria-label="Previous slide"
                     >
-                        <ChevronLeft className="w-8 h-8" />
+                        <ChevronLeft className="w-8 h-8 text-foreground" />
                     </Button>
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollNext(); }}
@@ -100,7 +100,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
                         aria-label="Next slide"
                     >
-                        <ChevronRight className="w-8 h-8" />
+                        <ChevronRight className="w-8 h-8 text-foreground" />
                     </Button>
                     </div>
                 </Link>
