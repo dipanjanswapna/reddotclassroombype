@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React from 'react';
@@ -32,22 +30,22 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
 
   return (
     <section className="py-16 overflow-hidden">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 md:px-8">
         <div className="glassmorphism-card p-8 md:p-12">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 text-center lg:text-left">
                 <h2 className="font-headline text-4xl font-bold" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
-                <p className="text-lg text-muted-foreground">
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
                 {data.description?.[language] || data.description?.['bn']}
                 </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
                 {(data.features || []).map((feature, index) => (
-                <div key={feature.id || `feature-${index}`} className="bg-background/50 border border-white/10 p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors backdrop-blur-sm">
-                    <div className="bg-primary/10 p-2 rounded-lg border-2 border-primary/50">
+                <div key={feature.id || `feature-${index}`} className="bg-background/50 border border-white/10 p-4 rounded-lg flex items-center gap-4 hover:border-primary/50 transition-colors backdrop-blur-sm flex-1 min-w-[200px] max-w-[300px]">
+                    <div className="bg-primary/10 p-2 rounded-lg border-2 border-primary/50 shrink-0">
                         <Image src={feature.iconUrl} alt={feature.title?.['bn'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="w-10 h-10"/>
                     </div>
-                    <h3 className="font-semibold text-card-foreground">{feature.title?.[language] || feature.title?.['bn']}</h3>
+                    <h3 className="font-semibold text-card-foreground text-sm sm:text-base">{feature.title?.[language] || feature.title?.['bn']}</h3>
                 </div>
                 ))}
             </div>
@@ -65,12 +63,12 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
                   <Card className="glassmorphism-card">
                     <CardContent className="p-8 grid md:grid-cols-3 gap-8 items-center">
-                        <div className="md:col-span-2">
-                            <Quote className="text-5xl text-primary/20" fill="currentColor" />
-                            <blockquote className="text-lg italic mt-[-2rem] ml-8">
+                        <div className="md:col-span-2 text-center md:text-left">
+                            <Quote className="text-5xl text-primary/20 mx-auto md:ml-0" fill="currentColor" />
+                            <blockquote className="text-lg italic mt-[-2rem] md:ml-8">
                                 {testimonial.quote?.[language] || testimonial.quote?.['bn']}
                             </blockquote>
-                            <div className="mt-4 ml-8">
+                            <div className="mt-4 md:ml-8">
                                 <p className="font-bold">{testimonial.studentName}</p>
                                 <p className="text-sm text-muted-foreground">{testimonial.college}</p>
                             </div>

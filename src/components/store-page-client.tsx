@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -46,7 +44,7 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 md:px-8 py-8">
             <main className="space-y-12">
                 {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
                      <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
@@ -54,18 +52,18 @@ export function StorePageClient({
                 
                 <div>
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold">{pageTitle}</h1>
+                        <h1 className="text-3xl font-bold text-center md:text-left">{pageTitle}</h1>
                         <div className="relative w-full md:w-auto md:flex-grow max-w-sm">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search products..."
-                                className="pl-9"
+                                className="pl-9 h-11"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-6">
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}

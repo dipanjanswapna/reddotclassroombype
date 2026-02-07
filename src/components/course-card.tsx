@@ -51,7 +51,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
         {type === 'Offline' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Offline</Badge>}
         {type === 'Hybrid' && !isPrebookingActive && <Badge className="absolute top-2 left-2" variant="secondary">Hybrid</Badge>}
       </CardHeader>
-      <CardContent className="p-4 flex-grow">
+      <CardContent className="p-4 flex flex-col flex-grow">
         {category && <Badge variant="secondary" className="mb-2">{category}</Badge>}
         <Link href={coursePageUrl}>
           <CardTitle className="text-base leading-snug group-hover:text-primary transition-colors">{title}</CardTitle>

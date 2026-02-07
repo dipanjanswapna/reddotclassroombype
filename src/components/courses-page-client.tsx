@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -68,7 +66,7 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 md:px-8 py-8">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -77,35 +75,35 @@ export function CoursesPageClient({
           />
       </div>
 
-      <main className="container mx-auto px-4 pt-0 pb-16">
+      <main className="container mx-auto px-4 md:px-8 pt-0 pb-16">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingSpinner className="w-12 h-12" />
           </div>
         ) : hasFilters ? (
             <section className='py-0'>
-              <h2 className="font-headline mb-6 text-3xl font-bold">
+              <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
                 Filtered Results ({initialCourses.length})
               </h2>
               {initialCourses.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-6">
                   {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
                     return <CourseCard key={course.id} {...course} provider={provider} />;
                   })}
                 </div>
               ) : (
-                <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
+                <p className="text-muted-foreground text-center">No courses found matching your criteria. Try clearing the filters.</p>
               )}
             </section>
         ) : (
             <div className="space-y-16">
               {sortedCategories.map((category) => (
                 <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0'>
-                  <h2 className="font-headline mb-6 text-3xl font-bold">
+                  <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
                     {category}
                   </h2>
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-6">
                     {coursesByCategory[category].map((course) => {
                        const provider = allProviders.find(p => p.id === course.organizationId);
                        return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -116,10 +114,10 @@ export function CoursesPageClient({
 
               {archivedCourses.length > 0 && (
                 <section id="archived-courses" className='py-0'>
-                    <h2 className="font-headline mb-6 text-3xl font-bold">
+                    <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
                         Archived Courses
                     </h2>
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-6">
                         {archivedCourses.map((course) => {
                             const provider = allProviders.find(p => p.id === course.organizationId);
                             return <CourseCard key={course.id} {...course} provider={provider} />;

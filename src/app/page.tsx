@@ -148,8 +148,8 @@ export default function Home() {
     <div className="text-foreground">
         {homepageConfig.welcomeSection?.display && (
             <section className="py-12 text-center">
-                <div className="container mx-auto px-4">
-                     <h1 className="text-4xl flex justify-center items-center gap-4 flex-wrap">
+                <div className="container mx-auto px-4 md:px-8">
+                     <h1 className="text-4xl flex flex-wrap justify-center items-center gap-4">
                         <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 md:h-16 w-auto" priority />
                         <p className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</p>
                     </h1>
@@ -167,9 +167,9 @@ export default function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8 px-4 md:px-8">
               <div className="container mx-auto">
-                  <div className="group relative glassmorphism-card p-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 overflow-hidden">
+                  <div className="group relative glassmorphism-card p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden">
                       <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                      <div className="flex items-center gap-4 text-center md:text-left z-10">
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-center md:text-left z-10">
                           <Image
                               src={homepageConfig.strugglingStudentSection.imageUrl}
                               alt="Struggling in studies illustration"
@@ -187,7 +187,7 @@ export default function Home() {
                               </p>
                           </div>
                       </div>
-                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300">
+                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 flex-1 sm:flex-none">
                           <Link href="/strugglers-studies">
                               {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
                                <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -434,7 +434,7 @@ export default function Home() {
                         <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground">{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
+                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none">{homepageConfig.notesBanner?.buttonText?.[language]}</Button>
                 </div>
             </div>
           </section>
