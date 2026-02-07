@@ -1,5 +1,3 @@
-
-
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -23,7 +21,7 @@ export default async function OfflineHubPage() {
         getBranches(),
     ]);
     
-    const language = 'bn'; // Defaulting to Bengali as per the image
+    const language = 'en';
     const offlineHubData = homepageConfig?.offlineHubSection;
     const offlineCourses = allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid');
 
@@ -44,24 +42,24 @@ export default async function OfflineHubPage() {
         </div>
       )}
 
-      <div className="bg-gray-900 text-white font-bengali">
+      <div className="bg-gray-900 text-white">
         <div className="relative overflow-hidden pt-20">
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900/40 via-gray-900 to-gray-900 z-0"></div>
              <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <h1 className="font-headline text-4xl lg:text-5xl font-bold tracking-tight">
-                            RDC অফলাইন হাব
+                            RDC Offline Hub
                         </h1>
                         <p className="mt-4 text-lg text-gray-300">
-                           অনলাইনে গত ৯ বছর ধরে লক্ষ লক্ষ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা নিয়ে এবার আমরা সামনাসামনি পড়াবো। এখন, আপনি অত্যাধুনিক মাল্টিমিডিয়া ক্লাসরুমে বসে, দেশের সেরা শিক্ষকদের কাছ থেকে সরাসরি শিখতে পারবেন।
+                           With 9 years of experience teaching millions of students online, we are now teaching face-to-face. Now you can learn directly from the best teachers in state-of-the-art multimedia classrooms.
                         </p>
                         <div className="mt-8 flex flex-col sm:flex-row gap-4">
                             <Button className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg">
-                                ফ্রি ক্লাস বুক করুন
+                                Book a Free Class
                             </Button>
                             <Button variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
-                                লিফলেট ডাউনলোড করুন
+                                Download Leaflet
                             </Button>
                         </div>
                     </div>
@@ -83,7 +81,7 @@ export default async function OfflineHubPage() {
       {offlineCourses.length > 0 && (
         <section className="container mx-auto px-4 py-16">
           <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-12">
-            {offlineHubData.programsTitle?.[language] || "আমাদের প্রোগ্রামসমূহ"}
+            {offlineHubData.programsTitle?.[language] || "Our Programs"}
           </h2>
           <div className="space-y-8 max-w-5xl mx-auto">
             {offlineCourses.map((program: Course) => (
@@ -113,7 +111,7 @@ export default async function OfflineHubPage() {
                       <Link href={`/checkout/${program.id}`}>Enroll Now</Link>
                     </Button>
                     <Button asChild variant="outline" className="bg-white hover:bg-gray-200 text-black font-bold text-base px-6 py-6 rounded-lg">
-                      <Link href={`/courses/${program.id}`}>আরো বিস্তারিত জানুন</Link>
+                      <Link href={`/courses/${program.id}`}>Learn More</Link>
                     </Button>
                   </div>
                 </div>
@@ -125,7 +123,7 @@ export default async function OfflineHubPage() {
 
       <section className="container mx-auto px-4 py-16">
          <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-12">
-            {offlineHubData.centersTitle[language]}
+            {offlineHubData.centersTitle[language] || "Our Offline Hubs"}
          </h2>
          <div className="flex gap-6 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory">
             {allBranches.map((center) => (
@@ -158,8 +156,8 @@ export default async function OfflineHubPage() {
                         <div className="inline-block p-4 bg-white/10 rounded-full mb-4">
                             <Phone className="w-8 h-8" />
                         </div>
-                        <h2 className="font-headline text-2xl md:text-3xl font-bold">{offlineHubData.contactSection.title[language]}</h2>
-                        <p className="mt-2 text-md md:text-lg text-gray-300 max-w-lg mx-auto">{offlineHubData.contactSection.subtitle[language]}</p>
+                        <h2 className="font-headline text-2xl md:text-3xl font-bold">{offlineHubData.contactSection.title[language] || "Any Questions?"}</h2>
+                        <p className="mt-2 text-md md:text-lg text-gray-300 max-w-lg mx-auto">{offlineHubData.contactSection.subtitle[language] || "Talk to our student advisors anytime."}</p>
                         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-bold text-base px-6 py-6 rounded-lg w-full sm:w-auto">
                                 <a href={`tel:${offlineHubData.contactSection.callButtonNumber}`}>{offlineHubData.contactSection.callButtonText[language]}</a>

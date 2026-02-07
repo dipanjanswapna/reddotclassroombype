@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
-type Language = 'bn' | 'en';
+type Language = 'en';
 
 interface LanguageContextType {
   language: Language;
@@ -14,30 +13,21 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('bn');
-
-  useEffect(() => {
-    const storedLang = localStorage.getItem('language') as Language;
-    if (storedLang) {
-      setLanguage(storedLang);
-    }
-  }, []);
-
-  const setLanguageAndStore = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
-  };
+  const language: Language = 'en';
 
   const toggleLanguage = () => {
-    const newLang = language === 'bn' ? 'en' : 'bn';
-    setLanguageAndStore(newLang);
+    // Language switching disabled - App is English only
+  };
+
+  const setLanguageAndStore = (lang: Language) => {
+    // Force English
   };
 
   const value = { language, toggleLanguage, setLanguage: setLanguageAndStore };
 
   return (
     <LanguageContext.Provider value={value}>
-      <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
+      <div lang="en" dir="ltr">
          {children}
       </div>
     </LanguageContext.Provider>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -29,7 +28,6 @@ import { Separator } from "@/components/ui/separator";
 import { UserNav } from "./user-nav";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
-import { LanguageToggle } from "./language-toggle";
 import { NotificationBell } from "./notification-bell";
 import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
@@ -104,7 +102,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-2">
-                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
                   <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
                   {!user && (
@@ -199,7 +196,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                           </div>
                       )}
                       <div className="pt-2 flex justify-between">
-                          <LanguageToggle />
                           <ThemeToggle />
                       </div>
                       </div>

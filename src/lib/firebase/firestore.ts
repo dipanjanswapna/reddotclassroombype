@@ -1,4 +1,3 @@
-
 import { getDbInstance } from './config';
 import {
   collection,
@@ -764,6 +763,11 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
   return allNotices;
 };
 
+export const markAllAnnouncementsAsRead = async (userId: string, courseId: string) => {
+    // This is a placeholder for actual notification/announcement read status logic
+    // Implementation would depend on how read status is tracked
+};
+
 
 // Homepage Configuration
 export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
@@ -809,9 +813,9 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   logoUrl: "",
   welcomeSection: {
     display: true,
-    title: { bn: "RDC শপ", en: "RDC SHOP" },
+    title: { bn: "RDC SHOP", en: "RDC SHOP" },
     description: { 
-      bn: "আপনার RDC ওয়েব অ্যাপে 'Request a callback' ফিচারটি যুক্ত করা হবে, যা সম্ভাব্য শিক্ষার্থীদের কাছ থেকে যোগাযোগের তথ্য এবং তাদের আগ্রহের বিষয় সংগ্রহ করবে, যাতে আপনার টিম তাদের সাথে যোগাযোগ করতে পারে।",
+      bn: "The 'Request a callback' feature will be added to your RDC web app, which will collect contact information and topics of interest from potential students, so that your team can communicate with them.",
       en: "The 'Request a callback' feature will be added to your RDC web app, which will collect contact information and topics of interest from potential students, so that your team can communicate with them."
     }
   },
@@ -826,14 +830,14 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   strugglingStudentSection: {
     display: true,
-    title: { bn: "পড়াশোনায় পিছিয়ে পড়ছো?", en: "Struggling in Studies?" },
-    subtitle: { bn: "এসো, তোমার সমস্যার সমাধান করি। ✨", en: "Aaiye apki Samasya ka, Samadan krte hai ✨" },
+    title: { bn: "Struggling in Studies?", en: "Struggling in Studies?" },
+    subtitle: { bn: "Come, let us solve your problems. ✨", en: "Come, let us solve your problems. ✨" },
     imageUrl: "https://cdni.iconscout.com/illustration/premium/thumb/man-confused-about-mobile-happenings-illustration-download-in-svg-png-gif-file-formats--error-warning-alert-exclamation-state-pack-people-illustrations-1784671.png?f=webp",
-    buttonText: { bn: "আমরা কিভাবে সাহায্য করি দেখুন", en: "See How We Help" },
+    buttonText: { bn: "See How We Help", en: "See How We Help" },
   },
   categoriesSection: {
     display: true,
-    title: { bn: "ক্যাটাগরি", en: "Categories" },
+    title: { bn: "Categories", en: "Categories" },
     categories: [
       { id: 1, title: 'MOTION GRAPHIC', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Motion+Graphic', dataAiHint: 'motion graphic' },
       { id: 2, title: 'ADVERTISEMENT', imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Advertisement', dataAiHint: 'advertisement can' },
@@ -845,24 +849,24 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   journeySection: {
     display: true,
-    title: { bn: "আপনার শেখার যাত্রা শুরু করুন", en: "Start Your Learning Journey" },
-    subtitle: { bn: "আমাদের লাইভ কোর্সগুলোতে জয়েন করে আপনার একাডেমিক ও স্কিল ডেভেলপমেন্টের পথে এগিয়ে যান।", en: "Join our live courses to advance your academic and skill development path." },
-    courseTitle: { bn: "লাইভ কোর্সসমূহ", en: "Live Courses" },
+    title: { bn: "Start Your Learning Journey", en: "Start Your Learning Journey" },
+    subtitle: { bn: "Join our live courses to advance your academic and skill development path.", en: "Join our live courses to advance your academic and skill development path." },
+    courseTitle: { bn: "Live Courses", en: "Live Courses" },
   },
   liveCoursesIds: ["1", "3", "4"],
   teachersSection: {
     display: true,
-    title: { bn: "আমাদের অভিজ্ঞ শিক্ষকগণ", en: "Our Experienced Teachers" },
-    subtitle: { bn: "দেশের সেরা শিক্ষকদের সাথে আপনার প্রস্তুতিকে নিয়ে যান এক নতুন মাত্রায়।", en: "Take your preparation to a new level with the best teachers in the country." },
-    buttonText: { bn: "সকল শিক্ষক", en: "All Teachers" },
+    title: { bn: "Our Experienced Teachers", en: "Our Experienced Teachers" },
+    subtitle: { bn: "Take your preparation to a new level with the best teachers in the country.", en: "Take your preparation to a new level with the best teachers in the country." },
+    buttonText: { bn: "All Teachers", en: "All Teachers" },
     instructorIds: ["ins-ja", "ins-fa", "ins-ms", "ins-nh", "ins-si"],
     scrollSpeed: 25,
   },
   videoSection: {
     display: true,
-    title: { bn: "কেন হাজারো শিক্ষার্থী RDC-কে বেছে নিয়েছে?", en: "Why have thousands of students chosen RDC?" },
-    description: { bn: "আমাদের শিক্ষার্থীদের সফলতার গল্পগুলো দেখুন এবং জানুন কীভাবে RDC তাদের স্বপ্ন পূরণে সহায়তা করেছে।", en: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams." },
-    buttonText: { bn: "সকল কোর্স দেখুন", en: "View All Courses" },
+    title: { bn: "Why have thousands of students chosen RDC?", en: "Why have thousands of students chosen RDC?" },
+    description: { bn: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams.", en: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams." },
+    buttonText: { bn: "View All Courses", en: "View All Courses" },
     videos: [
       { title: "Student Testimonial", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
       { title: "Platform Feature", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
@@ -870,61 +874,61 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   sscHscSection: {
     display: true,
-    badge: { bn: "SSC ও HSC", en: "SSC & HSC" },
-    title: { bn: "SSC ও HSC প্রস্তুতি", en: "SSC & HSC Preparation" },
+    badge: { bn: "SSC & HSC", en: "SSC & HSC" },
+    title: { bn: "SSC & HSC Preparation", en: "SSC & HSC Preparation" },
   },
   sscHscCourseIds: ["1", "4"],
   masterclassSection: {
     display: true,
-    title: { bn: "ফ্রি মাস্টারক্লাস", en: "Free Masterclasses" },
-    buttonText: { bn: "সকল মাস্টারক্লাস দেখুন", en: "View All Masterclasses" },
+    title: { bn: "Free Masterclasses", en: "Free Masterclasses" },
+    buttonText: { bn: "View All Masterclasses", en: "View All Masterclasses" },
   },
   masterClassesIds: [],
   admissionSection: {
     display: true,
-    badge: { bn: "ভর্তি পরীক্ষা", en: "Admission Test" },
-    title: { bn: "অ্যাডমিশন টেস্ট প্রস্তুতি", en: "Admission Test Preparation" },
-    buttonText: { bn: "সকল অ্যাডমিশন কোর্স", en: "All Admission Courses" },
+    badge: { bn: "Admission Test", en: "Admission Test" },
+    title: { bn: "Admission Test Preparation", en: "Admission Test Preparation" },
+    buttonText: { bn: "All Admission Courses", en: "All Admission Courses" },
   },
   admissionCoursesIds: ["2"],
   jobPrepSection: {
     display: true,
-    badge: { bn: "জব প্রস্তুতি", en: "Job Prep" },
-    title: { bn: "চাকরির প্রস্তুতি", en: "Job Preparation" },
-    buttonText: { bn: "সকল জব কোর্স", en: "All Job Courses" },
+    badge: { bn: "Job Prep", en: "Job Prep" },
+    title: { bn: "Job Preparation", en: "Job Preparation" },
+    buttonText: { bn: "All Job Courses", en: "All Job Courses" },
   },
   jobCoursesIds: [],
   whyChooseUs: {
     display: true,
-    title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
-    description: {bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education."},
+    title: { bn: "Why We Are The Best?", en: "Why We Are The Best?" },
+    description: {bn: "All our instructors are experienced in their respective fields and committed to providing the best education.", en: "All our instructors are experienced in their respective fields and committed to providing the best education."},
     features: [
-      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" } },
-      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "ইন্টারেক্টিভ লার্নিং", en: "Interactive Learning" } },
-      { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "স্বল্প খরচে অনেক কিছু", en: "Lots for a Low Cost" } },
-      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" } },
+      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "Best Instructors", en: "Best Instructors" } },
+      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "Interactive Learning", en: "Interactive Learning" } },
+      { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "Affordable Pricing", en: "Affordable Pricing" } },
+      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "Support System", en: "Support System" } },
     ],
     testimonials: [
-        {id: 'test1', quote: {bn: "অনলাইনে RDC'র লেসনগুলো পড়েই আমি গোল্ডেন A+ আর স্কলারশিপ পেয়েছি", en: "I got Golden A+ and a scholarship just by studying RDC's lessons online"}, studentName: "মেহজাবিন রহমান", college: "বি.এ.এফ. শাহীন কলেজ", imageUrl: "https://placehold.co/120x120.png", dataAiHint: "student happy"}
+        {id: 'test1', quote: {bn: "I got Golden A+ and a scholarship just by studying RDC's lessons online", en: "I got Golden A+ and a scholarship just by studying RDC's lessons online"}, studentName: "Mehjabin Rahman", college: "B.A.F. Shaheen College", imageUrl: "https://placehold.co/120x120.png", dataAiHint: "student happy"}
     ]
   },
   freeClassesSection: {
     display: true,
-    title: { bn: "আমাদের সকল ফ্রি ক্লাসসমূহ", en: "All Our Free Classes" },
-    subtitle: { bn: "আমাদের ক্লাসের কোয়ালিটি সম্পর্কে ধারণা পেতে সম্পূর্ণ ফ্রিতে দেখে নিতে পারো কিছু ক্লাস", en: "Watch some classes completely free to get an idea about the quality of our classes" },
+    title: { bn: "All Our Free Classes", en: "All Our Free Classes" },
+    subtitle: { bn: "Watch some classes completely free to get an idea about the quality of our classes", en: "Watch some classes completely free to get an idea about the quality of our classes" },
     classes: [
-      { id: "fc1", title: "অধ্যায় ১: বিজ্ঞান ও প্রযুক্তি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "ক্লাস ৯" },
-      { id: "fc2", title: "তথ্যঝুঁকি মোকাবেলায় মানববন্ধন | সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "ICT", instructor: "Samin Zahan Sieyam", grade: "ক্লাস ১০" },
-      { id: "fc3", title: "অধ্যায় ৩: গতি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "ক্লাস ৯" },
-      { id: "fc4", title: "৩য় অধ্যায়: অর্থ বুঝি বাক্য লিখি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Bangla", instructor: "Tashmiya Hasan", grade: "ক্লাস ৬" },
-      { id: "fc5", title: "Meeting an Overseas Friend, My Books, Arshi's letter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "English", instructor: "MD Omor Faruk", grade: "ক্লাস ৯" },
-      { id: "fc6", title: "দৈর্ঘ্য মাপি। সম্পূর্ণ অধ্যায়", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "ক্লাস ৬" },
+      { id: "fc1", title: "Chapter 1: Science & Tech. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "Class 9" },
+      { id: "fc2", title: "Human Chain for Info Safety | Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "ICT", instructor: "Samin Zahan Sieyam", grade: "Class 10" },
+      { id: "fc3", title: "Chapter 3: Motion. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "Class 9" },
+      { id: "fc4", title: "Chapter 3: Understanding Sentences. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Bangla", instructor: "Tashmiya Hasan", grade: "Class 6" },
+      { id: "fc5", title: "Meeting an Overseas Friend, My Books, Arshi's letter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "English", instructor: "MD Omor Faruk", grade: "Class 9" },
+      { id: "fc6", title: "Measuring Length. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "Class 6" },
     ]
   },
   aboutUsSection: {
     display: true,
-    title: { bn: "আমাদের সম্পর্কে", en: "About Us" },
-    subtitle: { bn: "আমাদের পেছনের কারিগরদের সাথে পরিচিত হন।", en: "Meet the team behind our platform." },
+    title: { bn: "About Us", en: "About Us" },
+    subtitle: { bn: "Meet the team behind our platform.", en: "Meet the team behind our platform." },
     teamMembers: [
       {
         id: "member1",
@@ -951,26 +955,26 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   offlineHubSection: {
     display: true,
-    programsTitle: { bn: 'আমাদের প্রোগ্রামসমূহ', en: 'Our Programs' },
-    centersTitle: { bn: 'আমাদের অফলাইন হাবসমূহ', en: 'Our Offline Hubs' },
+    programsTitle: { bn: 'Our Programs', en: 'Our Programs' },
+    centersTitle: { bn: 'Our Offline Hubs', en: 'Our Offline Hubs' },
     contactSection: {
       display: true,
-      title: { bn: "কোনো প্রশ্ন আছে?", en: "Have a Question?" },
-      subtitle: { bn: "যেকোনো সময় আমাদের স্টুডেন্ট অ্যাডভাইজরের সাথে কথা বলুন।", en: "Talk to our student advisors anytime." },
-      callButtonText: { bn: "কল করুন 01641035736", en: "Call 01641035736" },
+      title: { bn: "Have a Question?", en: "Have a Question?" },
+      subtitle: { bn: "Talk to our student advisors anytime.", en: "Talk to our student advisors anytime." },
+      callButtonText: { bn: "Call 01641035736", en: "Call 01641035736" },
       callButtonNumber: "01641035736",
-      whatsappButtonText: { bn: "WhatsApp-এ মেসেজ দিন", en: "Message on WhatsApp" },
+      whatsappButtonText: { bn: "Message on WhatsApp", en: "Message on WhatsApp" },
       whatsappNumber: "8801641035736",
     },
   },
   collaborations: {
     display: true,
-    title: { bn: "আমাদের সহযোগিতায়", en: "In Collaboration With" },
+    title: { bn: "In Collaboration With", en: "In Collaboration With" },
     organizationIds: [],
   },
   partnersSection: {
     display: true,
-    title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
+    title: { bn: "Our Partners", en: "Our Partners" },
     scrollSpeed: 25,
     partners: [
       { id: 1, name: "Prangon", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
@@ -982,47 +986,47 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   socialMediaSection: {
     display: true,
-    title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
-    description: { bn: "আমাদের সোশ্যাল মিডিয়া চ্যানেলগুলোতে যোগ দিন এবং লেটেস্ট আপডেট ও রিসোর্স পান।", en: "Join our social media channels to get the latest updates and resources." },
+    title: { bn: "Stay Connected With Us", en: "Stay Connected With Us" },
+    description: { bn: "Join our social media channels to get the latest updates and resources.", en: "Join our social media channels to get the latest updates and resources." },
     channels: [
       {
         id: 1,
         platform: 'YouTube',
-        name: { bn: "RDC ইউটিউব চ্যানেল", en: "RDC YouTube Channel" },
+        name: { bn: "RDC YouTube Channel", en: "RDC YouTube Channel" },
         handle: "@reddotclassroom",
         stat1_value: "1.5M",
-        stat1_label: { bn: "সাবস্ক্রাইবার", en: "Subscribers" },
+        stat1_label: { bn: "Subscribers", en: "Subscribers" },
         stat2_value: "500+",
-        stat2_label: { bn: "ভিডিও", en: "Videos" },
-        description: { bn: "শিক্ষামূলক ভিডিও, টিউটোরিয়াল এবং লাইভ ক্লাসের জন্য আমাদের ইউটিউব চ্যানেল সাবস্ক্রাইব করুন।", en: "Subscribe to our YouTube channel for educational videos, tutorials, and live classes." },
-        ctaText: { bn: "সাবস্ক্রাইব করুন", en: "Subscribe" },
+        stat2_label: { bn: "Videos", en: "Videos" },
+        description: { bn: "Subscribe to our YouTube channel for educational videos and live classes.", en: "Subscribe to our YouTube channel for educational videos and live classes." },
+        ctaText: { bn: "Subscribe", en: "Subscribe" },
         ctaUrl: "#",
       },
       {
         id: 2,
         platform: 'Facebook Page',
-        name: { bn: "RDC ফেসবুক পেজ", en: "RDC Facebook Page" },
+        name: { bn: "RDC Facebook Page", en: "RDC Facebook Page" },
         handle: "@rdc.bd",
         stat1_value: "2M",
-        stat1_label: { bn: "ফলোয়ার", en: "Followers" },
+        stat1_label: { bn: "Followers", en: "Followers" },
         stat2_value: "1.8M",
-        stat2_label: { bn: "লাইক", en: "Likes" },
-        description: { bn: "কোর্স আপডেট, ঘোষণা এবং কমিউনিটি ইভেন্টের জন্য আমাদের ফেসবুক পেজে লাইক দিন।", en: "Like our Facebook page for course updates, announcements, and community events." },
-        ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" },
+        stat2_label: { bn: "Likes", en: "Likes" },
+        description: { bn: "Like our Facebook page for updates, announcements, and events.", en: "Like our Facebook page for updates, announcements, and events." },
+        ctaText: { bn: "Visit Page", en: "Visit Page" },
         ctaUrl: "#",
       },
     ],
   },
   notesBanner: {
     display: true,
-    title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes and Lecture Sheets" },
-    description: { bn: "আমাদের ওয়েবসাইটে হাজারো ফ্রি নোটস এবং লেকচার শিট ডাউনলোড করে আপনার প্রস্তুতিকে আরও শক্তিশালী করুন।", en: "Strengthen your preparation by downloading thousands of free notes and lecture sheets from our website." },
-    buttonText: { bn: "ডাউনলোড করুন", en: "Download Now" },
+    title: { bn: "Free Notes & Lecture Sheets", en: "Free Notes & Lecture Sheets" },
+    description: { bn: "Strengthen your preparation by downloading thousands of free notes from our website.", en: "Strengthen your preparation by downloading thousands of free notes from our website." },
+    buttonText: { bn: "Download Now", en: "Download Now" },
   },
   appPromo: {
     display: true,
-    title: { bn: "RDC অ্যাপ ডাউনলোড করুন", en: "Download the RDC App" },
-    description: { bn: "যেকোনো সময়, যেকোনো স্থানে আপনার পড়াশোনা চালিয়ে যান। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন আপনার হাতের মুঠোয়।", en: "Continue your studies anytime, anywhere. Live classes, quizzes, and much more are now at your fingertips." },
+    title: { bn: "Download RDC App", en: "Download the RDC App" },
+    description: { bn: "Continue your studies anytime, anywhere. Live classes and quizzes now at your fingertips.", en: "Continue your studies anytime, anywhere. Live classes and quizzes now at your fingertips." },
     googlePlayUrl: "#",
     appStoreUrl: "#",
     googlePlayImageUrl: "https://placehold.co/180x60.png",
