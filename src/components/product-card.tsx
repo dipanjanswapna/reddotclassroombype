@@ -1,6 +1,7 @@
+
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,7 @@ type ProductCardProps = {
 const ProductCardComponent = ({ product, provider, className }: ProductCardProps) => {
     const { addToCart } = useCart();
     const { toast } = useToast();
+    const [isImageLoading, setIsImageLoading] = useState(true);
 
     const handleAddToCart = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -55,13 +57,17 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
           className
       )}>
           <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
-          <CardHeader className="p-0 overflow-hidden">
+          <CardHeader className="p-0 overflow-hidden bg-muted">
               <div className="relative aspect-square">
               <Image
                   src={product.imageUrl}
                   alt={product.name}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  className={cn(
+                    "object-cover transition-all duration-500 group-hover:scale-110",
+                    isImageLoading ? "scale-105 blur-sm grayscale" : "scale-100 blur-0 grayscale-0"
+                  )}
+                  onLoadingComplete={() => setIsImageLoading(false)}
                   data-ai-hint={product.dataAiHint || 'product image'}
               />
               </div>

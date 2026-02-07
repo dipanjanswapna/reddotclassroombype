@@ -1,6 +1,7 @@
+
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ type CourseCardProps = Partial<Course> & {
 
 const CourseCardComponent = (props: CourseCardProps) => {
   const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type, className } = props;
+  const [isImageLoading, setIsImageLoading] = useState(true);
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -41,14 +43,18 @@ const CourseCardComponent = (props: CourseCardProps) => {
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
-          <Link href={coursePageUrl} className="block overflow-hidden">
+          <Link href={coursePageUrl} className="block overflow-hidden bg-muted">
             <Image
               src={imageUrl}
               alt={title}
               width={600}
               height={400}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="w-full h-auto object-cover aspect-[16/10] transition-transform duration-500 group-hover:scale-110"
+              className={cn(
+                "w-full h-auto object-cover aspect-[16/10] transition-all duration-500 group-hover:scale-110",
+                isImageLoading ? "scale-105 blur-sm grayscale" : "scale-100 blur-0 grayscale-0"
+              )}
+              onLoadingComplete={() => setIsImageLoading(false)}
               data-ai-hint={dataAiHint}
             />
           </Link>
