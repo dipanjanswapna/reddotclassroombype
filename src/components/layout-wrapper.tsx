@@ -41,6 +41,7 @@ function useIsOnline() {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
+    // Initial check
     setIsOnline(navigator.onLine);
 
     window.addEventListener('online', handleOnline);

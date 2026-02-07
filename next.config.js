@@ -1,5 +1,4 @@
 
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -14,6 +13,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Suppress OpenTelemetry and Undici warnings
+  serverExternalPackages: [
+    '@opentelemetry/sdk-node',
+    '@opentelemetry/instrumentation',
+    '@opentelemetry/instrumentation-redis-4',
+    '@opentelemetry/instrumentation-undici'
+  ],
   images: {
     remotePatterns: [
       {
@@ -60,12 +66,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'scontent.fdac138-1.fna.fbcdn.net',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'cdni.iconscout.com',
         port: '',
         pathname: '/**',
@@ -79,12 +79,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'png.pngtree.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'scontent.fdac138-1.fna.fbcdn.net',
         port: '',
         pathname: '/**',
       }
