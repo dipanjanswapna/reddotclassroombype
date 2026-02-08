@@ -1,12 +1,10 @@
+
 import { getCourses, getStoreCategories, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
 
 export const metadata: Metadata = {
@@ -22,13 +20,12 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
 
   const [providers, allCoursesData, allCategoriesData, allInstructors] = await Promise.all([
     getOrganizations(),
-    getCourses({ status: 'Published' }), // Fetch all published for filters
+    getCourses({ status: 'Published' }), 
     getStoreCategories(),
     getInstructors(),
   ]);
   
   const allCategories = allCoursesData.map(c => c.category).filter((v, i, a) => a.indexOf(v) === i && v);
-
 
   const filteredCourses = await getCourses({
       category: selectedCategory,
@@ -68,22 +65,22 @@ export default async function CoursesPage({
     const homepageConfig = await getHomepageConfig();
     
   return (
-    <div className="bg-background">
+    <div className="bg-background min-h-screen">
         {homepageConfig?.offlineHubHeroCarousel?.display && (
-            <div className="bg-gray-900">
+            <div className="bg-gray-900 border-b border-white/5">
                 <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
             </div>
         )}
-      <div className="container mx-auto px-4 md:px-8 py-8">
+      <div className="container mx-auto px-4 md:px-8 py-12">
           <Suspense fallback={
-              <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+              <div className="flex flex-grow items-center justify-center h-96 w-full p-8">
                   <LoadingSpinner className="w-12 h-12" />
               </div>
           }>
               <CoursesPageContent searchParams={searchParams} />
           </Suspense>
       </div>
-      <div className="container mx-auto px-4 md:px-8 pb-12">
+      <div className="container mx-auto px-4 md:px-8 pb-20">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>

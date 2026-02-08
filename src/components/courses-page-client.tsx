@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -63,7 +64,7 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      <div className="container mx-auto px-0 py-4 mb-8">
+      <div className="container mx-auto px-0 py-4 mb-16">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -82,21 +83,21 @@ export function CoursesPageClient({
                     exit={{ opacity: 0, y: -20 }}
                     className='py-0'
                 >
-                    <div className="mb-10 text-center md:text-left px-4 md:px-0">
-                        <h2 className="font-headline text-3xl font-black tracking-tight">
+                    <div className="mb-12 text-center md:text-left px-4 md:px-0">
+                        <h2 className="font-headline text-3xl font-black tracking-tight uppercase">
                             Search Results ({initialCourses.length})
                         </h2>
-                        <div className="h-1.5 w-20 bg-primary mt-3 rounded-full mx-auto md:mx-0" />
+                        <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
                     </div>
                     {initialCourses.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 px-4 md:px-0">
                             {initialCourses.map((course) => {
                                 const provider = allProviders.find(p => p.id === course.organizationId);
                                 return <CourseCard key={course.id} {...course} provider={provider} />;
                             })}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-muted/30 rounded-3xl border-2 border-dashed mx-4 md:mx-0">
+                        <div className="text-center py-24 bg-muted/30 rounded-[2rem] border-2 border-dashed mx-4 md:mx-0">
                             <p className="text-xl font-medium text-muted-foreground">
                                 No courses match your filters.
                             </p>
@@ -105,7 +106,7 @@ export function CoursesPageClient({
                     )}
                 </motion.section>
             ) : (
-                <div className="space-y-24">
+                <div className="space-y-24 md:space-y-32">
                     {sortedCategories.map((category, catIdx) => (
                         <motion.section 
                             key={category} 
@@ -116,13 +117,13 @@ export function CoursesPageClient({
                             id={category.toLowerCase().replace(/\s+/g, '-')} 
                             className='py-0'
                         >
-                            <div className="mb-10 text-center md:text-left px-4 md:px-0">
-                                <h2 className="font-headline text-3xl font-black tracking-tight text-green-700 dark:text-green-500">
+                            <div className="mb-12 text-center md:text-left px-4 md:px-0">
+                                <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
                                     {category}
                                 </h2>
-                                <div className="h-1.5 w-20 bg-primary mt-3 rounded-full mx-auto md:mx-0" />
+                                <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 px-4 md:px-0">
                                 {coursesByCategory[category].map((course) => {
                                     const provider = allProviders.find(p => p.id === course.organizationId);
                                     return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -133,14 +134,14 @@ export function CoursesPageClient({
 
                     {archivedCourses.length > 0 && (
                         <section id="archived-courses" className='py-0 px-4 md:px-0'>
-                            <div className="mb-10 text-center md:text-left">
-                                <h2 className="font-headline text-3xl font-black tracking-tight text-muted-foreground">
+                            <div className="mb-12 text-center md:text-left">
+                                <h2 className="font-headline text-4xl font-black tracking-tight text-muted-foreground uppercase">
                                     Archived Programs
                                 </h2>
-                                <div className="h-1.5 w-20 bg-muted mt-3 rounded-full mx-auto md:mx-0" />
-                                <p className="text-sm text-muted-foreground mt-2 italic">These programs are currently closed for new enrollments.</p>
+                                <div className="h-2 w-24 bg-muted mt-4 rounded-full mx-auto md:mx-0" />
+                                <p className="text-sm text-muted-foreground mt-4 italic">These programs are currently closed for new enrollments.</p>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                                 {archivedCourses.map((course) => {
                                     const provider = allProviders.find(p => p.id === course.organizationId);
                                     return <CourseCard key={course.id} {...course} provider={provider} className="grayscale opacity-75 grayscale hover:grayscale-0 hover:opacity-100" />;
