@@ -9,6 +9,7 @@ import { getYoutubeVideoId } from '@/lib/utils';
 import { PlayCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { HomepageConfig } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/language-context';
 
 type FreeClassesSectionProps = {
   sectionData: HomepageConfig['freeClassesSection'];
@@ -18,6 +19,7 @@ const ITEMS_PER_PAGE = 6;
 
 export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   const { title, subtitle, classes } = sectionData;
+  const { language } = useLanguage();
   const [selectedGrade, setSelectedGrade] = useState('সব');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -50,10 +52,14 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
 
   return (
       <div className="container mx-auto px-4">
-        <div className="text-center mb-6">
-          <h2 id="free-classes-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{title.bn}</h2>
+        <div className="text-center mb-6 bg-gradient-to-r from-primary/10 via-background to-green-500/10 py-8 rounded-2xl shadow-sm">
+          <h2 id="free-classes-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
+            {title[language] || title.en}
+          </h2>
           <div className="h-1 w-16 bg-primary mx-auto mt-2 rounded-full" />
-          <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">{subtitle.bn}</p>
+          <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
+            {subtitle[language] || subtitle.en}
+          </p>
         </div>
 
         <div className="flex items-center justify-center flex-wrap gap-2 mb-6">

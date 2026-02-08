@@ -889,8 +889,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   freeClassesSection: {
     display: true,
-    title: { bn: "All Our Free Classes", en: "All Our Free Classes" },
-    subtitle: { bn: "Watch some classes completely free to get an idea about our teaching quality.", en: "Watch some classes completely free to get an idea about our teaching quality." },
+    title: { bn: "আমাদের সকল ফ্রি ক্লাসসমূহ", en: "All Our Free Classes" },
+    subtitle: { bn: "আমাদের ক্লাসের কোয়ালিটি সম্পর্কে ধারণা পেতে সম্পূর্ণ ফ্রিতে দেখে নিতে পারো কিছু ক্লাস", en: "Watch some classes completely free to get an idea about our teaching quality." },
     classes: []
   },
   aboutUsSection: {
