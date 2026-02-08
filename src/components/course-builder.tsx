@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -33,6 +31,7 @@ import {
   Database,
   Settings,
   Link as LinkIcon,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,7 +70,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization, User } from '@/lib/types';
+import { Course, SyllabusModule, AssignmentTemplate, Instructor, Announcement, LiveClass, ExamTemplate, Question, Lesson, CourseCycle, Organization, User, QuizTemplate } from '@/lib/types';
 import { getCourse, getCourses, getCategories, getInstructorByUid, getOrganizationByUserId, getInstructors, getQuestionBank, getOrganizations, getUsers } from '@/lib/firebase/firestore';
 import { saveCourseAction } from '@/app/actions/course.actions';
 import { scheduleLiveClassAction } from '@/app/actions/live-class.actions';
@@ -198,7 +197,7 @@ function SortableSyllabusItem({
                   aria-label="Remove Item"
                   onClick={() => removeItem(item.id)}
                 >
-                    <X className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                 </Button>
             </div>
         )
@@ -222,7 +221,7 @@ function SortableSyllabusItem({
                   aria-label="Remove Item"
                   onClick={() => removeItem(item.id)}
                 >
-                    <X className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                 </Button>
                  <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -872,39 +871,42 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             </div>
             <div className="flex gap-2 shrink-0">
                 {userRole === 'Admin' && (
-                    <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving}>
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(true)} disabled={isSaving} className="font-bold border-2 rounded-xl">
                         <Wand2 className="mr-2 h-4 w-4"/> Generate with AI
                     </Button>
                 )}
-                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving}>
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving} className="font-bold border-2 rounded-xl shadow-sm">
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
                 </Button>
                 {userRole === 'Admin' ? (
-                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving}>
+                     <Button variant="accent" onClick={() => handleSave('Published')} disabled={isSaving} className="font-black uppercase tracking-widest text-xs h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
-                        {isPublished ? 'Update Published Course' : 'Publish Course'}
+                        {isPublished ? 'Update Published' : 'Publish Course'}
                     </Button>
                 ) : (
-                    <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving || isPublished}>
+                    <Button variant="accent" onClick={() => handleSave('Pending Approval')} disabled={isSaving || isPublished} className="font-black uppercase tracking-widest text-xs h-11 px-8 rounded-xl shadow-lg shadow-primary/20">
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
-                        {isPublished ? 'Published' : 'Submit for Approval'}
+                        {isPublished ? 'Published' : 'Submit Approval'}
                     </Button>
                 )}
             </div>
         </div>
         
-        <Card>
-            <CardHeader className="p-0">
-                <div className="border-b">
-                    <div className="flex items-center gap-1 overflow-x-auto p-1">
+        <Card className="rounded-[2rem] border-primary/10 shadow-xl overflow-hidden">
+            <CardHeader className="p-0 border-b border-primary/5 bg-muted/30">
+                <div className="overflow-x-auto">
+                    <div className="flex items-center gap-1 p-1">
                         {tabs.map(tab => (
                             <Button 
                                 key={tab.id}
                                 variant="ghost"
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`rounded-md shrink-0 border-b-2 font-semibold px-4 ${activeTab === tab.id ? 'border-primary text-primary bg-accent/50' : 'border-transparent text-muted-foreground'}`}
+                                className={cn(
+                                    "rounded-xl shrink-0 font-bold px-4 h-12 transition-all",
+                                    activeTab === tab.id ? 'bg-primary/10 text-primary shadow-sm' : 'text-muted-foreground hover:bg-primary/5'
+                                )}
                             >
-                                <tab.icon className="mr-2"/>
+                                <tab.icon className="mr-2 h-4 w-4"/>
                                 {tab.label}
                             </Button>
                         ))}
@@ -912,567 +914,643 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </div>
             </CardHeader>
             
-            {activeTab === 'details' && (
-              <CardContent className="pt-6">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Course Title</Label>
-                    <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Course Description</Label>
-                    <Textarea id="description" placeholder="A brief summary of what this course is about..." rows={5} value={description} onChange={e => setDescription(e.target.value)} />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-6 md:p-8">
+                {activeTab === 'details' && (
+                    <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                              <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between"
-                              >
-                              {category || "Select a category..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                              <Command onKeyDown={(e) => {
-                                  if (e.key === 'Enter' && !allCategories.includes(e.currentTarget.querySelector('input')?.value || '')) {
-                                    (e.currentTarget.querySelector('input') as HTMLElement)?.blur();
-                                  }
-                              }}>
-                              <CommandInput placeholder="Search or create..." onValueChange={setCategory}/>
-                              <CommandEmpty>No category found. Type to create a new one.</CommandEmpty>
-                              <CommandGroup>
-                                  {allCategories.map((cat) => (
-                                  <CommandItem
-                                      key={cat}
-                                      value={cat}
-                                      onSelect={(currentValue) => {
-                                      setCategory(currentValue === category ? "" : currentValue)
-                                      }}
-                                  >
-                                      <Check
-                                      className={cn(
-                                          "mr-2 h-4 w-4",
-                                          category === cat ? "opacity-100" : "opacity-0"
-                                      )}
-                                      />
-                                      {cat}
-                                  </CommandItem>
-                                  ))}
-                              </CommandGroup>
-                              </Command>
-                          </PopoverContent>
-                      </Popover>
+                        <Label htmlFor="title" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Course Title</Label>
+                        <Input id="title" placeholder="e.g., HSC 2025 Physics Crash Course" value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-12 rounded-xl" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="sub-category">Sub-category</Label>
-                      <Input 
-                          id="sub-category" 
-                          placeholder="e.g., Physics 1st Paper" 
-                          value={subCategory} 
-                          onChange={e => setSubCategory(e.target.value)} 
-                      />
+                        <Label htmlFor="description" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Course Description</Label>
+                        <Textarea id="description" placeholder="A brief summary of what this course is about..." rows={5} value={description} onChange={e => setDescription(e.target.value)} className="rounded-xl" />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="course-type">Course Type</Label>
-                        <Select value={courseType} onValueChange={(value: 'Online' | 'Offline' | 'Hybrid' | 'Exam') => setCourseType(value)}>
-                            <SelectTrigger id="course-type">
-                                <SelectValue placeholder="Select course type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Online">Online</SelectItem>
-                                <SelectItem value="Offline">Offline</SelectItem>
-                                <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                <SelectItem value="Exam">Exam Batch</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                  </div>
-                  {userRole === 'Admin' && (
-                    <div className="space-y-2">
-                        <Label>Organization (Optional)</Label>
-                        <Select value={organizationId} onValueChange={setOrganizationId}>
-                            <SelectTrigger><SelectValue placeholder="Select an organization..."/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="none">None (RDC Original)</SelectItem>
-                                {allOrganizations.map(org => <SelectItem key={org.id} value={org.id!}>{org.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                  )}
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsappNumber" className="flex items-center gap-2"><Phone className="h-4 w-4"/> WhatsApp Contact Number (Optional)</Label>
-                    <Input id="whatsappNumber" placeholder="e.g., 8801700000000" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} />
-                    <CardDescription>If provided, a contact button will appear on the course page.</CardDescription>
-                  </div>
-                </div>
-              </CardContent>
-            )}
-
-            {activeTab === 'syllabus' && (
-              <CardContent className="pt-6">
-                 <p className="text-sm text-muted-foreground mb-4">Assign modules to a cycle in the 'Pricing' tab.</p>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                    <SortableContext items={syllabus.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                           {syllabus.map(item => (
-                               <SortableSyllabusItem 
-                                 key={item.id} 
-                                 item={item}
-                                 updateItem={updateSyllabusItem}
-                                 removeItem={removeSyllabusItem}
-                                 onGenerateQuiz={handleGenerateQuiz}
-                                 courseInstructors={instructors}
-                               />
-                           ))}
-                        </div>
-                    </SortableContext>
-                </DndContext>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" className="w-full border-dashed" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2"/> Add Module</Button>
-                  <Button variant="outline" className="w-full border-dashed" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2"/> Add Lesson</Button>
-                </div>
-              </CardContent>
-            )}
-            
-            {activeTab === 'pricing' && (
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h3 className="font-semibold mb-2 text-lg">Standard Pricing</h3>
-                        <div className="space-y-4 p-4 border rounded-md">
-                            <div className="space-y-2">
-                                <Label htmlFor="price">Full Course Price (BDT)</Label>
-                                <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
-                                <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} />
-                                <CardDescription>Optional. If set, this will be the new full course price.</CardDescription>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold mb-2 text-lg">Pre-booking</h3>
-                        <div className="p-4 border rounded-md space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="isPrebooking" className="font-semibold">Enable Pre-booking</Label>
-                                <Switch id="isPrebooking" checked={isPrebooking} onCheckedChange={setIsPrebooking} />
-                            </div>
-                            {isPrebooking && (
-                                <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="prebookingPrice">Pre-booking Price (BDT)</Label>
-                                        <Input id="prebookingPrice" type="number" placeholder="e.g., 500" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Pre-booking End Date</Label>
-                                        <DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} />
-                                    </div>
-                                     <div className="space-y-2">
-                                        <Label htmlFor="prebookingTarget">Enrollment Target</Label>
-                                        <Input id="prebookingTarget" type="number" placeholder="e.g., 100" value={prebookingTarget} onChange={e => setPrebookingTarget(Number(e.target.value))} />
-                                        <CardDescription>Number of students required to launch the course.</CardDescription>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                     <div className="lg:col-span-2">
-                        <h3 className="font-semibold mb-2 text-lg">Cycle Management</h3>
-                        <div className="p-4 border rounded-md space-y-4">
-                           {(cycles || []).map((cycle, index) => (
-                               <Collapsible key={cycle.id} className="p-3 border rounded-md space-y-2 bg-muted/50">
-                                   <div className="flex justify-between items-center">
-                                       <Label className="font-semibold">Cycle {cycle.order || index + 1}: {cycle.title || 'New Cycle'}</Label>
-                                       <div>
-                                            <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)}><X className="text-destructive h-4 w-4"/></Button>
-                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger>
-                                       </div>
-                                   </div>
-                                    <CollapsibleContent className="space-y-4 pt-2">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-2"><Label>Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} /></div>
-                                            <div className="space-y-2"><Label>Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} /></div>
-                                        </div>
-                                        <div className="space-y-2"><Label>Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2}/></div>
-                                        <div className="space-y-2"><Label>Community URL</Label><Input value={cycle.communityUrl || ''} onChange={e => updateCycle(cycle.id, 'communityUrl', e.target.value)} placeholder="https://facebook.com/groups/..." /></div>
-                                        <div className="space-y-2">
-                                            <Label>Modules in this Cycle</Label>
-                                             <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button variant="outline" className="w-full justify-start text-left h-auto min-h-10">
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {(cycle.moduleIds && cycle.moduleIds.length > 0) ? cycle.moduleIds.map(id => {
-                                                                const module = syllabus.find(s => s.id === id);
-                                                                return module ? <Badge key={id} variant="secondary">{module.title}</Badge> : null;
-                                                            }) : 'Select Modules...'}
-                                                        </div>
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Search modules..." />
-                                                        <CommandEmpty>No modules found.</CommandEmpty>
-                                                        <CommandGroup>
-                                                            {syllabus.filter(s => s.type === 'module').map(m => (
-                                                                <CommandItem key={m.id} onSelect={() => {
-                                                                    const currentIds = new Set(cycle.moduleIds || []);
-                                                                    if(currentIds.has(m.id)) currentIds.delete(m.id);
-                                                                    else currentIds.add(m.id);
-                                                                    updateCycle(cycle.id, 'moduleIds', Array.from(currentIds));
-                                                                }}>
-                                                                     <Check className={cn("mr-2 h-4 w-4", (cycle.moduleIds || []).includes(m.id) ? "opacity-100" : "opacity-0")} />
-                                                                     {m.title}
-                                                                </CommandItem>
-                                                            ))}
-                                                        </CommandGroup>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
-                                        </div>
-                                    </CollapsibleContent>
-                               </Collapsible>
-                           ))}
-                           <Button variant="outline" className="w-full" onClick={addCycle}><PlusCircle className="mr-2"/>Add Cycle</Button>
-                        </div>
-                    </div>
-                </div>
-              </CardContent>
-            )}
-
-            {activeTab === 'outcomes' && (
-              <CardContent className="pt-6 space-y-4">
-                  <div className="space-y-2">
-                      <Label>What students will learn</Label>
-                      {whatYouWillLearn.map((outcome, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                              <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} placeholder="e.g., Fundamentals of React" />
-                              <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)}><X className="text-destructive"/></Button>
-                          </div>
-                      ))}
-                      <Button variant="outline" className="w-full" onClick={addOutcome}><PlusCircle className="mr-2"/>Add Learning Outcome</Button>
-                  </div>
-              </CardContent>
-            )}
-
-            {activeTab === 'instructors' && (
-              <CardContent className="pt-6 space-y-4">
-                   <div className="space-y-2">
-                        <Label>Assigned Instructors</Label>
-                        <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-12">
-                            {instructors.length === 0 && <p className="text-sm text-muted-foreground">No instructors assigned.</p>}
-                            {instructors.map(inst => (
-                                <Badge key={inst.slug} variant="outline" className="p-2 gap-2">
-                                    <Avatar className="h-6 w-6"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
-                                    {inst.name}
-                                    <Button variant="ghost" size="icon" className="h-4 w-4" onClick={() => removeInstructor(inst.slug)}><X className="h-3 w-3"/></Button>
-                                </Badge>
-                            ))}
-                        </div>
-                   </div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full"><PlusCircle className="mr-2"/>Add Instructor</Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                            <Command>
-                                <CommandInput placeholder="Search instructors..." />
-                                <CommandEmpty>No instructor found.</CommandEmpty>
-                                <CommandGroup>
-                                    {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
-                                        <CommandItem key={inst.id} onSelect={() => addInstructor(inst)}>
-                                            <Avatar className="h-6 w-6 mr-2"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
-                                            {inst.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-              </CardContent>
-            )}
-
-            {activeTab === 'doubtsolvers' && (
-              <CardContent className="pt-6 space-y-4">
-                   <div className="space-y-2">
-                        <Label>Assigned Doubt Solvers</Label>
-                        <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-12">
-                            {doubtSolverIds.length === 0 && <p className="text-sm text-muted-foreground">No doubt solvers assigned.</p>}
-                            {allDoubtSolvers.filter(ds => doubtSolverIds.includes(ds.uid)).map(solver => (
-                                <Badge key={solver.uid} variant="outline" className="p-2 gap-2">
-                                    <Avatar className="h-6 w-6"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
-                                    {solver.name}
-                                    <Button variant="ghost" size="icon" className="h-4 w-4" onClick={() => handleDoubtSolverToggle(solver.uid, false)}><X className="h-3 w-3"/></Button>
-                                </Badge>
-                            ))}
-                        </div>
-                   </div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full"><PlusCircle className="mr-2"/>Assign Doubt Solver</Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                            <Command>
-                                <CommandInput placeholder="Search doubt solvers..." />
-                                <CommandEmpty>No doubt solvers found.</CommandEmpty>
-                                <CommandGroup>
-                                    {allDoubtSolvers.filter(solver => !doubtSolverIds.includes(solver.uid)).map(solver => (
-                                        <CommandItem key={solver.id} onSelect={() => handleDoubtSolverToggle(solver.uid, true)}>
-                                            <Avatar className="h-6 w-6 mr-2"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
-                                            {solver.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-              </CardContent>
-            )}
-
-            {activeTab === 'assignments' && (
-                <CardContent className="pt-6 space-y-4">
-                    {assignmentTemplates.map((assignment, index) => (
-                        <div key={assignment.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
-                            <div className="flex justify-between items-center"><Label className="font-semibold">Assignment {index + 1}</Label><Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)}><X className="text-destructive h-4 w-4"/></Button></div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label>Title</Label><Input value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Topic</Label><Input value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} /></div>
-                            </div>
-                            <div className="space-y-2"><Label>Deadline</Label><DatePicker date={assignment.deadline ? new Date(assignment.deadline as string) : new Date()} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} /></div>
-                        </div>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addAssignment}><PlusCircle className="mr-2"/>Add Assignment Template</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'exams' && (
-                <CardContent className="pt-6 space-y-4">
-                    {examTemplates.map((exam, index) => (
-                         <Collapsible key={exam.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
-                            <div className="flex justify-between items-center"><Label className="font-semibold">Exam: {exam.title || `Exam ${index + 1}`}</Label>
-                                <div>
-                                    <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)}><X className="text-destructive h-4 w-4"/></Button>
-                                    <CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger>
-                                </div>
-                            </div>
-                            <CollapsibleContent className="space-y-4 pt-4">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2 md:col-span-2"><Label>Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Exam Type</Label>
-                                        <Select value={exam.examType} onValueChange={(value) => updateExam(exam.id, 'examType', value)}>
-                                            <SelectTrigger><SelectValue/></SelectTrigger>
-                                            <SelectContent><SelectItem value="MCQ">MCQ</SelectItem><SelectItem value="Written">Written</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem><SelectItem value="Essay">Essay</SelectItem><SelectItem value="Short Answer">Short Answer</SelectItem></SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2"><Label>Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} /></div>
-                                    <div className="space-y-2"><Label>Exam Date</Label><DatePicker date={exam.examDate ? new Date(exam.examDate as string) : new Date()} setDate={(date) => updateExam(exam.id, 'examDate', date!)} /></div>
-                                </div>
-                                 <div className="space-y-2 pt-4 border-t">
-                                    <Label className="font-semibold">Questions</Label>
-                                    <div className="space-y-2">
-                                        {(exam.questions || []).map(q => <Badge key={q.id}>{q.text.substring(0, 30)}...</Badge>)}
-                                    </div>
-                                    <Button variant="outline" size="sm" onClick={() => openQuestionBank(exam)}>
-                                        <Database className="mr-2 h-4 w-4"/>
-                                        Add from Question Bank
-                                    </Button>
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addExam}><PlusCircle className="mr-2"/>Add Exam Template</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'media' && (
-              <CardContent className="pt-6 space-y-6">
-                <div className="space-y-2">
-                    <Label htmlFor="thumbnail">Thumbnail Image URL</Label>
-                    <Input id="thumbnail" value={thumbnailUrl} onChange={e => setThumbnailUrl(e.target.value)} />
-                    <div className="mt-2 rounded-lg border overflow-hidden aspect-video relative max-w-sm bg-muted">
-                      <Image src={thumbnailUrl} alt="Thumbnail Preview" fill className="object-cover" />
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="introVideo">Intro Video URL</Label>
-                    <Input id="introVideo" value={introVideoUrl} onChange={e => setIntroVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..."/>
-                </div>
-              </CardContent>
-            )}
-            
-            {activeTab === 'routine' && (
-                <CardContent className="pt-6 space-y-4">
-                    {classRoutine.map((item, index) => (
-                        <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
-                            <Select value={item.day} onValueChange={value => updateRoutineRow(item.id, 'day', value)}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Saturday">Saturday</SelectItem>
-                                    <SelectItem value="Sunday">Sunday</SelectItem>
-                                    <SelectItem value="Monday">Monday</SelectItem>
-                                    <SelectItem value="Tuesday">Tuesday</SelectItem>
-                                    <SelectItem value="Wednesday">Wednesday</SelectItem>
-                                    <SelectItem value="Thursday">Thursday</SelectItem>
-                                    <SelectItem value="Friday">Friday</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Input placeholder="Subject Name" value={item.subject} onChange={e => updateRoutineRow(item.id, 'subject', e.target.value)} />
-                            <Input placeholder="Time (e.g., 7:00 PM)" value={item.time} onChange={e => updateRoutineRow(item.id, 'time', e.target.value)} />
-                            <Button variant="ghost" size="icon" onClick={() => removeRoutineRow(item.id)}><X className="h-4 w-4 text-destructive"/></Button>
-                        </div>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addRoutineRow}><PlusCircle className="mr-2"/>Add Routine Row</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'liveClasses' && (
-                <CardContent className="pt-6 space-y-4">
-                    {liveClasses.map(lc => (
-                        <Collapsible key={lc.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
-                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">{lc.topic || 'New Live Class'}</h4><div><Button variant="ghost" size="icon" onClick={() => removeLiveClass(lc.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
-                            <CollapsibleContent className="space-y-4 pt-2">
-                                <div className="space-y-2"><Label>Topic</Label><Input value={lc.topic} onChange={e => updateLiveClass(lc.id, 'topic', e.target.value)} /></div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2"><Label>Date</Label><Input type="date" value={lc.date} onChange={e => updateLiveClass(lc.id, 'date', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Time</Label><Input type="time" value={lc.time} onChange={e => updateLiveClass(lc.id, 'time', e.target.value)} /></div>
-                                </div>
-                                 <div className="space-y-2"><Label>Platform</Label>
-                                    <Select value={lc.platform} onValueChange={(value) => updateLiveClass(lc.id, 'platform', value)}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent><SelectItem value="YouTube Live">YouTube Live</SelectItem><SelectItem value="Facebook Live">Facebook Live</SelectItem><SelectItem value="Zoom">Zoom</SelectItem><SelectItem value="Google Meet">Google Meet</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2"><Label>Join URL</Label><Input value={lc.joinUrl} onChange={e => updateLiveClass(lc.id, 'joinUrl', e.target.value)} /></div>
-                                <Button size="sm" onClick={() => handleScheduleLiveClass(lc)} disabled={isSaving}>
-                                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>}
-                                    Schedule & Notify Students
-                                </Button>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addLiveClass}><PlusCircle className="mr-2"/>Add Live Class</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'announcements' && (
-                <CardContent className="pt-6 space-y-4">
-                    {announcements.map(ann => (
-                        <div key={ann.id} className="p-4 border rounded-md space-y-2 bg-muted/50">
-                            <div className="flex justify-between items-center"><Label className="font-semibold">Announcement</Label><Button variant="ghost" size="icon" onClick={() => removeAnnouncement(ann.id)}><X className="text-destructive h-4 w-4"/></Button></div>
-                            <div className="space-y-2"><Label>Title</Label><Input value={ann.title} onChange={e => updateAnnouncement(ann.id, 'title', e.target.value)} /></div>
-                            <div className="space-y-2"><Label>Content</Label><Textarea value={ann.content} onChange={e => updateAnnouncement(ann.id, 'content', e.target.value)} /></div>
-                        </div>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addAnnouncement}><PlusCircle className="mr-2"/>Add Announcement</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'faq' && (
-                <CardContent className="pt-6 space-y-4">
-                    {faqs.map((faq, index) => (
-                         <Collapsible key={faq.id} className="p-4 border rounded-lg space-y-2 relative bg-muted/50">
-                            <div className="flex justify-between items-start"><h4 className="font-semibold pt-2">FAQ {index + 1}</h4><div><Button variant="ghost" size="icon" onClick={() => removeFaq(faq.id)}><X className="text-destructive h-4 w-4"/></Button><CollapsibleTrigger asChild><Button variant="ghost" size="icon"><ChevronDown className="h-4 w-4"/></Button></CollapsibleTrigger></div></div>
-                            <CollapsibleContent className="space-y-4">
-                                <div className="space-y-2"><Label>Question</Label><Input value={faq.question} onChange={e => updateFaq(faq.id, 'question', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Answer</Label><Textarea value={faq.answer} onChange={e => updateFaq(faq.id, 'answer', e.target.value)} rows={3}/></div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
-                    <Button variant="outline" className="w-full" onClick={addFaq}><PlusCircle className="mr-2"/>Add FAQ</Button>
-                </CardContent>
-            )}
-
-            {activeTab === 'settings' && (
-                <CardContent className="pt-6 space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="communityUrl" className="flex items-center gap-2"><LinkIcon className="h-4 w-4"/> Full Course Community URL</Label>
-                        <Input id="communityUrl" value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." />
-                        <CardDescription>The main Facebook/Discord group link for the entire course. Cycle-specific links can be set under the 'Pricing' tab.</CardDescription>
-                    </div>
-                    <div className="space-y-4">
-                        <Label>Bundled Courses</Label>
-                        <Popover>
+                            <Label htmlFor="category" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Category</Label>
+                            <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full justify-start text-left h-auto min-h-10">
-                                    <div className="flex flex-wrap gap-1">
-                                    {includedCourseIds.length > 0
-                                        ? allCourses.filter(c => includedCourseIds.includes(c.id!)).map(c => <Badge key={c.id} variant="secondary">{c.title}</Badge>)
-                                        : "Select courses to bundle..."}
-                                    </div>
+                                <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between h-12 rounded-xl border-2"
+                                >
+                                {category || "Select a category..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                <Command>
-                                    <CommandInput placeholder="Search courses..."/>
-                                    <CommandEmpty>No courses found.</CommandEmpty>
-                                    <CommandGroup>
-                                    {allCourses.filter(c => c.id !== courseId).map(c => (
-                                        <CommandItem
-                                            key={c.id}
-                                            onSelect={() => {
-                                                const newSelection = includedCourseIds.includes(c.id!)
-                                                ? includedCourseIds.filter(id => id !== c.id)
-                                                : [...includedCourseIds, c.id!];
-                                                setIncludedCourseIds(newSelection);
-                                            }}
-                                        >
-                                            <Check className={cn("mr-2 h-4 w-4", includedCourseIds.includes(c.id!) ? "opacity-100" : "opacity-0")} />
-                                            {c.title}
-                                        </CommandItem>
+                            <PopoverContent className="w-full p-0 rounded-xl overflow-hidden">
+                                <Command onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !allCategories.includes(e.currentTarget.querySelector('input')?.value || '')) {
+                                        (e.currentTarget.querySelector('input') as HTMLElement)?.blur();
+                                    }
+                                }}>
+                                <CommandInput placeholder="Search or create..." onValueChange={setCategory}/>
+                                <CommandEmpty>No category found. Type to create a new one.</CommandEmpty>
+                                <CommandGroup>
+                                    {allCategories.map((cat) => (
+                                    <CommandItem
+                                        key={cat}
+                                        value={cat}
+                                        onSelect={(currentValue) => {
+                                        setCategory(currentValue === category ? "" : currentValue)
+                                        }}
+                                    >
+                                        <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            category === cat ? "opacity-100" : "opacity-0"
+                                        )}
+                                        />
+                                        {cat}
+                                    </CommandItem>
                                     ))}
-                                    </CommandGroup>
+                                </CommandGroup>
                                 </Command>
                             </PopoverContent>
                         </Popover>
-                        <p className="text-sm text-muted-foreground">Students enrolling in this course will automatically get access to the selected bundled courses.</p>
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                        <div>
-                            <Label htmlFor="showStudentCount" className="font-semibold">Show Student Count</Label>
-                            <p className="text-sm text-muted-foreground">Display the total number of enrolled students on the public course page.</p>
                         </div>
-                        <Switch id="showStudentCount" checked={showStudentCount} onCheckedChange={setShowStudentCount} />
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                        <div>
-                            <Label htmlFor="archive" className="font-semibold text-destructive">Archive This Course</Label>
-                            <p className="text-sm text-muted-foreground">Archived courses will not be visible to the public or for new enrollments.</p>
+                        <div className="space-y-2">
+                        <Label htmlFor="sub-category" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Sub-category</Label>
+                        <Input 
+                            id="sub-category" 
+                            placeholder="e.g., Physics 1st Paper" 
+                            value={subCategory} 
+                            onChange={e => setSubCategory(e.target.value)} 
+                            className="h-12 rounded-xl"
+                        />
                         </div>
-                        <Switch id="archive" checked={isArchived} onCheckedChange={setIsArchived} />
+                        <div className="space-y-2">
+                            <Label htmlFor="course-type" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Course Type</Label>
+                            <Select value={courseType} onValueChange={(value: 'Online' | 'Offline' | 'Hybrid' | 'Exam') => setCourseType(value)}>
+                                <SelectTrigger id="course-type" className="h-12 rounded-xl border-2">
+                                    <SelectValue placeholder="Select course type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    <SelectItem value="Online">Online</SelectItem>
+                                    <SelectItem value="Offline">Offline</SelectItem>
+                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
+                                    <SelectItem value="Exam">Exam Batch</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                </CardContent>
-            )}
+                    {userRole === 'Admin' && (
+                        <div className="space-y-2">
+                            <Label className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Organization (Optional)</Label>
+                            <Select value={organizationId} onValueChange={setOrganizationId}>
+                                <SelectTrigger className="h-12 rounded-xl border-2"><SelectValue placeholder="Select an organization..."/></SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    <SelectItem value="none">None (RDC Original)</SelectItem>
+                                    {allOrganizations.map(org => <SelectItem key={org.id} value={org.id!}>{org.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div className="space-y-2">
+                        <Label htmlFor="whatsappNumber" className="flex items-center gap-2 font-bold uppercase text-[10px] tracking-widest text-primary/60"><Phone className="h-3 w-3"/> WhatsApp Contact Number (Optional)</Label>
+                        <Input id="whatsappNumber" placeholder="e.g., 8801700000000" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} className="h-12 rounded-xl" />
+                        <CardDescription>If provided, a contact button will appear on the course page.</CardDescription>
+                    </div>
+                    </div>
+                )}
+
+                {activeTab === 'syllabus' && (
+                    <div className="space-y-6">
+                        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center gap-3">
+                            <BookCopy className="h-5 w-5 text-primary" />
+                            <p className="text-sm font-medium">Assign modules to a cycle in the 'Pricing' tab for specific access control.</p>
+                        </div>
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={syllabus.map(item => item.id)} strategy={verticalListSortingStrategy}>
+                                <div className="space-y-3">
+                                {syllabus.map(item => (
+                                    <SortableSyllabusItem 
+                                        key={item.id} 
+                                        item={item}
+                                        updateItem={updateSyllabusItem}
+                                        removeItem={removeSyllabusItem}
+                                        onGenerateQuiz={handleGenerateQuiz}
+                                        courseInstructors={instructors}
+                                    />
+                                ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                            <Button variant="outline" className="flex-1 h-12 border-dashed border-2 rounded-xl font-bold" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2 h-4 w-4"/> Add Module</Button>
+                            <Button variant="outline" className="flex-1 h-12 border-dashed border-2 rounded-xl font-bold" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2 h-4 w-4"/> Add Lesson</Button>
+                        </div>
+                    </div>
+                )}
+                
+                {activeTab === 'pricing' && (
+                    <div className="space-y-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            <div className="space-y-4">
+                                <h3 className="font-black uppercase tracking-tight text-lg">Standard Pricing</h3>
+                                <div className="space-y-4 p-6 border-2 rounded-[2rem] bg-card shadow-sm">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="price" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Full Course Price (BDT)</Label>
+                                        <Input id="price" type="number" placeholder="e.g., 4500" value={price} onChange={e => setPrice(e.target.value)} className="h-12 rounded-xl" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="discountPrice" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Discount Price (BDT)</Label>
+                                        <Input id="discountPrice" type="number" placeholder="e.g., 3000" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-12 rounded-xl" />
+                                        <CardDescription>Optional. If set, this will be the display price.</CardDescription>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <h3 className="font-black uppercase tracking-tight text-lg">Pre-booking</h3>
+                                <div className="p-6 border-2 rounded-[2rem] bg-card shadow-sm space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="isPrebooking" className="font-bold text-base">Enable Pre-booking</Label>
+                                        <Switch id="isPrebooking" checked={isPrebooking} onCheckedChange={setIsPrebooking} />
+                                    </div>
+                                    {isPrebooking && (
+                                        <div className="space-y-4 pt-4 border-t">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="prebookingPrice" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Pre-booking Price (BDT)</Label>
+                                                <Input id="prebookingPrice" type="number" placeholder="e.g., 500" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} className="h-12 rounded-xl" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Pre-booking End Date</Label>
+                                                <DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="prebookingTarget" className="font-bold uppercase text-[10px] tracking-widest text-primary/60">Enrollment Target</Label>
+                                                <Input id="prebookingTarget" type="number" placeholder="e.g., 100" value={prebookingTarget} onChange={e => setPrebookingTarget(Number(e.target.value))} className="h-12 rounded-xl" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <h3 className="font-black uppercase tracking-tight text-lg">Cycle Management</h3>
+                            <div className="p-6 border-2 rounded-[2.5rem] bg-muted/20 space-y-6">
+                                {(cycles || []).map((cycle, index) => (
+                                    <Card key={cycle.id} className="rounded-3xl border-primary/10 overflow-hidden shadow-md group">
+                                        <CardHeader className="bg-primary/5 flex flex-row items-center justify-between p-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs">{cycle.order || index + 1}</div>
+                                                <CardTitle className="text-base uppercase tracking-tight">{cycle.title || 'New Cycle'}</CardTitle>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)} className="h-9 w-9 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="p-6 space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="h-11 rounded-xl" /></div>
+                                                <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="h-11 rounded-xl" /></div>
+                                            </div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Description</Label><Textarea value={cycle.description} onChange={e => updateCycle(cycle.id, 'description', e.target.value)} rows={2} className="rounded-xl" /></div>
+                                            <div className="space-y-2">
+                                                <Label className="font-bold uppercase text-[10px] tracking-widest">Modules in this Cycle</Label>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button variant="outline" className="w-full justify-start text-left h-auto min-h-[3rem] rounded-xl border-2">
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {(cycle.moduleIds && cycle.moduleIds.length > 0) ? cycle.moduleIds.map(id => {
+                                                                    const module = syllabus.find(s => s.id === id);
+                                                                    return module ? <Badge key={id} variant="secondary" className="rounded-lg">{module.title}</Badge> : null;
+                                                                }) : 'Select Included Modules...'}
+                                                            </div>
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl overflow-hidden">
+                                                        <Command>
+                                                            <CommandInput placeholder="Search modules..." />
+                                                            <CommandEmpty>No modules found.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {syllabus.filter(s => s.type === 'module').map(m => (
+                                                                    <CommandItem key={m.id} onSelect={() => {
+                                                                        const currentIds = new Set(cycle.moduleIds || []);
+                                                                        if(currentIds.has(m.id)) currentIds.delete(m.id);
+                                                                        else currentIds.add(m.id);
+                                                                        updateCycle(cycle.id, 'moduleIds', Array.from(currentIds));
+                                                                    }}>
+                                                                        <Check className={cn("mr-2 h-4 w-4", (cycle.moduleIds || []).includes(m.id) ? "opacity-100" : "opacity-0")} />
+                                                                        {m.title}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                                <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addCycle}><PlusCircle className="mr-2 h-5 w-5"/> Add New Cycle</Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'outcomes' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">What students will learn</h3>
+                        <div className="space-y-3 p-6 border-2 rounded-[2rem] bg-card">
+                            {whatYouWillLearn.map((outcome, index) => (
+                                <div key={index} className="flex items-center gap-2 group">
+                                    <div className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs text-primary">{index + 1}</div>
+                                    <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} placeholder="e.g., Fundamentals of Physics" className="h-11 rounded-xl flex-grow" />
+                                    <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full h-12 border-dashed border-2 rounded-xl font-bold mt-4" onClick={addOutcome}><PlusCircle className="mr-2 h-4 w-4"/> Add Outcome</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'instructors' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Course Mentors</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {instructors.map(inst => (
+                                <Card key={inst.slug} className="rounded-3xl border-primary/10 overflow-hidden group shadow-md">
+                                    <CardHeader className="p-0">
+                                        <div className="relative aspect-[4/5] bg-muted">
+                                            <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover" />
+                                            <div className="absolute top-2 right-2">
+                                                <Button variant="destructive" size="icon" onClick={() => removeInstructor(inst.slug)} className="rounded-full shadow-lg h-8 w-8"><X className="h-4 w-4"/></Button>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-4 text-center">
+                                        <p className="font-black uppercase tracking-tight leading-tight">{inst.name}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{inst.title}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-4 border-dashed border-4 rounded-[2rem] border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary">
+                                        <PlusCircle className="h-12 w-12" />
+                                        <span className="font-black uppercase tracking-widest text-xs">Add Mentor</span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl">
+                                    <Command>
+                                        <CommandInput placeholder="Search instructors..." />
+                                        <CommandEmpty>No instructor found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
+                                                <CommandItem key={inst.id} onSelect={() => addInstructor(inst)} className="p-3 hover:bg-primary/10 cursor-pointer">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-10 w-10 border-2 border-primary/10"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
+                                                        <div>
+                                                            <p className="font-bold">{inst.name}</p>
+                                                            <p className="text-xs text-muted-foreground">{inst.title}</p>
+                                                        </div>
+                                                    </div>
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'doubtsolvers' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Expert Doubt Solvers</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {allDoubtSolvers.filter(ds => doubtSolverIds.includes(ds.uid)).map(solver => (
+                                <Card key={solver.uid} className="rounded-3xl border-primary/10 overflow-hidden text-center group shadow-md">
+                                    <CardContent className="p-6">
+                                        <div className="relative inline-block">
+                                            <Avatar className="h-20 w-20 mx-auto border-2 border-primary/20"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
+                                            <Button variant="destructive" size="icon" onClick={() => handleDoubtSolverToggle(solver.uid, false)} className="absolute -top-1 -right-1 h-6 w-6 rounded-full shadow-lg"><X className="h-3 w-3"/></Button>
+                                        </div>
+                                        <p className="font-bold mt-4">{solver.name}</p>
+                                        <Badge variant="outline" className="mt-2 font-black text-[9px] uppercase tracking-widest">Expert</Badge>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="h-full min-h-[12rem] flex-col gap-3 border-dashed border-2 rounded-3xl border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary">
+                                        <PlusCircle className="h-8 w-8" />
+                                        <span className="font-black uppercase tracking-widest text-[10px]">Assign Solver</span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl">
+                                    <Command>
+                                        <CommandInput placeholder="Search experts..." />
+                                        <CommandEmpty>No doubt solvers found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {allDoubtSolvers.filter(solver => !doubtSolverIds.includes(solver.uid)).map(solver => (
+                                                <CommandItem key={solver.id} onSelect={() => handleDoubtSolverToggle(solver.uid, true)} className="p-3 hover:bg-primary/10 cursor-pointer">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-10 w-10 border-2 border-primary/10"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
+                                                        <div>
+                                                            <p className="font-bold">{solver.name}</p>
+                                                            <p className="text-xs text-muted-foreground">{solver.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'assignments' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Course Assignments</h3>
+                        <div className="space-y-4">
+                            {assignmentTemplates.map((assignment, index) => (
+                                <Card key={assignment.id} className="rounded-3xl border-primary/10 shadow-sm overflow-hidden bg-muted/20">
+                                    <CardContent className="p-6">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <Badge variant="secondary" className="font-black text-[10px] uppercase tracking-[0.2em] rounded-lg">Task {index + 1}</Badge>
+                                            <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Title</Label><Input value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} className="h-11 rounded-xl bg-background" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Topic</Label><Input value={assignment.topic} onChange={e => updateAssignment(assignment.id, 'topic', e.target.value)} className="h-11 rounded-xl bg-background" /></div>
+                                        </div>
+                                        <div className="mt-4 max-w-xs"><Label className="font-bold uppercase text-[10px] tracking-widest block mb-2">Submission Deadline</Label><DatePicker date={assignment.deadline ? new Date(assignment.deadline as string) : new Date()} setDate={(date) => updateAssignment(assignment.id, 'deadline', date!)} /></div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addAssignment}><PlusCircle className="mr-2 h-5 w-5"/> Add Assignment Template</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'exams' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Exam Schedule</h3>
+                        <div className="space-y-4">
+                            {examTemplates.map((exam, index) => (
+                                <Collapsible key={exam.id} className="rounded-3xl border-2 border-primary/5 bg-card shadow-sm group overflow-hidden">
+                                    <div className="flex justify-between items-center p-6 bg-primary/5">
+                                        <div className="flex items-center gap-3">
+                                            <Award className="h-5 w-5 text-primary" />
+                                            <span className="font-black uppercase tracking-tight leading-tight">{exam.title || `Exam ${index + 1}`}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="h-9 w-9 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="h-9 w-9"><ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180"/></Button></CollapsibleTrigger>
+                                        </div>
+                                    </div>
+                                    <CollapsibleContent className="p-6 border-t border-primary/5 space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="space-y-2 md:col-span-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Exam Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-11 rounded-xl" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Exam Type</Label>
+                                                <Select value={exam.examType} onValueChange={(value) => updateExam(exam.id, 'examType', value)}>
+                                                    <SelectTrigger className="h-11 rounded-xl border-2"><SelectValue/></SelectTrigger>
+                                                    <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (Auto-Graded)</SelectItem><SelectItem value="Written">Written (Manual)</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem><SelectItem value="Essay">Essay</SelectItem><SelectItem value="Short Answer">Short Answer</SelectItem></SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-11 rounded-xl" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-11 rounded-xl" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Scheduled Date</Label><DatePicker date={exam.examDate ? new Date(exam.examDate as string) : new Date()} setDate={(date) => updateExam(exam.id, 'examDate', date!)} /></div>
+                                        </div>
+                                        <div className="pt-4 border-t space-y-4">
+                                            <Label className="font-black uppercase tracking-tight text-sm">Exam Questions</Label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(exam.questions || []).length > 0 ? (exam.questions || []).map(q => <Badge key={q.id} variant="secondary" className="rounded-lg">{q.text.substring(0, 30)}...</Badge>) : <p className="text-xs text-muted-foreground font-medium">No questions added yet.</p>}
+                                            </div>
+                                            <Button variant="outline" size="sm" onClick={() => openQuestionBank(exam)} className="rounded-xl font-bold h-10 border-2">
+                                                <Database className="mr-2 h-4 w-4"/>
+                                                Import from Question Bank
+                                            </Button>
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addExam}><PlusCircle className="mr-2 h-5 w-5"/> Add Exam Template</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'media' && (
+                    <div className="space-y-8">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Course Assets</h3>
+                        <div className="space-y-6 p-8 border-2 rounded-[3rem] bg-card shadow-lg">
+                            <div className="space-y-4">
+                                <Label htmlFor="thumbnail" className="font-bold uppercase text-[10px] tracking-widest text-primary">Thumbnail Cover (600x400)</Label>
+                                <div className="flex flex-col md:flex-row gap-8 items-start">
+                                    <div className="w-full md:w-80 h-52 relative rounded-[2rem] overflow-hidden border-4 border-primary/5 shadow-2xl bg-muted shrink-0 group">
+                                        <Image src={thumbnailUrl} alt="Thumbnail Preview" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                                    </div>
+                                    <div className="flex-grow space-y-4 w-full">
+                                        <Input id="thumbnail" value={thumbnailUrl} onChange={e => setThumbnailUrl(e.target.value)} className="h-12 rounded-xl border-2" placeholder="https://placehold.co/600x400.png" />
+                                        <p className="text-sm text-muted-foreground font-medium italic">Provide a high-quality image URL for the course card. Recommended size: 1200x800px.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div className="space-y-2">
+                                <Label htmlFor="introVideo" className="font-bold uppercase text-[10px] tracking-widest text-primary">Promotional Intro Video</Label>
+                                <div className="relative">
+                                    <Video className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                    <Input id="introVideo" value={introVideoUrl} onChange={e => setIntroVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="h-12 rounded-xl pl-12 border-2" />
+                                </div>
+                                <CardDescription className="font-medium">Enter a YouTube or Vimeo link to showcase a course trailer.</CardDescription>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {activeTab === 'routine' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Class Routine</h3>
+                        <div className="p-6 border-2 rounded-[2rem] bg-card space-y-4">
+                            {classRoutine.map((item, index) => (
+                                <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center">
+                                    <Select value={item.day} onValueChange={value => updateRoutineRow(item.id, 'day', value)}>
+                                        <SelectTrigger className="h-11 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
+                                        <SelectContent className="rounded-xl">
+                                            {['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input placeholder="Subject Name" value={item.subject} onChange={e => updateRoutineRow(item.id, 'subject', e.target.value)} className="h-11 rounded-xl bg-background" />
+                                    <Input placeholder="Time (e.g., 7:00 PM)" value={item.time} onChange={e => updateRoutineRow(item.id, 'time', e.target.value)} className="h-11 rounded-xl bg-background" />
+                                    <Button variant="ghost" size="icon" onClick={() => removeRoutineRow(item.id)} className="text-destructive h-10 w-10 hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full h-12 border-dashed border-2 rounded-xl font-bold mt-4" onClick={addRoutineRow}><PlusCircle className="mr-2 h-4 w-4"/> Add Routine Entry</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'liveClasses' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Scheduled Live Sessions</h3>
+                        <div className="space-y-4">
+                            {liveClasses.map(lc => (
+                                <Card key={lc.id} className="rounded-3xl border-primary/10 overflow-hidden shadow-sm group bg-muted/20">
+                                    <CardContent className="p-6 space-y-6">
+                                        <div className="flex justify-between items-center">
+                                            <Badge variant="accent" className="font-black text-[10px] uppercase tracking-widest rounded-lg px-4 py-1">New Class</Badge>
+                                            <Button variant="ghost" size="icon" onClick={() => removeLiveClass(lc.id)} className="text-destructive h-8 w-8 hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                        </div>
+                                        <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Topic Title</Label><Input value={lc.topic} onChange={e => updateLiveClass(lc.id, 'topic', e.target.value)} className="h-11 rounded-xl bg-background" /></div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Date</Label><Input type="date" value={lc.date} onChange={e => updateLiveClass(lc.id, 'date', e.target.value)} className="h-11 rounded-xl bg-background" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Time</Label><Input type="time" value={lc.time} onChange={e => updateLiveClass(lc.id, 'time', e.target.value)} className="h-11 rounded-xl bg-background" /></div>
+                                            <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Platform</Label>
+                                                <Select value={lc.platform} onValueChange={(value) => updateLiveClass(lc.id, 'platform', value)}>
+                                                    <SelectTrigger className="h-11 rounded-xl border-2 bg-background"><SelectValue/></SelectTrigger>
+                                                    <SelectContent className="rounded-xl"><SelectItem value="YouTube Live">YouTube Live</SelectItem><SelectItem value="Facebook Live">Facebook Live</SelectItem><SelectItem value="Zoom">Zoom</SelectItem><SelectItem value="Google Meet">Google Meet</SelectItem></SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2"><Label className="font-bold uppercase text-[10px] tracking-widest">Stream/Join URL</Label><Input value={lc.joinUrl} onChange={e => updateLiveClass(lc.id, 'joinUrl', e.target.value)} className="h-11 rounded-xl bg-background" placeholder="https://..." /></div>
+                                        <Button size="lg" onClick={() => handleScheduleLiveClass(lc)} disabled={isSaving} className="w-full font-black uppercase tracking-widest text-xs h-12 rounded-2xl shadow-xl shadow-primary/10">
+                                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>}
+                                            Schedule & Notify Now
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addLiveClass}><PlusCircle className="mr-2 h-5 w-5"/> Add New Live Class</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'announcements' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Course Announcements</h3>
+                        <div className="space-y-4">
+                            {announcements.map(ann => (
+                                <Card key={ann.id} className="rounded-3xl border-primary/10 bg-card shadow-sm overflow-hidden">
+                                    <CardContent className="p-6 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <Label className="font-black uppercase text-[10px] tracking-widest text-primary">New Post</Label>
+                                            <Button variant="ghost" size="icon" onClick={() => removeAnnouncement(ann.id)} className="text-destructive h-8 w-8 hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                        </div>
+                                        <Input value={ann.title} onChange={e => updateAnnouncement(ann.id, 'title', e.target.value)} placeholder="Announcement Title" className="h-11 rounded-xl font-bold border-2" />
+                                        <Textarea value={ann.content} onChange={e => updateAnnouncement(ann.id, 'content', e.target.value)} placeholder="Write your announcement message here..." rows={4} className="rounded-xl border-2" />
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addAnnouncement}><PlusCircle className="mr-2 h-5 w-5"/> Create Announcement</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'faq' && (
+                    <div className="space-y-6">
+                        <h3 className="font-black uppercase tracking-tight text-lg">Frequently Asked Questions</h3>
+                        <div className="space-y-4">
+                            {faqs.map((faq, index) => (
+                                <Card key={faq.id} className="rounded-3xl border-2 border-primary/5 bg-card shadow-sm">
+                                    <CardContent className="p-6 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <Badge variant="secondary" className="font-black text-[10px] uppercase tracking-widest rounded-lg">Question {index + 1}</Badge>
+                                            <Button variant="ghost" size="icon" onClick={() => removeFaq(faq.id)} className="text-destructive h-8 w-8 hover:bg-destructive/10"><Trash2 className="h-4 w-4"/></Button>
+                                        </div>
+                                        <Input value={faq.question} onChange={e => updateFaq(faq.id, 'question', e.target.value)} placeholder="Q: What is the pre-requisite?" className="h-11 rounded-xl font-bold bg-muted/20 border-none" />
+                                        <Textarea value={faq.answer} onChange={e => updateFaq(faq.id, 'answer', e.target.value)} rows={3} placeholder="A: No pre-requisites needed..." className="rounded-xl bg-muted/20 border-none" />
+                                    </CardContent>
+                                </Card>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs" onClick={addFaq}><PlusCircle className="mr-2 h-5 w-5"/> Add FAQ Entry</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'settings' && (
+                    <div className="space-y-10">
+                        <h3 className="font-black uppercase tracking-tight text-lg">System Configurations</h3>
+                        <div className="space-y-6 p-8 border-2 rounded-[3rem] bg-card shadow-xl">
+                            <div className="space-y-2">
+                                <Label htmlFor="communityUrl" className="flex items-center gap-2 font-bold uppercase text-[10px] tracking-widest text-primary"><LinkIcon className="h-3 w-3"/> Course Community Group URL</Label>
+                                <Input id="communityUrl" value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." className="h-12 rounded-xl border-2" />
+                                <CardDescription className="font-medium mt-2">The main community link for the entire program.</CardDescription>
+                            </div>
+                            <Separator />
+                            <div className="space-y-4">
+                                <Label className="font-bold uppercase text-[10px] tracking-widest text-primary">Bundled Courses (Bonus Content)</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-start text-left h-auto min-h-[3.5rem] rounded-2xl border-2 border-dashed hover:bg-primary/5 hover:border-primary/40 transition-all">
+                                            <div className="flex flex-wrap gap-2">
+                                            {includedCourseIds.length > 0
+                                                ? allCourses.filter(c => includedCourseIds.includes(c.id!)).map(c => <Badge key={c.id} variant="secondary" className="rounded-lg">{c.title}</Badge>)
+                                                : "Link existing courses as free bonuses..."}
+                                            </div>
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl">
+                                        <Command>
+                                            <CommandInput placeholder="Search courses..."/>
+                                            <CommandEmpty>No courses found.</CommandEmpty>
+                                            <CommandGroup>
+                                            {allCourses.filter(c => c.id !== courseId).map(c => (
+                                                <CommandItem
+                                                    key={c.id}
+                                                    onSelect={() => {
+                                                        const newSelection = includedCourseIds.includes(c.id!)
+                                                        ? includedCourseIds.filter(id => id !== c.id)
+                                                        : [...includedCourseIds, c.id!];
+                                                        setIncludedCourseIds(newSelection);
+                                                    }}
+                                                    className="p-3 hover:bg-primary/10 cursor-pointer"
+                                                >
+                                                    <Check className={cn("mr-2 h-4 w-4", includedCourseIds.includes(c.id!) ? "text-primary" : "opacity-0")} />
+                                                    <span className="font-medium">{c.title}</span>
+                                                </CommandItem>
+                                            ))}
+                                            </CommandGroup>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <Separator />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="flex items-center justify-between rounded-3xl border-2 border-primary/5 p-6 bg-muted/10 hover:bg-muted/20 transition-colors">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="showStudentCount" className="font-bold text-base">Public Student Count</Label>
+                                        <p className="text-xs text-muted-foreground font-medium">Display total enrollment on course page.</p>
+                                    </div>
+                                    <Switch id="showStudentCount" checked={showStudentCount} onCheckedChange={setShowStudentCount} />
+                                </div>
+                                <div className="flex items-center justify-between rounded-3xl border-2 border-destructive/10 p-6 bg-destructive/5 hover:bg-destructive/10 transition-colors group">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="archive" className="font-bold text-base text-destructive">Archive Program</Label>
+                                        <p className="text-xs text-muted-foreground font-medium">Permanently disable new registrations.</p>
+                                    </div>
+                                    <Switch id="archive" checked={isArchived} onCheckedChange={setIsArchived} className="data-[state=checked]:bg-destructive" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </Card>
 
         {/* AI Generator Dialog */}
         <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
-            <DialogContent>
+            <DialogContent className="rounded-[2.5rem] p-8 border-2 border-primary shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle>Generate Course with AI</DialogTitle>
-                    <DialogDescription>Enter a topic and let AI generate a draft for your course structure.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black uppercase tracking-tight text-primary">RDC AI Architect</DialogTitle>
+                    <DialogDescription className="font-medium">Describe your course topic and our AI will build a professional draft for you.</DialogDescription>
                 </DialogHeader>
-                <div className="py-4 space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="ai-topic">Course Topic</Label>
-                        <Input id="ai-topic" value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Introduction to Quantum Physics"/>
-                    </div>
+                <div className="py-6">
+                    <Label htmlFor="ai-topic" className="font-bold uppercase text-[10px] tracking-widest text-muted-foreground mb-2 block">Focus Topic</Label>
+                    <Input id="ai-topic" value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Quantum Mechanics for HSC" className="h-14 rounded-2xl border-2 bg-muted/30 focus-visible:ring-primary text-lg font-bold" />
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic}>
-                        {isGenerating && <Loader2 className="mr-2 animate-spin"/>} Generate Content
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-12 font-bold px-8">Cancel</Button>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-12 font-black uppercase tracking-widest text-xs px-8 shadow-xl shadow-primary/20">
+                        {isGenerating ? <Loader2 className="mr-2 animate-spin"/> : <Wand2 className="mr-2"/>} Build Foundation
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -1480,35 +1558,35 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         
         {/* Question Bank Dialog */}
         <Dialog open={isQuestionBankOpen} onOpenChange={setIsQuestionBankOpen}>
-          <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                  <DialogTitle>Add Questions from Bank</DialogTitle>
-                  <DialogDescription>Select questions to add to the exam: "{selectedExamForQB?.title}".</DialogDescription>
+          <DialogContent className="max-w-4xl rounded-[2.5rem] border-2 border-primary overflow-hidden p-0 shadow-2xl">
+              <DialogHeader className="p-8 bg-primary/5 border-b border-primary/10">
+                  <DialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-3"><Database className="h-6 w-6 text-primary" /> Question Repository</DialogTitle>
+                  <DialogDescription className="font-medium">Populate "{selectedExamForQB?.title}" with curated questions.</DialogDescription>
               </DialogHeader>
-              <div className="flex flex-wrap gap-2 p-4 border-b">
-                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Subject" /></SelectTrigger>
-                    <SelectContent><SelectItem value="all">All Subjects</SelectItem>{[...new Set(questionBank.map(q => q.subject).filter(Boolean))] .map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
+              <div className="flex flex-wrap gap-3 p-6 bg-muted/20 border-b border-primary/5">
+                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[180px] h-11 rounded-xl bg-background border-none shadow-sm"><SelectValue placeholder="Subject" /></SelectTrigger>
+                    <SelectContent className="rounded-xl"><SelectItem value="all">All Subjects</SelectItem>{[...new Set(questionBank.map(q => q.subject).filter(Boolean))] .map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
                 </Select>
-                 <Select value={qbFilters.chapter} onValueChange={(v) => setQbFilters(f => ({...f, chapter: v}))}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filter by Chapter" /></SelectTrigger>
-                    <SelectContent><SelectItem value="all">All Chapters</SelectItem>{[...new Set(questionBank.map(q => q.chapter).filter(Boolean))] .map(c => <SelectItem key={c} value={c!}>{c}</SelectItem>)}</SelectContent>
+                 <Select value={qbFilters.chapter} onValueChange={(v) => setQbFilters(f => ({...f, chapter: v}))}><SelectTrigger className="w-full sm:w-[180px] h-11 rounded-xl bg-background border-none shadow-sm"><SelectValue placeholder="Chapter" /></SelectTrigger>
+                    <SelectContent className="rounded-xl"><SelectItem value="all">All Chapters</SelectItem>{[...new Set(questionBank.map(q => q.chapter).filter(Boolean))] .map(c => <SelectItem key={c} value={c!}>{c}</SelectItem>)}</SelectContent>
                 </Select>
-                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[150px]"><SelectValue placeholder="Filter by Difficulty" /></SelectTrigger>
-                    <SelectContent><SelectItem value="all">All Difficulties</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
+                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[150px] h-11 rounded-xl bg-background border-none shadow-sm"><SelectValue placeholder="Difficulty" /></SelectTrigger>
+                    <SelectContent className="rounded-xl"><SelectItem value="all">All</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                 </Select>
               </div>
-              <div className="max-h-[50vh] overflow-y-auto p-4">
+              <div className="max-h-[45vh] overflow-y-auto p-6">
                   <Table>
-                      <TableHeader>
+                      <TableHeader className="bg-muted/50">
                           <TableRow>
-                              <TableHead className="w-12"></TableHead>
-                              <TableHead>Question</TableHead>
-                              <TableHead>Type</TableHead>
+                              <TableHead className="w-12 px-4"></TableHead>
+                              <TableHead className="font-bold text-[10px] uppercase tracking-widest px-4">Question Details</TableHead>
+                              <TableHead className="font-bold text-[10px] uppercase tracking-widest px-4">Type</TableHead>
                           </TableRow>
                       </TableHeader>
                       <TableBody>
                           {filteredQbQuestions.map(q => (
-                              <TableRow key={q.id}>
-                                  <TableCell>
+                              <TableRow key={q.id} className="hover:bg-primary/5 transition-colors">
+                                  <TableCell className="px-4">
                                       <Checkbox 
                                         checked={qbSelectedQuestions.some(sq => sq.id === q.id)}
                                         onCheckedChange={(checked) => {
@@ -1518,23 +1596,22 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                 setQbSelectedQuestions(prev => prev.filter(sq => sq.id !== q.id));
                                             }
                                         }}
+                                        className="h-5 w-5 border-primary"
                                       />
                                   </TableCell>
-                                  <TableCell>{q.text}</TableCell>
-                                  <TableCell><Badge variant="outline">{q.type}</Badge></TableCell>
+                                  <TableCell className="px-4 py-4 font-medium">{q.text}</TableCell>
+                                  <TableCell className="px-4 py-4"><Badge variant="outline" className="rounded-lg">{q.type}</Badge></TableCell>
                               </TableRow>
                           ))}
                       </TableBody>
                   </Table>
               </div>
-              <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)}>Cancel</Button>
-                  <Button onClick={handleAddQuestionsFromBank}>Add Selected Questions</Button>
+              <DialogFooter className="p-8 border-t border-primary/5 bg-muted/10">
+                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)} className="rounded-xl h-12 font-bold px-8">Cancel</Button>
+                  <Button onClick={handleAddQuestionsFromBank} className="rounded-xl h-12 font-black uppercase tracking-widest text-xs px-8 shadow-xl shadow-primary/20">Inject {qbSelectedQuestions.length} Questions</Button>
               </DialogFooter>
           </DialogContent>
         </Dialog>
     </div>
   );
 }
-
-    

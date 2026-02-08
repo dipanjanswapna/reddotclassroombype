@@ -23,7 +23,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 
 /**
  * @fileOverview Refined Teacher Portal Layout.
- * Features modern glassmorphism bottom navigation and elite role branding.
+ * Features modern glassmorphism bottom navigation and standardized container padding.
  */
 export default function TeacherLayout({
   children,
@@ -77,12 +77,10 @@ export default function TeacherLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-full overflow-hidden">
-        <div className="container max-w-7xl mx-auto">
-            {children}
-        </div>
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
+          {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
           {menuItems.map((item) => (
             <Link
@@ -96,7 +94,7 @@ export default function TeacherLayout({
               )}
             >
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
-              <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">{item.label}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
