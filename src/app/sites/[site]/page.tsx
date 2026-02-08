@@ -1,4 +1,3 @@
-
 import { notFound } from 'next/navigation';
 import { getPartnerBySubdomain, getCourses, getProducts } from '@/lib/firebase/firestore';
 import type { Organization, Course, Product } from '@/lib/types';
@@ -8,8 +7,9 @@ import { CourseCard } from '@/components/course-card';
 import { ProductCard } from '@/components/product-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
-  const partner = await getPartnerBySubdomain(params.site);
+export async function generateMetadata({ params }: { params: Promise<{ site: string }> }): Promise<Metadata> {
+  const awaitedParams = await params;
+  const partner = await getPartnerBySubdomain(awaitedParams.site);
 
   if (!partner) {
     return {
@@ -29,8 +29,9 @@ export async function generateMetadata({ params }: { params: { site: string } })
 }
 
 
-export default async function PartnerSitePage({ params }: { params: { site: string } }) {
-  const siteSlug = params.site;
+export default async function PartnerSitePage({ params }: { params: Promise<{ site: string }> }) {
+  const awaitedParams = await params;
+  const siteSlug = awaitedParams.site;
   
   const partner = await getPartnerBySubdomain(siteSlug);
 

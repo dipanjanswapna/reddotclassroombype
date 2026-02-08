@@ -45,7 +45,7 @@ import { ReviewCard } from '@/components/review-card';
 import { cn, safeToDate } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/firebase/auth';
 
-export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ courseId: string }> }): Promise<Metadata> {
   const awaitedParams = await params;
   const course = await getCourse(awaitedParams.courseId);
 
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 export default async function CourseDetailPage({
   params,
 }: {
-  params: { courseId: string };
+  params: Promise<{ courseId: string }>;
 }) {
   const awaitedParams = await params;
   const { courseId } = awaitedParams;

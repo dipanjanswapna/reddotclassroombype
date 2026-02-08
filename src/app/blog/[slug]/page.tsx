@@ -1,4 +1,3 @@
-
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getBlogPostBySlug } from '@/lib/firebase/firestore';
@@ -7,8 +6,9 @@ import { BlogPost } from '@/lib/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post: BlogPost | null = await getBlogPostBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const awaitedParams = await params;
+  const post: BlogPost | null = await getBlogPostBySlug(awaitedParams.slug);
 
   if (!post) {
     return {
@@ -34,8 +34,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getBlogPostBySlug(params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const awaitedParams = await params;
+  const post = await getBlogPostBySlug(awaitedParams.slug);
 
   if (!post) {
     notFound();
