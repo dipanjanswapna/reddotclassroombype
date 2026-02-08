@@ -2,8 +2,8 @@ import React from 'react';
 
 /**
  * @fileOverview Layout for the Offline Hub section.
- * The footer and header are handled globally by LayoutWrapper.
- * This layout primarily sets the section-specific font and base background.
+ * Removed forced dark theme to allow the section to follow the global system theme
+ * and match the main page aesthetic.
  */
 export default async function OfflineHubLayout({
   children,
@@ -11,7 +11,7 @@ export default async function OfflineHubLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-gray-900 text-white font-bengali">
+    <div className="bg-background text-foreground font-bengali">
         <main>{children}</main>
     </div>
   );
