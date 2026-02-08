@@ -11,6 +11,8 @@ import {
   Clock,
   Share2,
   ArrowRight,
+  Calendar,
+  Award,
 } from 'lucide-react';
 import {
   Accordion,
@@ -278,6 +280,105 @@ export default async function CourseDetailPage({
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                         {courseCycles.sort((a,b) => a.order - b.order).map((cycle) => (
                             <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} isPrebookingActive={isPrebookingActive}/>
+                        ))}
+                    </div>
+                </section>
+            )}
+            
+            {/* Class Routine - Responsive Design */}
+            {course.classRoutine && course.classRoutine.length > 0 && (
+                <section id="routine" className="scroll-mt-32">
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                        Class Routine
+                    </h2>
+                    <div className="hidden md:block overflow-hidden rounded-[2rem] border border-primary/10 shadow-lg">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Day</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Subject</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Time</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {course.classRoutine.map((item, index) => (
+                                    <TableRow key={`routine-desktop-${index}`} className="hover:bg-primary/5 transition-colors border-b last:border-0 border-primary/5">
+                                        <TableCell className="font-black px-8 py-5 text-sm">{item.day}</TableCell>
+                                        <TableCell className="font-bold px-8 py-5 text-sm">{item.subject}</TableCell>
+                                        <TableCell className="font-black text-primary px-8 py-5 text-sm">{item.time}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    {/* Mobile Routine List */}
+                    <div className="md:hidden space-y-3">
+                        {course.classRoutine.map((item, index) => (
+                            <div key={`routine-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center">
+                                <div className="space-y-1">
+                                    <p className="font-black text-xs uppercase text-primary tracking-widest">{item.day}</p>
+                                    <p className="font-bold text-sm">{item.subject}</p>
+                                </div>
+                                <div className="text-right">
+                                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                                        <Clock className="w-3.5 h-3.5" />
+                                        <span className="text-xs font-black">{item.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Exam Schedule - Responsive Design */}
+            {course.examTemplates && course.examTemplates.length > 0 && (
+                <section id="exam-schedule" className="scroll-mt-32">
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                        Exam Schedule
+                    </h2>
+                    <div className="hidden md:block overflow-hidden rounded-[2rem] border border-primary/10 shadow-lg">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Title</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Topic</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Date</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-right">Marks</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {course.examTemplates.map((item, index) => (
+                                    <TableRow key={`exam-desktop-${index}`} className="hover:bg-primary/5 transition-colors border-b last:border-0 border-primary/5">
+                                        <TableCell className="font-bold px-8 py-5 text-sm">{item.title}</TableCell>
+                                        <TableCell className="font-medium text-muted-foreground px-8 py-5 text-sm">{item.topic}</TableCell>
+                                        <TableCell className="font-black px-8 py-5 text-sm">{item.examDate ? format(safeToDate(item.examDate), 'MMM d, yyyy') : 'TBD'}</TableCell>
+                                        <TableCell className="font-black text-primary px-8 py-5 text-sm text-right">{item.totalMarks}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    {/* Mobile Exam List */}
+                    <div className="md:hidden space-y-3">
+                        {course.examTemplates.map((item, index) => (
+                            <div key={`exam-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm space-y-3">
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="space-y-1">
+                                        <p className="font-black text-[10px] uppercase text-primary tracking-[0.2em]">Exam {index + 1}</p>
+                                        <h4 className="font-bold text-base leading-tight">{item.title}</h4>
+                                    </div>
+                                    <Badge variant="secondary" className="font-black text-[10px] px-2.5 py-1 rounded-lg">
+                                        {item.totalMarks} Marks
+                                    </Badge>
+                                </div>
+                                <div className="flex items-center justify-between text-xs font-medium text-muted-foreground pt-2 border-t border-primary/5">
+                                    <p className="truncate mr-4">{item.topic}</p>
+                                    <p className="font-black shrink-0">{item.examDate ? format(safeToDate(item.examDate), 'MMM d') : 'TBD'}</p>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </section>
