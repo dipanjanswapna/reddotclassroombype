@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -71,23 +72,23 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
           </CardHeader>
           <CardContent className="p-4 flex flex-col flex-grow">
               <p className="text-xs font-black text-primary/60 uppercase tracking-[0.2em] mb-1">{product.category}</p>
-              <h3 className="font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2 flex-grow">{product.name}</h3>
+              <h3 className="font-bold text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2 flex-grow">{product.name}</h3>
               {provider && (
                   <div className="flex items-center gap-2 mt-2">
                       <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
-                      <p className="text-xs text-muted-foreground">By {provider.name}</p>
+                      <p className="text-[10px] text-muted-foreground">By {provider.name}</p>
                   </div>
               )}
               <div className="flex items-center justify-between gap-2 mt-4">
               <div className="flex flex-col">
                   {product.oldPrice && (
-                  <p className="text-xs text-muted-foreground line-through">৳{product.oldPrice}</p>
+                  <p className="text-[10px] text-muted-foreground line-through">৳{product.oldPrice}</p>
                   )}
-                  <p className="text-lg font-black text-primary">৳{product.price}</p>
+                  <p className="text-base font-black text-primary">৳{product.price}</p>
               </div>
-              <Button size="sm" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`} className="shadow-md active:shadow-inner transition-all h-10 px-4 rounded-xl">
-                  <ShoppingCart className="h-4 w-4"/>
-                  <span className="ml-2 hidden sm:inline font-bold">Add</span>
+              <Button size="sm" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`} className="shadow-md active:shadow-inner transition-all h-9 px-3 rounded-xl text-xs">
+                  <ShoppingCart className="h-3.5 w-3.5"/>
+                  <span className="ml-1.5 hidden sm:inline font-bold">Add</span>
               </Button>
               </div>
           </CardContent>

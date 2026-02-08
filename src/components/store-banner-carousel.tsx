@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -14,6 +13,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { StoreHomepageBanner } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner[] }) {
   const plugin = React.useRef(
@@ -25,32 +25,36 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
   }
 
   return (
-    <Carousel
-      plugins={[plugin.current]}
-      className="w-full"
-      opts={{
-        align: 'start',
-        loop: true,
-      }}
-    >
-      <CarouselContent className="-ml-4">
-        {banners.map((banner) => (
-          <CarouselItem key={banner.id} className="pl-4">
-            <Link href={banner.linkUrl || '#'} className="block rounded-lg overflow-hidden group shadow-md hover:shadow-xl transition-shadow">
-              <div className="relative aspect-[16/6]">
-                <Image
-                  src={banner.imageUrl}
-                  alt="Promotional banner"
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-            </Link>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious className="hidden md:flex left-2 bg-background/50 hover:bg-background"/>
-      <CarouselNext className="hidden md:flex right-2 bg-background/50 hover:bg-background"/>
-    </Carousel>
+    <div className="w-full">
+      <Carousel
+        plugins={[plugin.current]}
+        className="w-full"
+        opts={{
+          align: 'center',
+          loop: true,
+        }}
+      >
+        <CarouselContent className="-ml-4">
+          {banners.map((banner) => (
+            <CarouselItem key={banner.id} className="pl-4 basis-full md:basis-[80%] lg:basis-[70%]">
+              <Link href={banner.linkUrl || '#'} className="block rounded-[2rem] overflow-hidden group shadow-xl border border-primary/10 transition-all duration-500 hover:shadow-2xl">
+                <div className="relative aspect-[16/7] md:aspect-[21/7]">
+                  <Image
+                    src={banner.imageUrl}
+                    alt="Promotional banner"
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                  />
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                </div>
+              </Link>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="hidden md:flex left-8 bg-background/40 backdrop-blur-md border-none h-12 w-12 hover:bg-background/80" />
+        <CarouselNext className="hidden md:flex right-8 bg-background/40 backdrop-blur-md border-none h-12 w-12 hover:bg-background/80" />
+      </Carousel>
+    </div>
   );
 }

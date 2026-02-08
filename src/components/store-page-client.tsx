@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -8,6 +9,7 @@ import { ProductCard } from './product-card';
 import { useSearchParams } from 'next/navigation';
 import { BookBanner } from './book-banner';
 import { StoreBannerCarousel } from './store-banner-carousel';
+import { StoreFilterBar } from './store-filter-bar';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function StorePageClient({
@@ -61,10 +63,16 @@ export function StorePageClient({
                 </AnimatePresence>
                 
                 <section className="space-y-8">
+                    <div className="mb-12">
+                        <StoreFilterBar categories={allCategories} />
+                    </div>
+
                     <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
                         <div className="text-center md:text-left space-y-2">
-                            <h1 className="text-3xl md:text-4xl font-black tracking-tight">{pageTitle}</h1>
-                            <div className="h-1.5 w-20 bg-primary rounded-full mx-auto md:mx-0 shadow-sm" />
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">
+                                {selectedCategorySlug ? pageTitle : 'Discover Store'}
+                            </h1>
+                            <div className="h-1.5 w-24 bg-primary rounded-full mx-auto md:mx-0 shadow-lg" />
                         </div>
                         <div className="relative w-full md:w-auto md:flex-grow max-w-md group">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -91,7 +99,7 @@ export function StorePageClient({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-muted/30 rounded-3xl border-2 border-dashed flex flex-col items-center">
+                        <div className="text-center py-24 bg-muted/30 rounded-[2rem] border-2 border-dashed flex flex-col items-center">
                             <Search className="h-16 w-16 text-muted-foreground mb-4 opacity-20" />
                             <p className="text-xl font-medium text-muted-foreground">
                                 No products found matching your criteria.
