@@ -800,7 +800,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             
             <div className="p-4 sm:p-6 md:p-10">
                 {activeTab === 'details' && (
-                    <div className="space-y-8 md:space-y-10">
+                    <div className="space-y-8 md:space-y-10 text-left">
                         <div className="space-y-2">
                             <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Program Master Title</Label>
                             <Input value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-12 md:h-14 rounded-xl text-base md:text-lg font-bold border-2 focus-visible:ring-primary" placeholder="e.g., HSC Physics Mastery 2025" />
@@ -854,7 +854,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
                 
                 {activeTab === 'pricing' && (
-                    <div className="space-y-14">
+                    <div className="space-y-14 text-left">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                             <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl">
                                 <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Revenue Structure</CardTitle></CardHeader>
@@ -889,9 +889,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)} className="h-10 w-10 text-destructive rounded-xl hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
                                         </CardHeader>
                                         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="rounded-xl border-2 font-black text-xl text-primary" /></div>
-                                            <div className="col-span-full space-y-2">
+                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="rounded-xl border-2 font-bold" /></div>
+                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="rounded-xl border-2 font-black text-xl text-primary" /></div>
+                                            <div className="col-span-full space-y-2 text-left">
                                                 <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Authorized Modules</Label>
                                                 <div className="flex flex-wrap gap-2 p-4 border-2 border-dashed rounded-xl bg-muted/20">
                                                     {syllabus.filter(s => s.type === 'module').map(m => (
@@ -919,7 +919,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
 
                 {activeTab === 'outcomes' && (
-                    <div className="space-y-10">
+                    <div className="space-y-10 text-left">
                         <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
                             <Label className="font-black uppercase text-sm tracking-tight text-primary">Key Learning Milestones</Label>
                             {whatYouWillLearn.map((outcome, index) => (
@@ -974,7 +974,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
 
                 {activeTab === 'doubtsolvers' && (
-                    <div className="space-y-10">
+                    <div className="space-y-10 text-left">
                         <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
                             <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Expert Doubt Solver Force</CardTitle><CardDescription className="font-bold">Select dedicated solvers for this program.</CardDescription></CardHeader>
                             <CardContent className="p-6 md:p-8">
@@ -983,7 +983,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <div key={solver.uid} className={cn("flex items-center justify-between p-4 rounded-xl border-2 transition-all", doubtSolverIds.includes(solver.uid) ? 'border-primary bg-primary/5' : 'border-muted/50 hover:border-primary/20')}>
                                             <div className="flex items-center gap-3">
                                                 <Avatar className="h-10 w-10 border-2"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
-                                                <div className="space-y-0.5"><p className="font-black text-xs uppercase">{solver.name}</p><p className="text-[9px] font-bold text-muted-foreground">{solver.email}</p></div>
+                                                <div className="space-y-0.5 text-left"><p className="font-black text-xs uppercase">{solver.name}</p><p className="text-[9px] font-bold text-muted-foreground">{solver.email}</p></div>
                                             </div>
                                             <Switch checked={doubtSolverIds.includes(solver.uid)} onCheckedChange={(checked) => handleDoubtSolverToggle(solver.uid, checked)} />
                                         </div>
@@ -995,7 +995,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
 
                 {activeTab === 'exams' && (
-                    <div className="space-y-10">
+                    <div className="space-y-10 text-left">
                         <div className="grid gap-6">
                             {examTemplates.map((exam, index) => (
                                 <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
@@ -1008,8 +1008,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </div>
                                     <CollapsibleContent className="p-6 md:p-8 space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            <div className="space-y-2 md:col-span-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Execution Mode</Label>
+                                            <div className="space-y-2 md:col-span-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
+                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Execution Mode</Label>
                                                 <Select value={exam.examType} onValueChange={(v: any) => updateExam(exam.id, 'examType', v)}>
                                                     <SelectTrigger className="h-12 md:h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
                                                     <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (Auto)</SelectItem><SelectItem value="Written">Written (Manual)</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem></SelectContent>
@@ -1017,8 +1017,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Full Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl text-primary" /></div>
+                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
+                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Full Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl text-primary" /></div>
                                         </div>
                                         <div className="pt-6 border-t-2 border-primary/5 flex justify-end">
                                             <Button variant="outline" onClick={() => openQuestionBank(exam)} className="rounded-xl h-12 font-black uppercase text-[10px] tracking-widest border-2 border-dashed shadow-md w-full sm:w-auto"><Database className="mr-2 h-4 w-4"/> Inject Questions from Bank</Button>
@@ -1032,7 +1032,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
 
                 {activeTab === 'routine' && (
-                    <div className="space-y-10">
+                    <div className="space-y-10 text-left">
                         <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
                             {classRoutine.map((item) => (
                                 <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 rounded-xl bg-muted/20 border-2 border-transparent hover:border-primary/10 transition-all">
@@ -1052,7 +1052,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 )}
 
                 {activeTab === 'settings' && (
-                    <div className="space-y-10">
+                    <div className="space-y-10 text-left">
                         <div className="space-y-10 p-6 md:p-10 border-2 rounded-2xl bg-card shadow-2xl relative overflow-hidden">
                             <div className="space-y-4">
                                 <Label className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest text-primary"><LinkIcon className="h-4 w-4"/> Master Community URL</Label>
