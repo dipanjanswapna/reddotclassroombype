@@ -59,7 +59,7 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
       className="h-full min-w-[280px] flex-1 max-w-[400px]"
     >
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl rounded-xl border border-white/10 dark:border-white/5 hover:border-primary/50 bg-gradient-to-br from-card to-secondary/30 dark:to-primary/5 group enrolled-course-card",
+          "flex flex-col h-full overflow-hidden transition-all duration-500 rounded-xl border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 group enrolled-course-card",
           className
       )}>
         <CardHeader className="p-0 relative">

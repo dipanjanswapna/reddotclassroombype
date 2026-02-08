@@ -11,6 +11,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Suppress OpenTelemetry and Sentry warnings by treating them as external packages
   serverExternalPackages: [
     '@opentelemetry/sdk-node',
     '@opentelemetry/instrumentation',
