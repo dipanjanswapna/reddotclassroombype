@@ -20,9 +20,8 @@ type OfflineHubCarouselProps = {
 };
 
 /**
- * @fileOverview Optimized Offline Hub Carousel.
- * Matches the main page aesthetic by removing heavy black backgrounds.
- * Fully responsive content stack for mobile, tablet, and desktop.
+ * @fileOverview Standardized Carousel Component.
+ * Removes heavy black backgrounds and uses subtle overlays for a clean look.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -63,7 +62,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Subtle Gradient Overlays for Readability - Lightened to match main page */}
+                  {/* Subtle Gradient Overlays - No more solid black */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent sm:bg-gradient-to-r sm:from-black/40 sm:via-transparent sm:to-transparent" />
                   
                   <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
@@ -94,7 +93,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
           ))}
         </CarouselContent>
         
-        {/* Modern Indicators */}
+        {/* Indicators */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {slides.map((_, index) => (
             <button

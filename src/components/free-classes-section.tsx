@@ -39,14 +39,12 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   
   const grades = useMemo(() => {
     if (!classes || classes.length === 0) return [];
-    // Extract unique grades and filter out any empty strings
     return Array.from(new Set(classes.map(c => c.grade))).filter(Boolean);
   }, [classes]);
 
   const [selectedGrade, setSelectedGrade] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Set initial selected grade when component mounts or grades load
   useEffect(() => {
     if (grades.length > 0 && !selectedGrade) {
       setSelectedGrade(grades[0]);
@@ -75,18 +73,18 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   };
 
   return (
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-6 bg-gradient-to-r from-primary/10 via-background to-green-500/10 py-8 rounded-2xl shadow-sm">
+      <div className="container mx-auto px-4 py-10 md:py-14">
+        <div className="text-center mb-8 bg-gradient-to-r from-primary/10 via-background to-green-500/10 py-8 rounded-2xl shadow-sm">
           <h2 id="free-classes-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
             {title[language] || title.en}
           </h2>
           <div className="h-1 w-16 bg-primary mx-auto mt-2 rounded-full" />
-          <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
+          <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto px-4">
             {subtitle[language] || subtitle.en}
           </p>
         </div>
 
-        <div className="flex items-center justify-center flex-wrap gap-2 mb-6">
+        <div className="flex items-center justify-center flex-wrap gap-2 mb-8">
           {grades.map(grade => (
             <Button
               key={grade}

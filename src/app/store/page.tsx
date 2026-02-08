@@ -1,5 +1,3 @@
-
-
 import type { Metadata } from 'next';
 import { getHomepageConfig, getProducts, getStoreCategories } from '@/lib/firebase/firestore';
 import { Suspense } from 'react';
@@ -53,12 +51,14 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
 
 export default async function RdcStorePage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {    
     return (
-        <Suspense fallback={
-            <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-                <LoadingSpinner className="w-12 h-12" />
-            </div>
-        }>
-            <StoreContent searchParams={searchParams} />
-        </Suspense>
+        <div className="bg-background min-h-screen">
+            <Suspense fallback={
+                <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+                    <LoadingSpinner className="w-12 h-12" />
+                </div>
+            }>
+                <StoreContent searchParams={searchParams} />
+            </Suspense>
+        </div>
     );
 }

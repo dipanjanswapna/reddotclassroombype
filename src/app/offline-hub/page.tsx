@@ -36,18 +36,18 @@ export default async function OfflineHubPage() {
     }
 
   return (
-    <div className="bg-background min-h-screen text-foreground pb-20">
-      {/* Dynamic Hero Carousel */}
+    <div className="bg-background min-h-screen text-foreground">
+      {/* Hero Carousel */}
       {homepageConfig?.offlineHubHeroCarousel?.display && (
         <div className="bg-background">
             <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
         </div>
       )}
 
-      {/* Static Hero Section */}
-      <div className="relative overflow-hidden border-b">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden border-b py-10 md:py-14">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 via-transparent to-transparent z-0 opacity-50 blur-3xl"></div>
-          <div className="container mx-auto px-4 py-8 md:py-12 relative z-10">
+          <div className="container mx-auto px-4 relative z-10">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6 text-center lg:text-left">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs tracking-widest uppercase mb-2">
@@ -85,9 +85,9 @@ export default async function OfflineHubPage() {
           </div>
       </div>
       
-      {/* Offline Programs Grid */}
+      {/* Offline Programs */}
       {offlineCourses.length > 0 && (
-        <section className="container mx-auto px-4 py-8 md:py-12">
+        <section className="container mx-auto px-4 py-10 md:py-14">
           <div className="text-center mb-10 space-y-2">
             <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500">
               {offlineHubData.programsTitle?.[language] || "Our Programs"}
@@ -111,8 +111,8 @@ export default async function OfflineHubPage() {
         </section>
       )}
 
-      {/* Offline Hubs/Centers Section */}
-      <section className="bg-muted/30 py-8 md:py-12 border-y">
+      {/* Offline Hubs/Centers */}
+      <section className="bg-muted/30 py-10 md:py-14 border-y">
         <div className="container mx-auto px-4">
             <div className="text-center mb-10 space-y-2">
                 <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500">
@@ -165,9 +165,9 @@ export default async function OfflineHubPage() {
         </div>
       </section>
 
-      {/* Modern Contact Section */}
+      {/* Contact Section */}
       {offlineHubData.contactSection?.display && (
-        <section className="container mx-auto px-4 py-8 md:py-12">
+        <section className="container mx-auto px-4 py-10 md:py-14 pb-24">
             <div className="bg-gradient-to-br from-primary via-red-700 to-black rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 text-center relative overflow-hidden shadow-2xl border border-white/10 group">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mt-48 blur-[80px]"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full -mr-48 -mb-48 blur-[80px]"></div>

@@ -61,7 +61,7 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <section
-    className={cn("py-6 md:py-8 container mx-auto px-4 md:px-8", className)}
+    className={cn("py-10 md:py-14 container mx-auto px-4 md:px-8", className)}
   >
     {children}
   </section>
@@ -151,7 +151,7 @@ export default function Home() {
   
   return (
     <div className="text-foreground">
-        <section className="py-3 md:py-6 container mx-auto px-4 md:px-8">
+        <section className="py-4 md:py-6 container mx-auto px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
@@ -167,7 +167,7 @@ export default function Home() {
           </SectionWrapper>
         )}
 
-        <div className="container mx-auto px-4 md:px-8 my-6">
+        <div className="container mx-auto px-4 md:px-8 my-4">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <NoticeBoard />
             </motion.div>

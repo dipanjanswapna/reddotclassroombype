@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -47,8 +46,8 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="container mx-auto px-4 md:px-8 py-8">
-            <main className="space-y-16">
+        <div className="container mx-auto px-4 md:px-8 py-6 md:py-8">
+            <main className="space-y-10 md:space-y-14">
                 <AnimatePresence mode="wait">
                     {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
                         <motion.div
@@ -63,7 +62,7 @@ export function StorePageClient({
                 </AnimatePresence>
                 
                 <section className="space-y-8">
-                    <div className="mb-12">
+                    <div className="mb-10">
                         <StoreFilterBar categories={allCategories} />
                     </div>
 

@@ -48,8 +48,8 @@ export default async function TopperPage() {
     }
 
   return (
-    <div className="space-y-16">
-        <section className="container mx-auto px-4 py-16">
+    <div className="space-y-4">
+        <section className="container mx-auto px-4 py-10 md:py-14">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
                 <div className="space-y-10">
                     <h1 className="font-headline text-4xl lg:text-5xl font-extrabold tracking-tight text-green-700 dark:text-green-500 leading-tight">
@@ -90,11 +90,11 @@ export default async function TopperPage() {
             </div>
         </section>
         
-        <section className="bg-secondary/30 py-16 border-y border-primary/5">
+        <section className="bg-secondary/30 py-10 md:py-14 border-y border-primary/5">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div className="space-y-2">
-                        <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-green-700 dark:text-green-500">Comprehensive Academic Programs for Class 6-12 & Beyond</h2>
+                        <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-green-700 dark:text-green-500">Comprehensive Academic Programs</h2>
                         <p className="text-xl text-muted-foreground">Select your class to enroll and start your journey to the top.</p>
                     </div>
                     <Button asChild size="lg" className="mt-4 md:mt-0 bg-red-500 hover:bg-red-600 font-bold shrink-0 shadow-lg px-10 h-14 rounded-xl">
@@ -133,9 +133,7 @@ export default async function TopperPage() {
         </section>
 
         {config.freeClassesSection?.display && (
-            <section className="py-6 sm:py-8 lg:py-10">
-                <FreeClassesSection sectionData={config.freeClassesSection} />
-            </section>
+            <FreeClassesSection sectionData={config.freeClassesSection} />
         )}
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { getCourses, getStoreCategories, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
@@ -67,11 +66,11 @@ export default async function CoursesPage({
   return (
     <div className="bg-background min-h-screen">
         {homepageConfig?.offlineHubHeroCarousel?.display && (
-            <div className="bg-gray-900 border-b border-white/5">
+            <div className="bg-background border-b border-white/5">
                 <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
             </div>
         )}
-      <div className="container mx-auto px-4 md:px-8 py-12">
+      <div className="container mx-auto px-4 md:px-8 py-10 md:py-14">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-96 w-full p-8">
                   <LoadingSpinner className="w-12 h-12" />
@@ -80,7 +79,7 @@ export default async function CoursesPage({
               <CoursesPageContent searchParams={searchParams} />
           </Suspense>
       </div>
-      <div className="container mx-auto px-4 md:px-8 pb-20">
+      <div className="container mx-auto px-4 md:px-8 pb-10 md:pb-14">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>

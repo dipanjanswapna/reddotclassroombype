@@ -204,9 +204,9 @@ export default async function CourseDetailPage({
 
       <CourseTabs course={course} />
 
-      <main className="container mx-auto px-4 py-16 md:py-24">
+      <main className="container mx-auto px-4 py-10 md:py-14">
         <div className="grid lg:grid-cols-3 gap-16">
-          <div className="lg:col-span-2 space-y-24">
+          <div className="lg:col-span-2 space-y-16">
             
             {/* Video Intro */}
             <div className="relative aspect-video rounded-[2.5rem] overflow-hidden group shadow-[0_30px_100px_rgba(0,0,0,0.15)] border-8 border-primary/5">
@@ -232,7 +232,7 @@ export default async function CourseDetailPage({
             {/* Learning Outcomes */}
             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-32">
-                    <h2 className="font-headline text-3xl md:text-4xl font-black mb-10 tracking-tight flex items-center gap-4">
+                    <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                         What you'll master
                     </h2>
@@ -252,7 +252,7 @@ export default async function CourseDetailPage({
             {/* Instructors */}
             {course.instructors && course.instructors.length > 0 && (
               <section id="instructors" className="scroll-mt-32">
-                <h2 className="font-headline text-3xl md:text-4xl font-black mb-10 tracking-tight flex items-center gap-4">
+                <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Meet Your Guides
                 </h2>
@@ -276,7 +276,7 @@ export default async function CourseDetailPage({
             {/* Cycles */}
              {courseCycles && courseCycles.length > 0 && (
                 <section id="cycles" className="scroll-mt-32">
-                    <h2 className="font-headline text-3xl md:text-4xl font-black mb-10 tracking-tight flex items-center gap-4">
+                    <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                         Flexible Modules
                     </h2>
@@ -291,7 +291,7 @@ export default async function CourseDetailPage({
             {/* Syllabus */}
             {course.syllabus && course.syllabus.length > 0 && (
               <section id="syllabus" className="scroll-mt-32">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                         Curriculum
@@ -337,7 +337,7 @@ export default async function CourseDetailPage({
             {/* Reviews */}
             {course.reviewsData && course.reviewsData.length > 0 && (
               <section id="reviews" className="scroll-mt-32">
-                <h2 className="font-headline text-3xl md:text-4xl font-black mb-10 tracking-tight flex items-center gap-4">
+                <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Success Stories
                 </h2>
@@ -352,7 +352,7 @@ export default async function CourseDetailPage({
             {/* FAQ */}
             {course.faqs && course.faqs.length > 0 && (
               <section id="faq" className="scroll-mt-32">
-                <h2 className="font-headline text-3xl md:text-4xl font-black mb-10 tracking-tight flex items-center gap-4">
+                <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Common Queries
                 </h2>
@@ -452,7 +452,7 @@ export default async function CourseDetailPage({
 
         {/* Bundled Content Section */}
         {includedCourses.length > 0 && (
-          <section className="pt-32 border-t border-primary/5">
+          <section className="pt-24 border-t border-primary/5">
             <div className="text-center mb-16 space-y-4">
                 <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Free Bonus Bundle</h2>
                 <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-lg" />
@@ -468,8 +468,8 @@ export default async function CourseDetailPage({
         )}
 
         {/* Recommendations */}
-         <section className="pt-32">
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-16 border-b border-primary/10 pb-8 gap-6">
+         <section className="pt-24">
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-12 border-b border-primary/10 pb-8 gap-6">
                 <div className="text-center sm:text-left space-y-2">
                     <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended for You</h2>
                     <p className="text-muted-foreground font-medium">Explore related programs to boost your growth.</p>
