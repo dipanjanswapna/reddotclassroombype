@@ -43,7 +43,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                 </div>
             </div>
 
-            <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredInstructors.map((teacher) => (
                 <Link key={teacher.id} href={`/teachers/${teacher.slug}`} className="group block" aria-label={`View profile for ${teacher.name}`}>
                     <Card className="overflow-hidden relative aspect-[4/5] rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -51,7 +51,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                         src={teacher.avatarUrl}
                         alt={teacher.name}
                         fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         data-ai-hint={teacher.dataAiHint}
                     />

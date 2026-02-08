@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { getHomepageConfig, getProducts, getStoreCategories } from '@/lib/firebase/firestore';
 import { Suspense } from 'react';
