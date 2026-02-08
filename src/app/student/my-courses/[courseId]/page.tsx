@@ -4,7 +4,7 @@ import { CourseContentClient } from '@/components/course-content-client';
 
 /**
  * @fileOverview Student Course Homepage.
- * Updated for Next.js 15 async params compliance and elite portal rhythm.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
  */
 export default async function CourseHomePage({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;

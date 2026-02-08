@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
-import type { Course } from '@/lib/types';
 import { ReviewsClient } from './reviews-client';
 
 /**
  * @fileOverview Course Reviews Page.
- * Updated for Next.js 15 async params compliance and elite portal rhythm.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
  */
 export default async function ReviewsPage({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await params;

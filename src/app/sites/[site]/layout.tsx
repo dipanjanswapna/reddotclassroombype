@@ -8,7 +8,7 @@ import { Organization } from '@/lib/types';
 
 /**
  * @fileOverview Partner Site Layout.
- * Updated for Next.js 15 async params compliance.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
  */
 export default async function PartnerSiteLayout({
   children,
@@ -24,7 +24,6 @@ export default async function PartnerSiteLayout({
     notFound();
   }
 
-  // Define CSS variables for dynamic theming
   const partnerThemeStyle = {
     '--primary': partner.primaryColor || '346.8 77.2% 49.8%',
     '--secondary': partner.secondaryColor || '210 40% 96.1%',

@@ -44,7 +44,7 @@ export default async function QuizzesPage({ params }: { params: Promise<{ course
         <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
       </div>
 
-      <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+      <Card className="rounded-2xl border-primary/10 shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
           <CardTitle className="font-black uppercase tracking-tight text-lg">Available Assessments</CardTitle>
           <CardDescription className="font-medium">Complete these quizzes to test your understanding of the course material.</CardDescription>
@@ -79,13 +79,13 @@ export default async function QuizzesPage({ params }: { params: Promise<{ course
                     </TableCell>
                     <TableCell className="px-8 py-6 text-right">
                       {status === 'Completed' ? (
-                        <Button variant="outline" size="sm" asChild className="rounded-xl font-black text-[10px] uppercase tracking-widest">
+                        <Button variant="outline" size="sm" asChild className="rounded-lg font-black text-[10px] uppercase tracking-widest">
                            <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
                                 View Results
                            </Link>
                         </Button>
                       ) : (
-                         <Button asChild size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg">
+                         <Button asChild size="sm" className="rounded-lg font-black text-[10px] uppercase tracking-widest shadow-lg">
                             <Link href={`/student/my-courses/${course.id}/quizzes/${quiz.id}`}>
                                 <PlayCircle className="mr-2 h-4 w-4" />
                                 Start Quiz

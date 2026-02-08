@@ -7,14 +7,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { PlayCircle, FileText, HelpCircle } from 'lucide-react';
+import { PlayCircle, FileText, HelpCircle, Archive } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import type { Course } from '@/lib/types';
 
 /**
  * @fileOverview Archived Bonus Content Page.
- * Updated for Next.js 15 async params compliance and elite portal rhythm.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
  */
 
 const getLessonIcon = (type: string) => {
@@ -50,7 +50,7 @@ export default async function ArchivedContentPage({ params }: { params: Promise<
                 <p className="text-lg text-muted-foreground font-medium">Accessing bonus materials and historical curriculum.</p>
                 <div className="h-1.5 w-24 bg-muted rounded-full mx-auto sm:mx-0 shadow-inner" />
             </div>
-            <div className="text-center py-24 bg-muted/30 rounded-[3rem] border-4 border-dashed">
+            <div className="text-center py-24 bg-muted/30 rounded-3xl border-4 border-dashed">
                 <Archive className="w-16 h-16 text-muted-foreground opacity-20 mx-auto mb-4" />
                 <p className="text-xl font-bold text-muted-foreground">No archived bonus content found for this course.</p>
             </div>
@@ -68,7 +68,7 @@ export default async function ArchivedContentPage({ params }: { params: Promise<
 
       <div className="space-y-10">
         {archivedCourses.map(course => (
-             <Card key={course.id} className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card transition-all hover:border-primary/40">
+             <Card key={course.id} className="rounded-2xl border-primary/10 shadow-xl overflow-hidden bg-card transition-all hover:border-primary/40">
                 <div className="p-8 border-b border-primary/5 bg-muted/30">
                     <h2 className="font-headline text-2xl font-black uppercase tracking-tight text-primary leading-tight">{course.title}</h2>
                     <Badge variant="secondary" className="mt-3 font-black text-[9px] uppercase tracking-widest px-4 py-1.5 rounded-full">{course.category}</Badge>
@@ -76,7 +76,7 @@ export default async function ArchivedContentPage({ params }: { params: Promise<
                  {course.syllabus && course.syllabus.length > 0 ? (
                     <Accordion type="multiple" defaultValue={course.syllabus.map(m => m.id)} className="w-full space-y-4 p-8">
                         {course.syllabus.map((module) => (
-                            <AccordionItem value={module.id} key={module.id} className="border-none rounded-[1.5rem] overflow-hidden bg-muted/20 transition-all hover:bg-muted/40 shadow-sm">
+                            <AccordionItem value={module.id} key={module.id} className="border-none rounded-xl overflow-hidden bg-muted/20 transition-all hover:bg-muted/40 shadow-sm">
                                 <AccordionTrigger className="text-lg font-black px-8 py-6 hover:no-underline text-left">
                                     <div className="flex flex-col">
                                         <span className="uppercase tracking-tight">{module.title}</span>

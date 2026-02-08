@@ -33,7 +33,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
   return (
     <div className="h-full w-full">
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl",
+          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-2xl",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
@@ -64,50 +64,50 @@ const CourseCardComponent = (props: CourseCardProps) => {
                     animate={{ opacity: 1, x: 0 }}
                     className="absolute top-2 left-2 flex flex-col gap-1 z-10"
                 >
-                    {isPrebookingActive && <Badge variant="warning">Pre-booking</Badge>}
-                    {type === 'Exam' && !isPrebookingActive && <Badge variant="destructive">Exam Batch</Badge>}
-                    {type === 'Offline' && !isPrebookingActive && <Badge variant="secondary">Offline</Badge>}
-                    {type === 'Hybrid' && !isPrebookingActive && <Badge variant="secondary">Hybrid</Badge>}
+                    {isPrebookingActive && <Badge variant="warning" className="rounded-lg font-black uppercase text-[9px]">Pre-booking</Badge>}
+                    {type === 'Exam' && !isPrebookingActive && <Badge variant="destructive" className="rounded-lg font-black uppercase text-[9px]">Exam Batch</Badge>}
+                    {type === 'Offline' && !isPrebookingActive && <Badge variant="secondary" className="rounded-lg font-black uppercase text-[9px]">Offline</Badge>}
+                    {type === 'Hybrid' && !isPrebookingActive && <Badge variant="secondary" className="rounded-lg font-black uppercase text-[9px]">Hybrid</Badge>}
                 </motion.div>
             )}
           </AnimatePresence>
         </CardHeader>
         <CardContent className="p-4 flex flex-col flex-grow">
-          {category && <Badge variant="secondary" className="mb-2 w-fit">{category}</Badge>}
+          {category && <Badge variant="secondary" className="mb-2 w-fit rounded-lg font-black text-[9px] uppercase tracking-wider">{category}</Badge>}
           <Link href={coursePageUrl}>
-            <CardTitle className="text-base font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">{title}</CardTitle>
+            <CardTitle className="text-base font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2 uppercase tracking-tight">{title}</CardTitle>
           </Link>
           {provider ? (
              <div className="flex items-center gap-2 mt-2">
               <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
-              <p className="text-xs text-muted-foreground">By {provider.name}</p>
+              <p className="text-[10px] text-muted-foreground font-bold">By {provider.name}</p>
             </div>
           ) : (
-            instructors && instructors.length > 0 && <p className="text-muted-foreground text-sm mt-2">By {instructors[0].name}</p>
+            instructors && instructors.length > 0 && <p className="text-muted-foreground text-xs mt-2 font-medium">By {instructors[0].name}</p>
           )}
         </CardContent>
         <CardFooter className="p-4 pt-0">
           {isPrebookingActive ? (
             <div className="flex flex-col items-start w-full">
-              <p className="text-sm text-muted-foreground line-through">{price}</p>
-              <p className="font-headline text-lg font-bold text-primary">{prebookingPrice}</p>
+              <p className="text-[10px] text-muted-foreground line-through font-bold opacity-60">{price}</p>
+              <p className="font-headline text-lg font-black text-primary tracking-tighter">{prebookingPrice}</p>
             </div>
           ) : hasDiscount ? (
             <div className="flex items-baseline gap-2">
-              <p className="font-headline text-lg font-bold text-primary">{discountPrice}</p>
-              <p className="text-sm text-muted-foreground line-through">{price}</p>
+              <p className="font-headline text-lg font-black text-primary tracking-tighter">{discountPrice}</p>
+              <p className="text-xs text-muted-foreground line-through font-bold opacity-50">{price}</p>
             </div>
           ) : isArchived ? (
-              <p className="text-sm text-muted-foreground italic">Registration Closed</p>
+              <p className="text-xs text-muted-foreground italic font-bold">Registration Closed</p>
           ) : (
-              price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
+              price && <p className="font-headline text-lg font-black text-primary tracking-tighter">{price}</p>
           )}
         </CardFooter>
         <div className="p-4 pt-0 mt-auto">
            {isArchived ? (
-              <Button disabled variant="outline" className="w-full">Closed</Button>
+              <Button disabled variant="outline" className="w-full rounded-xl font-black uppercase text-[10px] h-10 border-2">Closed</Button>
            ) : (
-              <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700 shadow-md active:shadow-inner transition-all">
+              <Button asChild className="w-full font-black uppercase tracking-widest text-[10px] h-11 rounded-xl shadow-md active:scale-95 transition-all bg-primary hover:bg-primary/90 text-white border-none">
                    <Link href={coursePageUrl}>View Details</Link>
                </Button>
            )}
