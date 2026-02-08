@@ -21,7 +21,7 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview Optimized Offline Hub Carousel.
- * Features a clean, light aesthetic by removing black backgrounds.
+ * Matches the main page aesthetic by removing heavy black backgrounds.
  * Fully responsive content stack for mobile, tablet, and desktop.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
@@ -63,12 +63,12 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Subtle Gradient Overlays for Readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-black/5 sm:to-transparent" />
+                  {/* Subtle Gradient Overlays for Readability - Lightened to match main page */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent sm:bg-gradient-to-r sm:from-black/40 sm:via-transparent sm:to-transparent" />
                   
                   <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
                     <div className="flex-1 space-y-3 text-left">
-                      <div className="bg-primary text-white font-black px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-lg">
+                      <div className="bg-primary text-white font-black px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-lg inline-block">
                         {slide.title}
                       </div>
                       <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight max-w-2xl drop-shadow-lg">
@@ -76,7 +76,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                       </h2>
                     </div>
                     
-                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 sm:bg-transparent sm:backdrop-blur-none sm:border-none sm:p-0">
+                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-4 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 sm:bg-transparent sm:backdrop-blur-none sm:border-none sm:p-0">
                       <div className="flex flex-col items-start md:items-end">
                          <span className="text-xs sm:text-base line-through opacity-80 font-medium">{slide.originalPrice}</span>
                          <span className="text-2xl sm:text-3xl md:text-4xl font-black text-yellow-400 drop-shadow-md">
