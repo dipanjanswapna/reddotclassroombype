@@ -21,7 +21,6 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
-import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -250,7 +249,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="video-section-heading">
             <div className="text-center">
                 <div className="text-center mb-12 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl shadow-sm overflow-hidden relative">
-                  <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
                   <h2 id="video-section-heading" className="font-headline text-3xl font-bold text-green-700 dark:text-green-500 relative z-10">{homepageConfig.videoSection?.title?.[language]}</h2>
                   <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-lg px-4 relative z-10">{homepageConfig.videoSection?.description?.[language]}</p>
                   <HeadingUnderline />
@@ -346,12 +345,6 @@ export default function Home() {
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
-          </SectionWrapper>
-        )}
-
-        {homepageConfig.freeClassesSection?.display && (
-          <SectionWrapper aria-labelledby="free-classes-heading">
-            <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
           </SectionWrapper>
         )}
 
