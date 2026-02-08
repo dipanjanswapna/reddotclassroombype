@@ -1,4 +1,3 @@
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -87,7 +86,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="bg-background min-h-screen flex flex-col overflow-x-hidden">
         <StoreHeader categories={categories} />
-        <main className="flex-grow pt-24">
+        <main className="flex-grow pt-20">
             {children}
         </main>
         <Footer homepageConfig={homepageConfig} />
@@ -98,7 +97,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
         <Header homepageConfig={homepageConfig} />
-        <main className="flex-grow pt-16">
+        <main className="flex-grow pt-20">
           {children}
         </main>
         {!isDashboardPage && <Footer homepageConfig={homepageConfig} />}

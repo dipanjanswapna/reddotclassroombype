@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -179,12 +178,12 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pt-3 pointer-events-none">
       <div className="container max-w-7xl pointer-events-auto px-4 flex flex-col gap-2">
-        <div className="flex h-12 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-6 shadow-xl overflow-hidden">
+        <div className="flex h-16 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-8 shadow-xl overflow-hidden">
             <div className="lg:hidden flex-1 flex justify-start">
                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label="Toggle Menu" className="h-8 w-8 rounded-full">
-                            <Menu className="h-5 w-5" />
+                        <Button variant="ghost" size="icon" aria-label="Toggle Menu" className="h-10 w-10 rounded-full">
+                            <Menu className="h-6 w-6" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="p-0 w-full max-w-xs flex flex-col bg-background/95 backdrop-blur-2xl border-r-primary/20">
@@ -233,39 +232,39 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
             </div>
             
             <div className="flex items-center justify-end space-x-1 flex-1">
-                <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex h-8 px-3 text-xs font-bold uppercase tracking-tight">
+                <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex h-10 px-4 text-xs font-bold uppercase tracking-tight">
                     <Link href="/student/payments">My Orders</Link>
                 </Button>
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label="Track Order" className="h-8 w-8 rounded-full">
+                        <Button variant="ghost" size="icon" aria-label="Track Order" className="h-10 w-10 rounded-full">
                             <Truck className="h-5 w-5" />
                         </Button>
                     </DialogTrigger>
                     <OrderTrackingModal />
                 </Dialog>
-                <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full" onClick={() => setIsCartOpen(true)}>
+                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full" onClick={() => setIsCartOpen(true)}>
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 justify-center rounded-full p-0 text-[10px] border-2 border-background">{itemCount}</Badge>
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-[10px] border-2 border-background">{itemCount}</Badge>
                 )}
                 </Button>
-                <div className="border-l border-primary/20 pl-2 ml-1 h-6 flex items-center">
+                <div className="border-l border-primary/20 pl-2 ml-1 h-8 flex items-center">
                     {user ? (
                         <UserNav />
                     ) : (
-                        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex h-8 text-xs font-bold rounded-full"><Link href="/login">Login</Link></Button>
+                        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex h-10 text-xs font-bold rounded-full"><Link href="/login">Login</Link></Button>
                     )}
                 </div>
             </div>
         </div>
 
-        <div className="hidden lg:flex items-center h-9 justify-start rounded-full bg-gray-900/90 backdrop-blur-xl border border-white/5 px-2 relative group/subnav">
+        <div className="hidden lg:flex items-center h-10 justify-start rounded-full bg-gray-900/90 backdrop-blur-xl border border-white/5 px-4 relative group/subnav">
             <Button
                 variant="ghost"
                 size="icon"
                 onClick={scrollPrev}
-                className="absolute left-1 z-20 h-7 w-7 rounded-full text-white hover:bg-white/10 opacity-0 group-hover/subnav:opacity-100 transition-opacity"
+                className="absolute left-1 z-20 h-8 w-8 rounded-full text-white hover:bg-white/10 opacity-0 group-hover/subnav:opacity-100 transition-opacity"
             >
                 <ChevronDown className="h-4 w-4 -rotate-90" />
             </Button>
@@ -277,7 +276,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                             .sort((a, b) => (a.order || 99) - (b.order || 99))
                             .map((category) => (
                                 <NavigationMenuItem key={category.id}>
-                                <NavigationMenuTrigger className="h-7 px-3 bg-transparent text-[11px] font-bold uppercase tracking-widest text-gray-300 hover:text-white data-[state=open]:text-white">
+                                <NavigationMenuTrigger className="h-8 px-4 bg-transparent text-[11px] font-bold uppercase tracking-widest text-gray-300 hover:text-white data-[state=open]:text-white">
                                     {category.name}
                                 </NavigationMenuTrigger>
                                 <NavigationMenuContent>
@@ -326,7 +325,7 @@ export function StoreHeader({ categories }: { categories: StoreCategory[] }) {
                 variant="ghost"
                 size="icon"
                 onClick={scrollNext}
-                className="absolute right-1 z-20 h-7 w-7 rounded-full text-white hover:bg-white/10 opacity-0 group-hover/subnav:opacity-100 transition-opacity"
+                className="absolute right-1 z-20 h-8 w-8 rounded-full text-white hover:bg-white/10 opacity-0 group-hover/subnav:opacity-100 transition-opacity"
             >
                 <ChevronDown className="h-4 w-4 rotate-90" />
             </Button>

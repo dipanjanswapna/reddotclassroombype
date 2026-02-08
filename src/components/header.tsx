@@ -62,18 +62,18 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
     <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pointer-events-none transition-all duration-300", wrapperClassName)}>
       <div className="container max-w-7xl pointer-events-auto px-4 mt-2">
         <div className={cn(
-          "flex h-12 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] overflow-hidden",
+          "flex h-16 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] overflow-hidden",
           containerClassName
         )}>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center space-x-2 shrink-0 transition-transform hover:scale-105 active:scale-95">
-                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-7 w-auto" priority />
+                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto" priority />
             </Link>
           </div>
           
           <nav className="hidden lg:flex items-center space-x-1">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("h-8 px-3 text-xs font-semibold uppercase tracking-tight", isDark && "text-white hover:bg-white/10")}>
+              <Button key={link.href} variant="ghost" asChild className={cn("h-10 px-4 text-xs font-bold uppercase tracking-wider", isDark && "text-white hover:bg-white/10")}>
                   <Link
                   href={link.href}
                   className="transition-colors hover:text-primary whitespace-nowrap"
@@ -84,7 +84,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn("h-8 px-3 flex items-center gap-1 text-xs font-semibold uppercase tracking-tight", isDark && "text-white hover:bg-white/10")}>
+                      <Button variant="ghost" className={cn("h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wider", isDark && "text-white hover:bg-white/10")}>
                       {t.nav_more[language]} <ChevronDown className="h-3 w-3 opacity-50" />
                       </Button>
                   </DropdownMenuTrigger>
@@ -100,13 +100,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-1">
-                  <ThemeToggle className={cn("h-8 w-8 rounded-full", isDark && "text-white hover:bg-white/10 hover:text-white")} />
+                  <ThemeToggle className={cn("h-10 w-10 rounded-full", isDark && "text-white hover:bg-white/10 hover:text-white")} />
                   {!user && (
-                    <div className="flex items-center gap-1 ml-2">
-                        <Button asChild variant="ghost" size="sm" className={cn("h-8 text-xs font-bold", isDark && "text-white hover:bg-white/10 hover:text-white")}>
+                    <div className="flex items-center gap-2 ml-2">
+                        <Button asChild variant="ghost" size="sm" className={cn("h-10 text-xs font-bold", isDark && "text-white hover:bg-white/10 hover:text-white")}>
                             <Link href="/login">{t.login[language]}</Link>
                         </Button>
-                        <Button asChild size="sm" className={cn("h-8 px-4 text-xs font-bold rounded-full shadow-lg active:shadow-inner bg-primary hover:bg-primary/90")}>
+                        <Button asChild size="sm" className={cn("h-10 px-6 text-xs font-bold rounded-full shadow-lg active:shadow-inner bg-primary hover:bg-primary/90")}>
                             <Link href="/signup">{t.signup[language]}</Link>
                         </Button>
                     </div>
@@ -114,7 +114,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               </div>
               
               {user && (
-                <div className="flex items-center gap-1 border-l border-primary/20 pl-2">
+                <div className="flex items-center gap-2 border-l border-primary/20 pl-2">
                     <NotificationBell />
                     <UserNav />
                 </div>
@@ -123,8 +123,8 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               <div className="lg:hidden flex items-center">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("h-8 w-8 rounded-full", isDark && "text-white hover:bg-white/10")}>
-                      <Menu className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("h-10 w-10 rounded-full", isDark && "text-white hover:bg-white/10")}>
+                      <Menu className="h-6 w-6" />
                   </Button>
                   </SheetTrigger>
                   <SheetContent side="left" className="p-0 w-full max-w-xs flex flex-col bg-background/95 backdrop-blur-2xl border-r-primary/20">
@@ -134,7 +134,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                               className="flex items-center space-x-2"
                               onClick={() => setMenuOpen(false)}
                           >
-                              <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto" priority />
+                              <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 w-auto" priority />
                           </Link>
                           <SheetDescription className="text-left mt-2">Empowering learners in Bangladesh.</SheetDescription>
                       </SheetHeader>
