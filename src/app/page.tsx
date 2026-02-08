@@ -192,8 +192,12 @@ export default function Home() {
           </SectionWrapper>
         )}
 
+        <div className="container mx-auto px-4 md:px-8 my-2">
+            <NoticeBoard />
+        </div>
+
         {homepageConfig.categoriesSection?.display && (
-          <SectionWrapper aria-labelledby="categories-heading" className="px-8 md:px-16 lg:px-24">
+          <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8 py-2">
             <div className="container mx-auto">
               <div className="text-center mb-4">
                 <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
@@ -205,10 +209,6 @@ export default function Home() {
             </div>
           </SectionWrapper>
         )}
-
-        <div className="container mx-auto px-4 md:px-8 my-2">
-            <NoticeBoard />
-        </div>
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading" className="px-4 md:px-8">
@@ -372,9 +372,7 @@ export default function Home() {
           <SectionWrapper aria-labelledby="partners-heading" className="px-4 md:px-8">
             <div className="container mx-auto text-center">
               <div className="mb-4">
-                <h2 id="partners-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
-                  {homepageConfig.partnersSection?.title?.[language]}
-                </h2>
+                <h2 id="partners-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.partnersSection?.title?.[language]}</h2>
                 <HeadingUnderline />
               </div>
               <PartnersLogoScroll 
