@@ -77,7 +77,7 @@ export default function ModeratorDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Open Tickets</CardTitle>
                     <Ticket className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
@@ -87,7 +87,7 @@ export default function ModeratorDashboardPage() {
                     <p className="text-xs text-muted-foreground font-medium mt-1">Needs reply</p>
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Users</CardTitle>
                     <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
@@ -97,7 +97,7 @@ export default function ModeratorDashboardPage() {
                     <p className="text-xs text-muted-foreground font-medium mt-1">Platform members</p>
                 </CardContent>
             </Card>
-             <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
+             <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Mod Status</CardTitle>
                     <ShieldCheck className="h-5 w-5 text-accent-foreground group-hover:scale-110 transition-transform" />
@@ -109,7 +109,7 @@ export default function ModeratorDashboardPage() {
             </Card>
         </div>
         
-        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card">
             <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
                     <Ticket className="h-6 w-6 text-primary"/>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,6 +18,10 @@ type DoubtWithCourse = Doubt & {
   courseTitle: string;
 };
 
+/**
+ * @fileOverview Polished Doubt Solver Dashboard.
+ * Focused academic support metrics.
+ */
 export default function DoubtSolverDashboard() {
   const { userInfo, loading: authLoading } = useAuth();
   const [doubts, setDoubts] = useState<DoubtWithCourse[]>([]);
@@ -76,7 +79,7 @@ export default function DoubtSolverDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Pending Doubts</CardTitle>
                     <HelpCircle className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
@@ -88,7 +91,7 @@ export default function DoubtSolverDashboard() {
             </Card>
         </div>
 
-        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card">
             <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
                     <HelpCircle className="h-6 w-6 text-primary"/>
