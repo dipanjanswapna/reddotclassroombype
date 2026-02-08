@@ -14,7 +14,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 
 /**
  * @fileOverview Refined Student Portal Layout.
- * Standardized portal container spacing and high-blur navigation.
+ * Synchronized vertical rhythm and premium glassmorphism navigation.
  */
 export default function StudentLayout({
   children,
@@ -75,7 +75,7 @@ export default function StudentLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
           {children}
       </main>

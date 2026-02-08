@@ -60,7 +60,7 @@ export default function AdminLayout({
     
     if (loading || !user || userInfo?.role !== 'Admin') {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center justify-center h-screen bg-background">
                 <LoadingSpinner className="w-12 h-12" />
             </div>
         );
@@ -109,8 +109,8 @@ export default function AdminLayout({
     };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background overflow-x-hidden max-w-full">
+      <main className="p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
           {children}
       </main>
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">

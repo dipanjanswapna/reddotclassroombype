@@ -130,7 +130,7 @@ export default function TeacherDashboardPage() {
   
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background">
         <LoadingSpinner className="w-12 h-12" />
       </div>
     );
@@ -147,7 +147,7 @@ export default function TeacherDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Active Courses</CardTitle>
                     <BookCopy className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
@@ -157,7 +157,7 @@ export default function TeacherDashboardPage() {
                     <p className="text-xs text-muted-foreground font-medium mt-1">Ongoing modules</p>
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Students</CardTitle>
                     <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
@@ -167,7 +167,7 @@ export default function TeacherDashboardPage() {
                     <p className="text-xs text-muted-foreground font-medium mt-1">Active learners</p>
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card border-orange-500/20 bg-orange-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-orange-500/20 bg-orange-500/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-orange-600">Pending Grading</CardTitle>
                     <MessageSquare className="h-5 w-5 text-orange-600 group-hover:scale-110 transition-transform" />
@@ -177,7 +177,7 @@ export default function TeacherDashboardPage() {
                     <p className="text-xs text-muted-foreground font-medium mt-1">Awaiting review</p>
                 </CardContent>
             </Card>
-            <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
+            <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group bg-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Instructor Rating</CardTitle>
                     <BarChart className="h-5 w-5 text-accent-foreground group-hover:scale-110 transition-transform" />
@@ -189,7 +189,7 @@ export default function TeacherDashboardPage() {
             </Card>
         </div>
 
-        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card">
             <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
                     <Building className="h-6 w-6 text-primary"/>
@@ -202,10 +202,10 @@ export default function TeacherDashboardPage() {
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Batch Name</TableHead>
-                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Course</TableHead>
-                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Branch</TableHead>
-                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Schedule</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">Batch Name</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">Course</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">Branch</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">Schedule</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="divide-y divide-primary/5">
@@ -219,14 +219,14 @@ export default function TeacherDashboardPage() {
                                     <TableCell className="px-8 py-6">
                                         <div className="flex flex-wrap gap-2">
                                             {batch.schedule.map(s => (
-                                                <Badge key={s.day} variant="outline" className="font-bold border-primary/20 text-[10px]">{s.day} @ {s.time}</Badge>
+                                                <Badge key={s.day} variant="outline" className="font-bold border-primary/20 text-[10px] uppercase tracking-tighter">{s.day} @ {s.time}</Badge>
                                             ))}
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium px-8">
+                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium px-8 italic">
                                         No assigned batches found.
                                     </TableCell>
                                 </TableRow>

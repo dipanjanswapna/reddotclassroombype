@@ -76,7 +76,7 @@ export default function TeacherLayout({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
           {children}
       </main>

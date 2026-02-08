@@ -89,7 +89,7 @@ export default function DashboardPage() {
   
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background">
         <LoadingSpinner className="w-12 h-12" />
       </div>
     );
@@ -145,7 +145,7 @@ export default function DashboardPage() {
             </h2>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="glassmorphism-card flex flex-col border-primary/10 rounded-[2.5rem] shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-500">
+                    <Card key={course.id} className="glassmorphism-card flex flex-col border-primary/10 rounded-[2.5rem] shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-card">
                         <CardHeader className="p-8">
                             <CardTitle className="text-xl font-black uppercase leading-tight group-hover:text-primary transition-colors">{course.title}</CardTitle>
                             <p className="text-sm text-muted-foreground font-medium pt-2">Resume where you left off</p>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                             </div>
                         </CardContent>
                         <div className="p-8 pt-0 mt-auto">
-                          <Button asChild className="w-full font-black uppercase tracking-widest text-xs h-12 rounded-2xl shadow-xl shadow-primary/10 active:scale-95 transition-all">
+                          <Button asChild className="w-full font-black uppercase tracking-widest text-xs h-12 rounded-2xl shadow-xl shadow-primary/10 active:scale-95 transition-all bg-primary hover:bg-primary/90 text-white border-none">
                             <Link href={`/student/my-courses/${course.id}`}>Enter Classroom</Link>
                           </Button>
                         </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+            <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card">
               <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight text-lg">Upcoming Tasks</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest">
@@ -201,7 +201,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+            <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden bg-card">
               <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight text-lg">Milestones</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest">
