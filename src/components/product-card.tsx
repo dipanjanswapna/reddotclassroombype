@@ -46,7 +46,7 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
   return (
     <div className="h-full w-full">
       <Card className={cn(
-          "overflow-hidden group flex flex-col h-full transition-all duration-500 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl",
+          "overflow-hidden group flex flex-col h-full transition-all duration-500 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-2xl",
           className
       )}>
           <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
@@ -59,6 +59,7 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
                   src={product.imageUrl}
                   alt={product.name}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className={cn(
                     "object-cover transition-all duration-700 group-hover:scale-110",
                     isImageLoading ? "scale-105 blur-lg grayscale opacity-50" : "scale-100 blur-0 grayscale-0 opacity-100"
@@ -69,8 +70,8 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
               </div>
           </CardHeader>
           <CardContent className="p-4 flex flex-col flex-grow">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{product.category}</p>
-              <h3 className="font-bold truncate group-hover:text-primary transition-colors flex-grow">{product.name}</h3>
+              <p className="text-xs font-black text-primary/60 uppercase tracking-[0.2em] mb-1">{product.category}</p>
+              <h3 className="font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-2 flex-grow">{product.name}</h3>
               {provider && (
                   <div className="flex items-center gap-2 mt-2">
                       <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
@@ -80,13 +81,13 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
               <div className="flex items-center justify-between gap-2 mt-4">
               <div className="flex flex-col">
                   {product.oldPrice && (
-                  <p className="text-sm text-muted-foreground line-through">৳{product.oldPrice}</p>
+                  <p className="text-xs text-muted-foreground line-through">৳{product.oldPrice}</p>
                   )}
-                  <p className="text-lg font-bold text-primary">৳{product.price}</p>
+                  <p className="text-lg font-black text-primary">৳{product.price}</p>
               </div>
-              <Button size="sm" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`} className="shadow-md active:shadow-inner transition-all">
+              <Button size="sm" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`} className="shadow-md active:shadow-inner transition-all h-10 px-4 rounded-xl">
                   <ShoppingCart className="h-4 w-4"/>
-                  <span className="ml-2 hidden sm:inline">Add to Cart</span>
+                  <span className="ml-2 hidden sm:inline font-bold">Add</span>
               </Button>
               </div>
           </CardContent>
