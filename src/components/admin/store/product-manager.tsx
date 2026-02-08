@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -31,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, Package } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -108,55 +107,54 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
         : [];
 
     return (
-        <>
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Store Products</h1>
-                    <p className="mt-1 text-lg text-muted-foreground">Manage all products for the RDC Store.</p>
-                </div>
-                <Button onClick={() => handleOpenDialog(null)}>
-                    <PlusCircle className="mr-2"/> Create Product
-                </Button>
-            </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>All Products</CardTitle>
-                    <CardDescription>A list of all products available in the store.</CardDescription>
+        <div className="space-y-8">
+            <Card className="rounded-xl border-primary/10 shadow-xl overflow-hidden bg-card">
+                <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-primary/5 bg-muted/30">
+                    <div className="space-y-1">
+                        <CardTitle className="font-black uppercase tracking-tight text-lg">Product Inventory</CardTitle>
+                        <CardDescription className="font-medium">Manage all physical products available in the RDC Store.</CardDescription>
+                    </div>
+                    <Button onClick={() => handleOpenDialog(null)} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 px-8 shadow-2xl active:scale-95 transition-all">
+                        <PlusCircle className="mr-2 h-4 w-4"/> Instate Product
+                    </Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0 overflow-x-auto">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead>Product</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Stock</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Category</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-primary">Price</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Stock</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest">Action</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className="divide-y divide-primary/5">
                             {products.map(product => (
-                                <TableRow key={product.id}>
-                                    <TableCell className="font-medium flex items-center gap-3">
-                                        <Image src={product.imageUrl} alt={product.name} width={40} height={40} className="rounded-md object-cover"/>
+                                <TableRow key={product.id} className="hover:bg-primary/5 transition-colors">
+                                    <TableCell className="px-8 py-6 font-bold flex items-center gap-4">
+                                        <div className="relative h-12 w-12 rounded-lg overflow-hidden border-2 border-primary/5 shadow-inner">
+                                            <Image src={product.imageUrl} alt={product.name} fill className="object-cover"/>
+                                        </div>
                                         {product.name}
                                     </TableCell>
-                                    <TableCell><Badge variant="outline">{product.category}</Badge></TableCell>
-                                    <TableCell>৳{product.price}</TableCell>
-                                    <TableCell>{product.stock ?? 'N/A'}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={product.isPublished ? "accent" : "secondary"}>
-                                            {product.isPublished ? 'Published' : 'Draft'}
+                                    <TableCell className="px-8 py-6">
+                                        <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-widest rounded-lg">{product.category}</Badge>
+                                    </TableCell>
+                                    <TableCell className="px-8 py-6 font-black text-primary text-base">৳{product.price}</TableCell>
+                                    <TableCell className="px-8 py-6 font-bold">{product.stock ?? 'N/A'}</TableCell>
+                                    <TableCell className="px-8 py-6">
+                                        <Badge variant={product.isPublished ? "accent" : "secondary"} className="font-black text-[9px] uppercase tracking-widest rounded-lg">
+                                            {product.isPublished ? 'Live' : 'Draft'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="px-8 py-6 text-right">
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuItem onClick={() => handleOpenDialog(product)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive" onClick={() => setProductToDelete(product)}><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
+                                            <DropdownMenuContent className="rounded-xl border-primary/20 shadow-2xl">
+                                                <DropdownMenuItem onClick={() => handleOpenDialog(product)} className="font-bold text-xs uppercase tracking-tight"><Edit className="mr-2 h-4 w-4" /> Edit Details</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive font-bold text-xs uppercase tracking-tight" onClick={() => setProductToDelete(product)}><Trash2 className="mr-2 h-4 w-4" /> Delete Permanently</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
@@ -166,97 +164,104 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                     </Table>
                 </CardContent>
             </Card>
-        </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>{editingProduct?.id ? 'Edit Product' : 'Create New Product'}</DialogTitle>
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+                    <DialogHeader className="p-8 pb-4 border-b">
+                        <DialogTitle>{editingProduct?.id ? 'Refine Product Artifact' : 'Instate New Product'}</DialogTitle>
                     </DialogHeader>
                     {editingProduct && (
-                        <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Product Name</Label>
-                                <Input id="name" value={editingProduct.name || ''} onChange={e => updateField('name', e.target.value)} />
+                        <div className="flex-grow overflow-y-auto p-8 space-y-8 scrollbar-hide">
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Universal Label</Label>
+                                <Input value={editingProduct.name || ''} onChange={e => updateField('name', e.target.value)} className="h-14 rounded-xl border-2 font-bold shadow-sm" placeholder="e.g., RDC MASTER PHYSICS NOTEBOOK" />
                             </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea id="description" value={editingProduct.description || ''} onChange={e => updateField('description', e.target.value)} />
+                             <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Detailed Manifest</Label>
+                                <Textarea value={editingProduct.description || ''} onChange={e => updateField('description', e.target.value)} className="rounded-xl border-2 font-medium" rows={4} placeholder="Summarize the product values..." />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Category</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Primary Category</Label>
                                     <Select value={editingProduct.category} onValueChange={(v) => updateField('category', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Select a category..."/></SelectTrigger>
-                                        <SelectContent>{categories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
+                                        <SelectTrigger className="h-12 rounded-xl border-2 font-bold"><SelectValue placeholder="Select Sector..."/></SelectTrigger>
+                                        <SelectContent className="rounded-xl">{categories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
                                     </Select>
                                 </div>
-                                 <div className="space-y-2">
-                                    <Label>Sub-category</Label>
+                                 <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Sub-category Specialization</Label>
                                     <Select 
                                         value={editingProduct.subCategory} 
                                         onValueChange={(v) => updateField('subCategory', v)}
                                         disabled={availableSubCategories.length === 0}
                                     >
-                                        <SelectTrigger><SelectValue placeholder="Select a sub-category..."/></SelectTrigger>
-                                        <SelectContent>
+                                        <SelectTrigger className="h-12 rounded-xl border-2 font-bold"><SelectValue placeholder="Select Tier..."/></SelectTrigger>
+                                        <SelectContent className="rounded-xl">
                                             {availableSubCategories.map(sub => <SelectItem key={sub.name} value={sub.name}>{sub.name}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Price (BDT)</Label>
-                                    <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Listing Price (BDT)</Label>
+                                    <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} className="h-12 rounded-xl border-2 font-black text-lg text-primary" />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Old Price (Optional)</Label>
-                                    <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} />
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Retail Ref. (Optional)</Label>
+                                    <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} className="h-12 rounded-xl border-2 font-black text-lg opacity-60" />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Stock</Label>
-                                    <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} />
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Stock Readiness</Label>
+                                    <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} className="h-12 rounded-xl border-2 font-black text-lg" />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Main Image URL</Label>
-                                <Input value={editingProduct.imageUrl || ''} onChange={e => updateField('imageUrl', e.target.value)} />
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Primary Identification URL</Label>
+                                <Input value={editingProduct.imageUrl || ''} onChange={e => updateField('imageUrl', e.target.value)} className="h-12 rounded-xl border-2 font-medium" placeholder="https://placehold.co/..." />
                             </div>
-                            <div className="space-y-2">
-                                <Label>Seller (Optional)</Label>
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Authorized Provider</Label>
                                 <Select value={editingProduct.sellerId} onValueChange={(v) => updateField('sellerId', v === 'admin' ? undefined : v)}>
-                                    <SelectTrigger><SelectValue placeholder="Select a seller..."/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="admin">Admin (RDC)</SelectItem>
+                                    <SelectTrigger className="h-12 rounded-xl border-2 font-bold"><SelectValue placeholder="Select Origin..."/></SelectTrigger>
+                                    <SelectContent className="rounded-xl">
+                                        <SelectItem value="admin">Admin Authority (RDC)</SelectItem>
                                         {sellers.map(s => <SelectItem key={s.id} value={s.id!}>{s.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
-                             <div className="flex items-center space-x-2">
+                             <div className="flex items-center justify-between rounded-xl border-2 border-primary/10 p-6 bg-muted/10 shadow-inner">
+                                <div className="space-y-1">
+                                    <Label htmlFor="isPublished" className="font-black uppercase text-sm tracking-tight leading-none">Public Deployment</Label>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Authorize product visibility in RDC Store</p>
+                                </div>
                                 <Switch id="isPublished" checked={editingProduct.isPublished} onCheckedChange={(checked) => updateField('isPublished', checked)} />
-                                <Label htmlFor="isPublished">Publish this product</Label>
                             </div>
                         </div>
                     )}
-                    <DialogFooter>
-                        <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                        <Button onClick={handleSave} disabled={isSaving}>
-                            {isSaving && <Loader2 className="animate-spin mr-2"/>}
-                            Save Product
+                    <DialogFooter className="p-8 border-t bg-muted/30">
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="rounded-xl h-12 px-8 font-black uppercase text-[10px] tracking-widest border-2">Abort</Button>
+                        <Button onClick={handleSave} disabled={isSaving} className="rounded-xl h-12 px-14 font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white border-none">
+                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                            Commit Product
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete the product: <strong>{productToDelete?.name}</strong>.</AlertDialogDescription>
+                <AlertDialogContent className="rounded-2xl border-4 border-destructive shadow-2xl">
+                    <AlertDialogHeader className="text-center">
+                        <div className="mx-auto h-16 w-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4"><Trash2 className="h-8 w-8 text-destructive"/></div>
+                        <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Destroy Product Artifact?</AlertDialogTitle>
+                        <AlertDialogDescription className="font-bold text-muted-foreground mt-2">This action is irreversible. "{productToDelete?.name}" will be erased from the central database.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction></AlertDialogFooter>
+                    <AlertDialogFooter className="sm:justify-center gap-4 mt-6">
+                        <AlertDialogCancel className="rounded-xl h-12 px-8 font-black uppercase text-[10px] border-2">Keep Artifact</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="rounded-xl h-12 px-10 font-black uppercase text-[10px] bg-destructive hover:bg-destructive/90 shadow-2xl shadow-destructive/20 border-none">Erase Permanently</AlertDialogAction>
+                    </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </>
+        </div>
     );
 }

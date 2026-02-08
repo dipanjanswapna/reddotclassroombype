@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -38,6 +36,7 @@ const roleIcons: { [key in User['role']]: React.ReactNode } = {
   Affiliate: <UserIcon className="h-4 w-4" />,
   Moderator: <UserIcon className="h-4 w-4" />,
   Seller: <UserIcon className="h-4 w-4" />,
+  'Doubt Solver': <UserIcon className="h-4 w-4" />,
 };
 
 export default function ManageUserPage() {
@@ -256,8 +255,6 @@ export default function ManageUserPage() {
         return <p className="p-8 text-center">User not found.</p>;
     }
     
-    const Icon = roleIcons[user.role] || UserIcon;
-
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8">
             <Card>
@@ -469,10 +466,10 @@ export default function ManageUserPage() {
              <Dialog open={isEnrollDialogOpen} onOpenChange={setIsEnrollDialogOpen}>
                 <DialogContent>
                     <DialogHeader><DialogTitle>Enroll {user.name} in a Course</DialogTitle></DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
                          <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" role="combobox" className="w-full justify-between">
+                                <Button variant="outline" role="combobox" className="w-full justify-between h-12 rounded-xl">
                                     {selectedCourseToEnroll ? selectedCourseToEnroll.title : "Select a course..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
@@ -545,7 +542,7 @@ export default function ManageUserPage() {
             {/* View Invoice Dialog */}
             <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
                 <DialogContent className="max-w-4xl p-0">
-                   <div className="max-h-[80vh] overflow-y-auto">
+                   <div className="max-h-[85vh] overflow-y-auto">
                         {loadingInvoice ? (
                             <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
                         ) : selectedInvoice ? (

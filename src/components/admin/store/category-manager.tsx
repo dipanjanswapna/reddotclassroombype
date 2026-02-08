@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -31,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, ListTree, Tags } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -149,46 +148,44 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
     };
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Store Categories</h1>
-                    <p className="mt-1 text-lg text-muted-foreground">Manage product categories and sub-categories for the RDC Store.</p>
-                </div>
-                <Button onClick={() => handleOpenDialog(null)}>
-                    <PlusCircle className="mr-2"/> Create Category
-                </Button>
-            </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>All Categories</CardTitle>
+        <div className="space-y-8">
+            <Card className="rounded-xl border-primary/10 shadow-xl overflow-hidden bg-card">
+                <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-primary/5 bg-muted/30">
+                    <div className="space-y-1">
+                        <CardTitle className="font-black uppercase tracking-tight text-lg">Knowledge Taxonomy</CardTitle>
+                        <CardDescription className="font-medium">Manage product categories and sub-categories for store navigation.</CardDescription>
+                    </div>
+                    <Button onClick={() => handleOpenDialog(null)} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 px-8 shadow-2xl active:scale-95 transition-all">
+                        <PlusCircle className="mr-2 h-4 w-4"/> Instate Category
+                    </Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0 overflow-x-auto">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Sub-categories</TableHead>
-                                <TableHead>Order</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Hierarchy Depth</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Order</TableHead>
+                                <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest">Action</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className="divide-y divide-primary/5">
                             {categories.sort((a,b) => (a.order || 99) - (b.order || 99)).map(category => (
-                                <TableRow key={category.id}>
-                                    <TableCell className="font-medium">{category.name}</TableCell>
-                                    <TableCell>
+                                <TableRow key={category.id} className="hover:bg-primary/5 transition-colors">
+                                    <TableCell className="px-8 py-6 font-bold">{category.name}</TableCell>
+                                    <TableCell className="px-8 py-6">
                                         <div className="flex flex-wrap gap-1 max-w-md">
-                                            {category.subCategoryGroups?.flatMap(g => g.subCategories).map(sc => <span key={sc.name} className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">{sc.name}</span>)}
+                                            {category.subCategoryGroups?.flatMap(g => g.subCategories).map(sc => <Badge key={sc.name} variant="outline" className="font-bold text-[9px] uppercase tracking-tighter">{sc.name}</Badge>)}
+                                            {(!category.subCategoryGroups || category.subCategoryGroups.length === 0) && <span className="text-xs text-muted-foreground italic">Root Only</span>}
                                         </div>
                                     </TableCell>
-                                    <TableCell>{category.order ?? 'N/A'}</TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="px-8 py-6 font-black text-primary">{category.order ?? 'N/A'}</TableCell>
+                                    <TableCell className="px-8 py-6 text-right">
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuItem onClick={() => handleOpenDialog(category)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive" onClick={() => setCategoryToDelete(category)}><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
+                                            <DropdownMenuContent className="rounded-xl border-primary/20 shadow-2xl">
+                                                <DropdownMenuItem onClick={() => handleOpenDialog(category)} className="font-bold text-xs uppercase tracking-tight"><Edit className="mr-2 h-4 w-4" /> Edit Taxonomy</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive font-bold text-xs uppercase tracking-tight" onClick={() => setCategoryToDelete(category)}><Trash2 className="mr-2 h-4 w-4" /> Delete Permanently</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
@@ -200,81 +197,85 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
             </Card>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>{editingCategory?.id ? 'Edit Category' : 'Create New Category'}</DialogTitle>
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+                    <DialogHeader className="p-8 pb-4 border-b">
+                        <DialogTitle>{editingCategory?.id ? 'Refine Taxonomy Node' : 'Instate New Taxonomy Node'}</DialogTitle>
                     </DialogHeader>
                     {editingCategory && (
-                        <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Category Name</Label>
-                                <Input id="name" value={editingCategory.name || ''} onChange={e => updateField('name', e.target.value)} />
+                        <div className="flex-grow overflow-y-auto p-8 space-y-8 scrollbar-hide">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Category Label</Label>
+                                    <Input value={editingCategory.name || ''} onChange={e => updateField('name', e.target.value)} className="h-12 rounded-xl border-2 font-bold shadow-sm" placeholder="e.g., ADMISSION BOOKS" />
+                                </div>
+                                <div className="space-y-3">
+                                    <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">System Slug</Label>
+                                    <Input value={editingCategory.slug || ''} onChange={e => updateField('slug', e.target.value)} placeholder="auto-generated" className="h-12 rounded-xl border-2 font-mono text-sm opacity-70" />
+                                </div>
                             </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="slug">URL Slug</Label>
-                                <Input id="slug" value={editingCategory.slug || ''} onChange={e => updateField('slug', e.target.value)} placeholder="auto-generated from name if left blank" />
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Priority Weights (Display Order)</Label>
+                                <Input type="number" value={editingCategory.order || ''} onChange={e => updateField('order', Number(e.target.value))} className="h-12 rounded-xl border-2 font-black text-lg text-primary w-full md:w-32" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="order">Display Order</Label>
-                                <Input id="order" type="number" value={editingCategory.order || ''} onChange={e => updateField('order', Number(e.target.value))} placeholder="e.g., 1"/>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="menuImageUrl">Menu Image URL</Label>
-                                <Input id="menuImageUrl" value={editingCategory.menuImageUrl || ''} onChange={e => updateField('menuImageUrl', e.target.value)} placeholder="https://example.com/image.png"/>
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="menuImageAiHint">Menu Image AI Hint</Label>
-                                <Input id="menuImageAiHint" value={editingCategory.menuImageAiHint || ''} onChange={e => updateField('menuImageAiHint', e.target.value)} placeholder="e.g., product book stack"/>
-                            </div>
-                            <div className="space-y-4 pt-4 border-t">
-                                <Label className="font-semibold">Sub-category Groups</Label>
-                                <div className="space-y-4">
+                            
+                            <div className="space-y-4 pt-6 border-t-2 border-primary/5">
+                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary flex items-center gap-2">
+                                    <ListTree className="h-4 w-4"/> Hierarchical Sub-sectors
+                                </Label>
+                                <div className="space-y-6">
                                 {(editingCategory.subCategoryGroups || []).map((group, groupIndex) => (
-                                    <div key={groupIndex} className="p-3 border rounded-md bg-muted/50 space-y-3">
-                                        <div className="flex items-center justify-between">
+                                    <div key={groupIndex} className="p-6 border-2 rounded-xl bg-muted/20 space-y-4 shadow-sm relative group/item">
+                                        <div className="flex items-center justify-between gap-4">
                                             <Input 
-                                                className="font-semibold text-base flex-grow" 
+                                                className="h-11 rounded-lg border-2 font-black uppercase text-xs tracking-wider flex-grow bg-background" 
                                                 value={group.title} 
                                                 onChange={e => updateGroupTitle(groupIndex, e.target.value)}
+                                                placeholder="GROUP TITLE (e.g., MEDICAL SECTOR)"
                                             />
-                                            <Button variant="ghost" size="icon" onClick={() => removeSubCategoryGroup(groupIndex)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => removeSubCategoryGroup(groupIndex)} className="h-11 w-11 rounded-lg text-destructive hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
                                         </div>
-                                        <div className="space-y-2 pl-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-4 border-l-4 border-primary/10">
                                         {(group.subCategories || []).map((sc, subIndex) => (
                                             <div key={subIndex} className="flex items-center gap-2">
                                                 <Input 
+                                                    className="h-10 rounded-lg border-2 font-bold text-xs"
                                                     value={sc.name}
                                                     onChange={(e) => updateSubCategory(groupIndex, subIndex, e.target.value)}
-                                                    placeholder={`Sub-category ${subIndex + 1}`}
+                                                    placeholder={`Artifact Sub-type ${subIndex + 1}`}
                                                 />
-                                                <Button variant="ghost" size="icon" onClick={() => removeSubCategory(groupIndex, subIndex)}><X className="h-4 w-4 text-destructive"/></Button>
+                                                <Button variant="ghost" size="icon" onClick={() => removeSubCategory(groupIndex, subIndex)} className="h-8 w-8 text-destructive rounded-lg hover:bg-destructive/5"><X className="h-4 w-4"/></Button>
                                             </div>
                                         ))}
-                                        <Button variant="outline" size="sm" onClick={() => addSubCategory(groupIndex)}>Add Sub-category</Button>
+                                        <Button variant="outline" size="sm" onClick={() => addSubCategory(groupIndex)} className="h-10 rounded-lg border-dashed border-2 font-black uppercase text-[9px] tracking-widest hover:bg-primary/5 shadow-sm"><PlusCircle className="mr-2 h-3.5 w-3.5"/> Instate Sub-type</Button>
                                         </div>
                                     </div>
                                 ))}
                                 </div>
-                                <Button variant="outline" size="sm" onClick={addSubCategoryGroup}>Add Sub-category Group</Button>
+                                <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-primary/5 transition-all" onClick={addSubCategoryGroup}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Register Tier Group</Button>
                             </div>
                         </div>
                     )}
-                    <DialogFooter>
-                        <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                        <Button onClick={handleSave} disabled={isSaving}>
-                            {isSaving && <Loader2 className="animate-spin mr-2"/>}
-                            Save Category
+                    <DialogFooter className="p-8 border-t bg-muted/30">
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="rounded-xl h-12 px-8 font-black uppercase text-[10px] tracking-widest border-2">Abort</Button>
+                        <Button onClick={handleSave} disabled={isSaving} className="rounded-xl h-12 px-14 font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white border-none">
+                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                            Commit Taxonomy
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete the category <strong>{categoryToDelete?.name}</strong> and all its sub-categories.</AlertDialogDescription>
+                <AlertDialogContent className="rounded-2xl border-4 border-destructive shadow-2xl">
+                    <AlertDialogHeader className="text-center">
+                        <div className="mx-auto h-16 w-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4"><Trash2 className="h-8 w-8 text-destructive"/></div>
+                        <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Destroy Taxonomy Node?</AlertDialogTitle>
+                        <AlertDialogDescription className="font-bold text-muted-foreground mt-2">Erasing "{categoryToDelete?.name}" will disconnect all associated artifacts. This action is terminal.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction></AlertDialogFooter>
+                    <AlertDialogFooter className="sm:justify-center gap-4 mt-6">
+                        <AlertDialogCancel className="rounded-xl h-12 px-8 font-black uppercase text-[10px] border-2">Retain Node</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="rounded-xl h-12 px-10 font-black uppercase text-[10px] bg-destructive hover:bg-destructive/90 shadow-2xl shadow-destructive/20 border-none">Erase Permanently</AlertDialogAction>
+                    </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
