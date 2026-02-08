@@ -13,6 +13,7 @@ import {
 import { Button } from './ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ClassNames from 'embla-carousel-class-names';
+import { cn } from '@/lib/utils';
 
 type HeroBanner = {
   id: number;
@@ -54,7 +55,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
   }, [api]);
 
   return (
-    <div className="hero-carousel-container group relative">
+    <div className="hero-carousel-container group relative w-full overflow-hidden">
       <Carousel
         setApi={setApi}
         opts={{ align: 'center', loop: true }}
@@ -62,45 +63,46 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         className="w-full hero-carousel"
       >
         <div className="relative">
-            <CarouselContent className="-ml-8">
+            <CarouselContent className="-ml-4 md:-ml-8">
             {banners.map((banner, index) => (
                 <CarouselItem
                 key={banner.id}
-                className="pl-8 basis-full md:basis-[50%] lg:basis-[40%]"
+                className="pl-4 md:pl-8 basis-full md:basis-[60%] lg:basis-[45%]"
                 >
                 <Link
                     href={banner.href}
-                    className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+                    className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-lg transition-transform duration-500 hover:scale-[1.02]"
                 >
-                    <div className="carousel-image-wrapper relative group/image">
+                    <div className="carousel-image-wrapper relative group/image aspect-[16/9] md:aspect-[21/9]">
                     <Image
                         src={banner.imageUrl}
                         alt={banner.alt}
-                        width={800}
-                        height={450}
+                        fill
                         priority={index === 0}
-                        className="rounded-xl object-cover"
+                        className="object-cover"
                         data-ai-hint={banner.dataAiHint}
                     />
+                    {/* Clean Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
                     
                     {/* Centered Scroll Buttons nested inside image wrapper for perfect alignment */}
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollPrev(); }}
                         variant="outline"
                         size="icon"
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
                         aria-label="Previous slide"
                     >
-                        <ChevronLeft className="w-8 h-8 text-foreground" />
+                        <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
                     </Button>
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollNext(); }}
                         variant="outline"
                         size="icon"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/30 hover:bg-background/90 rounded-full h-12 w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
                         aria-label="Next slide"
                     >
-                        <ChevronRight className="w-8 h-8 text-foreground" />
+                        <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
                     </Button>
                     </div>
                 </Link>
@@ -110,12 +112,15 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
       
-      <div className="hero-carousel-dots mt-4">
+      <div className="hero-carousel-dots mt-6 flex justify-center gap-2">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
-            className={`hero-carousel-dot ${index === current ? 'active' : ''}`}
+            className={cn(
+                "h-1.5 rounded-full transition-all duration-500",
+                index === current ? 'w-8 bg-primary shadow-sm' : 'w-2 bg-muted hover:bg-muted-foreground/50'
+            )}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

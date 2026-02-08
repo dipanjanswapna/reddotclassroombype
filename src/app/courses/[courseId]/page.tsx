@@ -67,24 +67,24 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 const CycleCard = ({ cycle, courseId, isPrebookingActive }: { cycle: CourseCycle, courseId: string, isPrebookingActive: boolean }) => (
     <Card className="bg-card border-primary/10 hover:border-primary/40 transition-all shadow-md group rounded-3xl overflow-hidden flex flex-col h-full">
         <CardHeader className="p-6">
-            <div className="flex justify-between items-start gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div className="space-y-1">
-                    <Badge variant="secondary" className="uppercase tracking-widest text-[10px] px-3 rounded-full font-bold">Cycle {cycle.order}</Badge>
+                    <Badge variant="secondary" className="uppercase tracking-widest text-[10px] px-3 rounded-full font-black">Cycle {cycle.order}</Badge>
                     <CardTitle className="text-xl font-black group-hover:text-primary transition-colors leading-tight">{cycle.title}</CardTitle>
                 </div>
-                <div className="text-right shrink-0">
+                <div className="text-left sm:text-right shrink-0">
                     <p className="text-2xl font-black text-primary leading-none">{cycle.price}</p>
                 </div>
             </div>
         </CardHeader>
         <CardContent className="px-6 flex-grow">
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{cycle.description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
         </CardContent>
         <div className="p-6 pt-0 mt-auto">
              {isPrebookingActive ? (
-                <Button className="w-full font-bold opacity-70 rounded-xl" disabled>Pre-booking Ongoing</Button>
+                <Button className="w-full font-black uppercase text-[10px] tracking-widest opacity-70 rounded-xl h-12" disabled>Pre-booking Ongoing</Button>
              ) : (
-                <Button asChild className="w-full font-bold bg-green-600 hover:bg-green-700 shadow-lg active:scale-95 transition-transform rounded-xl h-12">
+                <Button asChild className="w-full font-black uppercase text-[10px] tracking-widest bg-green-600 hover:bg-green-700 shadow-lg active:scale-95 transition-transform rounded-xl h-12">
                     <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll in This Cycle</Link>
                 </Button>
              )}
@@ -130,10 +130,10 @@ export default async function CourseDetailPage({
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   return (
-    <div className="bg-background min-h-screen overflow-x-hidden">
+    <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
       {/* Course Hero Section */}
       <section className="bg-secondary/20 dark:bg-muted/10 pt-16 pb-10 border-b border-primary/10">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-full">
           <div className="max-w-5xl mx-auto lg:mx-0 space-y-6">
               <div className="flex flex-wrap items-center gap-3">
                 {isPrebookingActive && (
@@ -141,8 +141,8 @@ export default async function CourseDetailPage({
                         Pre-booking Until {format(new Date(course.prebookingEndDate!), 'MMM d')}
                     </Badge>
                 )}
-                {course.type && <Badge variant="outline" className="px-4 py-1.5 rounded-full font-bold border-primary/20">{course.type}</Badge>}
-                <Badge variant="secondary" className="px-4 py-1.5 rounded-full font-bold">{course.category}</Badge>
+                {course.type && <Badge variant="outline" className="px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest border-primary/20">{course.type}</Badge>}
+                <Badge variant="secondary" className="px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">{course.category}</Badge>
               </div>
               
               {organization && (
@@ -154,7 +154,7 @@ export default async function CourseDetailPage({
                 </div>
               )}
               
-              <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground">
+              <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground uppercase">
                 {course.title}
               </h1>
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed font-medium">
@@ -201,9 +201,9 @@ export default async function CourseDetailPage({
 
       <CourseTabs course={course} />
 
-      <main className="container mx-auto px-4 py-10 md:py-14">
+      <main className="container mx-auto px-4 py-10 md:py-14 max-w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          <div className="lg:col-span-8 space-y-12 md:space-y-16">
+          <div className="lg:col-span-8 space-y-12 md:space-y-16 overflow-hidden">
             
             {/* Video Intro */}
             <div className="relative aspect-video rounded-[2rem] md:rounded-[2.5rem] overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
@@ -216,12 +216,12 @@ export default async function CourseDetailPage({
                   className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   data-ai-hint={course.dataAiHint}
                 />
-                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-6 transition-all group-hover:bg-black/20">
+                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-6 transition-all group-hover:bg-black/20 backdrop-blur-[1px]">
                   <div className="relative">
                       <div className="absolute inset-0 bg-primary rounded-full blur-2xl opacity-50 animate-pulse"></div>
                       <PlayCircle className="relative w-20 h-20 md:w-28 md:h-24 text-white group-hover:scale-110 transition-all cursor-pointer drop-shadow-2xl" />
                   </div>
-                  <span className="text-white font-black text-xs md:text-sm uppercase tracking-widest bg-black/60 px-6 py-2 md:px-8 md:py-3 rounded-2xl backdrop-blur-xl border border-white/20 shadow-2xl">Watch Sample Lesson</span>
+                  <span className="text-white font-black text-[10px] md:text-xs uppercase tracking-[0.25em] bg-black/60 px-6 py-2 md:px-8 md:py-3 rounded-2xl backdrop-blur-xl border border-white/20 shadow-2xl">Watch Sample Lesson</span>
                 </div>
               </Link>
             </div>
@@ -229,8 +229,8 @@ export default async function CourseDetailPage({
             {/* Learning Outcomes */}
             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         What you'll master
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-muted/20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-primary/5">
@@ -249,14 +249,14 @@ export default async function CourseDetailPage({
             {/* Instructors */}
             {course.instructors && course.instructors.length > 0 && (
               <section id="instructors" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                     Meet Your Guides
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                   {course.instructors?.map((instructor) => (
-                    <Link key={instructor.slug} href={`/teachers/${instructor.slug}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] md:rounded-[2rem] border bg-card/50 hover:border-primary/40 transition-all group shadow-sm hover:shadow-lg">
-                      <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 md:border-4 border-primary/5 ring-4 ring-primary/5">
+                    <Link key={instructor.slug} href={`/teachers/${instructor.slug}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] md:rounded-[2rem] border border-primary/5 bg-card/50 hover:border-primary/40 transition-all group shadow-sm hover:shadow-lg">
+                      <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 md:border-4 border-primary/5 ring-4 ring-primary/5 shadow-inner">
                         <AvatarImage src={instructor.avatarUrl} alt={instructor.name} />
                         <AvatarFallback className="font-black">{instructor.name.charAt(0)}</AvatarFallback>
                       </Avatar>
@@ -273,8 +273,8 @@ export default async function CourseDetailPage({
             {/* Cycles */}
              {courseCycles && courseCycles.length > 0 && (
                 <section id="cycles" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         Flexible Modules
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -288,8 +288,8 @@ export default async function CourseDetailPage({
             {/* Class Routine */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         Class Routine
                     </h2>
                     <div className="hidden md:block overflow-hidden rounded-[2rem] border border-primary/10 shadow-lg">
@@ -316,8 +316,8 @@ export default async function CourseDetailPage({
                         {course.classRoutine.map((item, index) => (
                             <div key={`routine-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center">
                                 <div className="space-y-1">
-                                    <p className="font-black text-xs uppercase text-primary tracking-widest">{item.day}</p>
-                                    <p className="font-bold text-sm">{item.subject}</p>
+                                    <p className="font-black text-[10px] uppercase text-primary tracking-[0.2em]">{item.day}</p>
+                                    <p className="font-bold text-sm leading-tight">{item.subject}</p>
                                 </div>
                                 <div className="text-right">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -334,8 +334,8 @@ export default async function CourseDetailPage({
             {/* Exam Schedule */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         Exam Schedule
                     </h2>
                     <div className="hidden md:block overflow-hidden rounded-[2rem] border border-primary/10 shadow-lg">
@@ -386,11 +386,11 @@ export default async function CourseDetailPage({
             {course.syllabus && course.syllabus.length > 0 && (
               <section id="syllabus" className="scroll-mt-32 py-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tight flex items-center gap-4">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                    <h2 className="font-headline text-2xl md:text-4xl font-black tracking-tight flex items-center gap-4 uppercase">
+                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         Curriculum
                     </h2>
-                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] py-2 px-4 rounded-full border-primary/20 w-fit">
+                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] py-2 px-4 rounded-full border-primary/20 w-fit shadow-inner">
                         {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} High-Quality Lessons
                     </Badge>
                 </div>
@@ -431,8 +431,8 @@ export default async function CourseDetailPage({
             {/* Reviews */}
             {course.reviewsData && course.reviewsData.length > 0 && (
               <section id="reviews" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                     Success Stories
                 </h2>
                 <div className="space-y-6 md:space-y-8 bg-card border border-primary/10 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
@@ -446,13 +446,13 @@ export default async function CourseDetailPage({
             {/* FAQ */}
             {course.faqs && course.faqs.length > 0 && (
               <section id="faq" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full"></div>
+                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                     Common Queries
                 </h2>
                 <Accordion type="single" collapsible className="w-full space-y-3">
                   {course.faqs.map((faq, index) => (
-                    <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`} className="border rounded-2xl md:rounded-[2rem] bg-card overflow-hidden transition-all hover:border-primary/20">
+                    <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`} className="border border-primary/5 rounded-2xl md:rounded-[2rem] bg-card overflow-hidden transition-all hover:border-primary/20 shadow-sm">
                       <AccordionTrigger className="font-black text-left px-6 py-4 md:px-8 md:py-5 hover:no-underline text-sm md:text-base">
                         {faq.question}
                       </AccordionTrigger>
@@ -468,14 +468,14 @@ export default async function CourseDetailPage({
 
           {/* Enrollment Sidebar */}
           <div className="lg:col-span-4">
-             <Card className="lg:sticky lg:top-32 bg-card/80 backdrop-blur-2xl text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-all hover:shadow-primary/5">
+             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 pb-8 pt-8 md:pb-10 md:pt-10 px-6 md:px-8">
                   {isPrebookingActive ? (
                       <div className="space-y-2">
                           <p className="text-muted-foreground line-through text-[10px] font-black uppercase tracking-widest opacity-60">Admission: {course.price}</p>
                           <div className="flex items-baseline gap-2 flex-wrap">
                             <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.prebookingPrice}</span>
-                            <Badge variant="warning" className="animate-bounce font-black text-[9px] md:text-[10px] uppercase rounded-full">Special Pre-book</Badge>
+                            <Badge variant="warning" className="animate-bounce font-black text-[9px] md:text-[10px] uppercase rounded-full shadow-md">Special Pre-book</Badge>
                           </div>
                       </div>
                   ) : hasDiscount ? (
@@ -484,7 +484,7 @@ export default async function CourseDetailPage({
                               <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.discountPrice}</span>
                               <p className="text-base md:text-lg text-muted-foreground line-through font-bold opacity-50">{course.price}</p>
                           </div>
-                          <Badge variant="accent" className="bg-green-600 font-black text-[9px] md:text-[10px] uppercase rounded-full border-none shadow-lg px-4">Flash Sale</Badge>
+                          <Badge variant="accent" className="bg-green-600 font-black text-[9px] md:text-[10px] uppercase rounded-full border-none shadow-lg px-4 py-1.5">Flash Sale</Badge>
                       </div>
                   ) : (
                       <CardTitle className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.price}</CardTitle>
@@ -501,7 +501,7 @@ export default async function CourseDetailPage({
                     />
                     <div className="grid grid-cols-2 gap-3">
                         <WishlistButton courseId={course.id!} />
-                        <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5" aria-label="Share Course">
+                        <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5 shadow-sm transition-all" aria-label="Share Course">
                             <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
                         </Button>
                     </div>
@@ -518,7 +518,7 @@ export default async function CourseDetailPage({
                             <div className="p-1.5 bg-primary/10 rounded-xl shadow-inner shrink-0">
                                 <CheckCircle className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary" />
                             </div>
-                            <span className="line-clamp-1 break-words">{feature}</span>
+                            <span className="line-clamp-1 break-words leading-snug">{feature}</span>
                           </li>
                         ))}
                       </ul>
@@ -526,12 +526,12 @@ export default async function CourseDetailPage({
                   )}
 
                   <div className="pt-6 border-t border-primary/5 space-y-3">
-                    <Button variant="ghost" className="w-full font-black uppercase text-[9px] md:text-[10px] tracking-widest h-12 md:h-14 rounded-2xl border-2 border-dashed border-primary/10 hover:bg-primary/5 hover:text-primary transition-all group">
+                    <Button variant="ghost" className="w-full font-black uppercase text-[9px] md:text-[10px] tracking-widest h-12 md:h-14 rounded-2xl border-2 border-dashed border-primary/10 hover:bg-primary/5 hover:text-primary transition-all group active:scale-95 shadow-sm">
                         <PlayCircle className="mr-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:scale-110" />
                         Course Intro
                     </Button>
                     {course.whatsappNumber && (
-                        <Button variant="outline" className="w-full h-12 md:h-14 rounded-2xl bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:text-green-800 transition-all font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-sm" asChild>
+                        <Button variant="outline" className="w-full h-12 md:h-14 rounded-2xl bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:text-green-800 transition-all font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-sm active:scale-95" asChild>
                             <Link href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank">
                                 <Phone className="mr-2 h-4 w-4 md:h-5 md:w-5 fill-current"/>
                                 Chat with Advisor
@@ -549,8 +549,8 @@ export default async function CourseDetailPage({
           <section className="pt-16 border-t border-primary/5">
             <div className="text-center mb-12 space-y-3">
                 <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Free Bonus Bundle</h2>
-                <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-lg" />
-                <p className="text-base md:text-lg text-muted-foreground font-medium">Included for free with your enrollment.</p>
+                <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-md" />
+                <p className="text-base md:text-lg text-muted-foreground font-medium pt-2">Included for free with your enrollment.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {includedCourses.map(includedCourse => {
@@ -566,9 +566,9 @@ export default async function CourseDetailPage({
             <div className="flex flex-col sm:flex-row items-center justify-between mb-10 border-b border-primary/10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended</h2>
-                    <p className="text-sm md:text-base text-muted-foreground font-medium">Programs tailored for your academic growth.</p>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Programs tailored for your academic growth.</p>
                 </div>
-                <Button variant="link" asChild className="font-black uppercase tracking-widest text-[10px] text-primary group h-auto p-0">
+                <Button variant="link" asChild className="font-black uppercase tracking-widest text-[10px] text-primary group h-auto p-0 hover:no-underline">
                     <Link href="/courses" className="flex items-center gap-2">
                         Explore All <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2"/>
                     </Link>

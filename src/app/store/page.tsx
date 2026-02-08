@@ -51,9 +51,9 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
 
 export default async function RdcStorePage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {    
     return (
-        <div className="bg-background min-h-screen">
+        <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
             <Suspense fallback={
-                <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+                <div className="flex flex-grow items-center justify-center h-screen w-full p-8">
                     <LoadingSpinner className="w-12 h-12" />
                 </div>
             }>

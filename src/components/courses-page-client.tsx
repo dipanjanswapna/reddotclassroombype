@@ -62,8 +62,8 @@ export function CoursesPageClient({
   }), [coursesByCategory]);
 
   return (
-    <div className="bg-background">
-      <div className="container mx-auto px-0 py-4 mb-8">
+    <div className="bg-background w-full">
+      <div className="w-full py-4 mb-8">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -72,7 +72,7 @@ export function CoursesPageClient({
           />
       </div>
 
-      <main className="container mx-auto px-0 pt-0 pb-16">
+      <main className="w-full pt-0 pb-16">
         <AnimatePresence mode="wait">
             {hasFilters ? (
                 <motion.section 
@@ -82,22 +82,22 @@ export function CoursesPageClient({
                     exit={{ opacity: 0, y: -20 }}
                     className='py-0'
                 >
-                    <div className="mb-10 text-center md:text-left px-4 md:px-0">
+                    <div className="mb-10 text-center md:text-left">
                         <h2 className="font-headline text-3xl font-black tracking-tight uppercase">
                             Search Results ({initialCourses.length})
                         </h2>
                         <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
                     </div>
                     {initialCourses.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 px-4 md:px-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                             {initialCourses.map((course) => {
                                 const provider = allProviders.find(p => p.id === course.organizationId);
                                 return <CourseCard key={course.id} {...course} provider={provider} />;
                             })}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-muted/30 rounded-[2rem] border-2 border-dashed mx-4 md:mx-0">
-                            <p className="text-xl font-medium text-muted-foreground">
+                        <div className="text-center py-24 bg-muted/30 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center">
+                            <p className="text-xl font-bold text-muted-foreground">
                                 No courses match your filters.
                             </p>
                             <p className="text-sm text-muted-foreground mt-2">Try selecting different categories or providers.</p>
@@ -116,13 +116,13 @@ export function CoursesPageClient({
                             id={category.toLowerCase().replace(/\s+/g, '-')} 
                             className='py-0'
                         >
-                            <div className="mb-10 text-center md:text-left px-4 md:px-0">
+                            <div className="mb-10 text-center md:text-left">
                                 <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
                                     {category}
                                 </h2>
                                 <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 px-4 md:px-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                                 {coursesByCategory[category].map((course) => {
                                     const provider = allProviders.find(p => p.id === course.organizationId);
                                     return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -132,13 +132,13 @@ export function CoursesPageClient({
                     ))}
 
                     {archivedCourses.length > 0 && (
-                        <section id="archived-courses" className='py-0 px-4 md:px-0'>
+                        <section id="archived-courses" className='py-0'>
                             <div className="mb-10 text-center md:text-left">
                                 <h2 className="font-headline text-4xl font-black tracking-tight text-muted-foreground uppercase">
                                     Archived Programs
                                 </h2>
-                                <div className="h-2 w-24 bg-muted mt-4 rounded-full mx-auto md:mx-0" />
-                                <p className="text-sm text-muted-foreground mt-4 italic">These programs are currently closed for new enrollments.</p>
+                                <div className="h-2 w-24 bg-muted mt-4 rounded-full mx-auto md:mx-0 shadow-inner" />
+                                <p className="text-sm text-muted-foreground mt-4 italic font-medium">These programs are currently closed for new enrollments.</p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                                 {archivedCourses.map((course) => {

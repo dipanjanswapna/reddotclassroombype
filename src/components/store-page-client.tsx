@@ -46,7 +46,7 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="container mx-auto px-4 md:px-8 py-6 md:py-8">
+        <div className="container mx-auto px-4 md:px-8 py-6 md:py-8 max-w-full overflow-hidden">
             <main className="space-y-10 md:space-y-14">
                 <AnimatePresence mode="wait">
                     {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
@@ -61,14 +61,14 @@ export function StorePageClient({
                     )}
                 </AnimatePresence>
                 
-                <section className="space-y-8">
-                    <div className="mb-10">
+                <section className="space-y-10 md:space-y-14">
+                    <div className="mb-6 md:mb-10">
                         <StoreFilterBar categories={allCategories} />
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
                         <div className="text-center md:text-left space-y-2">
-                            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase leading-tight">
                                 {selectedCategorySlug ? pageTitle : 'Discover Store'}
                             </h1>
                             <div className="h-1.5 w-24 bg-primary rounded-full mx-auto md:mx-0 shadow-lg" />
@@ -77,7 +77,7 @@ export function StorePageClient({
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
                                 placeholder="Search products, books, stationery..."
-                                className="pl-12 h-12 rounded-full border-2 bg-card/50 backdrop-blur-sm focus-visible:ring-primary shadow-sm"
+                                className="pl-12 h-12 rounded-full border-2 bg-card/50 backdrop-blur-sm focus-visible:ring-primary shadow-sm font-semibold"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -98,12 +98,12 @@ export function StorePageClient({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-muted/30 rounded-[2rem] border-2 border-dashed flex flex-col items-center">
+                        <div className="text-center py-24 bg-muted/30 rounded-[2rem] border-2 border-dashed flex flex-col items-center mx-4 md:mx-0">
                             <Search className="h-16 w-16 text-muted-foreground mb-4 opacity-20" />
-                            <p className="text-xl font-medium text-muted-foreground">
+                            <p className="text-xl font-bold text-muted-foreground">
                                 No products found matching your criteria.
                             </p>
-                            <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters or search terms.</p>
+                            <p className="text-sm text-muted-foreground mt-2 font-medium">Try adjusting your filters or search terms.</p>
                         </div>
                     )}
                 </section>

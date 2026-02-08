@@ -61,10 +61,10 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-full overflow-hidden">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-full overflow-hidden px-1">
       {/* Left: Image Gallery */}
       <div className="lg:col-span-7 space-y-6">
-        <div className="aspect-square relative bg-white dark:bg-background/50 rounded-[2.5rem] overflow-hidden border-2 border-primary/5 shadow-2xl group">
+        <div className="aspect-square relative bg-white dark:bg-background/50 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border-2 border-primary/5 shadow-2xl group">
           <Image
             src={selectedImage}
             alt={product.name}
@@ -98,25 +98,25 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
       <div className="lg:col-span-5 space-y-8">
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
-                <Badge variant={product.stock && product.stock > 0 ? "accent" : "destructive"} className="px-4 py-1 rounded-full font-black uppercase tracking-widest text-[10px]">
+                <Badge variant={product.stock && product.stock > 0 ? "accent" : "destructive"} className="px-4 py-1 rounded-full font-black uppercase tracking-widest text-[10px] shadow-sm">
                     {product.stock && product.stock > 0 ? 'In Stock' : 'Sold Out'}
                 </Badge>
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0 bg-muted/50 px-3 py-1 rounded-full">
                     <div className="flex items-center text-yellow-400">
                         {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-current" />
+                            <Star key={i} className="w-3.5 h-3.5 fill-current" />
                         ))}
                     </div>
-                    <span className="text-xs font-bold text-muted-foreground">5.0</span>
+                    <span className="text-[10px] font-black text-muted-foreground">5.0 (Verified)</span>
                 </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tight leading-tight break-words">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tight leading-tight break-words uppercase">{product.name}</h1>
             <p className="text-muted-foreground text-sm font-medium leading-relaxed line-clamp-3">
                 {product.description}
             </p>
         </div>
 
-        <div className="flex items-baseline gap-4 bg-primary/5 p-6 rounded-3xl border border-primary/10">
+        <div className="flex items-baseline gap-4 bg-primary/5 p-6 rounded-[2rem] border border-primary/10 shadow-inner">
             <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Our Price</span>
                 <p className="text-4xl font-black text-primary tracking-tighter">৳{product.price}</p>
@@ -131,12 +131,12 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
 
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex items-center bg-muted/50 rounded-2xl p-1 border h-14">
-                    <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1} className="rounded-xl h-12 w-12 hover:bg-background">
+                <div className="flex items-center bg-muted/50 rounded-2xl p-1 border border-primary/5 h-14 shadow-sm">
+                    <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1} className="rounded-xl h-12 w-12 hover:bg-background transition-colors">
                         <Minus className="h-4 w-4"/>
                     </Button>
-                    <span className="w-12 text-center font-black text-lg">{quantity}</span>
-                    <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)} className="rounded-xl h-12 w-12 hover:bg-background">
+                    <span className="w-12 text-center font-black text-lg select-none">{quantity}</span>
+                    <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)} className="rounded-xl h-12 w-12 hover:bg-background transition-colors">
                         <Plus className="h-4 w-4"/>
                     </Button>
                 </div>
@@ -154,41 +154,41 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl border border-primary/5">
-                <div className="p-2 bg-primary/10 rounded-xl"><Truck className="h-5 w-5 text-primary" /></div>
+            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-[1.5rem] border border-primary/5 shadow-sm">
+                <div className="p-2.5 bg-primary/10 rounded-xl shadow-inner"><Truck className="h-5 w-5 text-primary" /></div>
                 <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Fast Delivery</p>
-                    <p className="text-xs font-bold">Safe & Reliable</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-primary/60 leading-none mb-1">Fast Delivery</p>
+                    <p className="text-xs font-bold leading-none">Safe & Reliable</p>
                 </div>
             </div>
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl border border-primary/5">
-                <div className="p-2 bg-primary/10 rounded-xl"><ShieldCheck className="h-5 w-5 text-primary" /></div>
+            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-[1.5rem] border border-primary/5 shadow-sm">
+                <div className="p-2.5 bg-primary/10 rounded-xl shadow-inner"><ShieldCheck className="h-5 w-5 text-primary" /></div>
                 <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Quality Check</p>
-                    <p className="text-xs font-bold">100% Genuine</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-primary/60 leading-none mb-1">Quality Check</p>
+                    <p className="text-xs font-bold leading-none">100% Genuine</p>
                 </div>
             </div>
         </div>
 
         <Accordion type="single" collapsible defaultValue="specs" className="w-full space-y-3">
-            <AccordionItem value="specs" className="border rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20">
-                <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-sm uppercase tracking-widest">
+            <AccordionItem value="specs" className="border border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20 shadow-sm">
+                <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-[10px] uppercase tracking-widest">
                     Technical Specifications
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6 pt-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-muted/50 border rounded-xl overflow-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-muted/50 border border-primary/5 rounded-xl overflow-hidden">
                         {specifications.map((spec, i) => (
                             <div key={i} className="flex justify-between items-center p-4 bg-card group gap-4">
-                                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground shrink-0">{spec.label}</span>
-                                <span className="text-sm font-bold text-foreground text-right break-words">{spec.value}</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground shrink-0">{spec.label}</span>
+                                <span className="text-xs font-bold text-foreground text-right break-words">{spec.value}</span>
                             </div>
                         ))}
                     </div>
                 </AccordionContent>
             </AccordionItem>
             
-            <AccordionItem value="description" className="border rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20">
-                <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-sm uppercase tracking-widest">
+            <AccordionItem value="description" className="border border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20 shadow-sm">
+                <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-[10px] uppercase tracking-widest">
                     Detailed Description
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6 pt-2">
@@ -199,12 +199,12 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             </AccordionItem>
 
             {videoId && (
-                 <AccordionItem value="video" className="border rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20">
-                    <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-sm uppercase tracking-widest">
+                 <AccordionItem value="video" className="border border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20 shadow-sm">
+                    <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-[10px] uppercase tracking-widest">
                         Product Video
                     </AccordionTrigger>
                     <AccordionContent className="px-6 pb-6 pt-2">
-                         <div className="aspect-video relative rounded-xl overflow-hidden border shadow-inner">
+                         <div className="aspect-video relative rounded-xl overflow-hidden border border-primary/5 shadow-inner bg-muted">
                             <iframe
                             className="absolute inset-0 w-full h-full"
                             src={`https://www.youtube.com/embed/${videoId}`}
