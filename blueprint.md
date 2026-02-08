@@ -4,7 +4,7 @@ This document defines the complete architecture, feature set, and visual standar
 
 ## 1. Core Technology Architecture
 
-- **Framework**: Next.js 15 (App Router) with full Async API compliance.
+- **Framework**: Next.js 15 (App Router) with full Async API compliance (Awaited Params).
 - **Language**: TypeScript (Strict mode).
 - **Styling**: Tailwind CSS with a standardized design token system.
 - **UI Components**: ShadCN UI (Enhanced for high-density and responsiveness).
@@ -24,7 +24,7 @@ This document defines the complete architecture, feature set, and visual standar
     - **Body**: 'Inter' (Sans-serif) - Optimized for readability across dense datasets.
     - **Bengali**: 'Hind Siliguri' - Integrated for local context.
 - **Design Tokens**:
-    - **Corner Radius**: Standardized `rounded-xl` (12px) and `rounded-2xl` (16px) for a tight, professional edge.
+    - **Corner Radius**: Standardized `rounded-xl` (12px) and `rounded-2xl` (16px) for a tight, professional edge. Removed extreme rounding for a sharper "App" aesthetic.
     - **Vertical Rhythm**: `py-10 md:py-14` for public sections; `space-y-10 md:space-y-14` for dashboard arrivals.
     - **Glassmorphism**: High-blur backdrops (`backdrop-blur-xl`) for navigation and primary modals.
     - **Responsive Architecture**: "Smart Stacking" logic transforms wide data tables into accessible cards on mobile.

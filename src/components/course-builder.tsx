@@ -988,7 +988,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <div className="space-y-10 text-left">
                         <div className="grid gap-8">
                             {examTemplates.map((exam, index) => (
-                                <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl bg-card transition-all hover:border-primary/20">
+                                <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 shadow-xl overflow-hidden bg-card transition-all hover:border-primary/20">
                                     <div className="flex justify-between items-center p-8 bg-primary/5 border-b-2 border-primary/5">
                                         <div className="flex items-center gap-5"><Award className="h-8 w-8 text-primary shrink-0"/><span className="font-black uppercase text-lg tracking-tight truncate">{exam.title || `STRATEGIC ASSESSMENT ${index + 1}`}</span></div>
                                         <div className="flex items-center gap-3">
