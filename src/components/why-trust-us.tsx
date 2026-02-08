@@ -29,7 +29,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-4 sm:py-6 overflow-hidden">
+    <section className="py-1 sm:py-2 overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 shadow-xl">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
@@ -53,7 +53,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             </div>
         </div>
 
-        <div className="mt-6 z-10 relative">
+        <div className="mt-4 z-10 relative">
           <Carousel
             plugins={[plugin.current]}
             className="w-full"
@@ -91,7 +91,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
               ))}
             </CarouselContent>
              {(data.testimonials || []).length > 1 && (
-                <div className="mt-4 flex justify-center gap-2">
+                <div className="mt-2 flex justify-center gap-2">
                     <CarouselPrevious variant="outline" size="sm" className="static translate-y-0" aria-label="Previous testimonial"/>
                     <CarouselNext variant="outline" size="sm" className="static translate-y-0" aria-label="Next testimonial"/>
                 </div>

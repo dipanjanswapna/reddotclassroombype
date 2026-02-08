@@ -62,7 +62,7 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <section
-    className={cn("py-4 md:py-6 container mx-auto px-4 md:px-8", className)}
+    className={cn("py-1 md:py-2 container mx-auto px-4 md:px-8", className)}
   >
     {children}
   </section>
@@ -152,13 +152,13 @@ export default function Home() {
   
   return (
     <div className="text-foreground">
-        <section className="py-4 container mx-auto px-4 md:px-8">
+        <section className="py-1 container mx-auto px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {homepageConfig.categoriesSection?.display && (
           <SectionWrapper>
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.categoriesSection?.title?.[language]}
                 </h2>
@@ -168,7 +168,7 @@ export default function Home() {
           </SectionWrapper>
         )}
 
-        <div className="container mx-auto px-4 md:px-8 my-4">
+        <div className="container mx-auto px-4 md:px-8 my-1">
             <NoticeBoard />
         </div>
 
@@ -208,13 +208,13 @@ export default function Home() {
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mt-2">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-1 text-sm">{homepageConfig.journeySection?.subtitle?.[language]}</p>
                 <HeadingUnderline />
               </div>
               <div>
-                <h3 className="font-headline text-xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                <h3 className="font-headline text-lg font-bold text-center mb-4">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
           </SectionWrapper>
@@ -222,11 +222,11 @@ export default function Home() {
 
         {homepageConfig.teachersSection?.display && (
           <SectionWrapper aria-labelledby="teachers-heading">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                   <div className="text-center sm:text-left">
                       <h2 id="teachers-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.teachersSection?.title?.[language]}</h2>
-                      <div className="h-1 w-16 bg-primary mt-2 rounded-full hidden sm:block" />
-                      <p className="text-muted-foreground mt-2">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                      <div className="h-1 w-16 bg-primary mt-1 rounded-full hidden sm:block" />
+                      <p className="text-muted-foreground mt-1 text-sm">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
                   <Button asChild variant="outline" size="sm">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
@@ -239,9 +239,9 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <SectionWrapper aria-labelledby="video-section-heading">
             <div className="text-center">
-                <div className="mb-6">
+                <div className="mb-4">
                   <h2 id="video-section-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.videoSection?.title?.[language]}</h2>
-                  <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                  <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm">{homepageConfig.videoSection?.description?.[language]}</p>
                   <HeadingUnderline />
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
@@ -265,7 +265,7 @@ export default function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="default" size="lg" className="mt-6 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all">
+                <Button asChild variant="default" size="lg" className="mt-4 font-bold bg-accent text-accent-foreground shadow-lg hover:shadow-xl transition-all h-10">
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
@@ -275,8 +275,8 @@ export default function Home() {
         {homepageConfig.sscHscSection?.display && (
           <SectionWrapper aria-labelledby="ssc-hsc-heading">
               <div className="text-center">
-                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
-                  <div className="mb-6">
+                  <Badge variant="default" className="mb-1 text-sm py-0.5 px-3 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <div className="mb-4">
                     <h2 id="ssc-hsc-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
@@ -290,12 +290,12 @@ export default function Home() {
         {homepageConfig.masterclassSection?.display && (
           <SectionWrapper aria-labelledby="masterclass-heading">
               <div className="text-center">
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <h2 id="masterclass-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="default" size="lg" className="mt-6 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-4 font-bold bg-accent text-accent-foreground shadow-lg h-10">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -305,15 +305,15 @@ export default function Home() {
         {homepageConfig.admissionSection?.display && (
           <SectionWrapper aria-labelledby="admission-heading">
               <div className="text-center">
-                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
-                  <div className="mb-6">
+                  <Badge variant="default" className="mb-1 text-sm py-0.5 px-3 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <div className="mb-4">
                     <h2 id="admission-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.admissionSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <div className="flex flex-wrap justify-center gap-6">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-6 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-4 font-bold bg-accent text-accent-foreground shadow-lg h-10">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -323,15 +323,15 @@ export default function Home() {
         {homepageConfig.jobPrepSection?.display && (
           <SectionWrapper aria-labelledby="job-prep-heading">
               <div className="text-center">
-                  <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
-                  <div className="mb-6">
+                  <Badge variant="default" className="mb-1 text-sm py-0.5 px-3 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <div className="mb-4">
                     <h2 id="job-prep-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
                   <div className="flex flex-wrap justify-center gap-6">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-6 font-bold bg-accent text-accent-foreground shadow-lg">
+                  <Button asChild variant="default" size="lg" className="mt-4 font-bold bg-accent text-accent-foreground shadow-lg h-10">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -349,7 +349,7 @@ export default function Home() {
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
           <SectionWrapper aria-labelledby="collaborations-heading">
             <div className="text-center">
-              <div className="mb-6">
+              <div className="mb-4">
                 <h2 id="collaborations-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.collaborations?.title?.[language]}
                 </h2>
@@ -363,7 +363,7 @@ export default function Home() {
         {homepageConfig.partnersSection?.display && (
           <SectionWrapper aria-labelledby="partners-heading">
             <div className="text-center">
-              <div className="mb-6">
+              <div className="mb-4">
                 <h2 id="partners-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.partnersSection?.title?.[language]}</h2>
                 <HeadingUnderline />
               </div>
@@ -378,9 +378,9 @@ export default function Home() {
         {homepageConfig.socialMediaSection?.display && (
           <SectionWrapper aria-labelledby="social-media-heading">
             <div className="text-center">
-              <div className="mb-6">
+              <div className="mb-4">
                 <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.socialMediaSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm">
                   {homepageConfig.socialMediaSection?.description?.[language]}
                 </p>
                 <HeadingUnderline />
@@ -419,7 +419,7 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
                       </CardContent>
                       <CardFooter className="p-0 w-full mt-4">
-                        <Button asChild className="w-full shadow-md active:shadow-inner" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
+                        <Button asChild className="w-full shadow-md active:shadow-inner h-10" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
                           <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
                             <span className="ml-2">{typeof channel.ctaText === 'object' ? channel.ctaText[language] : channel.ctaText}</span>
                           </Link>
@@ -436,7 +436,7 @@ export default function Home() {
         {homepageConfig.statsSection?.display && (
           <SectionWrapper aria-labelledby="stats-heading">
             <div className="text-center">
-                <div className="mb-6">
+                <div className="mb-4">
                   <h2 id="stats-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.statsSection?.title?.[language]}</h2>
                   <HeadingUnderline />
                 </div>
@@ -462,7 +462,7 @@ export default function Home() {
                         <h3 id="notes-banner-heading" className="font-headline text-xl font-bold text-green-700 dark:text-green-500">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-1">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg">
+                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg h-10">
                       {homepageConfig.notesBanner?.buttonText?.[language]}
                     </Button>
                 </div>
