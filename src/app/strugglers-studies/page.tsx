@@ -14,11 +14,15 @@ export const metadata: Metadata = {
 };
 
 const classButtons = [
-    { classNo: '6', className: 'ক্লাস ৬', color: 'bg-red-100 dark:bg-red-900/30 text-red-500', href: '/courses?category=Class-6' },
-    { classNo: '7', className: 'ক্লাস ৭', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-500', href: '/courses?category=Class-7' },
-    { classNo: '8', className: 'ক্লাস ৮', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-500', href: '/courses?category=Class-8' },
-    { classNo: '9', className: 'ক্লাস ৯', color: 'bg-green-100 dark:bg-green-900/30 text-green-500', href: '/courses?category=Class-9' },
-    { classNo: '10', className: 'ক্লাস ১০', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600', href: '/courses?category=Class-10' },
+    { classNo: '6', className: 'Class 6', color: 'bg-red-100 dark:bg-red-900/30 text-red-500', href: '/courses?category=Class-6' },
+    { classNo: '7', className: 'Class 7', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-500', href: '/courses?category=Class-7' },
+    { classNo: '8', className: 'Class 8', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-500', href: '/courses?category=Class-8' },
+    { classNo: '9', className: 'Class 9', color: 'bg-green-100 dark:bg-green-900/30 text-green-500', href: '/courses?category=Class-9' },
+    { classNo: '10', className: 'Class 10', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600', href: '/courses?category=Class-10' },
+    { classNo: '11', className: 'Class 11', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-500', href: '/courses?category=Class-11' },
+    { classNo: '12', className: 'Class 12', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500', href: '/courses?category=Class-12' },
+    { classNo: 'ADM', className: 'Admission', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-500', href: '/courses?category=Admission' },
+    { classNo: 'BCS', className: 'BCS Prep', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-500', href: '/courses?category=Job+Prep' },
 ];
 
 export default async function TopperPage() {
@@ -79,12 +83,12 @@ export default async function TopperPage() {
         <section className="bg-secondary/30 py-16 border-y border-primary/5">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                    <div className="font-bengali space-y-2">
-                        <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-green-700 dark:text-green-500">৬ষ্ঠ-১০ম শ্রেণির পূর্ণাঙ্গ বছরভিত্তিক একাডেমিক প্রোগ্রাম</h2>
-                        <p className="text-xl text-muted-foreground">ভর্তি হতে তোমার ক্লাসটি সিলেক্ট করো</p>
+                    <div className="space-y-2">
+                        <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-green-700 dark:text-green-500">Comprehensive Academic Programs for Class 6-12 & Beyond</h2>
+                        <p className="text-xl text-muted-foreground">Select your class to enroll and start your journey to the top.</p>
                     </div>
-                    <Button asChild size="lg" className="mt-4 md:mt-0 bg-red-500 hover:bg-red-600 font-bengali shrink-0 shadow-lg px-10 h-14 rounded-xl">
-                        <Link href="/courses">ভর্তি হও</Link>
+                    <Button asChild size="lg" className="mt-4 md:mt-0 bg-red-500 hover:bg-red-600 font-bold shrink-0 shadow-lg px-10 h-14 rounded-xl">
+                        <Link href="/courses">Enroll Now</Link>
                     </Button>
                 </div>
 
@@ -93,10 +97,10 @@ export default async function TopperPage() {
                         <Link key={btn.classNo} href={btn.href} className="group">
                             <Card className="flex items-center justify-between p-5 bg-background rounded-xl shadow-md hover:shadow-xl hover:border-primary/50 border border-primary/10 transition-all duration-300">
                                 <div className="flex items-center gap-5">
-                                    <div className={cn("p-4 rounded-xl text-3xl font-black transition-transform group-hover:scale-110", btn.color)}>
+                                    <div className={cn("p-4 rounded-xl text-2xl font-black transition-transform group-hover:scale-110 flex items-center justify-center min-w-[80px]", btn.color)}>
                                         {btn.classNo}
                                     </div>
-                                    <span className="font-bold text-xl font-bengali text-foreground group-hover:text-primary transition-colors">{btn.className}</span>
+                                    <span className="font-bold text-xl text-foreground group-hover:text-primary transition-colors">{btn.className}</span>
                                 </div>
                                 <ArrowRight className="text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1"/>
                             </Card>
@@ -109,7 +113,7 @@ export default async function TopperPage() {
                                 <div className="p-2">
                                     <Rocket className="w-10 h-10 animate-bounce" />
                                 </div>
-                                <span className="font-black text-xl font-bengali">এখনই ভর্তি হও</span>
+                                <span className="font-black text-xl">Enroll Right Now</span>
                             </div>
                             <ArrowRight className="relative z-10 group-hover:translate-x-2 transition-transform" />
                         </Card>
