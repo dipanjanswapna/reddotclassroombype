@@ -198,7 +198,7 @@ export default function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8">
+          <SectionWrapper aria-labelledby="categories-heading" className="px-8 md:px-16 lg:px-24">
             <div className="container mx-auto">
               <div className="text-center mb-4">
                 <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
