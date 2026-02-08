@@ -222,7 +222,8 @@ export default function Home() {
 
         {homepageConfig.teachersSection?.display && (
           <SectionWrapper aria-labelledby="teachers-heading">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <Card className="glassmorphism-card border-2 border-primary shadow-xl p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
                   <div className="text-center sm:text-left">
                       <h2 id="teachers-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.teachersSection?.title?.[language]}</h2>
                       <div className="h-1 w-16 bg-primary mt-1 rounded-full hidden sm:block" />
@@ -233,6 +234,7 @@ export default function Home() {
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
+            </Card>
           </SectionWrapper>
         )}
 
