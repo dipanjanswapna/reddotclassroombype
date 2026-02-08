@@ -174,7 +174,7 @@ export default function Home() {
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-6 bg-secondary/50 py-8 rounded-2xl border border-primary/10 shadow-sm">
+              <div className="text-center mb-6 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl border border-primary shadow-sm">
                 <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto mt-2 text-sm px-4">{homepageConfig.journeySection?.subtitle?.[language]}</p>
                 <HeadingUnderline />
@@ -493,12 +493,12 @@ export default function Home() {
                     <div className="flex justify-center md:justify-start gap-4 mt-6 flex-wrap">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <div>
-                              <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://picsum.photos/seed/gp/180/60'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                              <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
                             </div>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
                             <div>
-                              <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://picsum.photos/seed/as/180/60'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                              <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
                             </div>
                         </Link>
                     </div>
