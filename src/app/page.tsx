@@ -61,15 +61,11 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 };
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <motion.section
-    initial={{ opacity: 0, y: 40 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+  <section
     className={cn("py-4 sm:py-6 lg:py-8", className)}
   >
     {children}
-  </motion.section>
+  </section>
 );
 
 const HeadingUnderline = () => (
@@ -163,8 +159,7 @@ export default function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <SectionWrapper className="py-2 px-4 md:px-8">
               <div className="container mx-auto">
-                  <motion.div 
-                    whileHover={{ scale: 1.01 }}
+                  <div 
                     className="group relative glassmorphism-card border-2 border-primary p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden shadow-xl"
                   >
                       <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
@@ -192,7 +187,7 @@ export default function Home() {
                                <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                       </Button>
-                  </motion.div>
+                  </div>
               </div>
           </SectionWrapper>
         )}
@@ -263,19 +258,18 @@ export default function Home() {
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
                       
                       return (
-                          <motion.a 
+                          <a 
                             key={index} 
                             href={video.videoUrl} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            whileHover={{ y: -5 }}
                             className="relative rounded-lg overflow-hidden group shadow-lg block max-w-[500px] flex-1 min-w-[280px]"
                           >
                               <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-500 group-hover:scale-110" />
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                   <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
                               </div>
-                          </motion.a>
+                          </a>
                       );
                     })}
                 </div>
@@ -403,10 +397,8 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap justify-center gap-6">
                 {homepageConfig.socialMediaSection?.channels.map((channel) => (
-                  <motion.div 
+                  <div 
                     key={channel.id}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                     className="flex-1 min-w-[280px] max-w-[320px]"
                   >
                     <Card className="text-center p-6 flex flex-col h-full items-center justify-between glassmorphism-card shadow-lg">
@@ -444,7 +436,7 @@ export default function Home() {
                         </Button>
                       </CardFooter>
                     </Card>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -460,17 +452,13 @@ export default function Home() {
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
-                        <motion.div 
+                        <div 
                           key={index}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 }}
                           className="text-center glassmorphism-card p-6 flex-1 min-w-[250px] max-w-[350px] shadow-lg"
                         >
                             <p className="font-headline text-4xl font-bold text-primary">{stat.value}</p>
                             <p className="mt-2 text-md text-muted-foreground">{stat.label?.[language]}</p>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -503,36 +491,30 @@ export default function Home() {
           <SectionWrapper aria-labelledby="app-promo-heading" className="px-4 md:px-8">
               <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
-                    <motion.h2 
-                      initial={{ x: -20, opacity: 0 }}
-                      whileInView={{ x: 0, opacity: 1 }}
-                      viewport={{ once: true }}
+                    <h2 
                       className="font-headline text-3xl font-bold text-green-700 dark:text-green-500"
                     >
                       {homepageConfig.appPromo?.title?.[language]}
-                    </motion.h2>
+                    </h2>
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-6 flex-wrap">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <div>
                               <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://picsum.photos/seed/gp/180/60'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
-                            </motion.div>
+                            </div>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <div>
                               <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://picsum.photos/seed/as/180/60'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
-                            </motion.div>
+                            </div>
                         </Link>
                     </div>
                   </div>
-                  <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
+                  <div 
                     className="flex justify-center"
                   >
                       <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={300} height={450} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
-                  </motion.div>
+                  </div>
               </div>
           </SectionWrapper>
         )}
