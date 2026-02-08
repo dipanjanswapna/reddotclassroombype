@@ -4,7 +4,7 @@ import { getHomepageConfig } from '@/lib/firebase/firestore';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Rocket } from 'lucide-react';
+import { ArrowRight, Rocket, Users, BookOpen, MessageSquare, BarChart3 } from 'lucide-react';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +24,13 @@ const classButtons = [
     { classNo: 'ADM', className: 'Admission', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-500', href: '/courses?category=Admission' },
     { classNo: 'BCS', className: 'BCS Prep', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-500', href: '/courses?category=Job+Prep' },
 ];
+
+const cardIconMap: Record<string, any> = {
+    "1": Users,
+    "2": BookOpen,
+    "3": MessageSquare,
+    "4": BarChart3
+};
 
 export default async function TopperPage() {
     const config = await getHomepageConfig();
@@ -49,20 +56,23 @@ export default async function TopperPage() {
                         {sectionData.title}
                     </h1>
                     <div className="grid sm:grid-cols-2 gap-8">
-                        {sectionData.cards.map(card => (
-                            <Card key={card.id} className="relative group p-6 overflow-hidden transition-all duration-300 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-2xl">
-                                <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
-                                <div className="flex flex-col gap-4 relative z-10">
-                                    <div className="bg-primary/10 p-3 rounded-xl w-fit border border-primary/20">
-                                        <Image src={card.iconUrl} alt={card.title} width={40} height={40} className="object-contain" data-ai-hint={card.dataAiHint} />
+                        {sectionData.cards.map(card => {
+                            const Icon = cardIconMap[card.id] || BookOpen;
+                            return (
+                                <Card key={card.id} className="relative group p-6 overflow-hidden transition-all duration-300 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-2xl">
+                                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                                    <div className="flex flex-col gap-4 relative z-10">
+                                        <div className="bg-primary/10 p-3 rounded-xl w-fit border border-primary/20">
+                                            <Icon className="w-8 h-8 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h2 className="font-bold text-xl leading-tight text-foreground group-hover:text-primary transition-colors">{card.title}</h2>
+                                            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{card.description}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 className="font-bold text-xl leading-tight text-foreground group-hover:text-primary transition-colors">{card.title}</h2>
-                                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{card.description}</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
+                                </Card>
+                            );
+                        })}
                     </div>
                 </div>
                 <div className="hidden lg:flex justify-center items-center">
