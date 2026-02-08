@@ -14,7 +14,7 @@ import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { Batch, Branch, Course } from '@/lib/types';
+import type { Batch, Course } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { safeToDate } from '@/lib/utils';
 
@@ -23,6 +23,10 @@ type BatchWithDetails = Batch & {
     branchName: string;
 }
 
+/**
+ * @fileOverview Polished Teacher Dashboard.
+ * Elite visual hierarchy for course management and offline operations.
+ */
 export default function TeacherDashboardPage() {
   const { userInfo } = useAuth();
   const { toast } = useToast();
@@ -67,7 +71,6 @@ export default function TeacherDashboardPage() {
           }
         });
 
-
         let pendingGradingCount = 0;
         let totalRating = 0;
         let ratedCourses = 0;
@@ -102,7 +105,6 @@ export default function TeacherDashboardPage() {
           averageRating: parseFloat(averageRating.toFixed(1)),
         });
 
-        // Fetch and process offline batches
         const teacherBatches = allBatches.filter(batch => batch.instructorSlugs.includes(instructor.slug));
         const batchesWithDetails = teacherBatches.map(batch => {
             const course = allCourses.find(c => c.id === batch.courseId);
@@ -114,7 +116,6 @@ export default function TeacherDashboardPage() {
             }
         });
         setAssignedBatches(batchesWithDetails);
-
 
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -139,21 +140,21 @@ export default function TeacherDashboardPage() {
     <div className="space-y-10 md:space-y-14">
         <div className="text-center sm:text-left space-y-2">
             <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                Teacher Dashboard
+                Academic Panel
             </h1>
-            <p className="text-lg text-muted-foreground font-medium">Manage your courses, students, and content.</p>
+            <p className="text-lg text-muted-foreground font-medium">Manage your courses, learners, and classroom content.</p>
             <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">My Courses</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Active Courses</CardTitle>
                     <BookCopy className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-primary tracking-tighter">{stats.courseCount}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Active learning modules</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Ongoing modules</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
@@ -163,7 +164,7 @@ export default function TeacherDashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.studentCount}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Learners reached</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Active learners</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-orange-500/20 bg-orange-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
@@ -178,12 +179,12 @@ export default function TeacherDashboardPage() {
             </Card>
             <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Average Rating</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Instructor Rating</CardTitle>
                     <BarChart className="h-5 w-5 text-accent-foreground group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-accent-foreground tracking-tighter">{stats.averageRating}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Student feedback score</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Based on student feedback</p>
                 </CardContent>
             </Card>
         </div>
@@ -192,9 +193,9 @@ export default function TeacherDashboardPage() {
             <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
                 <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
                     <Building className="h-6 w-6 text-primary"/>
-                    My Offline Batches
+                    Assigned Offline Batches
                 </CardTitle>
-                <CardDescription className="font-medium">Direct face-to-face academic sessions.</CardDescription>
+                <CardDescription className="font-medium">Direct face-to-face academic sessions in local centers.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -225,8 +226,8 @@ export default function TeacherDashboardPage() {
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium">
-                                        You are not assigned to any offline batches yet.
+                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium px-8">
+                                        No assigned batches found.
                                     </TableCell>
                                 </TableRow>
                             )}

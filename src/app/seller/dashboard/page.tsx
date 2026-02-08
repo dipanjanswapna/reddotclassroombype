@@ -14,6 +14,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 
+/**
+ * @fileOverview Polished Seller Dashboard.
+ * Focused metrics for organization growth and student reach.
+ */
 export default function SellerDashboardPage() {
     const { toast } = useToast();
     const { userInfo } = useAuth();
@@ -32,7 +36,7 @@ export default function SellerDashboardPage() {
             try {
                 const organization = await getOrganizationByUserId(userInfo.uid);
                 if (!organization) {
-                    toast({ title: 'Error', description: 'Could not find your organization details.', variant: 'destructive' });
+                    toast({ title: 'Error', description: 'Could not find organization details.', variant: 'destructive' });
                     setLoading(false);
                     return;
                 }
@@ -86,9 +90,9 @@ export default function SellerDashboardPage() {
     <div className="space-y-10 md:space-y-14">
         <div className="text-center sm:text-left space-y-2">
             <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                Seller Dashboard
+                Partner Dashboard
             </h1>
-            <p className="text-lg text-muted-foreground font-medium">Here's an overview of your organization's performance.</p>
+            <p className="text-lg text-muted-foreground font-medium">Overview of your organization's academic and sales performance.</p>
             <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
 
@@ -100,7 +104,7 @@ export default function SellerDashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-primary tracking-tighter">{stats.studentCount}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Unique course learners</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Unique learners</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
@@ -110,27 +114,27 @@ export default function SellerDashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.courseCount}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Published online tracks</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Published modules</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Total Revenue</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Gross Sales</CardTitle>
                     <DollarSign className="h-5 w-5 text-accent-foreground group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-accent-foreground tracking-tighter">৳{stats.totalRevenue.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">All-time platform sales</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">All-time revenue</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-orange-500/20 bg-orange-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-orange-600">Completion Rate</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-orange-600">Avg. Progress</CardTitle>
                     <BarChart className="h-5 w-5 text-orange-600 group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-orange-600 tracking-tighter">{stats.averageCompletionRate}%</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Across all tracks</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Across all students</p>
                 </CardContent>
             </Card>
         </div>

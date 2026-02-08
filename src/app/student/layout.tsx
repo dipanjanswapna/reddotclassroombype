@@ -10,6 +10,10 @@ import {
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Student Portal Layout.
+ * Features high-blur glassmorphism navigation and standardized portal container spacing.
+ */
 export default function StudentLayout({
   children,
 }: {
@@ -42,26 +46,17 @@ export default function StudentLayout({
     { href: "/student/live-classes", icon: Video, label: "Live Classes" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
     { href: "/student/exams", icon: ClipboardEdit, label: "Exams" },
-    { href: "/student/deadlines", icon: CalendarClock, label: "Deadlines" },
     { href: "/student/grades", icon: FileCheck2, label: "Grades" },
-    { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/referrals", icon: Share2, label: "Referrals" },
     { href: "/student/rewards", icon: Gift, label: "Rewards" },
-    { href: "/student/community", icon: UsersIcon, label: "Community" },
-    { href: "/student/leaderboard", icon: Crown, label: "Leaderboard" },
-    { href: "/student/achievements", icon: Trophy, label: "Achievements" },
     { href: "/student/tutor", icon: Bot, label: "AI Tutor" },
-    { href: "/student/tts", icon: Voicemail, label: "TTS" },
     { href: "/student/calculator", icon: Calculator, label: "Calculator" },
     { href: "/student/wishlist", icon: Heart, label: "Wishlist" },
     { href: "/student/payments", icon: Wallet, label: "Payments" },
-    { href: "/student/certificates", icon: Award, label: "Certificates" },
-    { href: "/student/notifications", icon: Bell, label: "Notifications" },
     { href: "/student/profile", icon: User, label: "Profile" },
     { href: "/student/id-card", icon: Badge, label: "ID Card" },
     { href: "/student/guardian", icon: UsersIcon, label: "Guardian" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
-    { href: "/student/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -75,6 +70,7 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
+  // Prevent double layouts for lesson pages
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
       return <>{children}</>;
   }

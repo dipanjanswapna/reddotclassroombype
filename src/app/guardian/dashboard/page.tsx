@@ -8,12 +8,16 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { getCourses, getEnrollmentsByUserId, getUser } from '@/lib/firebase/firestore';
+import { getEnrollmentsByUserId, getUser } from '@/lib/firebase/firestore';
 import type { User as UserType } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * @fileOverview Polished Guardian Dashboard.
+ * Clean visualization of linked child's academic performance.
+ */
 export default function GuardianDashboardPage() {
     const { userInfo: guardian, loading: authLoading } = useAuth();
     const { toast } = useToast();
@@ -67,9 +71,9 @@ export default function GuardianDashboardPage() {
     if (!student) {
       return (
           <div className="space-y-6 max-w-2xl mx-auto text-center py-20">
-             <div className="p-6 bg-muted/30 rounded-[2rem] border-2 border-dashed">
-                <h1 className="font-headline text-3xl font-black text-muted-foreground uppercase">No Student Linked</h1>
-                <p className="mt-4 text-muted-foreground font-medium">Please ask your child to send an invitation from their portal's Guardian page.</p>
+             <div className="p-10 bg-muted/30 rounded-[3rem] border-2 border-dashed">
+                <h1 className="font-headline text-3xl font-black text-muted-foreground uppercase tracking-tight">No Student Linked</h1>
+                <p className="mt-4 text-muted-foreground font-medium text-lg leading-relaxed">Please ask your child to send an invitation from their portal to start monitoring progress.</p>
              </div>
           </div>
       );
@@ -79,9 +83,9 @@ export default function GuardianDashboardPage() {
     <div className="space-y-10 md:space-y-14">
         <div className="text-center sm:text-left space-y-2">
             <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                Guardian Dashboard
+                Parental Dashboard
             </h1>
-            <p className="text-lg text-muted-foreground font-medium">Monitor your child's academic progress.</p>
+            <p className="text-lg text-muted-foreground font-medium">Monitoring academic progress for {student.name}.</p>
             <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
 
@@ -92,8 +96,8 @@ export default function GuardianDashboardPage() {
                     <User className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-black text-primary tracking-tight">{student.name}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">{student.className || 'N/A'}</p>
+                    <div className="text-2xl font-black text-primary tracking-tight truncate">{student.name}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Roll: {student.classRoll || 'N/A'}</p>
                 </CardContent>
             </Card>
             <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
@@ -108,12 +112,12 @@ export default function GuardianDashboardPage() {
             </Card>
             <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Courses Enrolled</CardTitle>
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Active Courses</CardTitle>
                     <BookOpen className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.enrolledCoursesCount}</div>
-                    <p className="text-xs text-muted-foreground font-medium mt-1">Active enrollments</p>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Currently studying</p>
                 </CardContent>
             </Card>
         </div>

@@ -13,6 +13,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 
+/**
+ * @fileOverview Polished Affiliate Dashboard.
+ * Focus on referral conversion and all-time commissions.
+ */
 export default function AffiliateDashboardPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
@@ -77,31 +81,31 @@ export default function AffiliateDashboardPage() {
         <div className="space-y-10 md:space-y-14">
             <div className="text-center sm:text-left space-y-2">
                 <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                    Affiliate Dashboard
+                    Partner Program
                 </h1>
-                <p className="text-lg text-muted-foreground font-medium">Welcome back, {userInfo?.name}! Track your referral performance.</p>
+                <p className="text-lg text-muted-foreground font-medium">Welcome, {userInfo?.name}! Track your referral performance.</p>
                 <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Total Earnings</CardTitle>
+                        <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Commission Balance</CardTitle>
                         <DollarSign className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-4xl font-black text-primary tracking-tighter">৳{stats.earnings.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground font-medium mt-1">All-time commission</p>
+                        <p className="text-xs text-muted-foreground font-medium mt-1">Total earned commissions</p>
                     </CardContent>
                 </Card>
                 <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Referrals</CardTitle>
+                        <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Conversions</CardTitle>
                         <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-black text-blue-600 tracking-tighter">+{stats.referrals}</div>
-                        <p className="text-xs text-muted-foreground font-medium mt-1">Successful student sign-ups</p>
+                        <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.referrals}</div>
+                        <p className="text-xs text-muted-foreground font-medium mt-1">Verified student sign-ups</p>
                     </CardContent>
                 </Card>
             </div>
@@ -110,18 +114,18 @@ export default function AffiliateDashboardPage() {
                 <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
                     <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
                         <Users className="h-6 w-6 text-primary"/>
-                        Recent Referral Activity
+                        Recent Referrals
                     </CardTitle>
-                    <CardDescription className="font-medium">Students who signed up using your links.</CardDescription>
+                    <CardDescription className="font-medium">The most recent students who joined using your unique link.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader className="bg-muted/50">
                                 <TableRow>
-                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">User</TableHead>
-                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Role</TableHead>
-                                    <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest">Joined</TableHead>
+                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">User</TableHead>
+                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest text-foreground">Role</TableHead>
+                                    <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest text-foreground">Joined</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="divide-y divide-primary/5">
@@ -135,8 +139,8 @@ export default function AffiliateDashboardPage() {
                                     </TableRow>
                                 )) : (
                                     <TableRow>
-                                        <TableCell colSpan={3} className="h-32 text-center text-muted-foreground font-medium">
-                                            No referral activity yet. Share your links to get started!
+                                        <TableCell colSpan={3} className="h-32 text-center text-muted-foreground font-medium px-8">
+                                            No referral activity yet.
                                         </TableCell>
                                     </TableRow>
                                 )}

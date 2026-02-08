@@ -17,6 +17,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Affiliate Portal Layout.
+ * Synchronized with platform aesthetic: high-blur navigation and elite typography.
+ */
 export default function AffiliateLayout({
   children,
 }: {
@@ -43,11 +47,11 @@ export default function AffiliateLayout({
   }
 
   const menuItems = [
-    { href: "/affiliate/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/affiliate/dashboard", icon: LayoutDashboard, label: "Overview" },
     { href: "/affiliate/links", icon: Link2, label: "Links" },
     { href: "/affiliate/analytics", icon: BarChart3, label: "Analytics" },
     { href: "/affiliate/payouts", icon: DollarSign, label: "Payouts" },
-    { href: "/affiliate/absent-students", icon: PhoneCall, label: "Call Center" },
+    { href: "/affiliate/absent-students", icon: PhoneCall, label: "Call Hub" },
     { href: "/affiliate/profile", icon: User, label: "Profile" },
     { href: "/affiliate/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },

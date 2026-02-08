@@ -19,6 +19,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Guardian Portal Layout.
+ * Simplified navigation and premium glassmorphism aesthetic.
+ */
 export default function GuardianLayout({
   children,
 }: {
@@ -45,7 +49,7 @@ export default function GuardianLayout({
   }
 
   const menuItems = [
-    { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Overview" },
     { href: "/guardian/progress", icon: BarChart3, label: "Progress" },
     { href: "/guardian/courses", icon: BookOpen, label: "Courses" },
     { href: "/guardian/attendance", icon: ClipboardCheck, label: "Attendance" },
@@ -53,7 +57,6 @@ export default function GuardianLayout({
     { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact" },
     { href: "/guardian/profile", icon: User, label: "Profile" },
     { href: "/guardian/id-card", icon: Badge, label: "ID Card" },
-    { href: "/guardian/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 

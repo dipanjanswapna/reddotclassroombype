@@ -20,6 +20,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Seller Portal Layout.
+ * High-blur glassmorphism navigation and elite branding for organizations.
+ */
 export default function SellerLayout({
   children,
 }: {
@@ -49,13 +53,12 @@ export default function SellerLayout({
     { href: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/seller/courses", icon: BookCopy, label: "Courses" },
     { href: "/seller/teachers", icon: UsersIcon, label: "Teachers" },
-    { href: "/seller/students", icon: UsersIcon, label: "Students" },
-    { href: "/seller/call-center", icon: PhoneCall, label: "Call Center" },
+    { href: "/seller/students", icon: UsersIcon, label: "Learners" },
+    { href: "/seller/call-center", icon: PhoneCall, label: "Calls" },
     { href: "/seller/scan-attendance", icon: QrCode, label: "Scan" },
     { href: "/seller/analytics", icon: BarChart3, label: "Analytics" },
-    { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
+    { href: "/seller/payouts", icon: Banknote, label: "Sales" },
     { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
-    { href: "/seller/settings", icon: Settings, label: "Settings" },
     { href: "/seller/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];

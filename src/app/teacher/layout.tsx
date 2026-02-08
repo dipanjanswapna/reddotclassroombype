@@ -23,6 +23,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Teacher Portal Layout.
+ * Features modern glassmorphism bottom navigation and elite role branding.
+ */
 export default function TeacherLayout({
   children,
 }: {
@@ -50,18 +54,16 @@ export default function TeacherLayout({
 
   const menuItems = [
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
-    { href: "/teacher/students", icon: Users, label: "Students" },
+    { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
+    { href: "/teacher/students", icon: Users, label: "Learners" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
     { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance" },
     { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
-    { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
-    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
-    { href: "/teacher/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo" },
     { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
     { href: "/teacher/profile", icon: User, label: "Profile" },
     { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
-    { href: "/teacher/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   

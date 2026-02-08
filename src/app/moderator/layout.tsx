@@ -17,6 +17,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Moderator Portal Layout.
+ * Features high-blur glassmorphism navigation and elite role branding.
+ */
 export default function ModeratorLayout({
   children,
 }: {
@@ -43,11 +47,11 @@ export default function ModeratorLayout({
   }
 
   const menuItems = [
-    { href: "/moderator/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/moderator/dashboard", icon: LayoutDashboard, label: "Overview" },
     { href: "/moderator/scan-attendance", icon: QrCode, label: "Scan" },
-    { href: "/moderator/absent-students", icon: PhoneCall, label: "Call Center" },
-    { href: "/moderator/content-review", icon: FileScan, label: "Content Review" },
-    { href: "/moderator/support-tickets", icon: Ticket, label: "Support Tickets" },
+    { href: "/moderator/absent-students", icon: PhoneCall, label: "Call Hub" },
+    { href: "/moderator/content-review", icon: FileScan, label: "Review" },
+    { href: "/moderator/support-tickets", icon: Ticket, label: "Tickets" },
     { href: "/moderator/profile", icon: User, label: "Profile" },
     { href: "/moderator/id-card", icon: Badge, label: "ID Card" },
     { href: "/", icon: LogOut, label: "Logout" },

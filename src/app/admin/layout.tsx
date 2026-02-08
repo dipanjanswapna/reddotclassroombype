@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -38,6 +37,10 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
+/**
+ * @fileOverview Refined Admin Portal Layout.
+ * Features ultra-clean glassmorphism navigation and efficient item grouping.
+ */
 export default function AdminLayout({
   children,
 }: {
@@ -65,35 +68,33 @@ export default function AdminLayout({
 
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { href: "/admin/homepage", icon: Home, label: "Homepage" },
+        { href: "/admin/homepage", icon: Home, label: "Home CMS" },
         { href: "/admin/store/products", icon: Store, label: "Products" },
-        { href: "/admin/store/categories", icon: Tags, label: "Categories" },
+        { href: "/admin/store/categories", icon: Tags, label: "Catalog" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
         { href: "/admin/store/rewards", icon: Gift, label: "Rewards" },
-        { href: "/admin/store/redeem-requests", icon: Gift, label: "Redeems" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
-        { href: "/admin/group-access", icon: Users2, label: "Group Access" },
-        { href: "/admin/absent-students", icon: PhoneCall, label: "Call Center" },
+        { href: "/admin/group-access", icon: Users2, label: "Groups" },
+        { href: "/admin/absent-students", icon: PhoneCall, label: "Call Hub" },
         { href: "/admin/callback-requests", icon: PhoneCall, label: "Callbacks" },
-        { href: "/admin/users", icon: UserCog, label: "Staff Users" },
-        { href: "/admin/students", icon: Users, label: "Student Users" },
-        { href: "/admin/doubt-solvers", icon: HelpCircle, label: "Doubt Solvers" },
-        { href: "/admin/manage-user", icon: Search, label: "Manage User" },
-        { href: "/admin/sellers", icon: Handshake, label: "Sellers" },
+        { href: "/admin/users", icon: UserCog, label: "Staff" },
+        { href: "/admin/students", icon: Users, label: "Students" },
+        { href: "/admin/doubt-solvers", icon: HelpCircle, label: "Experts" },
+        { href: "/admin/manage-user", icon: Search, label: "User Search" },
+        { href: "/admin/sellers", icon: Handshake, label: "Partners" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
         { href: "/admin/question-bank", icon: Database, label: "Question Bank" },
         { href: "/admin/notices", icon: Megaphone, label: "Notices" },
         { href: "/admin/blog", icon: Notebook, label: "Blog" },
         { href: "/admin/teachers", icon: UserCog, label: "Teachers" },
-        { href: "/admin/promo-codes", icon: TicketPercent, label: "Promo Codes" },
+        { href: "/admin/promo-codes", icon: TicketPercent, label: "Promos" },
         { href: "/admin/referrals", icon: Share2, label: "Referrals" },
-        { href: "/admin/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
-        { href: "/admin/financials", icon: DollarSign, label: "Financials" },
+        { href: "/admin/pre-bookings", icon: CalendarPlus, label: "Campaigns" },
+        { href: "/admin/financials", icon: DollarSign, label: "Sales" },
         { href: "/admin/analytics", icon: BarChartHorizontal, label: "Analytics" },
         { href: "/admin/reports", icon: AreaChart, label: "Reports" },
-        { href: "/admin/settings", icon: Settings, label: "Settings" },
-        { href: "/admin/id-card", icon: Badge, label: "ID Card" },
+        { href: "/admin/settings", icon: Settings, label: "System" },
         { href: "/", icon: LogOut, label: "Logout" },
     ];
 
@@ -110,7 +111,9 @@ export default function AdminLayout({
   return (
     <>
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-full overflow-hidden">
-        {children}
+        <div className="container max-w-7xl mx-auto">
+            {children}
+        </div>
       </main>
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
