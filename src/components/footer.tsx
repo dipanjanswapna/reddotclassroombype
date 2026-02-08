@@ -90,7 +90,7 @@ export function Footer({ homepageConfig }: { homepageConfig: HomepageConfig | nu
             <div className="flex flex-col gap-3">
                 <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 justify-start h-auto py-2.5 px-4 rounded-xl transition-all" asChild>
                     <Link href={homepageConfig?.appPromo?.googlePlayUrl || "#"}>
-                        <Image src="https://picsum.photos/seed/gp/32/32" width={24} height={24} alt="Play Store" className="mr-3" data-ai-hint="google play" />
+                        <Image src="https://picsum.photos/seed/gp/32/32" width={24} height={24} alt="Google Play Store" className="mr-3" data-ai-hint="google play" />
                         <div>
                             <p className="text-[10px] -mb-1 text-left opacity-60">Get it on</p>
                             <p className="font-bold text-left text-sm">Google Play</p>
