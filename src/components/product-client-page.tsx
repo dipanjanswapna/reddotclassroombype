@@ -61,7 +61,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-full overflow-hidden">
       {/* Left: Image Gallery */}
       <div className="lg:col-span-7 space-y-6">
         <div className="aspect-square relative bg-white dark:bg-background/50 rounded-[2.5rem] overflow-hidden border-2 border-primary/5 shadow-2xl group">
@@ -97,20 +97,20 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
       {/* Right: Product Info */}
       <div className="lg:col-span-5 space-y-8">
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
                 <Badge variant={product.stock && product.stock > 0 ? "accent" : "destructive"} className="px-4 py-1 rounded-full font-black uppercase tracking-widest text-[10px]">
                     {product.stock && product.stock > 0 ? 'In Stock' : 'Sold Out'}
                 </Badge>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 shrink-0">
                     <div className="flex items-center text-yellow-400">
                         {[...Array(5)].map((_, i) => (
                             <Star key={i} className="w-4 h-4 fill-current" />
                         ))}
                     </div>
-                    <span className="text-xs font-bold text-muted-foreground">5.0 (25 Reviews)</span>
+                    <span className="text-xs font-bold text-muted-foreground">5.0</span>
                 </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tight leading-tight">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tight leading-tight break-words">{product.name}</h1>
             <p className="text-muted-foreground text-sm font-medium leading-relaxed line-clamp-3">
                 {product.description}
             </p>
@@ -178,9 +178,9 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                 <AccordionContent className="px-6 pb-6 pt-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-muted/50 border rounded-xl overflow-hidden">
                         {specifications.map((spec, i) => (
-                            <div key={i} className="flex justify-between items-center p-4 bg-card group">
-                                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{spec.label}</span>
-                                <span className="text-sm font-bold text-foreground">{spec.value}</span>
+                            <div key={i} className="flex justify-between items-center p-4 bg-card group gap-4">
+                                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground shrink-0">{spec.label}</span>
+                                <span className="text-sm font-bold text-foreground text-right break-words">{spec.value}</span>
                             </div>
                         ))}
                     </div>

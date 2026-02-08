@@ -78,14 +78,14 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/doubt-solver');
 
   if (isPartnerSite) {
-    return <>{children}</>;
+    return <div className="max-w-full overflow-x-hidden">{children}</div>;
   }
 
   if (isStore) {
     return (
-      <div className="bg-background min-h-screen flex flex-col overflow-x-hidden">
+      <div className="bg-background min-h-screen flex flex-col overflow-x-hidden max-w-full">
         <StoreHeader categories={categories} />
-        <main className="flex-grow pt-20">
+        <main className="flex-grow pt-20 max-w-full overflow-x-hidden">
             {children}
         </main>
         <Footer homepageConfig={homepageConfig} />
@@ -94,9 +94,9 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
         <Header homepageConfig={homepageConfig} />
-        <main className="flex-grow pt-20">
+        <main className="flex-grow pt-20 max-w-full overflow-x-hidden">
           {children}
         </main>
         {!isDashboardPage && <Footer homepageConfig={homepageConfig} />}

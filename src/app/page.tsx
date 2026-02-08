@@ -150,7 +150,7 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground">
+    <div className="text-foreground overflow-x-hidden">
         <section className="py-4 md:py-6 container mx-auto px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
