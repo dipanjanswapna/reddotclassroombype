@@ -38,7 +38,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
       className="h-full min-w-[280px] flex-1 max-w-[400px]"
     >
       <Card className={cn(
-          "glassmorphism-card flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl group border-white/5",
+          "flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl group border border-white/10 dark:border-white/5 hover:border-primary/50 bg-gradient-to-br from-card to-secondary/30 dark:to-primary/5",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
