@@ -48,7 +48,7 @@ export function NoticeBoard() {
   }
 
   return (
-    <div className="my-8">
+    <div className="my-2">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
             <Card className="glassmorphism-card border-2 border-primary shadow-xl">
                 <CardHeader>

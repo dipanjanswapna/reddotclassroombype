@@ -74,7 +74,7 @@
     @apply bg-background text-foreground;
   }
   section {
-    @apply py-4 sm:py-6 lg:py-8;
+    @apply py-2 sm:py-4 lg:py-6;
   }
 }
 

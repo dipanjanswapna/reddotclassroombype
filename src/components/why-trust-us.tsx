@@ -29,7 +29,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-6 sm:py-8 overflow-hidden">
+    <section className="py-4 sm:py-6 overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 shadow-xl">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
