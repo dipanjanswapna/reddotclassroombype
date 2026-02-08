@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Settings,
   LogOut,
   BookCopy,
   Users as UsersIcon,
@@ -50,7 +49,7 @@ export default function SellerLayout({
   }
 
   const menuItems = [
-    { href: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/seller/dashboard", icon: LayoutDashboard, label: "Overview" },
     { href: "/seller/courses", icon: BookCopy, label: "Courses" },
     { href: "/seller/teachers", icon: UsersIcon, label: "Teachers" },
     { href: "/seller/students", icon: UsersIcon, label: "Learners" },

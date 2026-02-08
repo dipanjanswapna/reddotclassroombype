@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2, Gift
+  LayoutDashboard, BookOpen, BookMarked, Video, HelpCircle, 
+  Users as UsersIcon, Trophy, Calculator, Heart, Wallet, 
+  MessageSquare, LogOut, Badge, FileCheck2, Share2, Gift
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -40,22 +42,19 @@ export default function StudentLayout({
   }
 
   const navItems = [
-    { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/student/dashboard", icon: LayoutDashboard, label: "Overview" },
     { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
     { href: "/student/planner", icon: BookMarked, label: "Planner" },
-    { href: "/student/live-classes", icon: Video, label: "Live Classes" },
+    { href: "/student/live-classes", icon: Video, label: "Live" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
-    { href: "/student/exams", icon: ClipboardEdit, label: "Exams" },
     { href: "/student/grades", icon: FileCheck2, label: "Grades" },
     { href: "/student/referrals", icon: Share2, label: "Referrals" },
     { href: "/student/rewards", icon: Gift, label: "Rewards" },
-    { href: "/student/tutor", icon: Bot, label: "AI Tutor" },
-    { href: "/student/calculator", icon: Calculator, label: "Calculator" },
+    { href: "/student/calculator", icon: Calculator, label: "Tools" },
     { href: "/student/wishlist", icon: Heart, label: "Wishlist" },
     { href: "/student/payments", icon: Wallet, label: "Payments" },
-    { href: "/student/profile", icon: User, label: "Profile" },
+    { href: "/student/profile", icon: UsersIcon, label: "Profile" },
     { href: "/student/id-card", icon: Badge, label: "ID Card" },
-    { href: "/student/guardian", icon: UsersIcon, label: "Guardian" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];

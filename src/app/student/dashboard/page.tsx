@@ -6,14 +6,12 @@ import {
   Award,
   BarChart3,
   CalendarCheck,
-  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
-import type { Course, Assignment } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
@@ -28,7 +26,6 @@ export default function DashboardPage() {
     enrollments: [],
     upcomingDeadlines: [],
     inProgressCourses: [],
-    completedCoursesCount: 0,
     overallProgress: 0,
     recentAchievements: [],
   } as any);
@@ -46,8 +43,6 @@ export default function DashboardPage() {
             .filter(event => new Date(event.date) >= new Date())
             .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(0, 3);
-            
-        const completedCoursesCount = enrollments.filter(e => e.status === 'completed').length;
 
         const inProgressCourses = enrolledCourses
           .filter(c => enrollments.some(e => e.courseId === c.id && e.status === 'in-progress'))
@@ -73,21 +68,11 @@ export default function DashboardPage() {
                 icon: Award,
             });
         }
-        const completedCourse = enrolledCourses.find(c => enrollments.some(e => e.courseId === c.id && e.status === 'completed'));
-        if (completedCourse) {
-            achievements.push({
-                id: 'ach_completer',
-                title: 'Course Completer',
-                description: `Completed ${completedCourse.title}`,
-                icon: BookOpen,
-            });
-        }
         
         setStats({
           enrollments,
           upcomingDeadlines,
           inProgressCourses,
-          completedCoursesCount,
           overallProgress,
           recentAchievements: achievements.slice(0, 3)
         });
@@ -114,9 +99,9 @@ export default function DashboardPage() {
       <div className="space-y-10 md:space-y-14">
           <div className="text-center sm:text-left space-y-2">
               <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                Welcome, {userInfo?.name || 'Student'}!
+                Academic Dashboard
               </h1>
-              <p className="text-lg text-muted-foreground font-medium">Ready to continue your learning journey?</p>
+              <p className="text-lg text-muted-foreground font-medium">Welcome back, {userInfo?.name}! Let's continue your growth.</p>
               <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
           </div>
 

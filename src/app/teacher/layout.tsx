@@ -7,10 +7,8 @@ import {
   Video,
   DollarSign,
   User,
-  Settings,
   LogOut,
   TicketPercent,
-  CalendarPlus,
   FileCheck2,
   Badge,
   ClipboardCheck,
@@ -53,8 +51,8 @@ export default function TeacherLayout({
   }
 
   const menuItems = [
-    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
+    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Overview" },
+    { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
     { href: "/teacher/students", icon: Users, label: "Learners" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
     { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance" },

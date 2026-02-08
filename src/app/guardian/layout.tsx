@@ -9,7 +9,6 @@ import {
   Wallet,
   MessageSquare,
   LayoutDashboard,
-  Settings,
   LogOut,
   Badge,
   ClipboardCheck,
