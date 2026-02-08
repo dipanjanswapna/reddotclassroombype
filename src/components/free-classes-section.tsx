@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from './ui/button';
@@ -17,20 +17,43 @@ type FreeClassesSectionProps = {
 
 const ITEMS_PER_PAGE = 6;
 
+// Helper to translate Bengali grade labels to English for the UI
+const translateGrade = (grade: string) => {
+  const map: Record<string, string> = {
+    'ক্লাস ৬': 'Class 6',
+    'ক্লাস ৭': 'Class 7',
+    'ক্লাস ৮': 'Class 8',
+    'ক্লাস ৯': 'Class 9',
+    'ক্লাস ১০': 'Class 10',
+    'ক্লাস ১১': 'Class 11',
+    'ক্লাস ১২': 'Class 12',
+    'সব': 'All',
+  };
+  return map[grade] || grade;
+};
+
 export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   const { title, subtitle, classes } = sectionData;
   const { language } = useLanguage();
-  const [selectedGrade, setSelectedGrade] = useState('সব');
-  const [currentPage, setCurrentPage] = useState(1);
-
+  
   const grades = useMemo(() => {
-    if (!classes) return ['সব'];
-    return ['সব', ...Array.from(new Set(classes.map(c => c.grade)))];
+    if (!classes || classes.length === 0) return [];
+    // Extract unique grades and filter out any empty strings
+    return Array.from(new Set(classes.map(c => c.grade))).filter(Boolean);
   }, [classes]);
 
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Set initial selected grade when component mounts or grades load
+  useEffect(() => {
+    if (grades.length > 0 && !selectedGrade) {
+      setSelectedGrade(grades[0]);
+    }
+  }, [grades, selectedGrade]);
+
   const filteredClasses = useMemo(() => {
-    if (!classes) return [];
-    if (selectedGrade === 'সব') return classes;
+    if (!classes || !selectedGrade) return [];
     return classes.filter(c => c.grade === selectedGrade);
   }, [classes, selectedGrade]);
 
@@ -67,10 +90,10 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             <Button
               key={grade}
               variant={selectedGrade === grade ? 'default' : 'outline'}
-              className="rounded-full font-semibold px-3 py-1 h-8 text-xs"
+              className="rounded-full font-bold px-4 py-1 h-9 text-xs uppercase tracking-wider"
               onClick={() => handleGradeChange(grade)}
             >
-              {grade}
+              {translateGrade(grade)}
             </Button>
           ))}
         </div>
@@ -80,23 +103,26 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             const videoId = getYoutubeVideoId(item.youtubeUrl);
             const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
             return (
-              <Link key={item.id} href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                <Card className="glassmorphism-card overflow-hidden h-full flex flex-col">
-                  <div className="relative aspect-video">
+              <Link key={item.id} href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block h-full">
+                <Card className="glassmorphism-card border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 overflow-hidden h-full flex flex-col transition-all">
+                  <div className="relative aspect-video overflow-hidden">
                     <Image
                       src={thumbnailUrl}
                       alt={item.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
                       data-ai-hint="youtube video class"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <PlayCircle className="w-12 h-12 text-primary" />
+                      <PlayCircle className="w-12 h-12 text-white" />
+                    </div>
+                    <div className="absolute top-2 left-2">
+                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">{translateGrade(item.grade)}</Badge>
                     </div>
                   </div>
-                  <div className="p-3 flex flex-col flex-grow">
-                    <h3 className="font-semibold text-sm line-clamp-2">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{item.subject} • {item.instructor}</p>
+                  <div className="p-4 flex flex-col flex-grow">
+                    <h3 className="font-bold text-sm line-clamp-2 group-hover:text-primary transition-colors">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-2">{item.subject} • {item.instructor}</p>
                   </div>
                 </Card>
               </Link>
