@@ -14,7 +14,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 
 /**
  * @fileOverview Refined Student Portal Layout.
- * Synchronized vertical rhythm and premium glassmorphism navigation.
+ * Synchronized vertical rhythm and adaptive glassmorphism navigation.
  */
 export default function StudentLayout({
   children,
@@ -71,7 +71,7 @@ export default function StudentLayout({
   
   // Prevent double layouts for lesson pages
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
-      return <div className="min-h-screen bg-background">{children}</div>;
+      return <div className="min-h-screen bg-background pb-20">{children}</div>;
   }
 
   return (
@@ -86,14 +86,14 @@ export default function StudentLayout({
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-all rounded-xl",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-20 md:w-24 h-16 text-center transition-all rounded-xl",
                   getIsActive(item.href)
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               )}
             >
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
-              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>

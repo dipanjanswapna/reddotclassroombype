@@ -39,7 +39,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 
 /**
  * @fileOverview Refined Admin Portal Layout.
- * Features ultra-clean glassmorphism navigation and elite item grouping.
+ * Features ultra-clean glassmorphism navigation and high-density item grouping.
  */
 export default function AdminLayout({
   children,
@@ -120,7 +120,7 @@ export default function AdminLayout({
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-all rounded-2xl group",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-20 md:w-24 h-16 text-center transition-all rounded-2xl group",
                   getIsActive(item.href)
                     ? "bg-primary/10 text-primary shadow-inner"
                     : "text-muted-foreground hover:bg-primary/5 hover:text-primary"

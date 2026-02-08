@@ -759,19 +759,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h1 className="font-headline text-3xl font-black uppercase tracking-tight text-primary">
+            <div className="max-w-full overflow-hidden">
+                <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight text-primary truncate">
                     {isNewCourse ? 'Initiate Program' : `Forge: ${courseTitle}`}
                 </h1>
                 <div className="h-1 w-16 bg-primary mt-2 rounded-full shadow-md" />
             </div>
-            <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving} className="font-black uppercase tracking-widest text-[10px] h-11 px-6 rounded-xl border-2 shadow-xl active:scale-95 transition-all">
+            <div className="flex gap-2 shrink-0 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-11 px-6 rounded-xl border-2 shadow-xl active:scale-95 transition-all">
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
                 </Button>
-                <Button variant="accent" onClick={() => handleSave(userRole === 'Admin' ? 'Published' : 'Pending Approval')} disabled={isSaving} className="font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white active:scale-95 transition-all border-none">
+                <Button variant="accent" onClick={() => handleSave(userRole === 'Admin' ? 'Published' : 'Pending Approval')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white active:scale-95 transition-all border-none">
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
-                    {userRole === 'Admin' ? (initialStatus === 'Published' ? 'Synchronize' : 'Go Live') : 'Submit for Review'}
+                    {userRole === 'Admin' ? (initialStatus === 'Published' ? 'Sync' : 'Go Live') : 'Submit'}
                 </Button>
             </div>
         </div>
@@ -798,30 +798,30 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </div>
             </CardHeader>
             
-            <div className="p-6 md:p-10">
+            <div className="p-4 sm:p-6 md:p-10">
                 {activeTab === 'details' && (
-                    <div className="space-y-10">
+                    <div className="space-y-8 md:space-y-10">
                         <div className="space-y-2">
                             <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Program Master Title</Label>
-                            <Input value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-14 rounded-xl text-lg font-bold border-2 focus-visible:ring-primary" placeholder="e.g., HSC Physics Mastery 2025" />
+                            <Input value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-12 md:h-14 rounded-xl text-base md:text-lg font-bold border-2 focus-visible:ring-primary" placeholder="e.g., HSC Physics Mastery 2025" />
                         </div>
                         <div className="space-y-2">
                             <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Executive Summary</Label>
-                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={6} className="rounded-xl text-base border-2 focus-visible:ring-primary p-4" placeholder="Describe the curriculum's unique value..." />
+                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={6} className="rounded-xl text-sm md:text-base border-2 focus-visible:ring-primary p-4" placeholder="Describe the curriculum's unique value..." />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
                             <div className="space-y-2">
                                 <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Category</Label>
-                                <Input value={category} onChange={e => setCategory(e.target.value)} className="h-14 rounded-xl border-2 font-bold" placeholder="e.g., HSC" />
+                                <Input value={category} onChange={e => setCategory(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" placeholder="e.g., HSC" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Sub-category</Label>
-                                <Input value={subCategory} onChange={e => setSubCategory(e.target.value)} className="h-14 rounded-xl border-2 font-bold" placeholder="e.g., Physics" />
+                                <Input value={subCategory} onChange={e => setSubCategory(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" placeholder="e.g., Physics" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Delivery Mode</Label>
                                 <Select value={courseType} onValueChange={(v: any) => setCourseType(v)}>
-                                    <SelectTrigger className="h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
+                                    <SelectTrigger className="h-12 md:h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
                                     <SelectContent className="rounded-xl"><SelectItem value="Online">Online</SelectItem><SelectItem value="Offline">Offline</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Exam">Exam Batch</SelectItem></SelectContent>
                                 </Select>
                             </div>
@@ -857,19 +857,19 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <div className="space-y-14">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                             <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl">
-                                <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Revenue Structure</CardTitle></CardHeader>
-                                <CardContent className="p-8 space-y-6">
-                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Base Listing Price (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-primary" placeholder="4500" /></div>
-                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Incentive Price (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-green-600" placeholder="3000" /></div>
+                                <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Revenue Structure</CardTitle></CardHeader>
+                                <CardContent className="p-6 md:p-8 space-y-6">
+                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Base Listing Price (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl text-primary" placeholder="4500" /></div>
+                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Incentive Price (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl text-green-600" placeholder="3000" /></div>
                                 </CardContent>
                             </Card>
                             <Card className="rounded-2xl border-2 border-muted overflow-hidden shadow-xl">
-                                <CardHeader className="bg-muted/30 p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
-                                <CardContent className="p-8 space-y-6">
+                                <CardHeader className="bg-muted/30 p-6 md:p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
+                                <CardContent className="p-6 md:p-8 space-y-6">
                                     {isPrebooking ? (
                                         <>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Campaign Price (BDT)</Label><Input type="number" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">End Date</Label><DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} className="h-14 rounded-xl border-2" /></div>
+                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Campaign Price (BDT)</Label><Input type="number" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl" /></div>
+                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">End Date</Label><DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} className="h-12 md:h-14 rounded-xl border-2" /></div>
                                         </>
                                     ) : <div className="h-48 flex items-center justify-center text-muted-foreground font-medium italic">Pre-booking campaign inactive</div>}
                                 </CardContent>
@@ -877,9 +877,9 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </div>
                         
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between border-b-2 border-primary/10 pb-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b-2 border-primary/10 pb-4 gap-4">
                                 <h3 className="font-black uppercase tracking-tight text-xl">Payment Entitlement Cycles</h3>
-                                <Button onClick={addCycle} variant="outline" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] border-2 border-dashed"><PlusCircle className="mr-2 h-4 w-4"/> New Cycle</Button>
+                                <Button onClick={addCycle} variant="outline" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] border-2 border-dashed w-full sm:w-auto"><PlusCircle className="mr-2 h-4 w-4"/> New Cycle</Button>
                             </div>
                             <div className="grid gap-6">
                                 {(cycles || []).map((cycle, index) => (
@@ -920,13 +920,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'outcomes' && (
                     <div className="space-y-10">
-                        <div className="p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
+                        <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
                             <Label className="font-black uppercase text-sm tracking-tight text-primary">Key Learning Milestones</Label>
                             {whatYouWillLearn.map((outcome, index) => (
                                 <div key={index} className="flex items-center gap-4 group">
-                                    <Badge variant="outline" className="h-10 w-10 rounded-full flex items-center justify-center font-black bg-muted/50">{index + 1}</Badge>
+                                    <Badge variant="outline" className="h-10 w-10 rounded-full flex items-center justify-center font-black bg-muted/50 shrink-0">{index + 1}</Badge>
                                     <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} className="h-12 rounded-xl border-2 focus-visible:ring-primary flex-grow" placeholder="What student will achieve..." />
-                                    <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-5 w-5"/></Button>
+                                    <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shrink-0"><Trash2 className="h-5 w-5"/></Button>
                                 </div>
                             ))}
                             <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-md hover:bg-primary/5" onClick={addOutcome}><PlusCircle className="mr-2 h-5 w-5"/> Add Milestone</Button>
@@ -943,12 +943,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover transition-transform group-hover:scale-110" />
                                         <Button variant="destructive" size="icon" onClick={() => removeInstructorFn(inst.slug)} className="absolute top-2 right-2 rounded-xl shadow-2xl h-9 w-9"><X className="h-4 w-4"/></Button>
                                     </div>
-                                    <div className="p-4"><p className="font-black uppercase text-sm leading-tight">{inst.name}</p></div>
+                                    <div className="p-4"><p className="font-black uppercase text-sm leading-tight break-words">{inst.name}</p></div>
                                 </Card>
                             ))}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-4 border-dashed border-4 rounded-2xl border-primary/10 hover:bg-primary/5">
+                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-4 border-dashed border-4 rounded-2xl border-primary/10 hover:bg-primary/5 min-h-[250px]">
                                         <PlusCircle className="h-10 w-10 text-primary" />
                                         <span className="font-black uppercase text-[10px] tracking-widest">Appoint Mentor</span>
                                     </Button>
@@ -976,8 +976,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 {activeTab === 'doubtsolvers' && (
                     <div className="space-y-10">
                         <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
-                            <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Expert Doubt Solver Force</CardTitle><CardDescription className="font-bold">Select dedicated solvers for this program.</CardDescription></CardHeader>
-                            <CardContent className="p-8">
+                            <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Expert Doubt Solver Force</CardTitle><CardDescription className="font-bold">Select dedicated solvers for this program.</CardDescription></CardHeader>
+                            <CardContent className="p-6 md:p-8">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {allDoubtSolvers.map(solver => (
                                         <div key={solver.uid} className={cn("flex items-center justify-between p-4 rounded-xl border-2 transition-all", doubtSolverIds.includes(solver.uid) ? 'border-primary bg-primary/5' : 'border-muted/50 hover:border-primary/20')}>
@@ -1000,28 +1000,28 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             {examTemplates.map((exam, index) => (
                                 <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
                                     <div className="flex justify-between items-center p-6 bg-primary/5 border-b-2 border-primary/5">
-                                        <div className="flex items-center gap-4"><Award className="h-6 w-6 text-primary"/><span className="font-black uppercase text-base">{exam.title || `Mock Assessment ${index + 1}`}</span></div>
+                                        <div className="flex items-center gap-4"><Award className="h-6 w-6 text-primary shrink-0"/><span className="font-black uppercase text-base truncate">{exam.title || `Mock Assessment ${index + 1}`}</span></div>
                                         <div className="flex items-center gap-2">
                                             <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="text-destructive rounded-xl hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
                                             <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="rounded-xl"><ChevronDown className="h-5 w-5"/></Button></CollapsibleTrigger>
                                         </div>
                                     </div>
-                                    <CollapsibleContent className="p-8 space-y-8">
+                                    <CollapsibleContent className="p-6 md:p-8 space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            <div className="space-y-2 md:col-span-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-14 rounded-xl border-2 font-bold" /></div>
+                                            <div className="space-y-2 md:col-span-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
                                             <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Execution Mode</Label>
                                                 <Select value={exam.examType} onValueChange={(v: any) => updateExam(exam.id, 'examType', v)}>
-                                                    <SelectTrigger className="h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
+                                                    <SelectTrigger className="h-12 md:h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
                                                     <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (Auto)</SelectItem><SelectItem value="Written">Written (Manual)</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem></SelectContent>
                                                 </Select>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-14 rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Full Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-14 rounded-xl border-2 font-black text-xl text-primary" /></div>
+                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
+                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Full Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl text-primary" /></div>
                                         </div>
                                         <div className="pt-6 border-t-2 border-primary/5 flex justify-end">
-                                            <Button variant="outline" onClick={() => openQuestionBank(exam)} className="rounded-xl h-12 font-black uppercase text-[10px] tracking-widest border-2 border-dashed shadow-md"><Database className="mr-2 h-4 w-4"/> Inject Questions from Bank</Button>
+                                            <Button variant="outline" onClick={() => openQuestionBank(exam)} className="rounded-xl h-12 font-black uppercase text-[10px] tracking-widest border-2 border-dashed shadow-md w-full sm:w-auto"><Database className="mr-2 h-4 w-4"/> Inject Questions from Bank</Button>
                                         </div>
                                     </CollapsibleContent>
                                 </Collapsible>
@@ -1033,7 +1033,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'routine' && (
                     <div className="space-y-10">
-                        <div className="p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
+                        <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
                             {classRoutine.map((item) => (
                                 <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 rounded-xl bg-muted/20 border-2 border-transparent hover:border-primary/10 transition-all">
                                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Day</Label>
@@ -1053,10 +1053,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'settings' && (
                     <div className="space-y-10">
-                        <div className="space-y-10 p-10 border-2 rounded-2xl bg-card shadow-2xl relative overflow-hidden">
+                        <div className="space-y-10 p-6 md:p-10 border-2 rounded-2xl bg-card shadow-2xl relative overflow-hidden">
                             <div className="space-y-4">
                                 <Label className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest text-primary"><LinkIcon className="h-4 w-4"/> Master Community URL</Label>
-                                <Input value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." className="h-14 rounded-xl border-2 font-medium shadow-sm" />
+                                <Input value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." className="h-12 md:h-14 rounded-xl border-2 font-medium shadow-sm" />
                             </div>
                             <Separator className="opacity-50" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1077,16 +1077,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
         {/* AI & Question Bank Dialogs */}
         <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
-            <DialogContent className="rounded-3xl p-10 border-4 border-primary shadow-2xl">
+            <DialogContent className="rounded-3xl p-6 md:p-10 border-4 border-primary shadow-2xl">
                 <DialogHeader className="text-center">
                     <Wand2 className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-                    <DialogTitle className="text-3xl font-black uppercase tracking-tight text-primary">RDC AI Architect</DialogTitle>
-                    <DialogDescription className="font-bold text-lg mt-2">Forge a master blueprint for your new curriculum.</DialogDescription>
+                    <DialogTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-primary">RDC AI Architect</DialogTitle>
+                    <DialogDescription className="font-bold text-base md:text-lg mt-2">Forge a master blueprint for your new curriculum.</DialogDescription>
                 </DialogHeader>
-                <div className="py-8"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Physics Crash Course for HSC 2025" className="h-16 rounded-xl border-4 text-xl font-black text-center" /></div>
-                <DialogFooter className="sm:justify-center gap-4">
-                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-14 px-10 font-black border-2">Abort</Button>
-                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-14 px-12 font-black bg-primary text-white shadow-2xl">
+                <div className="py-8"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Physics Crash Course for HSC 2025" className="h-14 md:h-16 rounded-xl border-4 text-lg md:text-xl font-black text-center" /></div>
+                <DialogFooter className="sm:justify-center gap-4 flex-col sm:flex-row">
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-14 px-10 font-black border-2 w-full sm:w-auto">Abort</Button>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-14 px-12 font-black bg-primary text-white shadow-2xl w-full sm:w-auto">
                         {isGenerating ? <Loader2 className="mr-3 h-5 w-5 animate-spin"/> : <Wand2 className="mr-3 h-5 w-5"/>} 
                         Build Blueprints
                     </Button>
@@ -1095,29 +1095,29 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         </Dialog>
         
         <Dialog open={isQuestionBankOpen} onOpenChange={setIsQuestionBankOpen}>
-          <DialogContent className="max-w-5xl rounded-3xl border-4 border-primary overflow-hidden p-0 shadow-2xl">
-              <DialogHeader className="p-8 bg-primary/5 border-b-2 border-primary/10"><DialogTitle className="text-3xl font-black uppercase">Intelligence Repository</DialogTitle></DialogHeader>
-              <div className="flex flex-wrap gap-4 p-6 bg-muted/20 border-b-2">
-                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-[200px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Subject"/></SelectTrigger>
+          <DialogContent className="max-w-5xl rounded-3xl border-4 border-primary overflow-hidden p-0 shadow-2xl w-[95vw]">
+              <DialogHeader className="p-6 md:p-8 bg-primary/5 border-b-2 border-primary/10"><DialogTitle className="text-2xl md:text-3xl font-black uppercase">Intelligence Repository</DialogTitle></DialogHeader>
+              <div className="flex flex-wrap gap-4 p-4 md:p-6 bg-muted/20 border-b-2">
+                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[200px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Subject"/></SelectTrigger>
                     <SelectContent className="rounded-xl">{[...new Set(questionBank.map(q => q.subject).filter(Boolean))].map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
                 </Select>
-                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-[150px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Difficulty"/></SelectTrigger>
+                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[150px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Difficulty"/></SelectTrigger>
                     <SelectContent className="rounded-xl"><SelectItem value="all">All Scales</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                 </Select>
               </div>
-              <div className="max-h-[40vh] overflow-y-auto p-6 scrollbar-hide">
+              <div className="max-h-[40vh] overflow-y-auto p-4 md:p-6 scrollbar-hide">
                   <Table><TableBody className="divide-y">
                       {filteredQbQuestions.map(q => (
                           <TableRow key={q.id} className="hover:bg-primary/5 border-none">
                               <TableCell className="w-12"><Checkbox checked={qbSelectedQuestions.some(sq => sq.id === q.id)} onCheckedChange={(checked) => checked ? setQbSelectedQuestions(p => [...p, q]) : setQbSelectedQuestions(p => p.filter(sq => sq.id !== q.id))} /></TableCell>
-                              <TableCell className="font-bold text-base">{q.text}</TableCell>
+                              <TableCell className="font-bold text-sm md:text-base break-words">{q.text}</TableCell>
                               <TableCell><Badge variant="outline" className="rounded-lg px-3 py-1 font-black text-[9px] uppercase">{q.type}</Badge></TableCell>
                           </TableRow>
                       ))}</TableBody></Table>
               </div>
-              <DialogFooter className="p-8 border-t-2 border-primary/5 bg-muted/10">
-                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)} className="rounded-xl h-12 font-black px-10 border-2">Cancel</Button>
-                  <Button onClick={handleAddQuestionsFromBank} className="rounded-xl h-12 font-black px-12 bg-primary text-white shadow-2xl">Inject {qbSelectedQuestions.length} Selected Artifacts</Button>
+              <DialogFooter className="p-6 md:p-8 border-t-2 border-primary/5 bg-muted/10 flex-col sm:flex-row gap-4">
+                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)} className="rounded-xl h-12 font-black px-10 border-2 w-full sm:w-auto">Cancel</Button>
+                  <Button onClick={handleAddQuestionsFromBank} className="rounded-xl h-12 font-black px-12 bg-primary text-white shadow-2xl w-full sm:w-auto truncate">Inject {qbSelectedQuestions.length} Selected Artifacts</Button>
               </DialogFooter>
           </DialogContent>
         </Dialog>

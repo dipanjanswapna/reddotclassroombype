@@ -175,7 +175,7 @@ export default function Home() {
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-12 bg-muted/30 py-10 md:py-12 rounded-[2.5rem] border border-primary/10 shadow-sm relative overflow-hidden group">
+              <div className="text-center mb-12 bg-muted/30 py-10 md:py-12 rounded-3xl border border-primary/10 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
                 <h2 id="hero-heading" className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 relative z-10 uppercase">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.en}</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto mt-4 text-base md:text-lg font-medium px-6 relative z-10 leading-relaxed">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.en}</p>
@@ -196,7 +196,7 @@ export default function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
           <SectionWrapper>
               <div 
-                className="group relative rounded-[3rem] bg-card border-2 border-primary p-10 md:p-16 flex flex-wrap items-center justify-center lg:justify-between gap-12 overflow-hidden shadow-2xl transition-all hover:shadow-primary/10"
+                className="group relative rounded-[2.5rem] bg-card border-2 border-primary p-10 md:p-16 flex flex-wrap items-center justify-center lg:justify-between gap-12 overflow-hidden shadow-2xl transition-all hover:shadow-primary/10"
               >
                   <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-1000"></div>
                   <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-10 text-center lg:text-left z-10 flex-1">
@@ -218,7 +218,7 @@ export default function Home() {
                           </p>
                       </div>
                   </div>
-                  <Button asChild size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] h-16 px-12 rounded-[1.5rem] shrink-0 z-10 w-full lg:w-auto shadow-2xl shadow-primary/20 border-none active:scale-95 transition-all">
+                  <Button asChild size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] h-16 px-12 rounded-xl shrink-0 z-10 w-full lg:w-auto shadow-2xl shadow-primary/20 border-none active:scale-95 transition-all">
                       <Link href="/strugglers-studies" className="flex items-center gap-3">
                           {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.en}
                            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
@@ -230,7 +230,7 @@ export default function Home() {
 
         {homepageConfig.teachersSection?.display && (
           <SectionWrapper aria-labelledby="teachers-heading">
-            <Card className="rounded-[3rem] bg-card border-2 border-primary shadow-2xl p-10 md:p-16 overflow-hidden relative">
+            <Card className="rounded-[2.5rem] bg-card border-2 border-primary shadow-2xl p-10 md:p-16 overflow-hidden relative">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50"></div>
               <div className="flex flex-col lg:flex-row items-center justify-between mb-12 gap-8 relative z-10">
                   <div className="text-center lg:text-left space-y-3">
@@ -252,7 +252,7 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <SectionWrapper aria-labelledby="video-section-heading">
             <div className="text-center space-y-12">
-                <div className="text-center bg-muted/30 py-12 rounded-[2.5rem] border border-primary/10 shadow-sm overflow-hidden relative">
+                <div className="text-center bg-muted/30 py-12 rounded-3xl border border-primary/10 shadow-sm overflow-hidden relative">
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/5 to-transparent"></div>
                   <h2 id="video-section-heading" className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 relative z-10 uppercase">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.en}</h2>
                   <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-lg md:text-xl font-medium px-6 relative z-10 leading-relaxed">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.en}</p>
@@ -270,7 +270,7 @@ export default function Home() {
                             target="_blank" 
                             rel="noopener noreferrer" 
                             whileHover={{ y: -10 }}
-                            className="relative rounded-[2rem] overflow-hidden group shadow-2xl block flex-1 min-w-[280px] max-w-[550px] border-4 border-primary/5"
+                            className="relative rounded-2xl overflow-hidden group shadow-2xl block flex-1 min-w-[280px] max-w-[550px] border-4 border-primary/5"
                           >
                               <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-1000 group-hover:scale-110" />
                               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px]">
@@ -281,7 +281,7 @@ export default function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="default" size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-[1.5rem] shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
+                <Button asChild variant="default" size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-2xl shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language] || homepageConfig.videoSection?.buttonText?.en}</Link>
                 </Button>
             </div>
@@ -311,7 +311,7 @@ export default function Home() {
                     <HeadingUnderline />
                   </div>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-[1.5rem] shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-2xl shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language] || homepageConfig.masterclassSection?.buttonText?.en}</Link>
                   </Button>
               </div>
@@ -329,7 +329,7 @@ export default function Home() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-[1.5rem] shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-2xl shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language] || homepageConfig.admissionSection?.buttonText?.en}</Link>
                   </Button>
               </div>
@@ -347,7 +347,7 @@ export default function Home() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-[1.5rem] shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-black uppercase tracking-[0.2em] text-[10px] h-16 px-14 rounded-2xl shadow-2xl shadow-accent/20 bg-accent text-accent-foreground transition-all active:scale-95 border-none">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.en}</Link>
                   </Button>
               </div>
@@ -401,14 +401,14 @@ export default function Home() {
                     key={channel.id}
                     className="flex-1 min-w-[280px] max-w-[350px]"
                   >
-                    <Card className="text-center p-10 flex flex-col h-full items-center justify-between rounded-[2.5rem] border border-primary/10 bg-card hover:border-primary/40 transition-all duration-500 shadow-xl hover:shadow-2xl group">
+                    <Card className="text-center p-8 md:p-10 flex flex-col h-full items-center justify-between rounded-3xl border border-primary/10 bg-card hover:border-primary/40 transition-all duration-500 shadow-xl hover:shadow-2xl group">
                       <CardHeader className="p-0 w-full">
                         <div className="flex flex-col items-center gap-4 mb-6">
                           <div className={cn("w-16 h-16 rounded-3xl flex items-center justify-center shadow-2xl transition-transform duration-500 group-hover:scale-110", channel.platform === 'YouTube' ? 'bg-red-600 shadow-red-600/20' : 'bg-blue-600 shadow-blue-600/20')}>
                             <SocialIcon platform={channel.platform} className="w-8 h-8"/>
                           </div>
                           <div>
-                            <CardTitle className="text-2xl font-black uppercase tracking-tight">{typeof channel.name === 'object' ? (channel.name[language] || channel.name.en) : channel.name}</CardTitle>
+                            <CardTitle className="text-2xl font-black uppercase tracking-tight break-words">{typeof channel.name === 'object' ? (channel.name[language] || channel.name.en) : channel.name}</CardTitle>
                             <CardDescription className="text-sm font-bold text-primary/60 uppercase tracking-[0.2em] mt-1">{channel.handle}</CardDescription>
                           </div>
                         </div>
@@ -457,7 +457,7 @@ export default function Home() {
                         <motion.div 
                           key={index}
                           whileHover={{ scale: 1.05 }}
-                          className="text-center rounded-[3rem] bg-card border-2 border-primary/10 p-12 flex-1 min-w-[280px] max-w-[380px] shadow-2xl relative overflow-hidden group"
+                          className="text-center rounded-3xl bg-card border-2 border-primary/10 p-12 flex-1 min-w-[280px] max-w-[380px] shadow-2xl relative overflow-hidden group"
                         >
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
                             <p className="font-headline text-6xl font-black text-primary tracking-tighter drop-shadow-sm">{stat.value}</p>
@@ -471,14 +471,14 @@ export default function Home() {
 
         {homepageConfig.notesBanner?.display && (
           <SectionWrapper aria-labelledby="notes-banner-heading">
-              <div className="rounded-[3rem] bg-card border-4 border-primary p-12 md:p-20 flex flex-col lg:flex-row items-center justify-between gap-12 shadow-2xl relative overflow-hidden group/notes">
+              <div className="rounded-3xl bg-card border-4 border-primary p-12 md:p-20 flex flex-col lg:flex-row items-center justify-between gap-12 shadow-2xl relative overflow-hidden group/notes">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full -mr-64 -mt-64 blur-[100px] opacity-50 group-hover/notes:bg-primary/10 transition-colors duration-1000"></div>
                     <div className='text-center lg:text-left relative z-10 flex-1'>
                         <Badge variant="outline" className="mb-6 font-black uppercase text-[10px] tracking-[0.3em] px-6 py-1.5 rounded-full border-primary/30 text-primary bg-primary/5">Knowledge Repository</Badge>
                         <h3 id="notes-banner-heading" className="font-headline text-4xl md:text-5xl font-black text-green-700 dark:text-green-500 uppercase tracking-tight leading-tight">{homepageConfig.notesBanner?.title?.[language] || homepageConfig.notesBanner?.title?.en}</h3>
                         <p className="text-lg md:text-xl text-muted-foreground mt-6 leading-relaxed font-medium max-w-2xl opacity-90">{homepageConfig.notesBanner?.description?.[language] || homepageConfig.notesBanner?.description?.en}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] shrink-0 bg-primary text-white flex-1 sm:flex-none shadow-2xl shadow-primary/20 h-16 px-14 rounded-[1.5rem] relative z-10 active:scale-95 transition-all border-none">
+                    <Button variant="default" size="lg" className="font-black uppercase tracking-[0.2em] text-[10px] shrink-0 bg-primary text-white flex-1 sm:flex-none shadow-2xl shadow-primary/20 h-16 px-14 rounded-2xl relative z-10 active:scale-95 transition-all border-none">
                       {homepageConfig.notesBanner?.buttonText?.[language] || homepageConfig.notesBanner?.buttonText?.en}
                     </Button>
                 </div>
@@ -491,7 +491,7 @@ export default function Home() {
         
         {homepageConfig.appPromo?.display && (
           <SectionWrapper aria-labelledby="app-promo-heading">
-              <div className="rounded-[4rem] bg-card border-2 border-primary bg-gradient-to-br from-primary/5 via-background to-secondary/30 p-12 md:p-24 shadow-2xl overflow-hidden relative group/app">
+              <div className="rounded-[2.5rem] md:rounded-[4rem] bg-card border-2 border-primary bg-gradient-to-br from-primary/5 via-background to-secondary/30 p-10 md:p-24 shadow-2xl overflow-hidden relative group/app">
                   <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full -mr-80 -mt-80 blur-[120px] group-hover/app:bg-primary/10 transition-colors duration-1000"></div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
                       <div className="text-center lg:text-left">
@@ -500,7 +500,7 @@ export default function Home() {
                         </div>
                         <h2 
                           id="app-promo-heading"
-                          className="font-headline text-4xl md:text-6xl font-black text-green-700 dark:text-green-500 uppercase tracking-tight leading-tight"
+                          className="font-headline text-4xl md:text-6xl font-black text-green-700 dark:text-green-500 uppercase tracking-tight leading-tight break-words"
                         >
                           {homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.en}
                         </h2>
@@ -509,12 +509,12 @@ export default function Home() {
                         </p>
                         <div className="flex justify-center lg:justify-start gap-8 mt-14 flex-wrap">
                             <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'} className="block">
-                                <motion.div whileHover={{ scale: 1.05 }} className="shadow-2xl rounded-2xl overflow-hidden border-2 border-white/10">
+                                <motion.div whileHover={{ scale: 1.05 }} className="shadow-2xl rounded-2xl overflow-hidden border-2 border-white/10 bg-white">
                                   <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={220} height={66} alt="Google Play Store" className="object-contain" data-ai-hint="google play button"/>
                                 </motion.div>
                             </Link>
                             <Link href={homepageConfig.appPromo?.appStoreUrl || '#'} className="block">
-                                <motion.div whileHover={{ scale: 1.05 }} className="shadow-2xl rounded-2xl overflow-hidden border-2 border-white/10">
+                                <motion.div whileHover={{ scale: 1.05 }} className="shadow-2xl rounded-2xl overflow-hidden border-2 border-white/10 bg-white">
                                   <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={220} height={66} alt="Apple App Store" className="object-contain" data-ai-hint="app store button"/>
                                 </motion.div>
                             </Link>

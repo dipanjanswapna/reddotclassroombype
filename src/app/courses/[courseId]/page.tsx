@@ -47,7 +47,7 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 
 /**
  * @fileOverview Overhauled Course Detail Page.
- * Implements strict responsive grid density and synchronized UI with Course Builder.
+ * Implements strict responsive grid density and synchronized adaptive content stacking.
  */
 
 export async function generateMetadata({ params }: { params: Promise<{ courseId: string }> }): Promise<Metadata> {
@@ -109,7 +109,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
               <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground uppercase break-words">
                 {course.title}
               </h1>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed font-medium">
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed font-medium break-words">
                 {course.description}
               </p>
 
@@ -185,7 +185,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                                 <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary transition-colors duration-300">
                                     <CheckCircle2 className="w-5 h-5 text-primary group-hover:text-white" />
                                 </div>
-                                <p className="font-bold text-sm leading-relaxed">{item}</p>
+                                <p className="font-bold text-sm leading-relaxed break-words">{item}</p>
                             </div>
                         ))}
                     </div>
@@ -212,8 +212,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                                 {course.classRoutine.map((item, index) => (
                                     <TableRow key={index} className="hover:bg-primary/5 transition-colors border-b last:border-0">
                                         <TableCell className="font-black px-8 py-5 text-sm uppercase">{item.day}</TableCell>
-                                        <TableCell className="font-bold px-8 py-5 text-sm">{item.subject}</TableCell>
-                                        <TableCell className="font-black text-primary px-8 py-5 text-sm text-right">{item.time}</TableCell>
+                                        <TableCell className="font-bold px-8 py-5 text-sm break-words">{item.subject}</TableCell>
+                                        <TableCell className="font-black text-primary px-8 py-5 text-sm text-right whitespace-nowrap">{item.time}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -221,12 +221,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                     </div>
                     <div className="md:hidden space-y-3">
                         {course.classRoutine.map((item, index) => (
-                            <div key={index} className="bg-card border-2 border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center">
-                                <div className="space-y-1">
+                            <div key={index} className="bg-card border-2 border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center gap-4">
+                                <div className="space-y-1 overflow-hidden">
                                     <p className="font-black text-[10px] uppercase text-primary tracking-[0.2em]">{item.day}</p>
-                                    <p className="font-bold text-sm leading-tight">{item.subject}</p>
+                                    <p className="font-bold text-sm leading-tight break-words">{item.subject}</p>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right shrink-0">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
                                         <Clock className="w-3.5 h-3.5" />
                                         <span className="text-xs font-black">{item.time}</span>
@@ -249,18 +249,18 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                         {course.examTemplates.map((exam, index) => (
                             <div key={index} className="bg-card border-2 border-primary/10 rounded-2xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-primary/40 transition-all">
                                 <div className="flex items-center gap-5">
-                                    <div className="p-4 bg-primary/10 rounded-2xl border-2 border-primary/5 group-hover:bg-primary group-hover:text-white transition-all">
+                                    <div className="p-4 bg-primary/10 rounded-2xl border-2 border-primary/5 group-hover:bg-primary group-hover:text-white transition-all shrink-0">
                                         <Award className="w-8 h-8" />
                                     </div>
-                                    <div>
-                                        <h3 className="font-black text-lg md:text-xl uppercase tracking-tight">{exam.title}</h3>
+                                    <div className="overflow-hidden">
+                                        <h3 className="font-black text-lg md:text-xl uppercase tracking-tight break-words">{exam.title}</h3>
                                         <p className="text-sm text-muted-foreground font-bold uppercase tracking-wider">{exam.examType} Assessment • {exam.totalMarks} Marks</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-4 md:pt-0">
+                                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-4 md:pt-0 shrink-0">
                                     <div className="text-left md:text-right">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Scheduled On</p>
-                                        <p className="font-black text-sm">{exam.examDate ? format(safeToDate(exam.examDate), 'PPP') : 'TBD'}</p>
+                                        <p className="font-black text-sm whitespace-nowrap">{exam.examDate ? format(safeToDate(exam.examDate), 'PPP') : 'TBD'}</p>
                                     </div>
                                     <CalendarCheck className="w-6 h-6 text-primary opacity-20" />
                                 </div>
@@ -278,29 +278,29 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                         <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                         Curriculum
                     </h2>
-                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[10px] py-2 px-6 rounded-full border-primary/20 shadow-inner">
+                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[10px] py-2 px-6 rounded-full border-primary/20 shadow-inner w-fit">
                         {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} Professional Lessons
                     </Badge>
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-4">
                   {course.syllabus.map((item) => (
                     <AccordionItem value={item.id} key={item.id} className="border-none rounded-2xl overflow-hidden bg-muted/30 shadow-sm transition-all hover:shadow-md">
-                      <AccordionTrigger className="text-lg font-black px-8 py-6 hover:no-underline hover:bg-primary/5 data-[state=open]:text-primary transition-all text-left">
-                        <div className="flex items-center gap-5">
+                      <AccordionTrigger className="text-lg font-black px-6 md:px-8 py-6 hover:no-underline hover:bg-primary/5 data-[state=open]:text-primary transition-all text-left">
+                        <div className="flex items-center gap-5 overflow-hidden">
                            <BookOpen className="w-6 h-6 shrink-0 opacity-70 text-primary"/>
-                           <span className="uppercase tracking-tight">{item.title}</span>
+                           <span className="uppercase tracking-tight break-words">{item.title}</span>
                         </div>
                       </AccordionTrigger>
-                      <AccordionContent className="px-8 pb-6 pt-2">
+                      <AccordionContent className="px-6 md:px-8 pb-6 pt-2">
                         <ul className="space-y-2">
                             {item.lessons.map(lesson => (
                                 <li key={lesson.id} className="flex items-center gap-4 p-4 rounded-xl bg-background border border-primary/5 hover:border-primary/20 transition-all group">
-                                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
+                                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors shrink-0">
                                         <PlayCircle className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors"/>
                                     </div>
                                     <div className="min-w-0 flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                        <span className="font-bold text-sm truncate uppercase pr-2">{lesson.title}</span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/50 px-3 py-1 rounded-full shrink-0">{lesson.duration}</span>
+                                        <span className="font-bold text-sm break-words uppercase pr-2">{lesson.title}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/50 px-3 py-1 rounded-full shrink-0 w-fit">{lesson.duration}</span>
                                     </div>
                                 </li>
                             ))}
@@ -315,7 +315,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
 
           {/* Checkout Sidebar */}
           <div className="lg:col-span-4">
-             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] overflow-hidden transition-all hover:shadow-primary/5">
+             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-3xl overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 p-8 md:p-10">
                   {isPrebookingActive ? (
                       <div className="space-y-2">
