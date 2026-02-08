@@ -47,12 +47,12 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 
 /**
  * @fileOverview Partner-specific Course Detail Page.
- * Mirroring the high-quality main course detail page for consistency.
+ * Updated for Next.js 15 async params compliance and elite visual standard.
  */
 
-export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
-  const awaitedParams = await params;
-  const course = await getCourse(awaitedParams.courseId);
+export async function generateMetadata({ params }: { params: Promise<{ site: string; courseId: string }> }): Promise<Metadata> {
+  const { courseId } = await params;
+  const course = await getCourse(courseId);
 
   if (!course) {
     return {
@@ -72,10 +72,9 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 export default async function PartnerCourseDetailPage({
   params,
 }: {
-  params: { site: string; courseId: string };
+  params: Promise<{ site: string; courseId: string }>;
 }) {
-  const awaitedParams = await params;
-  const { site, courseId } = awaitedParams;
+  const { site, courseId } = await params;
   const course = await getCourse(courseId);
 
   if (!course || course.isArchived) {

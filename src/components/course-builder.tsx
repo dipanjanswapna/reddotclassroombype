@@ -15,6 +15,7 @@ import {
   GripVertical,
   ChevronDown,
   BookCopy,
+  BookOpen,
   HelpCircle,
   Users,
   Calendar,
@@ -485,7 +486,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -1015,7 +1020,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <div className="space-y-10">
                         <div className="bg-primary/5 p-6 rounded-[2rem] border-2 border-primary/10 flex items-center gap-4 shadow-inner">
                             <div className="p-3 bg-primary/10 rounded-2xl">
-                                <BookCopy className="h-6 w-6 text-primary" />
+                                <BookOpen className="h-6 w-6 text-primary" />
                             </div>
                             <p className="text-sm font-bold text-foreground leading-relaxed">Design your program roadmap. Modules can be assigned to individual payment cycles for flexible enrollment.</p>
                         </div>
@@ -1116,7 +1121,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                                 {(cycle.moduleIds && cycle.moduleIds.length > 0) ? cycle.moduleIds.map(id => {
                                                                     const module = syllabus.find(s => s.id === id);
                                                                     return module ? <Badge key={id} variant="secondary" className="rounded-xl px-3 py-1 font-bold text-[10px] uppercase tracking-wider">{module.title}</Badge> : null;
-                                                                }) : <span className="text-muted-foreground font-medium italic">Authorize specific modules for this cycle...</span>}
+                                                                }) : <span className="text-muted-foreground font-medium italic opacity-60">Authorize specific modules for this cycle...</span>}
                                                             </div>
                                                         </Button>
                                                     </PopoverTrigger>
@@ -1279,7 +1284,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                 <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-[0.25em] rounded-full px-4 py-1 shadow-sm">Milestone Task {index + 1}</Badge>
                                                 <h4 className="text-lg font-black uppercase tracking-tight pt-2">{assignment.title || 'Untitled Task'}</h4>
                                             </div>
-                                            <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)} className="h-10 w-10 text-destructive hover:bg-destructive/10 rounded-xl transition-all"><Trash2 className="h-5 w-5"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => removeAssignment(assignment.id)} className="text-destructive h-10 w-10 hover:bg-destructive/10 rounded-xl transition-all"><Trash2 className="h-5 w-5"/></Button>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Task Title</Label><Input value={assignment.title} onChange={e => updateAssignment(assignment.id, 'title', e.target.value)} className="h-14 rounded-2xl border-2 font-bold shadow-sm" placeholder="e.g., Quantum Mechanics Homework" /></div>
@@ -1372,7 +1377,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 <Label htmlFor="thumbnail" className="font-black uppercase text-[10px] tracking-[0.25em] text-primary">Master Program Cover (HD Recommended)</Label>
                                 <div className="flex flex-col md:flex-row gap-10 items-start">
                                     <div className="w-full md:w-[450px] aspect-[16/10] relative rounded-[2.5rem] overflow-hidden border-8 border-primary/5 shadow-2xl bg-muted shrink-0 group">
-                                        <Image src={thumbnailUrl} alt="Program Thumbnail Preview" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                                        <Image src={thumbnailUrl} alt="Program Thumbnail Preview" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <CloudUpload className="h-16 w-16 text-white drop-shadow-2xl" />
                                         </div>

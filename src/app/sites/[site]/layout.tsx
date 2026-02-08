@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { PartnerHeader } from '@/components/partner-header';
@@ -7,14 +6,19 @@ import { LanguageProvider } from '@/context/language-context';
 import { getPartnerBySubdomain } from '@/lib/firebase/firestore';
 import { Organization } from '@/lib/types';
 
+/**
+ * @fileOverview Partner Site Layout.
+ * Updated for Next.js 15 async params compliance.
+ */
 export default async function PartnerSiteLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { site: string };
+  params: Promise<{ site: string }>;
 }) {
-  const partner: Organization | null = await getPartnerBySubdomain(params.site);
+  const { site } = await params;
+  const partner: Organization | null = await getPartnerBySubdomain(site);
 
   if (!partner) {
     notFound();
