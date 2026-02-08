@@ -21,8 +21,8 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview Optimized Offline Hub Carousel.
- * Features a mobile-first responsive layout, removed black backgrounds,
- * and high-contrast typography for better readability.
+ * Features a clean, light aesthetic by removing black backgrounds.
+ * Fully responsive content stack for mobile, tablet, and desktop.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -42,7 +42,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 md:py-8">
+    <div className="container mx-auto px-4 py-4 md:py-6">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -52,39 +52,39 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id}>
-              <Card className="overflow-hidden rounded-3xl shadow-2xl border-2 border-primary/20 bg-muted relative group/card">
-                <div className="relative aspect-[16/10] sm:aspect-[21/6] w-full">
+              <Card className="overflow-hidden rounded-3xl shadow-xl border border-primary/10 bg-background relative group/card">
+                <div className="relative aspect-[16/10] sm:aspect-[21/6] w-full bg-muted">
                   <Image
                     src={slide.imageUrl}
                     alt={slide.title}
                     fill
                     priority
-                    className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                    className="object-cover transition-transform duration-1000 group-hover/card:scale-105"
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Multi-directional Overlays for readability on diverse images */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:bg-gradient-to-r sm:from-black/70 sm:via-black/10 sm:to-transparent" />
+                  {/* Subtle Gradient Overlays for Readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-black/5 sm:to-transparent" />
                   
-                  <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-8">
-                    <div className="flex-1 space-y-4 text-left">
-                      <div className="bg-primary text-white font-black px-4 py-1.5 rounded-full text-[10px] sm:text-xs w-fit uppercase tracking-[0.2em] shadow-lg border border-white/10">
+                  <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
+                    <div className="flex-1 space-y-3 text-left">
+                      <div className="bg-primary text-white font-black px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-lg">
                         {slide.title}
                       </div>
-                      <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight max-w-2xl drop-shadow-2xl">
+                      <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight max-w-2xl drop-shadow-lg">
                         {slide.subtitle}
                       </h2>
                     </div>
                     
                     <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 sm:bg-transparent sm:backdrop-blur-none sm:border-none sm:p-0">
                       <div className="flex flex-col items-start md:items-end">
-                         <span className="text-sm sm:text-lg line-through opacity-70 font-medium">{slide.originalPrice}</span>
-                         <span className="text-3xl sm:text-4xl md:text-5xl font-black text-yellow-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                         <span className="text-xs sm:text-base line-through opacity-80 font-medium">{slide.originalPrice}</span>
+                         <span className="text-2xl sm:text-3xl md:text-4xl font-black text-yellow-400 drop-shadow-md">
                             {slide.price}
                          </span>
                       </div>
-                      <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl px-10 py-7 h-auto text-lg sm:text-xl shadow-2xl transition-all active:scale-95 border-b-4 border-primary-foreground/20">
-                        <Link href={slide.enrollHref} aria-label={`Enroll in ${slide.title}`}>Enroll Now</Link>
+                      <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-8 h-12 shadow-xl transition-all active:scale-95">
+                        <Link href={slide.enrollHref}>Enroll Now</Link>
                       </Button>
                     </div>
                   </div>
@@ -93,15 +93,16 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        {/* Modern Pill Indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        
+        {/* Modern Indicators */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
               className={cn(
-                'h-1.5 rounded-full transition-all duration-500', 
-                current === index ? 'w-10 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'w-3 bg-white/30 hover:bg-white/50'
+                'h-1 rounded-full transition-all duration-500', 
+                current === index ? 'w-8 bg-white shadow-sm' : 'w-2 bg-white/40 hover:bg-white/60'
               )}
               aria-label={`Go to slide ${index + 1}`}
             />
