@@ -16,7 +16,6 @@ import { StoreHeader } from './store-header';
 import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
 import React, { Suspense, useState, useEffect } from 'react';
 import FacebookPixel from './facebook-pixel';
-import { LenisProvider } from './lenis-provider';
 import { NextProgressBar } from './next-progress-bar';
 import { WifiOff } from 'lucide-react';
 
@@ -120,7 +119,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <CartProvider>
             <LanguageProvider>
-            <LenisProvider>
                 <Suspense fallback={null}>
                     <NextProgressBar />
                 </Suspense>
@@ -128,11 +126,10 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                 <InnerLayout>
                     {children}
                 </InnerLayout>
-            </LenisProvider>
-            <Toaster position="bottom-right" richColors closeButton />
-            <Suspense fallback={null}>
-                <FacebookPixel />
-            </Suspense>
+                <Toaster position="bottom-right" richColors closeButton />
+                <Suspense fallback={null}>
+                    <FacebookPixel />
+                </Suspense>
             </LanguageProvider>
         </CartProvider>
       </AuthProvider>
