@@ -981,7 +981,36 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       title: "How we help you become a Topper from a Struggler?",
       mainImageUrl: "https://placehold.co/600x600.png",
       mainImageDataAiHint: "student success graph",
-      cards: []
+      cards: [
+        {
+          id: "1",
+          title: "Personalized Mentorship",
+          description: "Our expert mentors provide one-on-one guidance to address your specific needs and challenges.",
+          iconUrl: "https://picsum.photos/seed/mentorship/100/100",
+          dataAiHint: "mentor student"
+        },
+        {
+          id: "2",
+          title: "Targeted Study Materials",
+          description: "We offer curated notes and practice tests designed to strengthen your weak areas.",
+          iconUrl: "https://picsum.photos/seed/materials/100/100",
+          dataAiHint: "books notes"
+        },
+        {
+          id: "3",
+          title: "24/7 Doubt Clearing",
+          description: "Get your doubts resolved instantly anytime with our dedicated support team and AI.",
+          iconUrl: "https://picsum.photos/seed/doubt/100/100",
+          dataAiHint: "chat support"
+        },
+        {
+          id: "4",
+          title: "Performance Tracking",
+          description: "Monitor your progress with detailed analytics and customized feedback to stay on track.",
+          iconUrl: "https://picsum.photos/seed/analytics/100/100",
+          dataAiHint: "analytics graph"
+        }
+      ]
   },
   offlineHubHeroCarousel: {
     display: true,
