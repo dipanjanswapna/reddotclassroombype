@@ -1,5 +1,4 @@
 
-
 import type { Metadata } from 'next';
 import { Card } from '@/components/ui/card';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
@@ -7,6 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Rocket } from 'lucide-react';
+import { FreeClassesSection } from '@/components/free-classes-section';
 
 export const metadata: Metadata = {
   title: 'How We Help You Become A Topper | RDC',
@@ -107,8 +107,12 @@ export default async function TopperPage() {
                 </div>
             </div>
         </section>
+
+        {config.freeClassesSection?.display && (
+            <section className="py-6 sm:py-8 lg:py-10">
+                <FreeClassesSection sectionData={config.freeClassesSection} />
+            </section>
+        )}
     </>
   );
 }
-
-    
