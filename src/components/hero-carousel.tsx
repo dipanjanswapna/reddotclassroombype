@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -32,7 +31,6 @@ type AutoplaySettings = {
 /**
  * @fileOverview Modern Hero Carousel component.
  * Features ultra-clean backgrounds using high-blur glassmorphism.
- * Replaces heavy solid overlays with professional soft gradients.
  */
 export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -88,10 +86,8 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         className="object-cover transition-transform duration-1000 group-hover/image:scale-105"
                         data-ai-hint={banner.dataAiHint}
                     />
-                    {/* Standardized Soft Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                     
-                    {/* Floating Glassmorphism Navigation */}
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollPrev(); }}
                         variant="ghost"
@@ -118,7 +114,6 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
       
-      {/* Refined Progress Dots */}
       <div className="hero-carousel-dots mt-6 flex justify-center gap-2">
         {banners.map((_, index) => (
           <button

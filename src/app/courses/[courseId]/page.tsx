@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -12,6 +11,9 @@ import {
   Clock,
   Share2,
   ArrowRight,
+  ShieldCheck,
+  CreditCard,
+  MessageSquare
 } from 'lucide-react';
 import {
   Accordion,
@@ -42,12 +44,6 @@ import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
 import { cn, safeToDate } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/firebase/auth';
-
-/**
- * @fileOverview Redesigned Course Detail Page.
- * Implements a responsive Card-to-List routine strategy and elite layout.
- * Ensures zero content cutoff on all devices.
- */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const awaitedParams = await params;
@@ -332,6 +328,30 @@ export default async function CourseDetailPage({
                 </Accordion>
               </section>
             )}
+
+            {/* Payment Info Section */}
+            <section id="payment" className="scroll-mt-32 py-0">
+                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                    Payment & Enrollment
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-6">
+                    <Card className="rounded-[2rem] border-primary/10 bg-muted/20 shadow-sm p-6 space-y-4">
+                        <div className="p-3 bg-primary/10 rounded-2xl w-fit">
+                            <ShieldCheck className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-lg">Secure Payment</h3>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">We support all major mobile banking platforms including bKash and Nagad. Your transaction is 100% secure.</p>
+                    </Card>
+                    <Card className="rounded-[2rem] border-primary/10 bg-muted/20 shadow-sm p-6 space-y-4">
+                        <div className="p-3 bg-primary/10 rounded-2xl w-fit">
+                            <CreditCard className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-lg">Instant Access</h3>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">Once payment is confirmed, you get immediate access to all course materials and the secret community group.</p>
+                    </Card>
+                </div>
+            </section>
           </div>
 
           {/* Enrollment Sidebar */}
@@ -372,6 +392,14 @@ export default async function CourseDetailPage({
                           <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
                       </Button>
                   </div>
+                  
+                  {course.whatsappNumber && (
+                    <Button variant="outline" className="w-full h-14 rounded-2xl font-bold gap-3 border-green-500/20 hover:bg-green-50 text-green-600 transition-all shadow-sm" asChild>
+                        <a href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                            <MessageSquare className="w-5 h-5 fill-current" /> Talk to Advisor
+                        </a>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
           </div>

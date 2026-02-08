@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +11,6 @@ import { Home, Book } from 'lucide-react';
 /**
  * @fileOverview Redesigned Teacher Filter Page.
  * Implements a strict 5-column grid on desktop (xl:grid-cols-5).
- * Standardized spacing and elite visual hierarchy.
  */
 export function TeacherFilterPage({ instructors, subjects }: { instructors: Instructor[], subjects: string[] }) {
     const [selectedSubject, setSelectedSubject] = useState('সব');
@@ -51,7 +49,6 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                 </div>
             </div>
 
-            {/* Elite 5-column Grid on Desktop */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredInstructors.map((teacher) => (
                 <Link key={teacher.id} href={`/teachers/${teacher.slug}`} className="group block" aria-label={`View profile for ${teacher.name}`}>

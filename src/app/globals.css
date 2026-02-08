@@ -71,7 +71,7 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-hidden max-w-full;
   }
   section {
     @apply py-10 md:py-14;

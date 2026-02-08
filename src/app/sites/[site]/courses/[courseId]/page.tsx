@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -12,6 +11,9 @@ import {
   Clock,
   Share2,
   ArrowRight,
+  ShieldCheck,
+  CreditCard,
+  MessageSquare
 } from 'lucide-react';
 import {
   Accordion,
@@ -46,7 +48,6 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 /**
  * @fileOverview Partner-specific Course Detail Page.
  * Mirroring the high-quality main course detail page for consistency.
- * Ensures zero content cutoff on all devices.
  */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -332,6 +333,30 @@ export default async function PartnerCourseDetailPage({
                 </Accordion>
               </section>
             )}
+
+            {/* Payment Section */}
+            <section id="payment" className="scroll-mt-32 py-0">
+                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                    Payment & Enrollment
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-6">
+                    <Card className="rounded-[2rem] border-primary/10 bg-muted/20 shadow-sm p-6 space-y-4">
+                        <div className="p-3 bg-primary/10 rounded-2xl w-fit">
+                            <ShieldCheck className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-lg">Secure Payment</h3>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">We support all major mobile banking platforms including bKash and Nagad. Your transaction is 100% secure.</p>
+                    </Card>
+                    <Card className="rounded-[2rem] border-primary/10 bg-muted/20 shadow-sm p-6 space-y-4">
+                        <div className="p-3 bg-primary/10 rounded-2xl w-fit">
+                            <CreditCard className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-lg">Instant Access</h3>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">Once payment is confirmed, you get immediate access to all course materials and the secret community group.</p>
+                    </Card>
+                </div>
+            </section>
           </div>
 
           {/* Enrollment Sidebar */}
@@ -362,7 +387,7 @@ export default async function PartnerCourseDetailPage({
                   <CourseEnrollmentButton
                       courseId={course.id!}
                       isPrebookingActive={isPrebookingActive}
-                      checkoutUrl={`/checkout/${course.id!}`}
+                      checkoutUrl={`/sites/${site}/checkout/${course.id!}`}
                       courseType={course.type}
                       size="lg"
                   />
@@ -372,21 +397,29 @@ export default async function PartnerCourseDetailPage({
                           <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
                       </Button>
                   </div>
+                  
+                  {course.whatsappNumber && (
+                    <Button variant="outline" className="w-full h-14 rounded-2xl font-bold gap-3 border-green-500/20 hover:bg-green-50 text-green-600 transition-all shadow-sm" asChild>
+                        <a href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                            <MessageSquare className="w-5 h-5 fill-current" /> Talk to Advisor
+                        </a>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
           </div>
         </div>
 
-        {/* Spaced Recommendations */}
+        {/* Global Recommendations */}
          <section className="pt-16 border-t border-primary/10">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended</h2>
-                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Programs curated for your specific track.</p>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Curated programs for your academic track.</p>
                 </div>
                 <Button variant="link" asChild className="font-black uppercase tracking-widest text-[10px] text-primary group h-auto p-0 hover:no-underline">
                     <Link href="/courses" className="flex items-center gap-2">
-                        Explore All <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2"/>
+                        Explore All <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2"/>
                     </Link>
                 </Button>
             </div>

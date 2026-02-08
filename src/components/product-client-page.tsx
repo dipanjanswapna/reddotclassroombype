@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -25,7 +24,6 @@ import Link from 'next/link';
 /**
  * @fileOverview Redesigned Product Details Component.
  * Optimized for high density and absolute mobile responsiveness.
- * Implements a card-based specification grid that stacks on mobile.
  */
 
 interface ProductClientPageProps {
@@ -57,7 +55,6 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   }
 
   const gallery = [product.imageUrl, ...(product.gallery || [])].slice(0, 4);
-  const videoId = product.videoUrl ? getYoutubeVideoId(product.videoUrl) : null;
 
   const specifications = [
     { label: 'Category', value: product.category },
@@ -104,7 +101,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
       <div className="lg:col-span-5 space-y-8">
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
-                <Badge variant={product.stock && product.stock > 0 ? "accent" : "destructive"} className="px-4 py-1 rounded-full font-black uppercase tracking-widest text-[10px] shadow-sm">
+                <Badge variant={product.stock && product.stock > 0 ? "accent" : "destructive"} className="px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[10px] shadow-sm">
                     {product.stock && product.stock > 0 ? 'Verified Genuine' : 'Out of Stock'}
                 </Badge>
                 <div className="flex items-center gap-1.5 shrink-0 bg-muted/50 px-3 py-1 rounded-full">
@@ -113,12 +110,12 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                 </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tight leading-tight uppercase break-words">{product.name}</h1>
-            <p className="text-muted-foreground text-sm font-medium leading-relaxed line-clamp-3">
+            <p className="text-muted-foreground text-sm font-medium leading-relaxed">
                 {product.description}
             </p>
         </div>
 
-        {/* Pricing Strategy */}
+        {/* Pricing */}
         <div className="flex items-baseline gap-4 bg-primary/5 p-6 rounded-[2rem] border border-primary/10 shadow-inner">
             <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Shop Price</span>
@@ -132,7 +129,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             )}
         </div>
 
-        {/* Dynamic CTA Section */}
+        {/* Actions */}
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex items-center bg-muted/50 rounded-2xl p-1 border border-primary/5 h-14 shadow-sm">
@@ -157,7 +154,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             </Button>
         </div>
 
-        {/* Global Spaced Content Units */}
+        {/* Responsive Specs */}
         <Accordion type="single" collapsible defaultValue="specs" className="w-full space-y-3">
             <AccordionItem value="specs" className="border border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20 shadow-sm">
                 <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-[10px] uppercase tracking-widest">
@@ -171,17 +168,6 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                                 <span className="text-xs font-bold text-foreground text-right break-words">{spec.value}</span>
                             </div>
                         ))}
-                    </div>
-                </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="description" className="border border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20 shadow-sm">
-                <AccordionTrigger className="font-black text-left px-6 py-4 hover:no-underline text-[10px] uppercase tracking-widest">
-                    Product Insight
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6 pt-2">
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground leading-relaxed font-medium">
-                        {product.description || "Information currently being updated."}
                     </div>
                 </AccordionContent>
             </AccordionItem>
