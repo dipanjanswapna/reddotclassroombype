@@ -31,9 +31,9 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <div className="h-full min-w-[280px] flex-1 max-w-[400px]">
+    <div className="h-full w-full">
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10",
+          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
@@ -104,7 +104,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
               price && <p className="font-headline text-lg font-bold text-primary">{price}</p>
           )}
         </CardFooter>
-        <div className="p-4 pt-0">
+        <div className="p-4 pt-0 mt-auto">
            {isArchived ? (
               <Button disabled variant="outline" className="w-full">Closed</Button>
            ) : (

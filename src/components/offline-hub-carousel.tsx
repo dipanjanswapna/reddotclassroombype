@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -38,7 +37,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4 md:py-8">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -48,31 +47,31 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id}>
-              <Card className="overflow-hidden rounded-2xl shadow-lg border-0">
-                <div className="relative aspect-[21/6] w-full">
+              <Card className="overflow-hidden rounded-2xl shadow-lg border-0 bg-black">
+                <div className="relative aspect-video sm:aspect-[21/6] w-full">
                   <Image
                     src={slide.imageUrl}
                     alt={slide.title}
                     fill
-                    className="object-cover"
+                    className="object-cover opacity-70 sm:opacity-100"
                     data-ai-hint={slide.dataAiHint}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
-                  <div className="absolute inset-0 p-4 md:p-8 flex items-center justify-between text-white">
-                    <div className="flex-1">
-                      <div className="bg-yellow-400 text-black font-bold px-3 py-1 rounded-md text-sm w-fit">
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent sm:from-black/50" />
+                  <div className="absolute inset-0 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-4">
+                    <div className="flex-1 space-y-2">
+                      <div className="bg-yellow-400 text-black font-black px-3 py-1 rounded-md text-xs w-fit uppercase tracking-tighter">
                         {slide.title}
                       </div>
-                      <h2 className="text-3xl md:text-5xl font-extrabold mt-2 text-shadow" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+                      <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-shadow leading-tight" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
                         {slide.subtitle}
                       </h2>
                     </div>
-                    <div className="text-right shrink-0 flex flex-col items-end">
+                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-2 w-full md:w-auto">
                       <div className="flex items-center gap-2">
-                         <span className="text-xl md:text-2xl font-bold text-yellow-300">{slide.price}</span>
-                         <span className="text-md md:text-lg line-through opacity-80">{slide.originalPrice}</span>
+                         <span className="text-2xl md:text-3xl font-black text-yellow-300">{slide.price}</span>
+                         <span className="text-sm md:text-lg line-through opacity-60">{slide.originalPrice}</span>
                       </div>
-                      <Button asChild className="mt-2 bg-red-600 hover:bg-red-700 font-bold rounded-lg text-sm md:text-base">
+                      <Button asChild className="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg px-8 py-6 h-auto text-base shadow-xl">
                         <Link href={slide.enrollHref} aria-label={`Enroll in ${slide.title}`}>ENROLL NOW!</Link>
                       </Button>
                     </div>
@@ -87,7 +86,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
-              className={cn('w-2 h-2 rounded-full transition-all', current === index ? 'w-4 bg-white' : 'bg-white/50')}
+              className={cn('w-2 h-2 rounded-full transition-all', current === index ? 'w-6 bg-white' : 'bg-white/50')}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

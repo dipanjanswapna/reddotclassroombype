@@ -5,8 +5,6 @@ import { CourseCard } from '@/components/course-card';
 import { Course, Organization, Instructor } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { CourseFilterBar } from './course-filter-bar';
-import { FreeCoursesBanner } from './free-courses-banner';
-import { HomepageConfig } from '@/lib/types';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -66,7 +64,7 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      <div className="container mx-auto px-4 md:px-8 py-8">
+      <div className="container mx-auto px-4 md:px-8 py-4">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -82,28 +80,34 @@ export function CoursesPageClient({
           </div>
         ) : hasFilters ? (
             <section className='py-0'>
-              <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
-                Filtered Results ({initialCourses.length})
-              </h2>
+              <div className="mb-10 text-center md:text-left">
+                <h2 className="font-headline text-3xl font-bold">
+                    Filtered Results ({initialCourses.length})
+                </h2>
+                <div className="h-1 w-16 bg-primary mt-2 rounded-full mx-auto md:mx-0" />
+              </div>
               {initialCourses.length > 0 ? (
-                <div className="flex flex-wrap justify-center sm:justify-start gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
                     return <CourseCard key={course.id} {...course} provider={provider} />;
                   })}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-center">No courses found matching your criteria. Try clearing the filters.</p>
+                <p className="text-muted-foreground text-center py-12">No courses found matching your criteria. Try clearing the filters.</p>
               )}
             </section>
         ) : (
-            <div className="space-y-16">
+            <div className="space-y-20">
               {sortedCategories.map((category) => (
                 <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0'>
-                  <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
-                    {category}
-                  </h2>
-                  <div className="flex flex-wrap justify-center sm:justify-start gap-6">
+                  <div className="mb-10 text-center md:text-left">
+                    <h2 className="font-headline text-3xl font-bold">
+                        {category}
+                    </h2>
+                    <div className="h-1 w-16 bg-primary mt-2 rounded-full mx-auto md:mx-0" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {coursesByCategory[category].map((course) => {
                        const provider = allProviders.find(p => p.id === course.organizationId);
                        return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -114,10 +118,13 @@ export function CoursesPageClient({
 
               {archivedCourses.length > 0 && (
                 <section id="archived-courses" className='py-0'>
-                    <h2 className="font-headline mb-6 text-3xl font-bold text-center md:text-left">
-                        Archived Courses
-                    </h2>
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-6">
+                    <div className="mb-10 text-center md:text-left">
+                        <h2 className="font-headline text-3xl font-bold">
+                            Archived Courses
+                        </h2>
+                        <div className="h-1 w-16 bg-primary mt-2 rounded-full mx-auto md:mx-0" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {archivedCourses.map((course) => {
                             const provider = allProviders.find(p => p.id === course.organizationId);
                             return <CourseCard key={course.id} {...course} provider={provider} />;
