@@ -1,5 +1,4 @@
 
-
 import { getCourses, getUsers, getEnrollments } from '@/lib/firebase/firestore';
 import { Course, User, Enrollment } from '@/lib/types';
 import { Metadata } from 'next';
@@ -57,14 +56,15 @@ export default async function AdminDashboardPage() {
 
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="mb-8">
-            <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Admin Dashboard
+    <div className="space-y-10 md:space-y-14">
+        <div className="text-center sm:text-left space-y-2">
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
+                Admin Dashboard
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-            Platform-wide overview and management tools.
+            <p className="text-lg text-muted-foreground font-medium">
+                Platform-wide overview and management tools.
             </p>
+            <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
         <DashboardClient courses={courses} users={users} enrollments={enrollments} />
     </div>

@@ -137,115 +137,103 @@ export default function TeacherDashboardPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="mb-8">
-            <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Teacher Dashboard
+    <div className="space-y-10 md:space-y-14">
+        <div className="text-center sm:text-left space-y-2">
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
+                Teacher Dashboard
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-            Manage your courses, students, and content.
-            </p>
+            <p className="text-lg text-muted-foreground font-medium">Manage your courses, students, and content.</p>
+            <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                My Courses
-                </CardTitle>
-                <BookCopy className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.courseCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Active online courses
-                </p>
-            </CardContent>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">My Courses</CardTitle>
+                    <BookCopy className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-primary tracking-tighter">{stats.courseCount}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Active learning modules</p>
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Total Students
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.studentCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Across all online courses
-                </p>
-            </CardContent>
+            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Students</CardTitle>
+                    <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.studentCount}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Learners reached</p>
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Pending Grading
-                </CardTitle>
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.pendingGradingCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Assignments & Exams to review
-                </p>
-            </CardContent>
+            <Card className="glassmorphism-card border-orange-500/20 bg-orange-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-orange-600">Pending Grading</CardTitle>
+                    <MessageSquare className="h-5 w-5 text-orange-600 group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-orange-600 tracking-tighter">{stats.pendingGradingCount}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Awaiting review</p>
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Average Rating
-                </CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.averageRating}</div>
-                <p className="text-xs text-muted-foreground">
-                From student reviews
-                </p>
-            </CardContent>
+            <Card className="glassmorphism-card border-accent/20 bg-accent/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-accent-foreground">Average Rating</CardTitle>
+                    <BarChart className="h-5 w-5 text-accent-foreground group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-accent-foreground tracking-tighter">{stats.averageRating}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Student feedback score</p>
+                </CardContent>
             </Card>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Building className="h-5 w-5"/>
+        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+            <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
+                <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
+                    <Building className="h-6 w-6 text-primary"/>
                     My Offline Batches
                 </CardTitle>
-                <CardDescription>A list of your assigned batches in offline centers.</CardDescription>
+                <CardDescription className="font-medium">Direct face-to-face academic sessions.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Batch Name</TableHead>
-                            <TableHead>Course</TableHead>
-                            <TableHead>Branch</TableHead>
-                            <TableHead>Schedule</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {assignedBatches.length > 0 ? assignedBatches.map(batch => (
-                            <TableRow key={batch.id}>
-                                <TableCell className="font-medium">{batch.name}</TableCell>
-                                <TableCell>{batch.courseName}</TableCell>
-                                <TableCell>{batch.branchName}</TableCell>
-                                <TableCell>
-                                    <div className="flex flex-col gap-1">
-                                        {batch.schedule.map(s => (
-                                            <Badge key={s.day} variant="outline" className="w-fit">{s.day}, {s.time}</Badge>
-                                        ))}
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        )) : (
+            <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center">
-                                    You are not assigned to any offline batches yet.
-                                </TableCell>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Batch Name</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Course</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Branch</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Schedule</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody className="divide-y divide-primary/5">
+                            {assignedBatches.length > 0 ? assignedBatches.map(batch => (
+                                <TableRow key={batch.id} className="hover:bg-primary/5 transition-colors">
+                                    <TableCell className="px-8 py-6 font-bold">{batch.name}</TableCell>
+                                    <TableCell className="px-8 py-6">{batch.courseName}</TableCell>
+                                    <TableCell className="px-8 py-6">
+                                        <Badge variant="secondary" className="font-black text-[10px] uppercase tracking-widest rounded-lg">{batch.branchName}</Badge>
+                                    </TableCell>
+                                    <TableCell className="px-8 py-6">
+                                        <div className="flex flex-wrap gap-2">
+                                            {batch.schedule.map(s => (
+                                                <Badge key={s.day} variant="outline" className="font-bold border-primary/20 text-[10px]">{s.day} @ {s.time}</Badge>
+                                            ))}
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium">
+                                        You are not assigned to any offline batches yet.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     </div>

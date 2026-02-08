@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { DollarSign, Link2, Users } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
@@ -75,67 +75,75 @@ export default function AffiliateDashboardPage() {
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div className="mb-8">
-                <h1 className="font-headline text-4xl font-bold tracking-tight">
-                    Welcome, {userInfo?.name}!
+        <div className="space-y-10 md:space-y-14">
+            <div className="text-center sm:text-left space-y-2">
+                <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
+                    Affiliate Dashboard
                 </h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                    Here's a summary of your affiliate performance.
-                </p>
+                <p className="text-lg text-muted-foreground font-medium">Welcome back, {userInfo?.name}! Track your referral performance.</p>
+                <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Total Earnings</CardTitle>
+                        <DollarSign className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">৳{stats.earnings.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">All-time earnings</p>
+                        <div className="text-4xl font-black text-primary tracking-tighter">৳{stats.earnings.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground font-medium mt-1">All-time commission</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Referrals</CardTitle>
+                        <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+{stats.referrals}</div>
-                        <p className="text-xs text-muted-foreground">Successful sign-ups</p>
+                        <div className="text-4xl font-black text-blue-600 tracking-tighter">+{stats.referrals}</div>
+                        <p className="text-xs text-muted-foreground font-medium mt-1">Successful student sign-ups</p>
                     </CardContent>
                 </Card>
             </div>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Recent Referral Activity</CardTitle>
-                    <CardDescription>A log of the most recent users who signed up using your links.</CardDescription>
+
+             <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+                <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
+                    <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
+                        <Users className="h-6 w-6 text-primary"/>
+                        Recent Referral Activity
+                    </CardTitle>
+                    <CardDescription className="font-medium">Students who signed up using your links.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Joined</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {recentReferrals.length > 0 ? recentReferrals.map(referral => (
-                                <TableRow key={referral.id}>
-                                    <TableCell className="font-medium">{referral.name} ({referral.email})</TableCell>
-                                    <TableCell><Badge variant="outline">{referral.role}</Badge></TableCell>
-                                    <TableCell>{formatDistanceToNow(safeToDate(referral.joined), { addSuffix: true })}</TableCell>
-                                </TableRow>
-                            )) : (
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
                                 <TableRow>
-                                    <TableCell colSpan={3} className="h-24 text-center">
-                                        No referral activity yet. Share your links to get started!
-                                    </TableCell>
+                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">User</TableHead>
+                                    <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Role</TableHead>
+                                    <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest">Joined</TableHead>
                                 </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody className="divide-y divide-primary/5">
+                                {recentReferrals.length > 0 ? recentReferrals.map(referral => (
+                                    <TableRow key={referral.id} className="hover:bg-primary/5 transition-colors">
+                                        <TableCell className="px-8 py-6 font-bold">{referral.name} ({referral.email})</TableCell>
+                                        <TableCell className="px-8 py-6">
+                                            <Badge variant="outline" className="font-black text-[10px] uppercase tracking-widest rounded-lg">{referral.role}</Badge>
+                                        </TableCell>
+                                        <TableCell className="px-8 py-6 text-right text-muted-foreground text-xs font-bold">{formatDistanceToNow(safeToDate(referral.joined), { addSuffix: true })}</TableCell>
+                                    </TableRow>
+                                )) : (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="h-32 text-center text-muted-foreground font-medium">
+                                            No referral activity yet. Share your links to get started!
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </CardContent>
             </Card>
         </div>

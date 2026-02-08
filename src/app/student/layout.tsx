@@ -76,32 +76,30 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
-  // This layout handles the main student dashboard pages.
-  // A nested layout at /student/my-courses/[courseId]/layout.tsx will handle course-specific navigation.
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
       return <>{children}</>;
   }
 
   return (
     <>
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-full overflow-hidden">
         {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
-        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-all rounded-xl",
                   getIsActive(item.href)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               )}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-xs whitespace-nowrap">{item.label}</span>
+              <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
+              <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -109,5 +107,3 @@ export default function StudentLayout({
     </>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -65,80 +66,79 @@ export default function ModeratorDashboardPage() {
     }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="mb-8">
-            <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Moderator Dashboard
+    <div className="space-y-10 md:space-y-14">
+        <div className="text-center sm:text-left space-y-2">
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
+                Moderator Dashboard
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-            Overview of community health and pending tasks.
-            </p>
+            <p className="text-lg text-muted-foreground font-medium">Overview of community health and pending tasks.</p>
+            <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Open Support Tickets
-                </CardTitle>
-                <Ticket className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.openSupportTickets}</div>
-                <p className="text-xs text-muted-foreground">
-                Waiting for a response
-                </p>
-            </CardContent>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="glassmorphism-card border-primary/20 bg-primary/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">Open Tickets</CardTitle>
+                    <Ticket className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-primary tracking-tighter">{stats.openSupportTickets}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Awaiting response</p>
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Total Users
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                <p className="text-xs text-muted-foreground">
-                All registered users
-                </p>
-            </CardContent>
+            <Card className="glassmorphism-card border-blue-500/20 bg-blue-500/5 shadow-xl rounded-[2rem] overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs font-black uppercase tracking-widest text-blue-600">Total Users</CardTitle>
+                    <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-4xl font-black text-blue-600 tracking-tighter">{stats.totalUsers}</div>
+                    <p className="text-xs text-muted-foreground font-medium mt-1">Platform wide</p>
+                </CardContent>
             </Card>
         </div>
         
-        <Card>
-            <CardHeader>
-                <CardTitle>Recent Support Tickets</CardTitle>
-                <CardDescription>The newest tickets that need attention.</CardDescription>
+        <Card className="rounded-[2.5rem] border-primary/10 shadow-xl overflow-hidden">
+            <CardHeader className="p-8 border-b border-primary/5 bg-muted/30">
+                <CardTitle className="font-black uppercase tracking-tight flex items-center gap-3">
+                    <Ticket className="h-6 w-6 text-primary"/>
+                    Recent Support Tickets
+                </CardTitle>
+                <CardDescription className="font-medium">The newest tickets that need attention.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Description</TableHead>
-                             <TableHead>Time</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {recentTickets.length > 0 ? recentTickets.map((ticket) => (
-                            <TableRow key={ticket.id}>
-                                <TableCell><Badge variant='warning'>Ticket</Badge></TableCell>
-                                <TableCell>New ticket from {ticket.userName}: "{ticket.subject}"</TableCell>
-                                <TableCell>{formatDistanceToNow(safeToDate(ticket.createdAt), { addSuffix: true })}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button asChild variant="outline" size="sm">
-                                        <Link href="/moderator/support-tickets">View</Link>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        )) : (
+            <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center">No new tickets.</TableCell>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                <TableHead className="px-8 font-black uppercase text-[10px] tracking-widest">Time</TableHead>
+                                <TableHead className="px-8 text-right font-black uppercase text-[10px] tracking-widest">Action</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody className="divide-y divide-primary/5">
+                            {recentTickets.length > 0 ? recentTickets.map((ticket) => (
+                                <TableRow key={ticket.id} className="hover:bg-primary/5 transition-colors">
+                                    <TableCell className="px-8 py-6">
+                                        <Badge variant='warning' className="font-black text-[10px] uppercase tracking-widest rounded-lg">Ticket</Badge>
+                                    </TableCell>
+                                    <TableCell className="px-8 py-6 font-medium">New ticket from {ticket.userName}: "{ticket.subject}"</TableCell>
+                                    <TableCell className="px-8 py-6 text-muted-foreground text-xs font-bold">{formatDistanceToNow(safeToDate(ticket.createdAt), { addSuffix: true })}</TableCell>
+                                    <TableCell className="px-8 py-6 text-right">
+                                        <Button asChild variant="outline" size="sm" className="font-black uppercase text-[10px] tracking-widest h-9 rounded-xl">
+                                            <Link href="/moderator/support-tickets">Manage</Link>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground font-medium">No new tickets.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     </div>
