@@ -11,7 +11,6 @@ import { useCart } from '@/context/cart-context';
 import { useToast } from './ui/use-toast';
 import { ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 type ProductCardProps = {
   product: Product;
@@ -45,14 +44,9 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
   }
   
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="h-full min-w-[280px] flex-1 max-w-[400px]"
-    >
+    <div className="h-full min-w-[280px] flex-1 max-w-[400px]">
       <Card className={cn(
-          "overflow-hidden group flex flex-col h-full transition-all duration-500 hover:shadow-2xl bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 border border-primary/20 hover:border-primary/60",
+          "overflow-hidden group flex flex-col h-full transition-all duration-500 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10",
           className
       )}>
           <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">
@@ -98,7 +92,7 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
           </CardContent>
           </Link>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 

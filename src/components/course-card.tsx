@@ -31,14 +31,9 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="h-full min-w-[280px] flex-1 max-w-[400px]"
-    >
+    <div className="h-full min-w-[280px] flex-1 max-w-[400px]">
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-all duration-500 hover:shadow-2xl group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10",
+          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">
@@ -119,7 +114,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
            )}
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 

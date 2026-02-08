@@ -13,7 +13,6 @@ import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
-import { motion } from 'framer-motion';
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
@@ -52,12 +51,7 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="h-full min-w-[280px] flex-1 max-w-[400px]"
-    >
+    <div className="h-full min-w-[280px] flex-1 max-w-[400px]">
       <Card className={cn(
           "flex flex-col h-full overflow-hidden transition-all duration-500 rounded-xl border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 group enrolled-course-card",
           className
@@ -169,6 +163,6 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
           )}
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }
