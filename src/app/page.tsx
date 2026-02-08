@@ -172,6 +172,25 @@ export default function Home() {
             <NoticeBoard />
         </div>
 
+        {homepageConfig.journeySection?.display && (
+          <SectionWrapper aria-labelledby="hero-heading">
+              <div className="text-center mb-6 bg-secondary/50 py-8 rounded-2xl border border-primary/10 shadow-sm">
+                <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-2 text-sm px-4">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+                <HeadingUnderline />
+              </div>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b pb-2">
+                    <h3 className="font-headline text-lg font-bold text-primary">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                    <Button asChild variant="link" size="sm">
+                        <Link href="/courses">View All <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                    </Button>
+                </div>
+                <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
+              </div>
+          </SectionWrapper>
+        )}
+
         {homepageConfig.strugglingStudentSection?.display && (
           <SectionWrapper>
               <div 
@@ -202,20 +221,6 @@ export default function Home() {
                            <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </Link>
                   </Button>
-              </div>
-          </SectionWrapper>
-        )}
-
-        {homepageConfig.journeySection?.display && (
-          <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-4">
-                <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mt-1 text-sm">{homepageConfig.journeySection?.subtitle?.[language]}</p>
-                <HeadingUnderline />
-              </div>
-              <div>
-                <h3 className="font-headline text-lg font-bold text-center mb-4">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
-                <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
           </SectionWrapper>
         )}
