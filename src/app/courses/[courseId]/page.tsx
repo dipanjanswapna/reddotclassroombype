@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -12,8 +11,6 @@ import {
   Clock,
   Share2,
   ArrowRight,
-  Calendar,
-  Award,
 } from 'lucide-react';
 import {
   Accordion,
@@ -23,7 +20,7 @@ import {
 } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CourseTabs } from '@/components/course-tabs';
 import { CourseCard } from '@/components/course-card';
 import {
@@ -46,9 +43,8 @@ import { cn, safeToDate } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/firebase/auth';
 
 /**
- * @fileOverview Shared Course Detail Component logic.
- * Implements a high-impact, fully responsive LMS-style layout.
- * Features: Adaptive Routine/Exam views (Tables on desktop, Cards on mobile) to prevent cutoff.
+ * @fileOverview Redesigned Course Detail Page.
+ * Implements a responsive Card-to-List routine strategy and elite layout.
  */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -128,16 +124,13 @@ export default async function CourseDetailPage({
   const allOrgs = await getOrganizations();
   
   const relatedCourses = allCourses.filter(c => c.id !== course.id && !c.isArchived).slice(0, 4);
-  const includedCourses = course.includedCourseIds
-    ? allCourses.filter(c => course.includedCourseIds?.includes(c.id!))
-    : [];
 
   const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   return (
     <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
-      {/* Course Hero Section with Standardized Spacing */}
+      {/* Hero Section */}
       <section className="bg-secondary/20 dark:bg-muted/10 pt-10 md:pt-14 pb-10 border-b border-primary/10">
         <div className="container mx-auto px-4 max-w-full">
           <div className="max-w-5xl mx-auto lg:mx-0 space-y-6">
@@ -150,15 +143,6 @@ export default async function CourseDetailPage({
                 {course.type && <Badge variant="outline" className="px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest border-primary/20">{course.type}</Badge>}
                 <Badge variant="secondary" className="px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">{course.category}</Badge>
               </div>
-              
-              {organization && (
-                <div className="flex items-center gap-2 bg-background/50 w-fit px-3 py-1.5 rounded-full border border-primary/10 backdrop-blur-sm">
-                  <Image src={organization.logoUrl} alt={organization.name} width={24} height={24} className="rounded-full bg-white p-0.5 object-contain"/>
-                  <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground">
-                    Provider: <Link href={`/sites/${organization.subdomain}`} className="text-primary hover:underline">{organization.name}</Link>
-                  </p>
-                </div>
-              )}
               
               <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground uppercase break-words">
                 {course.title}
@@ -211,7 +195,7 @@ export default async function CourseDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-8 space-y-12 md:space-y-16 overflow-hidden">
             
-            {/* Video Intro - High density Shadow */}
+            {/* Video Intro */}
             <div className="relative aspect-video rounded-[2rem] md:rounded-[2.5rem] overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
               <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <Image
@@ -232,66 +216,7 @@ export default async function CourseDetailPage({
               </Link>
             </div>
 
-            {/* Learning Outcomes */}
-            {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
-                <section id="features" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                        Course Outcomes
-                    </h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-muted/20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-primary/5">
-                        {course.whatYouWillLearn.map((item, index) => (
-                            <div key={`learn-${index}`} className="flex items-start gap-4 group">
-                                <div className="mt-1 p-1.5 bg-primary/10 rounded-xl shrink-0 group-hover:bg-primary transition-colors">
-                                    <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover:text-white transition-colors" />
-                                </div>
-                                <p className='text-foreground font-bold text-sm md:text-base leading-snug break-words'>{item}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Instructors */}
-            {course.instructors && course.instructors.length > 0 && (
-              <section id="instructors" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                    Expert Instructors
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                  {course.instructors?.map((instructor) => (
-                    <Link key={instructor.slug} href={`/teachers/${instructor.slug}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] md:rounded-[2rem] border border-primary/5 bg-card/50 hover:border-primary/40 transition-all group shadow-sm hover:shadow-lg">
-                      <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 md:border-4 border-primary/5 ring-4 ring-primary/5 shadow-inner">
-                        <AvatarImage src={instructor.avatarUrl} alt={instructor.name} />
-                        <AvatarFallback className="font-black">{instructor.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <h3 className="font-black text-base md:text-lg group-hover:text-primary transition-colors leading-tight truncate">{instructor.name}</h3>
-                        <p className="text-[9px] md:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1 truncate">{instructor.title}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Cycles Grid */}
-             {courseCycles && courseCycles.length > 0 && (
-                <section id="cycles" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                        Flexible Cycles
-                    </h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                        {courseCycles.sort((a,b) => a.order - b.order).map((cycle) => (
-                            <CycleCard key={cycle.id} cycle={cycle} courseId={courseId} isPrebookingActive={isPrebookingActive}/>
-                        ))}
-                    </div>
-                </section>
-            )}
-            
-            {/* Class Routine: Optimized for All Screens */}
+            {/* Routine & Schedule (Adaptive Cards on Mobile) */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -337,7 +262,7 @@ export default async function CourseDetailPage({
                 </section>
             )}
 
-            {/* Exam Schedule: Optimized for All Screens */}
+            {/* Exam Schedule */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -433,55 +358,18 @@ export default async function CourseDetailPage({
                 </Accordion>
               </section>
             )}
-
-            {/* Success Stories */}
-            {course.reviewsData && course.reviewsData.length > 0 && (
-              <section id="reviews" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                    Success Stories
-                </h2>
-                <div className="space-y-6 md:space-y-8 bg-card border border-primary/10 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] shadow-xl">
-                    {course.reviewsData.map((review) => (
-                      <ReviewCard key={review.id} review={review} courseId={courseId} />
-                    ))}
-                </div>
-              </section>
-            )}
-
-            {/* FAQ */}
-            {course.faqs && course.faqs.length > 0 && (
-              <section id="faq" className="scroll-mt-32 py-0">
-                <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                    Common Queries
-                </h2>
-                <Accordion type="single" collapsible className="w-full space-y-3">
-                  {course.faqs.map((faq, index) => (
-                    <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`} className="border border-primary/5 rounded-2xl md:rounded-[2rem] bg-card overflow-hidden transition-all hover:border-primary/20 shadow-sm">
-                      <AccordionTrigger className="font-black text-left px-6 py-4 md:px-8 md:py-5 hover:no-underline text-sm md:text-base text-foreground">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-5 md:px-8 md:pb-6 text-xs md:text-sm text-muted-foreground leading-relaxed font-medium">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </section>
-            )}
           </div>
 
-          {/* Enrollment Sidebar with Adaptive Spacing */}
+          {/* Enrollment Sidebar */}
           <div className="lg:col-span-4">
              <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 pb-8 pt-8 md:pb-10 md:pt-10 px-6 md:px-8">
                   {isPrebookingActive ? (
                       <div className="space-y-2">
-                          <p className="text-muted-foreground line-through text-[10px] font-black uppercase tracking-widest opacity-60">Admission: {course.price}</p>
+                          <p className="text-muted-foreground line-through text-[10px] font-black uppercase tracking-widest opacity-60">Regular: {course.price}</p>
                           <div className="flex items-baseline gap-2 flex-wrap">
                             <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.prebookingPrice}</span>
-                            <Badge variant="warning" className="animate-bounce font-black text-[9px] md:text-[10px] uppercase rounded-full shadow-md">Special Pre-book</Badge>
+                            <Badge variant="warning" className="animate-bounce font-black text-[9px] md:text-[10px] uppercase rounded-full shadow-md">Pre-book Now</Badge>
                           </div>
                       </div>
                   ) : hasDiscount ? (
@@ -490,83 +378,48 @@ export default async function CourseDetailPage({
                               <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.discountPrice}</span>
                               <p className="text-base md:text-lg text-muted-foreground line-through font-bold opacity-50">{course.price}</p>
                           </div>
-                          <Badge variant="accent" className="bg-green-600 font-black text-[9px] md:text-[10px] uppercase rounded-full border-none shadow-lg px-4 py-1.5">Flash Sale</Badge>
+                          <Badge variant="accent" className="bg-green-600 font-black text-[9px] md:text-[10px] uppercase rounded-full border-none shadow-lg px-4 py-1.5">Limited Time</Badge>
                       </div>
                   ) : (
                       <CardTitle className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{course.price}</CardTitle>
                   )}
                 </CardHeader>
                 <CardContent className="space-y-8 pt-8 md:pt-10 px-6 md:px-8">
-                  <div className="flex flex-col gap-4">
-                    <CourseEnrollmentButton
-                        courseId={course.id!}
-                        isPrebookingActive={isPrebookingActive}
-                        checkoutUrl={`/checkout/${course.id!}`}
-                        courseType={course.type}
-                        size="lg"
-                    />
-                    <div className="grid grid-cols-2 gap-3">
-                        <WishlistButton courseId={course.id!} />
-                        <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5 shadow-sm transition-all" aria-label="Share Course">
-                            <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
-                        </Button>
-                    </div>
-                  </div>
-
-                  {course.features && course.features.length > 0 && (
-                    <div className="space-y-5">
-                      <h3 className="font-headline font-black text-[9px] md:text-[10px] uppercase tracking-[0.25em] text-primary/60 border-b border-primary/5 pb-3">
-                        LMS Features
-                      </h3>
-                      <ul className="space-y-3">
-                        {course.features?.slice(0, 6).map((feature, index) => (
-                          <li key={`feature-${index}`} className="flex items-center gap-3 text-xs md:text-sm font-bold text-foreground">
-                            <div className="p-1.5 bg-primary/10 rounded-xl shadow-inner shrink-0">
-                                <CheckCircle className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary" />
-                            </div>
-                            <span className="line-clamp-1 break-words leading-snug">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="pt-6 border-t border-primary/5 space-y-3">
-                    <Button variant="ghost" className="w-full font-black uppercase text-[9px] md:text-[10px] tracking-widest h-12 md:h-14 rounded-2xl border-2 border-dashed border-primary/10 hover:bg-primary/5 hover:text-primary transition-all group active:scale-95 shadow-sm">
-                        <PlayCircle className="mr-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:scale-110" />
-                        Course Intro
-                    </Button>
-                    {course.whatsappNumber && (
-                        <Button variant="outline" className="w-full h-12 md:h-14 rounded-2xl bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:text-green-800 transition-all font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-sm active:scale-95" asChild>
-                            <Link href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank">
-                                <Phone className="mr-2 h-4 w-4 md:h-5 md:w-5 fill-current"/>
-                                Chat with Advisor
-                            </Link>
-                        </Button>
-                    )}
+                  <CourseEnrollmentButton
+                      courseId={course.id!}
+                      isPrebookingActive={isPrebookingActive}
+                      checkoutUrl={`/checkout/${course.id!}`}
+                      courseType={course.type}
+                      size="lg"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                      <WishlistButton courseId={course.id!} />
+                      <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5 shadow-sm transition-all">
+                          <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
+                      </Button>
                   </div>
                 </CardContent>
               </Card>
           </div>
         </div>
 
-        {/* Recommended Grids: Strict 4-column desktop */}
+        {/* Global Spaced Recommendations */}
          <section className="pt-16 border-t border-primary/10">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended</h2>
-                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Programs tailored for your academic goals.</p>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Curated programs for your academic track.</p>
                 </div>
                 <Button variant="link" asChild className="font-black uppercase tracking-widest text-[10px] text-primary group h-auto p-0 hover:no-underline">
                     <Link href="/courses" className="flex items-center gap-2">
-                        Explore All <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-2"/>
+                        Explore All <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2"/>
                     </Link>
                 </Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 {relatedCourses.map(course => {
                     const provider = allOrgs.find(p => p.id === course.organizationId);
-                    return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={provider?.subdomain} />;
+                    return <CourseCard key={course.id} {...course} provider={provider} />;
                 })}
             </div>
          </section>

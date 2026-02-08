@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -35,7 +34,7 @@ export default async function AboutPage() {
 
   return (
     <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
-        {/* Simplified Header with Global Spacing */}
+        {/* Simplified Header */}
         <section className="bg-secondary/20 py-10 md:py-14 border-b border-primary/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 rounded-full blur-[100px] -mr-24 -mt-24"></div>
             <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
@@ -47,10 +46,10 @@ export default async function AboutPage() {
             </div>
         </section>
 
-        {/* Leadership Team Grid: Elite 5-column desktop layout */}
-        <section className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-full">
+        {/* Leadership Team Grid: Elite 5-column layout */}
+        <section className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-full overflow-hidden">
             <div className="mb-12 text-center md:text-left">
-                <h2 className="font-headline text-3xl md:text-4xl font-black uppercase tracking-tight flex items-center gap-4 justify-center md:justify-start">
+                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight flex items-center gap-4 justify-center md:justify-start">
                     <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
                     The Leadership Team
                 </h2>
@@ -60,7 +59,7 @@ export default async function AboutPage() {
                     const externalLink = member.socialLinks.find(l => l.platform === 'external');
                     const socialLinks = member.socialLinks.filter(l => l.platform !== 'external');
                     return (
-                        <div key={member.id} className="relative group aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-xl border border-primary/10 bg-card transition-all duration-500 hover:shadow-2xl hover:border-primary/40 hover:-translate-y-1">
+                        <div key={member.id} className="relative group aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border border-primary/10 bg-card transition-all duration-500 hover:shadow-2xl hover:border-primary/40 hover:-translate-y-1">
                             <Image
                                 src={member.imageUrl}
                                 alt={member.name}
@@ -71,24 +70,24 @@ export default async function AboutPage() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                             <div className="absolute bottom-6 left-6 right-6">
-                                <div className="relative p-5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl text-white">
+                                <div className="relative p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl text-white text-center">
                                     <div className="space-y-1">
-                                        <h3 className="font-black text-lg uppercase tracking-tight leading-tight">{member.name}</h3>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">{member.title}</p>
+                                        <h3 className="font-black text-base md:text-lg uppercase tracking-tight leading-tight">{member.name}</h3>
+                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">{member.title}</p>
                                     </div>
-                                    <div className="flex items-center gap-3 mt-5">
+                                    <div className="flex items-center justify-center gap-3 mt-4">
                                         {socialLinks.map((link, index) => {
                                             const Icon = (socialIconMap as any)[link.platform] || ExternalLink;
                                             return (
                                                 <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/10 hover:bg-primary transition-all group/icon">
-                                                    <Icon className="w-4 h-4 text-white group-hover/icon:scale-110" />
+                                                    <Icon className="w-3.5 h-3.5 text-white group-hover/icon:scale-110" />
                                                 </Link>
                                             )
                                         })}
                                     </div>
                                     {externalLink && (
                                         <Link href={externalLink.url} target="_blank" rel="noopener noreferrer" className="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-colors">
-                                            <ExternalLink className="w-4 h-4 text-white" />
+                                            <ExternalLink className="w-3.5 h-3.5 text-white" />
                                         </Link>
                                     )}
                                 </div>

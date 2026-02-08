@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -31,8 +30,7 @@ type AutoplaySettings = {
 
 /**
  * @fileOverview Modern Hero Carousel component.
- * Features ultra-clean, semi-transparent overlays instead of heavy black backgrounds.
- * Implements smooth transitions and high-blur glassmorphism controls.
+ * Replaces heavy black backgrounds with semi-transparent glassmorphism overlays.
  */
 export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -88,7 +86,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         className="object-cover"
                         data-ai-hint={banner.dataAiHint}
                     />
-                    {/* Refined Semi-Transparent Glassmorphism Overlay */}
+                    {/* Semi-Transparent Glassmorphism Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                     
                     {/* Floating Navigation Controls */}
@@ -118,7 +116,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
       
-      {/* Dynamic Progress Dots */}
+      {/* Progress Dots */}
       <div className="hero-carousel-dots mt-6 flex justify-center gap-2">
         {banners.map((_, index) => (
           <button

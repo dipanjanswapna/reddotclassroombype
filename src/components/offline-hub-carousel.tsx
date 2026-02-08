@@ -21,7 +21,7 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview Standardized Carousel Component for Offline Hub.
- * Features refined glassmorphism, responsive content stacks, and removal of black backgrounds.
+ * Uses clean backgrounds and glassmorphism consistent with the main page.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -62,8 +62,8 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Professional Transparent Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r md:from-black/50 md:via-transparent md:to-transparent opacity-70" />
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70" />
                   
                   <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
                     <div className="flex-1 space-y-2 sm:space-y-4 text-left max-w-2xl">
@@ -93,7 +93,6 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
           ))}
         </CarouselContent>
         
-        {/* Modern Progress-Style Indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {slides.map((_, index) => (
             <button

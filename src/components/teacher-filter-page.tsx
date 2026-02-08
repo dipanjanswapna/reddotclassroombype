@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -11,8 +10,7 @@ import { Home, Book } from 'lucide-react';
 
 /**
  * @fileOverview Redesigned Teacher Filter Page.
- * Implements a strict 5-column grid on desktop (xl:grid-cols-5) for an elite gallery feel.
- * Optimized spacing and fluid imagery ensures no content is cut off on any device.
+ * Implements a strict 5-column grid on desktop (xl:grid-cols-5).
  */
 export function TeacherFilterPage({ instructors, subjects }: { instructors: Instructor[], subjects: string[] }) {
     const [selectedSubject, setSelectedSubject] = useState('সব');
@@ -22,7 +20,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
         : instructors.filter(inst => inst.title === selectedSubject);
 
     return (
-        <div className="container mx-auto px-4 py-10 md:py-14 max-w-full">
+        <div className="container mx-auto px-4 py-10 md:py-14 max-w-full overflow-hidden">
             <div className="mb-10">
                 <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-6 flex items-center gap-4">
                     <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
@@ -51,7 +49,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                 </div>
             </div>
 
-            {/* Elite 5-column Grid on Desktop */}
+            {/* Strict 5-column Grid on Desktop */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredInstructors.map((teacher) => (
                 <Link key={teacher.id} href={`/teachers/${teacher.slug}`} className="group block" aria-label={`View profile for ${teacher.name}`}>
@@ -67,7 +65,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" aria-hidden="true" />
                     
                     <div className="absolute bottom-6 left-6 right-6">
-                        <div className="relative p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl text-white">
+                        <div className="relative p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl text-white text-center">
                             <h3 className="font-black text-base md:text-lg uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">{teacher.name}</h3>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mt-1">{teacher.title}</p>
                         </div>
@@ -79,7 +77,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
             {filteredInstructors.length === 0 && (
                 <div className="text-center py-24 bg-muted/30 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center">
                     <p className="text-xl font-bold text-muted-foreground">No teachers found for this category.</p>
-                    <p className="text-sm text-muted-foreground mt-2">Try selecting another subject or reset the filter.</p>
+                    <p className="text-sm text-muted-foreground mt-2 font-medium">Try selecting another subject or reset the filter.</p>
                 </div>
             )}
         </div>

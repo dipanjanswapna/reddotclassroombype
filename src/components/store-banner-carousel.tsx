@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Refined Store Banner Carousel.
- * Features ultra-clean layouts, premium glassmorphism dots, and smooth transitions.
+ * Removed heavy black backgrounds, aligned with main hero aesthetic.
  */
 export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner[] }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -37,7 +37,7 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
   }
 
   return (
-    <div className="w-full py-2 group/main relative">
+    <div className="w-full py-2 group/main relative overflow-hidden">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -58,7 +58,7 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
-                  {/* Premium Subtle Gradient Overlay */}
+                  {/* Subtle Transparent Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-40" />
                 </div>
               </Link>
@@ -69,7 +69,6 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
         <CarouselNext className="hidden md:flex right-8 bg-background/40 backdrop-blur-md border-none h-12 w-12 hover:bg-background/80 transition-opacity opacity-0 group-hover/main:opacity-100 shadow-lg" />
       </Carousel>
 
-      {/* Modern Dots */}
       <div className="flex justify-center gap-1.5 mt-6">
         {banners.map((_, index) => (
           <button

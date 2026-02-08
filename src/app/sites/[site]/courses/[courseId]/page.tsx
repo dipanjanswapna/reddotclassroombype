@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -21,7 +20,7 @@ import {
 } from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CourseTabs } from '@/components/course-tabs';
 import { CourseCard } from '@/components/course-card';
 import {
@@ -46,7 +45,6 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 /**
  * @fileOverview Partner-specific Course Detail Page.
  * Mirroring the high-quality main course detail page for consistency.
- * Optimized responsiveness for mobile, tablet, and desktop.
  */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -218,27 +216,7 @@ export default async function PartnerCourseDetailPage({
               </Link>
             </div>
 
-            {/* Learning Outcomes */}
-            {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
-                <section id="features" className="scroll-mt-32 py-0">
-                    <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
-                        <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                        Course Outcomes
-                    </h2>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-muted/20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-primary/5">
-                        {course.whatYouWillLearn.map((item, index) => (
-                            <div key={`learn-${index}`} className="flex items-start gap-4 group">
-                                <div className="mt-1 p-1.5 bg-primary/10 rounded-xl shrink-0 group-hover:bg-primary transition-colors">
-                                    <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover:text-white transition-colors" />
-                                </div>
-                                <p className='text-foreground font-bold text-sm md:text-base leading-snug break-words'>{item}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Routine: Responsive Cards on Mobile */}
+            {/* Routine & Schedule (Adaptive Cards on Mobile) */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -284,7 +262,7 @@ export default async function PartnerCourseDetailPage({
                 </section>
             )}
 
-            {/* Exam Schedule: Responsive Cards on Mobile */}
+            {/* Exam Schedule */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -335,7 +313,7 @@ export default async function PartnerCourseDetailPage({
                 </section>
             )}
             
-            {/* Syllabus Accordion */}
+            {/* Syllabus */}
             {course.syllabus && course.syllabus.length > 0 && (
               <section id="syllabus" className="scroll-mt-32 py-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
@@ -382,7 +360,7 @@ export default async function PartnerCourseDetailPage({
             )}
           </div>
 
-          {/* Enrollment Sidebar: Mobile-friendly stacking */}
+          {/* Enrollment Sidebar */}
           <div className="lg:col-span-4">
              <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 pb-8 pt-8 md:pb-10 md:pt-10 px-6 md:px-8">
@@ -445,7 +423,7 @@ export default async function PartnerCourseDetailPage({
           </div>
         </div>
 
-        {/* Global Spaced Recommendations */}
+        {/* Spaced Recommendations */}
          <section className="pt-16 border-t border-primary/10">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">
