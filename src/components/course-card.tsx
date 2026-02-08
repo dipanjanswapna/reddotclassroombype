@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { Button } from "./ui/button";
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type CourseCardProps = Partial<Course> & {
@@ -25,7 +25,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
     return null;
   }
   
-  const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate as string) > new Date();
+  const isPrebookingActive = isPrebooking && prebookingEndDate && safeToDate(prebookingEndDate) > new Date();
   const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
@@ -33,7 +33,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
   return (
     <div className="h-full w-full">
       <Card className={cn(
-          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-2xl",
+          "flex flex-col h-full overflow-hidden transition-all duration-500 group border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl rounded-xl",
           className
       )}>
         <CardHeader className="p-0 overflow-hidden relative">

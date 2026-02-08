@@ -301,6 +301,11 @@ function SortableSyllabusItem({
     );
 }
 
+interface CourseBuilderProps {
+    userRole: 'Admin' | 'Seller' | 'Teacher';
+    redirectPath: string;
+}
+
 export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const router = useRouter();
   const params = useParams();
@@ -772,7 +777,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             </div>
         </div>
         
-        <Card className="rounded-[2rem] border-primary/10 shadow-2xl overflow-hidden bg-card">
+        <Card className="rounded-xl border-primary/10 shadow-2xl overflow-hidden bg-card">
             <CardHeader className="p-0 border-b border-primary/5 bg-muted/30">
                 <div className="overflow-x-auto scrollbar-hide">
                     <div className="flex items-center gap-1 p-2">
@@ -782,7 +787,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 variant="ghost"
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "rounded-xl shrink-0 font-black uppercase text-[10px] tracking-widest px-6 h-14 transition-all",
+                                    "rounded-lg shrink-0 font-black uppercase text-[10px] tracking-widest px-6 h-14 transition-all",
                                     activeTab === tab.id ? 'bg-primary/10 text-primary shadow-inner' : 'text-muted-foreground hover:bg-primary/5'
                                 )}
                             >
@@ -803,7 +808,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                         </div>
                         <div className="space-y-3">
                             <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Curriculum Brief</Label>
-                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={8} className="rounded-2xl text-base border-2 focus-visible:ring-primary p-6 shadow-sm font-medium" placeholder="Synthesize the educational value proposition here..." />
+                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={8} className="rounded-xl text-base border-2 focus-visible:ring-primary p-6 shadow-sm font-medium" placeholder="Synthesize the educational value proposition here..." />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
@@ -818,7 +823,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Delivery Protocol</Label>
                                 <Select value={courseType} onValueChange={(v: any) => setCourseType(v)}>
                                     <SelectTrigger className="h-14 rounded-xl border-2 font-black uppercase text-xs"><SelectValue/></SelectTrigger>
-                                    <SelectContent className="rounded-xl"><SelectItem value="Online">Online Sync</SelectItem><SelectItem value="Offline">On-Site Hub</SelectItem><SelectItem value="Hybrid">Hybrid Force</SelectItem><SelectItem value="Exam">Exam Arsenal</SelectItem></SelectContent>
+                                    <SelectContent className="rounded-lg"><SelectItem value="Online">Online Sync</SelectItem><SelectItem value="Offline">On-Site Hub</SelectItem><SelectItem value="Hybrid">Hybrid Force</SelectItem><SelectItem value="Exam">Exam Arsenal</SelectItem></SelectContent>
                                 </Select>
                             </div>
                         </div>
@@ -843,8 +848,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </SortableContext>
                         </DndContext>
                         <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t-2 border-primary/5">
-                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Module</Button>
-                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Lesson</Button>
+                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Module</Button>
+                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Lesson</Button>
                         </div>
                     </div>
                 )}
@@ -852,14 +857,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 {activeTab === 'pricing' && (
                     <div className="space-y-16 text-left">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <Card className="rounded-[2rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card">
+                            <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl bg-card">
                                 <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Full Enrollment Pricing</CardTitle></CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Standard Listing (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-primary" placeholder="4500" /></div>
                                     <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Flash Incentive (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-green-600" placeholder="3000" /></div>
                                 </CardContent>
                             </Card>
-                            <Card className="rounded-[2rem] border-2 border-muted overflow-hidden shadow-2xl bg-card">
+                            <Card className="rounded-2xl border-2 border-muted overflow-hidden shadow-2xl bg-card">
                                 <CardHeader className="bg-muted/30 p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking Protocol</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
                                 <CardContent className="p-8 space-y-8">
                                     {isPrebooking ? (
@@ -879,17 +884,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </div>
                             <div className="grid grid-cols-1 gap-8">
                                 {(cycles || []).map((cycle, index) => (
-                                    <Card key={cycle.id} className="rounded-[2rem] border-2 border-primary/5 shadow-xl group overflow-hidden bg-card hover:border-primary/20 transition-all">
+                                    <Card key={cycle.id} className="rounded-2xl border-2 border-primary/5 shadow-xl group overflow-hidden bg-card hover:border-primary/20 transition-all">
                                         <CardHeader className="bg-primary/5 p-6 flex flex-row items-center justify-between">
                                             <Badge className="font-black rounded-lg px-4 py-1 uppercase text-[10px] tracking-widest">Cycle {index + 1}</Badge>
-                                            <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)} className="h-10 w-10 text-destructive rounded-xl hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)} className="h-10 w-10 text-destructive rounded-lg hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
                                         </CardHeader>
                                         <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Public Label</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="rounded-xl border-2 font-black uppercase text-sm" placeholder="e.g., JANUARY MODULE" /></div>
                                             <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Cycle Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="rounded-xl border-2 font-black text-2xl text-primary" placeholder="1000" /></div>
                                             <div className="col-span-full space-y-3 text-left">
                                                 <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Authorized Knowledge Modules</Label>
-                                                <div className="flex flex-wrap gap-2 p-6 border-2 border-dashed rounded-2xl bg-muted/20">
+                                                <div className="flex flex-wrap gap-2 p-6 border-2 border-dashed rounded-xl bg-muted/20">
                                                     {syllabus.filter(s => s.type === 'module').map(m => (
                                                         <Badge 
                                                             key={m.id} 
@@ -917,7 +922,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'outcomes' && (
                     <div className="space-y-10 text-left">
-                        <div className="p-8 md:p-12 border-2 rounded-[2.5rem] bg-card shadow-2xl space-y-8 relative overflow-hidden">
+                        <div className="p-8 md:p-12 border-2 rounded-2xl bg-card shadow-2xl space-y-8 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] -mr-32 -mt-32"></div>
                             <Label className="font-black uppercase text-base tracking-tight text-primary flex items-center gap-3">
                                 <Award className="h-6 w-6"/> Global Knowledge Milestones
@@ -925,13 +930,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             <div className="space-y-4">
                                 {whatYouWillLearn.map((outcome, index) => (
                                     <div key={index} className="flex items-center gap-4 group">
-                                        <div className="h-12 w-12 rounded-2xl flex items-center justify-center font-black bg-primary text-white shrink-0 shadow-lg shadow-primary/20">{index + 1}</div>
+                                        <div className="h-12 w-12 rounded-xl flex items-center justify-center font-black bg-primary text-white shrink-0 shadow-lg shadow-primary/20">{index + 1}</div>
                                         <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} className="h-14 rounded-xl border-2 focus-visible:ring-primary flex-grow font-bold shadow-sm" placeholder="Student will master the principles of..." />
-                                        <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl h-12 w-12 hover:bg-destructive/10 shrink-0"><Trash2 className="h-5 w-5"/></Button>
+                                        <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-lg h-12 w-12 hover:bg-destructive/10 shrink-0"><Trash2 className="h-5 w-5"/></Button>
                                     </div>
                                 ))}
                             </div>
-                            <Button variant="outline" className="w-full h-16 border-dashed border-4 rounded-2xl font-black uppercase tracking-[0.25em] text-[10px] shadow-xl hover:bg-primary/5 transition-all border-primary/10" onClick={addOutcome}><PlusCircle className="mr-2 h-6 w-6 text-primary"/> Register Milestone</Button>
+                            <Button variant="outline" className="w-full h-16 border-dashed border-4 rounded-xl font-black uppercase tracking-[0.25em] text-[10px] shadow-xl hover:bg-primary/5 transition-all border-primary/10" onClick={addOutcome}><PlusCircle className="mr-2 h-6 w-6 text-primary"/> Register Milestone</Button>
                         </div>
                     </div>
                 )}
@@ -940,10 +945,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <div className="space-y-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                             {instructors.map(inst => (
-                                <Card key={inst.slug} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl text-center group bg-card transition-all hover:border-primary/40">
+                                <Card key={inst.slug} className="rounded-xl border-2 border-primary/10 overflow-hidden shadow-2xl text-center group bg-card transition-all hover:border-primary/40">
                                     <div className="relative aspect-[4/5] bg-muted overflow-hidden">
                                         <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                                        <Button variant="destructive" size="icon" onClick={() => removeInstructorFn(inst.slug)} className="absolute top-3 right-3 rounded-xl shadow-2xl h-10 w-10 border-2 border-white/20"><X className="h-5 w-5"/></Button>
+                                        <Button variant="destructive" size="icon" onClick={() => removeInstructorFn(inst.slug)} className="absolute top-3 right-3 rounded-lg shadow-2xl h-10 w-10 border-2 border-white/20"><X className="h-5 w-5"/></Button>
                                     </div>
                                     <div className="p-5">
                                         <p className="font-black uppercase text-sm leading-tight break-words">{inst.name}</p>
@@ -953,17 +958,17 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             ))}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-6 border-dashed border-4 rounded-[2rem] border-primary/10 hover:bg-primary/5 hover:border-primary/30 transition-all min-h-[300px] shadow-xl">
+                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-6 border-dashed border-4 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/30 transition-all min-h-[300px] shadow-xl">
                                         <PlusCircle className="h-12 w-12 text-primary opacity-40 group-hover:opacity-100" />
                                         <span className="font-black uppercase text-[10px] tracking-[0.3em] text-primary/60">Appoint Faculty</span>
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl border-primary/20 bg-background/95 backdrop-blur-xl">
+                                <PopoverContent className="w-80 p-0 rounded-xl overflow-hidden shadow-2xl border-primary/20 bg-background/95 backdrop-blur-xl">
                                     <Command>
                                         <CommandInput placeholder="Search faculty directory..." className="h-14 font-bold" />
                                         <CommandGroup className="p-2 max-h-[350px] overflow-y-auto scrollbar-hide">
                                             {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
-                                                <CommandItem key={inst.id} onSelect={() => addInstructorFn(inst)} className="rounded-xl p-3 hover:bg-primary/5 cursor-pointer transition-colors mb-1">
+                                                <CommandItem key={inst.id} onSelect={() => addInstructorFn(inst)} className="rounded-lg p-3 hover:bg-primary/5 cursor-pointer transition-colors mb-1">
                                                     <div className="flex items-center gap-4">
                                                         <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-md"><AvatarImage src={inst.avatarUrl} /><AvatarFallback className="font-black">{inst.name.charAt(0)}</AvatarFallback></Avatar>
                                                         <div className="text-left"><p className="font-black text-xs uppercase tracking-tight">{inst.name}</p><p className="text-[9px] font-bold text-muted-foreground uppercase">{inst.title}</p></div>
@@ -983,12 +988,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     <div className="space-y-10 text-left">
                         <div className="grid gap-8">
                             {examTemplates.map((exam, index) => (
-                                <Collapsible key={exam.id} className="rounded-[2.5rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card transition-all hover:border-primary/20">
+                                <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl bg-card transition-all hover:border-primary/20">
                                     <div className="flex justify-between items-center p-8 bg-primary/5 border-b-2 border-primary/5">
                                         <div className="flex items-center gap-5"><Award className="h-8 w-8 text-primary shrink-0"/><span className="font-black uppercase text-lg tracking-tight truncate">{exam.title || `STRATEGIC ASSESSMENT ${index + 1}`}</span></div>
                                         <div className="flex items-center gap-3">
-                                            <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="text-destructive rounded-xl h-11 w-11 hover:bg-destructive/10"><Trash2 className="h-6 w-6"/></Button>
-                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="rounded-xl h-11 w-11"><ChevronDown className="h-6 w-6 transition-transform"/></Button></CollapsibleTrigger>
+                                            <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="text-destructive rounded-lg h-11 w-11 hover:bg-destructive/10"><Trash2 className="h-6 w-6"/></Button>
+                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="rounded-lg h-11 w-11"><ChevronDown className="h-6 w-6 transition-transform"/></Button></CollapsibleTrigger>
                                         </div>
                                     </div>
                                     <CollapsibleContent className="p-8 md:p-12 space-y-10">
@@ -997,7 +1002,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                             <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Execution Protocol</Label>
                                                 <Select value={exam.examType} onValueChange={(v: any) => updateExam(exam.id, 'examType', v)}>
                                                     <SelectTrigger className="h-14 rounded-xl border-2 font-black uppercase text-xs shadow-sm"><SelectValue/></SelectTrigger>
-                                                    <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (AUTOMATED)</SelectItem><SelectItem value="Written">WRITTEN (MANUAL)</SelectItem><SelectItem value="Oral">ORAL VIVA</SelectItem><SelectItem value="Practical">PRACTICAL LAB</SelectItem></SelectContent>
+                                                    <SelectContent className="rounded-lg"><SelectItem value="MCQ">MCQ (AUTOMATED)</SelectItem><SelectItem value="Written">WRITTEN (MANUAL)</SelectItem><SelectItem value="Oral">ORAL VIVA</SelectItem><SelectItem value="Practical">PRACTICAL LAB</SelectItem></SelectContent>
                                                 </Select>
                                             </div>
                                         </div>
@@ -1011,14 +1016,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </CollapsibleContent>
                                 </Collapsible>
                             ))}
-                            <Button variant="outline" className="w-full h-20 border-dashed border-4 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-primary/5 transition-all border-primary/10" onClick={addExam}><PlusCircle className="mr-3 h-8 w-8 text-primary"/> Define Strategic Assessment</Button>
+                            <Button variant="outline" className="w-full h-20 border-dashed border-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-primary/5 transition-all border-primary/10" onClick={addExam}><PlusCircle className="mr-3 h-8 w-8 text-primary"/> Define Strategic Assessment</Button>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'media' && (
                     <div className="space-y-10 text-left">
-                        <Card className="rounded-[2.5rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card relative">
+                        <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl bg-card relative">
                             <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Visual Identification & Previews</CardTitle></CardHeader>
                             <CardContent className="p-8 md:p-12 space-y-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -1028,7 +1033,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Arrival Preview</Label>
-                                        <div className="relative aspect-video rounded-3xl border-4 border-primary/5 overflow-hidden bg-muted shadow-2xl group">
+                                        <div className="relative aspect-video rounded-2xl border-4 border-primary/5 overflow-hidden bg-muted shadow-2xl group">
                                             <Image src={thumbnailUrl} alt="Program Preview" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                                         </div>
@@ -1041,7 +1046,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'settings' && (
                     <div className="space-y-10 text-left">
-                        <div className="space-y-12 p-8 md:p-16 border-2 rounded-[3rem] bg-card shadow-2xl relative overflow-hidden">
+                        <div className="space-y-12 p-8 md:p-16 border-2 rounded-2xl bg-card shadow-2xl relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] -mr-48 -mt-48"></div>
                             <div className="space-y-4 max-w-3xl">
                                 <Label className="flex items-center gap-3 font-black uppercase text-[10px] tracking-[0.25em] text-primary">
@@ -1052,11 +1057,11 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                             </div>
                             <Separator className="opacity-50" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="flex items-center justify-between rounded-[2rem] border-2 border-primary/10 p-8 bg-muted/10 shadow-sm group hover:border-primary/30 transition-all">
+                                <div className="flex items-center justify-between rounded-xl border-2 border-primary/10 p-8 bg-muted/10 shadow-sm group hover:border-primary/30 transition-all">
                                     <div className="space-y-1.5"><Label className="font-black uppercase text-base tracking-tight leading-none">Public Enrollment Metrics</Label><p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Display real-time student force count</p></div>
                                     <Switch checked={showStudentCount} onCheckedChange={setShowStudentCount} />
                                 </div>
-                                <div className="flex items-center justify-between rounded-[2rem] border-2 border-destructive/20 p-8 bg-destructive/5 shadow-sm group hover:border-destructive/40 transition-all">
+                                <div className="flex items-center justify-between rounded-xl border-2 border-destructive/20 p-8 bg-destructive/5 shadow-sm group hover:border-destructive/40 transition-all">
                                     <div className="space-y-1.5"><Label className="font-black uppercase text-base tracking-tight text-destructive leading-none">Curriculum Sunset</Label><p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Terminate all active admissions</p></div>
                                     <Switch checked={isArchived} onCheckedChange={setIsArchived} />
                                 </div>
@@ -1069,13 +1074,13 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
         {/* AI & Question Bank Dialogs */}
         <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
-            <DialogContent className="rounded-[2.5rem] p-10 md:p-16 border-4 border-primary shadow-2xl bg-background/95 backdrop-blur-2xl">
+            <DialogContent className="rounded-2xl p-10 md:p-16 border-4 border-primary shadow-2xl bg-background/95 backdrop-blur-2xl">
                 <DialogHeader className="text-center">
                     <Wand2 className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
                     <DialogTitle className="text-3xl md:text-4xl font-black uppercase tracking-tight text-primary">RDC AI SYNERGIST</DialogTitle>
                     <DialogDescription className="font-black uppercase text-xs md:text-sm tracking-widest mt-4 opacity-70">Synthesize a master curriculum blueprint from a single topic.</DialogDescription>
                 </DialogHeader>
-                <div className="py-10"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., ADMISSION ARSENAL: PHYSICS 2025" className="h-16 md:h-20 rounded-2xl border-4 text-xl md:text-2xl font-black text-center shadow-inner" /></div>
+                <div className="py-10"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., ADMISSION ARSENAL: PHYSICS 2025" className="h-16 md:h-20 rounded-xl border-4 text-xl md:text-2xl font-black text-center shadow-inner" /></div>
                 <DialogFooter className="sm:justify-center gap-6 flex-col sm:flex-row">
                     <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-16 px-12 font-black uppercase tracking-widest text-[10px] border-2 w-full sm:w-auto active:scale-95 transition-all">Abort Protocol</Button>
                     <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-16 px-14 font-black uppercase tracking-widest text-[10px] bg-primary text-white shadow-2xl shadow-primary/20 w-full sm:w-auto active:scale-95 transition-all border-none">
@@ -1087,14 +1092,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         </Dialog>
         
         <Dialog open={isQuestionBankOpen} onOpenChange={setIsQuestionBankOpen}>
-          <DialogContent className="max-w-6xl rounded-[3rem] border-4 border-primary overflow-hidden p-0 shadow-2xl w-[95vw] bg-background">
+          <DialogContent className="max-w-6xl rounded-2xl border-4 border-primary overflow-hidden p-0 shadow-2xl w-[95vw] bg-background">
               <DialogHeader className="p-8 md:p-12 bg-primary/5 border-b-2 border-primary/10 flex flex-col items-center text-center"><Database className="h-12 w-12 text-primary mb-4"/><DialogTitle className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Knowledge Core Injection</DialogTitle><DialogDescription className="font-black uppercase text-[10px] tracking-[0.3em] mt-2 opacity-60">Mass-injecting strategic items from the central question bank.</DialogDescription></DialogHeader>
               <div className="flex flex-wrap gap-4 p-6 md:p-10 bg-muted/20 border-b-2 border-primary/5">
                  <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[250px] h-14 rounded-xl border-none shadow-2xl font-black uppercase text-[10px] tracking-widest bg-background"><SelectValue placeholder="Target Subject"/></SelectTrigger>
-                    <SelectContent className="rounded-xl">{[...new Set(questionBank.map(q => q.subject).filter(Boolean))].map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="rounded-lg">{[...new Set(questionBank.map(q => q.subject).filter(Boolean))].map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
                 </Select>
                  <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[200px] h-14 rounded-xl border-none shadow-2xl font-black uppercase text-[10px] tracking-widest bg-background"><SelectValue placeholder="Intelligence Scale"/></SelectTrigger>
-                    <SelectContent className="rounded-xl"><SelectItem value="all">Full Spectrum</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
+                    <SelectContent className="rounded-lg"><SelectItem value="all">Full Spectrum</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                 </Select>
               </div>
               <div className="max-h-[45vh] overflow-y-auto p-6 md:p-10 scrollbar-hide">
@@ -1116,9 +1121,4 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
         </Dialog>
     </div>
   );
-}
-
-type CourseBuilderProps = {
-    userRole: 'Admin' | 'Seller' | 'Teacher';
-    redirectPath: string;
 }

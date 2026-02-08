@@ -89,12 +89,12 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
 
         <CardContent className="p-4 flex flex-col flex-grow">
           <Link href={courseLink}>
-            <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+            <h3 className="font-headline text-base font-bold leading-snug hover:text-primary transition-colors line-clamp-2 uppercase">{course.title}</h3>
           </Link>
           {provider ? (
              <div className="flex items-center gap-2 mt-2">
               <Image src={provider.logoUrl} alt={provider.name} width={16} height={16} className="rounded-full bg-muted object-contain"/>
-              <p className="text-xs text-muted-foreground">By {provider.name}</p>
+              <p className="text-xs text-muted-foreground font-bold">By {provider.name}</p>
             </div>
           ) : (
             <p className="text-muted-foreground text-sm mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
@@ -104,7 +104,7 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
               {status === 'in-progress' && typeof course.progress === 'number' && (
               <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Course Progress</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Progress</p>
                       <p className="text-sm font-bold text-primary">{course.progress}%</p>
                   </div>
                   <Progress value={course.progress} className="h-1.5 [&>div]:bg-accent" />
@@ -126,37 +126,37 @@ export function EnrolledCourseCard({ course, status, provider, className }: Enro
 
         <CardFooter className="p-4 pt-0">
           {status === 'in-progress' && (
-             <Button asChild className="w-full font-bold shadow-md active:shadow-inner">
-                  <Link href={continueLink}>Continue Learning</Link>
+             <Button asChild className="w-full font-bold shadow-md rounded-xl h-11 active:shadow-inner uppercase tracking-widest text-[10px]">
+                  <Link href={continueLink}>Resume Sync</Link>
              </Button>
           )}
           {status === 'completed' && (
              <div className="w-full flex flex-col gap-2">
-               <Button asChild className="w-full font-bold shadow-md" variant="accent">
-                      <Link href="/student/certificates">View Certificate</Link>
+               <Button asChild className="w-full font-bold shadow-md rounded-xl h-11 uppercase tracking-widest text-[10px]" variant="accent">
+                      <Link href="/student/certificates">Get Certificate</Link>
                </Button>
-               <Button asChild className="w-full" variant="outline">
-                      <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>Rate Course</Link>
+               <Button asChild className="w-full rounded-xl h-11 uppercase tracking-widest text-[10px]" variant="outline">
+                      <Link href={`/student/my-courses/${course.id}/reviews`}><Star className="mr-2 h-4 w-4"/>Rate Program</Link>
                </Button>
              </div>
           )}
            {status === 'wishlisted' && (
              <div className="w-full flex items-center gap-2">
-               <Button asChild className="w-full font-bold shadow-md flex-grow">
-                      <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
+               <Button asChild className="w-full font-bold shadow-md flex-grow rounded-xl h-11 uppercase tracking-widest text-[10px]">
+                      <Link href={`/checkout/${course.id}`}>Authorize</Link>
                </Button>
-               <Button variant="outline" size="icon" className="shrink-0" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
+               <Button variant="outline" size="icon" className="shrink-0 rounded-xl h-11 w-11" aria-label="Remove from wishlist" onClick={handleRemoveFromWishlist}>
                   <Trash2 className="h-4 w-4" />
                </Button>
              </div>
           )}
           {status === 'archived' && (
-             <Button asChild className="w-full" variant="outline">
-                  <Link href={courseLink}>View Archived Content</Link>
+             <Button asChild className="w-full rounded-xl h-11 uppercase tracking-widest text-[10px]" variant="outline">
+                  <Link href={courseLink}>Open Vault</Link>
              </Button>
           )}
           {status === 'prebooked' && (
-             <Button disabled className="w-full font-bold opacity-80">
+             <Button disabled className="w-full font-bold opacity-80 rounded-xl h-11 uppercase tracking-widest text-[10px]">
                   <BookmarkCheck className="mr-2 h-4 w-4" />
                   Pre-booked
              </Button>

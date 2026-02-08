@@ -25,7 +25,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 0 72% 51%;
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -86,7 +86,7 @@
   }
 
   .glassmorphism-card {
-    @apply bg-card/80 dark:bg-card/40 backdrop-blur-md border border-white/10 rounded-2xl shadow-lg;
+    @apply bg-card/80 dark:bg-card/40 backdrop-blur-md border border-white/10 rounded-xl shadow-lg;
   }
 }
 

@@ -15,12 +15,12 @@ import {
   Award,
   CheckCircle2,
   CalendarCheck,
-  Megaphone,
-  HelpCircle,
-  FileText,
   Layers3,
   ChevronRight,
-  Zap
+  HelpCircle,
+  FileText,
+  Megaphone,
+  Zap,
 } from 'lucide-react';
 import {
   Accordion,
@@ -32,29 +32,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { CourseTabs } from '@/components/course-tabs';
-import { CourseCard } from '@/components/course-card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import Link from 'next/link';
 import { Course, CourseCycle } from '@/lib/types';
-import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganizations, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import { getCourse, getEnrollmentsByCourseId, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { cn, safeToDate } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/firebase/auth';
+import { Separator } from '@/components/ui/separator';
 
 /**
  * @fileOverview Elite Responsive Course Detail Page.
- * Optimised for conversions with aggressive enrollment CTAs and modular course cycles.
- * Fully compliant with Next.js 15 async parameter requirements.
+ * Optimized for high conversion with early CTAs and modular access.
  */
 
 export async function generateMetadata({ params }: { params: Promise<{ courseId: string }> }): Promise<Metadata> {
@@ -91,10 +81,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
   
   const enrollments = await getEnrollmentsByCourseId(courseId);
   const studentCount = enrollments.length;
-  const allCourses = await getCourses({ status: 'Published' });
-  const relatedCourses = allCourses.filter(c => c.id !== course.id).slice(0, 4);
 
-  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && new Date(course.prebookingEndDate as string) > new Date();
+  const isPrebookingActive = course.isPrebooking && course.prebookingEndDate && safeToDate(course.prebookingEndDate) > new Date();
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   return (
@@ -125,7 +113,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                    <div className="flex flex-wrap items-center gap-x-8 gap-y-6 pt-4">
                         {course.instructors && course.instructors.length > 0 && (
                             <div className="flex items-center gap-3">
-                                <Avatar className="h-12 w-12 border-2 border-primary/20 ring-4 ring-primary/5">
+                                <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-md">
                                     <AvatarImage src={course.instructors[0].avatarUrl} alt={course.instructors[0].name} />
                                     <AvatarFallback className="font-bold">{course.instructors[0].name.charAt(0)}</AvatarFallback>
                                 </Avatar>
@@ -156,11 +144,10 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                     </div>
               </div>
               
-              {/* Early Buy Prompt for Desktop */}
               <div className="hidden lg:block lg:col-span-4">
-                  <Card className="rounded-[2.5rem] shadow-2xl border-2 border-primary/20 bg-card overflow-hidden">
+                  <Card className="rounded-2xl shadow-2xl border-2 border-primary/20 bg-card overflow-hidden">
                       <div className="p-8 bg-primary/5 border-b border-primary/5">
-                          <p className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 mb-2">Sync Access</p>
+                          <p className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 mb-2">Institutional Pricing</p>
                           <h3 className="text-4xl font-black text-primary tracking-tighter">{isPrebookingActive ? course.prebookingPrice : (hasDiscount ? course.discountPrice : course.price)}</h3>
                       </div>
                       <div className="p-8 space-y-4">
@@ -180,69 +167,10 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
 
       <CourseTabs course={course} />
 
-      <main className="container mx-auto px-4 py-10 md:py-14 max-w-7xl overflow-hidden">
+      <main className="container mx-auto px-4 py-10 md:py-14 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-8 space-y-12 md:space-y-16">
             
-            {/* Promo Media System */}
-            {(course.videoUrl || course.imageUrl) && (
-                <section id="media" className="scroll-mt-32">
-                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
-                        <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                            <Image
-                            src={course.imageUrl}
-                            alt={course.title}
-                            fill
-                            priority
-                            className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                            />
-                            {course.videoUrl && (
-                                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-6 transition-all group-hover:bg-black/20 backdrop-blur-[1px]">
-                                    <PlayCircle className="w-20 h-20 md:w-28 text-white group-hover:scale-110 transition-all cursor-pointer drop-shadow-2xl" />
-                                    <span className="text-white font-black text-[10px] md:text-xs uppercase tracking-[0.25em] bg-black/60 px-6 py-2 md:px-8 md:py-3 rounded-xl backdrop-blur-xl border border-white/20 shadow-2xl">Visual Blueprint Preview</span>
-                                </div>
-                            )}
-                        </Link>
-                    </div>
-                </section>
-            )}
-
-            {/* Modular Course Cycles System */}
-            {course.cycles && course.cycles.length > 0 && (
-                <section id="cycles" className="scroll-mt-32 space-y-8">
-                    <div className="flex items-center gap-4">
-                        <div className="h-10 w-2 bg-primary rounded-full shadow-lg"></div>
-                        <h2 className="font-headline text-2xl md:text-4xl font-black uppercase tracking-tight">Access Tiers</h2>
-                    </div>
-                    <div className="grid gap-4">
-                        {course.cycles.map((cycle: CourseCycle) => (
-                            <div key={cycle.id} className="group relative rounded-3xl border-2 border-primary/10 bg-card p-6 md:p-10 shadow-xl transition-all hover:border-primary/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl transition-transform group-hover:scale-150"></div>
-                                <div className="space-y-2 text-left relative z-10">
-                                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-foreground">{cycle.title}</h3>
-                                    <p className="text-sm text-muted-foreground font-medium max-w-xl">{cycle.description}</p>
-                                    <div className="flex items-center gap-2 pt-2">
-                                        <Layers3 className="h-4 w-4 text-primary opacity-60" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">{cycle.moduleIds?.length || 0} Modules Authorized</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center w-full md:w-auto gap-4 pt-4 md:pt-0 border-t md:border-t-0 relative z-10">
-                                    <div className="text-left md:text-right">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Cycle Cost</p>
-                                        <p className="text-2xl md:text-3xl font-black text-primary tracking-tighter">৳{cycle.price}</p>
-                                    </div>
-                                    <Button asChild className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20 active:scale-95 bg-primary hover:bg-primary/90 text-white border-none">
-                                        <Link href={`/checkout/${course.id}?cycleId=${cycle.id}`}>
-                                            Secure Tier <ChevronRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
             {/* Outcomes Section */}
             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <section id="features" className="scroll-mt-32">
@@ -252,11 +180,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {course.whatYouWillLearn.map((item, index) => (
-                            <div key={index} className="flex items-start gap-4 p-6 rounded-2xl bg-card border border-primary/10 shadow-lg hover:shadow-xl transition-all group">
-                                <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary transition-colors duration-300">
+                            <div key={index} className="flex items-start gap-4 p-6 rounded-xl bg-card border border-primary/10 shadow-lg hover:shadow-xl transition-all group">
+                                <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary transition-colors duration-300">
                                     <CheckCircle2 className="w-5 h-5 text-primary group-hover:text-white" />
                                 </div>
-                                <p className="font-bold text-sm leading-relaxed text-left break-words">{item}</p>
+                                <p className="font-bold text-sm leading-relaxed text-left break-words uppercase">{item}</p>
                             </div>
                         ))}
                     </div>
@@ -272,12 +200,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                         Curriculum
                     </h2>
                     <Badge variant="outline" className="font-black uppercase tracking-widest text-[10px] py-2 px-6 rounded-full border-primary/20 shadow-inner w-fit">
-                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} Professional Artifacts
+                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} Academic Artifacts
                     </Badge>
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-4">
                   {course.syllabus.map((item) => (
-                    <AccordionItem value={item.id} key={item.id} className="border-none rounded-3xl overflow-hidden bg-muted/30 shadow-sm transition-all hover:shadow-md">
+                    <AccordionItem value={item.id} key={item.id} className="border-none rounded-2xl overflow-hidden bg-muted/30 shadow-sm transition-all hover:shadow-md">
                       <AccordionTrigger className="text-lg font-black px-6 md:px-10 py-8 hover:no-underline hover:bg-primary/5 data-[state=open]:text-primary transition-all text-left">
                         <div className="flex items-center gap-5 overflow-hidden">
                            <BookOpen className="w-6 h-6 shrink-0 opacity-70 text-primary"/>
@@ -287,8 +215,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                       <AccordionContent className="px-6 md:px-10 pb-8 pt-2">
                         <ul className="space-y-2 text-left">
                             {item.lessons.map(lesson => (
-                                <li key={lesson.id} className="flex items-center gap-4 p-5 rounded-2xl bg-background border border-primary/5 hover:border-primary/20 transition-all group">
-                                    <div className="p-3 bg-muted rounded-xl group-hover:bg-primary/10 transition-colors shrink-0">
+                                <li key={lesson.id} className="flex items-center gap-4 p-5 rounded-xl bg-background border border-primary/5 hover:border-primary/20 transition-all group">
+                                    <div className="p-3 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors shrink-0">
                                         <PlayCircle className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors"/>
                                     </div>
                                     <div className="min-w-0 flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -304,13 +232,62 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                 </Accordion>
               </section>
             )}
+
+            {/* Routine Section */}
+            {course.classRoutine && course.classRoutine.length > 0 && (
+                <section id="routine" className="scroll-mt-32">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="h-10 w-2 bg-primary rounded-full shadow-lg"></div>
+                        <h2 className="font-headline text-2xl md:text-4xl font-black uppercase tracking-tight">Class Routine</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {course.classRoutine.map((item, index) => (
+                            <Card key={index} className="rounded-xl border-primary/10 bg-card overflow-hidden shadow-md">
+                                <div className="p-4 bg-primary/5 border-b border-primary/5 flex justify-between items-center">
+                                    <span className="font-black text-[10px] uppercase tracking-widest text-primary">{item.day}</span>
+                                    <Clock className="h-4 w-4 text-primary opacity-40"/>
+                                </div>
+                                <CardContent className="p-5 space-y-3">
+                                    <p className="font-black text-sm uppercase leading-tight">{item.subject}</p>
+                                    <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                        <span>Starts @ {item.time}</span>
+                                        {item.instructorName && <span className="text-primary/60">{item.instructorName}</span>}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* FAQ Section */}
+            {course.faqs && course.faqs.length > 0 && (
+                <section id="faq" className="scroll-mt-32">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="h-10 w-2 bg-primary rounded-full shadow-lg"></div>
+                        <h2 className="font-headline text-2xl md:text-4xl font-black uppercase tracking-tight">Support FAQ</h2>
+                    </div>
+                    <Accordion type="single" collapsible className="w-full space-y-3">
+                        {course.faqs.map((faq, index) => (
+                            <AccordionItem key={index} value={`faq-${index}`} className="border-2 border-primary/5 rounded-2xl overflow-hidden bg-card transition-all hover:border-primary/20">
+                                <AccordionTrigger className="text-left font-black text-sm uppercase px-6 py-5 hover:no-underline">
+                                    {faq.question}
+                                </AccordionTrigger>
+                                <AccordionContent className="px-6 pb-6 text-muted-foreground font-medium leading-relaxed">
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </section>
+            )}
           </div>
 
           {/* Pricing Sidebar */}
           <div className="lg:col-span-4">
-             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2.5rem] overflow-hidden transition-all hover:shadow-primary/5">
+             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-2xl overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 p-8 md:p-10 border-b-2 border-primary/5">
-                  <p className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 mb-2">Institutional Pricing</p>
+                  <p className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 mb-2">Sync Access Value</p>
                   {isPrebookingActive ? (
                       <div className="space-y-2 text-left">
                           <div className="flex items-baseline gap-3 flex-wrap">
@@ -351,7 +328,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
                   {course.whatsappNumber && (
                     <Button variant="outline" className="w-full h-14 rounded-xl font-bold gap-3 border-green-500/20 hover:bg-green-50 text-green-600 transition-all shadow-sm" asChild>
                         <a href={`https://wa.me/${course.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                            <MessageSquare className="w-5 h-5 fill-current" /> Sync Support
+                            <MessageSquare className="w-5 h-5 fill-current" /> Human Support
                         </a>
                     </Button>
                   )}
