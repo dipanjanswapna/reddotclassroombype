@@ -21,7 +21,7 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview Standardized Carousel Component.
- * Removes heavy black backgrounds and uses subtle overlays for a clean look.
+ * Features ultra-clean backgrounds, adaptive content stacking, and fluid typography.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -51,7 +51,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id}>
-              <Card className="overflow-hidden rounded-3xl shadow-xl border border-primary/10 bg-background relative group/card">
+              <Card className="overflow-hidden rounded-[2rem] sm:rounded-[3rem] shadow-xl border border-primary/10 bg-background relative group/card">
                 <div className="relative aspect-[16/10] sm:aspect-[21/6] w-full bg-muted">
                   <Image
                     src={slide.imageUrl}
@@ -62,12 +62,12 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Subtle Gradient Overlays - No more solid black */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent sm:bg-gradient-to-r sm:from-black/40 sm:via-transparent sm:to-transparent" />
+                  {/* Premium Transparent Gradients */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-transparent sm:to-transparent" />
                   
                   <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
-                    <div className="flex-1 space-y-3 text-left">
-                      <div className="bg-primary text-white font-black px-4 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-lg inline-block">
+                    <div className="flex-1 space-y-2 sm:space-y-4 text-left">
+                      <div className="bg-primary text-white font-black px-4 py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.2em] shadow-lg inline-block">
                         {slide.title}
                       </div>
                       <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight max-w-2xl drop-shadow-lg">
@@ -75,14 +75,14 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                       </h2>
                     </div>
                     
-                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-4 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 sm:bg-transparent sm:backdrop-blur-none sm:border-none sm:p-0">
+                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-4 sm:p-0 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 sm:bg-transparent sm:backdrop-blur-none sm:border-none">
                       <div className="flex flex-col items-start md:items-end">
-                         <span className="text-xs sm:text-base line-through opacity-80 font-medium">{slide.originalPrice}</span>
+                         <span className="text-[10px] sm:text-base line-through opacity-80 font-medium">{slide.originalPrice}</span>
                          <span className="text-2xl sm:text-3xl md:text-4xl font-black text-yellow-400 drop-shadow-md">
                             {slide.price}
                          </span>
                       </div>
-                      <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold rounded-xl px-8 h-12 shadow-xl transition-all active:scale-95">
+                      <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-black rounded-xl px-8 h-12 shadow-xl transition-all active:scale-95">
                         <Link href={slide.enrollHref}>Enroll Now</Link>
                       </Button>
                     </div>
@@ -93,7 +93,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
           ))}
         </CarouselContent>
         
-        {/* Indicators */}
+        {/* Modern Minimal Indicators */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {slides.map((_, index) => (
             <button

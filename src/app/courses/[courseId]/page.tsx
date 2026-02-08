@@ -231,7 +231,7 @@ export default async function CourseDetailPage({
 
             {/* Learning Outcomes */}
             {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
-                <section id="features" className="scroll-mt-32">
+                <section id="features" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                         What you'll master
@@ -251,7 +251,7 @@ export default async function CourseDetailPage({
 
             {/* Instructors */}
             {course.instructors && course.instructors.length > 0 && (
-              <section id="instructors" className="scroll-mt-32">
+              <section id="instructors" className="scroll-mt-32 py-0">
                 <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Meet Your Guides
@@ -275,7 +275,7 @@ export default async function CourseDetailPage({
 
             {/* Cycles */}
              {courseCycles && courseCycles.length > 0 && (
-                <section id="cycles" className="scroll-mt-32">
+                <section id="cycles" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                         Flexible Modules
@@ -290,7 +290,7 @@ export default async function CourseDetailPage({
             
             {/* Syllabus */}
             {course.syllabus && course.syllabus.length > 0 && (
-              <section id="syllabus" className="scroll-mt-32">
+              <section id="syllabus" className="scroll-mt-32 py-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight flex items-center gap-4">
                         <div className="h-10 w-1.5 bg-primary rounded-full"></div>
@@ -336,7 +336,7 @@ export default async function CourseDetailPage({
 
             {/* Reviews */}
             {course.reviewsData && course.reviewsData.length > 0 && (
-              <section id="reviews" className="scroll-mt-32">
+              <section id="reviews" className="scroll-mt-32 py-0">
                 <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Success Stories
@@ -351,7 +351,7 @@ export default async function CourseDetailPage({
 
             {/* FAQ */}
             {course.faqs && course.faqs.length > 0 && (
-              <section id="faq" className="scroll-mt-32">
+              <section id="faq" className="scroll-mt-32 py-0">
                 <h2 className="font-headline text-3xl md:text-4xl font-black mb-8 tracking-tight flex items-center gap-4">
                     <div className="h-10 w-1.5 bg-primary rounded-full"></div>
                     Common Queries
@@ -452,7 +452,7 @@ export default async function CourseDetailPage({
 
         {/* Bundled Content Section */}
         {includedCourses.length > 0 && (
-          <section className="pt-24 border-t border-primary/5">
+          <section className="pt-20 border-t border-primary/5">
             <div className="text-center mb-16 space-y-4">
                 <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Free Bonus Bundle</h2>
                 <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-lg" />
@@ -468,7 +468,7 @@ export default async function CourseDetailPage({
         )}
 
         {/* Recommendations */}
-         <section className="pt-24">
+         <section className="pt-20">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-12 border-b border-primary/10 pb-8 gap-6">
                 <div className="text-center sm:text-left space-y-2">
                     <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended for You</h2>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -15,6 +14,10 @@ import {
 import { StoreHomepageBanner } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
+/**
+ * @fileOverview Refined Store Banner Carousel.
+ * Standardizes section spacing and uses clean semi-transparent overlays.
+ */
 export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner[] }) {
   const plugin = React.useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
@@ -25,7 +28,7 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full py-2">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
@@ -38,15 +41,15 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
           {banners.map((banner) => (
             <CarouselItem key={banner.id} className="pl-4 basis-full md:basis-[80%] lg:basis-[70%]">
               <Link href={banner.linkUrl || '#'} className="block rounded-[2rem] overflow-hidden group shadow-xl border border-primary/10 transition-all duration-500 hover:shadow-2xl">
-                <div className="relative aspect-[16/7] md:aspect-[21/7]">
+                <div className="relative aspect-[16/7] md:aspect-[21/7] bg-muted">
                   <Image
                     src={banner.imageUrl}
                     alt="Promotional banner"
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
-                  {/* Subtle Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                  {/* Professional Transparent Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
               </Link>
             </CarouselItem>

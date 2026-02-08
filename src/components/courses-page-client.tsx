@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -64,7 +63,7 @@ export function CoursesPageClient({
 
   return (
     <div className="bg-background">
-      <div className="container mx-auto px-0 py-4 mb-16">
+      <div className="container mx-auto px-0 py-4 mb-8">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -83,7 +82,7 @@ export function CoursesPageClient({
                     exit={{ opacity: 0, y: -20 }}
                     className='py-0'
                 >
-                    <div className="mb-12 text-center md:text-left px-4 md:px-0">
+                    <div className="mb-10 text-center md:text-left px-4 md:px-0">
                         <h2 className="font-headline text-3xl font-black tracking-tight uppercase">
                             Search Results ({initialCourses.length})
                         </h2>
@@ -106,7 +105,7 @@ export function CoursesPageClient({
                     )}
                 </motion.section>
             ) : (
-                <div className="space-y-24 md:space-y-32">
+                <div className="space-y-20 md:space-y-24">
                     {sortedCategories.map((category, catIdx) => (
                         <motion.section 
                             key={category} 
@@ -117,7 +116,7 @@ export function CoursesPageClient({
                             id={category.toLowerCase().replace(/\s+/g, '-')} 
                             className='py-0'
                         >
-                            <div className="mb-12 text-center md:text-left px-4 md:px-0">
+                            <div className="mb-10 text-center md:text-left px-4 md:px-0">
                                 <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
                                     {category}
                                 </h2>
@@ -134,7 +133,7 @@ export function CoursesPageClient({
 
                     {archivedCourses.length > 0 && (
                         <section id="archived-courses" className='py-0 px-4 md:px-0'>
-                            <div className="mb-12 text-center md:text-left">
+                            <div className="mb-10 text-center md:text-left">
                                 <h2 className="font-headline text-4xl font-black tracking-tight text-muted-foreground uppercase">
                                     Archived Programs
                                 </h2>
