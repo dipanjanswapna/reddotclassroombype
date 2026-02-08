@@ -938,8 +938,11 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   },
   appPromo: {
     display: true,
-    title: { bn: "Download RDC App", en: "Download the RDC App" },
-    description: { bn: "Continue your studies anytime, anywhere. Live classes and quizzes now at your fingertips.", en: "Continue your studies anytime, anywhere. Live classes and quizzes now at your fingertips." },
+    title: { bn: "RDC অ্যাপ ডাউনলোড করো", en: "Download the RDC App" },
+    description: { 
+        bn: "যেকোনো সময়, যেকোনো জায়গায় তোমার পড়াশোনা চালিয়ে যাও। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন তোমার হাতের মুঠোয়।", 
+        en: "Continue your studies anytime, anywhere. Live classes, quizzes, and much more are now at your fingertips." 
+    },
     googlePlayUrl: "#",
     appStoreUrl: "#",
     googlePlayImageUrl: "https://placehold.co/180x60.png",

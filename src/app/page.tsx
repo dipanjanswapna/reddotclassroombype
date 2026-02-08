@@ -31,7 +31,7 @@ import { RequestCallbackForm } from '@/components/request-callback-form';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
     loading: () => <Skeleton className="h-[380px] w-full" />,
@@ -169,21 +169,24 @@ export default function Home() {
         )}
 
         <div className="container mx-auto px-4 md:px-8 my-1">
-            <NoticeBoard />
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <NoticeBoard />
+            </motion.div>
         </div>
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-6 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl border border-primary shadow-sm">
-                <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mt-2 text-sm px-4">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+              <div className="text-center mb-6 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl border border-primary shadow-sm overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500 relative z-10">{homepageConfig.journeySection?.title?.[language]}</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-2 text-sm px-4 relative z-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
                 <HeadingUnderline />
               </div>
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b pb-2">
                     <h3 className="font-headline text-lg font-bold text-primary">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
-                    <Button asChild variant="link" size="sm">
-                        <Link href="/courses">View All <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                    <Button asChild variant="link" size="sm" className="group">
+                        <Link href="/courses">View All <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1"/></Link>
                     </Button>
                 </div>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
@@ -215,10 +218,10 @@ export default function Home() {
                           </p>
                       </div>
                   </div>
-                  <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 flex-1 sm:flex-none">
+                  <Button asChild className="font-bold shrink-0 z-10 flex-1 sm:flex-none">
                       <Link href="/strugglers-studies">
                           {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
-                           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                           <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                   </Button>
               </div>
@@ -246,9 +249,10 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <SectionWrapper aria-labelledby="video-section-heading">
             <div className="text-center">
-                <div className="text-center mb-8 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl shadow-sm">
-                  <h2 id="video-section-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.videoSection?.title?.[language]}</h2>
-                  <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm px-4">{homepageConfig.videoSection?.description?.[language]}</p>
+                <div className="text-center mb-8 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl shadow-sm overflow-hidden relative">
+                  <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
+                  <h2 id="video-section-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500 relative z-10">{homepageConfig.videoSection?.title?.[language]}</h2>
+                  <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm px-4 relative z-10">{homepageConfig.videoSection?.description?.[language]}</p>
                   <HeadingUnderline />
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
@@ -266,7 +270,7 @@ export default function Home() {
                           >
                               <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-500 group-hover:scale-110" />
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                                  <PlayCircle className="w-16 h-16 text-white/80 transition-colors cursor-pointer"/>
                               </div>
                           </a>
                       );
@@ -387,7 +391,7 @@ export default function Home() {
             <div className="text-center">
               <div className="mb-4">
                 <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.socialMediaSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm">
+                <p className="text-muted-foreground mt-1 max-w-2xl mx-auto text-sm px-4">
                   {homepageConfig.socialMediaSection?.description?.[language]}
                 </p>
                 <HeadingUnderline />
@@ -398,7 +402,7 @@ export default function Home() {
                     key={channel.id}
                     className="flex-1 min-w-[280px] max-w-[320px]"
                   >
-                    <Card className="text-center p-6 flex flex-col h-full items-center justify-between glassmorphism-card shadow-lg">
+                    <Card className="text-center p-6 flex flex-col h-full items-center justify-between glassmorphism-card shadow-lg border border-primary/20 hover:border-primary/40 transition-colors">
                       <CardHeader className="p-0">
                         <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
                           <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
@@ -426,7 +430,7 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? channel.description[language] : channel.description}</p>
                       </CardContent>
                       <CardFooter className="p-0 w-full mt-4">
-                        <Button asChild className="w-full shadow-md active:shadow-inner h-10" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
+                        <Button asChild className="w-full shadow-md h-10" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
                           <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
                             <span className="ml-2">{typeof channel.ctaText === 'object' ? channel.ctaText[language] : channel.ctaText}</span>
                           </Link>
@@ -451,7 +455,7 @@ export default function Home() {
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
                         <div 
                           key={index}
-                          className="text-center glassmorphism-card p-6 flex-1 min-w-[250px] max-w-[350px] shadow-lg"
+                          className="text-center glassmorphism-card p-6 flex-1 min-w-[250px] max-w-[350px] shadow-lg border border-primary/20"
                         >
                             <p className="font-headline text-4xl font-bold text-primary">{stat.value}</p>
                             <p className="mt-2 text-md text-muted-foreground">{stat.label?.[language]}</p>
@@ -464,12 +468,13 @@ export default function Home() {
 
         {homepageConfig.notesBanner?.display && (
           <SectionWrapper aria-labelledby="notes-banner-heading">
-              <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-                    <div className='text-center md:text-left'>
+              <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                    <div className='text-center md:text-left relative z-10'>
                         <h3 id="notes-banner-heading" className="font-headline text-xl font-bold text-green-700 dark:text-green-500">{homepageConfig.notesBanner?.title?.[language]}</h3>
                         <p className="text-muted-foreground mt-1">{homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg h-10">
+                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground flex-1 sm:flex-none shadow-lg h-10 relative z-10">
                       {homepageConfig.notesBanner?.buttonText?.[language]}
                     </Button>
                 </div>
@@ -482,31 +487,45 @@ export default function Home() {
         
         {homepageConfig.appPromo?.display && (
           <SectionWrapper aria-labelledby="app-promo-heading">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                  <div className="text-center md:text-left">
-                    <h2 
-                      className="font-headline text-3xl font-bold text-green-700 dark:text-green-500"
-                    >
-                      {homepageConfig.appPromo?.title?.[language]}
-                    </h2>
-                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language]}</p>
-                    <div className="flex justify-center md:justify-start gap-4 mt-6 flex-wrap">
-                        <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
-                            <div>
-                              <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="google play button"/>
-                            </div>
-                        </Link>
-                        <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
-                            <div>
-                              <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
-                            </div>
-                        </Link>
-                    </div>
-                  </div>
-                  <div 
-                    className="flex justify-center"
-                  >
-                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={300} height={450} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
+              <div className="glassmorphism-card border-2 border-primary bg-gradient-to-br from-primary/10 via-background to-secondary/30 p-8 md:p-12 shadow-2xl rounded-3xl overflow-hidden relative group/app">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover/app:bg-primary/10 transition-colors duration-700"></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+                      <div className="text-center md:text-left">
+                        <h2 
+                          id="app-promo-heading"
+                          className="font-headline text-3xl md:text-4xl font-bold text-green-700 dark:text-green-500"
+                        >
+                          {homepageConfig.appPromo?.title?.[language]}
+                        </h2>
+                        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+                            {homepageConfig.appPromo?.description?.[language]}
+                        </p>
+                        <div className="flex justify-center md:justify-start gap-4 mt-8 flex-wrap">
+                            <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'} className="block">
+                                <div className="transition-transform hover:scale-105 active:scale-95">
+                                  <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="google play button"/>
+                                </div>
+                            </Link>
+                            <Link href={homepageConfig.appPromo?.appStoreUrl || '#'} className="block">
+                                <div className="transition-transform hover:scale-105 active:scale-95">
+                                  <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                                </div>
+                            </Link>
+                        </div>
+                      </div>
+                      <div className="flex justify-center">
+                          <div className="relative">
+                              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse"></div>
+                              <Image 
+                                src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} 
+                                width={300} 
+                                height={450} 
+                                alt="RDC App" 
+                                className='object-contain relative z-10 transition-transform duration-500 group-hover/app:rotate-2 group-hover/app:scale-105' 
+                                data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} 
+                              />
+                          </div>
+                      </div>
                   </div>
               </div>
           </SectionWrapper>
