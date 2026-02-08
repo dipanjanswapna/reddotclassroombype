@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -28,6 +29,11 @@ type AutoplaySettings = {
   autoplayDelay: number;
 };
 
+/**
+ * @fileOverview Modern Hero Carousel component.
+ * Features ultra-clean, semi-transparent overlays instead of heavy black backgrounds.
+ * Implements smooth transitions and high-blur glassmorphism controls.
+ */
 export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
@@ -73,7 +79,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                     href={banner.href}
                     className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-lg transition-transform duration-500 hover:scale-[1.02]"
                 >
-                    <div className="carousel-image-wrapper relative group/image aspect-[16/9] md:aspect-[21/9]">
+                    <div className="carousel-image-wrapper relative group/image aspect-[16/9] md:aspect-[21/9] bg-muted">
                     <Image
                         src={banner.imageUrl}
                         alt={banner.alt}
@@ -82,15 +88,15 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         className="object-cover"
                         data-ai-hint={banner.dataAiHint}
                     />
-                    {/* Clean Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+                    {/* Refined Semi-Transparent Glassmorphism Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                     
-                    {/* Centered Scroll Buttons nested inside image wrapper for perfect alignment */}
+                    {/* Floating Navigation Controls */}
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollPrev(); }}
                         variant="outline"
                         size="icon"
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-xl"
                         aria-label="Previous slide"
                     >
                         <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
@@ -99,7 +105,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         onClick={(e) => { e.preventDefault(); api?.scrollNext(); }}
                         variant="outline"
                         size="icon"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-xl"
                         aria-label="Next slide"
                     >
                         <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
@@ -112,6 +118,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
       
+      {/* Dynamic Progress Dots */}
       <div className="hero-carousel-dots mt-6 flex justify-center gap-2">
         {banners.map((_, index) => (
           <button
@@ -119,7 +126,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
             onClick={() => api?.scrollTo(index)}
             className={cn(
                 "h-1.5 rounded-full transition-all duration-500",
-                index === current ? 'w-8 bg-primary shadow-sm' : 'w-2 bg-muted hover:bg-muted-foreground/50'
+                index === current ? 'w-8 bg-primary shadow-lg' : 'w-2 bg-muted hover:bg-muted-foreground/50'
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

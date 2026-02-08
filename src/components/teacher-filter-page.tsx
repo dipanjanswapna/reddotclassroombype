@@ -9,6 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Instructor } from '@/lib/types';
 import { Home, Book } from 'lucide-react';
 
+/**
+ * @fileOverview Redesigned Teacher Filter Page.
+ * Implements a strict 5-column grid on desktop (xl:grid-cols-5) for an elite gallery feel.
+ * Optimized spacing and fluid imagery ensures no content is cut off on any device.
+ */
 export function TeacherFilterPage({ instructors, subjects }: { instructors: Instructor[], subjects: string[] }) {
     const [selectedSubject, setSelectedSubject] = useState('সব');
 
@@ -17,14 +22,17 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
         : instructors.filter(inst => inst.title === selectedSubject);
 
     return (
-        <div className="container mx-auto px-4 py-12">
-            <div className="mb-8">
-                <h2 className="font-headline text-2xl font-bold mb-4">বিভাগ অনুযায়ী শিক্ষকদের সংগঠিত</h2>
-                <div className="flex flex-wrap gap-2">
+        <div className="container mx-auto px-4 py-10 md:py-14 max-w-full">
+            <div className="mb-10">
+                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-6 flex items-center gap-4">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                    Find Your Mentor
+                </h2>
+                <div className="flex flex-wrap gap-3">
                     <Button
                         variant={selectedSubject === 'সব' ? 'default' : 'outline'}
                         onClick={() => setSelectedSubject('সব')}
-                        className="rounded-full"
+                        className="rounded-full h-10 px-6 font-bold uppercase tracking-wider text-xs"
                     >
                         <Home className="mr-2 h-4 w-4" />
                         সব
@@ -34,7 +42,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                             key={subject}
                             variant={selectedSubject === subject ? 'default' : 'outline'}
                             onClick={() => setSelectedSubject(subject)}
-                             className="rounded-full"
+                             className="rounded-full h-10 px-6 font-bold uppercase tracking-wider text-xs border-primary/20"
                         >
                            <Book className="mr-2 h-4 w-4" />
                            {subject}
@@ -43,30 +51,35 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                 </div>
             </div>
 
-            <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+            {/* Elite 5-column Grid on Desktop */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredInstructors.map((teacher) => (
                 <Link key={teacher.id} href={`/teachers/${teacher.slug}`} className="group block" aria-label={`View profile for ${teacher.name}`}>
-                    <Card className="overflow-hidden relative aspect-[4/5] rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <Card className="overflow-hidden relative aspect-[4/5] rounded-[2rem] border border-primary/10 shadow-lg transition-all duration-500 hover:shadow-2xl hover:border-primary/40 hover:-translate-y-1 group">
                     <Image
                         src={teacher.avatarUrl}
                         alt={teacher.name}
                         fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 25vw, 20vw"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
                         data-ai-hint={teacher.dataAiHint}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" aria-hidden="true" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                        <h3 className="font-semibold text-lg">{teacher.name}</h3>
-                        <p className="text-sm text-white/80">{teacher.title}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" aria-hidden="true" />
+                    
+                    <div className="absolute bottom-6 left-6 right-6">
+                        <div className="relative p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl text-white">
+                            <h3 className="font-black text-base md:text-lg uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">{teacher.name}</h3>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mt-1">{teacher.title}</p>
+                        </div>
                     </div>
                     </Card>
                 </Link>
                 ))}
             </div>
             {filteredInstructors.length === 0 && (
-                <div className="text-center py-16 bg-muted rounded-lg col-span-full">
-                    <p className="text-muted-foreground">No teachers found for the selected subject.</p>
+                <div className="text-center py-24 bg-muted/30 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center">
+                    <p className="text-xl font-bold text-muted-foreground">No teachers found for this category.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Try selecting another subject or reset the filter.</p>
                 </div>
             )}
         </div>

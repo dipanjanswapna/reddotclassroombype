@@ -34,33 +34,39 @@ export default async function AboutPage() {
     }
 
   return (
-    <div className="bg-background min-h-screen">
-        <section className="bg-secondary/20 py-16 border-b border-primary/5">
-            <div className="container mx-auto px-4 md:px-8 text-center">
+    <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
+        {/* Simplified Header with Global Spacing */}
+        <section className="bg-secondary/20 py-10 md:py-14 border-b border-primary/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 rounded-full blur-[100px] -mr-24 -mt-24"></div>
+            <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
                 <h1 className="font-headline text-4xl md:text-6xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">{aboutSection.title.en || 'About Us'}</h1>
                 <div className="h-1.5 w-24 bg-primary mx-auto mt-6 rounded-full shadow-md" />
                 <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
-                    {aboutSection.subtitle.en || "Meet the team behind our platform."}
+                    {aboutSection.subtitle.en || "Meet the visionaries behind our high-impact learning platform."}
                 </p>
             </div>
         </section>
 
+        {/* Leadership Team Grid: Elite 5-column desktop layout */}
         <section className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-full">
             <div className="mb-12 text-center md:text-left">
-                <h2 className="font-headline text-3xl font-black uppercase tracking-tight">The Leadership Team</h2>
-                <div className="h-1.5 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0" />
+                <h2 className="font-headline text-3xl md:text-4xl font-black uppercase tracking-tight flex items-center gap-4 justify-center md:justify-start">
+                    <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
+                    The Leadership Team
+                </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8 justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8 justify-center">
                 {aboutSection.teamMembers.map(member => {
                     const externalLink = member.socialLinks.find(l => l.platform === 'external');
                     const socialLinks = member.socialLinks.filter(l => l.platform !== 'external');
                     return (
-                        <div key={member.id} className="relative group aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl border border-primary/5 bg-card">
+                        <div key={member.id} className="relative group aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-xl border border-primary/10 bg-card transition-all duration-500 hover:shadow-2xl hover:border-primary/40 hover:-translate-y-1">
                             <Image
                                 src={member.imageUrl}
                                 alt={member.name}
                                 fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 25vw, 20vw"
+                                className="object-cover transition-transform duration-1000 group-hover:scale-110"
                                 data-ai-hint={member.dataAiHint}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

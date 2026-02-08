@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -37,13 +38,18 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Course, CourseCycle } from '@/lib/types';
-import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations, getCourseCycles } from '@/lib/firebase/firestore';
+import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations, getCourseCycles, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
 import { WishlistButton } from '@/components/wishlist-button';
 import { CourseEnrollmentButton } from '@/components/course-enrollment-button';
 import { ReviewCard } from '@/components/review-card';
 import { cn, safeToDate } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/firebase/auth';
-import { getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+
+/**
+ * @fileOverview Shared Course Detail Component logic.
+ * Implements a high-impact, fully responsive LMS-style layout.
+ * Features: Adaptive Routine/Exam views (Tables on desktop, Cards on mobile) to prevent cutoff.
+ */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
   const awaitedParams = await params;
@@ -131,8 +137,8 @@ export default async function CourseDetailPage({
 
   return (
     <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
-      {/* Course Hero Section */}
-      <section className="bg-secondary/20 dark:bg-muted/10 pt-16 pb-10 border-b border-primary/10">
+      {/* Course Hero Section with Standardized Spacing */}
+      <section className="bg-secondary/20 dark:bg-muted/10 pt-10 md:pt-14 pb-10 border-b border-primary/10">
         <div className="container mx-auto px-4 max-w-full">
           <div className="max-w-5xl mx-auto lg:mx-0 space-y-6">
               <div className="flex flex-wrap items-center gap-3">
@@ -154,7 +160,7 @@ export default async function CourseDetailPage({
                 </div>
               )}
               
-              <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground uppercase">
+              <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-foreground uppercase break-words">
                 {course.title}
               </h1>
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl leading-relaxed font-medium">
@@ -174,7 +180,7 @@ export default async function CourseDetailPage({
                             </div>
                         </div>
                     )}
-                    <div className="flex items-center gap-8 border-l border-primary/10 pl-8">
+                    <div className="flex flex-wrap items-center gap-8 border-l-none sm:border-l border-primary/10 sm:pl-8">
                         {course.showStudentCount && (
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.2em]">Community</span>
@@ -205,7 +211,7 @@ export default async function CourseDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-8 space-y-12 md:space-y-16 overflow-hidden">
             
-            {/* Video Intro */}
+            {/* Video Intro - High density Shadow */}
             <div className="relative aspect-video rounded-[2rem] md:rounded-[2.5rem] overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
               <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <Image
@@ -231,7 +237,7 @@ export default async function CourseDetailPage({
                 <section id="features" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
                         <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                        What you'll master
+                        Course Outcomes
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-muted/20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-primary/5">
                         {course.whatYouWillLearn.map((item, index) => (
@@ -251,7 +257,7 @@ export default async function CourseDetailPage({
               <section id="instructors" className="scroll-mt-32 py-0">
                 <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
                     <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                    Meet Your Guides
+                    Expert Instructors
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                   {course.instructors?.map((instructor) => (
@@ -270,12 +276,12 @@ export default async function CourseDetailPage({
               </section>
             )}
 
-            {/* Cycles */}
+            {/* Cycles Grid */}
              {courseCycles && courseCycles.length > 0 && (
                 <section id="cycles" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
                         <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                        Flexible Modules
+                        Flexible Cycles
                     </h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                         {courseCycles.sort((a,b) => a.order - b.order).map((cycle) => (
@@ -285,7 +291,7 @@ export default async function CourseDetailPage({
                 </section>
             )}
             
-            {/* Class Routine */}
+            {/* Class Routine: Optimized for All Screens */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -296,9 +302,9 @@ export default async function CourseDetailPage({
                         <Table>
                             <TableHeader className="bg-muted/50">
                                 <TableRow>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Day</TableHead>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Subject</TableHead>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Time</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Day</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Subject</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Time</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -314,12 +320,12 @@ export default async function CourseDetailPage({
                     </div>
                     <div className="md:hidden space-y-3">
                         {course.classRoutine.map((item, index) => (
-                            <div key={`routine-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center">
-                                <div className="space-y-1">
+                            <div key={`routine-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm flex justify-between items-center gap-4">
+                                <div className="space-y-1 min-w-0">
                                     <p className="font-black text-[10px] uppercase text-primary tracking-[0.2em]">{item.day}</p>
-                                    <p className="font-bold text-sm leading-tight">{item.subject}</p>
+                                    <p className="font-bold text-sm leading-tight break-words">{item.subject}</p>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right shrink-0">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
                                         <Clock className="w-3.5 h-3.5" />
                                         <span className="text-xs font-black">{item.time}</span>
@@ -331,7 +337,7 @@ export default async function CourseDetailPage({
                 </section>
             )}
 
-            {/* Exam Schedule */}
+            {/* Exam Schedule: Optimized for All Screens */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -342,10 +348,10 @@ export default async function CourseDetailPage({
                         <Table>
                             <TableHeader className="bg-muted/50">
                                 <TableRow>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Title</TableHead>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Topic</TableHead>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5">Date</TableHead>
-                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-right">Marks</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Title</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Topic</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-foreground">Date</TableHead>
+                                    <TableHead className="font-black uppercase text-[10px] tracking-[0.2em] px-8 py-5 text-right text-foreground">Marks</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -364,12 +370,12 @@ export default async function CourseDetailPage({
                         {course.examTemplates.map((item, index) => (
                             <div key={`exam-mobile-${index}`} className="bg-card border border-primary/10 p-5 rounded-2xl shadow-sm space-y-3">
                                 <div className="flex justify-between items-start gap-4">
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 min-w-0">
                                         <p className="font-black text-[10px] uppercase text-primary tracking-[0.2em]">Exam {index + 1}</p>
                                         <h4 className="font-bold text-base leading-tight break-words">{item.title}</h4>
                                     </div>
                                     <Badge variant="secondary" className="font-black text-[10px] px-2.5 py-1 rounded-lg shrink-0">
-                                        {item.totalMarks} Marks
+                                        {item.totalMarks} M
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between text-xs font-medium text-muted-foreground pt-2 border-t border-primary/5">
@@ -391,7 +397,7 @@ export default async function CourseDetailPage({
                         Curriculum
                     </h2>
                     <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] py-2 px-4 rounded-full border-primary/20 w-fit shadow-inner">
-                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} High-Quality Lessons
+                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} Professional Lessons
                     </Badge>
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-4">
@@ -400,7 +406,7 @@ export default async function CourseDetailPage({
                       <AccordionTrigger className="text-base md:text-lg font-black px-6 py-5 md:px-8 md:py-6 hover:no-underline hover:bg-primary/5 data-[state=open]:text-primary transition-all text-left">
                         <div className="flex items-center gap-4 md:gap-5">
                            <div className="p-2 md:p-3 bg-background rounded-xl md:rounded-2xl shadow-inner border border-primary/5">
-                               <BookOpen className="w-5 h-5 md:w-6 md:h-6 shrink-0 opacity-70"/>
+                               <BookOpen className="w-5 h-5 md:w-6 md:h-6 shrink-0 opacity-70 text-primary"/>
                            </div>
                            <span className="leading-tight break-words">{item.title}</span>
                         </div>
@@ -428,7 +434,7 @@ export default async function CourseDetailPage({
               </section>
             )}
 
-            {/* Reviews */}
+            {/* Success Stories */}
             {course.reviewsData && course.reviewsData.length > 0 && (
               <section id="reviews" className="scroll-mt-32 py-0">
                 <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -453,7 +459,7 @@ export default async function CourseDetailPage({
                 <Accordion type="single" collapsible className="w-full space-y-3">
                   {course.faqs.map((faq, index) => (
                     <AccordionItem value={`faq-${index}`} key={`faq-${faq.question}-${index}`} className="border border-primary/5 rounded-2xl md:rounded-[2rem] bg-card overflow-hidden transition-all hover:border-primary/20 shadow-sm">
-                      <AccordionTrigger className="font-black text-left px-6 py-4 md:px-8 md:py-5 hover:no-underline text-sm md:text-base">
+                      <AccordionTrigger className="font-black text-left px-6 py-4 md:px-8 md:py-5 hover:no-underline text-sm md:text-base text-foreground">
                         {faq.question}
                       </AccordionTrigger>
                       <AccordionContent className="px-6 pb-5 md:px-8 md:pb-6 text-xs md:text-sm text-muted-foreground leading-relaxed font-medium">
@@ -466,7 +472,7 @@ export default async function CourseDetailPage({
             )}
           </div>
 
-          {/* Enrollment Sidebar */}
+          {/* Enrollment Sidebar with Adaptive Spacing */}
           <div className="lg:col-span-4">
              <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-[2rem] md:rounded-[3rem] overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 pb-8 pt-8 md:pb-10 md:pt-10 px-6 md:px-8">
@@ -510,11 +516,11 @@ export default async function CourseDetailPage({
                   {course.features && course.features.length > 0 && (
                     <div className="space-y-5">
                       <h3 className="font-headline font-black text-[9px] md:text-[10px] uppercase tracking-[0.25em] text-primary/60 border-b border-primary/5 pb-3">
-                        Included Features
+                        LMS Features
                       </h3>
                       <ul className="space-y-3">
                         {course.features?.slice(0, 6).map((feature, index) => (
-                          <li key={`feature-${index}`} className="flex items-center gap-3 text-xs md:text-sm font-bold">
+                          <li key={`feature-${index}`} className="flex items-center gap-3 text-xs md:text-sm font-bold text-foreground">
                             <div className="p-1.5 bg-primary/10 rounded-xl shadow-inner shrink-0">
                                 <CheckCircle className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary" />
                             </div>
@@ -544,29 +550,12 @@ export default async function CourseDetailPage({
           </div>
         </div>
 
-        {/* Bundled Content Section */}
-        {includedCourses.length > 0 && (
-          <section className="pt-16 border-t border-primary/5">
-            <div className="text-center mb-12 space-y-3">
-                <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Free Bonus Bundle</h2>
-                <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-md" />
-                <p className="text-base md:text-lg text-muted-foreground font-medium pt-2">Included for free with your enrollment.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {includedCourses.map(includedCourse => {
-                const provider = allOrgs.find(p => p.id === includedCourse.organizationId);
-                return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} partnerSubdomain={provider?.subdomain} />;
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Recommendations */}
-         <section className="pt-16">
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-10 border-b border-primary/10 pb-6 gap-4">
+        {/* Recommended Grids: Strict 4-column desktop */}
+         <section className="pt-16 border-t border-primary/10">
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">
                     <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Recommended</h2>
-                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Programs tailored for your academic growth.</p>
+                    <p className="text-sm md:text-base text-muted-foreground font-medium pt-1">Programs tailored for your academic goals.</p>
                 </div>
                 <Button variant="link" asChild className="font-black uppercase tracking-widest text-[10px] text-primary group h-auto p-0 hover:no-underline">
                     <Link href="/courses" className="flex items-center gap-2">
