@@ -324,7 +324,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
   const [allDoubtSolvers, setAllDoubtSolvers] = useState<User[]>([]);
   const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
-  const [questionBank, setQuestionBank] = useState<Question[]>([]);
+  const [questionBank, setAllQuestionBank] = useState<Question[]>([]);
 
   // Course state
   const [courseTitle, setCourseTitle] = useState('');
@@ -442,7 +442,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             setAllInstructors(approvedInstructors);
             setAllDoubtSolvers(doubtSolvers);
             setAllOrganizations(approvedOrgs);
-            setQuestionBank(fetchedQuestionBank);
+            setAllQuestionBank(fetchedQuestionBank);
 
             if (!isNewCourse) {
                 const courseData = await getCourse(courseId);
@@ -918,6 +918,22 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     </div>
                 )}
 
+                {activeTab === 'outcomes' && (
+                    <div className="space-y-10">
+                        <div className="p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
+                            <Label className="font-black uppercase text-sm tracking-tight text-primary">Key Learning Milestones</Label>
+                            {whatYouWillLearn.map((outcome, index) => (
+                                <div key={index} className="flex items-center gap-4 group">
+                                    <Badge variant="outline" className="h-10 w-10 rounded-full flex items-center justify-center font-black bg-muted/50">{index + 1}</Badge>
+                                    <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} className="h-12 rounded-xl border-2 focus-visible:ring-primary flex-grow" placeholder="What student will achieve..." />
+                                    <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-5 w-5"/></Button>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-md hover:bg-primary/5" onClick={addOutcome}><PlusCircle className="mr-2 h-5 w-5"/> Add Milestone</Button>
+                        </div>
+                    </div>
+                )}
+
                 {activeTab === 'instructors' && (
                     <div className="space-y-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -954,6 +970,27 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </PopoverContent>
                             </Popover>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'doubtsolvers' && (
+                    <div className="space-y-10">
+                        <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
+                            <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Expert Doubt Solver Force</CardTitle><CardDescription className="font-bold">Select dedicated solvers for this program.</CardDescription></CardHeader>
+                            <CardContent className="p-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {allDoubtSolvers.map(solver => (
+                                        <div key={solver.uid} className={cn("flex items-center justify-between p-4 rounded-xl border-2 transition-all", doubtSolverIds.includes(solver.uid) ? 'border-primary bg-primary/5' : 'border-muted/50 hover:border-primary/20')}>
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-10 w-10 border-2"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <div className="space-y-0.5"><p className="font-black text-xs uppercase">{solver.name}</p><p className="text-[9px] font-bold text-muted-foreground">{solver.email}</p></div>
+                                            </div>
+                                            <Switch checked={doubtSolverIds.includes(solver.uid)} onCheckedChange={(checked) => handleDoubtSolverToggle(solver.uid, checked)} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
 
