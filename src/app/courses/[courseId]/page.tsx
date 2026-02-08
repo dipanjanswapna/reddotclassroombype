@@ -44,7 +44,7 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 
 /**
  * @fileOverview Refined Course Detail Page.
- * Standardized spacing and optimized for mobile-first legibility.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
  */
 
 export async function generateMetadata({ params }: { params: Promise<{ courseId: string }> }): Promise<Metadata> {
@@ -86,10 +86,8 @@ export default async function CourseDetailPage({
     }
   }
   
-  const organization = course.organizationId ? await getOrganization(course.organizationId) : null;
   const enrollments = await getEnrollmentsByCourseId(courseId);
   const studentCount = enrollments.length;
-  const courseCycles = await getCourseCycles(courseId);
 
   const allCourses = await getCourses();
   const allOrgs = await getOrganizations();
@@ -167,7 +165,7 @@ export default async function CourseDetailPage({
           <div className="lg:col-span-8 space-y-12 md:space-y-16 overflow-hidden">
             
             {/* Video Intro */}
-            <div className="relative aspect-video rounded-2xl md:rounded-3xl overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
+            <div className="relative aspect-video rounded-2xl overflow-hidden group shadow-2xl border-4 md:border-8 border-primary/5">
               <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                 <Image
                   src={course.imageUrl}
@@ -282,7 +280,7 @@ export default async function CourseDetailPage({
 
           {/* Enrollment Sidebar */}
           <div className="lg:col-span-4">
-             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-3xl overflow-hidden transition-all hover:shadow-primary/5">
+             <Card className="lg:sticky lg:top-32 bg-card text-card-foreground shadow-2xl border-2 border-primary/20 rounded-2xl overflow-hidden transition-all hover:shadow-primary/5">
                 <CardHeader className="bg-primary/5 pb-8 pt-8 md:pb-10 md:pt-10 px-6 md:px-8">
                   {isPrebookingActive ? (
                       <div className="space-y-2">

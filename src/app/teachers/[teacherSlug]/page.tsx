@@ -11,6 +11,11 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getYoutubeVideoId } from '@/lib/utils';
 
+/**
+ * @fileOverview Teacher Profile Page.
+ * Updated for Next.js 15 async params compliance and refined visual radius.
+ */
+
 export async function generateMetadata({ params }: { params: Promise<{ teacherSlug: string }> }): Promise<Metadata> {
   const awaitedParams = await params;
   const teacher = await getInstructorBySlug(awaitedParams.teacherSlug);

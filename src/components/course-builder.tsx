@@ -38,7 +38,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -118,7 +118,6 @@ import {
     CommandItem,
 } from '@/components/ui/command';
 import { generateCourseContent } from '@/ai/flows/ai-course-creator-flow';
-import { generateQuizForLesson, AiQuizGeneratorInput } from '@/ai/flows/ai-quiz-generator-flow';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/auth-context';
 import { removeUndefinedValues, cn } from '@/lib/utils';
@@ -132,6 +131,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from './ui/separator';
+import { Checkbox } from './ui/checkbox';
 
 type LessonData = {
     id: string;
@@ -171,13 +171,11 @@ function SortableSyllabusItem({
     item, 
     updateItem, 
     removeItem, 
-    onGenerateQuiz, 
     courseInstructors,
 }: { 
     item: SyllabusItem, 
     updateItem: (id: string, field: string, value: any) => void, 
     removeItem: (id: string) => void, 
-    onGenerateQuiz: (lesson: LessonData) => void, 
     courseInstructors: Instructor[],
 }) {
     const {
@@ -192,14 +190,6 @@ function SortableSyllabusItem({
         transform: CSS.Transform.toString(transform),
         transition,
     };
-    
-    const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
-
-    const handleGenerateQuiz = async (lesson: LessonData) => {
-        setIsGeneratingQuiz(true);
-        await onGenerateQuiz(lesson);
-        setIsGeneratingQuiz(false);
-    }
 
     if (item.type === 'module') {
         return (
@@ -304,15 +294,6 @@ function SortableSyllabusItem({
                             </SelectContent>
                         </Select>
                     </div>
-                    
-                     {item.type !== 'quiz' && (
-                        <div className="mt-2">
-                            <Button size="sm" variant="outline" onClick={() => handleGenerateQuiz(item as LessonData)} disabled={isGeneratingQuiz} className="rounded-lg h-10 border-dashed border-2">
-                                {isGeneratingQuiz ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
-                                Generate Quiz with AI
-                            </Button>
-                        </div>
-                    )}
                 </div>
             </CollapsibleContent>
         </Collapsible>
@@ -747,6 +728,15 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     toast({ title: 'Mass Injection Complete' });
   };
 
+  const filteredQbQuestions = useMemo(() => {
+    return questionBank.filter(q => 
+        (qbFilters.subject === 'all' || q.subject === qbFilters.subject) &&
+        (qbFilters.difficulty === 'all' || q.difficulty === qbFilters.difficulty)
+    );
+  }, [questionBank, qbFilters]);
+
+  const instructorForSelection = allInstructors;
+
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
     { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
@@ -786,7 +776,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
             </div>
         </div>
         
-        <Card className="rounded-[1.5rem] border-primary/10 shadow-2xl overflow-hidden">
+        <Card className="rounded-2xl border-primary/10 shadow-2xl overflow-hidden">
             <CardHeader className="p-0 border-b border-primary/5 bg-muted/30">
                 <div className="overflow-x-auto scrollbar-hide">
                     <div className="flex items-center gap-1 p-1">
@@ -850,7 +840,6 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                         item={item}
                                         updateItem={updateSyllabusItem}
                                         removeItem={removeSyllabusItem}
-                                        onGenerateQuiz={handleGenerateQuiz}
                                         courseInstructors={instructors}
                                     />
                                 ))}
@@ -867,14 +856,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 {activeTab === 'pricing' && (
                     <div className="space-y-14">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <Card className="rounded-[1.5rem] border-2 border-primary/10 overflow-hidden shadow-xl">
+                            <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl">
                                 <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Revenue Structure</CardTitle></CardHeader>
                                 <CardContent className="p-8 space-y-6">
                                     <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Base Listing Price (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-primary" placeholder="4500" /></div>
                                     <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Incentive Price (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-green-600" placeholder="3000" /></div>
                                 </CardContent>
                             </Card>
-                            <Card className="rounded-[1.5rem] border-2 border-muted overflow-hidden shadow-xl">
+                            <Card className="rounded-2xl border-2 border-muted overflow-hidden shadow-xl">
                                 <CardHeader className="bg-muted/30 p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
                                 <CardContent className="p-8 space-y-6">
                                     {isPrebooking ? (
