@@ -60,7 +60,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center py-2 bg-transparent pointer-events-none", wrapperClassName)}>
+    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pointer-events-none", wrapperClassName)}>
       <div className="container max-w-7xl pointer-events-auto">
         <div className={cn(
           "flex h-12 items-center justify-between rounded-xl bg-background/95 dark:bg-card/90 backdrop-blur-md border border-primary px-4 sm:px-6 shadow-xl overflow-hidden",
