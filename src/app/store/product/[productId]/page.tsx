@@ -1,13 +1,13 @@
 
-
 import { notFound } from 'next/navigation';
-import { getProduct, getProducts } from '@/lib/firebase/firestore';
+import { getProduct, getProducts, getOrganizations } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { ProductClientPage } from '@/components/product-client-page';
 import { Card } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductReviewSystem } from '@/components/product-review-system';
+import { ProductCard } from '@/components/product-card';
 
 export async function generateMetadata({ params }: { params: { productId: string } }): Promise<Metadata> {
   const { productId } = params;
@@ -38,50 +38,36 @@ export default async function ProductDetailPage({ params }: { params: { productI
     notFound();
   }
 
-  const allProducts = await getProducts();
+  const [allProducts, allOrgs] = await Promise.all([
+      getProducts(),
+      getOrganizations()
+  ]);
   const relatedProducts = allProducts.filter(
       p => p.isPublished && p.category === product.category && p.id !== product.id
   ).slice(0, 4);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 py-8 md:py-12">
-        <div className="container mx-auto px-4">
+    <div className="bg-background py-10 md:py-14 max-w-full overflow-hidden">
+        <div className="container mx-auto px-4 md:px-8">
             <ProductClientPage product={product} />
 
-            <div className="mt-12">
+            <div className="mt-16">
                 <ProductReviewSystem product={product} />
             </div>
 
             {relatedProducts.length > 0 && (
-                 <section className="mt-16">
-                    <h2 className="font-headline text-3xl font-bold mb-6 text-center">Related Products</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {relatedProducts.map(p => (
-                            <Card key={p.id} className="overflow-hidden group">
-                                <Link href={`/store/product/${p.id}`} className="block">
-                                    <div className="p-0">
-                                    <div className="relative aspect-square">
-                                        <Image
-                                        src={p.imageUrl}
-                                        alt={p.name}
-                                        fill
-                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                    </div>
-                                    </div>
-                                    <div className="p-4">
-                                    <p className="text-xs text-muted-foreground">{p.category}</p>
-                                    <h3 className="font-semibold truncate group-hover:text-primary">{p.name}</h3>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <p className="text-lg font-bold text-primary">৳{p.price}</p>
-                                        {p.oldPrice && (
-                                        <p className="text-sm text-muted-foreground line-through">৳{p.oldPrice}</p>
-                                        )}
-                                    </div>
-                                    </div>
-                                </Link>
-                            </Card>
-                        ))}
+                 <section className="mt-20 border-t border-primary/5 pt-16">
+                    <div className="text-center mb-10 space-y-2">
+                        <h2 className="font-headline text-3xl font-black uppercase tracking-tight text-green-700 dark:text-green-500">Related Products</h2>
+                        <div className="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-md" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                        {relatedProducts.map(p => {
+                            const provider = allOrgs.find(o => o.id === p.sellerId);
+                            return (
+                                <ProductCard key={p.id} product={p} provider={provider} />
+                            )
+                        })}
                     </div>
                 </section>
             )}
@@ -89,5 +75,3 @@ export default async function ProductDetailPage({ params }: { params: { productI
     </div>
   );
 }
-
-

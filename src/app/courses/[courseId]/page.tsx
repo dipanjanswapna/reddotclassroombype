@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -45,6 +46,7 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 /**
  * @fileOverview Redesigned Course Detail Page.
  * Implements a responsive Card-to-List routine strategy and elite layout.
+ * Ensures zero content cutoff on all devices.
  */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -65,34 +67,6 @@ export async function generateMetadata({ params }: { params: { courseId: string 
     },
   }
 }
-
-const CycleCard = ({ cycle, courseId, isPrebookingActive }: { cycle: CourseCycle, courseId: string, isPrebookingActive: boolean }) => (
-    <Card className="bg-card border-primary/10 hover:border-primary/40 transition-all shadow-md group rounded-3xl overflow-hidden flex flex-col h-full">
-        <CardHeader className="p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="space-y-1">
-                    <Badge variant="secondary" className="uppercase tracking-widest text-[10px] px-3 rounded-full font-black">Cycle {cycle.order}</Badge>
-                    <CardTitle className="text-xl font-black group-hover:text-primary transition-colors leading-tight">{cycle.title}</CardTitle>
-                </div>
-                <div className="text-left sm:text-right shrink-0">
-                    <p className="text-2xl font-black text-primary leading-none">{cycle.price}</p>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent className="px-6 flex-grow">
-            <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
-        </CardContent>
-        <div className="p-6 pt-0 mt-auto">
-             {isPrebookingActive ? (
-                <Button className="w-full font-black uppercase text-[10px] tracking-widest opacity-70 rounded-xl h-12" disabled>Pre-booking Ongoing</Button>
-             ) : (
-                <Button asChild className="w-full font-black uppercase text-[10px] tracking-widest bg-green-600 hover:bg-green-700 shadow-lg active:scale-95 transition-transform rounded-xl h-12">
-                    <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll in This Cycle</Link>
-                </Button>
-             )}
-        </div>
-    </Card>
-);
 
 export default async function CourseDetailPage({
   params,
@@ -216,7 +190,7 @@ export default async function CourseDetailPage({
               </Link>
             </div>
 
-            {/* Routine & Schedule (Adaptive Cards on Mobile) */}
+            {/* Routine Section (Adaptive Cards on Mobile) */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -262,7 +236,7 @@ export default async function CourseDetailPage({
                 </section>
             )}
 
-            {/* Exam Schedule */}
+            {/* Exam Schedule (Adaptive Cards on Mobile) */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -403,7 +377,7 @@ export default async function CourseDetailPage({
           </div>
         </div>
 
-        {/* Global Spaced Recommendations */}
+        {/* Global Recommendations */}
          <section className="pt-16 border-t border-primary/10">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-10 pb-6 gap-4">
                 <div className="text-center sm:text-left space-y-1">

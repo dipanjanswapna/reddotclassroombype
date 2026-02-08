@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -45,6 +46,7 @@ import { getCurrentUser } from '@/lib/firebase/auth';
 /**
  * @fileOverview Partner-specific Course Detail Page.
  * Mirroring the high-quality main course detail page for consistency.
+ * Ensures zero content cutoff on all devices.
  */
 
 export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
@@ -65,34 +67,6 @@ export async function generateMetadata({ params }: { params: { courseId: string 
     },
   }
 }
-
-const CycleCard = ({ cycle, courseId, isPrebookingActive }: { cycle: CourseCycle, courseId: string, isPrebookingActive: boolean }) => (
-    <Card className="bg-card border-primary/10 hover:border-primary/40 transition-all shadow-md group rounded-3xl overflow-hidden flex flex-col h-full">
-        <CardHeader className="p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="space-y-1">
-                    <Badge variant="secondary" className="uppercase tracking-widest text-[10px] px-3 rounded-full font-black">Cycle {cycle.order}</Badge>
-                    <CardTitle className="text-xl font-black group-hover:text-primary transition-colors leading-tight">{cycle.title}</CardTitle>
-                </div>
-                <div className="text-left sm:text-right shrink-0">
-                    <p className="text-2xl font-black text-primary leading-none">{cycle.price}</p>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent className="px-6 flex-grow">
-            <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
-        </CardContent>
-        <div className="p-6 pt-0 mt-auto">
-             {isPrebookingActive ? (
-                <Button className="w-full font-black uppercase text-[10px] tracking-widest opacity-70 rounded-xl h-12" disabled>Pre-booking Ongoing</Button>
-             ) : (
-                <Button asChild className="w-full font-black uppercase text-[10px] tracking-widest bg-green-600 hover:bg-green-700 shadow-lg active:scale-95 transition-transform rounded-xl h-12">
-                    <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll in This Cycle</Link>
-                </Button>
-             )}
-        </div>
-    </Card>
-);
 
 export default async function PartnerCourseDetailPage({
   params,
@@ -216,7 +190,7 @@ export default async function PartnerCourseDetailPage({
               </Link>
             </div>
 
-            {/* Routine & Schedule (Adaptive Cards on Mobile) */}
+            {/* Routine Section (Adaptive Cards on Mobile) */}
             {course.classRoutine && course.classRoutine.length > 0 && (
                 <section id="routine" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -262,7 +236,7 @@ export default async function PartnerCourseDetailPage({
                 </section>
             )}
 
-            {/* Exam Schedule */}
+            {/* Exam Schedule (Adaptive Cards on Mobile) */}
             {course.examTemplates && course.examTemplates.length > 0 && (
                 <section id="exam-schedule" className="scroll-mt-32 py-0">
                     <h2 className="font-headline text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tight flex items-center gap-4 uppercase">
@@ -322,7 +296,7 @@ export default async function PartnerCourseDetailPage({
                         Curriculum
                     </h2>
                     <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] py-2 px-4 rounded-full border-primary/20 w-fit shadow-inner">
-                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} High-Value Lessons
+                        {course.syllabus.reduce((acc, mod) => acc + mod.lessons.length, 0)} Professional Lessons
                     </Badge>
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-4">
@@ -385,39 +359,19 @@ export default async function PartnerCourseDetailPage({
                   )}
                 </CardHeader>
                 <CardContent className="space-y-8 pt-8 md:pt-10 px-6 md:px-8">
-                  <div className="flex flex-col gap-4">
-                    <CourseEnrollmentButton
-                        courseId={course.id!}
-                        isPrebookingActive={isPrebookingActive}
-                        checkoutUrl={`/checkout/${course.id!}`}
-                        courseType={course.type}
-                        size="lg"
-                    />
-                    <div className="grid grid-cols-2 gap-3">
-                        <WishlistButton courseId={course.id!} />
-                        <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5 shadow-sm transition-all" aria-label="Share Course">
-                            <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
-                        </Button>
-                    </div>
+                  <CourseEnrollmentButton
+                      courseId={course.id!}
+                      isPrebookingActive={isPrebookingActive}
+                      checkoutUrl={`/checkout/${course.id!}`}
+                      courseType={course.type}
+                      size="lg"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                      <WishlistButton courseId={course.id!} />
+                      <Button variant="outline" className="font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-2xl h-12 md:h-14 border-primary/10 hover:bg-primary/5 shadow-sm transition-all">
+                          <Share2 className="mr-2 h-4 w-4 text-primary" /> Share
+                      </Button>
                   </div>
-
-                  {course.features && course.features.length > 0 && (
-                    <div className="space-y-5">
-                      <h3 className="font-headline font-black text-[9px] md:text-[10px] uppercase tracking-[0.25em] text-primary/60 border-b border-primary/5 pb-3">
-                        What's Included
-                      </h3>
-                      <ul className="space-y-3">
-                        {course.features?.slice(0, 6).map((feature, index) => (
-                          <li key={`feature-${index}`} className="flex items-center gap-3 text-xs md:text-sm font-bold text-foreground">
-                            <div className="p-1.5 bg-primary/10 rounded-xl shadow-inner shrink-0">
-                                <CheckCircle className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary" />
-                            </div>
-                            <span className="line-clamp-1 break-words leading-snug">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
           </div>

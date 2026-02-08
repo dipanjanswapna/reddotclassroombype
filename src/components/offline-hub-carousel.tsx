@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -20,8 +21,9 @@ type OfflineHubCarouselProps = {
 };
 
 /**
- * @fileOverview Standardized Carousel Component for Offline Hub.
- * Uses clean backgrounds and glassmorphism consistent with the main page.
+ * @fileOverview Refined Offline Hub Carousel.
+ * Synchronized with main page aesthetic: removed solid black, added glassmorphism.
+ * Standardized padding and vertical rhythm.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -62,8 +64,8 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Subtle Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70" />
+                  {/* Glassmorphism Overlay Logic */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70" />
                   
                   <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
                     <div className="flex-1 space-y-2 sm:space-y-4 text-left max-w-2xl">
@@ -75,7 +77,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                       </h2>
                     </div>
                     
-                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-5 md:p-0 rounded-[2rem] bg-white/10 backdrop-blur-md border border-white/10 md:bg-transparent md:backdrop-blur-none md:border-none shadow-2xl md:shadow-none">
+                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-5 md:p-0 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl md:bg-transparent md:backdrop-blur-none md:border-none md:shadow-none">
                       <div className="flex flex-col items-start md:items-end">
                          <span className="text-[10px] md:text-sm line-through opacity-70 font-black tracking-widest">{slide.originalPrice}</span>
                          <span className="text-3xl md:text-5xl font-black text-yellow-400 drop-shadow-2xl tracking-tighter">

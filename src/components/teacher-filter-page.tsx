@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +12,7 @@ import { Home, Book } from 'lucide-react';
 /**
  * @fileOverview Redesigned Teacher Filter Page.
  * Implements a strict 5-column grid on desktop (xl:grid-cols-5).
+ * Standardized spacing and elite visual hierarchy.
  */
 export function TeacherFilterPage({ instructors, subjects }: { instructors: Instructor[], subjects: string[] }) {
     const [selectedSubject, setSelectedSubject] = useState('সব');
@@ -21,16 +23,16 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
 
     return (
         <div className="container mx-auto px-4 py-10 md:py-14 max-w-full overflow-hidden">
-            <div className="mb-10">
-                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-6 flex items-center gap-4">
+            <div className="mb-10 text-center md:text-left">
+                <h2 className="font-headline text-2xl md:text-4xl font-black uppercase tracking-tight mb-8 flex items-center justify-center md:justify-start gap-4">
                     <div className="h-8 md:h-10 w-1.5 bg-primary rounded-full shadow-sm"></div>
-                    Find Your Mentor
+                    Meet Our Expert Mentors
                 </h2>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                     <Button
                         variant={selectedSubject === 'সব' ? 'default' : 'outline'}
                         onClick={() => setSelectedSubject('সব')}
-                        className="rounded-full h-10 px-6 font-bold uppercase tracking-wider text-xs"
+                        className="rounded-full h-10 px-6 font-black uppercase tracking-widest text-[10px]"
                     >
                         <Home className="mr-2 h-4 w-4" />
                         সব
@@ -40,7 +42,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                             key={subject}
                             variant={selectedSubject === subject ? 'default' : 'outline'}
                             onClick={() => setSelectedSubject(subject)}
-                             className="rounded-full h-10 px-6 font-bold uppercase tracking-wider text-xs border-primary/20"
+                             className="rounded-full h-10 px-6 font-black uppercase tracking-widest text-[10px] border-primary/20"
                         >
                            <Book className="mr-2 h-4 w-4" />
                            {subject}
@@ -49,7 +51,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
                 </div>
             </div>
 
-            {/* Strict 5-column Grid on Desktop */}
+            {/* Elite 5-column Grid on Desktop */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredInstructors.map((teacher) => (
                 <Link key={teacher.id} href={`/teachers/${teacher.slug}`} className="group block" aria-label={`View profile for ${teacher.name}`}>
@@ -76,7 +78,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
             </div>
             {filteredInstructors.length === 0 && (
                 <div className="text-center py-24 bg-muted/30 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center">
-                    <p className="text-xl font-bold text-muted-foreground">No teachers found for this category.</p>
+                    <p className="text-xl font-bold text-muted-foreground">No mentors found for this category.</p>
                     <p className="text-sm text-muted-foreground mt-2 font-medium">Try selecting another subject or reset the filter.</p>
                 </div>
             )}

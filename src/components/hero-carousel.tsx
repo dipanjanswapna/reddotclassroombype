@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -30,7 +31,8 @@ type AutoplaySettings = {
 
 /**
  * @fileOverview Modern Hero Carousel component.
- * Replaces heavy black backgrounds with semi-transparent glassmorphism overlays.
+ * Features ultra-clean backgrounds using high-blur glassmorphism.
+ * Replaces heavy solid overlays with professional soft gradients.
  */
 export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -59,7 +61,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
   }, [api]);
 
   return (
-    <div className="hero-carousel-container group relative w-full overflow-hidden">
+    <div className="hero-carousel-container group/main relative w-full overflow-hidden">
       <Carousel
         setApi={setApi}
         opts={{ align: 'center', loop: true }}
@@ -75,7 +77,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                 >
                 <Link
                     href={banner.href}
-                    className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-lg transition-transform duration-500 hover:scale-[1.02]"
+                    className="block outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-lg transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl"
                 >
                     <div className="carousel-image-wrapper relative group/image aspect-[16/9] md:aspect-[21/9] bg-muted">
                     <Image
@@ -83,27 +85,27 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                         alt={banner.alt}
                         fill
                         priority={index === 0}
-                        className="object-cover"
+                        className="object-cover transition-transform duration-1000 group-hover/image:scale-105"
                         data-ai-hint={banner.dataAiHint}
                     />
-                    {/* Semi-Transparent Glassmorphism Overlay */}
+                    {/* Standardized Soft Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                     
-                    {/* Floating Navigation Controls */}
+                    {/* Floating Glassmorphism Navigation */}
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollPrev(); }}
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-xl"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-xl hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-2xl border border-white/20"
                         aria-label="Previous slide"
                     >
                         <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
                     </Button>
                     <Button
                         onClick={(e) => { e.preventDefault(); api?.scrollNext(); }}
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-md hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 border-none transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-xl"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 backdrop-blur-xl hover:bg-white/90 rounded-full h-10 w-10 md:h-12 md:w-12 transition-all opacity-0 group-hover/image:opacity-100 hidden md:flex shadow-2xl border border-white/20"
                         aria-label="Next slide"
                     >
                         <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-foreground" />
@@ -116,15 +118,15 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
       
-      {/* Progress Dots */}
+      {/* Refined Progress Dots */}
       <div className="hero-carousel-dots mt-6 flex justify-center gap-2">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-                "h-1.5 rounded-full transition-all duration-500",
-                index === current ? 'w-8 bg-primary shadow-lg' : 'w-2 bg-muted hover:bg-muted-foreground/50'
+                "h-1.5 rounded-full transition-all duration-500 shadow-sm",
+                index === current ? 'w-10 bg-primary' : 'w-2.5 bg-muted hover:bg-primary/40'
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

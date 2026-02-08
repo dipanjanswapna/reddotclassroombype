@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -17,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Refined Store Banner Carousel.
- * Removed heavy black backgrounds, aligned with main hero aesthetic.
+ * Synchronized with platform aesthetic: Removed solid black, added clean gradients and high-blur glassmorphism.
  */
 export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner[] }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -59,24 +60,24 @@ export function StoreBannerCarousel({ banners }: { banners?: StoreHomepageBanner
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
                   {/* Subtle Transparent Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-40" />
                 </div>
               </Link>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex left-8 bg-background/40 backdrop-blur-md border-none h-12 w-12 hover:bg-background/80 transition-opacity opacity-0 group-hover/main:opacity-100 shadow-lg" />
-        <CarouselNext className="hidden md:flex right-8 bg-background/40 backdrop-blur-md border-none h-12 w-12 hover:bg-background/80 transition-opacity opacity-0 group-hover/main:opacity-100 shadow-lg" />
+        <CarouselPrevious className="hidden md:flex left-8 bg-background/40 backdrop-blur-xl border-white/20 h-12 w-12 hover:bg-background/80 transition-opacity opacity-0 group-hover/main:opacity-100 shadow-2xl" />
+        <CarouselNext className="hidden md:flex right-8 bg-background/40 backdrop-blur-xl border-white/20 h-12 w-12 hover:bg-background/80 transition-opacity opacity-0 group-hover/main:opacity-100 shadow-2xl" />
       </Carousel>
 
-      <div className="flex justify-center gap-1.5 mt-6">
+      <div className="flex justify-center gap-2 mt-6">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
             className={cn(
               'h-1 rounded-full transition-all duration-500 shadow-sm', 
-              current === index ? 'w-8 bg-primary' : 'w-2 bg-muted hover:bg-muted-foreground/50'
+              current === index ? 'w-10 bg-primary' : 'w-2.5 bg-muted hover:bg-primary/40'
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

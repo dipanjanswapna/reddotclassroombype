@@ -25,17 +25,21 @@ const faqs = [
   },
   {
     question: "Can I get a refund?",
-    answer: "We offer a 30-day money-back guarantee on most courses. Please check our refund policy on the Terms of Service page for more details."
+    answer: "We offer a refund policy based on specific criteria. Please check our refund section on the Terms of Service page for more details."
   },
   {
     question: "How do I access my course materials?",
     answer: "Once enrolled, you can access all your course materials, including videos and notes, from your Student Dashboard under the 'My Courses' section."
+  },
+  {
+    question: "How does the Study Planner work?",
+    answer: "Our Study Planner helps you organize tasks, sync with Google Calendar, and use Pomodoro timers to stay focused. Access it from your Student Dashboard."
   }
 ];
 
 export default function FaqPage() {
   return (
-    <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-full">
+    <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-full overflow-hidden">
       <div className="text-center mb-16">
         <h1 className="font-headline text-4xl md:text-5xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Frequently Asked Questions</h1>
         <div className="h-1.5 w-24 bg-primary mx-auto mt-4 rounded-full shadow-md" />
@@ -45,16 +49,16 @@ export default function FaqPage() {
       </div>
       
       <div className="max-w-4xl mx-auto">
-        <Card className="rounded-[2.5rem] border border-primary/10 bg-card shadow-2xl p-6 md:p-12">
+        <Card className="rounded-[2.5rem] border border-primary/10 bg-card shadow-2xl p-6 md:p-12 overflow-hidden">
             <Accordion type="single" collapsible className="w-full space-y-4">
             {faqs.map((faq, index) => (
                 <AccordionItem value={`item-${index}`} key={index} className="border border-primary/5 rounded-[1.5rem] overflow-hidden bg-muted/20 px-2 transition-all hover:bg-muted/40">
                 <AccordionTrigger className="font-black text-left px-6 py-5 hover:no-underline text-base md:text-lg">
                     <div className="flex items-center gap-4">
-                        <div className="p-2 bg-primary/10 rounded-xl">
+                        <div className="p-2 bg-primary/10 rounded-xl shrink-0">
                             <HelpCircle className="w-5 h-5 text-primary" />
                         </div>
-                        <span className="leading-tight">{faq.question}</span>
+                        <span className="leading-tight break-words">{faq.question}</span>
                     </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-16 pb-6 text-muted-foreground text-sm md:text-base leading-relaxed font-medium">

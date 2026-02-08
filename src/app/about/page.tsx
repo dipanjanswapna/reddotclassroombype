@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,7 +35,7 @@ export default async function AboutPage() {
 
   return (
     <div className="bg-background min-h-screen overflow-x-hidden max-w-full">
-        {/* Simplified Header */}
+        {/* Standardized Header */}
         <section className="bg-secondary/20 py-10 md:py-14 border-b border-primary/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 rounded-full blur-[100px] -mr-24 -mt-24"></div>
             <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
