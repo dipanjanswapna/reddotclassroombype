@@ -62,7 +62,7 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <section
-    className={cn("py-8 md:py-12 container mx-auto px-4 md:px-8", className)}
+    className={cn("py-6 md:py-8 container mx-auto px-4 md:px-8", className)}
   >
     {children}
   </section>
@@ -152,7 +152,7 @@ export default function Home() {
   
   return (
     <div className="text-foreground">
-        <section className="py-4 md:py-8 container mx-auto px-4 md:px-8">
+        <section className="py-3 md:py-6 container mx-auto px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
@@ -168,7 +168,7 @@ export default function Home() {
           </SectionWrapper>
         )}
 
-        <div className="container mx-auto px-4 md:px-8 my-8">
+        <div className="container mx-auto px-4 md:px-8 my-6">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <NoticeBoard />
             </motion.div>
@@ -176,7 +176,7 @@ export default function Home() {
 
         {homepageConfig.journeySection?.display && (
           <SectionWrapper aria-labelledby="hero-heading">
-              <div className="text-center mb-12 bg-gradient-to-r from-secondary via-background to-secondary py-12 rounded-2xl border border-primary shadow-sm overflow-hidden relative">
+              <div className="text-center mb-12 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl border border-primary shadow-sm overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                 <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500 relative z-10">{homepageConfig.journeySection?.title?.[language]}</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto mt-4 text-sm px-4 relative z-10">{homepageConfig.journeySection?.subtitle?.[language]}</p>
@@ -249,7 +249,7 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <SectionWrapper aria-labelledby="video-section-heading">
             <div className="text-center">
-                <div className="text-center mb-12 bg-gradient-to-r from-secondary via-background to-secondary py-12 rounded-2xl shadow-sm overflow-hidden relative">
+                <div className="text-center mb-12 bg-gradient-to-r from-secondary via-background to-secondary py-8 rounded-2xl shadow-sm overflow-hidden relative">
                   <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
                   <h2 id="video-section-heading" className="font-headline text-3xl font-bold text-green-700 dark:text-green-500 relative z-10">{homepageConfig.videoSection?.title?.[language]}</h2>
                   <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-lg px-4 relative z-10">{homepageConfig.videoSection?.description?.[language]}</p>
