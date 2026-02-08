@@ -1,11 +1,9 @@
-
-
 'use server';
 import 'dotenv/config';
 
 import { revalidatePath } from 'next/cache';
 import { getCourse, getUser, addPrebooking, getPrebookingForUser, getEnrollmentsByUserId, getInvoiceByEnrollmentId, addNotification, updateEnrollment, getDocument, addReferral, updateUser, getHomepageConfig, getEnrollmentsByCourseId, getUserByClassRoll, getCourseCycles } from '@/lib/firebase/firestore';
-import { Enrollment, Assignment, Exam, Invoice, User, Referral } from '@/lib/types';
+import { Enrollment, Assignment, Exam, Invoice, User, Referral, CourseCycle } from '@/lib/types';
 import { Timestamp, writeBatch, doc, collection, getDoc, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import { getDbInstance } from '@/lib/firebase/config';
 import { createInvoiceAction } from './invoice.actions';
@@ -23,13 +21,13 @@ export async function prebookCourseAction(details: { courseId: string, userId: s
             getUser(userId),
         ]);
         
-        if (!course) throw new Error("Course not found.");
-        if (!student) throw new Error("Student user not found.");
-        if (!course.isPrebooking) throw new Error("This course is not available for pre-booking.");
-        if (existingPrebooking) throw new Error("You have already pre-booked this course.");
+        if (!course) throw new Error("Target curriculum not identified.");
+        if (!student) throw new Error("Student node not found in registry.");
+        if (!course.isPrebooking) throw new Error("This curriculum is not enabled for pre-booking.");
+        if (existingPrebooking) throw new Error("Your node is already synchronized for pre-booking.");
 
         if (!student.mobileNumber || !student.guardianMobileNumber) {
-            throw new Error("Please complete your profile by adding your and your guardian's mobile number before pre-booking.");
+            throw new Error("Identity record incomplete. Add personal and guardian contact numbers to continue.");
         }
 
         await addPrebooking({
@@ -45,29 +43,28 @@ export async function prebookCourseAction(details: { courseId: string, userId: s
         revalidatePath(`/sites/[site]/courses/${courseId}`);
         revalidatePath('/student/my-courses');
         revalidatePath('/admin/pre-bookings');
-        revalidatePath('/teacher/pre-bookings');
 
-        return { success: true, message: 'Pre-booking successful! You will be notified when the course launches.' };
+        return { success: true, message: 'Pre-booking authorized. You will receive sync notifications upon launch.' };
 
     } catch (error: any) {
-        console.error("Pre-booking error:", error);
+        console.error("Pre-booking Error:", error);
         return { success: false, message: error.message };
     }
 }
 
 type ManualEnrollmentDetails = {
     courseId: string;
-    userId: string; // The UID of the student being enrolled
+    userId: string;
     paymentDetails?: {
         totalFee: number;
         paidAmount: number;
         discount?: number;
         paymentMethod: string;
-        paymentDate: string; // ISO String
-        recordedBy: string; // UID of admin/staff
+        paymentDate: string;
+        recordedBy: string;
     };
-    cycleId?: string; // Optional: for cycle-based enrollment
-    referralCode?: string; // The class roll of the referrer
+    cycleId?: string;
+    referralCode?: string;
 };
 
 
@@ -75,7 +72,7 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
     const { courseId, userId, paymentDetails, cycleId, referralCode } = details;
     const db = getDbInstance();
     if (!db) {
-        throw new Error('Database service is currently unavailable.');
+        throw new Error('Database service is currently offline.');
     }
     try {
         const [student, course, config] = await Promise.all([
@@ -84,19 +81,18 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             getHomepageConfig()
         ]);
         
-        if (!student) throw new Error("Student user not found.");
-        if (!course) throw new Error("Course not found after enrollment.");
+        if (!student) throw new Error("Student identifier not found.");
+        if (!course) throw new Error("Course manifest not available.");
         
-        // Mobile number check is only for non-manual enrollments
         if (!paymentDetails && (!student.mobileNumber || !student.guardianMobileNumber)) {
-            throw new Error("Please complete your profile by adding your and your guardian's mobile number before enrolling.");
+            throw new Error("Synchronization denied: Mobile and Guardian contact missing from profile.");
         }
         
         const isCycleEnrollment = !!cycleId;
         const cycles = await getCourseCycles(courseId);
         const cycle = isCycleEnrollment ? cycles.find(c => c.id === cycleId) : null;
         
-        if (isCycleEnrollment && !cycle) throw new Error("Selected course cycle not found.");
+        if (isCycleEnrollment && !cycle) throw new Error("Selected knowledge tier not authorized.");
 
         const batch = writeBatch(db);
         const mainEnrollmentRef = doc(collection(db, 'enrollments'));
@@ -110,18 +106,19 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
         
         if (isFirstEnrollment && referralCode) {
             if (student.hasUsedReferral) {
-                throw new Error("You have already used a referral code for a previous purchase.");
+                throw new Error("One-time referral protocol already executed.");
             }
             referrer = await getUserByClassRoll(referralCode);
             if (!referrer) {
-                throw new Error("The referral code you entered is invalid.");
+                throw new Error("Invalid referral rolls identified.");
             }
             if (referrer.uid === student.uid) {
-                throw new Error("You cannot use your own referral code.");
+                throw new Error("Self-referral protocols are prohibited.");
             }
 
             if (config.referralSettings) {
-                const price = parseFloat((cycle?.price || course.price)?.replace(/[^0-9.]/g, '')) || 0;
+                const basePriceStr = isCycleEnrollment ? cycle?.price : (course.discountPrice || course.price);
+                const price = parseFloat(basePriceStr?.replace(/[^0-9.]/g, '') || '0');
                 referralDiscount = price * (config.referralSettings.referredDiscountPercentage / 100);
             }
         }
@@ -146,25 +143,25 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             const dueAmount = paymentDetails.totalFee - paymentDetails.paidAmount - (paymentDetails.discount || 0) - referralDiscount;
             enrollmentData.totalFee = paymentDetails.totalFee;
             enrollmentData.paidAmount = paymentDetails.paidAmount;
-            enrollmentData.dueAmount = dueAmount;
+            enrollmentData.dueAmount = Math.max(0, dueAmount);
             enrollmentData.paymentMethod = paymentDetails.paymentMethod;
             enrollmentData.discount = (paymentDetails.discount || 0) + referralDiscount;
             enrollmentData.enrolledBy = paymentDetails.recordedBy;
             enrollmentData.paymentStatus = dueAmount > 0 ? 'partial' : 'paid';
         } else {
-            const price = parseFloat((cycle ? cycle.price : course.price)?.replace(/[^0-9.]/g, '')) || 0;
+            const basePriceStr = isCycleEnrollment ? cycle?.price : (course.discountPrice || course.price);
+            const price = parseFloat(basePriceStr?.replace(/[^0-9.]/g, '') || '0');
             enrollmentData.totalFee = price;
             enrollmentData.discount = referralDiscount;
-            enrollmentData.paidAmount = price - referralDiscount;
+            enrollmentData.paidAmount = Math.max(0, price - referralDiscount);
             enrollmentData.dueAmount = 0;
             enrollmentData.paymentStatus = 'paid';
-            enrollmentData.paymentMethod = 'Online';
+            enrollmentData.paymentMethod = 'Sync Online';
         }
         
         batch.set(mainEnrollmentRef, enrollmentData);
         batch.update(userRef, { enrolledCourses: arrayUnion(courseId) });
 
-        
         if (isFirstEnrollment && referrer && config.referralSettings) {
             const points = config.referralSettings.pointsPerReferral || 10;
             const updatedPoints = (referrer.referralPoints || 0) + points;
@@ -182,8 +179,6 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
                 status: 'Awarded'
             };
             batch.set(doc(collection(db, 'referrals')), referralData);
-            
-            // Mark student as having used a referral
             batch.update(doc(db, 'users', student.id!), { hasUsedReferral: true });
         }
 
@@ -203,49 +198,40 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
             }
         }
         
+        // Dynamic generation of assignments and exams for the enrolled student
         const newAssignments: Assignment[] = [];
         if (course.assignmentTemplates && course.assignmentTemplates.length > 0) {
             course.assignmentTemplates.forEach(template => {
-                const assignmentExists = course.assignments?.some(
-                    a => a.studentId === userId && a.title === template.title && a.topic === template.topic
-                );
-                if (!assignmentExists) {
-                    newAssignments.push({
-                        id: `${template.id}-${userId}`,
-                        studentId: userId,
-                        studentName: student.name,
-                        title: template.title,
-                        topic: template.topic,
-                        deadline: template.deadline || '',
-                        status: 'Pending',
-                    });
-                }
+                newAssignments.push({
+                    id: `${template.id}-${userId}`,
+                    studentId: userId,
+                    studentName: student.name,
+                    title: template.title,
+                    topic: template.topic,
+                    deadline: template.deadline || '',
+                    status: 'Pending',
+                });
             });
         }
         
         const newExams: Exam[] = [];
         if (course.examTemplates && course.examTemplates.length > 0) {
             course.examTemplates.forEach(template => {
-                const examExists = course.exams?.some(
-                    e => e.studentId === userId && e.title === template.title && e.topic === template.topic
-                );
-                if (!examExists) {
-                    newExams.push({
-                        id: `${template.id}-${userId}`,
-                        studentId: userId,
-                        studentName: student.name,
-                        title: template.title,
-                        topic: template.topic,
-                        examType: template.examType,
-                        totalMarks: template.totalMarks,
-                        examDate: template.examDate,
-                        status: 'Pending',
-                    });
-                }
+                newExams.push({
+                    id: `${template.id}-${userId}`,
+                    studentId: userId,
+                    studentName: student.name,
+                    title: template.title,
+                    topic: template.topic,
+                    examType: template.examType,
+                    totalMarks: template.totalMarks,
+                    examDate: template.examDate,
+                    status: 'Pending',
+                });
             });
         }
         
-        const updates: Partial<any> = {};
+        const updates: any = {};
         if (newAssignments.length > 0) updates.assignments = [...(course.assignments || []), ...newAssignments];
         if (newExams.length > 0) updates.exams = [...(course.exams || []), ...newExams];
 
@@ -260,123 +246,11 @@ export async function enrollInCourseAction(details: ManualEnrollmentDetails) {
 
         revalidatePath('/student/my-courses');
         revalidatePath('/student/dashboard');
-        revalidatePath('/student/referrals');
-        revalidatePath(`/admin/manage-user/${student.id}`);
-        revalidatePath(`/admin/referrals`);
-        revalidatePath(`/checkout/${courseId}`);
-        revalidatePath(`/sites/[site]/checkout/${courseId}`);
-        revalidatePath(`/student/my-courses/${courseId}/assignments`);
-        revalidatePath(`/student/my-courses/${courseId}/exams`);
-        if(course.isPrebooking) {
-            revalidatePath('/admin/pre-bookings');
-            revalidatePath('/teacher/pre-bookings');
-        }
+        revalidatePath(`/student/my-courses/${courseId}`);
 
-        return { success: true, message: 'Successfully enrolled in the course.' };
+        return { success: true, message: 'Authorization complete. Knowledge sync initiated.' };
     } catch (error: any) {
-        console.error(error);
-        return { success: false, message: error.message };
-    }
-}
-
-
-export async function verifyGroupAccessCodeAction(accessCode: string) {
-    const db = getDbInstance();
-    if (!db) {
-        throw new Error('Database service is currently unavailable.');
-    }
-    try {
-        let enrollment = await getDocument<Enrollment>('enrollments', accessCode);
-        if (!enrollment) {
-            return { success: false, message: 'Invalid Group Access Code.' };
-        }
-
-        const [student, course] = await Promise.all([
-            getUser(enrollment.userId),
-            getCourse(enrollment.courseId),
-        ]);
-
-        if (!student || !course) {
-            return { success: false, message: 'Could not find student or course details.' };
-        }
-
-        // If invoice doesn't exist, create it.
-        let invoice = null;
-        if (enrollment.invoiceId) {
-            invoice = await getDocument<Invoice>('invoices', enrollment.invoiceId);
-        }
-        
-        if (!invoice) {
-            invoice = await getInvoiceByEnrollmentId(enrollment.id!);
-            if (invoice) {
-                await updateEnrollment(enrollment.id!, { invoiceId: invoice.id });
-                enrollment.invoiceId = invoice.id;
-            }
-        }
-        
-        if (!invoice) {
-            const creationResult = await createInvoiceAction(enrollment, student, course);
-            if (creationResult.success && creationResult.invoiceId) {
-                invoice = await getDocument<Invoice>('invoices', creationResult.invoiceId);
-                await updateEnrollment(enrollment.id!, { invoiceId: invoice!.id });
-                enrollment.invoiceId = invoice!.id;
-            }
-        }
-        
-        return { success: true, data: { enrollment, student, course, invoice } };
-
-    } catch (error: any) {
-        console.error("Error verifying group access code:", error);
-        return { success: false, message: error.message || 'An unexpected error occurred during verification.' };
-    }
-}
-
-export async function markAsGroupAccessedAction(enrollmentId: string, adminId: string) {
-    const db = getDbInstance();
-    if (!db) {
-        throw new Error('Database service is currently unavailable.');
-    }
-    try {
-        const enrollmentDoc = await getDoc(doc(db, 'enrollments', enrollmentId));
-        if (!enrollmentDoc.exists()) {
-            throw new Error('Enrollment not found.');
-        }
-
-        const enrollment = enrollmentDoc.data() as Enrollment;
-
-        if (enrollment.isGroupAccessed) {
-            return { success: true, message: 'Student was already marked as added.' };
-        }
-        
-        const course = await getCourse(enrollment.courseId);
-        if (!course) {
-            throw new Error('Course not found.');
-        }
-
-        await updateEnrollment(enrollmentId, {
-            isGroupAccessed: true,
-            groupAccessedAt: Timestamp.now(),
-            groupAccessedBy: adminId,
-        });
-        
-        const cycle = enrollment.cycleId ? course.cycles?.find(c => c.id === enrollment.cycleId) : null;
-        
-        const notificationTitle = `Welcome to the ${course.title} Group!`;
-        const notificationDescription = `You have been successfully added to the secret group for ${course.title}${cycle ? ` - ${cycle.title}` : ''}. Start learning with your peers!`;
-        
-        await addNotification({
-            userId: enrollment.userId,
-            icon: 'Users',
-            title: notificationTitle,
-            description: notificationDescription,
-            date: Timestamp.now(),
-            read: false,
-            link: cycle?.communityUrl || course.communityUrl,
-        });
-        
-        return { success: true, message: 'Student marked as added and notified.' };
-
-    } catch (error: any) {
+        console.error("Enrollment Synchronization Error:", error);
         return { success: false, message: error.message };
     }
 }

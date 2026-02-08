@@ -33,6 +33,7 @@ import {
   Settings,
   Link as LinkIcon,
   Trash2,
+  ListCollapse,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -193,19 +194,19 @@ function SortableSyllabusItem({
 
     if (item.type === 'module') {
         return (
-             <div ref={setNodeRef} style={style} className="flex items-center gap-2 p-2 bg-muted rounded-xl border-2">
+             <div ref={setNodeRef} style={style} className="flex items-center gap-2 p-3 bg-muted rounded-xl border-2">
                 <div {...attributes} {...listeners} className="cursor-grab p-1">
                     <GripVertical className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <Badge variant='default' className="capitalize select-none rounded-lg">Module</Badge>
+                <Badge variant='default' className="capitalize select-none rounded-lg px-3 py-1 font-black text-[10px] tracking-widest">Module</Badge>
                 <Input 
                   value={item.title} 
                   onChange={(e) => updateItem(item.id, 'title', e.target.value)}
-                  className="flex-grow bg-transparent border-none font-bold focus-visible:ring-0" />
+                  className="flex-grow bg-transparent border-none font-black uppercase text-sm focus-visible:ring-0" />
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-destructive hover:bg-destructive/10 rounded-lg" 
+                  className="text-destructive hover:bg-destructive/10 rounded-lg h-9 w-9" 
                   onClick={() => removeItem(item.id)}
                 >
                     <Trash2 className="h-4 w-4" />
@@ -220,15 +221,15 @@ function SortableSyllabusItem({
                 <div {...attributes} {...listeners} className="cursor-grab p-1">
                     <GripVertical className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <Badge variant='secondary' className="capitalize select-none rounded-lg">{item.type}</Badge>
+                <Badge variant='secondary' className="capitalize select-none rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-widest">{item.type}</Badge>
                 <Input 
                   value={item.title} 
                   onChange={(e) => updateItem(item.id, 'title', e.target.value)}
-                  className="flex-grow border-none focus-visible:ring-0" />
+                  className="flex-grow border-none focus-visible:ring-0 font-bold text-sm" />
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-destructive hover:bg-destructive/10 rounded-lg" 
+                  className="text-destructive hover:bg-destructive/10 rounded-lg h-8 w-8" 
                   onClick={() => removeItem(item.id)}
                 >
                     <Trash2 className="h-4 w-4" />
@@ -242,15 +243,15 @@ function SortableSyllabusItem({
             <CollapsibleContent>
                 <div className="p-4 border-t-2 space-y-4 bg-muted/30 rounded-b-xl">
                      <div className="space-y-2">
-                        <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Lesson Type</Label>
+                        <Label className="font-black text-[9px] uppercase tracking-[0.2em] text-primary/60">Lesson Artifact Type</Label>
                         <Select value={item.type} onValueChange={(value) => updateItem(item.id, 'type', value)}>
-                            <SelectTrigger className="rounded-lg h-11">
+                            <SelectTrigger className="rounded-lg h-11 border-2">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
-                                <SelectItem value="video">Video Lesson</SelectItem>
-                                <SelectItem value="quiz">Quiz</SelectItem>
-                                <SelectItem value="document">Document / Reading</SelectItem>
+                                <SelectItem value="video">Streaming Lesson</SelectItem>
+                                <SelectItem value="quiz">Interactive Quiz</SelectItem>
+                                <SelectItem value="document">Knowledge Resource</SelectItem>
                             </SelectContent>
                         </Select>
                      </div>
@@ -258,34 +259,34 @@ function SortableSyllabusItem({
                     {item.type === 'video' && (
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor={`videoId-${item.id}`} className="font-bold text-xs uppercase tracking-widest text-muted-foreground">YouTube Video ID/URL</Label>
-                                <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} className="rounded-lg" />
+                                <Label htmlFor={`videoId-${item.id}`} className="font-black text-[9px] uppercase tracking-[0.2em] text-primary/60">Video Identifier (YouTube)</Label>
+                                <Input id={`videoId-${item.id}`} placeholder="e.g., dQw4w9WgXcQ" value={item.videoId || ''} onChange={(e) => updateItem(item.id, 'videoId', e.target.value)} className="rounded-lg border-2" />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor={`duration-${item.id}`} className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Duration</Label>
-                                <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} className="rounded-lg" />
+                                <Label htmlFor={`duration-${item.id}`} className="font-black text-[9px] uppercase tracking-[0.2em] text-primary/60">Execution Time</Label>
+                                <Input id={`duration-${item.id}`} placeholder="e.g., 45 min" value={item.duration || ''} onChange={(e) => updateItem(item.id, 'duration', e.target.value)} className="rounded-lg border-2" />
                             </div>
                         </div>
                     )}
 
                     {(item.type === 'video' || item.type === 'document') && (
                         <div className="space-y-2">
-                            <Label htmlFor={`sheetUrl-${item.id}`} className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Document URL</Label>
-                            <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} className="rounded-lg" />
+                            <Label htmlFor={`sheetUrl-${item.id}`} className="font-black text-[9px] uppercase tracking-[0.2em] text-primary/60">Resource Direct Link</Label>
+                            <Input id={`sheetUrl-${item.id}`} placeholder="https://docs.google.com/..." value={item.lectureSheetUrl || ''} onChange={(e) => updateItem(item.id, 'lectureSheetUrl', e.target.value)} className="rounded-lg border-2" />
                         </div>
                     )}
                     
                     <div className="space-y-2">
-                        <Label htmlFor={`instructor-${item.id}`} className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Assigned Instructor</Label>
+                        <Label htmlFor={`instructor-${item.id}`} className="font-black text-[9px] uppercase tracking-[0.2em] text-primary/60">Assigned Faculty</Label>
                         <Select
                             value={item.instructorSlug || ''}
                             onValueChange={(value) => updateItem(item.id, 'instructorSlug', value === 'default' ? '' : value)}
                         >
-                            <SelectTrigger className="rounded-lg h-11">
-                                <SelectValue placeholder="Default (First Instructor)" />
+                            <SelectTrigger className="rounded-lg h-11 border-2">
+                                <SelectValue placeholder="Default (Lead Instructor)" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
-                                <SelectItem value="default">Default (First Instructor)</SelectItem>
+                                <SelectItem value="default">Lead Instructor (Auto)</SelectItem>
                                 {courseInstructors.map((inst: Instructor) => (
                                     <SelectItem key={inst.slug} value={inst.slug}>
                                         {inst.name}
@@ -298,11 +299,6 @@ function SortableSyllabusItem({
             </CollapsibleContent>
         </Collapsible>
     );
-}
-
-type CourseBuilderProps = {
-    userRole: 'Admin' | 'Seller' | 'Teacher';
-    redirectPath: string;
 }
 
 export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
@@ -492,8 +488,8 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addSyllabusItem = (type: 'module' | 'lesson') => {
     const newItem: SyllabusItem = type === 'module' 
-      ? { id: Date.now().toString(), type, title: 'New Module' }
-      : { id: Date.now().toString(), type: 'video', title: 'New Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
+      ? { id: Date.now().toString(), type, title: 'New Master Module' }
+      : { id: Date.now().toString(), type: 'video', title: 'New Tactical Lesson', duration: '', videoId: '', lectureSheetUrl: '' };
     
     if (type === 'lesson') {
         let lastModuleIndex = -1;
@@ -553,16 +549,16 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
   const addLiveClass = () => setLiveClasses(prev => [...prev, { id: `lc_${Date.now()}`, topic: '', date: format(new Date(), 'yyyy-MM-dd'), time: '', platform: 'YouTube Live', joinUrl: '' }]);
   const handleScheduleLiveClass = async (liveClass: LiveClass) => {
       if (!liveClass.topic || !liveClass.date || !liveClass.time || !liveClass.joinUrl) {
-          toast({ title: 'Error', description: 'Please fill all fields for the live class.', variant: 'destructive'});
+          toast({ title: 'Validation Error', description: 'Please fill all mandatory fields for the live session.', variant: 'destructive'});
           return;
       }
       setIsSaving(true);
       const result = await scheduleLiveClassAction(courseId, liveClass);
       if (result.success) {
-          toast({ title: 'Success!', description: result.message });
+          toast({ title: 'Session Synchronized!', description: result.message });
           setLiveClasses(prev => prev.map(lc => lc.id === liveClass.id ? result.newLiveClass! : lc));
       } else {
-          toast({ title: 'Error', description: result.message, variant: 'destructive' });
+          toast({ title: 'Sync Error', description: result.message, variant: 'destructive' });
       }
       setIsSaving(false);
   }
@@ -579,7 +575,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const addExam = () => setExamTemplates(p => [...p, { id: `ex_${Date.now()}`, title: '', topic: '', examType: 'MCQ', totalMarks: 100, examDate: format(new Date(), 'yyyy-MM-dd') }]);
   const updateExam = (id: string, field: keyof Omit<ExamTemplate, 'id'>, value: string | number | Date | boolean | Question[]) => {
-      setExamTemplates(p => p.map(e => e.id === id ? { ...e, [field]: field === 'examDate' ? format(value as Date, 'yyyy-MM-dd') : value } : e));
+      setExamTemplates(p => p.map(e => e.id === id ? { ...e, [field]: field === 'examDate' ? (typeof value === 'object' && value instanceof Date ? format(value, 'yyyy-MM-dd') : value) : value } : e));
   };
   const removeExam = (id: string) => setExamTemplates(p => p.filter(e => e.id !== id));
   
@@ -599,12 +595,12 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const handleSave = async (status: 'Draft' | 'Pending Approval' | 'Published') => {
     if (!courseTitle) {
-      toast({ title: 'Validation Error', description: 'Course title cannot be empty.', variant: 'destructive' });
+      toast({ title: 'Validation Warning', description: 'Curriculum title is required.', variant: 'destructive' });
       setActiveTab('details');
       return;
     }
     if (instructors.length === 0) {
-        toast({ title: 'Validation Error', description: 'At least one instructor must be added.', variant: 'destructive' });
+        toast({ title: 'Validation Warning', description: 'Assign at least one faculty member.', variant: 'destructive' });
         setActiveTab('instructors');
         return;
     }
@@ -679,10 +675,10 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     const result = await saveCourseAction(removeUndefinedValues(courseData));
 
     if (result.success) {
-      toast({ title: 'Course Data Saved Successfully', description: result.message });
+      toast({ title: 'Sync Successful', description: result.message });
       if (isNewCourse && result.courseId) router.replace(`${redirectPath}/builder/${result.courseId}`);
     } else {
-        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+        toast({ title: 'Sync Error', description: result.message, variant: 'destructive' });
     }
     setIsSaving(false);
   };
@@ -699,14 +695,14 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
       result.syllabus.forEach(module => {
         newSyllabus.push({ id: Math.random().toString(), type: 'module', title: module.title });
         module.lessons.forEach(lesson => {
-          newSyllabus.push({ id: Math.random().toString(), type: 'video', title: lesson.title, duration: '10 min' });
+          newSyllabus.push({ id: Math.random().toString(), type: 'video', title: lesson.title, duration: '15 min' });
         });
       });
       setSyllabus(newSyllabus);
-      toast({ title: 'AI Blueprints Generated!' });
+      toast({ title: 'AI Architect: Blueprint Forged' });
       setIsAiDialogOpen(false);
     } catch (err) {
-      toast({ title: 'AI Generation Failed', variant: 'destructive' });
+      toast({ title: 'AI Synthesis Failed', variant: 'destructive' });
     } finally {
       setIsGenerating(false);
     }
@@ -725,7 +721,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
     updateExam(selectedExamForQB.id, 'questions', [...(selectedExamForQB.questions || []), ...newQs]);
     setIsQuestionBankOpen(false);
     setQbSelectedQuestions([]);
-    toast({ title: 'Mass Injection Complete' });
+    toast({ title: 'Data Injected: Questions Loaded' });
   };
 
   const filteredQbQuestions = useMemo(() => {
@@ -739,47 +735,47 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
   const tabs = [
     { id: 'details', label: 'Details', icon: FileText },
-    { id: 'syllabus', label: 'Syllabus', icon: BookCopy },
+    { id: 'syllabus', label: 'Syllabus', icon: ListCollapse },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'outcomes', label: 'Outcomes', icon: Book },
-    { id: 'instructors', label: 'Instructors', icon: Users },
-    { id: 'doubtsolvers', label: 'Doubt Solvers', icon: HelpCircle },
-    { id: 'assignments', label: 'Assignments', icon: ClipboardEdit },
+    { id: 'instructors', label: 'Faculty', icon: Users },
+    { id: 'doubtsolvers', label: 'Experts', icon: HelpCircle },
+    { id: 'assignments', label: 'Tasks', icon: ClipboardEdit },
     { id: 'exams', label: 'Exams', icon: Award },
-    { id: 'media', label: 'Media', icon: CloudUpload },
+    { id: 'media', label: 'Media', icon: Video },
     { id: 'routine', label: 'Routine', icon: Calendar },
-    { id: 'liveClasses', label: 'Live Classes', icon: Video },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'liveClasses', label: 'Live', icon: Video },
+    { id: 'announcements', label: 'Notices', icon: Megaphone },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'settings', label: 'System', icon: Settings },
   ];
 
   if (loading) return <div className="flex items-center justify-center h-screen"><LoadingSpinner className="w-12 h-12" /></div>;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="max-w-full overflow-hidden">
-                <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight text-primary truncate">
-                    {isNewCourse ? 'Initiate Program' : `Forge: ${courseTitle}`}
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="max-w-full">
+                <h1 className="font-headline text-3xl font-black uppercase tracking-tight text-primary truncate leading-tight">
+                    {isNewCourse ? 'Initiate Core Program' : `Forge: ${courseTitle}`}
                 </h1>
-                <div className="h-1 w-16 bg-primary mt-2 rounded-full shadow-md" />
+                <div className="h-1.5 w-24 bg-primary mt-2 rounded-full shadow-md" />
             </div>
-            <div className="flex gap-2 shrink-0 w-full sm:w-auto">
-                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-11 px-6 rounded-xl border-2 shadow-xl active:scale-95 transition-all">
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save Draft
+            <div className="flex gap-3 shrink-0 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => handleSave('Draft')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-12 px-8 rounded-xl border-2 shadow-xl active:scale-95 transition-all">
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Draft
                 </Button>
-                <Button variant="accent" onClick={() => handleSave(userRole === 'Admin' ? 'Published' : 'Pending Approval')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white active:scale-95 transition-all border-none">
+                <Button variant="accent" onClick={() => handleSave(userRole === 'Admin' ? 'Published' : 'Pending Approval')} disabled={isSaving} className="flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] h-12 px-10 rounded-xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white active:scale-95 transition-all border-none">
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4"/>} 
-                    {userRole === 'Admin' ? (initialStatus === 'Published' ? 'Sync' : 'Go Live') : 'Submit'}
+                    {userRole === 'Admin' ? (initialStatus === 'Published' ? 'Sync Live' : 'Go Live') : 'Submit'}
                 </Button>
             </div>
         </div>
         
-        <Card className="rounded-2xl border-primary/10 shadow-2xl overflow-hidden">
+        <Card className="rounded-[2rem] border-primary/10 shadow-2xl overflow-hidden bg-card">
             <CardHeader className="p-0 border-b border-primary/5 bg-muted/30">
                 <div className="overflow-x-auto scrollbar-hide">
-                    <div className="flex items-center gap-1 p-1">
+                    <div className="flex items-center gap-1 p-2">
                         {tabs.map(tab => (
                             <Button 
                                 key={tab.id}
@@ -787,7 +783,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
                                     "rounded-xl shrink-0 font-black uppercase text-[10px] tracking-widest px-6 h-14 transition-all",
-                                    activeTab === tab.id ? 'bg-primary/10 text-primary shadow-sm' : 'text-muted-foreground hover:bg-primary/5'
+                                    activeTab === tab.id ? 'bg-primary/10 text-primary shadow-inner' : 'text-muted-foreground hover:bg-primary/5'
                                 )}
                             >
                                 <tab.icon className="mr-2 h-4 w-4"/>
@@ -798,31 +794,31 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                 </div>
             </CardHeader>
             
-            <div className="p-4 sm:p-6 md:p-10">
+            <div className="p-6 md:p-12">
                 {activeTab === 'details' && (
-                    <div className="space-y-8 md:space-y-10 text-left">
-                        <div className="space-y-2">
-                            <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Program Master Title</Label>
-                            <Input value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-12 md:h-14 rounded-xl text-base md:text-lg font-bold border-2 focus-visible:ring-primary" placeholder="e.g., HSC Physics Mastery 2025" />
+                    <div className="space-y-10 text-left">
+                        <div className="space-y-3">
+                            <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Program Authority Title</Label>
+                            <Input value={courseTitle} onChange={e => setCourseTitle(e.target.value)} className="h-14 md:h-16 rounded-xl text-lg md:text-xl font-black border-2 focus-visible:ring-primary shadow-sm" placeholder="e.g., MEDICAL ADMISSION COMMANDO BATCH 2025" />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Executive Summary</Label>
-                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={6} className="rounded-xl text-sm md:text-base border-2 focus-visible:ring-primary p-4" placeholder="Describe the curriculum's unique value..." />
+                        <div className="space-y-3">
+                            <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Curriculum Brief</Label>
+                            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={8} className="rounded-2xl text-base border-2 focus-visible:ring-primary p-6 shadow-sm font-medium" placeholder="Synthesize the educational value proposition here..." />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-                            <div className="space-y-2">
-                                <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Category</Label>
-                                <Input value={category} onChange={e => setCategory(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" placeholder="e.g., HSC" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Academic Category</Label>
+                                <Input value={category} onChange={e => setCategory(e.target.value)} className="h-14 rounded-xl border-2 font-black uppercase text-sm" placeholder="e.g., ADMISSION" />
                             </div>
-                            <div className="space-y-2">
-                                <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Sub-category</Label>
-                                <Input value={subCategory} onChange={e => setSubCategory(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" placeholder="e.g., Physics" />
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Specialization</Label>
+                                <Input value={subCategory} onChange={e => setSubCategory(e.target.value)} className="h-14 rounded-xl border-2 font-black uppercase text-sm" placeholder="e.g., MEDICAL" />
                             </div>
-                            <div className="space-y-2">
-                                <Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Delivery Mode</Label>
+                            <div className="space-y-3">
+                                <Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60 ml-1">Delivery Protocol</Label>
                                 <Select value={courseType} onValueChange={(v: any) => setCourseType(v)}>
-                                    <SelectTrigger className="h-12 md:h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
-                                    <SelectContent className="rounded-xl"><SelectItem value="Online">Online</SelectItem><SelectItem value="Offline">Offline</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem><SelectItem value="Exam">Exam Batch</SelectItem></SelectContent>
+                                    <SelectTrigger className="h-14 rounded-xl border-2 font-black uppercase text-xs"><SelectValue/></SelectTrigger>
+                                    <SelectContent className="rounded-xl"><SelectItem value="Online">Online Sync</SelectItem><SelectItem value="Offline">On-Site Hub</SelectItem><SelectItem value="Hybrid">Hybrid Force</SelectItem><SelectItem value="Exam">Exam Arsenal</SelectItem></SelectContent>
                                 </Select>
                             </div>
                         </div>
@@ -846,59 +842,59 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                 </div>
                             </SortableContext>
                         </DndContext>
-                        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t-2">
-                            <Button variant="outline" className="flex-1 h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-xs shadow-md hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2 h-5 w-5"/> Inject Module</Button>
-                            <Button variant="outline" className="flex-1 h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-xs shadow-md hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2 h-5 w-5"/> Inject Lesson</Button>
+                        <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t-2 border-primary/5">
+                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('module')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Module</Button>
+                            <Button variant="outline" className="flex-1 h-16 border-dashed border-2 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-primary/5 transition-all" onClick={() => addSyllabusItem('lesson')}><PlusCircle className="mr-2 h-5 w-5 text-primary"/> Instate Lesson</Button>
                         </div>
                     </div>
                 )}
                 
                 {activeTab === 'pricing' && (
-                    <div className="space-y-14 text-left">
+                    <div className="space-y-16 text-left">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl">
-                                <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Revenue Structure</CardTitle></CardHeader>
-                                <CardContent className="p-6 md:p-8 space-y-6">
-                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Base Listing Price (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl text-primary" placeholder="4500" /></div>
-                                    <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Incentive Price (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl text-green-600" placeholder="3000" /></div>
+                            <Card className="rounded-[2rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card">
+                                <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Full Enrollment Pricing</CardTitle></CardHeader>
+                                <CardContent className="p-8 space-y-8">
+                                    <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Standard Listing (BDT)</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-primary" placeholder="4500" /></div>
+                                    <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Flash Incentive (BDT)</Label><Input type="number" value={discountPrice} onChange={e => setDiscountPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl text-green-600" placeholder="3000" /></div>
                                 </CardContent>
                             </Card>
-                            <Card className="rounded-2xl border-2 border-muted overflow-hidden shadow-xl">
-                                <CardHeader className="bg-muted/30 p-6 md:p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
-                                <CardContent className="p-6 md:p-8 space-y-6">
+                            <Card className="rounded-[2rem] border-2 border-muted overflow-hidden shadow-2xl bg-card">
+                                <CardHeader className="bg-muted/30 p-8 border-b-2 border-primary/5 flex flex-row items-center justify-between"><CardTitle className="text-xl font-black uppercase tracking-tight">Pre-booking Protocol</CardTitle><Switch checked={isPrebooking} onCheckedChange={setIsPrebooking}/></CardHeader>
+                                <CardContent className="p-8 space-y-8">
                                     {isPrebooking ? (
                                         <>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">Campaign Price (BDT)</Label><Input type="number" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl md:text-2xl" /></div>
-                                            <div className="space-y-2"><Label className="font-black uppercase text-[10px] tracking-[0.2em] text-primary/60">End Date</Label><DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} className="h-12 md:h-14 rounded-xl border-2" /></div>
+                                            <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Early Bird Price (BDT)</Label><Input type="number" value={prebookingPrice} onChange={e => setPrebookingPrice(e.target.value)} className="h-14 rounded-xl border-2 font-black text-2xl" /></div>
+                                            <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-[0.25em] text-primary/60">Protocol Expiry</Label><DatePicker date={prebookingEndDate} setDate={setPrebookingEndDate} className="h-14 rounded-xl border-2 font-bold" /></div>
                                         </>
-                                    ) : <div className="h-48 flex items-center justify-center text-muted-foreground font-medium italic">Pre-booking campaign inactive</div>}
+                                    ) : <div className="h-48 flex items-center justify-center text-muted-foreground font-black uppercase text-[10px] tracking-widest bg-muted/10 rounded-xl border-2 border-dashed">Protocol Offline</div>}
                                 </CardContent>
                             </Card>
                         </div>
                         
-                        <div className="space-y-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b-2 border-primary/10 pb-4 gap-4">
-                                <h3 className="font-black uppercase tracking-tight text-xl">Payment Entitlement Cycles</h3>
-                                <Button onClick={addCycle} variant="outline" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] border-2 border-dashed w-full sm:w-auto"><PlusCircle className="mr-2 h-4 w-4"/> New Cycle</Button>
+                        <div className="space-y-8">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b-2 border-primary/10 pb-6 gap-4">
+                                <h3 className="font-black uppercase tracking-tight text-2xl">Entitlement Cycles</h3>
+                                <Button onClick={addCycle} variant="outline" className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] border-2 border-dashed shadow-lg active:scale-95"><PlusCircle className="mr-2 h-4 w-4 text-primary"/> Add New Cycle</Button>
                             </div>
-                            <div className="grid gap-6">
+                            <div className="grid grid-cols-1 gap-8">
                                 {(cycles || []).map((cycle, index) => (
-                                    <Card key={cycle.id} className="rounded-2xl border-2 border-primary/10 shadow-lg group overflow-hidden">
+                                    <Card key={cycle.id} className="rounded-[2rem] border-2 border-primary/5 shadow-xl group overflow-hidden bg-card hover:border-primary/20 transition-all">
                                         <CardHeader className="bg-primary/5 p-6 flex flex-row items-center justify-between">
-                                            <Badge className="font-black">Cycle {index + 1}</Badge>
+                                            <Badge className="font-black rounded-lg px-4 py-1 uppercase text-[10px] tracking-widest">Cycle {index + 1}</Badge>
                                             <Button variant="ghost" size="icon" onClick={() => removeCycle(cycle.id)} className="h-10 w-10 text-destructive rounded-xl hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
                                         </CardHeader>
-                                        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="rounded-xl border-2 font-black text-xl text-primary" /></div>
-                                            <div className="col-span-full space-y-2 text-left">
-                                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Authorized Modules</Label>
-                                                <div className="flex flex-wrap gap-2 p-4 border-2 border-dashed rounded-xl bg-muted/20">
+                                        <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Public Label</Label><Input value={cycle.title} onChange={e => updateCycle(cycle.id, 'title', e.target.value)} className="rounded-xl border-2 font-black uppercase text-sm" placeholder="e.g., JANUARY MODULE" /></div>
+                                            <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Cycle Price (BDT)</Label><Input type="number" value={cycle.price} onChange={e => updateCycle(cycle.id, 'price', e.target.value)} className="rounded-xl border-2 font-black text-2xl text-primary" placeholder="1000" /></div>
+                                            <div className="col-span-full space-y-3 text-left">
+                                                <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Authorized Knowledge Modules</Label>
+                                                <div className="flex flex-wrap gap-2 p-6 border-2 border-dashed rounded-2xl bg-muted/20">
                                                     {syllabus.filter(s => s.type === 'module').map(m => (
                                                         <Badge 
                                                             key={m.id} 
                                                             variant={(cycle.moduleIds || []).includes(m.id) ? 'accent' : 'outline'}
-                                                            className="cursor-pointer rounded-lg px-4 py-1.5 font-bold uppercase text-[9px] transition-all"
+                                                            className="cursor-pointer rounded-lg px-5 py-2 font-black uppercase text-[9px] tracking-wider transition-all select-none shadow-sm"
                                                             onClick={() => {
                                                                 const ids = new Set(cycle.moduleIds || []);
                                                                 if(ids.has(m.id)) ids.delete(m.id); else ids.add(m.id);
@@ -908,6 +904,7 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                                                             {m.title}
                                                         </Badge>
                                                     ))}
+                                                    {syllabus.filter(s => s.type === 'module').length === 0 && <p className="text-xs text-muted-foreground font-bold italic">No modules defined in syllabus yet.</p>}
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -920,51 +917,60 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
                 {activeTab === 'outcomes' && (
                     <div className="space-y-10 text-left">
-                        <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
-                            <Label className="font-black uppercase text-sm tracking-tight text-primary">Key Learning Milestones</Label>
-                            {whatYouWillLearn.map((outcome, index) => (
-                                <div key={index} className="flex items-center gap-4 group">
-                                    <Badge variant="outline" className="h-10 w-10 rounded-full flex items-center justify-center font-black bg-muted/50 shrink-0">{index + 1}</Badge>
-                                    <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} className="h-12 rounded-xl border-2 focus-visible:ring-primary flex-grow" placeholder="What student will achieve..." />
-                                    <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shrink-0"><Trash2 className="h-5 w-5"/></Button>
-                                </div>
-                            ))}
-                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-md hover:bg-primary/5" onClick={addOutcome}><PlusCircle className="mr-2 h-5 w-5"/> Add Milestone</Button>
+                        <div className="p-8 md:p-12 border-2 rounded-[2.5rem] bg-card shadow-2xl space-y-8 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] -mr-32 -mt-32"></div>
+                            <Label className="font-black uppercase text-base tracking-tight text-primary flex items-center gap-3">
+                                <Award className="h-6 w-6"/> Global Knowledge Milestones
+                            </Label>
+                            <div className="space-y-4">
+                                {whatYouWillLearn.map((outcome, index) => (
+                                    <div key={index} className="flex items-center gap-4 group">
+                                        <div className="h-12 w-12 rounded-2xl flex items-center justify-center font-black bg-primary text-white shrink-0 shadow-lg shadow-primary/20">{index + 1}</div>
+                                        <Input value={outcome} onChange={e => updateOutcome(index, e.target.value)} className="h-14 rounded-xl border-2 focus-visible:ring-primary flex-grow font-bold shadow-sm" placeholder="Student will master the principles of..." />
+                                        <Button variant="ghost" size="icon" onClick={() => removeOutcome(index)} className="text-destructive rounded-xl h-12 w-12 hover:bg-destructive/10 shrink-0"><Trash2 className="h-5 w-5"/></Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button variant="outline" className="w-full h-16 border-dashed border-4 rounded-2xl font-black uppercase tracking-[0.25em] text-[10px] shadow-xl hover:bg-primary/5 transition-all border-primary/10" onClick={addOutcome}><PlusCircle className="mr-2 h-6 w-6 text-primary"/> Register Milestone</Button>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'instructors' && (
                     <div className="space-y-10">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                             {instructors.map(inst => (
-                                <Card key={inst.slug} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl text-center group">
+                                <Card key={inst.slug} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-2xl text-center group bg-card transition-all hover:border-primary/40">
                                     <div className="relative aspect-[4/5] bg-muted overflow-hidden">
-                                        <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover transition-transform group-hover:scale-110" />
-                                        <Button variant="destructive" size="icon" onClick={() => removeInstructorFn(inst.slug)} className="absolute top-2 right-2 rounded-xl shadow-2xl h-9 w-9"><X className="h-4 w-4"/></Button>
+                                        <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        <Button variant="destructive" size="icon" onClick={() => removeInstructorFn(inst.slug)} className="absolute top-3 right-3 rounded-xl shadow-2xl h-10 w-10 border-2 border-white/20"><X className="h-5 w-5"/></Button>
                                     </div>
-                                    <div className="p-4"><p className="font-black uppercase text-sm leading-tight break-words">{inst.name}</p></div>
+                                    <div className="p-5">
+                                        <p className="font-black uppercase text-sm leading-tight break-words">{inst.name}</p>
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">{inst.title}</p>
+                                    </div>
                                 </Card>
                             ))}
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-4 border-dashed border-4 rounded-2xl border-primary/10 hover:bg-primary/5 min-h-[250px]">
-                                        <PlusCircle className="h-10 w-10 text-primary" />
-                                        <span className="font-black uppercase text-[10px] tracking-widest">Appoint Mentor</span>
+                                    <Button variant="outline" className="aspect-[4/5] h-full flex-col gap-6 border-dashed border-4 rounded-[2rem] border-primary/10 hover:bg-primary/5 hover:border-primary/30 transition-all min-h-[300px] shadow-xl">
+                                        <PlusCircle className="h-12 w-12 text-primary opacity-40 group-hover:opacity-100" />
+                                        <span className="font-black uppercase text-[10px] tracking-[0.3em] text-primary/60">Appoint Faculty</span>
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl border-primary/20">
+                                <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-2xl border-primary/20 bg-background/95 backdrop-blur-xl">
                                     <Command>
-                                        <CommandInput placeholder="Search instructors..." className="h-12" />
-                                        <CommandGroup className="p-2 max-h-[300px] overflow-y-auto">
+                                        <CommandInput placeholder="Search faculty directory..." className="h-14 font-bold" />
+                                        <CommandGroup className="p-2 max-h-[350px] overflow-y-auto scrollbar-hide">
                                             {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).map(inst => (
-                                                <CommandItem key={inst.id} onSelect={() => addInstructorFn(inst)} className="rounded-xl p-3 hover:bg-primary/5 cursor-pointer">
-                                                    <div className="flex items-center gap-3">
-                                                        <Avatar className="h-10 w-10 border-2 border-primary/10 shadow-sm"><AvatarImage src={inst.avatarUrl} /><AvatarFallback>{inst.name.charAt(0)}</AvatarFallback></Avatar>
-                                                        <p className="font-black text-xs uppercase">{inst.name}</p>
+                                                <CommandItem key={inst.id} onSelect={() => addInstructorFn(inst)} className="rounded-xl p-3 hover:bg-primary/5 cursor-pointer transition-colors mb-1">
+                                                    <div className="flex items-center gap-4">
+                                                        <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-md"><AvatarImage src={inst.avatarUrl} /><AvatarFallback className="font-black">{inst.name.charAt(0)}</AvatarFallback></Avatar>
+                                                        <div className="text-left"><p className="font-black text-xs uppercase tracking-tight">{inst.name}</p><p className="text-[9px] font-bold text-muted-foreground uppercase">{inst.title}</p></div>
                                                     </div>
                                                 </CommandItem>
                                             ))}
+                                            {instructorForSelection.filter(inst => !instructors.some(i => i.slug === inst.slug)).length === 0 && <p className="text-center p-4 text-xs font-bold text-muted-foreground italic">All faculty currently assigned.</p>}
                                         </CommandGroup>
                                     </Command>
                                 </PopoverContent>
@@ -973,99 +979,85 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
                     </div>
                 )}
 
-                {activeTab === 'doubtsolvers' && (
+                {activeTab === 'exams' && (
                     <div className="space-y-10 text-left">
-                        <Card className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
-                            <CardHeader className="bg-primary/5 p-6 md:p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Expert Doubt Solver Force</CardTitle><CardDescription className="font-bold">Select dedicated solvers for this program.</CardDescription></CardHeader>
-                            <CardContent className="p-6 md:p-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {allDoubtSolvers.map(solver => (
-                                        <div key={solver.uid} className={cn("flex items-center justify-between p-4 rounded-xl border-2 transition-all", doubtSolverIds.includes(solver.uid) ? 'border-primary bg-primary/5' : 'border-muted/50 hover:border-primary/20')}>
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-10 w-10 border-2"><AvatarImage src={solver.avatarUrl} /><AvatarFallback>{solver.name.charAt(0)}</AvatarFallback></Avatar>
-                                                <div className="space-y-0.5 text-left"><p className="font-black text-xs uppercase">{solver.name}</p><p className="text-[9px] font-bold text-muted-foreground">{solver.email}</p></div>
-                                            </div>
-                                            <Switch checked={doubtSolverIds.includes(solver.uid)} onCheckedChange={(checked) => handleDoubtSolverToggle(solver.uid, checked)} />
+                        <div className="grid gap-8">
+                            {examTemplates.map((exam, index) => (
+                                <Collapsible key={exam.id} className="rounded-[2.5rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card transition-all hover:border-primary/20">
+                                    <div className="flex justify-between items-center p-8 bg-primary/5 border-b-2 border-primary/5">
+                                        <div className="flex items-center gap-5"><Award className="h-8 w-8 text-primary shrink-0"/><span className="font-black uppercase text-lg tracking-tight truncate">{exam.title || `STRATEGIC ASSESSMENT ${index + 1}`}</span></div>
+                                        <div className="flex items-center gap-3">
+                                            <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="text-destructive rounded-xl h-11 w-11 hover:bg-destructive/10"><Trash2 className="h-6 w-6"/></Button>
+                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="rounded-xl h-11 w-11"><ChevronDown className="h-6 w-6 transition-transform"/></Button></CollapsibleTrigger>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <CollapsibleContent className="p-8 md:p-12 space-y-10">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                            <div className="space-y-3 md:col-span-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Assessment Label</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-14 rounded-xl border-2 font-black uppercase text-base shadow-sm" /></div>
+                                            <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Execution Protocol</Label>
+                                                <Select value={exam.examType} onValueChange={(v: any) => updateExam(exam.id, 'examType', v)}>
+                                                    <SelectTrigger className="h-14 rounded-xl border-2 font-black uppercase text-xs shadow-sm"><SelectValue/></SelectTrigger>
+                                                    <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (AUTOMATED)</SelectItem><SelectItem value="Written">WRITTEN (MANUAL)</SelectItem><SelectItem value="Oral">ORAL VIVA</SelectItem><SelectItem value="Practical">PRACTICAL LAB</SelectItem></SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                            <div className="space-y-3 text-left md:col-span-2"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Subject Matter</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-14 rounded-xl border-2 font-bold shadow-sm" /></div>
+                                            <div className="space-y-3 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Total Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-14 rounded-xl border-2 font-black text-2xl text-primary shadow-sm" /></div>
+                                        </div>
+                                        <div className="pt-10 border-t-2 border-primary/5 flex flex-col sm:flex-row justify-end gap-4">
+                                            <Button variant="outline" onClick={() => openQuestionBank(exam)} className="rounded-xl h-14 px-10 font-black uppercase text-[10px] tracking-[0.25em] border-2 border-dashed shadow-xl active:scale-95 transition-all"><Database className="mr-3 h-5 w-5 text-primary"/> Instate Items from Bank</Button>
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            ))}
+                            <Button variant="outline" className="w-full h-20 border-dashed border-4 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-primary/5 transition-all border-primary/10" onClick={addExam}><PlusCircle className="mr-3 h-8 w-8 text-primary"/> Define Strategic Assessment</Button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'media' && (
+                    <div className="space-y-10 text-left">
+                        <Card className="rounded-[2.5rem] border-2 border-primary/10 overflow-hidden shadow-2xl bg-card relative">
+                            <CardHeader className="bg-primary/5 p-8 border-b-2 border-primary/5"><CardTitle className="text-xl font-black uppercase tracking-tight text-primary">Visual Identification & Previews</CardTitle></CardHeader>
+                            <CardContent className="p-8 md:p-12 space-y-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    <div className="space-y-6">
+                                        <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Master Thumbnail URL</Label><Input value={thumbnailUrl} onChange={e => setThumbnailUrl(e.target.value)} className="h-14 rounded-xl border-2 font-medium shadow-sm" /></div>
+                                        <div className="space-y-3"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Introductory Trailer (YouTube)</Label><Input value={introVideoUrl} onChange={e => setIntroVideoUrl(e.target.value)} className="h-14 rounded-xl border-2 font-medium shadow-sm" placeholder="https://youtube.com/watch?v=..." /></div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="font-black uppercase text-[10px] tracking-widest text-primary/60 ml-1">Arrival Preview</Label>
+                                        <div className="relative aspect-video rounded-3xl border-4 border-primary/5 overflow-hidden bg-muted shadow-2xl group">
+                                            <Image src={thumbnailUrl} alt="Program Preview" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
                 )}
 
-                {activeTab === 'exams' && (
-                    <div className="space-y-10 text-left">
-                        <div className="grid gap-6">
-                            {examTemplates.map((exam, index) => (
-                                <Collapsible key={exam.id} className="rounded-2xl border-2 border-primary/10 overflow-hidden shadow-xl bg-card">
-                                    <div className="flex justify-between items-center p-6 bg-primary/5 border-b-2 border-primary/5">
-                                        <div className="flex items-center gap-4"><Award className="h-6 w-6 text-primary shrink-0"/><span className="font-black uppercase text-base truncate">{exam.title || `Mock Assessment ${index + 1}`}</span></div>
-                                        <div className="flex items-center gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => removeExam(exam.id)} className="text-destructive rounded-xl hover:bg-destructive/10"><Trash2 className="h-5 w-5"/></Button>
-                                            <CollapsibleTrigger asChild><Button variant="ghost" size="icon" className="rounded-xl"><ChevronDown className="h-5 w-5"/></Button></CollapsibleTrigger>
-                                        </div>
-                                    </div>
-                                    <CollapsibleContent className="p-6 md:p-8 space-y-8">
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            <div className="space-y-2 md:col-span-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Title</Label><Input value={exam.title} onChange={e => updateExam(exam.id, 'title', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Execution Mode</Label>
-                                                <Select value={exam.examType} onValueChange={(v: any) => updateExam(exam.id, 'examType', v)}>
-                                                    <SelectTrigger className="h-12 md:h-14 rounded-xl border-2 font-bold"><SelectValue/></SelectTrigger>
-                                                    <SelectContent className="rounded-xl"><SelectItem value="MCQ">MCQ (Auto)</SelectItem><SelectItem value="Written">Written (Manual)</SelectItem><SelectItem value="Oral">Oral</SelectItem><SelectItem value="Practical">Practical</SelectItem></SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Topic</Label><Input value={exam.topic} onChange={e => updateExam(exam.id, 'topic', e.target.value)} className="h-12 md:h-14 rounded-xl border-2 font-bold" /></div>
-                                            <div className="space-y-2 text-left"><Label className="font-black uppercase text-[10px] tracking-widest text-primary/60">Full Marks</Label><Input type="number" value={exam.totalMarks} onChange={e => updateExam(exam.id, 'totalMarks', Number(e.target.value))} className="h-12 md:h-14 rounded-xl border-2 font-black text-xl text-primary" /></div>
-                                        </div>
-                                        <div className="pt-6 border-t-2 border-primary/5 flex justify-end">
-                                            <Button variant="outline" onClick={() => openQuestionBank(exam)} className="rounded-xl h-12 font-black uppercase text-[10px] tracking-widest border-2 border-dashed shadow-md w-full sm:w-auto"><Database className="mr-2 h-4 w-4"/> Inject Questions from Bank</Button>
-                                        </div>
-                                    </CollapsibleContent>
-                                </Collapsible>
-                            ))}
-                            <Button variant="outline" className="w-full h-16 border-dashed border-2 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary/5 transition-all" onClick={addExam}><PlusCircle className="mr-2 h-6 w-6"/> Define New Assessment</Button>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'routine' && (
-                    <div className="space-y-10 text-left">
-                        <div className="p-6 md:p-8 border-2 rounded-2xl bg-card shadow-xl space-y-6">
-                            {classRoutine.map((item) => (
-                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-4 rounded-xl bg-muted/20 border-2 border-transparent hover:border-primary/10 transition-all">
-                                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Day</Label>
-                                        <Select value={item.day} onValueChange={v => updateRoutineRow(item.id, 'day', v)}><SelectTrigger className="rounded-lg bg-background"><SelectValue/></SelectTrigger>
-                                            <SelectContent className="rounded-xl">{['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Subject</Label><Input value={item.subject} onChange={e => updateRoutineRow(item.id, 'subject', e.target.value)} className="rounded-lg bg-background shadow-sm" /></div>
-                                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Execution Time</Label><Input value={item.time} onChange={e => updateRoutineRow(item.id, 'time', e.target.value)} className="rounded-lg bg-background shadow-sm" /></div>
-                                    <Button variant="ghost" size="icon" onClick={() => removeRoutineRow(item.id)} className="text-destructive h-10 w-10 rounded-xl hover:bg-destructive/10 mb-0.5"><Trash2 className="h-5 w-5"/></Button>
-                                </div>
-                            ))}
-                            <Button variant="outline" className="w-full h-14 border-dashed border-2 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-md hover:bg-primary/5" onClick={addRoutineRow}><PlusCircle className="mr-2 h-5 w-5"/> Add Weekly Slot</Button>
-                        </div>
-                    </div>
-                )}
-
                 {activeTab === 'settings' && (
                     <div className="space-y-10 text-left">
-                        <div className="space-y-10 p-6 md:p-10 border-2 rounded-2xl bg-card shadow-2xl relative overflow-hidden">
-                            <div className="space-y-4">
-                                <Label className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest text-primary"><LinkIcon className="h-4 w-4"/> Master Community URL</Label>
-                                <Input value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." className="h-12 md:h-14 rounded-xl border-2 font-medium shadow-sm" />
+                        <div className="space-y-12 p-8 md:p-16 border-2 rounded-[3rem] bg-card shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] -mr-48 -mt-48"></div>
+                            <div className="space-y-4 max-w-3xl">
+                                <Label className="flex items-center gap-3 font-black uppercase text-[10px] tracking-[0.25em] text-primary">
+                                    <LinkIcon className="h-5 w-5"/> Synchronized Community Hub URL
+                                </Label>
+                                <Input value={communityUrl} onChange={e => setCommunityUrl(e.target.value)} placeholder="https://facebook.com/groups/..." className="h-14 md:h-16 rounded-xl border-2 font-bold text-lg shadow-inner bg-muted/10" />
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest pl-1">Authorized access point for student collaboration.</p>
                             </div>
                             <Separator className="opacity-50" />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="flex items-center justify-between rounded-xl border-2 border-primary/10 p-6 bg-muted/10 shadow-sm">
-                                    <div className="space-y-1"><Label className="font-black uppercase text-sm tracking-tight">Public Metrics</Label><p className="text-[10px] text-muted-foreground font-bold uppercase">Display enrolled count</p></div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="flex items-center justify-between rounded-[2rem] border-2 border-primary/10 p-8 bg-muted/10 shadow-sm group hover:border-primary/30 transition-all">
+                                    <div className="space-y-1.5"><Label className="font-black uppercase text-base tracking-tight leading-none">Public Enrollment Metrics</Label><p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Display real-time student force count</p></div>
                                     <Switch checked={showStudentCount} onCheckedChange={setShowStudentCount} />
                                 </div>
-                                <div className="flex items-center justify-between rounded-xl border-2 border-destructive/20 p-6 bg-destructive/5 shadow-sm">
-                                    <div className="space-y-1"><Label className="font-black uppercase text-sm tracking-tight text-destructive">Sunset Program</Label><p className="text-[10px] text-muted-foreground font-bold uppercase">Disable admissions</p></div>
+                                <div className="flex items-center justify-between rounded-[2rem] border-2 border-destructive/20 p-8 bg-destructive/5 shadow-sm group hover:border-destructive/40 transition-all">
+                                    <div className="space-y-1.5"><Label className="font-black uppercase text-base tracking-tight text-destructive leading-none">Curriculum Sunset</Label><p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Terminate all active admissions</p></div>
                                     <Switch checked={isArchived} onCheckedChange={setIsArchived} />
                                 </div>
                             </div>
@@ -1077,50 +1069,56 @@ export function CourseBuilder({ userRole, redirectPath }: CourseBuilderProps) {
 
         {/* AI & Question Bank Dialogs */}
         <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
-            <DialogContent className="rounded-3xl p-6 md:p-10 border-4 border-primary shadow-2xl">
+            <DialogContent className="rounded-[2.5rem] p-10 md:p-16 border-4 border-primary shadow-2xl bg-background/95 backdrop-blur-2xl">
                 <DialogHeader className="text-center">
-                    <Wand2 className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-                    <DialogTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-primary">RDC AI Architect</DialogTitle>
-                    <DialogDescription className="font-bold text-base md:text-lg mt-2">Forge a master blueprint for your new curriculum.</DialogDescription>
+                    <Wand2 className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
+                    <DialogTitle className="text-3xl md:text-4xl font-black uppercase tracking-tight text-primary">RDC AI SYNERGIST</DialogTitle>
+                    <DialogDescription className="font-black uppercase text-xs md:text-sm tracking-widest mt-4 opacity-70">Synthesize a master curriculum blueprint from a single topic.</DialogDescription>
                 </DialogHeader>
-                <div className="py-8"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., Physics Crash Course for HSC 2025" className="h-14 md:h-16 rounded-xl border-4 text-lg md:text-xl font-black text-center" /></div>
-                <DialogFooter className="sm:justify-center gap-4 flex-col sm:flex-row">
-                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-14 px-10 font-black border-2 w-full sm:w-auto">Abort</Button>
-                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-14 px-12 font-black bg-primary text-white shadow-2xl w-full sm:w-auto">
-                        {isGenerating ? <Loader2 className="mr-3 h-5 w-5 animate-spin"/> : <Wand2 className="mr-3 h-5 w-5"/>} 
-                        Build Blueprints
+                <div className="py-10"><Input value={aiTopic} onChange={e => setAiTopic(e.target.value)} placeholder="e.g., ADMISSION ARSENAL: PHYSICS 2025" className="h-16 md:h-20 rounded-2xl border-4 text-xl md:text-2xl font-black text-center shadow-inner" /></div>
+                <DialogFooter className="sm:justify-center gap-6 flex-col sm:flex-row">
+                    <Button variant="outline" onClick={() => setIsAiDialogOpen(false)} className="rounded-xl h-16 px-12 font-black uppercase tracking-widest text-[10px] border-2 w-full sm:w-auto active:scale-95 transition-all">Abort Protocol</Button>
+                    <Button onClick={handleGenerateCourse} disabled={isGenerating || !aiTopic} className="rounded-xl h-16 px-14 font-black uppercase tracking-widest text-[10px] bg-primary text-white shadow-2xl shadow-primary/20 w-full sm:w-auto active:scale-95 transition-all border-none">
+                        {isGenerating ? <Loader2 className="mr-3 h-6 w-6 animate-spin"/> : <Wand2 className="mr-3 h-6 w-6"/>} 
+                        Execute Synthesis
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
         
         <Dialog open={isQuestionBankOpen} onOpenChange={setIsQuestionBankOpen}>
-          <DialogContent className="max-w-5xl rounded-3xl border-4 border-primary overflow-hidden p-0 shadow-2xl w-[95vw]">
-              <DialogHeader className="p-6 md:p-8 bg-primary/5 border-b-2 border-primary/10"><DialogTitle className="text-2xl md:text-3xl font-black uppercase">Intelligence Repository</DialogTitle></DialogHeader>
-              <div className="flex flex-wrap gap-4 p-4 md:p-6 bg-muted/20 border-b-2">
-                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[200px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Subject"/></SelectTrigger>
+          <DialogContent className="max-w-6xl rounded-[3rem] border-4 border-primary overflow-hidden p-0 shadow-2xl w-[95vw] bg-background">
+              <DialogHeader className="p-8 md:p-12 bg-primary/5 border-b-2 border-primary/10 flex flex-col items-center text-center"><Database className="h-12 w-12 text-primary mb-4"/><DialogTitle className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Knowledge Core Injection</DialogTitle><DialogDescription className="font-black uppercase text-[10px] tracking-[0.3em] mt-2 opacity-60">Mass-injecting strategic items from the central question bank.</DialogDescription></DialogHeader>
+              <div className="flex flex-wrap gap-4 p-6 md:p-10 bg-muted/20 border-b-2 border-primary/5">
+                 <Select value={qbFilters.subject} onValueChange={(v) => setQbFilters(f => ({...f, subject: v}))}><SelectTrigger className="w-full sm:w-[250px] h-14 rounded-xl border-none shadow-2xl font-black uppercase text-[10px] tracking-widest bg-background"><SelectValue placeholder="Target Subject"/></SelectTrigger>
                     <SelectContent className="rounded-xl">{[...new Set(questionBank.map(q => q.subject).filter(Boolean))].map(s => <SelectItem key={s} value={s!}>{s}</SelectItem>)}</SelectContent>
                 </Select>
-                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[150px] h-12 rounded-xl border-none shadow-lg font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Difficulty"/></SelectTrigger>
-                    <SelectContent className="rounded-xl"><SelectItem value="all">All Scales</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
+                 <Select value={qbFilters.difficulty} onValueChange={(v) => setQbFilters(f => ({...f, difficulty: v}))}><SelectTrigger className="w-full sm:w-[200px] h-14 rounded-xl border-none shadow-2xl font-black uppercase text-[10px] tracking-widest bg-background"><SelectValue placeholder="Intelligence Scale"/></SelectTrigger>
+                    <SelectContent className="rounded-xl"><SelectItem value="all">Full Spectrum</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                 </Select>
               </div>
-              <div className="max-h-[40vh] overflow-y-auto p-4 md:p-6 scrollbar-hide">
-                  <Table><TableBody className="divide-y">
+              <div className="max-h-[45vh] overflow-y-auto p-6 md:p-10 scrollbar-hide">
+                  <Table><TableBody className="divide-y divide-primary/5">
                       {filteredQbQuestions.map(q => (
-                          <TableRow key={q.id} className="hover:bg-primary/5 border-none">
-                              <TableCell className="w-12"><Checkbox checked={qbSelectedQuestions.some(sq => sq.id === q.id)} onCheckedChange={(checked) => checked ? setQbSelectedQuestions(p => [...p, q]) : setQbSelectedQuestions(p => p.filter(sq => sq.id !== q.id))} /></TableCell>
-                              <TableCell className="font-bold text-sm md:text-base break-words">{q.text}</TableCell>
-                              <TableCell><Badge variant="outline" className="rounded-lg px-3 py-1 font-black text-[9px] uppercase">{q.type}</Badge></TableCell>
+                          <TableRow key={q.id} className="hover:bg-primary/5 border-none transition-colors group">
+                              <TableCell className="w-16"><Checkbox checked={qbSelectedQuestions.some(sq => sq.id === q.id)} onCheckedChange={(checked) => checked ? setQbSelectedQuestions(p => [...p, q]) : setQbSelectedQuestions(p => p.filter(sq => sq.id !== q.id))} className="h-6 w-6 border-2"/></TableCell>
+                              <TableCell className="font-bold text-base md:text-lg break-words py-6 pr-10">{q.text}</TableCell>
+                              <TableCell className="text-right"><Badge variant="outline" className="rounded-lg px-4 py-1.5 font-black text-[9px] uppercase tracking-widest border-primary/20 bg-primary/5">{q.type}</Badge></TableCell>
                           </TableRow>
                       ))}</TableBody></Table>
+                  {filteredQbQuestions.length === 0 && <div className="py-20 text-center font-black uppercase text-xs tracking-widest text-muted-foreground italic opacity-40">Zero items identified in local sector.</div>}
               </div>
-              <DialogFooter className="p-6 md:p-8 border-t-2 border-primary/5 bg-muted/10 flex-col sm:flex-row gap-4">
-                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)} className="rounded-xl h-12 font-black px-10 border-2 w-full sm:w-auto">Cancel</Button>
-                  <Button onClick={handleAddQuestionsFromBank} className="rounded-xl h-12 font-black px-12 bg-primary text-white shadow-2xl w-full sm:w-auto truncate">Inject {qbSelectedQuestions.length} Selected Artifacts</Button>
+              <DialogFooter className="p-8 md:p-12 border-t-2 border-primary/5 bg-muted/10 flex-col sm:flex-row gap-6">
+                  <Button variant="outline" onClick={() => setIsQuestionBankOpen(false)} className="rounded-xl h-16 px-12 font-black uppercase tracking-widest text-[10px] border-2 w-full sm:w-auto active:scale-95 transition-all">Abort Protocol</Button>
+                  <Button onClick={handleAddQuestionsFromBank} className="rounded-xl h-16 px-16 font-black uppercase tracking-widest text-[10px] bg-primary text-white shadow-2xl shadow-primary/20 w-full sm:w-auto truncate active:scale-95 transition-all border-none">Execute {qbSelectedQuestions.length} Artifact Injections</Button>
               </DialogFooter>
           </DialogContent>
         </Dialog>
     </div>
   );
+}
+
+type CourseBuilderProps = {
+    userRole: 'Admin' | 'Seller' | 'Teacher';
+    redirectPath: string;
 }
