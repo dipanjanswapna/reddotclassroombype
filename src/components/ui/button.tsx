@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 font-black uppercase tracking-widest",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg shadow-destructive/20 font-black uppercase tracking-widest",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg shadow-destructive/20 font-black uppercase tracking-widest border-b-4 border-black/20",
         outline:
-          "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm",
+          "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm font-bold",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 font-bold",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20 font-black uppercase tracking-widest",
+        link: "text-primary underline-offset-4 hover:underline font-bold",
+        accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20 font-black uppercase tracking-widest border-b-4 border-black/20",
         success: "bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-600/20 font-black uppercase tracking-widest",
         social: "bg-[#1877F2] text-white hover:bg-[#166fe5] shadow-lg shadow-blue-600/20 font-bold",
       },

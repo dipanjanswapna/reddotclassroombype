@@ -110,24 +110,24 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden max-w-full">
-      <main className="p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
+      <main className="p-4 sm:p-6 lg:p-8 pb-32 max-w-7xl mx-auto w-full">
           {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t-2 border-primary/20 shadow-[0_-10px_50px_rgba(0,0,0,0.1)]">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-2 scrollbar-hide">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-all rounded-xl",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-all rounded-2xl group",
                   getIsActive(item.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                    ? "bg-primary/10 text-primary shadow-inner"
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
               )}
             >
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
-              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
+              <item.icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", getIsActive(item.href) && "animate-pulse")} />
+              <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>

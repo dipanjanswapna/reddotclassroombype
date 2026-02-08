@@ -42,6 +42,8 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   const { user } = useAuth();
   const isDark = variant === 'dark';
 
+  const logoToDisplay = homepageConfig?.logoUrl || logoSrc;
+
   const mainNavLinks = [
     { href: "/store", label: t.nav_rdc_store[language] },
     { href: "/courses", label: t.rdc_shop[language]},
@@ -67,13 +69,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
         )}>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center space-x-2 shrink-0 transition-transform hover:scale-105 active:scale-95">
-                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-10 w-auto" priority />
+                <Image src={logoToDisplay} alt="RED DOT CLASSROOM Logo" width={120} height={40} className="h-10 w-auto object-contain" priority />
             </Link>
           </div>
           
           <nav className="hidden lg:flex items-center space-x-1">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("h-10 px-4 text-xs font-bold uppercase tracking-wider", isDark && "text-white hover:bg-white/10")}>
+              <Button key={link.href} variant="ghost" asChild className={cn("h-10 px-4 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10")}>
                   <Link
                   href={link.href}
                   className="transition-colors hover:text-primary whitespace-nowrap"
@@ -84,13 +86,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn("h-10 px-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wider", isDark && "text-white hover:bg-white/10")}>
+                      <Button variant="ghost" className={cn("h-10 px-4 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10")}>
                       {t.nav_more[language]} <ChevronDown className="h-3 w-3 opacity-50" />
                       </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48 bg-background/95 backdrop-blur-lg border-primary/20">
+                  <DropdownMenuContent align="start" className="w-48 bg-background/95 backdrop-blur-lg border-primary/20 rounded-2xl shadow-2xl">
                       {moreLinks.map((link) => (
-                          <DropdownMenuItem key={link.href} asChild className="cursor-pointer focus:bg-primary/10 focus:text-primary font-medium">
+                          <DropdownMenuItem key={link.href} asChild className="cursor-pointer focus:bg-primary/10 focus:text-primary font-bold text-xs uppercase tracking-tight p-3 rounded-xl mx-1 my-0.5">
                               <Link href={link.href}>{link.label}</Link>
                           </DropdownMenuItem>
                       ))}
@@ -103,10 +105,10 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                   <ThemeToggle className={cn("h-10 w-10 rounded-full", isDark && "text-white hover:bg-white/10 hover:text-white")} />
                   {!user && (
                     <div className="flex items-center gap-2 ml-2">
-                        <Button asChild variant="ghost" size="sm" className={cn("h-10 text-xs font-bold", isDark && "text-white hover:bg-white/10 hover:text-white")}>
+                        <Button asChild variant="ghost" size="sm" className={cn("h-10 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10 hover:text-white")}>
                             <Link href="/login">{t.login[language]}</Link>
                         </Button>
-                        <Button asChild size="sm" className={cn("h-10 px-6 text-xs font-bold rounded-full shadow-lg active:shadow-inner bg-primary hover:bg-primary/90")}>
+                        <Button asChild size="sm" className={cn("h-10 px-6 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg active:shadow-inner bg-primary hover:bg-primary/90 text-white border-none")}>
                             <Link href="/signup">{t.signup[language]}</Link>
                         </Button>
                     </div>
@@ -134,9 +136,9 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                               className="flex items-center space-x-2"
                               onClick={() => setMenuOpen(false)}
                           >
-                              <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 w-auto" priority />
+                              <Image src={logoToDisplay} alt="RED DOT CLASSROOM Logo" width={140} height={50} className="h-12 w-auto object-contain" priority />
                           </Link>
-                          <SheetDescription className="text-left mt-2">Empowering learners in Bangladesh.</SheetDescription>
+                          <SheetDescription className="text-left mt-2 font-medium">Empowering learners in Bangladesh.</SheetDescription>
                       </SheetHeader>
                       
                       <div className="flex-grow overflow-y-auto px-4 py-6">
@@ -146,7 +148,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                               key={link.href}
                               href={link.href}
                               onClick={() => setMenuOpen(false)}
-                              className="px-4 py-3 text-lg font-bold transition-colors hover:text-primary hover:bg-primary/5 rounded-xl"
+                              className="px-4 py-3 text-lg font-black uppercase tracking-tight transition-colors hover:text-primary hover:bg-primary/5 rounded-xl"
                           >
                               {link.label}
                           </Link>
@@ -154,7 +156,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                           <Separator className="my-2 opacity-50" />
                           <Accordion type="single" collapsible className="w-full">
                           <AccordionItem value="more-links" className="border-b-0">
-                              <AccordionTrigger className="px-4 py-3 text-lg font-bold transition-colors hover:text-primary hover:bg-primary/5 rounded-xl hover:no-underline justify-between">
+                              <AccordionTrigger className="px-4 py-3 text-lg font-black uppercase tracking-tight transition-colors hover:text-primary hover:bg-primary/5 rounded-xl hover:no-underline justify-between">
                               {t.nav_more[language]}
                               </AccordionTrigger>
                               <AccordionContent>
@@ -164,7 +166,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                                       key={link.href}
                                       href={link.href}
                                       onClick={() => setMenuOpen(false)}
-                                      className="px-4 py-2.5 text-base font-medium transition-colors hover:text-primary hover:bg-primary/5 rounded-lg"
+                                      className="px-4 py-2.5 text-base font-bold transition-colors hover:text-primary hover:bg-primary/5 rounded-lg"
                                   >
                                       {link.label}
                                   </Link>
@@ -178,22 +180,22 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
                       <div className="p-6 mt-auto border-t border-primary/10 bg-accent/5">
                         <div className="flex flex-col gap-4">
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground font-bold">
                                 <Phone className="h-4 w-4 text-primary" />
                                 <span>{t.hotline[language]}: 01641035736</span>
                             </div>
                             {!user && (
                                 <div className="grid grid-cols-2 gap-3">
-                                    <Button asChild variant="outline" className="rounded-xl border-primary/20 font-bold">
+                                    <Button asChild variant="outline" className="rounded-xl border-primary/20 font-black uppercase text-[10px] tracking-widest h-12">
                                         <Link href="/login" onClick={() => setMenuOpen(false)}>{t.login[language]}</Link>
                                     </Button>
-                                    <Button asChild className="rounded-xl font-bold">
+                                    <Button asChild className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 border-none shadow-lg shadow-primary/20">
                                         <Link href="/signup" onClick={() => setMenuOpen(false)}>{t.signup[language]}</Link>
                                     </Button>
                                 </div>
                             )}
                             <div className="flex items-center justify-between pt-2">
-                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Theme</span>
+                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Appearance</span>
                                 <ThemeToggle />
                             </div>
                         </div>
