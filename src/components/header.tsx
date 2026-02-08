@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -60,8 +59,8 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pt-3 pointer-events-none transition-all duration-300", wrapperClassName)}>
-      <div className="container max-w-7xl pointer-events-auto px-4">
+    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pointer-events-none transition-all duration-300", wrapperClassName)}>
+      <div className="container max-w-7xl pointer-events-auto px-4 mt-2">
         <div className={cn(
           "flex h-12 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] overflow-hidden",
           containerClassName

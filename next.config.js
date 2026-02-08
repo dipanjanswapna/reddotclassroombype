@@ -22,17 +22,17 @@ const nextConfig = {
   ],
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'placehold.co' },
-      { protocol: 'https', hostname: 'i.imgur.com' },
-      { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com' },
-      { protocol: 'https', hostname: 'img.youtube.com' },
-      { protocol: 'https', hostname: 'mir-s3-cdn-cf.behance.net' },
-      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-      { protocol: 'https', hostname: '**.fbcdn.net' },
-      { protocol: 'https', hostname: 'cdni.iconscout.com' },
-      { protocol: 'https', hostname: 'static.vecteezy.com' },
-      { protocol: 'https', hostname: 'png.pngtree.com' },
-      { protocol: 'https', hostname: 'picsum.photos' }
+      { protocol: 'https', hostname: 'placehold.co', pathname: '/**' },
+      { protocol: 'https', hostname: 'i.imgur.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'encrypted-tbn0.gstatic.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'img.youtube.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'mir-s3-cdn-cf.behance.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
+      { protocol: 'https', hostname: '**.fbcdn.net', pathname: '/**' },
+      { protocol: 'https', hostname: 'cdni.iconscout.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'static.vecteezy.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'png.pngtree.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' }
     ],
   },
 };

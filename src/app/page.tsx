@@ -156,49 +156,8 @@ export default function Home() {
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {homepageConfig.strugglingStudentSection?.display && (
-          <SectionWrapper className="py-2 px-4 md:px-8">
-              <div className="container mx-auto">
-                  <div 
-                    className="group relative glassmorphism-card border-2 border-primary p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden shadow-xl"
-                  >
-                      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-center md:text-left z-10">
-                          <Image
-                              src={homepageConfig.strugglingStudentSection.imageUrl}
-                              alt="Struggling in studies illustration"
-                              width={120}
-                              height={100}
-                              className="hidden sm:block object-contain"
-                              data-ai-hint="student family studying"
-                          />
-                          <div>
-                              <h3 className="font-headline text-xl font-bold text-green-700 dark:text-green-500">
-                                  {homepageConfig.strugglingStudentSection?.title?.[language]}
-                              </h3>
-                              <p className="text-muted-foreground">
-                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language]}
-                              </p>
-                          </div>
-                      </div>
-                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 flex-1 sm:flex-none">
-                          <Link href="/strugglers-studies">
-                              {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
-                               <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
-                      </Button>
-                  </div>
-              </div>
-          </SectionWrapper>
-        )}
-
-        <div className="container mx-auto px-4 md:px-8 my-2">
-            <NoticeBoard />
-        </div>
-
         {homepageConfig.categoriesSection?.display && (
-          <SectionWrapper aria-labelledby="categories-heading" className="px-4 md:px-8 py-2">
-            <div className="container mx-auto">
+          <div className="container mx-auto px-4 md:px-8 my-8">
               <div className="text-center mb-4">
                 <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.categoriesSection?.title?.[language]}
@@ -206,8 +165,45 @@ export default function Home() {
                 <HeadingUnderline />
               </div>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
-            </div>
-          </SectionWrapper>
+          </div>
+        )}
+
+        <div className="container mx-auto px-4 md:px-8 my-8">
+            <NoticeBoard />
+        </div>
+
+        {homepageConfig.strugglingStudentSection?.display && (
+          <div className="container mx-auto px-4 md:px-8 my-8">
+              <div 
+                className="group relative glassmorphism-card border-2 border-primary p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden shadow-xl"
+              >
+                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-center md:text-left z-10">
+                      <Image
+                          src={homepageConfig.strugglingStudentSection.imageUrl}
+                          alt="Struggling in studies illustration"
+                          width={120}
+                          height={100}
+                          className="hidden sm:block object-contain"
+                          data-ai-hint="student family studying"
+                      />
+                      <div>
+                          <h3 className="font-headline text-xl font-bold text-green-700 dark:text-green-500">
+                              {homepageConfig.strugglingStudentSection?.title?.[language]}
+                          </h3>
+                          <p className="text-muted-foreground">
+                              {homepageConfig.strugglingStudentSection?.subtitle?.[language]}
+                          </p>
+                      </div>
+                  </div>
+                  <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 flex-1 sm:flex-none">
+                      <Link href="/strugglers-studies">
+                          {homepageConfig.strugglingStudentSection?.buttonText?.[language]}
+                           <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </Link>
+                  </Button>
+              </div>
+          </div>
         )}
 
         {homepageConfig.journeySection?.display && (
