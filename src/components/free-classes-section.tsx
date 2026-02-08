@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Badge } from '@/components/ui/badge';
 import { getYoutubeVideoId } from '@/lib/utils';
 import { PlayCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { HomepageConfig } from '@/lib/types';
