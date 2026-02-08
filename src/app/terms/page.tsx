@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -9,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 md:px-8 py-12">
       <div className="max-w-4xl mx-auto prose dark:prose-invert">
         <h1 className="font-headline text-4xl font-bold tracking-tight mb-8">Terms of Service</h1>
         <p className="mb-4"><em>Last updated: {new Date().toLocaleDateString()}</em></p>

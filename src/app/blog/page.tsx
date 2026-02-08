@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +16,7 @@ export default async function BlogPage() {
   const blogPosts: BlogPost[] = await getBlogPosts();
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 md:px-8 py-12">
       <div className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight">Our Blog</h1>
         <p className="mt-4 text-lg text-muted-foreground">

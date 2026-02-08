@@ -62,7 +62,7 @@ const SocialIcon = ({ platform, className }: { platform: string, className?: str
 
 const SectionWrapper = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <section
-    className={cn("py-4 sm:py-6 lg:py-8", className)}
+    className={cn("py-8 md:py-12 container mx-auto px-4 md:px-8", className)}
   >
     {children}
   </section>
@@ -152,20 +152,20 @@ export default function Home() {
   
   return (
     <div className="text-foreground">
-        <section className="py-2 px-4 md:px-8">
+        <section className="py-4 container mx-auto px-4 md:px-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {homepageConfig.categoriesSection?.display && (
-          <div className="container mx-auto px-4 md:px-8 my-8">
-              <div className="text-center mb-4">
+          <SectionWrapper>
+              <div className="text-center mb-8">
                 <h2 id="categories-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.categoriesSection?.title?.[language]}
                 </h2>
                 <HeadingUnderline />
               </div>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
-          </div>
+          </SectionWrapper>
         )}
 
         <div className="container mx-auto px-4 md:px-8 my-8">
@@ -173,7 +173,7 @@ export default function Home() {
         </div>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <div className="container mx-auto px-4 md:px-8 my-8">
+          <SectionWrapper>
               <div 
                 className="group relative glassmorphism-card border-2 border-primary p-6 flex flex-wrap items-center justify-center md:justify-between gap-6 overflow-hidden shadow-xl"
               >
@@ -203,49 +203,45 @@ export default function Home() {
                       </Link>
                   </Button>
               </div>
-          </div>
+          </SectionWrapper>
         )}
 
         {homepageConfig.journeySection?.display && (
-          <SectionWrapper aria-labelledby="hero-heading" className="px-4 md:px-8">
-            <div className="container mx-auto">
-              <div className="text-center mb-4">
+          <SectionWrapper aria-labelledby="hero-heading">
+              <div className="text-center mb-8">
                 <h2 id="hero-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.journeySection?.title?.[language]}</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">{homepageConfig.journeySection?.subtitle?.[language]}</p>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-2">{homepageConfig.journeySection?.subtitle?.[language]}</p>
                 <HeadingUnderline />
               </div>
               <div>
-                <h3 className="font-headline text-xl font-bold text-center mb-4">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                <h3 className="font-headline text-xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
-            </div>
           </SectionWrapper>
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <SectionWrapper aria-labelledby="teachers-heading" className="px-4 md:px-8">
-            <div className="container mx-auto">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+          <SectionWrapper aria-labelledby="teachers-heading">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
                   <div className="text-center sm:text-left">
                       <h2 id="teachers-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.teachersSection?.title?.[language]}</h2>
                       <div className="h-1 w-16 bg-primary mt-2 rounded-full hidden sm:block" />
-                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                      <p className="text-muted-foreground mt-2">{homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
                   <Button asChild variant="outline" size="sm">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
-            </div>
           </SectionWrapper>
         )}
 
         {homepageConfig.videoSection?.display && (
-          <SectionWrapper aria-labelledby="video-section-heading" className="px-4 md:px-8">
-            <div className="container mx-auto text-center">
-                <div className="mb-4">
+          <SectionWrapper aria-labelledby="video-section-heading">
+            <div className="text-center">
+                <div className="mb-8">
                   <h2 id="video-section-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.videoSection?.title?.[language]}</h2>
-                  <p className="text-muted-foreground mb-2 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
+                  <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language]}</p>
                   <HeadingUnderline />
                 </div>
                 <div className="flex flex-wrap justify-center gap-6">
@@ -277,10 +273,10 @@ export default function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <SectionWrapper aria-labelledby="ssc-hsc-heading" className="px-4 md:px-8">
-              <div className="container mx-auto text-center">
+          <SectionWrapper aria-labelledby="ssc-hsc-heading">
+              <div className="text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language]}</Badge>
-                  <div className="mb-4">
+                  <div className="mb-8">
                     <h2 id="ssc-hsc-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
@@ -292,9 +288,9 @@ export default function Home() {
         )}
 
         {homepageConfig.masterclassSection?.display && (
-          <SectionWrapper aria-labelledby="masterclass-heading" className="px-4 md:px-8">
-              <div className="container mx-auto text-center">
-                  <div className="mb-4">
+          <SectionWrapper aria-labelledby="masterclass-heading">
+              <div className="text-center">
+                  <div className="mb-8">
                     <h2 id="masterclass-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.masterclassSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
@@ -307,10 +303,10 @@ export default function Home() {
         )}
 
         {homepageConfig.admissionSection?.display && (
-          <SectionWrapper aria-labelledby="admission-heading" className="px-4 md:px-8">
-              <div className="container mx-auto text-center">
+          <SectionWrapper aria-labelledby="admission-heading">
+              <div className="text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language]}</Badge>
-                  <div className="mb-4">
+                  <div className="mb-8">
                     <h2 id="admission-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.admissionSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
@@ -325,10 +321,10 @@ export default function Home() {
         )}
         
         {homepageConfig.jobPrepSection?.display && (
-          <SectionWrapper aria-labelledby="job-prep-heading" className="px-4 md:px-8">
-              <div className="container mx-auto text-center">
+          <SectionWrapper aria-labelledby="job-prep-heading">
+              <div className="text-center">
                   <Badge variant="default" className="mb-2 text-md py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
-                  <div className="mb-4">
+                  <div className="mb-8">
                     <h2 id="job-prep-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
@@ -343,7 +339,7 @@ export default function Home() {
         )}
 
         {homepageConfig.freeClassesSection?.display && (
-          <SectionWrapper aria-labelledby="free-classes-heading" className="px-4 md:px-8">
+          <SectionWrapper aria-labelledby="free-classes-heading">
             <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
           </SectionWrapper>
         )}
@@ -351,9 +347,9 @@ export default function Home() {
         <WhyTrustUs data={homepageConfig.whyChooseUs} />
         
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
-          <SectionWrapper aria-labelledby="collaborations-heading" className="px-4 md:px-8">
-            <div className="container mx-auto text-center">
-              <div className="mb-6">
+          <SectionWrapper aria-labelledby="collaborations-heading">
+            <div className="text-center">
+              <div className="mb-8">
                 <h2 id="collaborations-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">
                   {homepageConfig.collaborations?.title?.[language]}
                 </h2>
@@ -365,9 +361,9 @@ export default function Home() {
         )}
 
         {homepageConfig.partnersSection?.display && (
-          <SectionWrapper aria-labelledby="partners-heading" className="px-4 md:px-8">
-            <div className="container mx-auto text-center">
-              <div className="mb-4">
+          <SectionWrapper aria-labelledby="partners-heading">
+            <div className="text-center">
+              <div className="mb-8">
                 <h2 id="partners-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.partnersSection?.title?.[language]}</h2>
                 <HeadingUnderline />
               </div>
@@ -380,11 +376,11 @@ export default function Home() {
         )}
 
         {homepageConfig.socialMediaSection?.display && (
-          <SectionWrapper aria-labelledby="social-media-heading" className="px-4 md:px-8">
-            <div className="container mx-auto text-center">
-              <div className="mb-6">
+          <SectionWrapper aria-labelledby="social-media-heading">
+            <div className="text-center">
+              <div className="mb-8">
                 <h2 id="social-media-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.socialMediaSection?.title?.[language]}</h2>
-                <p className="text-muted-foreground mb-2 max-w-2xl mx-auto">
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
                   {homepageConfig.socialMediaSection?.description?.[language]}
                 </p>
                 <HeadingUnderline />
@@ -438,9 +434,9 @@ export default function Home() {
         )}
         
         {homepageConfig.statsSection?.display && (
-          <SectionWrapper aria-labelledby="stats-heading" className="px-4 md:px-8">
-            <div className="container mx-auto text-center">
-                <div className="mb-6">
+          <SectionWrapper aria-labelledby="stats-heading">
+            <div className="text-center">
+                <div className="mb-8">
                   <h2 id="stats-heading" className="font-headline text-2xl font-bold text-green-700 dark:text-green-500">{homepageConfig.statsSection?.title?.[language]}</h2>
                   <HeadingUnderline />
                 </div>
@@ -460,8 +456,7 @@ export default function Home() {
         )}
 
         {homepageConfig.notesBanner?.display && (
-          <SectionWrapper aria-labelledby="notes-banner-heading" className="px-4 md:px-8">
-            <div className="container mx-auto">
+          <SectionWrapper aria-labelledby="notes-banner-heading">
               <div className="glassmorphism-card border-2 border-primary p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                     <div className='text-center md:text-left'>
                         <h3 id="notes-banner-heading" className="font-headline text-xl font-bold text-green-700 dark:text-green-500">{homepageConfig.notesBanner?.title?.[language]}</h3>
@@ -471,19 +466,16 @@ export default function Home() {
                       {homepageConfig.notesBanner?.buttonText?.[language]}
                     </Button>
                 </div>
-            </div>
           </SectionWrapper>
         )}
         
-        <SectionWrapper className="px-4 md:px-8">
-            <div className="container mx-auto">
-                <RequestCallbackForm homepageConfig={homepageConfig} />
-            </div>
+        <SectionWrapper>
+            <RequestCallbackForm homepageConfig={homepageConfig} />
         </SectionWrapper>
         
         {homepageConfig.appPromo?.display && (
-          <SectionWrapper aria-labelledby="app-promo-heading" className="px-4 md:px-8">
-              <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <SectionWrapper aria-labelledby="app-promo-heading">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
                     <h2 
                       className="font-headline text-3xl font-bold text-green-700 dark:text-green-500"
