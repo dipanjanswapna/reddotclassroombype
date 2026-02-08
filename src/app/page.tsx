@@ -290,7 +290,7 @@ export default function Home() {
                     <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold text-green-700 dark:text-green-500">{homepageConfig.sscHscSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
-                  <div className="flex flex-wrap justify-center gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
               </div>
@@ -320,7 +320,7 @@ export default function Home() {
                     <h2 id="admission-heading" className="font-headline text-3xl font-bold text-green-700 dark:text-green-500">{homepageConfig.admissionSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
-                  <div className="flex flex-wrap justify-center gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg h-12 px-10">
@@ -338,7 +338,7 @@ export default function Home() {
                     <h2 id="job-prep-heading" className="font-headline text-3xl font-bold text-green-700 dark:text-green-500">{homepageConfig.jobPrepSection?.title?.[language]}</h2>
                     <HeadingUnderline />
                   </div>
-                  <div className="flex flex-wrap justify-center gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-10 font-bold bg-accent text-accent-foreground shadow-lg h-12 px-10">

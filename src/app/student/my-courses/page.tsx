@@ -113,7 +113,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-6 border-b pb-2">Ongoing Courses</h2>
             {inProgressCourses.length > 0 ? (
-                <div className="flex flex-wrap justify-center sm:justify-start gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {inProgressCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
@@ -129,7 +129,7 @@ export default function MyCoursesPage() {
         {filteredPrebookedCourses.length > 0 && (
             <section>
                 <h2 className="font-headline text-2xl font-bold mb-6 border-b pb-2">Pre-booked Courses</h2>
-                 <div className="flex flex-wrap justify-center sm:justify-start gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredPrebookedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="prebooked" provider={provider} />;
@@ -141,7 +141,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-6 border-b pb-2">Recently Completed</h2>
             {completedCourses.length > 0 ? (
-                 <div className="flex flex-wrap justify-center sm:justify-start gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {completedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
@@ -157,7 +157,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-6 border-b pb-2">My Wishlist</h2>
             {filteredWishlistedCourses.length > 0 ? (
-                 <div className="flex flex-wrap justify-center sm:justify-start gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredWishlistedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;

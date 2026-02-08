@@ -44,9 +44,9 @@ const ProductCardComponent = ({ product, provider, className }: ProductCardProps
   }
   
   return (
-    <div className="h-full min-w-[280px] flex-1 max-w-[400px]">
+    <div className="h-full w-full">
       <Card className={cn(
-          "overflow-hidden group flex flex-col h-full transition-all duration-500 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10",
+          "overflow-hidden group flex flex-col h-full transition-all duration-500 border border-primary/20 hover:border-primary/60 bg-gradient-to-br from-card to-secondary/30 dark:from-card dark:to-primary/10 shadow-lg hover:shadow-xl",
           className
       )}>
           <Link href={`/store/product/${product.id}`} className="block flex flex-col flex-grow">

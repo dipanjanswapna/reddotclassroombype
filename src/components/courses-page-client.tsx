@@ -87,7 +87,7 @@ export function CoursesPageClient({
                 <div className="h-1.5 w-20 bg-primary mt-3 rounded-full mx-auto md:mx-0" />
               </div>
               {initialCourses.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {initialCourses.map((course) => {
                     const provider = allProviders.find(p => p.id === course.organizationId);
                     return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -109,7 +109,7 @@ export function CoursesPageClient({
                     </h2>
                     <div className="h-1.5 w-20 bg-primary mt-3 rounded-full mx-auto md:mx-0" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 px-4 md:px-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-0">
                     {coursesByCategory[category].map((course) => {
                        const provider = allProviders.find(p => p.id === course.organizationId);
                        return <CourseCard key={course.id} {...course} provider={provider} />;
@@ -126,7 +126,7 @@ export function CoursesPageClient({
                         </h2>
                         <div className="h-1.5 w-20 bg-muted mt-3 rounded-full mx-auto md:mx-0" />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {archivedCourses.map((course) => {
                             const provider = allProviders.find(p => p.id === course.organizationId);
                             return <CourseCard key={course.id} {...course} provider={provider} className="grayscale opacity-80" />;

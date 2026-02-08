@@ -45,8 +45,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
                 <Image
                 src={imageUrl}
                 alt={title}
-                width={600}
-                height={400}
+                fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className={cn(
                     "w-full h-auto object-cover aspect-[16/10] transition-all duration-700 group-hover:scale-110",
