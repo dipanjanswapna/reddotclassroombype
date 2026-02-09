@@ -1,5 +1,4 @@
-
-import { getCourses, getStoreCategories, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
+import { getCourses, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
@@ -66,29 +65,32 @@ export default async function CoursesPage({
     
   return (
     <div className="bg-background mesh-gradient min-h-screen">
-        {/* Elite Shop Hero */}
-        <section className="bg-black/5 dark:bg-transparent">
-            {homepageConfig?.offlineHubHeroCarousel?.display && (
-                <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
-            )}
-        </section>
-
-        {/* Shop Intro */}
-        <section className="py-10 md:py-16 text-center border-b border-white/10">
+        {/* Unified Hero & Intro Section */}
+        <section className="pt-6 md:pt-10 pb-16 md:pb-24 border-b border-white/10 overflow-hidden">
             <div className="container mx-auto px-4">
-                <h1 className="font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter uppercase mb-4">
-                    RDC <span className="text-primary">SHOP</span>
-                </h1>
-                <div className="max-w-3xl mx-auto h-[4.5rem] md:h-auto">
-                    <TypingText 
-                        text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
-                        className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed font-bengali"
-                    />
+                {/* Hero Carousel Integrated into Page Flow */}
+                {homepageConfig?.offlineHubHeroCarousel?.display && (
+                    <div className="mb-12 md:mb-20">
+                        <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+                    </div>
+                )}
+
+                {/* Shop Intro - Seamlessly aligned below Carousel */}
+                <div className="text-center max-w-4xl mx-auto space-y-4 md:space-y-6">
+                    <h1 className="font-black text-4xl md:text-6xl lg:text-7xl tracking-tighter uppercase">
+                        RDC <span className="text-primary">SHOP</span>
+                    </h1>
+                    <div className="min-h-[5rem] md:min-h-auto">
+                        <TypingText 
+                            text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
+                            className="text-lg md:text-2xl text-muted-foreground font-semibold leading-relaxed font-bengali px-2"
+                        />
+                    </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-12 h-12" />
