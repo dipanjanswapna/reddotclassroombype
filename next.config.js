@@ -11,7 +11,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Suppress OpenTelemetry and Sentry warnings by treating them as external packages
   serverExternalPackages: [
     '@opentelemetry/sdk-node',
     '@opentelemetry/instrumentation',
@@ -32,7 +31,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cdni.iconscout.com', pathname: '/**' },
       { protocol: 'https', hostname: 'static.vecteezy.com', pathname: '/**' },
       { protocol: 'https', hostname: 'png.pngtree.com', pathname: '/**' },
-      { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' }
+      { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
+      { protocol: 'https', hostname: 'scontent.fdac138-1.fna.fbcdn.net', pathname: '/**' }
     ],
   },
 };
