@@ -33,7 +33,6 @@ export default function OfflineHubPage() {
                 setConfig(homepageConfig);
                 setBranches(allBranches);
                 setOrganizations(allOrgs);
-                // Filter for offline/hybrid courses
                 setCourses(allCourses.filter(c => c.type === 'Offline' || c.type === 'Hybrid' || c.type === 'Exam'));
             } catch (error) {
                 console.error("Failed to fetch offline hub data:", error);
@@ -53,7 +52,7 @@ export default function OfflineHubPage() {
     }
 
     const offlineHubData = config?.offlineHubSection;
-    const language = 'en'; // Standardizing on high-density English UI for this view
+    const language = 'en';
 
     const features = [
         { icon: Zap, title: "Multimedia Classrooms", desc: "Digital smart boards and high-speed connectivity." },
@@ -61,7 +60,6 @@ export default function OfflineHubPage() {
         { icon: Award, title: "Exam Environment", desc: "Standardized testing conditions for peak performance." },
     ];
 
-    // Requested Size: 600x400
     const heroImageUrl = offlineHubData?.heroImageUrl || "https://picsum.photos/seed/offline/600/400";
     const heroImageAiHint = offlineHubData?.heroImageDataAiHint || "modern classroom";
 
@@ -104,7 +102,6 @@ export default function OfflineHubPage() {
                             className="relative flex justify-center"
                         >
                             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px] scale-110 opacity-50" />
-                            {/* Precisely 600x400 via aspect-[3/2] */}
                             <div className="relative z-10 w-full max-w-[600px] aspect-[3/2]">
                                 <Image
                                     src={heroImageUrl}
@@ -136,7 +133,7 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Dynamic Programs Grid */}
+            {/* Programs Section */}
             <section id="programs" className="py-20 md:py-28">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-12">
@@ -157,7 +154,7 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Branch/Center Directory */}
+            {/* Branch Directory */}
             <section id="centers" className="py-20 md:py-28 bg-black/40">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 space-y-4">
@@ -202,7 +199,7 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* High-Impact Contact Section */}
+            {/* Contact Section */}
             {offlineHubData?.contactSection?.display && (
                 <section className="py-20 md:py-28">
                     <div className="container mx-auto px-4">
