@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -76,6 +75,14 @@
   }
   section {
     @apply py-10 md:py-14;
+  }
+
+  /* Global Bengali Font Override */
+  [lang="bn"], 
+  [lang="bn"] h1, [lang="bn"] h2, [lang="bn"] h3, [lang="bn"] h4, [lang="bn"] h5, [lang="bn"] h6,
+  [lang="bn"] button, [lang="bn"] input, [lang="bn"] textarea, [lang="bn"] select,
+  [lang="bn"] .font-headline, [lang="bn"] .font-body {
+    font-family: var(--font-bengali), var(--font-inter), sans-serif !important;
   }
 }
 
