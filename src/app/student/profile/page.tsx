@@ -136,7 +136,7 @@ export default function StudentProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Info Section */}
         <div className="lg:col-span-2 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/30 bg-[#eef2ed] shadow-xl">
+            <Card className="rounded-2xl md:rounded-3xl border-white/30 shadow-xl overflow-hidden">
                 <CardHeader>
                 <CardTitle className="font-black uppercase tracking-tight">Your Information</CardTitle>
                 <CardDescription className="font-medium text-muted-foreground">Keep your details up-to-date.</CardDescription>
@@ -227,7 +227,7 @@ export default function StudentProfilePage() {
 
         {/* Device Management Section */}
         <div className="lg:col-span-1 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/30 bg-[#eef2ed] shadow-xl overflow-hidden">
+            <Card className="rounded-2xl md:rounded-3xl border-white/30 shadow-xl overflow-hidden">
                 <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Monitor className="w-5 h-5 text-primary" />

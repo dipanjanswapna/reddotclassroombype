@@ -15,7 +15,7 @@ import {
 } from 'firebase/auth';
 import { getAuthInstance, getDbInstance } from '@/lib/firebase/config';
 import { getUser, getHomepageConfig, getUserByClassRoll, updateUser, getUserByRegistrationNumber } from '@/lib/firebase/firestore';
-import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
+import { doc, serverTimestamp, updateDoc, onSnapshot, Timestamp, setDoc } from 'firebase/firestore';
 import { User, UserSession } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
@@ -46,6 +46,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
     const auth = getAuthInstance();
     const db = getDbInstance();
+
+    const logout = useCallback(() => {
+        if (!auth) return;
+        signOut(auth).then(() => {
+            localStorage.removeItem('rdc_session_id');
+            router.push('/login');
+        });
+    }, [auth, router]);
 
     const fetchAndSetUser = useCallback(async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
@@ -99,7 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return () => unsubscribeFirestore();
-    }, [userInfo, db, toast]);
+    }, [userInfo, db, toast, logout]);
 
     const refreshUserInfo = useCallback(async () => {
         if (!auth) return;
@@ -346,14 +354,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         return userCredential;
-    };
-
-    const logout = () => {
-        if (!auth) return;
-        signOut(auth).then(() => {
-            localStorage.removeItem('rdc_session_id');
-            router.push('/login');
-        });
     };
 
     const resetPassword = (email: string) => {
