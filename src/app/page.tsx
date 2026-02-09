@@ -182,7 +182,7 @@ export default function Home() {
                         <motion.div 
                           initial={{ scale: 0.9 }}
                           animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200, stiffness: 200, damping: 15 }}
+                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
                           className="flex items-center justify-center gap-3 md:gap-4"
                         >
                             <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
@@ -307,16 +307,16 @@ export default function Home() {
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.[language]}</h2>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.[language]}</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-6 max-w-4xl mx-auto">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
                       
                       return (
-                          <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-xl overflow-hidden group shadow-lg block">
-                              <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" />
+                          <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-xl overflow-hidden group shadow-lg block w-full md:w-1/2 aspect-video">
+                              <Image src={thumbnailUrl} alt={video.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <PlayCircle className="w-12 h-12 md:w-16 md:h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
+                                  <PlayCircle className="w-10 h-10 md:w-14 md:h-14 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
                               </div>
                           </a>
                       );
