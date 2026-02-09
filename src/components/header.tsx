@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -66,35 +65,50 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("sticky top-0 z-50 w-full py-3", wrapperClassName)}>
+    <header className={cn("sticky top-0 z-50 w-full py-3 transition-all duration-300", wrapperClassName)}>
       <div className="container">
-        <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/60 dark:bg-card/40 backdrop-blur-lg border border-white/10 px-4 shadow-lg", containerClassName)}>
+        <div className={cn(
+          "flex h-16 items-center justify-between rounded-full bg-background/70 dark:bg-card/50 backdrop-blur-xl border border-white/20 dark:border-white/10 px-4 shadow-xl transition-all duration-300",
+          containerClassName
+        )}>
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center space-x-2">
-                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 md:h-10 w-auto" priority />
+            <Link href="/" className="flex items-center space-x-2 group">
+                <div className="relative h-8 md:h-10 w-auto transition-transform duration-300 group-hover:scale-105">
+                  <Image 
+                    src={homepageConfig?.logoUrl || logoSrc} 
+                    alt="RED DOT CLASSROOM Logo" 
+                    width={120} 
+                    height={40} 
+                    className="h-full w-auto object-contain"
+                    priority 
+                  />
+                </div>
             </Link>
           </div>
           
-          <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
+          <nav className="hidden lg:flex items-center space-x-1 text-sm font-semibold">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn(isDark && "text-white hover:bg-white/20")}>
-                  <Link
-                  href={link.href}
-                  className="transition-colors hover:text-primary"
-                  >
-                  {link.label}
+              <Button key={link.href} variant="ghost" asChild className={cn(
+                "rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
+                isDark && "text-white hover:bg-white/20"
+              )}>
+                  <Link href={link.href}>
+                    {link.label}
                   </Link>
               </Button>
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn("flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
-                      {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
+                      <Button variant="ghost" className={cn(
+                        "flex items-center gap-1 rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
+                        isDark && "text-white hover:bg-white/20"
+                      )}>
+                      {t.nav_more[language]} <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent align="start" className="rounded-xl border-white/10 shadow-2xl">
                       {moreLinks.map((link) => (
-                          <DropdownMenuItem key={link.href} asChild>
+                          <DropdownMenuItem key={link.href} asChild className="rounded-lg">
                               <Link href={link.href}>{link.label}</Link>
                           </DropdownMenuItem>
                       ))}
@@ -103,105 +117,133 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           </nav>
 
           <div className="flex items-center justify-end space-x-2">
-              <div className="hidden sm:flex items-center space-x-2">
-                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
-                  <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
-                  <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
+              <div className="hidden sm:flex items-center space-x-1">
+                  <LanguageToggle className={cn("rounded-full h-9", isDark && "text-white hover:bg-white/20")} />
+                  <ThemeToggle className={cn("rounded-full h-9", isDark && "text-white hover:bg-white/20")} />
+                  
+                  <Separator orientation="vertical" className="h-6 mx-2 hidden lg:block opacity-50" />
+                  
+                  <Button variant="ghost" size="sm" className={cn(
+                    "hidden lg:inline-flex rounded-full text-xs font-bold gap-2", 
+                    isDark && "text-white hover:bg-white/20"
+                  )}>
+                    <Phone className="h-3.5 w-3.5 text-primary"/> 01641035736
+                  </Button>
+
                   {!user && (
-                    <>
-                    <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
-                        <Link href="/login">{t.login[language]}</Link>
-                    </Button>
-                    <Button asChild className={cn(isDark && "bg-white text-black hover:bg-gray-200")}>
-                        <Link href="/signup">{t.signup[language]}</Link>
-                    </Button>
-                    </>
+                    <div className="flex items-center gap-2 ml-2">
+                      <Button asChild variant="ghost" size="sm" className={cn(
+                        "rounded-full font-bold",
+                        isDark && "text-white hover:bg-white/20"
+                      )}>
+                          <Link href="/login">{t.login[language]}</Link>
+                      </Button>
+                      <Button asChild size="sm" className={cn(
+                        "rounded-full font-bold px-6 shadow-lg shadow-primary/20",
+                        isDark && "bg-white text-black hover:bg-gray-200"
+                      )}>
+                          <Link href="/signup">{t.signup[language]}</Link>
+                      </Button>
+                    </div>
                   )}
               </div>
               
-              {user && <NotificationBell />}
-              {user && <UserNav />}
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className={cn("relative rounded-full", isDark && "text-white hover:bg-white/20")} onClick={() => setIsCartOpen(true)}>
+                  <ShoppingCart className="h-5 w-5" />
+                  {itemCount > 0 && (
+                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-[10px] border-2 border-background">{itemCount}</Badge>
+                  )}
+                </Button>
+                
+                {user && <NotificationBell />}
+                {user && <UserNav />}
+              </div>
 
               <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn(isDark && "text-white hover:bg-white/20")}>
-                      <Menu className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("rounded-full", isDark && "text-white hover:bg-white/20")}>
+                      <Menu className="h-6 w-6" />
                   </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
-                      <SheetHeader className="sr-only">
-                          <SheetTitle>Mobile Menu</SheetTitle>
-                          <SheetDescription>Main navigation links for the Red Dot Classroom website.</SheetDescription>
+                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/90 backdrop-blur-2xl border-r-0">
+                      <SheetHeader className="p-6 border-b bg-muted/20">
+                          <SheetTitle className="text-left flex items-center gap-2">
+                            <Image src={homepageConfig?.logoUrl || logoSrc} alt="Logo" width={100} height={32} className="h-8 w-auto object-contain" />
+                          </SheetTitle>
+                          <SheetDescription className="text-left text-xs">Empowering learners across Bangladesh.</SheetDescription>
                       </SheetHeader>
-                      <div className="p-4 border-b">
-                      <Link
-                          href="/"
-                          className="flex items-center space-x-2"
-                          onClick={() => setMenuOpen(false)}
-                      >
-                          <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
-                      </Link>
-                      </div>
                       
-                      <div className="flex-grow overflow-y-auto px-2 py-4">
-                      <div className="flex flex-col space-y-1">
-                          {mainNavLinks.map((link) => (
-                          <Link
-                              key={link.href}
-                              href={link.href}
-                              onClick={() => setMenuOpen(false)}
-                              className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md"
-                          >
-                              {link.label}
-                          </Link>
-                          ))}
-                          <Accordion type="single" collapsible className="w-full">
-                          <AccordionItem value="more-links" className="border-b-0">
-                              <AccordionTrigger className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md hover:no-underline justify-start gap-1">
-                              {t.nav_more[language]}
-                              </AccordionTrigger>
-                              <AccordionContent>
-                              <div className="flex flex-col space-y-1 pl-7">
-                                  {moreLinks.map((link) => (
-                                  <Link
-                                      key={link.href}
-                                      href={link.href}
-                                      onClick={() => setMenuOpen(false)}
-                                      className="px-2 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md"
-                                  >
-                                      {link.label}
-                                  </Link>
-                                  ))}
-                              </div>
-                              </AccordionContent>
-                          </AccordionItem>
-                          </Accordion>
-                      </div>
+                      <div className="flex-grow overflow-y-auto px-4 py-6">
+                        <div className="flex flex-col space-y-2">
+                            {mainNavLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setMenuOpen(false)}
+                                className="px-4 py-3 text-lg font-bold transition-all hover:bg-primary/10 hover:text-primary rounded-xl"
+                            >
+                                {link.label}
+                            </Link>
+                            ))}
+                            <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="more-links" className="border-b-0">
+                                <AccordionTrigger className="px-4 py-3 text-lg font-bold transition-all hover:bg-primary/10 hover:text-primary rounded-xl hover:no-underline justify-between">
+                                {t.nav_more[language]}
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                <div className="flex flex-col space-y-1 pl-4 mt-2 border-l-2 border-primary/20 ml-4">
+                                    {moreLinks.map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={() => setMenuOpen(false)}
+                                        className="px-4 py-2 text-base font-semibold transition-all hover:text-primary rounded-lg"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                    ))}
+                                </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            </Accordion>
+                        </div>
                       </div>
 
-                      <Separator />
-                      <div className="p-4 flex flex-col gap-2">
-                      <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
-                      <Separator />
-                      {!user && (
-                          <div className="flex gap-2 mt-2">
-                          <Button asChild variant="outline" className="w-full">
-                              <Link href="/login" onClick={() => setMenuOpen(false)}>
-                              {t.login[language]}
-                              </Link>
+                      <Separator className="opacity-50" />
+                      <div className="p-6 bg-muted/10 space-y-6">
+                        <div className="flex flex-col gap-3">
+                          <Button variant="outline" className="w-full justify-start rounded-xl h-12 font-bold gap-3" asChild>
+                            <a href="tel:01641035736">
+                              <Phone className="h-4 w-4 text-primary"/>
+                              {t.hotline[language]}: 01641035736
+                            </a>
                           </Button>
-                          <Button asChild className="w-full">
-                              <Link href="/signup" onClick={() => setMenuOpen(false)}>
-                              {t.signup[language]}
-                              </Link>
-                          </Button>
-                          </div>
-                      )}
-                      <div className="pt-2 flex justify-between">
-                          <LanguageToggle />
-                          <ThemeToggle />
-                      </div>
+                        </div>
+                        
+                        {!user && (
+                            <div className="grid grid-cols-2 gap-3">
+                              <Button asChild variant="outline" className="w-full rounded-xl h-12 font-bold">
+                                  <Link href="/login" onClick={() => setMenuOpen(false)}>
+                                  {t.login[language]}
+                                  </Link>
+                              </Button>
+                              <Button asChild className="w-full rounded-xl h-12 font-bold shadow-lg shadow-primary/20">
+                                  <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                                  {t.signup[language]}
+                                  </Link>
+                              </Button>
+                            </div>
+                        )}
+                        
+                        <div className="flex justify-between items-center px-2">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Preferences</p>
+                            <div className="flex gap-2">
+                              <LanguageToggle className="rounded-full bg-background shadow-sm border border-white/10" />
+                              <ThemeToggle className="rounded-full bg-background shadow-sm border border-white/10" />
+                            </div>
+                        </div>
                       </div>
                   </SheetContent>
               </Sheet>

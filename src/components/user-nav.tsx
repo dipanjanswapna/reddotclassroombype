@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Link from "next/link";
@@ -18,10 +16,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, LogOut, BookOpen, HelpCircle, User } from "lucide-react";
+import { LayoutDashboard, LogOut, BookOpen, HelpCircle, User, Settings, Badge } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { Skeleton } from "./ui/skeleton";
-
 
 export function UserNav() {
   const { user, userInfo, loading, logout } = useAuth();
@@ -65,45 +62,67 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="Open user menu">
-          <Avatar className="h-9 w-9">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full ring-2 ring-transparent hover:ring-primary/20 transition-all" aria-label="Open user menu">
+          <Avatar className="h-9 w-9 border-2 border-white/50 dark:border-white/10 shadow-sm">
             <AvatarImage src={userInfo.avatarUrl} alt={userInfo.name} />
-            <AvatarFallback>{userInfo.name?.split(' ').map(n => n[0]).join('') || 'U'}</AvatarFallback>
+            <AvatarFallback className="bg-primary/5 text-primary font-bold">
+              {userInfo.name?.split(' ').map(n => n[0]).join('') || 'U'}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent className="w-64 p-2 rounded-xl shadow-2xl border-white/10" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal p-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{userInfo.name}</p>
+            <p className="text-sm font-bold leading-none">{userInfo.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {userInfo.email}
             </p>
+            <div className="pt-2">
+              <span className="text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {userInfo.role}
+              </span>
+            </div>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href={getDashboardLink()}><LayoutDashboard className="mr-2 h-4 w-4" />My Dashboard</Link>
+        <DropdownMenuSeparator className="opacity-50" />
+        <DropdownMenuGroup className="space-y-1 mt-1">
+          <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+            <Link href={getDashboardLink()} className="flex items-center py-2 px-3">
+              <LayoutDashboard className="mr-3 h-4 w-4 opacity-70" />
+              <span className="font-semibold">My Dashboard</span>
+            </Link>
           </DropdownMenuItem>
           
-          <DropdownMenuItem asChild>
-              <Link href={getProfileLink()}><User className="mr-2 h-4 w-4" />Profile &amp; Settings</Link>
+          <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+              <Link href={getProfileLink()} className="flex items-center py-2 px-3">
+                <User className="mr-3 h-4 w-4 opacity-70" />
+                <span className="font-semibold">Profile & Settings</span>
+              </Link>
           </DropdownMenuItem>
           
           {userInfo.role === 'Student' && (
-            <DropdownMenuItem asChild>
-                <Link href="/student/my-courses"><BookOpen className="mr-2 h-4 w-4" />My Courses</Link>
+            <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                <Link href="/student/my-courses" className="flex items-center py-2 px-3">
+                  <BookOpen className="mr-3 h-4 w-4 opacity-70" />
+                  <span className="font-semibold">My Courses</span>
+                </Link>
             </DropdownMenuItem>
           )}
 
-           <DropdownMenuItem asChild>
-             <Link href="/faq"><HelpCircle className="mr-2 h-4 w-4" />Help &amp; Support</Link>
+           <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+             <Link href="/faq" className="flex items-center py-2 px-3">
+                <HelpCircle className="mr-3 h-4 w-4 opacity-70" />
+                <span className="font-semibold">Help & Support</span>
+             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4" />Log out
+        <DropdownMenuSeparator className="opacity-50 mt-1" />
+        <DropdownMenuItem onClick={logout} className="rounded-lg mt-1 cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+          <div className="flex items-center py-2 px-3 w-full">
+            <LogOut className="mr-3 h-4 w-4" />
+            <span className="font-bold">Log out</span>
+          </div>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
