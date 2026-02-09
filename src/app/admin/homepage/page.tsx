@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon, Info } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem, SocialChannel } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
@@ -325,7 +325,10 @@ export default function AdminHomepageManagementPage() {
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader>
                             <CardTitle>Main Hero Banners</CardTitle>
-                            <CardDescription>Manage the main sliding banners on the homepage.</CardDescription>
+                            <CardDescription className="flex items-center gap-2">
+                                <Info className="w-4 h-4 text-primary" />
+                                <span>পোস্ট ইমেজ (PostIMG) ব্যবহার করলে অবশ্যই <strong>"Direct Link"</strong> কপি করে এখানে দিবেন।</span>
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {safeHeroBanners.map((banner, index) => (
@@ -333,11 +336,11 @@ export default function AdminHomepageManagementPage() {
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <Label className="text-xs">Image URL</Label>
-                                            <Input placeholder="Enter image URL (e.g., https://...)" value={banner.imageUrl} onChange={e => handleHeroBannerChange(index, 'imageUrl', e.target.value)} />
+                                            <Label className="text-xs">Image URL (Direct Link)</Label>
+                                            <Input placeholder="e.g., https://i.postimg.cc/..." value={banner.imageUrl} onChange={e => handleHeroBannerChange(index, 'imageUrl', e.target.value)} />
                                             {banner.imageUrl && (
-                                                <div className="mt-2 relative aspect-[16/9] w-32 rounded-md overflow-hidden border">
-                                                    <Image src={banner.imageUrl} alt="Preview" fill className="object-cover" />
+                                                <div className="mt-2 relative aspect-[16/9] w-32 rounded-md overflow-hidden border bg-black">
+                                                    <img src={banner.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                                                 </div>
                                             )}
                                         </div>
@@ -362,11 +365,11 @@ export default function AdminHomepageManagementPage() {
                                 <div key={slide.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
                                     <div className="space-y-2">
-                                        <Label className="text-xs">Image URL</Label>
+                                        <Label className="text-xs">Image URL (Direct Link)</Label>
                                         <Input placeholder="Enter image URL..." value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} />
                                         {slide.imageUrl && (
-                                            <div className="mt-2 relative aspect-[21/7] w-48 rounded-md overflow-hidden border">
-                                                <Image src={slide.imageUrl} alt="Preview" fill className="object-cover" />
+                                            <div className="mt-2 relative aspect-[21/7] w-48 rounded-md overflow-hidden border bg-black">
+                                                <img src={slide.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                                             </div>
                                         )}
                                     </div>
@@ -420,11 +423,11 @@ export default function AdminHomepageManagementPage() {
                                 <div className="space-y-2 col-span-2"><Label>Hero Subtitle (EN)</Label><Textarea value={config.offlineHubSection?.heroSubtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'heroSubtitle', 'en', e.target.value)} className="rounded-xl" rows={2}/></div>
                             </div>
                             <div className="space-y-4 pt-4 border-t">
-                                <Label className="font-bold text-primary flex items-center gap-2"><ImageIcon className="w-4 h-4"/> Hero Media (Recommended Size: 600x400)</Label>
+                                <Label className="font-bold text-primary flex items-center gap-2"><ImageIcon className="w-4 h-4"/> Hero Media (Use Direct Link)</Label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label>Hero Image URL</Label>
-                                        <Input value={config.offlineHubSection?.heroImageUrl || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'heroImageUrl', e.target.value)} className="rounded-xl" placeholder="https://picsum.photos/seed/offline/600/400" />
+                                        <Input value={config.offlineHubSection?.heroImageUrl || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'heroImageUrl', e.target.value)} className="rounded-xl" placeholder="e.g., https://i.postimg.cc/..." />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Hero Image AI Hint</Label>
@@ -432,8 +435,8 @@ export default function AdminHomepageManagementPage() {
                                     </div>
                                 </div>
                                 {config.offlineHubSection?.heroImageUrl && (
-                                    <div className="mt-2 rounded-xl border overflow-hidden aspect-[3/2] relative max-w-sm bg-muted mx-auto md:mx-0">
-                                        <Image src={config.offlineHubSection.heroImageUrl} alt="Hero Preview" fill className="object-cover" />
+                                    <div className="mt-2 rounded-xl border overflow-hidden aspect-[3/2] relative max-w-sm bg-black mx-auto md:mx-0">
+                                        <img src={config.offlineHubSection.heroImageUrl} alt="Hero Preview" className="w-full h-full object-cover" />
                                     </div>
                                 )}
                             </div>
