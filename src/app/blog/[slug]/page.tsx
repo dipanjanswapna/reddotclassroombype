@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { BlogPost } from '@/lib/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
-import { Calendar, Clock, ChevronLeft, Share2 } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
@@ -84,42 +84,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             />
           </div>
           
-          <div className="grid lg:grid-cols-4 gap-12">
-            {/* Sidebar info */}
-            <div className="lg:col-span-1 hidden lg:block">
-                <div className="sticky top-24 space-y-8">
-                    <div className="space-y-4">
-                        <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Author</h4>
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-black text-primary text-xs">RDC</div>
-                            <div>
-                                <p className="font-black text-xs uppercase">RDC Editorial</p>
-                                <p className="text-[10px] text-muted-foreground">Expert Mentor</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Share Article</h4>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="icon" className="rounded-xl h-9 w-9 border-white/10 hover:bg-primary hover:text-white transition-all"><Share2 className="w-4 h-4"/></Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+          <div className="max-w-3xl mx-auto">
             {/* Main Content */}
-            <div className="lg:col-span-3">
-                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-headline prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-medium prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-img:rounded-3xl prose-img:shadow-2xl">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
-                </div>
-                
-                <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <p className="font-bold text-sm">Was this article helpful?</p>
-                    <div className="flex gap-3">
-                        <Button variant="outline" className="rounded-xl font-black uppercase text-[10px] tracking-widest h-10 px-6 border-white/10 hover:bg-primary/10">Yes, Thanks!</Button>
-                        <Button variant="outline" className="rounded-xl font-black uppercase text-[10px] tracking-widest h-10 px-6 border-white/10">Not really</Button>
-                    </div>
-                </div>
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-headline prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-medium prose-p:leading-relaxed prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-img:rounded-3xl prose-img:shadow-2xl">
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
             </div>
           </div>
         </article>
