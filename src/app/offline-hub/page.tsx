@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -9,12 +8,14 @@ import { getHomepageConfig, getCourses, getBranches, getOrganizations } from '@/
 import { ArrowRight, CheckCircle2, MapPin, Phone, MessageSquare, Zap, Target, Award } from 'lucide-react';
 import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
-import { Course, Branch, Organization } from '@/lib/types';
+import { Course, Branch, Organization, HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export default function OfflineHubPage() {
-    const [config, setConfig] = React.useState<any>(null);
+    const [config, setConfig] = React.useState<HomepageConfig | null>(null);
     const [courses, setCourses] = React.useState<Course[]>([]);
     const [branches, setBranches] = React.useState<Branch[]>([]);
     const [organizations, setOrganizations] = React.useState<Organization[]>([]);
@@ -79,17 +80,17 @@ export default function OfflineHubPage() {
                                 RDC Physical Centers
                             </div>
                             <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight uppercase">
-                                Red Dot <span className="text-primary">Offline Hub</span>
+                                {offlineHubData?.heroTitle?.[language] || "Red Dot Offline Hub"}
                             </h1>
                             <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                                Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.
+                                {offlineHubData?.heroSubtitle?.[language] || "Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance."}
                             </p>
                             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
                                 <Button asChild size="lg" className="rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 h-14 px-8 bg-primary hover:bg-primary/90 text-white">
-                                    <Link href="#programs">Explore Programs</Link>
+                                    <Link href="#programs">{offlineHubData?.exploreProgramsText?.[language] || "Explore Programs"}</Link>
                                 </Button>
-                                <Button variant="outline" size="lg" className="rounded-xl font-black uppercase tracking-widest h-14 px-8 border-white/20 bg-white/5 hover:bg-white/10 text-white">
-                                    Find a Center
+                                <Button asChild variant="outline" size="lg" className="rounded-xl font-black uppercase tracking-widest h-14 px-8 border-white/20 bg-white/5 hover:bg-white/10 text-white">
+                                    <Link href="#centers">{offlineHubData?.findCenterText?.[language] || "Find a Center"}</Link>
                                 </Button>
                             </div>
                         </motion.div>
@@ -153,13 +154,15 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Branch Directory */}
-            <section className="py-20 md:py-28 bg-black/40">
+            <section id="centers" className="py-20 md:py-28 bg-black/40">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 space-y-4">
                         <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">
                             {offlineHubData?.centersTitle?.[language] || "Our Offline Hubs"}
                         </h2>
-                        <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">Visit us at any of our state-of-the-art locations across Bangladesh.</p>
+                        <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
+                            {offlineHubData?.centersSubtitle?.[language] || "Visit us at any of our state-of-the-art locations across Bangladesh."}
+                        </p>
                     </div>
                     
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -215,13 +218,13 @@ export default function OfflineHubPage() {
                                     <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 shadow-xl">
                                         <a href={`tel:${offlineHubData.contactSection.callButtonNumber}`}>
                                             <Phone className="mr-3 h-5 w-5" />
-                                            Call Support
+                                            {offlineHubData.contactSection.callButtonText[language] || "Call Support"}
                                         </a>
                                     </Button>
                                     <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
                                         <a href={`https://wa.me/${offlineHubData.contactSection.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
                                             <MessageSquare className="mr-3 h-5 w-5" />
-                                            WhatsApp Us
+                                            {offlineHubData.contactSection.whatsappButtonText[language] || "WhatsApp Us"}
                                         </a>
                                     </Button>
                                 </div>

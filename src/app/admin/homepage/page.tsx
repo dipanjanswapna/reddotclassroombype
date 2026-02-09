@@ -489,6 +489,7 @@ export default function AdminHomepageManagementPage() {
     { key: 'appPromo', label: 'App Promo Section' },
     { key: 'requestCallbackSection', label: 'Request Callback Section'},
     { key: 'storeHomepageSection', label: 'Store Homepage'},
+    { key: 'offlineHubSection', label: 'Offline Hub Page CMS'},
   ] as const;
 
   const handleSectionToggle = (sectionKey: typeof allSections[number]['key'], value: boolean) => {
@@ -803,6 +804,36 @@ export default function AdminHomepageManagementPage() {
                 </TabsContent>
 
                 <TabsContent value="pages" className="space-y-8 mt-0">
+                    <Card className="rounded-2xl shadow-sm border-white/10">
+                        <CardHeader>
+                            <CardTitle>Offline Hub Management</CardTitle>
+                            <CardDescription>Manage titles, subtitles, and button text for the Offline Hub page.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm bg-muted/20">
+                                <Label htmlFor="offline-hub-display" className="font-semibold">Display Page Content</Label>
+                                <Switch 
+                                    id="offline-hub-display" 
+                                    checked={config.offlineHubSection?.display ?? true} 
+                                    onCheckedChange={(checked) => handleSectionValueChange('offlineHubSection', 'display', checked)}
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                                <div className="space-y-2"><Label>Hero Title (BN)</Label><Input value={config.offlineHubSection?.heroTitle?.bn || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'heroTitle', 'bn', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Hero Title (EN)</Label><Input value={config.offlineHubSection?.heroTitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'heroTitle', 'en', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2 col-span-2"><Label>Hero Subtitle (EN)</Label><Textarea value={config.offlineHubSection?.heroSubtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'heroSubtitle', 'en', e.target.value)} className="rounded-xl" rows={2}/></div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                                <div className="space-y-2"><Label>Explore Programs Button (EN)</Label><Input value={config.offlineHubSection?.exploreProgramsText?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'exploreProgramsText', 'en', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Find a Center Button (EN)</Label><Input value={config.offlineHubSection?.findCenterText?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'findCenterText', 'en', e.target.value)} className="rounded-xl"/></div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                                <div className="space-y-2"><Label>Programs Section Title (EN)</Label><Input value={config.offlineHubSection?.programsTitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'programsTitle', 'en', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Centers Section Title (EN)</Label><Input value={config.offlineHubSection?.centersTitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'centersTitle', 'en', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2 col-span-2"><Label>Centers Section Subtitle (EN)</Label><Input value={config.offlineHubSection?.centersSubtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'centersSubtitle', 'en', e.target.value)} className="rounded-xl"/></div>
+                            </div>
+                        </CardContent>
+                    </Card>
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader>
                             <CardTitle>Strugglers/Topper Page</CardTitle>
