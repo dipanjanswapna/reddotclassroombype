@@ -1,5 +1,4 @@
 
-
 import type { Metadata } from 'next';
 import SignupPageClient from './signup-client-page';
 import { getHomepageConfig } from '@/lib/firebase/firestore';

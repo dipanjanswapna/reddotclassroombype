@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -15,7 +16,7 @@ export function TeachersCarousel({ instructors, scrollSpeed = 25 }: { instructor
 
   return (
     <div
-      className="w-full inline-flex flex-nowrap overflow-hidden"
+      className="w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_48px,_black_calc(100%-48px),transparent_100%)]"
     >
       <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-infinite-scroll" style={animationStyle}>
         {instructors.map((instructor) => (

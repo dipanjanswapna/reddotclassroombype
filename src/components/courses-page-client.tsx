@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,7 +7,8 @@ import { CourseCard } from '@/components/course-card';
 import { Course, Organization, Instructor } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { CourseFilterBar } from './course-filter-bar';
-import { motion, AnimatePresence } from 'framer-motion';
+import { FreeCoursesBanner } from './free-courses-banner';
+import { HomepageConfig } from '@/lib/types';
 
 type CoursesPageClientProps = {
     initialCourses: Course[];
@@ -51,6 +53,8 @@ export function CoursesPageClient({
     allInstructors,
     hasFilters,
 }: CoursesPageClientProps) {
+  const [loading] = useState(false); 
+
   const coursesByCategory = useMemo(() => groupCoursesByCategory(initialCourses), [initialCourses]);
 
   const sortedCategories = useMemo(() => Object.keys(coursesByCategory).sort((a, b) => {
@@ -63,8 +67,8 @@ export function CoursesPageClient({
   }), [coursesByCategory]);
 
   return (
-    <div className="bg-background w-full">
-      <div className="w-full py-4 mb-8">
+    <div className="bg-background">
+      <div className="container mx-auto px-4 py-8">
           <CourseFilterBar
             categories={allCategories}
             subCategories={allSubCategories}
@@ -73,85 +77,58 @@ export function CoursesPageClient({
           />
       </div>
 
-      <main className="w-full pt-0 pb-16">
-        <AnimatePresence mode="wait">
-            {hasFilters ? (
-                <motion.section 
-                    key="filtered-results"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className='py-0'
-                >
-                    <div className="mb-10 text-center md:text-left">
-                        <h2 className="font-headline text-3xl font-black tracking-tight uppercase">
-                            Search Results ({initialCourses.length})
-                        </h2>
-                        <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
-                    </div>
-                    {initialCourses.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                            {initialCourses.map((course) => {
-                                const provider = allProviders.find(p => p.id === course.organizationId);
-                                return <CourseCard key={course.id} {...course} provider={provider} />;
-                            })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-24 bg-muted/30 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center">
-                            <p className="text-xl font-bold text-muted-foreground">
-                                No courses match your filters.
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-2">Try selecting different categories or providers.</p>
-                        </div>
-                    )}
-                </motion.section>
-            ) : (
-                <div className="space-y-20 md:space-y-24">
-                    {sortedCategories.map((category, catIdx) => (
-                        <motion.section 
-                            key={category} 
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ delay: catIdx * 0.1 }}
-                            id={category.toLowerCase().replace(/\s+/g, '-')} 
-                            className='py-0'
-                        >
-                            <div className="mb-10 text-center md:text-left">
-                                <h2 className="font-headline text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">
-                                    {category}
-                                </h2>
-                                <div className="h-2 w-24 bg-primary mt-4 rounded-full mx-auto md:mx-0 shadow-lg" />
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                                {coursesByCategory[category].map((course) => {
-                                    const provider = allProviders.find(p => p.id === course.organizationId);
-                                    return <CourseCard key={course.id} {...course} provider={provider} />;
-                                })}
-                            </div>
-                        </motion.section>
-                    ))}
-
-                    {archivedCourses.length > 0 && (
-                        <section id="archived-courses" className='py-0'>
-                            <div className="mb-10 text-center md:text-left">
-                                <h2 className="font-headline text-4xl font-black tracking-tight text-muted-foreground uppercase">
-                                    Archived Programs
-                                </h2>
-                                <div className="h-2 w-24 bg-muted mt-4 rounded-full mx-auto md:mx-0 shadow-inner" />
-                                <p className="text-sm text-muted-foreground mt-4 italic font-medium">These programs are currently closed for new enrollments.</p>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                                {archivedCourses.map((course) => {
-                                    const provider = allProviders.find(p => p.id === course.organizationId);
-                                    return <CourseCard key={course.id} {...course} provider={provider} className="grayscale opacity-75 grayscale hover:grayscale-0 hover:opacity-100" />;
-                                })}
-                            </div>
-                        </section>
-                    )}
+      <main className="container mx-auto px-4 pt-0 pb-16">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner className="w-12 h-12" />
+          </div>
+        ) : hasFilters ? (
+            <section className='py-0'>
+              <h2 className="font-headline mb-6 text-3xl font-bold">
+                Filtered Results ({initialCourses.length})
+              </h2>
+              {initialCourses.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {initialCourses.map((course) => {
+                    const provider = allProviders.find(p => p.id === course.organizationId);
+                    return <CourseCard key={course.id} {...course} provider={provider} />;
+                  })}
                 </div>
-            )}
-        </AnimatePresence>
+              ) : (
+                <p className="text-muted-foreground">No courses found matching your criteria. Try clearing the filters.</p>
+              )}
+            </section>
+        ) : (
+            <div className="space-y-16">
+              {sortedCategories.map((category) => (
+                <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0'>
+                  <h2 className="font-headline mb-6 text-3xl font-bold">
+                    {category}
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {coursesByCategory[category].map((course) => {
+                       const provider = allProviders.find(p => p.id === course.organizationId);
+                       return <CourseCard key={course.id} {...course} provider={provider} />;
+                    })}
+                  </div>
+                </section>
+              ))}
+
+              {archivedCourses.length > 0 && (
+                <section id="archived-courses" className='py-0'>
+                    <h2 className="font-headline mb-6 text-3xl font-bold">
+                        Archived Courses
+                    </h2>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {archivedCourses.map((course) => {
+                            const provider = allProviders.find(p => p.id === course.organizationId);
+                            return <CourseCard key={course.id} {...course} provider={provider} />;
+                        })}
+                    </div>
+                </section>
+              )}
+            </div>
+        )}
       </main>
     </div>
   );

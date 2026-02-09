@@ -1,25 +1,21 @@
+
 import { notFound } from 'next/navigation';
 import { getCourse } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
 import { ReviewsClient } from './reviews-client';
 
-/**
- * @fileOverview Course Reviews Page.
- * Updated for Next.js 15 async params compliance and refined visual radius.
- */
-export default async function ReviewsPage({ params }: { params: Promise<{ courseId: string }> }) {
-  const { courseId } = await params;
-  const course = await getCourse(courseId);
+export default async function ReviewsPage({ params }: { params: { courseId: string } }) {
+  const course = await getCourse(params.courseId);
 
   if (!course) {
     notFound();
   }
 
   return (
-    <div className="space-y-10 md:space-y-14">
-      <div className="text-center sm:text-left space-y-2">
-        <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight text-green-700 dark:text-green-500 uppercase">Program Reviews</h1>
-        <p className="text-lg text-muted-foreground font-medium">Community feedback and ratings for {course.title}.</p>
-        <div className="h-1.5 w-24 bg-primary rounded-full mx-auto sm:mx-0 shadow-md" />
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-bold tracking-tight">Reviews</h1>
+        <p className="mt-1 text-lg text-muted-foreground">See what other students are saying about {course.title}.</p>
       </div>
 
       <ReviewsClient course={course} />

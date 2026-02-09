@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
@@ -5,17 +6,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, BookMarked, Video, HelpCircle, 
-  Users as UsersIcon, Trophy, Calculator, Heart, Wallet, 
-  MessageSquare, LogOut, Badge, FileCheck2, Share2, Gift
+  LayoutDashboard, BookOpen, CalendarClock, GraduationCap, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Crown, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2, Gift
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
-/**
- * @fileOverview Refined Student Portal Layout.
- * Synchronized vertical rhythm and adaptive glassmorphism navigation.
- */
 export default function StudentLayout({
   children,
 }: {
@@ -35,27 +30,39 @@ export default function StudentLayout({
 
   if (loading || !user || userInfo?.role !== 'Student') {
     return (
-        <div className="flex items-center justify-center h-screen bg-background">
+        <div className="flex items-center justify-center h-screen">
             <LoadingSpinner className="w-12 h-12" />
         </div>
     );
   }
 
   const navItems = [
-    { href: "/student/dashboard", icon: LayoutDashboard, label: "Overview" },
+    { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
     { href: "/student/planner", icon: BookMarked, label: "Planner" },
-    { href: "/student/live-classes", icon: Video, label: "Live" },
+    { href: "/student/live-classes", icon: Video, label: "Live Classes" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
+    { href: "/student/exams", icon: ClipboardEdit, label: "Exams" },
+    { href: "/student/deadlines", icon: CalendarClock, label: "Deadlines" },
     { href: "/student/grades", icon: FileCheck2, label: "Grades" },
+    { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/referrals", icon: Share2, label: "Referrals" },
     { href: "/student/rewards", icon: Gift, label: "Rewards" },
-    { href: "/student/calculator", icon: Calculator, label: "Tools" },
+    { href: "/student/community", icon: UsersIcon, label: "Community" },
+    { href: "/student/leaderboard", icon: Crown, label: "Leaderboard" },
+    { href: "/student/achievements", icon: Trophy, label: "Achievements" },
+    { href: "/student/tutor", icon: Bot, label: "AI Tutor" },
+    { href: "/student/tts", icon: Voicemail, label: "TTS" },
+    { href: "/student/calculator", icon: Calculator, label: "Calculator" },
     { href: "/student/wishlist", icon: Heart, label: "Wishlist" },
     { href: "/student/payments", icon: Wallet, label: "Payments" },
-    { href: "/student/profile", icon: UsersIcon, label: "Profile" },
+    { href: "/student/certificates", icon: Award, label: "Certificates" },
+    { href: "/student/notifications", icon: Bell, label: "Notifications" },
+    { href: "/student/profile", icon: User, label: "Profile" },
     { href: "/student/id-card", icon: Badge, label: "ID Card" },
+    { href: "/student/guardian", icon: UsersIcon, label: "Guardian" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
+    { href: "/student/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -69,35 +76,38 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
-  // Prevent double layouts for lesson pages
+  // This layout handles the main student dashboard pages.
+  // A nested layout at /student/my-courses/[courseId]/layout.tsx will handle course-specific navigation.
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
-      return <div className="min-h-screen bg-background pb-20">{children}</div>;
+      return <>{children}</>;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
-          {children}
+    <>
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+        {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-20 md:w-24 h-16 text-center transition-all rounded-xl",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
                   getIsActive(item.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
               )}
             >
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
       </nav>
-    </div>
+    </>
   );
 }
+
+    

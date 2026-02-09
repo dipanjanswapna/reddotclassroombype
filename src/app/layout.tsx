@@ -1,9 +1,11 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
 import logoSrc from '@/public/logo.png';
+
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -28,10 +30,10 @@ const fontHindSiliguri = Hind_Siliguri({
 export const metadata: Metadata = {
   metadataBase: new URL('https://rdc.vercel.app'),
   title: {
-    default: 'RED DOT CLASSROOM (RDC)',
+    default: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM',
     template: '%s | RED DOT CLASSROOM (RDC)',
   },
-  description: 'RED DOT CLASSROOM (RDC). A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
+  description: 'RED DOT CLASSROOM (RDC) powered by PRANGONS ECOSYSTEM. A modern online learning management system for Bangladesh, offering courses for HSC, SSC, Admission Tests, and skills development.',
   icons: {
     icon: logoSrc.src,
     shortcut: logoSrc.src,

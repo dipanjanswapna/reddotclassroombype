@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -7,8 +8,10 @@ import {
   Video,
   DollarSign,
   User,
+  Settings,
   LogOut,
   TicketPercent,
+  CalendarPlus,
   FileCheck2,
   Badge,
   ClipboardCheck,
@@ -21,10 +24,6 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
-/**
- * @fileOverview Refined Teacher Portal Layout.
- * Features modern glassmorphism bottom navigation and elite adaptive typography.
- */
 export default function TeacherLayout({
   children,
 }: {
@@ -44,24 +43,26 @@ export default function TeacherLayout({
   
   if (loading || !user || userInfo?.role !== 'Teacher') {
     return (
-        <div className="flex items-center justify-center h-screen bg-background">
+        <div className="flex items-center justify-center h-screen">
             <LoadingSpinner className="w-12 h-12" />
         </div>
     );
   }
 
   const menuItems = [
-    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Overview" },
+    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
-    { href: "/teacher/students", icon: Users, label: "Learners" },
+    { href: "/teacher/students", icon: Users, label: "Students" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
     { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance" },
     { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
-    { href: "/teacher/live-classes", icon: Video, label: "Live" },
-    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
+    { href: "/teacher/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
     { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
     { href: "/teacher/profile", icon: User, label: "Profile" },
     { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
+    { href: "/teacher/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -76,29 +77,29 @@ export default function TeacherLayout({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 max-w-7xl mx-auto w-full">
-          {children}
+    <>
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+        {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-2xl border-t border-primary/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1 scrollbar-hide">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
+        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-20 md:w-24 h-16 text-center transition-all rounded-xl",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
                   getIsActive(item.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
               )}
             >
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) && "animate-pulse")} />
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
       </nav>
-    </div>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { getPartnerBySubdomain, getCourses, getProducts } from '@/lib/firebase/firestore';
 import type { Organization, Course, Product } from '@/lib/types';
@@ -7,14 +8,8 @@ import { CourseCard } from '@/components/course-card';
 import { ProductCard } from '@/components/product-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-/**
- * @fileOverview Partner Storefront.
- * Updated for Next.js 15 async params compliance and refined visual radius.
- */
-
-export async function generateMetadata({ params }: { params: Promise<{ site: string }> }): Promise<Metadata> {
-  const { site } = await params;
-  const partner = await getPartnerBySubdomain(site);
+export async function generateMetadata({ params }: { params: { site: string } }): Promise<Metadata> {
+  const partner = await getPartnerBySubdomain(params.site);
 
   if (!partner) {
     return {
@@ -34,8 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ site: str
 }
 
 
-export default async function PartnerSitePage({ params }: { params: Promise<{ site: string }> }) {
-  const { site: siteSlug } = await params;
+export default async function PartnerSitePage({ params }: { params: { site: string } }) {
+  const siteSlug = params.site;
+  
   const partner = await getPartnerBySubdomain(siteSlug);
 
   if (!partner) {
@@ -87,10 +83,10 @@ export default async function PartnerSitePage({ params }: { params: Promise<{ si
           </div>
         )}
 
-        <Tabs defaultValue={defaultTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 rounded-xl h-14 p-1">
-                {hasCourses && <TabsTrigger value="courses" className="rounded-lg font-bold">Courses</TabsTrigger>}
-                {hasProducts && <TabsTrigger value="products" className="rounded-lg font-bold">Store Products</TabsTrigger>}
+        <Tabs defaultValue={defaultTab}>
+            <TabsList className="grid w-full grid-cols-2">
+                {hasCourses && <TabsTrigger value="courses">Courses</TabsTrigger>}
+                {hasProducts && <TabsTrigger value="products">Store Products</TabsTrigger>}
             </TabsList>
             {hasCourses && (
                  <TabsContent value="courses" className="mt-8">
@@ -113,7 +109,7 @@ export default async function PartnerSitePage({ params }: { params: Promise<{ si
         </Tabs>
 
         { !hasCourses && !hasProducts && (
-          <div className="text-center py-16 bg-muted rounded-2xl">
+          <div className="text-center py-16 bg-muted rounded-lg">
             <p className="text-muted-foreground">No courses or products available from this seller yet.</p>
           </div>
         )}

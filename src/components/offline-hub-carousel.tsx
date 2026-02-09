@@ -20,11 +20,6 @@ type OfflineHubCarouselProps = {
   slides?: HomepageConfig['offlineHubHeroCarousel']['slides'];
 };
 
-/**
- * @fileOverview Refined Offline Hub Carousel.
- * Synchronized with main page aesthetic: removed solid black, added glassmorphism.
- * Standardized padding and vertical rhythm.
- */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
@@ -43,7 +38,7 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 md:py-6 max-w-full overflow-hidden">
+    <div className="container mx-auto px-4 py-8">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -53,39 +48,32 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
         <CarouselContent>
           {slides.map((slide) => (
             <CarouselItem key={slide.id}>
-              <Card className="overflow-hidden rounded-[2.5rem] md:rounded-[3rem] shadow-xl border border-primary/10 bg-background relative group/card">
-                <div className="relative aspect-[16/10] sm:aspect-[21/7] md:aspect-[21/6] w-full bg-muted">
+              <Card className="overflow-hidden rounded-2xl shadow-lg border-0">
+                <div className="relative aspect-[21/6] w-full">
                   <Image
                     src={slide.imageUrl}
                     alt={slide.title}
                     fill
-                    priority
-                    className="object-cover transition-transform duration-1000 group-hover/card:scale-105"
+                    className="object-cover"
                     data-ai-hint={slide.dataAiHint}
                   />
-                  
-                  {/* Glassmorphism Overlay Logic */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70" />
-                  
-                  <div className="absolute inset-0 p-6 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between text-white gap-6">
-                    <div className="flex-1 space-y-2 sm:space-y-4 text-left max-w-2xl">
-                      <div className="bg-primary text-white font-black px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.2em] shadow-lg inline-block select-none">
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 p-4 md:p-8 flex items-center justify-between text-white">
+                    <div className="flex-1">
+                      <div className="bg-yellow-400 text-black font-bold px-3 py-1 rounded-md text-sm w-fit">
                         {slide.title}
                       </div>
-                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight drop-shadow-xl uppercase tracking-tight">
+                      <h2 className="text-3xl md:text-5xl font-extrabold mt-2 text-shadow" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
                         {slide.subtitle}
                       </h2>
                     </div>
-                    
-                    <div className="text-left md:text-right shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto mt-auto md:mt-0 p-5 md:p-0 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl md:bg-transparent md:backdrop-blur-none md:border-none md:shadow-none">
-                      <div className="flex flex-col items-start md:items-end">
-                         <span className="text-[10px] md:text-sm line-through opacity-70 font-black tracking-widest">{slide.originalPrice}</span>
-                         <span className="text-3xl md:text-5xl font-black text-yellow-400 drop-shadow-2xl tracking-tighter">
-                            {slide.price}
-                         </span>
+                    <div className="text-right shrink-0 flex flex-col items-end">
+                      <div className="flex items-center gap-2">
+                         <span className="text-xl md:text-2xl font-bold text-yellow-300">{slide.price}</span>
+                         <span className="text-md md:text-lg line-through opacity-80">{slide.originalPrice}</span>
                       </div>
-                      <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl px-10 h-12 md:h-14 shadow-2xl transition-all active:scale-95 border-none">
-                        <Link href={slide.enrollHref}>Enroll Now</Link>
+                      <Button asChild className="mt-2 bg-red-600 hover:bg-red-700 font-bold rounded-lg text-sm md:text-base">
+                        <Link href={slide.enrollHref} aria-label={`Enroll in ${slide.title}`}>ENROLL NOW!</Link>
                       </Button>
                     </div>
                   </div>
@@ -94,16 +82,12 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
-              className={cn(
-                'h-1 rounded-full transition-all duration-500 shadow-sm', 
-                current === index ? 'w-10 bg-white shadow-xl' : 'w-2.5 bg-white/30 hover:bg-white/60'
-              )}
+              className={cn('w-2 h-2 rounded-full transition-all', current === index ? 'w-4 bg-white' : 'bg-white/50')}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

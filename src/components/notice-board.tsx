@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -48,16 +49,13 @@ export function NoticeBoard() {
   }
 
   return (
-    <div className="my-2">
+    <div className="my-8">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
-            <Card className="glassmorphism-card border-2 border-primary shadow-xl">
+            <Card className="glassmorphism-card">
                 <CardHeader>
-                    <div className="flex flex-col items-center gap-1">
-                        <div className="flex items-center gap-3">
-                          <Megaphone className="w-6 h-6 text-primary" />
-                          <CardTitle className="text-xl font-bold text-green-700 dark:text-green-500">নোটিশ বোর্ড</CardTitle>
-                        </div>
-                        <div className="h-1 w-12 bg-primary mt-1 rounded-full" />
+                    <div className="flex items-center gap-3 text-primary">
+                        <Megaphone className="w-6 h-6" />
+                        <CardTitle className="text-xl font-bold">Notice Board</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -69,7 +67,7 @@ export function NoticeBoard() {
                                 <button 
                                     key={notice.id}
                                     onClick={() => setSelectedNotice(notice)}
-                                    className="w-full text-left p-2 rounded-md hover:bg-primary/10 transition-colors"
+                                    className="w-full text-left p-2 rounded-md hover:bg-primary/10"
                                 >
                                     <div className="flex items-center gap-2 text-sm font-medium">
                                         <Pin className="h-4 w-4 text-primary" />
@@ -87,7 +85,7 @@ export function NoticeBoard() {
 
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="text-green-700 dark:text-green-500">{selectedNotice?.title}</DialogTitle>
+                    <DialogTitle>{selectedNotice?.title}</DialogTitle>
                     {selectedNotice?.publishedAt && (
                       <DialogDescription className="flex items-center gap-2 pt-2">
                           <Calendar className="w-4 h-4"/>

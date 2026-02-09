@@ -1,5 +1,4 @@
 
-
 import { getAuth } from 'firebase/auth';
 import { getFirebaseApp } from './config';
 // A server-side helper to get the current user.

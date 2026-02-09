@@ -1,44 +1,33 @@
 
-
 'use client';
 
-import { Suspense } from 'react';
-import { LoadingSpinner } from '@/components/loading-spinner';
-import { PaymentsClient, HydratedOrder } from './payments-client';
-import { getCurrentUser } from '@/lib/firebase/auth';
-import { getCoursesByIds, getEnrollmentsByUserId, getOrdersByUserId } from '@/lib/firebase/firestore';
-import type { Course, Enrollment, Order } from '@/lib/types';
-import { safeToDate } from '@/lib/utils';
-import { redirect } from 'next/navigation';
-import { useAuth } from '@/context/auth-context';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth-context';
+import { PaymentsClient } from './payments-client';
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
+import type { Course } from '@/lib/types';
+import { safeToDate } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
-
 
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
-
     const [transactions, setTransactions] = useState<any[]>([]);
-    const [orders, setOrders] = useState<HydratedOrder[]>([]);
     const [loading, setLoading] = useState(true);
-    
+
     useEffect(() => {
         if (authLoading) return;
         if (!userInfo) {
             setLoading(false);
-            redirect('/login');
             return;
         }
 
-        const fetchData = async () => {
+        const fetchInitialData = async () => {
             try {
-                const [enrollmentsData, ordersData] = await Promise.all([
-                    getEnrollmentsByUserId(userInfo.uid),
-                    getOrdersByUserId(userInfo.uid)
-                ]);
-
+                const enrollmentsData = await getEnrollmentsByUserId(userInfo.uid);
                 const courseIds = enrollmentsData.map(e => e.courseId);
+                
                 let coursesData: Course[] = [];
                 if (courseIds.length > 0) {
                     coursesData = await getCoursesByIds(courseIds);
@@ -55,31 +44,19 @@ export default function StudentPaymentsPage() {
                     };
                 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-                const serializedOrders: HydratedOrder[] = ordersData.map(order => ({
-                    ...order,
-                    createdAt: safeToDate(order.createdAt).toISOString(),
-                    updatedAt: safeToDate(order.updatedAt).toISOString(),
-                })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
                 setTransactions(transactionData);
-                setOrders(serializedOrders);
-            } catch(e) {
-                toast({
-                    title: 'Error',
-                    description: 'Could not fetch payment history.',
-                    variant: 'destructive',
-                });
+            } catch (error) {
+                console.error("Failed to fetch payment data:", error);
+                toast({ title: 'Error', description: 'Could not load payment history.', variant: 'destructive' });
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
-
+        fetchInitialData();
     }, [userInfo, authLoading, toast]);
 
-
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-20rem)]">
                 <LoadingSpinner className="w-12 h-12" />
@@ -95,7 +72,7 @@ export default function StudentPaymentsPage() {
                     A record of all your transactions on the platform.
                 </p>
             </div>
-            <PaymentsClient initialTransactions={transactions} initialOrders={orders} />
+            <PaymentsClient initialTransactions={transactions} />
         </div>
     );
 }

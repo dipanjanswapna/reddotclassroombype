@@ -1,3 +1,5 @@
+
+
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getInstructorBySlug, getCourses, getEnrollments } from '@/lib/firebase/firestore';
@@ -11,14 +13,8 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getYoutubeVideoId } from '@/lib/utils';
 
-/**
- * @fileOverview Teacher Profile Page.
- * Updated for Next.js 15 async params compliance and refined visual radius.
- */
-
-export async function generateMetadata({ params }: { params: Promise<{ teacherSlug: string }> }): Promise<Metadata> {
-  const awaitedParams = await params;
-  const teacher = await getInstructorBySlug(awaitedParams.teacherSlug);
+export async function generateMetadata({ params }: { params: { teacherSlug: string } }): Promise<Metadata> {
+  const teacher = await getInstructorBySlug(params.teacherSlug);
 
   if (!teacher) {
     return {
@@ -37,9 +33,8 @@ export async function generateMetadata({ params }: { params: Promise<{ teacherSl
   }
 }
 
-export default async function TeacherProfilePage({ params }: { params: Promise<{ teacherSlug: string }> }) {
-    const awaitedParams = await params;
-    const teacher = await getInstructorBySlug(awaitedParams.teacherSlug);
+export default async function TeacherProfilePage({ params }: { params: { teacherSlug: string } }) {
+    const teacher = await getInstructorBySlug(params.teacherSlug);
 
     if (!teacher || teacher.status !== 'Approved') {
         notFound();
@@ -51,7 +46,7 @@ export default async function TeacherProfilePage({ params }: { params: Promise<{
     ]);
     
     const courses = allCourses.filter(c => 
-        c.status === 'Published' && c.instructors?.some(i => i.slug === awaitedParams.teacherSlug)
+        c.status === 'Published' && c.instructors?.some(i => i.slug === params.teacherSlug)
     );
     const courseIds = courses.map(c => c.id);
     const studentCount = new Set(allEnrollments.filter(e => courseIds.includes(e.courseId)).map(e => e.userId)).size;

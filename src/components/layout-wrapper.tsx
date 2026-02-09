@@ -1,3 +1,6 @@
+
+
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -9,54 +12,19 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from './theme-provider';
 import { AuthProvider } from '@/context/auth-context';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from './ui/toaster';
 import { CartProvider } from '@/context/cart-context';
 import { CartSheet } from './cart-sheet';
 import { StoreHeader } from './store-header';
+import { StoreFooter } from './store-footer';
 import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore';
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import FacebookPixel from './facebook-pixel';
-import { NextProgressBar } from './next-progress-bar';
-import { WifiOff } from 'lucide-react';
 
-function useIsOnline() {
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    setIsOnline(navigator.onLine);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  return isOnline;
-}
-
-const NetworkStatus = () => {
-  const isOnline = useIsOnline();
-  
-  if (isOnline) return null;
-
-  return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-destructive text-destructive-foreground py-2 px-4 flex items-center justify-center gap-2 text-sm font-bold animate-in slide-in-from-top duration-300">
-      <WifiOff className="h-4 w-4" />
-      <span>You are currently offline. Some features may not work correctly.</span>
-    </div>
-  );
-};
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const { language } = useLanguage();
   const [categories, setCategories] = React.useState([]);
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
 
@@ -65,49 +33,71 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     getHomepageConfig().then(setHomepageConfig);
   }, []);
 
-  const isPartnerSite = pathname.startsWith('/sites/');
+  const isFullPageLayout =
+    pathname.startsWith('/sites/') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/signup') ||
+    pathname.startsWith('/seller-program/apply') ||
+    pathname.startsWith('/password-reset');
+    
+  const isOfflineHub = pathname.startsWith('/offline-hub');
   const isStore = pathname.startsWith('/store');
+
+  if (isFullPageLayout || isOfflineHub) {
+    return <>{children}</>;
+  }
+
+  if (isStore) {
+    return (
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
+        <StoreHeader categories={categories} />
+        <main className="flex-grow">
+            {children}
+        </main>
+        <StoreFooter categories={categories} />
+      </div>
+    );
+  }
+  
   const isDashboardPage = 
     pathname.startsWith('/student') ||
     pathname.startsWith('/teacher') ||
     pathname.startsWith('/guardian') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/moderator') ||
-    pathname.startsWith('/seller') ||
-    pathname.startsWith('/affiliate') ||
-    pathname.startsWith('/doubt-solver');
+    pathname.startsWith('/seller');
+    
+  const isHomePage = pathname === '/';
 
-  if (isPartnerSite) {
-    return <div className="max-w-full overflow-x-hidden">{children}</div>;
-  }
-
-  if (isStore) {
-    return (
-      <div className="bg-background min-h-screen flex flex-col overflow-x-hidden max-w-full">
-        <StoreHeader categories={categories} />
-        <main className="flex-grow pt-20 max-w-full overflow-x-hidden">
-            {children}
-        </main>
-        <Footer homepageConfig={homepageConfig} />
-      </div>
-    );
-  }
-  
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden max-w-full">
-        <Header homepageConfig={homepageConfig} />
-        <main className="flex-grow pt-20 max-w-full overflow-x-hidden">
-          {children}
-        </main>
-        {!isDashboardPage && <Footer homepageConfig={homepageConfig} />}
-        {homepageConfig?.floatingWhatsApp?.display && (
-            <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
-        )}
-        <CartSheet />
+    <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
+        <div className={cn(
+            "min-h-screen flex flex-col",
+            isDashboardPage && "bg-background"
+        )}>
+            <Header homepageConfig={homepageConfig} />
+            <main className={cn("flex-grow")}>
+              {children}
+            </main>
+            {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+             {homepageConfig?.floatingWhatsApp?.display && (
+                <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
+            )}
+        </div>
     </div>
   );
 }
 
+
+/**
+ * @fileOverview LayoutWrapper component.
+ * This component acts as a conditional layout manager for the entire application.
+ * It inspects the current URL pathname to decide whether to render the main
+ * Header and Footer components. This allows for different page types, such as
+ * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
+ * interfaces, to have distinct layouts.
+ */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
  return (
      <ThemeProvider
@@ -119,17 +109,14 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <CartProvider>
             <LanguageProvider>
-                <Suspense fallback={null}>
-                    <NextProgressBar />
-                </Suspense>
-                <NetworkStatus />
-                <InnerLayout>
-                    {children}
-                </InnerLayout>
-                <Toaster position="bottom-right" richColors closeButton />
-                <Suspense fallback={null}>
-                    <FacebookPixel />
-                </Suspense>
+            <InnerLayout>
+                {children}
+            </InnerLayout>
+            <CartSheet />
+            <Toaster />
+            <Suspense fallback={null}>
+                <FacebookPixel />
+            </Suspense>
             </LanguageProvider>
         </CartProvider>
       </AuthProvider>

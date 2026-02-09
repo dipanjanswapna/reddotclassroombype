@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -21,27 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
-import Confetti from 'react-confetti';
 
-// Local hook to avoid react-use optimization issues
-function useWindowSize() {
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const handleResize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return size;
-}
-
+// Simplified list for demonstration. In a real app, this would come from a database or a comprehensive library.
 const districts = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Sylhet", "Barishal", "Rangpur", "Mymensingh"];
 const thanas: { [key: string]: string[] } = {
   "Dhaka": ["Gulshan", "Dhanmondi", "Mirpur", "Uttara", "Motijheel", "Savar"],
@@ -58,7 +40,6 @@ const thanas: { [key: string]: string[] } = {
 export default function CheckoutPage() {
   const { items, clearCart, total } = useCart();
   const { userInfo } = useAuth();
-  const { width, height } = useWindowSize();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -71,7 +52,6 @@ export default function CheckoutPage() {
   });
   
   const [config, setConfig] = useState<HomepageConfig['storeSettings'] | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     if (userInfo) {
@@ -155,22 +135,20 @@ export default function CheckoutPage() {
 
     const result = await createOrderAction(orderDetails);
     if(result.success) {
-      setShowConfetti(true);
       toast({
-        title: "Order Placed Successfully!",
-        description: "Your order is being processed. Redirecting to your dashboard...",
+        title: "Order Placed!",
+        description: result.message,
       });
       clearCart();
-      setTimeout(() => {
-        router.push('/student/dashboard');
-      }, 4000);
+      router.push('/student/dashboard'); // Or an order confirmation page
     } else {
       toast({ title: "Order Failed", description: result.message, variant: "destructive" });
-      setIsProcessing(false);
     }
+    
+    setIsProcessing(false);
   };
   
-  if (items.length === 0 && !isProcessing && !showConfetti) {
+  if (items.length === 0 && !isProcessing) {
       return (
         <div className="container mx-auto max-w-2xl py-12 text-center">
             <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground" />
@@ -183,7 +161,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto max-w-5xl py-12">
-      {showConfetti && <Confetti width={width} height={height} numberOfPieces={200} recycle={false} gravity={0.2} />}
       <h1 className="text-3xl font-bold mb-8">Checkout</h1>
       <div className="grid md:grid-cols-2 gap-8">
         <div>
@@ -202,23 +179,23 @@ export default function CheckoutPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name*</Label>
-                <Input id="name" placeholder="Full Name" value={shippingInfo.name} onChange={handleInputChange} disabled={showConfetti} />
+                <Input id="name" placeholder="Full Name" value={shippingInfo.name} onChange={handleInputChange} />
               </div>
                <div className="space-y-2">
                 <Label htmlFor="phone">Phone*</Label>
-                <Input id="phone" type="tel" placeholder="01XXXXXXXXX" value={shippingInfo.phone} onChange={handleInputChange} disabled={showConfetti} />
+                <Input id="phone" type="tel" placeholder="01XXXXXXXXX" value={shippingInfo.phone} onChange={handleInputChange} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label htmlFor="district">District*</Label>
-                    <Select value={shippingInfo.district} onValueChange={(v) => handleSelectChange('district', v)} disabled={showConfetti}>
+                    <Select value={shippingInfo.district} onValueChange={(v) => handleSelectChange('district', v)}>
                         <SelectTrigger><SelectValue placeholder="Select District"/></SelectTrigger>
                         <SelectContent>{districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                    <div className="space-y-2">
                     <Label htmlFor="thana">Thana*</Label>
-                    <Select value={shippingInfo.thana} onValueChange={(v) => handleSelectChange('thana', v)} disabled={!shippingInfo.district || showConfetti}>
+                    <Select value={shippingInfo.thana} onValueChange={(v) => handleSelectChange('thana', v)} disabled={!shippingInfo.district}>
                         <SelectTrigger><SelectValue placeholder="Select Thana"/></SelectTrigger>
                         <SelectContent>{(thanas[shippingInfo.district] || []).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                     </Select>
@@ -226,7 +203,7 @@ export default function CheckoutPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Delivery Address*</Label>
-                <Input id="address" placeholder="তোমার নিকটস্থ সুন্দরবন কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} disabled={showConfetti} />
+                <Input id="address" placeholder="তোমার নিকটস্থ সুন্দরবন কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} />
               </div>
             </CardContent>
           </Card>
@@ -262,8 +239,8 @@ export default function CheckoutPage() {
                         <span>- ৳{discount.toFixed(2)}</span>
                     </div>
                      <div className="flex gap-2">
-                        <Input placeholder="Enter Coupon Code" value={coupon} onChange={e => setCoupon(e.target.value)} disabled={isCouponLoading || showConfetti}/>
-                        <Button variant="outline" size="sm" onClick={handleApplyCoupon} disabled={isCouponLoading || !coupon || showConfetti}>
+                        <Input placeholder="Enter Coupon Code" value={coupon} onChange={e => setCoupon(e.target.value)} disabled={isCouponLoading}/>
+                        <Button variant="outline" size="sm" onClick={handleApplyCoupon} disabled={isCouponLoading || !coupon}>
                             {isCouponLoading && <Loader2 className="h-4 w-4 animate-spin"/>}
                             Apply
                         </Button>
@@ -278,7 +255,7 @@ export default function CheckoutPage() {
             </CardContent>
             <div className='p-6 pt-2 space-y-4'>
                 <div className="items-top flex space-x-2">
-                    <Checkbox id="terms1" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} disabled={showConfetti} />
+                    <Checkbox id="terms1" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} />
                     <div className="grid gap-1.5 leading-none">
                         <label
                         htmlFor="terms1"
@@ -293,9 +270,9 @@ export default function CheckoutPage() {
                         </p>
                     </div>
                 </div>
-               <Button size="lg" className="w-full" onClick={handlePlaceOrder} disabled={isProcessing || showConfetti}>
+               <Button size="lg" className="w-full" onClick={handlePlaceOrder} disabled={isProcessing}>
                 {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                {showConfetti ? 'Success!' : 'Place Order'}
+                Place Order
               </Button>
             </div>
           </Card>

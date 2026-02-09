@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -102,13 +103,14 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 2,
+            scale: 2, // Higher scale for better quality
             useCORS: true,
             backgroundColor: '#ffffff'
         });
         
         const imgData = canvas.toDataURL('image/png');
         
+        // A4 size in points: 595.28 x 841.89
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'pt',
@@ -122,7 +124,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
         const imgHeight = canvas.height;
         const ratio = imgWidth / imgHeight;
 
-        let finalWidth = pdfWidth - 40;
+        let finalWidth = pdfWidth - 40; // 20pt margin on each side
         let finalHeight = finalWidth / ratio;
 
         if (finalHeight > pdfHeight - 40) {
@@ -131,7 +133,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
         }
 
         const x = (pdfWidth - finalWidth) / 2;
-        const y = 20;
+        const y = 20; // 20pt margin from top
         
         pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
         pdf.save(`${invoice.invoiceNumber}.pdf`);
@@ -170,6 +172,7 @@ export function InvoiceView({ invoice, className }: InvoiceViewProps) {
                     <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-16 w-auto" />
                     <div>
                          <h1 className="font-bold text-2xl text-gray-800">RED DOT CLASSROOM</h1>
+                         <p className="text-xs text-gray-500">powered by prangons ecosystem</p>
                          <p className="text-xl font-semibold mt-2">Invoice</p>
                     </div>
                 </div>

@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, ChevronDown, Phone, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, Search, X, ChevronDown, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -28,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { UserNav } from "./user-nav";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
+import { LanguageToggle } from "./language-toggle";
 import { NotificationBell } from "./notification-bell";
 import { HomepageConfig } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
@@ -35,14 +37,17 @@ import Image from "next/image";
 import logoSrc from '@/public/logo.png';
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { useCart } from "@/context/cart-context";
+import { Badge } from "./ui/badge";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const { items, setIsCartOpen } = useCart();
   const isDark = variant === 'dark';
 
-  const logoToDisplay = homepageConfig?.logoUrl || logoSrc;
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const mainNavLinks = [
     { href: "/store", label: t.nav_rdc_store[language] },
@@ -61,24 +66,21 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("fixed top-0 left-0 right-0 z-50 w-full flex justify-center bg-transparent pointer-events-none transition-all duration-300", wrapperClassName)}>
-      <div className="container max-w-7xl pointer-events-auto px-4 mt-2">
-        <div className={cn(
-          "flex h-16 items-center justify-between rounded-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border border-primary/40 px-4 sm:px-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] overflow-hidden",
-          containerClassName
-        )}>
+    <header className={cn("sticky top-0 z-50 w-full py-3", wrapperClassName)}>
+      <div className="container">
+        <div className={cn("flex h-16 items-center justify-between rounded-full bg-background/60 dark:bg-card/40 backdrop-blur-lg border border-white/10 px-4 shadow-lg", containerClassName)}>
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center space-x-2 shrink-0 transition-transform hover:scale-105 active:scale-95">
-                <Image src={logoToDisplay} alt="RED DOT CLASSROOM Logo" width={120} height={40} className="h-10 w-auto object-contain" priority />
+            <Link href="/" className="flex items-center space-x-2">
+                <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 md:h-10 w-auto" priority />
             </Link>
           </div>
           
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("h-10 px-4 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10")}>
+              <Button key={link.href} variant="ghost" asChild className={cn(isDark && "text-white hover:bg-white/20")}>
                   <Link
                   href={link.href}
-                  className="transition-colors hover:text-primary whitespace-nowrap"
+                  className="transition-colors hover:text-primary"
                   >
                   {link.label}
                   </Link>
@@ -86,13 +88,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn("h-10 px-4 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10")}>
-                      {t.nav_more[language]} <ChevronDown className="h-3 w-3 opacity-50" />
+                      <Button variant="ghost" className={cn("flex items-center gap-1", isDark && "text-white hover:bg-white/20")}>
+                      {t.nav_more[language]} <ChevronDown className="h-4 w-4" />
                       </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48 bg-background/95 backdrop-blur-lg border-primary/20 rounded-2xl shadow-2xl">
+                  <DropdownMenuContent>
                       {moreLinks.map((link) => (
-                          <DropdownMenuItem key={link.href} asChild className="cursor-pointer focus:bg-primary/10 focus:text-primary font-bold text-xs uppercase tracking-tight p-3 rounded-xl mx-1 my-0.5">
+                          <DropdownMenuItem key={link.href} asChild>
                               <Link href={link.href}>{link.label}</Link>
                           </DropdownMenuItem>
                       ))}
@@ -101,72 +103,72 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           </nav>
 
           <div className="flex items-center justify-end space-x-2">
-              <div className="hidden sm:flex items-center space-x-1">
-                  <ThemeToggle className={cn("h-10 w-10 rounded-full", isDark && "text-white hover:bg-white/10 hover:text-white")} />
+              <div className="hidden sm:flex items-center space-x-2">
+                  <LanguageToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
+                  <ThemeToggle className={cn(isDark && "text-white hover:bg-white/20 hover:text-white")} />
+                  <Button variant="ghost" className={cn("hidden lg:inline-flex", isDark && "text-white hover:bg-white/20 hover:text-white")}><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
                   {!user && (
-                    <div className="flex items-center gap-2 ml-2">
-                        <Button asChild variant="ghost" size="sm" className={cn("h-10 text-[10px] font-black uppercase tracking-widest", isDark && "text-white hover:bg-white/10 hover:text-white")}>
-                            <Link href="/login">{t.login[language]}</Link>
-                        </Button>
-                        <Button asChild size="sm" className={cn("h-10 px-6 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg active:shadow-inner bg-primary hover:bg-primary/90 text-white border-none")}>
-                            <Link href="/signup">{t.signup[language]}</Link>
-                        </Button>
-                    </div>
+                    <>
+                    <Button asChild variant="outline" className={cn(isDark && "text-white border-white/50 hover:bg-white/10 hover:text-white")}>
+                        <Link href="/login">{t.login[language]}</Link>
+                    </Button>
+                    <Button asChild className={cn(isDark && "bg-white text-black hover:bg-gray-200")}>
+                        <Link href="/signup">{t.signup[language]}</Link>
+                    </Button>
+                    </>
                   )}
               </div>
               
-              {user && (
-                <div className="flex items-center gap-2 border-l border-primary/20 pl-2">
-                    <NotificationBell />
-                    <UserNav />
-                </div>
-              )}
+              {user && <NotificationBell />}
+              {user && <UserNav />}
 
-              <div className="lg:hidden flex items-center">
+              <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("h-10 w-10 rounded-full", isDark && "text-white hover:bg-white/10")}>
-                      <Menu className="h-6 w-6" />
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn(isDark && "text-white hover:bg-white/20")}>
+                      <Menu className="h-5 w-5" />
                   </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-full max-w-xs flex flex-col bg-background/95 backdrop-blur-2xl border-r-primary/20">
-                      <SheetHeader className="p-6 border-b border-primary/10">
-                          <Link
-                              href="/"
-                              className="flex items-center space-x-2"
-                              onClick={() => setMenuOpen(false)}
-                          >
-                              <Image src={logoToDisplay} alt="RED DOT CLASSROOM Logo" width={140} height={50} className="h-12 w-auto object-contain" priority />
-                          </Link>
-                          <SheetDescription className="text-left mt-2 font-medium">Empowering learners in Bangladesh.</SheetDescription>
+                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/80 backdrop-blur-xl">
+                      <SheetHeader className="sr-only">
+                          <SheetTitle>Mobile Menu</SheetTitle>
+                          <SheetDescription>Main navigation links for the Red Dot Classroom website.</SheetDescription>
                       </SheetHeader>
+                      <div className="p-4 border-b">
+                      <Link
+                          href="/"
+                          className="flex items-center space-x-2"
+                          onClick={() => setMenuOpen(false)}
+                      >
+                          <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-8 w-auto" priority />
+                      </Link>
+                      </div>
                       
-                      <div className="flex-grow overflow-y-auto px-4 py-6">
-                      <div className="flex flex-col space-y-2">
+                      <div className="flex-grow overflow-y-auto px-2 py-4">
+                      <div className="flex flex-col space-y-1">
                           {mainNavLinks.map((link) => (
                           <Link
                               key={link.href}
                               href={link.href}
                               onClick={() => setMenuOpen(false)}
-                              className="px-4 py-3 text-lg font-black uppercase tracking-tight transition-colors hover:text-primary hover:bg-primary/5 rounded-xl"
+                              className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md"
                           >
                               {link.label}
                           </Link>
                           ))}
-                          <Separator className="my-2 opacity-50" />
                           <Accordion type="single" collapsible className="w-full">
                           <AccordionItem value="more-links" className="border-b-0">
-                              <AccordionTrigger className="px-4 py-3 text-lg font-black uppercase tracking-tight transition-colors hover:text-primary hover:bg-primary/5 rounded-xl hover:no-underline justify-between">
+                              <AccordionTrigger className="px-2 py-3 text-base font-medium transition-colors hover:text-primary rounded-md hover:no-underline justify-start gap-1">
                               {t.nav_more[language]}
                               </AccordionTrigger>
                               <AccordionContent>
-                              <div className="flex flex-col space-y-1 pl-4 mt-1 border-l-2 border-primary/10 ml-4">
+                              <div className="flex flex-col space-y-1 pl-7">
                                   {moreLinks.map((link) => (
                                   <Link
                                       key={link.href}
                                       href={link.href}
                                       onClick={() => setMenuOpen(false)}
-                                      className="px-4 py-2.5 text-base font-bold transition-colors hover:text-primary hover:bg-primary/5 rounded-lg"
+                                      className="px-2 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md"
                                   >
                                       {link.label}
                                   </Link>
@@ -178,27 +180,28 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                       </div>
                       </div>
 
-                      <div className="p-6 mt-auto border-t border-primary/10 bg-accent/5">
-                        <div className="flex flex-col gap-4">
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground font-bold">
-                                <Phone className="h-4 w-4 text-primary" />
-                                <span>{t.hotline[language]}: 01641035736</span>
-                            </div>
-                            {!user && (
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Button asChild variant="outline" className="rounded-xl border-primary/20 font-black uppercase text-[10px] tracking-widest h-12">
-                                        <Link href="/login" onClick={() => setMenuOpen(false)}>{t.login[language]}</Link>
-                                    </Button>
-                                    <Button asChild className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 border-none shadow-lg shadow-primary/20">
-                                        <Link href="/signup" onClick={() => setMenuOpen(false)}>{t.signup[language]}</Link>
-                                    </Button>
-                                </div>
-                            )}
-                            <div className="flex items-center justify-between pt-2">
-                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Appearance</span>
-                                <ThemeToggle />
-                            </div>
-                        </div>
+                      <Separator />
+                      <div className="p-4 flex flex-col gap-2">
+                      <Button variant="ghost" className="w-full justify-start"><Phone className="mr-2"/> {t.hotline[language]}: 01641035736</Button>
+                      <Separator />
+                      {!user && (
+                          <div className="flex gap-2 mt-2">
+                          <Button asChild variant="outline" className="w-full">
+                              <Link href="/login" onClick={() => setMenuOpen(false)}>
+                              {t.login[language]}
+                              </Link>
+                          </Button>
+                          <Button asChild className="w-full">
+                              <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                              {t.signup[language]}
+                              </Link>
+                          </Button>
+                          </div>
+                      )}
+                      <div className="pt-2 flex justify-between">
+                          <LanguageToggle />
+                          <ThemeToggle />
+                      </div>
                       </div>
                   </SheetContent>
               </Sheet>
