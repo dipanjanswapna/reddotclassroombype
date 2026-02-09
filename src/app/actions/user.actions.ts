@@ -1,6 +1,3 @@
-
-
-
 'use server';
 
 import 'dotenv/config';
@@ -182,5 +179,22 @@ export async function markStudentAsCounseledAction(studentId: string) {
         return { success: true, message: 'Student marked as counseled for this month.' };
     } catch (error: any) {
         return { success: false, message: 'Failed to update counseling status.' };
+    }
+}
+
+export async function removeUserSessionAction(userId: string, sessionId: string) {
+    try {
+        const user = await getUser(userId);
+        if (!user || !user.activeSessions) {
+            throw new Error("User or sessions not found.");
+        }
+
+        const updatedSessions = user.activeSessions.filter(s => s.id !== sessionId);
+        await updateUser(userId, { activeSessions: updatedSessions });
+        
+        revalidatePath('/student/profile');
+        return { success: true, message: 'Device removed successfully.' };
+    } catch (error: any) {
+        return { success: false, message: error.message };
     }
 }

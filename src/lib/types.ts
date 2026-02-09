@@ -586,6 +586,14 @@ export type SupportTicket = {
   }[];
 };
 
+export type UserSession = {
+    id: string;
+    deviceName: string;
+    ipAddress: string;
+    lastLoginAt: any; // Timestamp
+    userAgent: string;
+};
+
 export type User = {
   id?: string;
   uid: string; // Firebase Auth UID
@@ -635,7 +643,9 @@ export type User = {
   plannerSettings?: {
     theme: string;
     whiteNoise: string;
-  }
+  };
+  // Device Management
+  activeSessions?: UserSession[];
 };
 
 export type Referral = {
@@ -1099,7 +1109,7 @@ export type HomepageConfig = {
   topperPageSection?: TopperPageSection;
   offlineHubHeroCarousel?: {
     display: boolean;
-    slides: OfflineHubSlide[];
+    slides: OfflineHubHeroSlide[];
   };
   statsSection?: {
     display: boolean;
