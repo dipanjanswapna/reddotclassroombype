@@ -22,8 +22,8 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview OfflineHubCarousel Component
- * A high-performance hero carousel optimized for Tablet, Mobile, and Desktop.
- * Features fluid typography and zero-cutoff responsive logic.
+ * A high-performance hero carousel optimized for extreme content scaling.
+ * Features significantly smaller text and buttons for a minimalist, high-density look.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -47,7 +47,6 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
     return null;
   }
 
-  // Animation variants for staggered entrance
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -60,8 +59,8 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } }
+    hidden: { y: 15, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 120 } }
   };
 
   return (
@@ -76,57 +75,54 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="pl-0 basis-full">
               <div className="px-0 sm:px-0">
-                {/* Responsive Container: Generous aspect ratios to prevent content cutoff on tab/mobile */}
-                <div className="relative w-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl bg-black aspect-[16/12] sm:aspect-[16/8] md:aspect-[21/8] lg:aspect-[21/6]">
+                <div className="relative w-full overflow-hidden rounded-[1.5rem] md:rounded-[2rem] shadow-2xl bg-black aspect-[16/10] sm:aspect-[16/7] md:aspect-[21/7] lg:aspect-[21/5]">
                   <Image
                     src={slide.imageUrl}
                     alt={slide.title}
                     fill
                     priority={index === 0}
-                    className="object-cover opacity-60 transition-transform duration-[8000ms] ease-linear group-hover/carousel:scale-110"
+                    className="object-cover opacity-50 transition-transform duration-[8000ms] ease-linear group-hover/carousel:scale-110"
                     data-ai-hint={slide.dataAiHint}
                   />
                   
-                  {/* Cinematic Gradient for Legibility */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent z-10" />
                   
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 z-20 p-6 sm:p-12 md:p-16 lg:p-20 flex items-center">
+                  <div className="absolute inset-0 z-20 p-6 sm:p-10 md:p-14 lg:p-16 flex items-center">
                     <motion.div 
                       key={`content-${current}`}
                       variants={containerVariants}
                       initial="hidden"
                       animate={current === index ? "visible" : "hidden"}
-                      className="w-full max-w-5xl space-y-4 sm:space-y-6"
+                      className="w-full max-w-4xl space-y-3 sm:space-y-4"
                     >
                       <motion.div
                         variants={itemVariants}
-                        className="inline-flex items-center gap-2 bg-primary text-white font-black px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-[0.2em] shadow-xl border border-white/20"
+                        className="inline-flex items-center gap-1.5 bg-primary text-white font-black px-3 py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.15em] shadow-lg border border-white/10"
                       >
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Sparkles className="w-3 h-3" />
                         {slide.title}
                       </motion.div>
 
                       <motion.h2 
                         variants={itemVariants}
-                        className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] drop-shadow-2xl font-headline uppercase tracking-tighter"
+                        className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-xl font-headline uppercase tracking-tight"
                       >
                         {slide.subtitle}
                       </motion.h2>
 
                       <motion.div 
                         variants={itemVariants}
-                        className="flex flex-wrap items-center gap-4 sm:gap-8 pt-2"
+                        className="flex flex-wrap items-center gap-3 sm:gap-6 pt-1"
                       >
                         <div className="flex flex-col">
-                          <span className="text-white/50 text-xs sm:text-sm line-through font-bold tracking-tight">{slide.originalPrice}</span>
-                          <span className="text-2xl sm:text-4xl md:text-5xl font-black text-primary drop-shadow-[0_0_20px_rgba(var(--primary),0.5)]">{slide.price}</span>
+                          <span className="text-white/40 text-[10px] sm:text-xs line-through font-bold">{slide.originalPrice}</span>
+                          <span className="text-xl sm:text-2xl md:text-3xl font-black text-primary">{slide.price}</span>
                         </div>
                         
-                        <Button asChild className="bg-white hover:bg-primary hover:text-white text-black font-black text-xs sm:text-base px-6 sm:px-10 h-10 sm:h-14 rounded-xl md:rounded-2xl shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95">
+                        <Button asChild size="sm" className="bg-white hover:bg-primary hover:text-white text-black font-black text-[10px] sm:text-xs px-4 sm:px-6 h-8 sm:h-10 rounded-lg md:rounded-xl shadow-xl transition-all duration-300">
                           <Link href={slide.enrollHref}>
                             ENROLL NOW
-                            <ChevronRight className="ml-2 w-4 h-4 sm:w-6 h-6" />
+                            <ChevronRight className="ml-1.5 w-3 h-3 sm:w-4 h-4" />
                           </Link>
                         </Button>
                       </motion.div>
@@ -138,37 +134,35 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
           ))}
         </CarouselContent>
 
-        {/* Navigation - Strategic Placement for Tablet/Desktop */}
         <div className="hidden md:flex">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => api?.scrollPrev()}
-            className="absolute top-1/2 -translate-y-1/2 left-4 z-30 h-12 w-12 rounded-full bg-black/20 backdrop-blur-xl border border-white/20 text-white hover:bg-primary hover:border-primary transition-all opacity-0 group-hover/carousel:opacity-100"
+            className="absolute top-1/2 -translate-y-1/2 left-4 z-30 h-10 w-10 rounded-full bg-black/20 backdrop-blur-xl border border-white/20 text-white hover:bg-primary opacity-0 group-hover/carousel:opacity-100 transition-all"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => api?.scrollNext()}
-            className="absolute top-1/2 -translate-y-1/2 right-4 z-30 h-12 w-12 rounded-full bg-black/20 backdrop-blur-xl border border-white/20 text-white hover:bg-primary hover:border-primary transition-all opacity-0 group-hover/carousel:opacity-100"
+            className="absolute top-1/2 -translate-y-1/2 right-4 z-30 h-10 w-10 rounded-full bg-black/20 backdrop-blur-xl border border-white/20 text-white hover:bg-primary opacity-0 group-hover/carousel:opacity-100 transition-all"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Navigation Progress Indicators */}
-        <div className="flex justify-center items-center gap-3 mt-6 sm:mt-8">
+        <div className="flex justify-center items-center gap-2 mt-4 sm:mt-6">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
               className={cn(
-                'h-1.5 sm:h-2 rounded-full transition-all duration-500',
+                'h-1 rounded-full transition-all duration-500',
                 current === index 
-                  ? 'w-10 sm:w-12 bg-primary shadow-lg shadow-primary/30' 
-                  : 'w-2 sm:w-3 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                  ? 'w-6 sm:w-8 bg-primary shadow-md' 
+                  : 'w-1.5 sm:w-2 bg-muted-foreground/30'
               )}
               aria-label={`Go to slide ${index + 1}`}
             />
