@@ -1,10 +1,9 @@
-
 'use client';
 
 import Link from "next/link";
 import Image from "next/image";
 import logoSrc from '@/public/logo.png';
-import { Facebook, Youtube, Linkedin, ArrowUp, Twitter } from "lucide-react";
+import { Facebook, Youtube, Linkedin, ArrowUp, Twitter, MapPin, Phone } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function OfflineHubFooter() {
