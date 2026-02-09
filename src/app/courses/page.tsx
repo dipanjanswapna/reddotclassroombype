@@ -1,15 +1,12 @@
 
-
 import { getCourses, getStoreCategories, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
+import { TypingText } from '@/components/typing-text';
 
 export const metadata: Metadata = {
   title: 'RDC SHOP - Red Dot Classroom',
@@ -22,15 +19,13 @@ async function CoursesPageContent({ searchParams }: { searchParams?: { [key: str
   const selectedProvider = searchParams?.provider;
   const selectedInstructor = searchParams?.instructor;
 
-  const [providers, allCoursesData, allCategoriesData, allInstructors] = await Promise.all([
+  const [providers, allCoursesData, allInstructors] = await Promise.all([
     getOrganizations(),
-    getCourses({ status: 'Published' }), // Fetch all published for filters
-    getStoreCategories(),
+    getCourses({ status: 'Published' }),
     getInstructors(),
   ]);
   
   const allCategories = allCoursesData.map(c => c.category).filter((v, i, a) => a.indexOf(v) === i && v);
-
 
   const filteredCourses = await getCourses({
       category: selectedCategory,
@@ -70,22 +65,41 @@ export default async function CoursesPage({
     const homepageConfig = await getHomepageConfig();
     
   return (
-    <div className="bg-background">
-        {homepageConfig?.offlineHubHeroCarousel?.display && (
-            <div className="bg-gray-900">
+    <div className="bg-background mesh-gradient min-h-screen">
+        {/* Elite Shop Hero */}
+        <section className="bg-black/5 dark:bg-transparent">
+            {homepageConfig?.offlineHubHeroCarousel?.display && (
                 <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
+            )}
+        </section>
+
+        {/* Shop Intro */}
+        <section className="py-10 md:py-16 text-center border-b border-white/10">
+            <div className="container mx-auto px-4">
+                <h1 className="font-black text-3xl md:text-5xl lg:text-6xl tracking-tighter uppercase mb-4">
+                    RDC <span className="text-primary">SHOP</span>
+                </h1>
+                <div className="max-w-3xl mx-auto h-[4.5rem] md:h-auto">
+                    <TypingText 
+                        text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
+                        className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed font-bengali"
+                    />
+                </div>
             </div>
-        )}
+        </section>
+
       <div className="container mx-auto px-4 py-8">
           <Suspense fallback={
-              <div className="flex flex-grow items-center justify-center h-full w-full p-8">
+              <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-12 h-12" />
               </div>
           }>
               <CoursesPageContent searchParams={searchParams} />
           </Suspense>
       </div>
-      <div className="container mx-auto px-4 pb-12">
+
+      {/* Premium Footer Banner */}
+      <div className="container mx-auto px-4 pb-20 md:pb-28">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>
