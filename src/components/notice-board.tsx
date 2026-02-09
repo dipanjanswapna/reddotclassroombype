@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,6 +10,7 @@ import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -51,49 +51,51 @@ export function NoticeBoard() {
   return (
     <div className="my-8">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
-            <Card className="glassmorphism-card">
+            <Card className="bg-[#c2edcf] dark:bg-[#c2edcf]/10 border border-[#a8dbba] dark:border-[#c2edcf]/20 rounded-2xl shadow-lg transition-all duration-300">
                 <CardHeader>
                     <div className="flex items-center gap-3 text-primary">
-                        <Megaphone className="w-6 h-6" />
-                        <CardTitle className="text-xl font-bold">Notice Board</CardTitle>
+                        <div className="bg-primary/10 p-2 rounded-xl">
+                            <Megaphone className="w-6 h-6 text-primary" />
+                        </div>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-foreground">Notice Board</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
                        <NoticeBoardSkeleton />
                     ) : notices.length > 0 ? (
-                         <div className="space-y-2">
+                         <div className="space-y-1">
                             {notices.map((notice) => (
                                 <button 
                                     key={notice.id}
                                     onClick={() => setSelectedNotice(notice)}
-                                    className="w-full text-left p-2 rounded-md hover:bg-primary/10"
+                                    className="w-full text-left p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-200 group"
                                 >
-                                    <div className="flex items-center gap-2 text-sm font-medium">
-                                        <Pin className="h-4 w-4 text-primary" />
-                                        <span className="truncate">{notice.title}</span>
-                                        <span className="ml-auto text-xs text-muted-foreground shrink-0">{formatDateSafe(notice.publishedAt, 'dd MMM')}</span>
+                                    <div className="flex items-center gap-3 text-sm font-semibold">
+                                        <Pin className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+                                        <span className="truncate flex-grow text-foreground">{notice.title}</span>
+                                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground shrink-0">{formatDateSafe(notice.publishedAt, 'dd MMM')}</span>
                                     </div>
                                 </button>
                             ))}
                         </div>
                     ) : (
-                       <p className="text-sm text-center text-muted-foreground">No recent notices.</p>
+                       <p className="text-sm text-center text-muted-foreground py-4 font-medium">No recent notices.</p>
                     )}
                 </CardContent>
             </Card>
 
-            <DialogContent>
+            <DialogContent className="rounded-2xl border-white/10">
                 <DialogHeader>
-                    <DialogTitle>{selectedNotice?.title}</DialogTitle>
+                    <DialogTitle className="text-xl font-bold">{selectedNotice?.title}</DialogTitle>
                     {selectedNotice?.publishedAt && (
-                      <DialogDescription className="flex items-center gap-2 pt-2">
-                          <Calendar className="w-4 h-4"/>
+                      <DialogDescription className="flex items-center gap-2 pt-2 font-medium">
+                          <Calendar className="w-4 h-4 text-primary"/>
                           Published on {formatDateSafe(selectedNotice.publishedAt, 'PPP')}
                       </DialogDescription>
                     )}
                 </DialogHeader>
-                <div className="py-4 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto">
+                <div className="py-4 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto font-medium leading-relaxed">
                     {selectedNotice?.content}
                 </div>
             </DialogContent>
