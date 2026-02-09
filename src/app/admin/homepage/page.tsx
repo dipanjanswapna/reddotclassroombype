@@ -44,10 +44,22 @@ export default function AdminHomepageManagementPage() {
             getOrganizations(),
             getCourses({ status: 'Published' })
         ]);
+        
+        // Ensure critical fields are arrays to prevent .map() errors
+        if (fetchedConfig) {
+            if (!Array.isArray(fetchedConfig.heroBanners)) fetchedConfig.heroBanners = [];
+            if (fetchedConfig.offlineHubHeroCarousel && !Array.isArray(fetchedConfig.offlineHubHeroCarousel.slides)) {
+                fetchedConfig.offlineHubHeroCarousel.slides = [];
+            }
+            if (!Array.isArray(fetchedConfig.liveCoursesIds)) fetchedConfig.liveCoursesIds = [];
+            if (!Array.isArray(fetchedConfig.sscHscCourseIds)) fetchedConfig.sscHscCourseIds = [];
+            if (!Array.isArray(fetchedConfig.admissionCoursesIds)) fetchedConfig.admissionCoursesIds = [];
+        }
+
         setConfig(fetchedConfig);
-        setAllInstructors(instructorsData.filter(i => i.status === 'Approved'));
-        setAllOrganizations(organizationsData.filter(o => o.status === 'approved'));
-        setAllCourses(coursesData);
+        setAllInstructors(Array.isArray(instructorsData) ? instructorsData.filter(i => i.status === 'Approved') : []);
+        setAllOrganizations(Array.isArray(organizationsData) ? organizationsData.filter(o => o.status === 'approved') : []);
+        setAllCourses(Array.isArray(coursesData) ? coursesData : []);
       } catch (error) {
         console.error("Error fetching homepage config:", error);
         toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
@@ -114,7 +126,7 @@ export default function AdminHomepageManagementPage() {
             if (!prev || index < 0) return prev;
             
             const section = (prev[sectionKey] as any) || { display: true };
-            const array = section[arrayKey] ? [...section[arrayKey]] : [];
+            const array = Array.isArray(section[arrayKey]) ? [...section[arrayKey]] : [];
             
             if (array[index]) {
                 array[index] = { ...array[index], [field]: value };
@@ -151,7 +163,7 @@ export default function AdminHomepageManagementPage() {
   const addHeroBanner = () => {
     setConfig(prev => {
         if (!prev) return null;
-        const currentBanners = prev.heroBanners || [];
+        const currentBanners = Array.isArray(prev.heroBanners) ? prev.heroBanners : [];
         return {
             ...prev,
             heroBanners: [
@@ -163,10 +175,14 @@ export default function AdminHomepageManagementPage() {
   };
 
   const removeHeroBanner = (id: number) => {
-    setConfig(prev => prev ? ({
-      ...prev,
-      heroBanners: (prev.heroBanners || []).filter(banner => banner.id !== id)
-    }) : null);
+    setConfig(prev => {
+        if (!prev) return null;
+        const currentBanners = Array.isArray(prev.heroBanners) ? prev.heroBanners : [];
+        return {
+            ...prev,
+            heroBanners: currentBanners.filter(banner => banner.id !== id)
+        };
+    });
   };
 
   const addOfflineSlide = () => {
@@ -183,9 +199,10 @@ export default function AdminHomepageManagementPage() {
           enrollHref: '#'
       };
       const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
+      const currentSlides = Array.isArray(offlineCarousel.slides) ? offlineCarousel.slides : [];
       return {
           ...prev,
-          offlineHubHeroCarousel: { ...offlineCarousel, slides: [...(offlineCarousel.slides || []), newSlide] }
+          offlineHubHeroCarousel: { ...offlineCarousel, slides: [...currentSlides, newSlide] }
       };
     });
   };
@@ -193,7 +210,8 @@ export default function AdminHomepageManagementPage() {
   const removeOfflineSlide = (id: number) => {
     setConfig(prev => {
       if (!prev || !prev.offlineHubHeroCarousel) return null;
-      const newSlides = (prev.offlineHubHeroCarousel.slides || []).filter(s => s.id !== id);
+      const currentSlides = Array.isArray(prev.offlineHubHeroCarousel.slides) ? prev.offlineHubHeroCarousel.slides : [];
+      const newSlides = currentSlides.filter(s => s.id !== id);
       return { ...prev, offlineHubHeroCarousel: { ...prev.offlineHubHeroCarousel, slides: newSlides } };
     });
   };
@@ -228,6 +246,9 @@ export default function AdminHomepageManagementPage() {
     { key: 'appPromo', label: 'App Promo' },
     { key: 'requestCallbackSection', label: 'Callback Section'},
   ] as const;
+
+  const safeHeroBanners = Array.isArray(config.heroBanners) ? config.heroBanners : [];
+  const safeOfflineSlides = Array.isArray(config.offlineHubHeroCarousel?.slides) ? config.offlineHubHeroCarousel.slides : [];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -297,7 +318,7 @@ export default function AdminHomepageManagementPage() {
                             <CardDescription>Manage the main sliding banners on the homepage.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {(config.heroBanners || []).map((banner, index) => (
+                            {safeHeroBanners.map((banner, index) => (
                                 <div key={banner.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -316,7 +337,7 @@ export default function AdminHomepageManagementPage() {
                             <CardDescription>The slim sliding banner used on Shop and Offline Hub pages.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {(config.offlineHubHeroCarousel?.slides || []).map((slide, index) => (
+                            {safeOfflineSlides.map((slide, index) => (
                                 <div key={slide.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
                                     <div className="space-y-2"><Label className="text-xs">Image URL</Label><Input value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
@@ -336,9 +357,9 @@ export default function AdminHomepageManagementPage() {
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader><CardTitle>Featured Course Lists</CardTitle><CardDescription>Enter comma-separated course IDs to display in each homepage section.</CardDescription></CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2"><Label>Journey Section (Live Courses IDs)</Label><Input value={config.liveCoursesIds?.join(', ') || ''} onChange={e => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label>SSC & HSC Section IDs</Label><Input value={config.sscHscCourseIds?.join(', ') || ''} onChange={e => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label>Admission Section IDs</Label><Input value={config.admissionCoursesIds?.join(', ') || ''} onChange={e => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Journey Section (Live Courses IDs)</Label><Input value={Array.isArray(config.liveCoursesIds) ? config.liveCoursesIds.join(', ') : ''} onChange={e => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>SSC & HSC Section IDs</Label><Input value={Array.isArray(config.sscHscCourseIds) ? config.sscHscCourseIds.join(', ') : ''} onChange={e => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Admission Section IDs</Label><Input value={Array.isArray(config.admissionCoursesIds) ? config.admissionCoursesIds.join(', ') : ''} onChange={e => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
                         </CardContent>
                     </Card>
                 </TabsContent>
