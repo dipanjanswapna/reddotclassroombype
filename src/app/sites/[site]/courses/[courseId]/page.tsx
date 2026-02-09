@@ -1,5 +1,4 @@
 
-
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -391,7 +390,7 @@ export default async function PartnerCourseDetailPage({
         {includedCourses.length > 0 && (
           <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">এই কোর্সের সাথে যা ফ্রি পাচ্ছেন</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
               {includedCourses.map(includedCourse => {
                 const provider = allOrgs.find(p => p.id === includedCourse.organizationId);
                 return <CourseCard key={includedCourse.id} {...includedCourse} provider={provider} partnerSubdomain={params.site} />;
@@ -402,7 +401,7 @@ export default async function PartnerCourseDetailPage({
 
          <section className="pt-16">
             <h2 className="font-headline text-3xl font-bold mb-6">আমাদের আরও কিছু কোর্স</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                 {relatedCourses.map(course => {
                     const provider = allOrgs.find(p => p.id === course.organizationId);
                     return <CourseCard key={course.id} {...course} provider={provider} partnerSubdomain={params.site} />;

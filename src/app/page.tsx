@@ -248,10 +248,10 @@ export default function Home() {
         {homepageConfig.journeySection?.display && (
           <section aria-labelledby="hero-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent">
             <div className="container mx-auto px-4">
-              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.['en']}</h2>
-              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.['en']}</p>
+              <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.[language]}</h2>
+              <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
-                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.['en']}</h3>
+                <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.[language]}</h3>
                 <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
               </div>
             </div>
@@ -263,11 +263,11 @@ export default function Home() {
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-8">
                   <div>
-                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.['en']}</h2>
-                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.['en']}</p>
+                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
                   <Button asChild variant="outline" className="rounded-xl">
-                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.['en']}</Link>
+                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
@@ -278,8 +278,8 @@ export default function Home() {
         {homepageConfig.videoSection?.display && (
           <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20">
             <div className="container mx-auto px-4 text-center">
-                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.['en']}</h2>
-                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.['en']}</p>
+                <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.[language]}</h2>
+                <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.[language]}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {homepageConfig.videoSection?.videos.map((video, index) => {
                       const videoId = getYoutubeVideoId(video.videoUrl);
@@ -296,7 +296,7 @@ export default function Home() {
                     })}
                 </div>
                 <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg shadow-accent/20">
-                  <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language] || homepageConfig.videoSection?.buttonText?.['en']}</Link>
+                  <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language] || homepageConfig.videoSection?.buttonText?.[language]}</Link>
                 </Button>
             </div>
           </section>
@@ -305,8 +305,8 @@ export default function Home() {
         {homepageConfig.sscHscSection?.display && (
           <section aria-labelledby="ssc-hsc-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
-                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
@@ -317,10 +317,10 @@ export default function Home() {
         {homepageConfig.masterclassSection?.display && (
           <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent">
               <div className="container mx-auto px-4 text-center">
-                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.['en']}</h2>
+                  <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
-                    <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language] || homepageConfig.masterclassSection?.buttonText?.['en']}</Link>
+                    <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language] || homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -329,13 +329,13 @@ export default function Home() {
         {homepageConfig.admissionSection?.display && (
           <section aria-labelledby="admission-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.['en']}</Badge>
-                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.['en']}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.[language]}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
-                    <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language] || homepageConfig.admissionSection?.buttonText?.['en']}</Link>
+                    <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language] || homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -344,13 +344,13 @@ export default function Home() {
         {homepageConfig.jobPrepSection?.display && (
           <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.['en']}</Badge>
-                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.['en']}</h2>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
-                    <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.['en']}</Link>
+                    <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
           </section>
@@ -362,7 +362,7 @@ export default function Home() {
           <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent">
             <div className="container mx-auto px-4">
               <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
-                {homepageConfig.collaborations?.title?.[language] || homepageConfig.collaborations?.title?.['en']}
+                {homepageConfig.collaborations?.title?.[language] || homepageConfig.collaborations?.title?.[language]}
               </h2>
               <DynamicCollaborationsCarousel organizations={approvedCollaborators} />
             </div>
@@ -373,7 +373,7 @@ export default function Home() {
           <section aria-labelledby="partners-heading">
             <div className="container mx-auto px-4">
               <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
-                {homepageConfig.partnersSection?.title?.[language] || homepageConfig.partnersSection?.title?.['en']}
+                {homepageConfig.partnersSection?.title?.[language] || homepageConfig.partnersSection?.title?.[language]}
               </h2>
               <PartnersLogoScroll 
                 partners={homepageConfig.partnersSection.partners}
@@ -388,10 +388,10 @@ export default function Home() {
           <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
-                {homepageConfig.socialMediaSection?.title?.[language] || homepageConfig.socialMediaSection?.title?.['en']}
+                {homepageConfig.socialMediaSection?.title?.[language] || homepageConfig.socialMediaSection?.title?.[language]}
               </h2>
               <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">
-                {homepageConfig.socialMediaSection?.description?.[language] || homepageConfig.socialMediaSection?.description?.['en']}
+                {homepageConfig.socialMediaSection?.description?.[language] || homepageConfig.socialMediaSection?.description?.[language]}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {homepageConfig.socialMediaSection?.channels.map((channel) => (
@@ -439,12 +439,12 @@ export default function Home() {
         {homepageConfig.statsSection?.display && (
           <section aria-labelledby="stats-heading">
             <div className="container mx-auto px-4 text-center">
-                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language] || homepageConfig.statsSection?.title?.['en']}</h2>
+                <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language] || homepageConfig.statsSection?.title?.[language]}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
                         <div key={index} className="text-center glassmorphism-card p-8 bg-white/40 dark:bg-card/40 border-white/20">
                             <p className="font-headline text-5xl font-black text-primary drop-shadow-sm">{stat.value}</p>
-                            <p className="mt-2 text-lg text-muted-foreground font-bold tracking-tight uppercase">{stat.label?.[language] || stat.label?.['en']}</p>
+                            <p className="mt-2 text-lg text-muted-foreground font-bold tracking-tight uppercase">{stat.label?.[language] || stat.label?.[language]}</p>
                         </div>
                     ))}
                 </div>
@@ -457,10 +457,10 @@ export default function Home() {
             <div className="container mx-auto px-4">
               <div className="glassmorphism-card p-8 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-primary/10 to-accent/10 border-white/30">
                     <div className='text-center md:text-left'>
-                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold">{homepageConfig.notesBanner?.title?.[language] || homepageConfig.notesBanner?.title?.['en']}</h3>
-                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language] || homepageConfig.notesBanner?.description?.['en']}</p>
+                        <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold">{homepageConfig.notesBanner?.title?.[language] || homepageConfig.notesBanner?.title?.[language]}</h3>
+                        <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language] || homepageConfig.notesBanner?.description?.[language]}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-black shrink-0 bg-accent text-accent-foreground rounded-xl shadow-xl shadow-accent/20 px-10">{homepageConfig.notesBanner?.buttonText?.[language] || homepageConfig.notesBanner?.buttonText?.['en']}</Button>
+                    <Button variant="default" size="lg" className="font-black shrink-0 bg-accent text-accent-foreground rounded-xl shadow-xl shadow-accent/20 px-10">{homepageConfig.notesBanner?.buttonText?.[language] || homepageConfig.notesBanner?.buttonText?.[language]}</Button>
                 </div>
             </div>
           </section>
@@ -476,8 +476,8 @@ export default function Home() {
           <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
-                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.['en']}</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.['en']}</p>
+                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.[language]}</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
                             <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl"/>
