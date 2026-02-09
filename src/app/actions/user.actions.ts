@@ -198,3 +198,15 @@ export async function removeUserSessionAction(userId: string, sessionId: string)
         return { success: false, message: error.message };
     }
 }
+
+export async function findRollNumberByEmailAction(email: string) {
+    try {
+        const user = await getUserByEmailAndRole(email, 'Student');
+        if (!user) {
+            return { success: false, message: "এই ইমেইল দিয়ে কোনো শিক্ষার্থী পাওয়া যায়নি।" };
+        }
+        return { success: true, rollNumber: user.classRoll || user.offlineRollNo || 'N/A' };
+    } catch (error: any) {
+        return { success: false, message: "একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন।" };
+    }
+}

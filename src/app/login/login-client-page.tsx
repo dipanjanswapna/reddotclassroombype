@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,12 +11,22 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Search, Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User, HomepageConfig } from '@/lib/types';
 import loginImage from '@/public/login.jpg';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { findRollNumberByEmailAction } from '@/app/actions/user.actions';
 
 
 function GoogleIcon() {
@@ -43,6 +52,7 @@ function FacebookIcon() {
 export default function LoginPageClient({ homepageConfig }: { homepageConfig: HomepageConfig }) {
   const { language } = useLanguage();
   const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll, loginWithStaffId } = useAuth();
+  const { toast } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -54,6 +64,12 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('student');
+
+  // Find Roll states
+  const [searchEmail, setSearchEmail] = useState('');
+  const [isFindingRoll, setIsFindingRoll] = useState(false);
+  const [foundRoll, setFoundRoll] = useState<string | null>(null);
+  const [findRollError, setFindRollError] = useState<string | null>(null);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +129,25 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
        setIsLoading(false);
     }
   };
+
+  const handleFindRoll = async () => {
+      if (!searchEmail) {
+          setFindRollError("দয়া করে ইমেইল এড্রেস লিখুন।");
+          return;
+      }
+      setIsFindingRoll(true);
+      setFindRollError(null);
+      setFoundRoll(null);
+      
+      const result = await findRollNumberByEmailAction(searchEmail);
+      if (result.success) {
+          setFoundRoll(result.rollNumber!);
+          toast({ title: "রোল নম্বর পাওয়া গেছে!" });
+      } else {
+          setFindRollError(result.message!);
+      }
+      setIsFindingRoll(false);
+  };
   
   const currentRole = role === ('Partner' as any) ? 'Seller' : role;
   const socialLoginDisabled = !homepageConfig.platformSettings.Student.loginEnabled;
@@ -121,7 +156,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-sm mx-auto shadow-lg">
+        <Card className="w-full max-w-sm mx-auto shadow-lg bg-card">
             <CardHeader className="text-center">
             <CardTitle className="text-2xl font-headline">{t.login_welcome[language]}</CardTitle>
             <CardDescription>{t.login_desc[language]}</CardDescription>
@@ -144,11 +179,11 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                     <TabsContent value="student">
                         <div className="pt-4 grid gap-4">
                             <p className="text-center text-sm text-muted-foreground">The easiest way to login or create an account.</p>
-                            <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading || socialLoginDisabled} className="w-full">
+                            <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading || socialLoginDisabled} className="w-full h-12 rounded-xl">
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
                                 <span className="ml-2">Continue with Google</span>
                             </Button>
-                            <Button variant="social" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full">
+                            <Button variant="social" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full h-12 rounded-xl">
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FacebookIcon />}
                                 <span className="ml-2">Continue with Facebook</span>
                             </Button>
@@ -168,18 +203,70 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                             <form className="grid gap-4" onSubmit={handleClassRollLogin}>
                                 <div className="grid gap-2">
                                     <Label htmlFor="class-roll">{t.class_roll[language]}</Label>
-                                    <Input id="class-roll" placeholder="123456" required value={classRoll} onChange={(e) => setClassRoll(e.target.value)} />
+                                    <Input id="class-roll" placeholder="123456" required value={classRoll} onChange={(e) => setClassRoll(e.target.value)} className="h-11 rounded-xl" />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="student-password">{t.password[language]}</Label>
-                                    <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} />
+                                    <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} className="h-11 rounded-xl" />
                                 </div>
-                                <div className="flex items-center justify-end">
-                                    <Link href="/password-reset" className="text-sm text-primary hover:underline">
+                                <div className="flex items-center justify-between">
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <button type="button" className="text-xs font-bold text-primary hover:underline">
+                                                Forgot Roll Number?
+                                            </button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-md">
+                                            <DialogHeader>
+                                                <DialogTitle className="font-headline uppercase tracking-tight">রোল নম্বর খুঁজুন</DialogTitle>
+                                                <DialogDescription>
+                                                    আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন। আমরা আপনার রোল নম্বরটি জানিয়ে দেব।
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4 py-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="search-email">ইমেইল এড্রেস</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input 
+                                                            id="search-email" 
+                                                            type="email" 
+                                                            placeholder="example@mail.com" 
+                                                            value={searchEmail} 
+                                                            onChange={e => setSearchEmail(e.target.value)}
+                                                            className="rounded-xl h-11"
+                                                        />
+                                                        <Button onClick={handleFindRoll} disabled={isFindingRoll} className="rounded-xl h-11 px-4">
+                                                            {isFindingRoll ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                {findRollError && (
+                                                    <Alert variant="destructive" className="rounded-xl border-none bg-red-50 text-red-800">
+                                                        <AlertTriangle className="h-4 w-4" />
+                                                        <AlertDescription>{findRollError}</AlertDescription>
+                                                    </Alert>
+                                                )}
+                                                {foundRoll && (
+                                                    <Alert className="rounded-xl border-none bg-green-50 text-green-800">
+                                                        <Info className="h-4 w-4 text-green-600" />
+                                                        <AlertDescription className="text-base font-bold">
+                                                            আপনার রোল নম্বরটি হলো: <span className="text-primary text-xl ml-1">{foundRoll}</span>
+                                                        </AlertDescription>
+                                                    </Alert>
+                                                )}
+                                            </div>
+                                            <DialogFooter className="sm:justify-start">
+                                                <DialogTrigger asChild>
+                                                    <Button type="button" variant="secondary" className="rounded-xl">বন্ধ করুন</Button>
+                                                </DialogTrigger>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Link href="/password-reset" className="text-xs font-bold text-primary hover:underline">
                                         {t.forgot_password[language]}
                                     </Link>
                                 </div>
-                                <Button type="submit" className="w-full font-bold" disabled={isLoading || socialLoginDisabled}>
+                                <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading || socialLoginDisabled}>
                                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                                     {t.login[language]}
                                 </Button>
@@ -197,7 +284,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                     <div className="grid gap-2">
                                     <Label htmlFor="role">Your Role</Label>
                                     <Select value={role} onValueChange={(value) => setRole(value as User['role'])} required>
-                                        <SelectTrigger id="role">
+                                        <SelectTrigger id="role" className="h-11 rounded-xl">
                                         <SelectValue placeholder="Select your role" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -212,11 +299,11 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                     </div>
                                     <div className="grid gap-2">
                                     <Label htmlFor="email">{t.email[language]}</Label>
-                                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 rounded-xl" />
                                     </div>
                                     <div className="grid gap-2">
                                     <Label htmlFor="password">{t.password[language]}</Label>
-                                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 rounded-xl" />
                                     </div>
                                     {roleLoginDisabled && (
                                         <Alert variant="destructive" className="p-2 text-xs">
@@ -228,7 +315,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                             {t.forgot_password[language]}
                                         </Link>
                                     </div>
-                                    <Button type="submit" className="w-full font-bold" disabled={isLoading || !!roleLoginDisabled}>
+                                    <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading || !!roleLoginDisabled}>
                                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                                         {t.login[language]}
                                     </Button>
@@ -238,18 +325,18 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                 <form className="grid gap-4 pt-4" onSubmit={handleStaffIdLogin}>
                                     <div className="grid gap-2">
                                         <Label htmlFor="staff-id">{t.staff_id[language]}</Label>
-                                        <Input id="staff-id" placeholder="12345678" required value={staffId} onChange={(e) => setStaffId(e.target.value)} />
+                                        <Input id="staff-id" placeholder="12345678" required value={staffId} onChange={(e) => setStaffId(e.target.value)} className="h-11 rounded-xl" />
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="staff-password">{t.password[language]}</Label>
-                                        <Input id="staff-password" type="password" required value={staffPassword} onChange={(e) => setStaffPassword(e.target.value)} />
+                                        <Input id="staff-password" type="password" required value={staffPassword} onChange={(e) => setStaffPassword(e.target.value)} className="h-11 rounded-xl" />
                                     </div>
                                     <div className="flex items-center justify-end">
                                         <Link href="/password-reset" className="text-sm text-primary hover:underline">
                                             {t.forgot_password[language]}
                                         </Link>
                                     </div>
-                                    <Button type="submit" className="w-full font-bold" disabled={isLoading}>
+                                    <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading}>
                                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                                         {t.login[language]}
                                     </Button>
@@ -269,7 +356,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
             </CardContent>
         </Card>
       </div>
-      <div className="hidden bg-muted lg:block">
+      <div className="hidden bg-muted lg:block relative">
         <Image
           src={loginImage}
           alt="Students learning in a classroom"
@@ -277,6 +364,7 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
           className="h-full w-full object-cover"
           data-ai-hint="students classroom"
         />
+        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
       </div>
     </div>
   );
