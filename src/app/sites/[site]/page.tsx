@@ -90,7 +90,7 @@ export default async function PartnerSitePage({ params }: { params: { site: stri
             </TabsList>
             {hasCourses && (
                  <TabsContent value="courses" className="mt-8">
-                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                         {partnerCourses.map((course) => (
                         <CourseCard key={course.id} {...course} partnerSubdomain={siteSlug} provider={partner}/>
                         ))}
@@ -99,9 +99,9 @@ export default async function PartnerSitePage({ params }: { params: { site: stri
             )}
              {hasProducts && (
                 <TabsContent value="products" className="mt-8">
-                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {partnerProducts.map((product) => (
-                           <ProductCard key={product.id} product={product} />
+                           <ProductCard key={product.id} product={product} provider={partner} />
                         ))}
                     </div>
                 </TabsContent>

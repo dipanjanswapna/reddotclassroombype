@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { EnrolledCourseCard } from '@/components/enrolled-course-card';
-import { getCourses, getUsers, getEnrollmentsByUserId, getUser } from '@/lib/firebase/firestore';
-import type { Course, User, Enrollment } from '@/lib/types';
+import { getCourses, getUsers, getEnrollmentsByUserId, getUser, getOrganizations } from '@/lib/firebase/firestore';
+import type { Course, User, Enrollment, Organization } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,6 +14,7 @@ export default function GuardianCoursesPage() {
     const { toast } = useToast();
     const [student, setStudent] = useState<User | null>(null);
     const [childsCourses, setChildsCourses] = useState<Course[]>([]);
+    const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,13 +26,15 @@ export default function GuardianCoursesPage() {
                 return;
             }
             try {
-                const [linkedStudent, allCourses, enrollments] = await Promise.all([
+                const [linkedStudent, allCourses, enrollments, orgsData] = await Promise.all([
                     getUser(guardian.linkedStudentId),
                     getCourses(),
-                    getEnrollmentsByUserId(guardian.linkedStudentId)
+                    getEnrollmentsByUserId(guardian.linkedStudentId),
+                    getOrganizations()
                 ]);
                 
                 setStudent(linkedStudent || null);
+                setOrganizations(orgsData);
 
                 if (linkedStudent) {
                     const enrolledCourseIds = enrollments.map(e => e.courseId);
@@ -79,10 +82,11 @@ export default function GuardianCoursesPage() {
             <section>
                 <h2 className="font-headline text-2xl font-bold mb-4">In Progress</h2>
                 {childsCourses.length > 0 ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {childsCourses.filter(c => (c as any).status === 'in-progress').map((course) => (
-                            <EnrolledCourseCard key={course.id} course={course} status="in-progress" />
-                        ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                        {childsCourses.filter(c => (c as any).status === 'in-progress').map((course) => {
+                            const provider = organizations.find(p => p.id === course.organizationId);
+                            return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
+                        })}
                     </div>
                 ) : (
                      <div className="text-center py-16 bg-muted rounded-lg">
@@ -93,10 +97,11 @@ export default function GuardianCoursesPage() {
              <section>
                 <h2 className="font-headline text-2xl font-bold mb-4">Completed</h2>
                 {childsCourses.length > 0 && childsCourses.some(c => (c as any).status === 'completed') ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {childsCourses.filter(c => (c as any).status === 'completed').map((course) => (
-                            <EnrolledCourseCard key={course.id} course={course} status="completed" />
-                        ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                        {childsCourses.filter(c => (c as any).status === 'completed').map((course) => {
+                            const provider = organizations.find(p => p.id === course.organizationId);
+                            return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
+                        })}
                     </div>
                 ) : (
                      <div className="text-center py-8 bg-muted rounded-lg">

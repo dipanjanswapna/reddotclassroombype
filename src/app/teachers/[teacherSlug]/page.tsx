@@ -1,7 +1,8 @@
+
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getInstructorBySlug, getCourses, getEnrollments } from '@/lib/firebase/firestore';
-import type { Course, Instructor } from '@/lib/types';
+import { getInstructorBySlug, getCourses, getEnrollments, getOrganizations } from '@/lib/firebase/firestore';
+import type { Course, Instructor, Organization } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Linkedin, Facebook, Twitter, CheckCircle, Star, Users, PlayCircle } from 'lucide-react';
@@ -38,20 +39,21 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
         notFound();
     }
 
-    const [allCourses, allEnrollments] = await Promise.all([
+    const [allCourses, allEnrollments, allOrgs] = await Promise.all([
         getCourses(),
-        getEnrollments()
+        getEnrollments(),
+        getOrganizations()
     ]);
     
-    const courses = allCourses.filter(c => 
+    const teacherCourses = allCourses.filter(c => 
         c.status === 'Published' && c.instructors?.some(i => i.slug === params.teacherSlug)
     );
-    const courseIds = courses.map(c => c.id);
+    const courseIds = teacherCourses.map(c => c.id);
     const studentCount = new Set(allEnrollments.filter(e => courseIds.includes(e.courseId)).map(e => e.userId)).size;
 
 
     // --- Dynamic Stats Calculation ---
-    const ratedCourses = courses.filter(c => c.rating && c.rating > 0);
+    const ratedCourses = teacherCourses.filter(c => c.rating && c.rating > 0);
     const totalRatingSum = ratedCourses.reduce((sum, course) => sum + (course.rating || 0), 0);
     const averageRating = ratedCourses.length > 0 ? (totalRatingSum / ratedCourses.length).toFixed(1) : "N/A";
 
@@ -91,11 +93,12 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
             {/* Course Display Section */}
             <main className="container mx-auto px-4 py-16">
                 <h2 className="font-headline text-3xl font-bold mb-8 text-center">My Courses</h2>
-                {courses.length > 0 ? (
-                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
-                        {courses.map(course => (
-                            <CourseCard key={course.id} {...course} />
-                        ))}
+                {teacherCourses.length > 0 ? (
+                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                        {teacherCourses.map(course => {
+                            const provider = allOrgs.find(p => p.id === course.organizationId);
+                            return <CourseCard key={course.id} {...course} provider={provider} />
+                        })}
                     </div>
                 ) : (
                     <div className="text-center py-12 bg-muted rounded-lg">
