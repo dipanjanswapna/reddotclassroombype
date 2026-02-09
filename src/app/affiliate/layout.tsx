@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,6 +16,7 @@ import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { motion } from 'framer-motion';
 
 export default function AffiliateLayout({
   children,
@@ -65,29 +65,41 @@ export default function AffiliateLayout({
   };
 
   return (
-    <>
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24">
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-28">
         {children}
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t">
-        <div className="container mx-auto flex justify-start items-center space-x-1 overflow-x-auto p-1">
+      <motion.nav 
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden transition-all duration-300"
+      >
+        <div className="flex justify-start items-center space-x-1 overflow-x-auto no-scrollbar scroll-smooth">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 p-2 w-24 h-16 text-center transition-colors rounded-md",
+                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-24 h-16 text-center transition-all duration-300 rounded-xl relative",
                   getIsActive(item.href)
-                    ? "bg-accent text-accent-foreground"
+                    ? "text-primary-foreground scale-105"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
               )}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-xs whitespace-nowrap">{item.label}</span>
+              {getIsActive(item.href) && (
+                <motion.div 
+                  layoutId="active-pill-affiliate"
+                  className="absolute inset-0 bg-primary shadow-lg shadow-primary/30 rounded-xl -z-10"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "animate-pulse" : "")} />
+              <span className="text-[10px] font-bold uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
-      </nav>
-    </>
+      </motion.nav>
+    </div>
   );
 }

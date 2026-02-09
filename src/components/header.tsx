@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Menu, Search, X, ChevronDown, Phone, ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { Menu, Search, ChevronDown, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -38,11 +38,12 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
   const isDark = variant === 'dark';
 
@@ -65,7 +66,12 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   ];
 
   return (
-    <header className={cn("sticky top-0 z-50 w-full py-3 transition-all duration-300", wrapperClassName)}>
+    <motion.header 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={cn("sticky top-0 z-50 w-full py-3 transition-all duration-300", wrapperClassName)}
+    >
       <div className="container">
         <div className={cn(
           "flex h-16 items-center justify-between rounded-full bg-background/70 dark:bg-card/50 backdrop-blur-xl border border-white/20 dark:border-white/10 px-4 shadow-xl transition-all duration-300",
@@ -73,7 +79,11 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
         )}>
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center space-x-2 group">
-                <div className="relative h-8 md:h-10 w-auto transition-transform duration-300 group-hover:scale-105">
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative h-8 md:h-10 w-auto transition-transform duration-300"
+                >
                   <Image 
                     src={homepageConfig?.logoUrl || logoSrc} 
                     alt="RED DOT CLASSROOM Logo" 
@@ -82,20 +92,22 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                     className="h-full w-auto object-contain"
                     priority 
                   />
-                </div>
+                </motion.div>
             </Link>
           </div>
           
           <nav className="hidden lg:flex items-center space-x-1 text-sm font-semibold">
               {mainNavLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn(
-                "rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
-                isDark && "text-white hover:bg-white/20"
-              )}>
-                  <Link href={link.href}>
-                    {link.label}
-                  </Link>
-              </Button>
+              <motion.div key={link.href} whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
+                <Button variant="ghost" asChild className={cn(
+                  "rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
+                  isDark && "text-white hover:bg-white/20"
+                )}>
+                    <Link href={link.href}>
+                      {link.label}
+                    </Link>
+                </Button>
+              </motion.div>
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -138,12 +150,14 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                       )}>
                           <Link href="/login">{t.login[language]}</Link>
                       </Button>
-                      <Button asChild size="sm" className={cn(
-                        "rounded-full font-bold px-6 shadow-lg shadow-primary/20",
-                        isDark && "bg-white text-black hover:bg-gray-200"
-                      )}>
-                          <Link href="/signup">{t.signup[language]}</Link>
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button asChild size="sm" className={cn(
+                          "rounded-full font-bold px-6 shadow-lg shadow-primary/20",
+                          isDark && "bg-white text-black hover:bg-gray-200"
+                        )}>
+                            <Link href="/signup">{t.signup[language]}</Link>
+                        </Button>
+                      </motion.div>
                     </div>
                   )}
               </div>
@@ -251,6 +265,6 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }
