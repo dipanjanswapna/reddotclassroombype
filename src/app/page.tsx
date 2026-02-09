@@ -9,6 +9,7 @@ import {
   Video,
   ThumbsUp,
   ArrowRight,
+  PlayCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -156,14 +157,6 @@ export default function Home() {
                           transition={{ type: "spring", stiffness: 200, damping: 15 }}
                           className="flex items-center justify-center gap-3 md:gap-4"
                         >
-                            <Image 
-                                src={logoSrc} 
-                                alt="RDC Logo" 
-                                width={48} 
-                                height={48} 
-                                className="h-10 md:h-14 w-auto object-contain drop-shadow-sm" 
-                                priority 
-                            />
                             <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
                                 RED DOT <span className="text-primary">CLASSROOM</span>
                             </h1>
