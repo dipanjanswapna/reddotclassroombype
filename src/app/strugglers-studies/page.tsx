@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Card } from '@/components/ui/card';
-import { getHomepageConfig } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getUsers, getEnrollments, getInstructors, getCourses } from '@/lib/firebase/firestore';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -34,8 +34,33 @@ const featureIcons: Record<string, any> = {
 };
 
 export default async function TopperPage() {
-    const config = await getHomepageConfig();
+    const [config, allUsers, allEnrollments, allInstructors, allCourses] = await Promise.all([
+        getHomepageConfig(),
+        getUsers(),
+        getEnrollments(),
+        getInstructors(),
+        getCourses({ status: 'Published' })
+    ]);
+
     const sectionData = config?.topperPageSection;
+
+    // --- Dynamic Stats Calculation ---
+    const activeLearnersCount = allUsers.filter(u => u.role === 'Student').length;
+    const expertMentorsCount = allInstructors.filter(i => i.status === 'Approved').length;
+    
+    const totalEnrollments = allEnrollments.length;
+    const completedEnrollments = allEnrollments.filter(e => e.status === 'completed').length;
+    const successRate = totalEnrollments > 0 ? Math.round((completedEnrollments / totalEnrollments) * 100) : 98;
+
+    const coursesWithRatings = allCourses.filter(c => c.rating && c.rating > 0);
+    const avgRating = coursesWithRatings.length > 0 
+        ? (coursesWithRatings.reduce((sum, c) => sum + (c.rating || 0), 0) / coursesWithRatings.length).toFixed(1)
+        : "4.9";
+
+    const formatCount = (num: number) => {
+        if (num >= 1000) return `${(num / 1000).toFixed(1)}K+`;
+        return num.toString();
+    };
 
     if (!sectionData || !sectionData.display) {
         return (
@@ -181,19 +206,19 @@ export default async function TopperPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
-                            <p className="text-4xl font-black text-primary">150K+</p>
+                            <p className="text-4xl font-black text-primary">{formatCount(activeLearnersCount)}</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Active Learners</p>
                         </div>
                         <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
-                            <p className="text-4xl font-black text-accent">98%</p>
+                            <p className="text-4xl font-black text-accent">{successRate}%</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Success Rate</p>
                         </div>
                         <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
-                            <p className="text-4xl font-black text-blue-600">500+</p>
+                            <p className="text-4xl font-black text-blue-600">{expertMentorsCount}</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Expert Mentors</p>
                         </div>
                         <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
-                            <p className="text-4xl font-black text-yellow-500">4.9/5</p>
+                            <p className="text-4xl font-black text-yellow-500">{avgRating}/5</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">User Rating</p>
                         </div>
                     </div>
