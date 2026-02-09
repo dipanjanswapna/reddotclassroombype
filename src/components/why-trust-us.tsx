@@ -48,7 +48,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
       
       <div className="container mx-auto px-4">
         {/* Features Section */}
-        <div className="glassmorphism-card p-6 md:p-12 border-white/30 bg-white/50 dark:bg-card/40 rounded-2xl md:rounded-3xl mb-8 md:mb-10">
+        <div className="glassmorphism-card p-6 md:p-12 border-white/30 bg-card dark:bg-card/40 rounded-2xl md:rounded-3xl mb-8 md:mb-10">
             <div className="grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
             <div className="space-y-4 md:space-y-6">
                 <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
@@ -91,7 +91,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             <CarouselContent>
               {(data.testimonials || []).map((testimonial, index) => (
                 <CarouselItem key={testimonial.id || `testimonial-${index}`}>
-                  <Card className="glassmorphism-card bg-white/80 dark:bg-card/60 border-white/40 rounded-2xl md:rounded-3xl overflow-hidden">
+                  <Card className="glassmorphism-card bg-card dark:bg-card/60 border-white/40 rounded-2xl md:rounded-3xl overflow-hidden">
                     <CardContent className="p-6 md:p-12 md:py-16 grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-center">
                         {/* Text Content */}
                         <div className="lg:col-span-2 relative space-y-6 text-center lg:text-left">

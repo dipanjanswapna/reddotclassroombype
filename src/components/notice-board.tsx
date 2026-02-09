@@ -51,7 +51,7 @@ export function NoticeBoard() {
   return (
     <div className="my-8">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
-            <Card className="bg-[#c2edcf] dark:bg-[#c2edcf]/10 border border-[#a8dbba] dark:border-[#c2edcf]/20 rounded-2xl shadow-lg transition-all duration-300">
+            <Card className="bg-card dark:bg-card/10 border border-primary/20 rounded-2xl shadow-lg transition-all duration-300">
                 <CardHeader>
                     <div className="flex items-center gap-3 text-primary">
                         <div className="bg-primary/10 p-2 rounded-xl">

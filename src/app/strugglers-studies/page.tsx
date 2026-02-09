@@ -123,7 +123,7 @@ export default async function TopperPage() {
                 {sectionData.cards.map((card, index) => {
                     const Icon = featureIcons[card.title] || Rocket;
                     return (
-                        <Card key={card.id} className="p-6 md:p-8 glassmorphism-card border-white/40 bg-white/60 dark:bg-card/60 group hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-2xl md:rounded-3xl">
+                        <Card key={card.id} className="p-6 md:p-8 glassmorphism-card border-white/40 bg-card group hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-2xl md:rounded-3xl">
                             <div className="flex flex-col gap-4">
                                 <div className="p-4 bg-primary/10 rounded-2xl text-primary w-fit group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300">
                                     <Icon className="w-8 h-8" />
@@ -161,7 +161,7 @@ export default async function TopperPage() {
                     {classButtons.map((btn) => (
                         <Link key={btn.label} href={btn.href}>
                             <div className={cn(
-                                "flex flex-col items-center justify-center p-6 md:p-8 rounded-3xl shadow-sm border border-white/30 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-xl group",
+                                "flex flex-col items-center justify-center p-6 md:p-8 rounded-3xl shadow-sm border border-white/30 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-card backdrop-blur-xl group",
                                 "hover:border-primary/50"
                             )}>
                                 <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black mb-4 group-hover:scale-110 transition-transform shadow-inner", btn.color)}>
@@ -205,19 +205,19 @@ export default async function TopperPage() {
                         </ul>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                        <div className="bg-card p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
                             <p className="text-4xl font-black text-primary">{formatCount(activeLearnersCount)}</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Active Learners</p>
                         </div>
-                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                        <div className="bg-card p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
                             <p className="text-4xl font-black text-accent">{successRate}%</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Success Rate</p>
                         </div>
-                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                        <div className="bg-card p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
                             <p className="text-4xl font-black text-blue-600">{expertMentorsCount}</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">Expert Mentors</p>
                         </div>
-                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                        <div className="bg-card p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
                             <p className="text-4xl font-black text-yellow-500">{avgRating}/5</p>
                             <p className="text-xs font-black uppercase text-muted-foreground">User Rating</p>
                         </div>

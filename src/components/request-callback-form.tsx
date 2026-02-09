@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,10 +86,10 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
     }
 
   return (
-    <Card className="shadow-2xl overflow-hidden border-none rounded-2xl md:rounded-3xl">
+    <Card className="shadow-2xl overflow-hidden border-none rounded-2xl md:rounded-3xl bg-card">
         <CardContent className="p-0">
             <div className="grid md:grid-cols-2">
-                <div className="hidden md:flex items-center justify-center bg-[#eef2ed] dark:bg-gray-800 p-8">
+                <div className="hidden md:flex items-center justify-center bg-card dark:bg-gray-800 p-8">
                      <Image
                         src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
                         alt="Happy student requesting a callback"
@@ -100,7 +99,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                         data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
                     />
                 </div>
-                <div className="p-6 md:p-10 bg-[#eef2ed] dark:bg-gray-900/50">
+                <div className="p-6 md:p-10 bg-card dark:bg-gray-900/50">
                     <h3 className="text-xl md:text-2xl font-black mb-6 text-gray-900 dark:text-foreground font-headline uppercase tracking-tight">Request a callback</h3>
                     <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

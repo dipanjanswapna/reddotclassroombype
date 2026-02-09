@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -153,8 +152,8 @@ export default function ContactPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <Card className="shadow-2xl border-white/10 bg-[#eef2ed] dark:bg-card/30 backdrop-blur-2xl rounded-3xl overflow-hidden">
-                                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-[#eef2ed]/50">
+                            <Card className="shadow-2xl border-white/10 bg-card dark:bg-card/30 backdrop-blur-2xl rounded-3xl overflow-hidden">
+                                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-card/50">
                                     <div className="flex items-center gap-3 mb-2">
                                         <MessageSquare className="w-6 h-6 text-primary" />
                                         <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">Send a Message</CardTitle>
