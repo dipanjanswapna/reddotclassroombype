@@ -74,7 +74,7 @@ export function CoursesPageClient({
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: { opacity: 1, y: 0, transition: { type: "spring", bounce: 0.3 } }
   };
 
@@ -101,7 +101,7 @@ export function CoursesPageClient({
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="space-y-12 md:space-y-16"
+              className="space-y-10 md:space-y-16"
             >
               {hasFilters ? (
                   <section className='py-0'>
@@ -109,7 +109,7 @@ export function CoursesPageClient({
                       Found {initialCourses.length} Courses
                     </h2>
                     {initialCourses.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-6">
                         {initialCourses.map((course) => {
                           const provider = allProviders.find(p => p.id === course.organizationId);
                           return (
@@ -132,7 +132,7 @@ export function CoursesPageClient({
                         <h2 className="font-headline mb-6 text-base md:text-lg font-black tracking-tight uppercase border-l-4 border-primary pl-4">
                           {category}
                         </h2>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-6">
                           {coursesByCategory[category].map((course) => {
                              const provider = allProviders.find(p => p.id === course.organizationId);
                              return (
@@ -150,7 +150,7 @@ export function CoursesPageClient({
                           <h2 className="font-headline mb-6 text-base md:text-lg font-black tracking-tight uppercase text-muted-foreground border-l-4 border-muted-foreground/30 pl-4">
                               Archived Courses
                           </h2>
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-6">
                               {archivedCourses.map((course) => {
                                   const provider = allProviders.find(p => p.id === course.organizationId);
                                   return (

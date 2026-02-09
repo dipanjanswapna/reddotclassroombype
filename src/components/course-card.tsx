@@ -3,11 +3,10 @@
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
-import { Button } from "./ui/button";
 import { cn } from '@/lib/utils';
 
 type CourseCardProps = Partial<Course> & {
@@ -24,79 +23,84 @@ const CourseCardComponent = (props: CourseCardProps) => {
   
   const isPrebookingActive = isPrebooking && prebookingEndDate && new Date(prebookingEndDate as string) > new Date();
   const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
+  const displayPrice = isPrebookingActive ? prebookingPrice : (hasDiscount ? discountPrice : price);
 
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white dark:bg-card/60 border-border rounded-xl">
-      <CardHeader className="p-0 overflow-hidden relative">
-        <Link href={coursePageUrl} className="block overflow-hidden aspect-video">
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            data-ai-hint={dataAiHint}
-          />
-        </Link>
-        <CourseCardWishlistButton courseId={id} />
-        
-        {/* Status Badges - Compact */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {isPrebookingActive && <Badge className="bg-orange-500 text-[8px] h-4 px-1 font-bold uppercase" variant="default">Pre-book</Badge>}
-            {type === 'Exam' && !isPrebookingActive && <Badge className="bg-red-600 text-[8px] h-4 px-1 font-bold uppercase" variant="default">Exam</Badge>}
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-2 flex flex-col flex-grow gap-1">
-        <Link href={coursePageUrl}>
-          <CardTitle className="text-[13px] font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2 min-h-[2rem] font-headline">
-            {title}
-          </CardTitle>
-        </Link>
-
-        <div className="mt-auto">
-            {provider ? (
-            <div className="flex items-center gap-1 pt-0.5">
-                <p className="text-[10px] font-medium text-muted-foreground truncate">By {provider.name}</p>
+    <div className="group relative">
+      <Link href={coursePageUrl} className="block">
+        <Card className={cn(
+          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-white dark:bg-card/60 border-0 md:border rounded-none md:rounded-xl",
+          "border-b border-dashed md:border-b-border pb-4 md:pb-0 mb-0 md:mb-0 last:border-b-0 last:pb-0"
+        )}>
+          {/* Card Header / Image Section */}
+          <div className="relative w-[120px] xs:w-[140px] md:w-full aspect-[4/3] md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none">
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              sizes="(max-width: 640px) 140px, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover transition-transform duration-500 md:group-hover:scale-110"
+              data-ai-hint={dataAiHint}
+            />
+            
+            {/* Corner Ribbons/Badges */}
+            <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none">
+                {isPrebookingActive ? (
+                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-orange-500 text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
+                        Pre
+                    </div>
+                ) : type === 'Exam' ? (
+                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-red-600 text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
+                        Exam
+                    </div>
+                ) : (
+                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-primary text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
+                        New
+                    </div>
+                )}
             </div>
-            ) : (
-            instructors && instructors.length > 0 && (
-                <p className="text-muted-foreground font-medium text-[10px] pt-0.5 truncate">
-                    By {instructors[0].name}
-                </p>
-            )
-            )}
-        </div>
-      </CardContent>
 
-      <CardFooter className="px-2 pb-2 pt-0 flex items-center justify-between">
-        <div className="flex items-baseline gap-1.5">
-            {isPrebookingActive ? (
-                <>
-                    <span className="text-sm font-bold text-accent">{prebookingPrice}</span>
-                    <span className="text-[9px] text-muted-foreground line-through">{price}</span>
-                </>
-            ) : hasDiscount ? (
-                <>
-                    <span className="text-sm font-bold text-accent">{discountPrice}</span>
-                    <span className="text-[9px] text-muted-foreground line-through">{price}</span>
-                </>
-            ) : isArchived ? (
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Archived</span>
-            ) : (
-                price && <span className="text-sm font-bold text-accent">{price}</span>
-            )}
-        </div>
-        
-        {!isArchived && (
-            <Button variant="ghost" size="sm" asChild className="h-6 px-1.5 text-[9px] font-bold uppercase text-primary hover:bg-primary/10">
-                <Link href={coursePageUrl}>Details</Link>
-            </Button>
-        )}
-      </CardFooter>
-    </Card>
+            <div className="hidden md:block">
+                <CourseCardWishlistButton courseId={id} />
+            </div>
+          </div>
+
+          {/* Card Body / Text Section */}
+          <div className="flex-1 flex flex-col p-0 md:p-3 justify-center md:justify-start gap-1">
+            <h3 className="text-[14px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 md:line-clamp-2 min-h-0 md:min-h-[2.5rem] font-headline group-hover:text-primary transition-colors">
+              {title}
+            </h3>
+
+            <div className="flex flex-col gap-0.5">
+                {provider ? (
+                    <p className="text-[11px] md:text-[12px] font-medium text-muted-foreground truncate">
+                        {provider.name}
+                    </p>
+                ) : (
+                    instructors && instructors.length > 0 && (
+                        <p className="text-[11px] md:text-[12px] font-medium text-muted-foreground truncate">
+                            {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
+                        </p>
+                    )
+                )}
+            </div>
+
+            <div className="mt-1 md:mt-2 flex items-center gap-2">
+                <span className="text-[15px] md:text-[16px] font-black text-accent drop-shadow-sm">
+                    {displayPrice}
+                </span>
+                {hasDiscount && (
+                    <span className="text-[10px] md:text-[11px] text-muted-foreground line-through opacity-60">
+                        {price}
+                    </span>
+                )}
+            </div>
+          </div>
+        </Card>
+      </Link>
+    </div>
   );
 }
 
