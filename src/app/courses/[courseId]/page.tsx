@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next';
@@ -15,6 +14,8 @@ import {
   ShieldCheck,
   ChevronRight,
   Info,
+  Award,
+  MessageSquare,
 } from 'lucide-react';
 import {
   Accordion,
@@ -37,6 +38,7 @@ import {
 } from '@/components/ui/table';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { Course, CourseCycle } from '@/lib/types';
 import { getCourse, getCourses, getEnrollmentsByCourseId, getOrganization, getOrganizations } from '@/lib/firebase/firestore';
