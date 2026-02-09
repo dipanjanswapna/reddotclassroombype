@@ -168,7 +168,7 @@ export default function AdminHomepageManagementPage() {
             ...prev,
             heroBanners: [
                 ...currentBanners,
-                { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
+                { id: Date.now(), href: '', imageUrl: '', alt: '', dataAiHint: '' }
             ]
         }
     });
@@ -190,13 +190,13 @@ export default function AdminHomepageManagementPage() {
       if (!prev) return null;
       const newSlide: OfflineHubHeroSlide = {
           id: Date.now(),
-          imageUrl: 'https://placehold.co/1200x343.png',
-          dataAiHint: 'students course banner',
-          title: 'New Slide Title',
-          subtitle: 'New Slide Subtitle',
-          price: '৳0',
-          originalPrice: '৳0',
-          enrollHref: '#'
+          imageUrl: '',
+          dataAiHint: '',
+          title: '',
+          subtitle: '',
+          price: '',
+          originalPrice: '',
+          enrollHref: ''
       };
       const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
       const currentSlides = Array.isArray(offlineCarousel.slides) ? offlineCarousel.slides : [];
@@ -322,8 +322,19 @@ export default function AdminHomepageManagementPage() {
                                 <div key={banner.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1"><Label className="text-xs">Image URL</Label><Input value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
-                                        <div className="space-y-1"><Label className="text-xs">Link URL</Label><Input value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
+                                        <div className="space-y-1">
+                                            <Label className="text-xs">Image URL</Label>
+                                            <Input placeholder="Enter image URL (e.g., https://...)" value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} />
+                                            {banner.imageUrl && (
+                                                <div className="mt-2 relative aspect-[16/9] w-32 rounded-md overflow-hidden border">
+                                                    <Image src={banner.imageUrl} alt="Preview" fill className="object-cover" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label className="text-xs">Link URL</Label>
+                                            <Input placeholder="e.g., /courses/physics-batch" value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -340,11 +351,24 @@ export default function AdminHomepageManagementPage() {
                             {safeOfflineSlides.map((slide, index) => (
                                 <div key={slide.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
-                                    <div className="space-y-2"><Label className="text-xs">Image URL</Label><Input value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1"><Label className="text-xs">Title (Badge)</Label><Input value={slide.title} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} /></div>
-                                        <div className="space-y-1"><Label className="text-xs">Subtitle (Heading)</Label><Input value={slide.subtitle} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} /></div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Image URL</Label>
+                                        <Input placeholder="Enter image URL..." value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} />
+                                        {slide.imageUrl && (
+                                            <div className="mt-2 relative aspect-[21/7] w-48 rounded-md overflow-hidden border">
+                                                <Image src={slide.imageUrl} alt="Preview" fill className="object-cover" />
+                                            </div>
+                                        )}
                                     </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1"><Label className="text-xs">Title (Badge)</Label><Input placeholder="e.g., SPECIAL OFFER" value={slide.title} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} /></div>
+                                        <div className="space-y-1"><Label className="text-xs">Subtitle (Heading)</Label><Input placeholder="e.g., Join our new Physics Batch" value={slide.subtitle} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} /></div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1"><Label className="text-xs">Offer Price</Label><Input placeholder="e.g., ৳1,200" value={slide.price} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'price', e.target.value)} /></div>
+                                        <div className="space-y-1"><Label className="text-xs">Original Price</Label><Input placeholder="e.g., ৳3,000" value={slide.originalPrice} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'originalPrice', e.target.value)} /></div>
+                                    </div>
+                                    <div className="space-y-1"><Label className="text-xs">Enroll Link URL</Label><Input placeholder="e.g., /checkout/course-id" value={slide.enrollHref} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'enrollHref', e.target.value)} /></div>
                                 </div>
                             ))}
                             <Button variant="outline" className="w-full border-dashed rounded-xl" onClick={addOfflineSlide}><PlusCircle className="mr-2 h-4 w-4"/>Add Carousel Slide</Button>
