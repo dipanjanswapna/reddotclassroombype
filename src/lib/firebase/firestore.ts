@@ -17,7 +17,7 @@ import {
   Timestamp,
   arrayUnion,
 } from 'firebase/firestore';
-import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask, Goal, CategoryItem } from '../types';
+import { Course, Instructor, Organization, User, HomepageConfig, PromoCode, SupportTicket, BlogPost, Notification, PlatformSettings, Enrollment, Announcement, Prebooking, Branch, Batch, AttendanceRecord, Question, Payout, ReportedContent, Invoice, CallbackRequest, Notice, Product, Order, StoreCategory, StoreHomepageSection, Referral, Reward, RedemptionRequest, Doubt, DoubtAnswer, DoubtSession, Folder, List, PlannerTask, Goal, CategoryItem, OfflineHubSection } from '../types';
 import { safeToDate } from '../utils';
 
 // Generic function to fetch a collection
@@ -966,6 +966,8 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
       whatsappButtonText: { bn: "WhatsApp-এ মেসেজ দিন", en: "WhatsApp Us" },
       whatsappNumber: "8801641035736",
     },
+    heroImageUrl: "https://picsum.photos/seed/offline/800/800",
+    heroImageDataAiHint: "modern classroom",
   },
   collaborations: {
     display: true,

@@ -934,6 +934,20 @@ export type CategoryItem = {
     dataAiHint: string;
 };
 
+export type OfflineHubSection = {
+  display: boolean;
+  heroTitle: { [key: string]: string };
+  heroSubtitle: { [key: string]: string };
+  exploreProgramsText: { [key: string]: string };
+  findCenterText: { [key: string]: string };
+  programsTitle: { [key: string]: string };
+  centersTitle: { [key: string]: string };
+  centersSubtitle: { [key: string]: string };
+  contactSection: OfflineHubContactSection;
+  heroImageUrl?: string;
+  heroImageDataAiHint?: string;
+};
+
 export type HomepageConfig = {
   id?: string;
   logoUrl: string;
@@ -1026,17 +1040,7 @@ export type HomepageConfig = {
     subtitle: { [key: string]: string };
     teamMembers: TeamMember[];
   };
-  offlineHubSection: {
-    display: boolean;
-    heroTitle: { [key: string]: string };
-    heroSubtitle: { [key: string]: string };
-    exploreProgramsText: { [key: string]: string };
-    findCenterText: { [key: string]: string };
-    programsTitle: { [key: string]: string };
-    centersTitle: { [key: string]: string };
-    centersSubtitle: { [key: string]: string };
-    contactSection: OfflineHubContactSection;
-  };
+  offlineHubSection: OfflineHubSection;
   collaborations: {
     display: boolean;
     title: { [key: string]: string };
@@ -1095,7 +1099,7 @@ export type HomepageConfig = {
   topperPageSection?: TopperPageSection;
   offlineHubHeroCarousel?: {
     display: boolean;
-    slides: OfflineHubHeroSlide[];
+    slides: OfflineHubSlide[];
   };
   statsSection?: {
     display: boolean;

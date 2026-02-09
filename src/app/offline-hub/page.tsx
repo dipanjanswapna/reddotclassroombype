@@ -62,6 +62,9 @@ export default function OfflineHubPage() {
         { icon: Award, title: "Exam Environment", desc: "Standardized testing conditions for peak performance." },
     ];
 
+    const heroImageUrl = offlineHubData?.heroImageUrl || "https://picsum.photos/seed/offline/800/800";
+    const heroImageAiHint = offlineHubData?.heroImageDataAiHint || "modern classroom";
+
     return (
         <div className="bg-gray-900 text-white min-h-screen">
             {/* Cinematic Hero */}
@@ -79,10 +82,10 @@ export default function OfflineHubPage() {
                                 <MapPin className="w-3.5 h-3.5" />
                                 RDC Physical Centers
                             </div>
-                            <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight uppercase">
+                            <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-tight uppercase text-left">
                                 {offlineHubData?.heroTitle?.[language] || "Red Dot Offline Hub"}
                             </h1>
-                            <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0 text-left">
                                 {offlineHubData?.heroSubtitle?.[language] || "Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance."}
                             </p>
                             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
@@ -103,11 +106,11 @@ export default function OfflineHubPage() {
                             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px] scale-110 opacity-50" />
                             <div className="relative z-10 w-full max-w-lg aspect-square">
                                 <Image
-                                    src="https://picsum.photos/seed/offline/800/800"
+                                    src={heroImageUrl}
                                     alt="Offline Education Hub"
                                     fill
                                     className="object-contain drop-shadow-2xl rounded-3xl border-4 border-white/5"
-                                    data-ai-hint="modern classroom"
+                                    data-ai-hint={heroImageAiHint}
                                 />
                             </div>
                         </motion.div>
