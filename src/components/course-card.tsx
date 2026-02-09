@@ -44,26 +44,26 @@ const CourseCardComponent = (props: CourseCardProps) => {
         
         {/* Status Badges - Compact */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {isPrebookingActive && <Badge className="bg-orange-500 text-[9px] h-5 px-1.5 font-bold uppercase" variant="default">Pre-book</Badge>}
-            {type === 'Exam' && !isPrebookingActive && <Badge className="bg-red-600 text-[9px] h-5 px-1.5 font-bold uppercase" variant="default">Exam</Badge>}
+            {isPrebookingActive && <Badge className="bg-orange-500 text-[8px] h-4 px-1 font-bold uppercase" variant="default">Pre-book</Badge>}
+            {type === 'Exam' && !isPrebookingActive && <Badge className="bg-red-600 text-[8px] h-4 px-1 font-bold uppercase" variant="default">Exam</Badge>}
         </div>
       </CardHeader>
 
-      <CardContent className="p-3 flex flex-col flex-grow gap-1">
+      <CardContent className="p-2 flex flex-col flex-grow gap-1">
         <Link href={coursePageUrl}>
-          <CardTitle className="text-[14px] font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2 min-h-[2.5rem] font-headline">
+          <CardTitle className="text-[13px] font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2 min-h-[2rem] font-headline">
             {title}
           </CardTitle>
         </Link>
 
         <div className="mt-auto">
             {provider ? (
-            <div className="flex items-center gap-1.5 pt-1">
-                <p className="text-[11px] font-medium text-muted-foreground truncate">By {provider.name}</p>
+            <div className="flex items-center gap-1 pt-0.5">
+                <p className="text-[10px] font-medium text-muted-foreground truncate">By {provider.name}</p>
             </div>
             ) : (
             instructors && instructors.length > 0 && (
-                <p className="text-muted-foreground font-medium text-[11px] pt-1 truncate">
+                <p className="text-muted-foreground font-medium text-[10px] pt-0.5 truncate">
                     By {instructors[0].name}
                 </p>
             )
@@ -71,27 +71,27 @@ const CourseCardComponent = (props: CourseCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="px-3 pb-3 pt-0 flex items-center justify-between">
-        <div className="flex items-baseline gap-2">
+      <CardFooter className="px-2 pb-2 pt-0 flex items-center justify-between">
+        <div className="flex items-baseline gap-1.5">
             {isPrebookingActive ? (
                 <>
-                    <span className="text-base font-bold text-accent">{prebookingPrice}</span>
-                    <span className="text-[10px] text-muted-foreground line-through">{price}</span>
+                    <span className="text-sm font-bold text-accent">{prebookingPrice}</span>
+                    <span className="text-[9px] text-muted-foreground line-through">{price}</span>
                 </>
             ) : hasDiscount ? (
                 <>
-                    <span className="text-base font-bold text-accent">{discountPrice}</span>
-                    <span className="text-[10px] text-muted-foreground line-through">{price}</span>
+                    <span className="text-sm font-bold text-accent">{discountPrice}</span>
+                    <span className="text-[9px] text-muted-foreground line-through">{price}</span>
                 </>
             ) : isArchived ? (
-                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Archived</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Archived</span>
             ) : (
-                price && <span className="text-base font-bold text-accent">{price}</span>
+                price && <span className="text-sm font-bold text-accent">{price}</span>
             )}
         </div>
         
         {!isArchived && (
-            <Button variant="ghost" size="sm" asChild className="h-7 px-2 text-[10px] font-bold uppercase text-primary hover:bg-primary/10">
+            <Button variant="ghost" size="sm" asChild className="h-6 px-1.5 text-[9px] font-bold uppercase text-primary hover:bg-primary/10">
                 <Link href={coursePageUrl}>Details</Link>
             </Button>
         )}
