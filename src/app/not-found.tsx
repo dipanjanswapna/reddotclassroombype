@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Home, MessageSquare, AlertCircle } from 'lucide-react';
+import { Home, MessageSquare, AlertCircle, MoveLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Refined 404 Not Found Page.
- * Features custom animations, brand-consistent styling, and full responsiveness.
+ * Focuses on high-quality text animations, clean typography, and a premium brand-aligned UI.
  */
 export default function NotFound() {
   
@@ -21,97 +21,147 @@ export default function NotFound() {
     };
   }, []);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { type: "spring", damping: 12, stiffness: 200 }
+    },
+  };
+
+  const titleText = "404";
+
   return (
     <div className="fixed inset-0 z-[100] bg-background mesh-gradient flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden">
       
-      {/* Decorative Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px] -z-10" />
+      {/* Dynamic Background Circles */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px] -z-10" />
 
-      <main className="w-full max-w-2xl text-center flex flex-col items-center relative z-10">
+      <motion.main 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-3xl text-center flex flex-col items-center relative z-10"
+      >
         
-        {/* Animated Illustration Container */}
+        {/* Large Animated 404 Text */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-          className="relative w-full max-w-[280px] sm:max-w-md h-48 sm:h-64 md:h-80 mb-6 md:mb-8"
+          className="flex mb-2 md:mb-4"
+          initial="hidden"
+          animate="visible"
         >
-            <motion.div
-              animate={{ y: [0, -15, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="w-full h-full relative"
+          {titleText.split("").map((letter, index) => (
+            <motion.span
+              key={index}
+              variants={letterVariants}
+              className="text-8xl sm:text-9xl md:text-[12rem] font-black tracking-tighter text-foreground leading-none select-none"
+              animate={{ 
+                y: [0, -20, 0],
+                rotate: index % 2 === 0 ? [0, 2, 0] : [0, -2, 0]
+              }}
+              transition={{ 
+                duration: 4, 
+                repeat: Infinity, 
+                ease: "easeInOut",
+                delay: index * 0.2
+              }}
             >
-                <Image
-                    src="https://picsum.photos/seed/404error/600/400"
-                    alt="404 Error Illustration"
-                    fill
-                    className="object-contain drop-shadow-2xl opacity-90"
-                    priority
-                    data-ai-hint="space astronaut"
-                />
-            </motion.div>
-            
-            {/* Pulsing Error Badge */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-              className="absolute top-0 right-0 sm:top-4 sm:right-4 md:right-10 bg-destructive text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] shadow-xl flex items-center gap-2 border border-white/20"
-            >
-              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              Error Code: 404
-            </motion.div>
+              {letter === "0" ? <span className="text-primary">0</span> : letter}
+            </motion.span>
+          ))}
         </motion.div>
 
-        {/* Text Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="space-y-3 sm:space-y-4 px-4"
+        {/* Status Badge */}
+        <motion.div 
+          variants={itemVariants}
+          className="bg-destructive/10 text-destructive px-4 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-[0.2em] border border-destructive/20 mb-8 flex items-center gap-2"
         >
-          <h1 className="font-headline text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase leading-none">
-            OOOPS!! <span className="text-primary">LOST</span> IN SPACE?
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium max-w-md mx-auto leading-relaxed">
-            This page has been moved or doesn't exist anymore. Don't worry, even the best students get lost sometimes!
-          </p>
+          <AlertCircle className="w-3.5 h-3.5" />
+          Page Not Found
         </motion.div>
+
+        {/* Main Heading & Description */}
+        <div className="space-y-4 px-4 max-w-xl">
+          <motion.h1 
+            variants={itemVariants}
+            className="font-headline text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground uppercase leading-tight"
+          >
+            আপনি কি পথ হারিয়েছেন?
+          </motion.h1>
+          <motion.p 
+            variants={itemVariants}
+            className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium leading-relaxed"
+          >
+            দুঃখিত, আপনি যে পৃষ্ঠাটি খুঁজছেন তা খুঁজে পাওয়া যাচ্ছে না অথবা এটি সরিয়ে নেওয়া হয়েছে। নিচের বাটনটি ব্যবহার করে হোমপেজে ফিরে যান।
+          </motion.p>
+        </div>
 
         {/* Action Buttons */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto px-6"
+          variants={itemVariants}
+          className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-6"
         >
-          <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-12 sm:h-14 px-8 shadow-xl shadow-primary/20">
+          <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 shadow-2xl shadow-primary/30 group">
             <Link href="/" className="flex items-center justify-center gap-2">
-              <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Home className="w-5 h-5 transition-transform group-hover:-translate-y-1" />
               Go Back Home
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-12 sm:h-14 px-8 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white/80 transition-all">
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/10 transition-all">
             <Link href="/contact" className="flex items-center justify-center gap-2">
-              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-              Contact Support
+              <MessageSquare className="w-5 h-5" />
+              Support
             </Link>
           </Button>
         </motion.div>
 
-        {/* Brand Footer Attribution */}
+        {/* Footer Brand Attribution */}
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
-          transition={{ delay: 1 }}
-          className="mt-12 sm:mt-16 flex items-center gap-2 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground"
+          variants={itemVariants}
+          className="mt-16 sm:mt-24 flex items-center gap-3 text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground/40"
         >
           <span>RED DOT CLASSROOM</span>
-          <div className="w-1 h-1 rounded-full bg-primary" />
+          <div className="w-1 h-1 rounded-full bg-primary/40" />
           <span>PRANGONS ECOSYSTEM</span>
         </motion.div>
-      </main>
+      </motion.main>
+
+      <style jsx global>{`
+        .mesh-gradient {
+          background-color: hsla(0,0%,100%,1);
+          background-image: 
+            radial-gradient(at 0% 0%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(142,71%,40%,0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(142,71%,40%,0.05) 0px, transparent 50%);
+        }
+        .dark .mesh-gradient {
+          background-color: hsla(222,47%,11%,1);
+          background-image: 
+            radial-gradient(at 0% 0%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(142,76%,36%,0.1) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(142,76%,36%,0.1) 0px, transparent 50%);
+        }
+      `}</style>
     </div>
   );
 }
