@@ -1,13 +1,14 @@
+
 'use client';
 
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Course, Organization } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star, Trash2, BookmarkCheck } from "lucide-react";
+import { Clock, Trash2, BookmarkCheck } from "lucide-react";
 import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";

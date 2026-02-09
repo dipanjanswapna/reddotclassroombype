@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -116,7 +117,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">চলমান কোর্সসমূহ</h2>
             {filteredInProgress.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                     {filteredInProgress.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
@@ -130,7 +131,7 @@ export default function MyCoursesPage() {
         {filteredPrebookedCourses.length > 0 && (
             <section>
                 <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">প্রি-বুক করা কোর্স</h2>
-                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                     {filteredPrebookedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="prebooked" provider={provider} />;
@@ -142,7 +143,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
             {filteredCompleted.length > 0 ? (
-                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                     {filteredCompleted.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
@@ -156,7 +157,7 @@ export default function MyCoursesPage() {
         <section>
             <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">উইশলিস্টে থাকা কোর্স</h2>
             {filteredWishlistedCourses.length > 0 ? (
-                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                     {filteredWishlistedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;

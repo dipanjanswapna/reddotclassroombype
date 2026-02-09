@@ -1,10 +1,10 @@
+
 'use client';
 
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { cn } from '@/lib/utils';
@@ -15,7 +15,7 @@ type CourseCardProps = Partial<Course> & {
 };
 
 const CourseCardComponent = (props: CourseCardProps) => {
-  const { id, title, instructors, imageUrl, category, price, discountPrice, dataAiHint, isArchived, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
+  const { id, title, instructors, imageUrl, price, discountPrice, dataAiHint, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -68,8 +68,8 @@ const CourseCardComponent = (props: CourseCardProps) => {
           </div>
 
           {/* Card Body / Text Section */}
-          <div className="flex-1 flex flex-col p-3 md:p-3 justify-center md:justify-start gap-1">
-            <h3 className="text-[13px] md:text-[14px] font-black leading-tight text-foreground line-clamp-2 md:line-clamp-2 min-h-0 md:min-h-[2.5rem] font-headline group-hover:text-primary transition-colors">
+          <div className="flex-1 flex flex-col p-3 md:p-4 justify-center md:justify-start gap-1">
+            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors">
               {title}
             </h3>
 
@@ -88,7 +88,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
             </div>
 
             <div className="mt-1 md:mt-2 flex items-center gap-2">
-                <span className="text-[14px] md:text-[15px] font-black text-accent drop-shadow-sm">
+                <span className="text-[14px] md:text-[16px] font-black text-accent drop-shadow-sm">
                     {displayPrice}
                 </span>
                 {hasDiscount && (
