@@ -37,7 +37,7 @@ import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 
 
@@ -190,35 +190,55 @@ export default function Home() {
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-8">
+          <section className="py-10 md:py-14 overflow-hidden">
               <div className="container mx-auto px-4">
-                  <div className="group relative glassmorphism-card p-6 flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 overflow-hidden">
-                      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                      <div className="flex items-center gap-4 text-center md:text-left z-10">
-                          <Image
-                              src={homepageConfig.strugglingStudentSection.imageUrl}
-                              alt="Struggling in studies illustration"
-                              width={120}
-                              height={100}
-                              className="hidden sm:block object-contain"
-                              data-ai-hint="student family studying"
-                          />
-                          <div>
-                              <h3 className="font-headline text-xl font-bold">
+                  <motion.div 
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
+                    className="group relative glassmorphism-card p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5"
+                  >
+                      {/* Decorative Background Elements */}
+                      <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
+                      <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
+                      
+                      <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10">
+                          <motion.div
+                            whileHover={{ scale: 1.05, rotate: -2 }}
+                            className="relative w-32 h-32 md:w-40 md:h-40 shrink-0"
+                          >
+                            <Image
+                                src={homepageConfig.strugglingStudentSection.imageUrl}
+                                alt="Struggling in studies illustration"
+                                fill
+                                className="object-contain"
+                                data-ai-hint="confused student illustration"
+                            />
+                          </motion.div>
+                          <div className="space-y-2 max-w-lg">
+                              <h3 className="font-headline text-2xl md:text-3xl font-black tracking-tight text-foreground">
                                   {homepageConfig.strugglingStudentSection?.title?.[language] || homepageConfig.strugglingStudentSection?.title?.['en']}
                               </h3>
-                              <p className="text-muted-foreground">
+                              <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed">
                                   {homepageConfig.strugglingStudentSection?.subtitle?.[language] || homepageConfig.strugglingStudentSection?.subtitle?.['en']}
                               </p>
                           </div>
                       </div>
-                      <Button asChild className="font-bold shrink-0 z-10 group-hover:scale-105 group-hover:shadow-lg transition-all duration-300">
-                          <Link href="/strugglers-studies">
-                              {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.['en']}
-                               <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
-                      </Button>
-                  </div>
+                      
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="z-10 shrink-0 w-full md:w-auto"
+                      >
+                        <Button asChild size="lg" className="w-full md:w-auto font-black text-lg px-10 h-14 rounded-xl shadow-xl shadow-primary/20 group-hover:shadow-primary/40 transition-all duration-300">
+                            <Link href="/strugglers-studies">
+                                {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.['en']}
+                                 <ArrowRight className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
+                            </Link>
+                        </Button>
+                      </motion.div>
+                  </motion.div>
               </div>
           </section>
         )}
