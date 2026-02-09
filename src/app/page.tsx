@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -183,10 +182,10 @@ export default function Home() {
                         <motion.div 
                           initial={{ scale: 0.9 }}
                           animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                          transition={{ type: "spring", stiffness: 200, stiffness: 200, damping: 15 }}
                           className="flex items-center justify-center gap-3 md:gap-4"
                         >
-                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase text-shadow">
+                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
                                 RED DOT <span className="text-primary">CLASSROOM</span>
                             </h1>
                         </motion.div>
