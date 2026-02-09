@@ -30,7 +30,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
     <div className="group relative">
       <Link href={coursePageUrl} className="block">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-white dark:bg-card/60 border border-border rounded-xl",
+          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-[#c2e7ff] dark:bg-[#c2e7ff]/10 border border-border rounded-xl",
           "mb-3 md:mb-0 p-2 md:p-0"
         )}>
           {/* Card Header / Image Section */}
