@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,14 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner } from '@/lib/types';
-import { getHomepageConfig, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course } from '@/lib/types';
+import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
-import { getYoutubeVideoId } from '@/lib/utils';
+import { getYoutubeVideoId, cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -37,18 +36,21 @@ export default function AdminHomepageManagementPage() {
   const [activeTab, setActiveTab] = useState('general');
   const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const [fetchedConfig, instructorsData, organizationsData] = await Promise.all([
+        const [fetchedConfig, instructorsData, organizationsData, coursesData] = await Promise.all([
             getHomepageConfig(),
             getInstructors(),
-            getOrganizations()
+            getOrganizations(),
+            getCourses({ status: 'Published' })
         ]);
         setConfig(fetchedConfig);
         setAllInstructors(instructorsData.filter(i => i.status === 'Approved'));
         setAllOrganizations(organizationsData.filter(o => o.status === 'approved'));
+        setAllCourses(coursesData);
       } catch (error) {
         console.error("Error fetching homepage config:", error);
         toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
@@ -158,9 +160,15 @@ export default function AdminHomepageManagementPage() {
         });
     };
 
-    const handleStringArrayChange = (section: CourseIdSections, value: string) => {
-        const ids = value.split(',').map(id => id.trim()).filter(Boolean);
-        setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
+    const handleCourseIdToggle = (section: CourseIdSections, courseId: string, add: boolean) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const currentIds = prev[section] || [];
+            const newIds = add 
+                ? [...currentIds, courseId]
+                : currentIds.filter(id => id !== courseId);
+            return { ...prev, [section]: newIds };
+        });
     };
 
     const handleCarouselSettingChange = (key: 'autoplay' | 'autoplayDelay', value: any) => {
@@ -316,7 +324,7 @@ export default function AdminHomepageManagementPage() {
         const newPartners = prev.partnersSection.partners.filter(p => p.id !== id);
         return {
             ...prev,
-            partnersSection: { ...prev.partnersSection, partners: newPartners }
+            partnersSection: { ...partnersSection, partners: newPartners }
         };
     });
   };
@@ -526,6 +534,59 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const CourseSelector = ({ 
+    label, 
+    sectionKey, 
+    currentIds 
+  }: { 
+    label: string, 
+    sectionKey: CourseIdSections, 
+    currentIds: string[] 
+  }) => (
+    <div className="space-y-2">
+        <Label className="font-bold text-primary">{label}</Label>
+        <div className="flex flex-wrap gap-1 p-2 border rounded-md min-h-10 bg-muted/20">
+            {currentIds.length === 0 && <p className="text-xs text-muted-foreground p-1">No courses selected.</p>}
+            {currentIds.map(id => {
+                const course = allCourses.find(c => c.id === id);
+                return course ? (
+                    <Badge key={id} variant="secondary" className="gap-1">
+                        {course.title}
+                        <Button variant="ghost" size="icon" className="h-3 w-3 p-0 hover:bg-transparent" onClick={() => handleCourseIdToggle(sectionKey, id, false)}>
+                            <X className="h-3 w-3 text-destructive"/>
+                        </Button>
+                    </Badge>
+                ) : null;
+            })}
+        </div>
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full justify-between">
+                    Add course to {label}...
+                    <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <Command>
+                    <CommandInput placeholder="Search courses..." />
+                    <CommandEmpty>No course found.</CommandEmpty>
+                    <CommandGroup>
+                        {allCourses.filter(c => !currentIds.includes(c.id!)).map(course => (
+                            <CommandItem
+                                key={course.id}
+                                onSelect={() => handleCourseIdToggle(sectionKey, course.id!, true)}
+                            >
+                                <Check className="mr-2 h-4 w-4 opacity-0" />
+                                {course.title}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    </div>
+  );
+
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
@@ -682,13 +743,13 @@ export default function AdminHomepageManagementPage() {
                         </CardContent>
                     </Card>
                     <Card className="rounded-2xl shadow-sm border-white/10">
-                        <CardHeader><CardTitle>Featured Courses Sections</CardTitle><CardDescription>Enter comma-separated course IDs to feature in each section.</CardDescription></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2"><Label className="font-bold text-primary">লাইভ কোর্সসমূহ (IDs)</Label><Input value={config.liveCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label className="font-bold text-primary">SSC ও HSC (IDs)</Label><Input value={config.sscHscCourseIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label className="font-bold text-primary">মাস্টারক্লাস (IDs)</Label><Input value={config.masterClassesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('masterClassesIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label className="font-bold text-primary">Admission (IDs)</Label><Input value={config.admissionCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
-                            <div className="space-y-2"><Label className="font-bold text-primary">Job Prep (IDs)</Label><Input value={config.jobCoursesIds?.join(', ') || ''} onChange={(e) => handleStringArrayChange('jobCoursesIds', e.target.value)} /></div>
+                        <CardHeader><CardTitle>Featured Courses Sections</CardTitle><CardDescription>Select the courses you want to feature in each section.</CardDescription></CardHeader>
+                        <CardContent className="space-y-6">
+                            <CourseSelector label="লাইভ কোর্সসমূহ" sectionKey="liveCoursesIds" currentIds={config.liveCoursesIds || []} />
+                            <CourseSelector label="SSC ও HSC" sectionKey="sscHscCourseIds" currentIds={config.sscHscCourseIds || []} />
+                            <CourseSelector label="মাস্টারক্লাস" sectionKey="masterClassesIds" currentIds={config.masterClassesIds || []} />
+                            <CourseSelector label="Admission" sectionKey="admissionCoursesIds" currentIds={config.admissionCoursesIds || []} />
+                            <CourseSelector label="Job Prep" sectionKey="jobCoursesIds" currentIds={config.jobCoursesIds || []} />
                         </CardContent>
                     </Card>
                 </TabsContent>
