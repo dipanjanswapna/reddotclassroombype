@@ -81,7 +81,7 @@
   }
 
   section {
-    @apply py-10 md:py-14 max-w-full overflow-hidden;
+    @apply py-8 md:py-10 max-w-full overflow-hidden;
   }
 
   /* Global Bengali Font Override */

@@ -66,7 +66,7 @@ export default function OfflineHubPage() {
     return (
         <div className="bg-gray-900 text-white min-h-screen">
             {/* Cinematic Hero */}
-            <section className="relative pt-32 pb-16 md:pb-24 overflow-hidden border-b border-white/5">
+            <section className="relative pt-28 pb-12 md:pb-16 overflow-hidden border-b border-white/5">
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -117,7 +117,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* High-Density Features */}
-            <section className="py-12 bg-black/20 border-b border-white/5">
+            <section className="py-8 md:py-10 bg-black/20 border-b border-white/5">
                 <div className="container mx-auto px-4">
                     <div className="grid sm:grid-cols-3 gap-8">
                         {features.map((f, i) => (
@@ -134,7 +134,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Programs Section */}
-            <section id="programs" className="py-20 md:py-28">
+            <section id="programs" className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-12">
                         <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">
@@ -155,7 +155,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Branch Directory */}
-            <section id="centers" className="py-20 md:py-28 bg-black/40">
+            <section id="centers" className="py-12 md:py-16 bg-black/40">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 space-y-4">
                         <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">
@@ -201,7 +201,7 @@ export default function OfflineHubPage() {
 
             {/* Contact Section */}
             {offlineHubData?.contactSection?.display && (
-                <section className="py-20 md:py-28">
+                <section className="py-12 md:py-16">
                     <div className="container mx-auto px-4">
                         <div className="relative rounded-3xl overflow-hidden p-8 md:p-16 bg-gradient-to-br from-primary via-primary/80 to-black text-white shadow-2xl">
                             <div className="absolute top-0 right-0 -m-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />

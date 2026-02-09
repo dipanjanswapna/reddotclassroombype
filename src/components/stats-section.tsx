@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -42,10 +41,10 @@ export function StatsSection({ stats, title }: StatsSectionProps) {
   const { language } = useLanguage();
 
   return (
-    <section className="py-10 md:py-14 overflow-hidden">
+    <section className="py-8 md:py-10 overflow-hidden">
       <div className="container mx-auto px-4">
         {title && (
-          <h2 className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-10 text-center">
+          <h2 className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-8 md:mb-10 text-center">
             {title[language] || title['en']}
           </h2>
         )}

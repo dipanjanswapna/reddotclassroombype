@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,7 +23,7 @@ export default async function AboutPage() {
 
     if (!aboutSection || !aboutSection.display) {
         return (
-             <div className="container mx-auto px-4 py-12">
+             <div className="container mx-auto px-4 py-8">
                 <div className="text-center">
                     <h1 className="font-headline text-4xl font-bold tracking-tight">About RED DOT CLASSROOM</h1>
                     <p className="mt-4 text-lg text-muted-foreground">Information coming soon.</p>
@@ -35,7 +34,7 @@ export default async function AboutPage() {
 
   return (
     <div className="bg-background">
-        <section className="bg-secondary/50 py-16">
+        <section className="bg-secondary/50 py-12 md:py-16">
             <div className="container mx-auto px-4 text-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tight">{aboutSection.title.en || 'About Us'}</h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -44,7 +43,7 @@ export default async function AboutPage() {
             </div>
         </section>
 
-        <section className="container mx-auto px-4 py-16">
+        <section className="container mx-auto px-4 py-8 md:py-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-center">
                 {aboutSection.teamMembers.map(member => {
                     const externalLink = member.socialLinks.find(l => l.platform === 'external');

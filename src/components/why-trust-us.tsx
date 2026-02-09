@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -44,12 +43,12 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-12 md:py-16 overflow-hidden relative">
+    <section className="py-8 md:py-10 overflow-hidden relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-3xl rounded-full -z-10"></div>
       
       <div className="container mx-auto px-4">
         {/* Features Section */}
-        <div className="glassmorphism-card p-6 md:p-12 border-white/30 bg-white/50 dark:bg-card/40 rounded-2xl md:rounded-3xl mb-12 md:mb-16">
+        <div className="glassmorphism-card p-6 md:p-12 border-white/30 bg-white/50 dark:bg-card/40 rounded-2xl md:rounded-3xl mb-8 md:mb-10">
             <div className="grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
             <div className="space-y-4 md:space-y-6">
                 <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight" dangerouslySetInnerHTML={{ __html: renderedTitle }} />

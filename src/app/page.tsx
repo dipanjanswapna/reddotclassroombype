@@ -175,7 +175,7 @@ export default function Home() {
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full">
         {homepageConfig.welcomeSection?.display && (
-            <section className="py-8 md:py-10 text-center overflow-hidden">
+            <section className="py-6 md:py-8 text-center overflow-hidden">
                 <div className="container mx-auto px-4">
                      <motion.div 
                         initial={{ opacity: 0, y: 20 }}
@@ -209,7 +209,7 @@ export default function Home() {
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-10 md:py-14 overflow-hidden relative">
+          <section className="py-8 md:py-10 overflow-hidden relative">
               <div className="container mx-auto px-4">
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
@@ -262,7 +262,7 @@ export default function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <h2 id="categories-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 md:mb-10 text-left">
                 {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
@@ -277,7 +277,7 @@ export default function Home() {
         </div>
 
         {homepageConfig.journeySection?.display && (
-          <section aria-labelledby="journey-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="journey-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <h2 id="journey-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.[language]}</h2>
               <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base leading-relaxed">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.[language]}</p>
@@ -290,7 +290,7 @@ export default function Home() {
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <section aria-labelledby="teachers-heading" className="overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="teachers-heading" className="overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                   <div className="text-left">
@@ -307,7 +307,7 @@ export default function Home() {
         )}
 
         {homepageConfig.videoSection?.display && (
-          <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20 overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20 overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.[language]}</h2>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.[language]}</p>
@@ -334,7 +334,7 @@ export default function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section aria-labelledby="ssc-hsc-heading" className="overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="ssc-hsc-heading" className="overflow-hidden py-8 md:py-10">
               <div className="container mx-auto px-4">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                     <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] lg:text-xs py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
@@ -346,7 +346,7 @@ export default function Home() {
         )}
 
         {homepageConfig.masterclassSection?.display && (
-          <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
               <div className="container mx-auto px-4">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                     <h2 id="masterclass-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.[language]}</h2>
@@ -362,7 +362,7 @@ export default function Home() {
         )}
 
         {homepageConfig.admissionSection?.display && (
-          <section aria-labelledby="admission-heading" className="overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="admission-heading" className="overflow-hidden py-8 md:py-10">
               <div className="container mx-auto px-4">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                     <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] lg:text-xs py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.[language]}</Badge>
@@ -379,7 +379,7 @@ export default function Home() {
         )}
         
         {homepageConfig.jobPrepSection?.display && (
-          <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
               <div className="container mx-auto px-4">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                     <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] lg:text-xs py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
@@ -398,7 +398,7 @@ export default function Home() {
         <WhyTrustUs data={homepageConfig.whyChooseUs} />
         
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
-          <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <h2 id="collaborations-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-10 md:mb-12 text-left">
                 {homepageConfig.collaborations?.title?.[language] || homepageConfig.collaborations?.title?.[language]}
@@ -409,7 +409,7 @@ export default function Home() {
         )}
 
         {homepageConfig.partnersSection?.display && (
-          <section aria-labelledby="partners-heading" className="overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="partners-heading" className="overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <h2 id="partners-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-10 md:mb-12 text-left">
                 {homepageConfig.partnersSection?.title?.[language] || homepageConfig.partnersSection?.title?.[language]}
@@ -424,7 +424,7 @@ export default function Home() {
 
 
         {homepageConfig.socialMediaSection?.display && (
-          <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language] || homepageConfig.socialMediaSection?.title?.[language]}
@@ -480,7 +480,7 @@ export default function Home() {
         )}
 
         {homepageConfig.notesBanner?.display && (
-          <section aria-labelledby="notes-banner-heading" className="overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="notes-banner-heading" className="overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4">
               <div className="glassmorphism-card p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-primary/10 to-accent/10 border-white/30 rounded-2xl">
                     <div className='text-center md:text-left space-y-2'>
@@ -495,7 +495,7 @@ export default function Home() {
           </section>
         )}
         
-        <section className="relative overflow-hidden py-10 md:py-14">
+        <section className="relative overflow-hidden py-8 md:py-10">
             <div className="container mx-auto px-4 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
@@ -503,7 +503,7 @@ export default function Home() {
 
         {/* Have a Question? Section */}
         {contactSectionData?.display && (
-            <section className="py-10 md:py-14 overflow-hidden">
+            <section className="py-8 md:py-10 overflow-hidden">
                 <div className="container mx-auto px-4">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -546,13 +546,13 @@ export default function Home() {
         )}
         
         {homepageConfig.appPromo?.display && (
-          <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent overflow-hidden py-10 md:py-14">
+          <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent overflow-hidden py-8 md:py-10">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left space-y-4 md:space-y-6">
                     <h2 id="app-promo-heading" className="font-headline text-xl md:text-2xl lg:text-4xl font-bold text-primary leading-tight">
                         {homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.[language]}
                     </h2>
-                    <p className="text-sm md:text-base lg:text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto md:mx-0">
+                    <p className="text-sm md:text-base lg:text-lg text-muted-foreground leading-relaxed max-lg mx-auto md:mx-0">
                         {homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.[language]}
                     </p>
                     <div className="flex justify-center md:justify-start gap-3 md:gap-4 pt-4">

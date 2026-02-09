@@ -52,7 +52,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
 
   return (
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10 md:mb-12 space-y-2">
+        <div className="text-center mb-8 md:mb-10 space-y-2">
           <h2 id="free-classes-heading" className="font-headline text-2xl md:text-3xl lg:text-4xl font-bold text-primary">{title[language] || title['en']}</h2>
           <p className="text-sm md:text-base lg:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">{subtitle[language] || subtitle['en']}</p>
         </div>
