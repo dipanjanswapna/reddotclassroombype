@@ -37,6 +37,8 @@ import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
+import { motion } from 'framer-motion';
+import { TypingText } from '@/components/typing-text';
 
 
 const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
@@ -148,15 +150,37 @@ export default function Home() {
   return (
     <div className="text-foreground">
         {homepageConfig.welcomeSection?.display && (
-            <section className="py-12 text-center">
+            <section className="py-8 md:py-10 text-center overflow-hidden">
                 <div className="container mx-auto px-4">
-                     <h1 className="text-4xl flex justify-center items-center gap-4">
-                        <Image src={logoSrc} alt="RED DOT CLASSROOM Logo" className="h-12 md:h-16 w-auto" priority />
-                        <p className="font-bold text-3xl md:text-4xl text-foreground">RED DOT CLASSROOM</p>
-                    </h1>
-                    <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-                        {homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en']}
-                    </p>
+                     <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="flex flex-col items-center gap-2 md:gap-4"
+                     >
+                        <motion.div 
+                          initial={{ scale: 0.9 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                          className="flex items-center justify-center gap-3 md:gap-4"
+                        >
+                            <Image 
+                                src={logoSrc} 
+                                alt="RDC Logo" 
+                                width={48} 
+                                height={48} 
+                                className="h-10 md:h-14 w-auto object-contain drop-shadow-sm" 
+                                priority 
+                            />
+                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
+                                RED DOT <span className="text-primary">CLASSROOM</span>
+                            </h1>
+                        </motion.div>
+                        <TypingText 
+                            text={homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en'] || ''}
+                            className="mt-2 text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium break-words"
+                        />
+                     </motion.div>
                 </div>
             </section>
         )}
