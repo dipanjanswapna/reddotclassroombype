@@ -269,15 +269,15 @@ export default function StudentProfilePage() {
                                                     }
                                                 </div>
                                                 <div className="space-y-0.5">
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex flex-col">
                                                         <p className="font-black text-sm uppercase tracking-tight">{session.deviceName}</p>
                                                         {isCurrent && (
-                                                            <Badge variant="accent" className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0 h-4 gap-1">
+                                                            <Badge variant="accent" className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0 h-4 gap-1 w-fit mt-1">
                                                                 <CheckCircle2 className="w-2.5 h-2.5" /> Current Device
                                                             </Badge>
                                                         )}
                                                     </div>
-                                                    <p className="text-[10px] font-bold text-muted-foreground">Logged in: {formattedDate}</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground mt-1">Logged in: {formattedDate}</p>
                                                     <p className="text-[10px] font-mono text-primary/60">IP Address: {session.ipAddress}</p>
                                                 </div>
                                             </div>

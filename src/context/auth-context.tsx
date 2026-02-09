@@ -30,7 +30,7 @@ interface AuthContextType {
     loginWithStaffId: (staffId: string, pass: string) => Promise<any>;
     loginWithGoogle: () => Promise<any>;
     loginWithFacebook: () => Promise<any>;
-    signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status']) => Promise<any>;
+    signup: (email: string, pass: string, name: string, role: User['role'], status?: User['status'], referralCode?: string) => Promise<any>;
     logout: () => void;
     resetPassword: (email: string) => Promise<any>;
     refreshUserInfo: () => Promise<void>;
@@ -308,7 +308,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         redirectToDashboard(existingUserInfo, 'Login Successful!');
     };
     
-    const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
+    const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active', referralCode?: string) => {
         if (!auth || !db) throw new Error("Firebase services are not available.");
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
@@ -321,6 +321,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             role: role,
             status: status,
             joined: serverTimestamp(),
+            referredBy: referralCode,
         };
         
         if (role !== 'Guardian') {
