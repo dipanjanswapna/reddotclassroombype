@@ -10,6 +10,7 @@ import {
   ThumbsUp,
   ArrowRight,
   PlayCircle,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
