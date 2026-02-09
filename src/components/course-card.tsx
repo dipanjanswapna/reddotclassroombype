@@ -32,15 +32,15 @@ const CourseCardComponent = (props: CourseCardProps) => {
       <Link href={coursePageUrl} className="block">
         <Card className={cn(
           "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-white dark:bg-card/60 border-0 md:border rounded-none md:rounded-xl",
-          "border-b border-dashed md:border-b-border pb-4 md:pb-0 mb-0 md:mb-0 last:border-b-0 last:pb-0"
+          "border-b border-dashed border-muted-foreground/20 md:border-b-border pb-4 md:pb-0 mb-0 md:mb-0 last:border-b-0 last:pb-0 px-2 md:px-0"
         )}>
           {/* Card Header / Image Section */}
-          <div className="relative w-[120px] xs:w-[140px] md:w-full aspect-[4/3] md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none">
+          <div className="relative w-[110px] xs:w-[130px] md:w-full aspect-[4/3] md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none mt-2 md:mt-0">
             <Image
               src={imageUrl}
               alt={title}
               fill
-              sizes="(max-width: 640px) 140px, (max-width: 1024px) 33vw, 25vw"
+              sizes="(max-width: 640px) 130px, (max-width: 1024px) 33vw, 25vw"
               className="object-cover transition-transform duration-500 md:group-hover:scale-110"
               data-ai-hint={dataAiHint}
             />
@@ -68,19 +68,19 @@ const CourseCardComponent = (props: CourseCardProps) => {
           </div>
 
           {/* Card Body / Text Section */}
-          <div className="flex-1 flex flex-col p-0 md:p-3 justify-center md:justify-start gap-1">
-            <h3 className="text-[14px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 md:line-clamp-2 min-h-0 md:min-h-[2.5rem] font-headline group-hover:text-primary transition-colors">
+          <div className="flex-1 flex flex-col p-3 md:p-3 justify-center md:justify-start gap-1">
+            <h3 className="text-[13px] md:text-[14px] font-black leading-tight text-foreground line-clamp-2 md:line-clamp-2 min-h-0 md:min-h-[2.5rem] font-headline group-hover:text-primary transition-colors">
               {title}
             </h3>
 
             <div className="flex flex-col gap-0.5">
                 {provider ? (
-                    <p className="text-[11px] md:text-[12px] font-medium text-muted-foreground truncate">
+                    <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">
                         {provider.name}
                     </p>
                 ) : (
                     instructors && instructors.length > 0 && (
-                        <p className="text-[11px] md:text-[12px] font-medium text-muted-foreground truncate">
+                        <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">
                             {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
                         </p>
                     )
@@ -88,11 +88,11 @@ const CourseCardComponent = (props: CourseCardProps) => {
             </div>
 
             <div className="mt-1 md:mt-2 flex items-center gap-2">
-                <span className="text-[15px] md:text-[16px] font-black text-accent drop-shadow-sm">
+                <span className="text-[14px] md:text-[15px] font-black text-accent drop-shadow-sm">
                     {displayPrice}
                 </span>
                 {hasDiscount && (
-                    <span className="text-[10px] md:text-[11px] text-muted-foreground line-through opacity-60">
+                    <span className="text-[9px] md:text-[10px] text-muted-foreground line-through opacity-60">
                         {price}
                     </span>
                 )}
