@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Home, MessageSquare, AlertCircle } from 'lucide-react';
+import { Home, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
@@ -14,15 +14,19 @@ import { cn } from '@/lib/utils';
  * - Dynamic scaling for all elements.
  * - Premium Framer Motion animations.
  * - Fully responsive button layout.
+ * - Fixed positioning to eliminate parent padding/margins (Removes white top space).
  */
 export default function NotFound() {
   const { language } = useLanguage();
   
   useEffect(() => {
-    // Hide main header and footer when this page is active
+    // Hide main header and footer when this page is active via CSS class
     document.body.classList.add('body-is-404');
+    // Prevent document scrolling while on this page
+    document.documentElement.style.overflow = 'hidden';
     return () => {
       document.body.classList.remove('body-is-404');
+      document.documentElement.style.overflow = '';
     };
   }, []);
 
@@ -73,7 +77,7 @@ export default function NotFound() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-background flex items-center justify-center relative px-6 select-none">
+    <div className="fixed inset-0 z-[9999] w-screen h-screen overflow-hidden bg-background flex items-center justify-center px-6 select-none mesh-gradient">
       
       {/* Dynamic Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -128,7 +132,7 @@ export default function NotFound() {
                 scale: { type: "spring", stiffness: 200 }
               }}
               className={cn(
-                "text-[20vw] md:text-[15rem] font-black leading-none tracking-tighter drop-shadow-[0_10px_10px_rgba(0,0,0,0.1)]",
+                "text-[25vw] md:text-[15rem] font-black leading-none tracking-tighter drop-shadow-[0_10px_10px_rgba(0,0,0,0.1)]",
                 digit === "0" ? "text-primary" : "text-foreground"
               )}
             >
@@ -141,13 +145,13 @@ export default function NotFound() {
         <div className="space-y-4 md:space-y-6 max-w-2xl mx-auto">
           <motion.h1 
             variants={itemVariants}
-            className="font-headline text-[7vw] sm:text-4xl md:text-6xl font-black tracking-tight text-foreground uppercase leading-tight"
+            className="font-headline text-[8vw] sm:text-4xl md:text-6xl font-black tracking-tight text-foreground uppercase leading-tight"
           >
             {translations.heading[language]}
           </motion.h1>
           <motion.p 
             variants={itemVariants}
-            className="text-sm md:text-xl text-muted-foreground font-medium px-4 leading-relaxed opacity-80"
+            className="text-xs md:text-xl text-muted-foreground font-medium px-4 leading-relaxed opacity-80"
           >
             {translations.description[language]}
           </motion.p>
@@ -161,7 +165,7 @@ export default function NotFound() {
           <Button 
             asChild 
             size="lg" 
-            className="w-full sm:w-auto rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 px-8 md:px-12 shadow-2xl shadow-primary/30 group relative overflow-hidden text-xs md:text-sm"
+            className="w-full sm:w-auto rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 px-8 md:px-12 shadow-2xl shadow-primary/30 group relative overflow-hidden text-[10px] md:text-sm"
           >
             <Link href="/" className="flex items-center justify-center gap-3">
               <Home className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:-translate-y-1" />
@@ -173,7 +177,7 @@ export default function NotFound() {
             asChild 
             variant="outline" 
             size="lg" 
-            className="w-full sm:w-auto rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 px-8 md:px-12 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white dark:hover:bg-white/10 transition-all text-xs md:text-sm"
+            className="w-full sm:w-auto rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 px-8 md:px-12 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white dark:hover:bg-white/10 transition-all text-[10px] md:text-sm"
           >
             <Link href="/contact" className="flex items-center justify-center gap-3">
               <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
