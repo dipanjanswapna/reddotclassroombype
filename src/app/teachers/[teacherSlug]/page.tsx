@@ -55,9 +55,9 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
     const averageRating = ratedCourses.length > 0 ? (totalRatingSum / ratedCourses.length).toFixed(1) : "4.9";
 
     return (
-        <div className="bg-background min-h-screen pb-20">
-            {/* Modern Breadcrumb */}
-            <div className="bg-muted/30 border-b border-white/5 py-3">
+        <div className="bg-background min-h-screen pb-16">
+            {/* Tighter Breadcrumb */}
+            <div className="bg-muted/30 border-b border-white/5 py-2.5">
                 <div className="container mx-auto px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                     <ChevronRight className="w-3 h-3" />
@@ -67,18 +67,15 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                 </div>
             </div>
 
-            {/* Dynamic Hero Section */}
-            <section className="relative pt-12 md:pt-20 pb-16 md:pb-24 border-b border-white/5 overflow-hidden bg-muted/20">
+            {/* Compact Hero Section */}
+            <section className="relative pt-10 md:pt-14 pb-10 md:pb-14 border-b border-white/5 overflow-hidden bg-muted/20">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
-                <div className="absolute bottom-0 left-0 w-1/4 h-1/2 bg-accent/5 blur-[100px] rounded-full -z-10" />
-                
                 <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-12 gap-12 items-center">
-                        {/* Profile Image Column */}
+                    <div className="grid lg:grid-cols-12 gap-8 items-center">
                         <div className="lg:col-span-4 flex flex-col items-center">
                             <div className="relative group">
-                                <div className="absolute -inset-4 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500"></div>
-                                <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full border-[6px] border-white shadow-2xl overflow-hidden p-1 bg-white">
+                                <div className="absolute -inset-4 bg-primary/10 rounded-full blur-2xl opacity-50" />
+                                <div className="relative w-40 h-40 md:w-56 md:h-56 rounded-full border-[5px] border-white shadow-xl overflow-hidden p-1 bg-white">
                                     <Image
                                         src={teacher.avatarUrl}
                                         alt={teacher.name}
@@ -88,64 +85,63 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                                         priority
                                     />
                                 </div>
-                                <div className="absolute bottom-4 right-4 bg-primary text-white p-2 rounded-full shadow-xl border-4 border-white">
-                                    <CheckCircle2 className="w-6 h-6" />
+                                <div className="absolute bottom-3 right-3 bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+                                    <CheckCircle2 className="w-5 h-5" />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Info Column */}
-                        <div className="lg:col-span-8 space-y-8 text-center lg:text-left">
-                            <div className="space-y-4">
-                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 rounded-full px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                        <div className="lg:col-span-8 space-y-6 text-center lg:text-left">
+                            <div className="space-y-3">
+                                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 rounded-full px-3 py-0.5 text-[9px] font-black uppercase tracking-[0.2em]">
                                     Elite Faculty
                                 </Badge>
-                                <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-none uppercase text-foreground">
+                                <h1 className="font-headline text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-none uppercase text-foreground">
                                     {teacher.name}
                                 </h1>
-                                <p className="text-lg md:text-xl font-bold text-primary uppercase tracking-widest">
+                                <p className="text-base md:text-lg font-bold text-primary uppercase tracking-[0.15em]">
                                     {teacher.title}
                                 </p>
                             </div>
 
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-                                <div className="bg-card p-4 rounded-2xl border border-white/40 shadow-sm min-w-[120px] text-center">
-                                    <p className="text-2xl font-black text-foreground flex items-center justify-center gap-1.5">
-                                        <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                                <div className="bg-card p-3 rounded-xl border border-white/40 shadow-sm min-w-[100px] text-center">
+                                    <p className="text-xl font-black text-foreground flex items-center justify-center gap-1.5">
+                                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
                                         {averageRating}
                                     </p>
-                                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1">Avg. Rating</p>
+                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Rating</p>
                                 </div>
-                                <div className="bg-card p-4 rounded-2xl border border-white/40 shadow-sm min-w-[120px] text-center">
-                                    <p className="text-2xl font-black text-foreground flex items-center justify-center gap-1.5">
-                                        <Users className="w-5 h-5 text-primary" />
+                                <div className="bg-card p-3 rounded-xl border border-white/40 shadow-sm min-w-[100px] text-center">
+                                    <p className="text-xl font-black text-foreground flex items-center justify-center gap-1.5">
+                                        <Users className="w-4 h-4 text-primary" />
                                         {studentCount >= 1000 ? `${(studentCount/1000).toFixed(1)}k+` : studentCount}
                                     </p>
-                                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1">Learners</p>
+                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Learners</p>
                                 </div>
-                                <div className="bg-card p-4 rounded-2xl border border-white/40 shadow-sm min-w-[120px] text-center">
-                                    <p className="text-2xl font-black text-foreground flex items-center justify-center gap-1.5">
-                                        <GraduationCap className="w-5 h-5 text-accent" />
+                                <div className="bg-card p-3 rounded-xl border border-white/40 shadow-sm min-w-[100px] text-center">
+                                    <p className="text-xl font-black text-foreground flex items-center justify-center gap-1.5">
+                                        <GraduationCap className="w-4 h-4 text-accent" />
                                         {teacherCourses.length}
                                     </p>
-                                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1">Courses</p>
+                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Courses</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-4">
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-2 pt-2">
                                 {teacher.socials?.linkedin && (
-                                    <Button asChild variant="outline" size="icon" className="rounded-xl border-white/40 bg-white/50 backdrop-blur-sm hover:bg-primary hover:text-white hover:border-primary transition-all">
-                                        <a href={teacher.socials.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-5 h-5" /></a>
+                                    <Button asChild variant="outline" size="icon" className="h-9 w-9 rounded-lg border-white/40 bg-white/50 hover:bg-primary hover:text-white transition-all">
+                                        <a href={teacher.socials.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
                                     </Button>
                                 )}
                                 {teacher.socials?.facebook && (
-                                    <Button asChild variant="outline" size="icon" className="rounded-xl border-white/40 bg-white/50 backdrop-blur-sm hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
-                                        <a href={teacher.socials.facebook} target="_blank" rel="noopener noreferrer"><Facebook className="w-5 h-5" /></a>
+                                    <Button asChild variant="outline" size="icon" className="h-9 w-9 rounded-lg border-white/40 bg-white/50 hover:bg-blue-600 hover:text-white transition-all">
+                                        <a href={teacher.socials.facebook} target="_blank" rel="noopener noreferrer"><Facebook className="w-4 h-4" /></a>
                                     </Button>
                                 )}
                                 {teacher.socials?.twitter && (
-                                    <Button asChild variant="outline" size="icon" className="rounded-xl border-white/40 bg-white/50 backdrop-blur-sm hover:bg-sky-500 hover:text-white hover:border-sky-500 transition-all">
-                                        <a href={teacher.socials.twitter} target="_blank" rel="noopener noreferrer"><Twitter className="w-5 h-5" /></a>
+                                    <Button asChild variant="outline" size="icon" className="h-9 w-9 rounded-lg border-white/40 bg-white/50 hover:bg-sky-500 hover:text-white transition-all">
+                                        <a href={teacher.socials.twitter} target="_blank" rel="noopener noreferrer"><Twitter className="w-4 h-4" /></a>
                                     </Button>
                                 )}
                             </div>
@@ -154,17 +150,17 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                 </div>
             </section>
 
-            <main className="container mx-auto px-4 py-16 md:py-24 space-y-24">
-                {/* About Me Section */}
+            <main className="container mx-auto px-4 py-10 md:py-14 space-y-12 md:space-y-16">
+                {/* Biography Section */}
                 <div className="max-w-4xl mx-auto">
-                    <div className="flex items-center gap-3 mb-8 border-l-4 border-primary pl-6">
-                        <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tight uppercase">Biography</h2>
+                    <div className="flex items-center gap-3 mb-6 border-l-4 border-primary pl-4">
+                        <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">Biography</h2>
                     </div>
-                    <div className="bg-card p-8 md:p-12 rounded-3xl border border-white/40 shadow-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-8 opacity-5">
-                            <GraduationCap className="w-32 h-32 rotate-12" />
+                    <div className="bg-card p-6 md:p-10 rounded-2xl border border-white/40 shadow-lg relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                            <GraduationCap className="w-24 h-24 rotate-12" />
                         </div>
-                        <p className="text-base md:text-lg text-muted-foreground font-medium leading-relaxed whitespace-pre-line relative z-10">
+                        <p className="text-sm md:text-base text-muted-foreground font-medium leading-relaxed whitespace-pre-line relative z-10">
                             {teacher.bio}
                         </p>
                     </div>
@@ -172,12 +168,12 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
 
                 {/* Courses Grid */}
                 <section>
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-l-4 border-primary pl-4">
                         <div className="text-left">
-                            <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">My Courses</h2>
-                            <p className="text-muted-foreground font-medium text-lg mt-2">Pick your path to academic excellence with {teacher.name}.</p>
+                            <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tight uppercase">My Courses</h2>
+                            <p className="text-muted-foreground font-medium text-sm md:text-base mt-1">Pick your path to academic excellence.</p>
                         </div>
-                        <Badge variant="accent" className="rounded-full px-4 font-black">{teacherCourses.length} ACTIVE BATCHES</Badge>
+                        <Badge variant="accent" className="rounded-full px-3 py-0.5 font-black text-[10px] uppercase tracking-widest">{teacherCourses.length} ACTIVE BATCHES</Badge>
                     </div>
 
                     {teacherCourses.length > 0 ? (
@@ -188,53 +184,53 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                             })}
                         </div>
                     ) : (
-                        <div className="text-center py-20 bg-muted/20 border-2 border-dashed border-white/10 rounded-3xl">
-                            <GraduationCap className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-20" />
-                            <p className="text-muted-foreground text-lg font-bold">This teacher has not published any courses yet.</p>
+                        <div className="text-center py-16 bg-muted/20 border-2 border-dashed border-white/10 rounded-2xl">
+                            <GraduationCap className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                            <p className="text-muted-foreground text-sm font-bold">This teacher has not published any courses yet.</p>
                         </div>
                     )}
                 </section>
                 
                 {/* YouTube Classes Section */}
                 {teacher.youtubeClasses && teacher.youtubeClasses.length > 0 && (
-                    <section className="pt-8">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6">
+                    <section>
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-l-4 border-primary pl-4">
                             <div className="text-left">
-                                <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">Free YouTube Classes</h2>
-                                <p className="text-muted-foreground font-medium text-lg mt-2">Get a glimpse of the teaching quality through these free resources.</p>
+                                <h2 className="font-headline text-2xl md:text-3xl font-black tracking-tight uppercase">Free YouTube Classes</h2>
+                                <p className="text-muted-foreground font-medium text-sm md:text-base mt-1">Watch and learn from our free resources.</p>
                             </div>
                         </div>
 
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {teacher.youtubeClasses.map((video) => {
                                 const videoId = getYoutubeVideoId(video.youtubeUrl);
                                 const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Video';
 
                                 return (
                                     <Link key={video.id || video.title} href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                                        <Card className="overflow-hidden h-full flex flex-col rounded-2xl border-white/30 bg-card hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                                        <Card className="overflow-hidden h-full flex flex-col rounded-xl border-white/30 bg-card hover:border-primary/50 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
                                             <CardHeader className="p-0">
                                                 <div className="relative aspect-video">
                                                     <Image
                                                         src={thumbnailUrl}
                                                         alt={video.title}
                                                         fill
-                                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                                        className="object-cover"
                                                         data-ai-hint="youtube video thumbnail"
                                                     />
                                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                                        <div className="bg-primary p-4 rounded-full shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500">
-                                                            <PlayCircle className="w-10 h-10 text-white" />
+                                                        <div className="bg-primary p-3 rounded-full shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500">
+                                                            <PlayCircle className="w-8 h-8 text-white" />
                                                         </div>
                                                     </div>
-                                                    <Badge className="absolute top-4 left-4 bg-red-600 font-black text-[9px] uppercase tracking-widest border-none">LIVE</Badge>
+                                                    <Badge className="absolute top-3 left-3 bg-red-600 font-black text-[8px] uppercase tracking-widest border-none">LIVE</Badge>
                                                 </div>
                                             </CardHeader>
-                                            <CardContent className="p-6 flex-grow flex flex-col justify-center">
+                                            <CardContent className="p-4 flex-grow flex flex-col justify-center">
                                                 <h3 className="font-black text-sm md:text-base uppercase tracking-tight leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                                                     {video.title}
                                                 </h3>
-                                                <div className="mt-4 flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">
+                                                <div className="mt-3 flex items-center gap-1.5 text-primary font-black text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">
                                                     Watch on YouTube <ChevronRight className="w-3 h-3" />
                                                 </div>
                                             </CardContent>
