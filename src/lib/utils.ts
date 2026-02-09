@@ -1,5 +1,3 @@
-
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Timestamp } from "firebase/firestore";
@@ -20,10 +18,6 @@ export function generateRegistrationNumber(): string {
 
 /**
  * Recursively removes properties with `undefined` values from an object.
- * This is crucial for sending data to Firebase or server actions that don't
- * handle `undefined` during serialization.
- * @param obj The object to clean.
- * @returns A new object with `undefined` values removed.
  */
 export function removeUndefinedValues(obj: any): any {
   if (Array.isArray(obj)) {
@@ -42,9 +36,6 @@ export function removeUndefinedValues(obj: any): any {
 
 /**
  * Safely converts various date-like types from Firestore into a JavaScript Date object.
- * Handles Timestamps, date strings, and serialized timestamp objects.
- * @param dateField The value to convert.
- * @returns A valid Date object, or a Date object representing an invalid date if conversion fails.
  */
 export const safeToDate = (dateField: any): Date => {
   if (!dateField) {
@@ -53,29 +44,23 @@ export const safeToDate = (dateField: any): Date => {
   if (dateField instanceof Date) {
     return dateField;
   }
-  // Firestore Timestamp
   if (typeof dateField.toDate === 'function') {
     return dateField.toDate();
   }
-  // Object from Firestore serialization
   if (typeof dateField === 'object' && 'seconds' in dateField && 'nanoseconds' in dateField) {
     return new Timestamp(dateField.seconds, dateField.nanoseconds).toDate();
   }
-  // String representation
   if (typeof dateField === 'string') {
     const date = new Date(dateField);
     if (!isNaN(date.getTime())) {
         return date;
     }
   }
-  // Fallback for unexpected formats
   return new Date(NaN);
 };
 
 /**
  * Extracts a YouTube video ID from various URL formats.
- * @param url The YouTube URL to parse.
- * @returns The 11-character video ID, or null if not found.
  */
 export function getYoutubeVideoId(url: string): string | null {
   if (!url) return null;
@@ -88,7 +73,6 @@ export function getYoutubeVideoId(url: string): string | null {
       videoId = urlObj.searchParams.get('v');
     }
   } catch (e) {
-    // regex fallback for invalid urls
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
     if (match) {
@@ -96,4 +80,43 @@ export function getYoutubeVideoId(url: string): string | null {
     }
   }
   return videoId;
+}
+
+/**
+ * Parses User Agent to get a friendly device string like "Edge on Windows 10/11"
+ */
+export function getBrowserInfo(): string {
+    if (typeof window === 'undefined') return "Unknown Device";
+    const ua = navigator.userAgent;
+    let browser = "Browser";
+    let os = "OS";
+
+    if (ua.indexOf("Edg/") > -1) browser = "Edge";
+    else if (ua.indexOf("Chrome") > -1) browser = "Chrome";
+    else if (ua.indexOf("Firefox") > -1) browser = "Firefox";
+    else if (ua.indexOf("Safari") > -1) browser = "Safari";
+
+    if (ua.indexOf("Windows NT 10.0") > -1) os = "Windows 10/11";
+    else if (ua.indexOf("Windows NT 6.3") > -1) os = "Windows 8.1";
+    else if (ua.indexOf("Windows NT 6.2") > -1) os = "Windows 8";
+    else if (ua.indexOf("Windows NT 6.1") > -1) os = "Windows 7";
+    else if (ua.indexOf("Mac OS X") > -1) os = "macOS";
+    else if (ua.indexOf("Android") > -1) os = "Android";
+    else if (ua.indexOf("iPhone") > -1 || ua.indexOf("iPad") > -1) os = "iOS";
+    else if (ua.indexOf("Linux") > -1) os = "Linux";
+
+    return `${browser} on ${os}`;
+}
+
+/**
+ * Gets the user's public IP address.
+ */
+export async function getIpAddress(): Promise<string> {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (e) {
+        return 'Unknown IP';
+    }
 }

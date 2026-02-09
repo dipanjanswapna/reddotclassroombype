@@ -2,20 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info } from "lucide-react";
+import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2 } from "lucide-react";
 import { saveUserAction, removeUserSessionAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 export default function StudentProfilePage() {
     const { toast } = useToast();
@@ -134,6 +134,7 @@ export default function StudentProfilePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Info Section */}
         <div className="lg:col-span-2 space-y-8">
             <Card className="rounded-2xl md:rounded-3xl border-white/30 bg-[#eef2ed] shadow-xl">
                 <CardHeader>
@@ -224,8 +225,8 @@ export default function StudentProfilePage() {
             </Card>
         </div>
 
+        {/* Device Management Section */}
         <div className="lg:col-span-1 space-y-8">
-            {/* Manage Devices Section */}
             <Card className="rounded-2xl md:rounded-3xl border-white/30 bg-[#eef2ed] shadow-xl overflow-hidden">
                 <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
                     <div className="flex items-center gap-2 mb-1">
@@ -233,14 +234,14 @@ export default function StudentProfilePage() {
                         <CardTitle className="text-xl font-black uppercase tracking-tight">Manage Devices</CardTitle>
                     </div>
                     <CardDescription className="font-medium text-xs">
-                        Manage your active login sessions. You can be logged in on up to 2 devices.
+                        You can be logged in on up to 2 devices. Manage your active devices here.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                     <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
                         <Info className="h-4 w-4 text-blue-600" />
                         <AlertDescription className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-tighter">
-                            Device Limit: 2 active sessions. Removing a device will free up a slot.
+                            Device Limit: You can be logged in on a maximum of 2 devices at a time. Removing a device will free up a slot for a new device.
                         </AlertDescription>
                     </Alert>
 
@@ -270,10 +271,14 @@ export default function StudentProfilePage() {
                                                 <div className="space-y-0.5">
                                                     <div className="flex items-center gap-2">
                                                         <p className="font-black text-sm uppercase tracking-tight">{session.deviceName}</p>
-                                                        {isCurrent && <Badge variant="accent" className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0 h-4">Current Device</Badge>}
+                                                        {isCurrent && (
+                                                            <Badge variant="accent" className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0 h-4 gap-1">
+                                                                <CheckCircle2 className="w-2.5 h-2.5" /> Current Device
+                                                            </Badge>
+                                                        )}
                                                     </div>
                                                     <p className="text-[10px] font-bold text-muted-foreground">Logged in: {formattedDate}</p>
-                                                    <p className="text-[10px] font-mono text-primary/60">IP: {session.ipAddress}</p>
+                                                    <p className="text-[10px] font-mono text-primary/60">IP Address: {session.ipAddress}</p>
                                                 </div>
                                             </div>
                                             {!isCurrent && (

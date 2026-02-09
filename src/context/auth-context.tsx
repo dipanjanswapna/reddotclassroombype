@@ -19,7 +19,7 @@ import { doc, setDoc, serverTimestamp, updateDoc, onSnapshot, Timestamp } from '
 import { User, UserSession } from '@/lib/types';
 import { useToast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { generateRollNumber, generateRegistrationNumber } from '@/lib/utils';
+import { generateRollNumber, generateRegistrationNumber, getBrowserInfo, getIpAddress } from '@/lib/utils';
 
 interface AuthContextType {
     user: FirebaseUser | null;
@@ -37,36 +37,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-function getBrowserInfo() {
-    if (typeof window === 'undefined') return "Unknown Browser on Server";
-    const ua = navigator.userAgent;
-    let browser = "Browser";
-    let os = "OS";
-
-    if (ua.indexOf("Firefox") > -1) browser = "Firefox";
-    else if (ua.indexOf("Edg/") > -1) browser = "Edge";
-    else if (ua.indexOf("Chrome") > -1) browser = "Chrome";
-    else if (ua.indexOf("Safari") > -1) browser = "Safari";
-
-    if (ua.indexOf("Windows") > -1) os = "Windows 10/11";
-    else if (ua.indexOf("Mac OS") > -1) os = "macOS";
-    else if (ua.indexOf("Android") > -1) os = "Android";
-    else if (ua.indexOf("iPhone") > -1 || ua.indexOf("iPad") > -1) os = "iOS";
-    else if (ua.indexOf("Linux") > -1) os = "Linux";
-
-    return `${browser} on ${os}`;
-}
-
-async function getIpAddress() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip;
-    } catch (e) {
-        return 'Unknown IP';
-    }
-}
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -101,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => unsubscribeAuth();
     }, [fetchAndSetUser, auth]);
     
-    // Multi-device login listener
+    // Live multi-device session enforcement
     useEffect(() => {
         if (!userInfo || userInfo.role !== 'Student' || !db) {
             return;
@@ -114,9 +84,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const activeSessions = userData.activeSessions || [];
                 const clientSessionId = localStorage.getItem('rdc_session_id');
 
-                // If current client session is not in the active sessions list, logout
+                // If current client session is not in the active sessions list, logout instantly
                 if (clientSessionId && !activeSessions.some(s => s.id === clientSessionId)) {
-                    console.warn('Session no longer valid. Logging out.');
+                    console.warn('Current session removed remotely. Logging out.');
                     toast({
                         title: 'Logged Out',
                         description: 'Your session has ended or been removed from another device.',
@@ -176,7 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         const currentSessions = existingUser?.activeSessions || [];
         
-        // Ensure max 2 sessions. Remove the oldest if necessary.
+        // Enforce 2-device limit. If 3rd attempt, remove the oldest session.
         let updatedSessions = [...currentSessions, newSession];
         if (updatedSessions.length > 2) {
             updatedSessions = updatedSessions.slice(-2);
@@ -184,9 +154,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         await updateDoc(doc(db, 'users', uid), {
             activeSessions: updatedSessions,
-            currentSessionId: newSessionId, // legacy support
             lastLoginAt: serverTimestamp(),
         });
+        
         localStorage.setItem('rdc_session_id', newSessionId);
     };
 
@@ -202,52 +172,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (role && role !== 'Admin' && !config.platformSettings[role]?.loginEnabled) {
-            throw new Error(`Logins for the '${role}' role are temporarily disabled by the administrator.`);
+            throw new Error(`Logins for the '${role}' role are temporarily disabled.`);
         }
 
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-        
         let fetchedUserInfo = await getUser(userCredential.user.uid);
-
-        if (!fetchedUserInfo && email === 'dipanjanswapnaprangon@gmail.com') {
-             const newUserInfo: Omit<User, 'id'> = {
-                uid: userCredential.user.uid,
-                name: "RDC Admin",
-                email: email,
-                avatarUrl: `https://placehold.co/100x100.png?text=RA`,
-                role: 'Admin',
-                status: 'Active',
-                joined: serverTimestamp(),
-            };
-            await setDoc(doc(db!, "users", userCredential.user.uid), newUserInfo);
-            fetchedUserInfo = { ...newUserInfo, id: userCredential.user.uid } as User;
-        }
 
         if (!fetchedUserInfo) {
             await signOut(auth);
-            throw new Error("Your user profile could not be found. Please contact support.");
+            throw new Error("Your user profile could not be found.");
         }
         
         if (fetchedUserInfo.status !== 'Active') {
             await signOut(auth);
             const statusMessage = fetchedUserInfo.status === 'Pending Approval'
-                ? "Your account is pending admin approval. You will be notified once it's reviewed."
+                ? "Your account is pending admin approval."
                 : 'Your account has been suspended.';
             throw new Error(statusMessage);
         }
         
-        if ((fetchedUserInfo.role as any) === 'Partner') {
-            fetchedUserInfo.role = 'Seller';
-        }
-        
-        if ((fetchedUserInfo.role as any) !== 'Doubt Solver' && fetchedUserInfo.role !== 'Admin' && !config.platformSettings[fetchedUserInfo.role]?.loginEnabled) {
-            await signOut(auth);
-            throw new Error(`Logins for your role ('${fetchedUserInfo.role}') are temporarily disabled.`);
-        }
-
         if (role && fetchedUserInfo.role !== role) {
             await signOut(auth);
-            throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account. Please log in with the correct role or tab.`);
+            throw new Error(`Access Denied: This is a '${fetchedUserInfo.role}' account.`);
         }
         
         if (fetchedUserInfo.role === 'Student') {
@@ -270,14 +216,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     
         if (studentInfo.status !== 'Active') {
-            const statusMessage = studentInfo.status === 'Pending Approval'
-                ? "Your account is pending admin approval."
-                : 'Your account has been suspended.';
-            throw new Error(statusMessage);
+            await signOut(auth);
+            throw new Error("Your account is not active.");
         }
 
         const userCredential = await signInWithEmailAndPassword(auth, studentInfo.email, pass);
-    
         await handleStudentLoginSession(studentInfo.uid, studentInfo);
         setUserInfo(studentInfo);
         redirectToDashboard(studentInfo, 'Login Successful!');
@@ -291,20 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("No staff member found with this ID.");
         }
 
-        const staffRoles: User['role'][] = ['Teacher', 'Admin', 'Moderator', 'Affiliate', 'Seller', 'Doubt Solver'];
-        if (!staffRoles.includes(staffInfo.role)) {
-            throw new Error("This login method is for staff members only.");
-        }
-    
-        if (staffInfo.status !== 'Active') {
-            const statusMessage = staffInfo.status === 'Pending Approval'
-                ? "Your account is pending admin approval."
-                : 'Your account has been suspended.';
-            throw new Error(statusMessage);
-        }
-
         const userCredential = await signInWithEmailAndPassword(auth, staffInfo.email, pass);
-        
         setUserInfo(staffInfo);
         redirectToDashboard(staffInfo, 'Login Successful!');
         return userCredential;
@@ -312,32 +242,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const loginWithGoogle = async () => {
         if (!auth || !db) throw new Error("Firebase services are not available.");
-        const config = await getHomepageConfig();
-        if (!config) {
-            throw new Error("Platform configuration is not available. Please try again later.");
-        }
-    
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
         let existingUserInfo = await getUser(user.uid);
         
-        if (existingUserInfo) {
-            if (existingUserInfo.status !== 'Active') {
-                await signOut(auth);
-                throw new Error("Your account is not active.");
-            }
-        } else {
-            if (!config.platformSettings['Student']?.signupEnabled) {
-                await signOut(auth);
-                throw new Error("Student registrations are temporarily disabled.");
-            }
-            
-            const searchParams = new URLSearchParams(window.location.search);
-            const ref = searchParams.get('ref');
+        if (!existingUserInfo) {
             const roll = generateRollNumber();
-
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
                 name: user.displayName || 'New User',
@@ -349,7 +261,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 classRoll: roll,
                 offlineRollNo: roll,
                 registrationNumber: generateRegistrationNumber(),
-                ...(ref && { referredBy: ref }),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             existingUserInfo = { ...newUserInfo, id: user.uid } as User;
@@ -365,32 +276,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const loginWithFacebook = async () => {
         if (!auth || !db) throw new Error("Firebase services are not available.");
-        const config = await getHomepageConfig();
-        if (!config) {
-            throw new Error("Platform configuration is not available. Please try again later.");
-        }
-    
         const provider = new FacebookAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         
         let existingUserInfo = await getUser(user.uid);
         
-        if (existingUserInfo) {
-            if (existingUserInfo.status !== 'Active') {
-                await signOut(auth);
-                throw new Error("Your account is not active.");
-            }
-        } else {
-            if (!config.platformSettings['Student']?.signupEnabled) {
-                await signOut(auth);
-                throw new Error("Student registrations are temporarily disabled.");
-            }
-            
-            const searchParams = new URLSearchParams(window.location.search);
-            const ref = searchParams.get('ref');
+        if (!existingUserInfo) {
             const roll = generateRollNumber();
-
             const newUserInfo: Omit<User, 'id'> = {
                 uid: user.uid,
                 name: user.displayName || 'New User',
@@ -402,7 +295,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 classRoll: roll,
                 offlineRollNo: roll,
                 registrationNumber: generateRegistrationNumber(),
-                ...(ref && { referredBy: ref }),
             };
             await setDoc(doc(db, "users", user.uid), newUserInfo);
             existingUserInfo = { ...newUserInfo, id: user.uid } as User;
@@ -418,14 +310,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     const signup = async (email: string, pass: string, name: string, role: User['role'], status: User['status'] = 'Active') => {
         if (!auth || !db) throw new Error("Firebase services are not available.");
-        const config = await getHomepageConfig();
-        if (!config) {
-            throw new Error("Platform configuration is not available. Please try again later.");
-        }
-        if (role !== 'Admin' && role !== 'Doubt Solver' && !config.platformSettings[role]?.signupEnabled) {
-            throw new Error(`Registrations for the '${role}' role are temporarily disabled.`);
-        }
-
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const newUser = userCredential.user;
 
@@ -475,7 +359,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!auth) throw new Error("Authentication service is not available.");
         return sendPasswordResetEmail(auth, email);
     }
-
 
     const value = {
         user,
