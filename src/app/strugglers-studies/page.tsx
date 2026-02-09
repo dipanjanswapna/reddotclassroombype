@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Rocket, Users, BookOpen, HelpCircle, BarChart3 } from 'lucide-react';
 import { FreeClassesSection } from '@/components/free-classes-section';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'How We Help You Become A Topper | RDC',
