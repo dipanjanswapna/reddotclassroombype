@@ -5,12 +5,11 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { getHomepageConfig, getCourses, getBranches, getOrganizations } from '@/lib/firebase/firestore';
-import { ArrowRight, CheckCircle2, MapPin, Phone, MessageSquare, Zap, Target, Award } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, MessageSquare, Zap, Target, Award } from 'lucide-react';
 import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
 import { Course, Branch, Organization, HomepageConfig } from '@/lib/types';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -62,7 +61,8 @@ export default function OfflineHubPage() {
         { icon: Award, title: "Exam Environment", desc: "Standardized testing conditions for peak performance." },
     ];
 
-    const heroImageUrl = offlineHubData?.heroImageUrl || "https://picsum.photos/seed/offline/800/800";
+    // Requested Size: 600x400
+    const heroImageUrl = offlineHubData?.heroImageUrl || "https://picsum.photos/seed/offline/600/400";
     const heroImageAiHint = offlineHubData?.heroImageDataAiHint || "modern classroom";
 
     return (
@@ -104,12 +104,13 @@ export default function OfflineHubPage() {
                             className="relative flex justify-center"
                         >
                             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px] scale-110 opacity-50" />
-                            <div className="relative z-10 w-full max-w-lg aspect-square">
+                            {/* Precisely 600x400 via aspect-[3/2] */}
+                            <div className="relative z-10 w-full max-w-[600px] aspect-[3/2]">
                                 <Image
                                     src={heroImageUrl}
                                     alt="Offline Education Hub"
                                     fill
-                                    className="object-contain drop-shadow-2xl rounded-3xl border-4 border-white/5"
+                                    className="object-cover drop-shadow-2xl rounded-2xl border-4 border-white/5"
                                     data-ai-hint={heroImageAiHint}
                                 />
                             </div>
@@ -156,7 +157,7 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Branch Directory */}
+            {/* Branch/Center Directory */}
             <section id="centers" className="py-20 md:py-28 bg-black/40">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 space-y-4">
@@ -169,7 +170,7 @@ export default function OfflineHubPage() {
                     </div>
                     
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {branches.map((branch) => (
+                        {branches.length > 0 ? branches.map((branch) => (
                             <Card key={branch.id} className="p-6 border-white/5 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 group rounded-2xl">
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-start">
@@ -194,7 +195,9 @@ export default function OfflineHubPage() {
                                     </div>
                                 </div>
                             </Card>
-                        ))}
+                        )) : (
+                            <p className="col-span-full text-center py-12 text-gray-500 border border-dashed border-white/10 rounded-2xl">Offline centers are currently being updated. Please check back later.</p>
+                        )}
                     </div>
                 </div>
             </section>

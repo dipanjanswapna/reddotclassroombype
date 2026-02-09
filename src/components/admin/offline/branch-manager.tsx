@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -31,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, MoreVertical, X, Building2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -93,7 +92,7 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
 
     const handleSave = async () => {
         if (!name || !address) {
-            toast({ title: 'Error', description: 'Branch name and address are required.', variant: 'destructive'});
+            toast({ title: 'Error', description: 'Center name and address are required.', variant: 'destructive'});
             return;
         }
         setIsSaving(true);
@@ -125,7 +124,7 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
         const result = await deleteBranchAction(branchToDelete.id);
         if (result.success) {
             setBranches(branches.filter(b => b.id !== branchToDelete.id));
-            toast({ title: 'Branch Deleted', description: result.message, variant: 'destructive' });
+            toast({ title: 'Center Deleted', description: result.message, variant: 'destructive' });
         } else {
              toast({ title: 'Error', description: result.message, variant: 'destructive'});
         }
@@ -143,19 +142,19 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>All Branches</CardTitle>
-                        <CardDescription>Manage your organization's physical locations.</CardDescription>
+                        <CardTitle className="flex items-center gap-2"><Building2 className="w-5 h-5 text-primary"/> Offline Centers</CardTitle>
+                        <CardDescription>Manage your organization's physical education centers.</CardDescription>
                     </div>
                     <Button onClick={() => handleOpenDialog(null)}>
-                        <PlusCircle className="mr-2"/> Create Branch
+                        <PlusCircle className="mr-2 h-4 w-4"/> Add New Center
                     </Button>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Branch Name</TableHead>
-                                <TableHead>Branch Code</TableHead>
+                                <TableHead>Center Name</TableHead>
+                                <TableHead>Code</TableHead>
                                 <TableHead>Address</TableHead>
                                 <TableHead>Contact</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
@@ -178,18 +177,23 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
+                                            <DropdownMenuContent align="end">
                                                 <DropdownMenuItem onClick={() => handleOpenDialog(branch)}>
-                                                    <Edit className="mr-2 h-4 w-4" /> Edit
+                                                    <Edit className="mr-2 h-4 w-4" /> Edit Details
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="text-destructive" onClick={() => setBranchToDelete(branch)}>
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Center
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))}
+                            {branches.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">No offline centers found. Create one to get started.</TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -198,14 +202,14 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>{editingBranch ? 'Edit Branch' : 'Create New Branch'}</DialogTitle>
+                        <DialogTitle>{editingBranch ? 'Edit Center Details' : 'Create New Offline Center'}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                        <div className="grid grid-cols-2 gap-4">
-                         <div className="space-y-2"> <Label>Branch Name</Label> <Input value={name} onChange={e => setName(e.target.value)} /> </div>
-                         <div className="space-y-2"> <Label>Branch Code</Label> <Input value={branchCode} onChange={e => setBranchCode(e.target.value)} placeholder="e.g., UTT-01" /> </div>
+                         <div className="space-y-2"> <Label>Center Name</Label> <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Mirpur Center"/> </div>
+                         <div className="space-y-2"> <Label>Center Code</Label> <Input value={branchCode} onChange={e => setBranchCode(e.target.value)} placeholder="e.g., UTT-01" /> </div>
                        </div>
-                        <div className="space-y-2"> <Label>Address</Label> <Input value={address} onChange={e => setAddress(e.target.value)} /> </div>
+                        <div className="space-y-2"> <Label>Physical Address</Label> <Input value={address} onChange={e => setAddress(e.target.value)} placeholder="Full address of the center"/> </div>
                         <div className="grid grid-cols-2 gap-4">
                            <div className="space-y-2"> <Label>Contact Phone</Label> <Input value={contactPhone} onChange={e => setContactPhone(e.target.value)} /> </div>
                            <div className="space-y-2"> <Label>Contact Email</Label> <Input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} /> </div>
@@ -225,13 +229,13 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
                         </div>
                         
                         <div className="space-y-2 pt-4 border-t">
-                            <Label className="font-semibold">Classrooms</Label>
+                            <Label className="font-semibold">Classrooms & Facilities</Label>
                              <div className="space-y-2">
                                 {classrooms.map((room, index) => (
                                     <div key={room.id} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center">
                                         <Input placeholder="Classroom Name" value={room.name} onChange={e => handleClassroomChange(room.id, 'name', e.target.value)} />
                                         <Input placeholder="Capacity" type="number" value={room.capacity} onChange={e => handleClassroomChange(room.id, 'capacity', Number(e.target.value))} className="w-24" />
-                                        <Input placeholder="Equipment (comma-separated)" value={room.equipment} onChange={e => handleClassroomChange(room.id, 'equipment', e.target.value)} />
+                                        <Input placeholder="Equipment (e.g., Smart Board)" value={room.equipment} onChange={e => handleClassroomChange(room.id, 'equipment', e.target.value)} />
                                         <Button variant="ghost" size="icon" onClick={() => removeClassroom(room.id)}><X className="h-4 w-4 text-destructive"/></Button>
                                     </div>
                                 ))}
@@ -243,7 +247,7 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
                         <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
                         <Button onClick={handleSave} disabled={isSaving}>
                             {isSaving && <Loader2 className="animate-spin mr-2"/>}
-                            Save Branch
+                            Save Center Information
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -253,11 +257,11 @@ export function BranchManager({ initialBranches, allManagers }: BranchManagerPro
                 <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>This action cannot be undone. This will permanently delete the branch <strong>{branchToDelete?.name}</strong>.</AlertDialogDescription>
+                    <AlertDialogDescription>This action will permanently delete the center <strong>{branchToDelete?.name}</strong> and remove all associated batches from this location.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete Center</AlertDialogAction>
                 </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

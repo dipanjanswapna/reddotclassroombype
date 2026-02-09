@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
@@ -806,8 +806,8 @@ export default function AdminHomepageManagementPage() {
                 <TabsContent value="pages" className="space-y-8 mt-0">
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader>
-                            <CardTitle>Offline Hub Management</CardTitle>
-                            <CardDescription>Manage titles, subtitles, imagery, and button text for the Offline Hub page.</CardDescription>
+                            <CardTitle>Offline Hub CMS</CardTitle>
+                            <CardDescription>Manage titles, imagery, and button text for the Offline Hub page.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm bg-muted/20">
@@ -824,11 +824,11 @@ export default function AdminHomepageManagementPage() {
                                 <div className="space-y-2 col-span-2"><Label>Hero Subtitle (EN)</Label><Textarea value={config.offlineHubSection?.heroSubtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'heroSubtitle', 'en', e.target.value)} className="rounded-xl" rows={2}/></div>
                             </div>
                             <div className="space-y-4 pt-4 border-t">
-                                <Label className="font-bold text-primary">Hero Media</Label>
+                                <Label className="font-bold text-primary flex items-center gap-2"><ImageIcon className="w-4 h-4"/> Hero Media (Recommended Size: 600x400)</Label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label>Hero Image URL</Label>
-                                        <Input value={config.offlineHubSection?.heroImageUrl || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'heroImageUrl', e.target.value)} className="rounded-xl" placeholder="https://picsum.photos/800/800" />
+                                        <Input value={config.offlineHubSection?.heroImageUrl || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'heroImageUrl', e.target.value)} className="rounded-xl" placeholder="https://picsum.photos/seed/offline/600/400" />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Hero Image AI Hint</Label>
@@ -836,7 +836,7 @@ export default function AdminHomepageManagementPage() {
                                     </div>
                                 </div>
                                 {config.offlineHubSection?.heroImageUrl && (
-                                    <div className="mt-2 rounded-xl border overflow-hidden aspect-video relative max-w-sm bg-muted mx-auto md:mx-0">
+                                    <div className="mt-2 rounded-xl border overflow-hidden aspect-[3/2] relative max-w-sm bg-muted mx-auto md:mx-0">
                                         <Image src={config.offlineHubSection.heroImageUrl} alt="Hero Preview" fill className="object-cover" />
                                     </div>
                                 )}
