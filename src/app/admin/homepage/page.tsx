@@ -130,15 +130,9 @@ export default function AdminHomepageManagementPage() {
         });
     };
 
-    const handleCourseIdToggle = (section: CourseIdSections, courseId: string, add: boolean) => {
-        setConfig(prev => {
-            if (!prev) return null;
-            const currentIds = prev[section] || [];
-            const newIds = add 
-                ? [...currentIds, courseId]
-                : currentIds.filter(id => id !== courseId);
-            return { ...prev, [section]: newIds };
-        });
+    const handleStringArrayChange = (section: CourseIdSections, value: string) => {
+        const ids = value.split(',').map(id => id.trim()).filter(Boolean);
+        setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
     };
 
   const handleSectionToggle = (sectionKey: any, value: boolean) => {
@@ -155,19 +149,23 @@ export default function AdminHomepageManagementPage() {
   };
 
   const addHeroBanner = () => {
-    setConfig(prev => prev ? ({
-      ...prev,
-      heroBanners: [
-        ...prev.heroBanners,
-        { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
-      ]
-    }) : null);
+    setConfig(prev => {
+        if (!prev) return null;
+        const currentBanners = prev.heroBanners || [];
+        return {
+            ...prev,
+            heroBanners: [
+                ...currentBanners,
+                { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
+            ]
+        }
+    });
   };
 
   const removeHeroBanner = (id: number) => {
     setConfig(prev => prev ? ({
       ...prev,
-      heroBanners: prev.heroBanners.filter(banner => banner.id !== id)
+      heroBanners: (prev.heroBanners || []).filter(banner => banner.id !== id)
     }) : null);
   };
 
@@ -195,7 +193,7 @@ export default function AdminHomepageManagementPage() {
   const removeOfflineSlide = (id: number) => {
     setConfig(prev => {
       if (!prev || !prev.offlineHubHeroCarousel) return null;
-      const newSlides = prev.offlineHubHeroCarousel.slides.filter(s => s.id !== id);
+      const newSlides = (prev.offlineHubHeroCarousel.slides || []).filter(s => s.id !== id);
       return { ...prev, offlineHubHeroCarousel: { ...prev.offlineHubHeroCarousel, slides: newSlides } };
     });
   };
@@ -299,7 +297,7 @@ export default function AdminHomepageManagementPage() {
                             <CardDescription>Manage the main sliding banners on the homepage.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {config.heroBanners.map((banner, index) => (
+                            {(config.heroBanners || []).map((banner, index) => (
                                 <div key={banner.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -318,7 +316,7 @@ export default function AdminHomepageManagementPage() {
                             <CardDescription>The slim sliding banner used on Shop and Offline Hub pages.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
+                            {(config.offlineHubHeroCarousel?.slides || []).map((slide, index) => (
                                 <div key={slide.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
                                     <div className="space-y-2"><Label className="text-xs">Image URL</Label><Input value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
@@ -392,9 +390,4 @@ export default function AdminHomepageManagementPage() {
       </Tabs>
     </div>
   );
-
-  function handleStringArrayChange(section: CourseIdSections, value: string) {
-    const ids = value.split(',').map(id => id.trim()).filter(Boolean);
-    setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
-  }
 }
