@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -148,7 +147,7 @@ export default function Home() {
   }
   
   return (
-    <div className="text-foreground">
+    <div className="text-foreground mesh-gradient">
         {homepageConfig.welcomeSection?.display && (
             <section className="py-8 md:py-10 text-center overflow-hidden">
                 <div className="container mx-auto px-4">
@@ -190,14 +189,14 @@ export default function Home() {
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-10 md:py-14 overflow-hidden">
+          <section className="py-10 md:py-14 overflow-hidden relative">
               <div className="container mx-auto px-4">
                   <motion.div 
                     initial={{ opacity: 0, x: -50 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                    className="group relative glassmorphism-card p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5"
+                    className="group relative glassmorphism-card p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5 bg-white/40 dark:bg-card/40"
                   >
                       {/* Decorative Background Elements */}
                       <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
@@ -244,7 +243,7 @@ export default function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section aria-labelledby="categories-heading">
+          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent">
             <div className="container mx-auto px-4">
               <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
                 {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
@@ -259,7 +258,7 @@ export default function Home() {
         </div>
 
         {homepageConfig.journeySection?.display && (
-          <section aria-labelledby="hero-heading">
+          <section aria-labelledby="hero-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent">
             <div className="container mx-auto px-4">
               <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.['en']}</h2>
               <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.['en']}</p>
@@ -279,7 +278,7 @@ export default function Home() {
                       <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.['en']}</h2>
                       <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.['en']}</p>
                   </div>
-                  <Button asChild variant="outline">
+                  <Button asChild variant="outline" className="rounded-xl">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
@@ -289,7 +288,7 @@ export default function Home() {
         )}
 
         {homepageConfig.videoSection?.display && (
-          <section aria-labelledby="video-section-heading">
+          <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.['en']}</h2>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.['en']}</p>
@@ -299,7 +298,7 @@ export default function Home() {
                       const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
                       
                       return (
-                          <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-lg overflow-hidden group shadow-lg block">
+                          <a key={index} href={video.videoUrl} target="_blank" rel="noopener noreferrer" className="relative rounded-xl overflow-hidden group shadow-lg block">
                               <Image src={thumbnailUrl} alt={video.title} width={600} height={400} className="w-full transition-transform duration-300 group-hover:scale-105" />
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                   <PlayCircle className="w-16 h-16 text-white/80 group-hover:text-white transition-colors cursor-pointer"/>
@@ -308,7 +307,7 @@ export default function Home() {
                       );
                     })}
                 </div>
-                <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground">
+                <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg shadow-accent/20">
                   <Link href="/courses">{homepageConfig.videoSection?.buttonText?.[language] || homepageConfig.videoSection?.buttonText?.['en']}</Link>
                 </Button>
             </div>
@@ -318,7 +317,7 @@ export default function Home() {
         {homepageConfig.sscHscSection?.display && (
           <section aria-labelledby="ssc-hsc-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
@@ -328,11 +327,11 @@ export default function Home() {
         )}
 
         {homepageConfig.masterclassSection?.display && (
-          <section aria-labelledby="masterclass-heading">
+          <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent">
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.['en']}</h2>
                   <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language] || homepageConfig.masterclassSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
@@ -342,12 +341,12 @@ export default function Home() {
         {homepageConfig.admissionSection?.display && (
           <section aria-labelledby="admission-heading">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.['en']}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.['en']}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.['en']}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language] || homepageConfig.admissionSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
@@ -355,14 +354,14 @@ export default function Home() {
         )}
         
         {homepageConfig.jobPrepSection?.display && (
-          <section aria-labelledby="job-prep-heading">
+          <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.['en']}</Badge>
+                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.['en']}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.['en']}</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
-                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground">
+                  <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
@@ -378,7 +377,7 @@ export default function Home() {
         <WhyTrustUs data={homepageConfig.whyChooseUs} />
         
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
-          <section aria-labelledby="collaborations-heading">
+          <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent">
             <div className="container mx-auto px-4">
               <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
                 {homepageConfig.collaborations?.title?.[language] || homepageConfig.collaborations?.title?.['en']}
@@ -404,7 +403,7 @@ export default function Home() {
 
 
         {homepageConfig.socialMediaSection?.display && (
-          <section aria-labelledby="social-media-heading">
+          <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language] || homepageConfig.socialMediaSection?.title?.['en']}
@@ -414,10 +413,10 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {homepageConfig.socialMediaSection?.channels.map((channel) => (
-                  <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between glassmorphism-card">
+                  <Card key={channel.id} className="text-center p-6 flex flex-col items-center justify-between glassmorphism-card bg-white/60 dark:bg-card/40 border-white/20">
                     <CardHeader className="p-0">
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
+                        <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shadow-lg", channel.platform === 'YouTube' ? 'bg-red-600' : 'bg-blue-600')}>
                           <SocialIcon platform={channel.platform} />
                         </div>
                         <CardTitle className="text-lg">{typeof channel.name === 'object' ? (channel.name[language] || channel.name['en']) : channel.name}</CardTitle>
@@ -442,7 +441,7 @@ export default function Home() {
                       <p className="text-sm text-muted-foreground">{typeof channel.description === 'object' ? (channel.description[language] || channel.description['en']) : channel.description}</p>
                     </CardContent>
                     <CardFooter className="p-0 w-full">
-                      <Button asChild className="w-full" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
+                      <Button asChild className="w-full rounded-xl font-bold shadow-lg" style={{ backgroundColor: channel.platform === 'YouTube' ? '#FF0000' : '#1877F2', color: 'white' }}>
                         <Link href={channel.ctaUrl} target="_blank" rel="noopener noreferrer">
                           <span className="ml-2">{typeof channel.ctaText === 'object' ? (channel.ctaText[language] || channel.ctaText['en']) : channel.ctaText}</span>
                         </Link>
@@ -461,9 +460,9 @@ export default function Home() {
                 <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language] || homepageConfig.statsSection?.title?.['en']}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {homepageConfig.statsSection?.stats.map((stat, index) => (
-                        <div key={index} className="text-center glassmorphism-card p-6">
-                            <p className="font-headline text-5xl font-bold text-primary">{stat.value}</p>
-                            <p className="mt-2 text-lg text-muted-foreground">{stat.label?.[language] || stat.label?.['en']}</p>
+                        <div key={index} className="text-center glassmorphism-card p-8 bg-white/40 dark:bg-card/40 border-white/20">
+                            <p className="font-headline text-5xl font-black text-primary drop-shadow-sm">{stat.value}</p>
+                            <p className="mt-2 text-lg text-muted-foreground font-bold tracking-tight uppercase">{stat.label?.[language] || stat.label?.['en']}</p>
                         </div>
                     ))}
                 </div>
@@ -474,40 +473,41 @@ export default function Home() {
         {homepageConfig.notesBanner?.display && (
           <section aria-labelledby="notes-banner-heading">
             <div className="container mx-auto px-4">
-              <div className="glassmorphism-card p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="glassmorphism-card p-8 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-primary/10 to-accent/10 border-white/30">
                     <div className='text-center md:text-left'>
                         <h3 id="notes-banner-heading" className="font-headline text-2xl font-bold">{homepageConfig.notesBanner?.title?.[language] || homepageConfig.notesBanner?.title?.['en']}</h3>
                         <p className="text-muted-foreground mt-2">{homepageConfig.notesBanner?.description?.[language] || homepageConfig.notesBanner?.description?.['en']}</p>
                     </div>
-                    <Button variant="default" size="lg" className="font-bold shrink-0 bg-accent text-accent-foreground">{homepageConfig.notesBanner?.buttonText?.[language] || homepageConfig.notesBanner?.buttonText?.['en']}</Button>
+                    <Button variant="default" size="lg" className="font-black shrink-0 bg-accent text-accent-foreground rounded-xl shadow-xl shadow-accent/20 px-10">{homepageConfig.notesBanner?.buttonText?.[language] || homepageConfig.notesBanner?.buttonText?.['en']}</Button>
                 </div>
             </div>
           </section>
         )}
         
-        <section>
-            <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden">
+            <div className="container mx-auto px-4 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
         
         {homepageConfig.appPromo?.display && (
-          <section aria-labelledby="app-promo-heading">
+          <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
                     <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.['en']}</h2>
                     <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.['en']}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
-                            <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button"/>
+                            <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl"/>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
-                            <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button"/>
+                            <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl"/>
                         </Link>
                     </div>
                   </div>
-                  <div className="flex justify-center">
-                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
+                  <div className="flex justify-center relative">
+                      <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl scale-125 -z-10"></div>
+                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain drop-shadow-2xl' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
                   </div>
               </div>
           </section>

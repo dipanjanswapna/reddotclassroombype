@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,7 +94,7 @@
   }
 
   .glassmorphism-card {
-    @apply bg-card/60 dark:bg-card/40 backdrop-blur-lg border border-white/10 dark:border-white/5 rounded-xl shadow-lg transition-shadow duration-300;
+    @apply bg-card/70 dark:bg-card/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-xl shadow-xl transition-all duration-300;
   }
 
   .nav-pill {
@@ -113,5 +112,21 @@
   }
   .text-shadow {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  .mesh-gradient {
+    background-color: hsla(0,0%,100%,1);
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(142,71%,40%,0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(142,71%,40%,0.05) 0px, transparent 50%);
+  }
+  .dark .mesh-gradient {
+    background-color: hsla(222,47%,11%,1);
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(142,76%,36%,0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(142,76%,36%,0.1) 0px, transparent 50%);
   }
 }
