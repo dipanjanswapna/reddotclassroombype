@@ -49,16 +49,16 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
   return (
     <Card className={cn(
-      "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-white dark:bg-card/60 border-0 md:border rounded-none md:rounded-xl",
-      "border-b border-dashed border-muted-foreground/20 md:border-b-border pb-4 md:pb-0 mb-0 md:mb-0 last:border-b-0 last:pb-0 px-2 md:px-0"
+      "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-white dark:bg-card/60 border border-border rounded-xl",
+      "mb-3 md:mb-0 p-2 md:p-0"
     )}>
-      <div className="relative w-[110px] xs:w-[130px] md:w-full aspect-[4/3] md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none mt-2 md:mt-0">
+      <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none">
         <Link href={courseLink}>
           <Image
             src={course.imageUrl}
             alt={course.title}
             fill
-            sizes="(max-width: 640px) 130px, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 120px, (max-width: 1024px) 33vw, 25vw"
             className="object-cover transition-transform duration-500 md:group-hover:scale-110"
             data-ai-hint={course.dataAiHint}
           />
@@ -72,7 +72,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 text-[10px] scale-75 origin-top-left">Pre-booked</Badge>}
       </div>
 
-      <div className="flex-1 flex flex-col p-3 md:p-4 justify-center md:justify-start gap-1">
+      <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
         <Link href={courseLink}>
           <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors">{course.title}</h3>
         </Link>
