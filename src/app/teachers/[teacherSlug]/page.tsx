@@ -1,5 +1,3 @@
-
-
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getInstructorBySlug, getCourses, getEnrollments } from '@/lib/firebase/firestore';
@@ -94,7 +92,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
             <main className="container mx-auto px-4 py-16">
                 <h2 className="font-headline text-3xl font-bold mb-8 text-center">My Courses</h2>
                 {courses.length > 0 ? (
-                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                         {courses.map(course => (
                             <CourseCard key={course.id} {...course} />
                         ))}

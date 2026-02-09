@@ -158,7 +158,7 @@ export default function Home() {
                           transition={{ type: "spring", stiffness: 200, damping: 15 }}
                           className="flex items-center justify-center gap-3 md:gap-4"
                         >
-                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
+                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase text-shadow">
                                 RED DOT <span className="text-primary">CLASSROOM</span>
                             </h1>
                         </motion.div>
@@ -306,7 +306,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
               </div>
@@ -330,7 +330,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.['en']}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.['en']}</h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
@@ -345,7 +345,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.['en']}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.['en']}</h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                       {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
                   </div>
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">

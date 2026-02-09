@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -69,7 +68,7 @@ export default function StudentWishlistPage() {
         
         <section>
             {wishlistedCourses.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
                     {wishlistedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />

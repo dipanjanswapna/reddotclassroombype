@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
