@@ -4,16 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  BookOpen,
-  PlayCircle,
-  Users,
-  Trophy,
   Youtube,
   Facebook,
   Video,
   ThumbsUp,
   ArrowRight,
-  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -24,19 +19,17 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
-import { FreeClassesSection } from '@/components/free-classes-section';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/context/language-context';
-import { t } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import logoSrc from '@/public/logo.png';
 import WhyTrustUs from '@/components/why-trust-us';
 import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 
 
@@ -365,12 +358,6 @@ export default function Home() {
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
-          </section>
-        )}
-
-        {homepageConfig.freeClassesSection?.display && (
-          <section aria-labelledby="free-classes-heading">
-            <FreeClassesSection sectionData={homepageConfig.freeClassesSection} />
           </section>
         )}
 
