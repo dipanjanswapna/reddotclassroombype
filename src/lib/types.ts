@@ -1,5 +1,3 @@
-
-
 import { Timestamp } from "firebase/firestore";
 
 export type ProductReview = {
@@ -928,6 +926,10 @@ export type DoubtSession = {
     createdAt: Timestamp;
 };
 
-    
-
-    
+export type CategoryItem = {
+    id: number;
+    title: { bn: string; en: string };
+    imageUrl: string;
+    linkUrl: string;
+    dataAiHint: string;
+};

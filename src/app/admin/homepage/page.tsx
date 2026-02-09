@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -25,8 +25,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
-type CategoryItem = HomepageConfig['categoriesSection']['categories'][0];
-
 
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -227,7 +225,7 @@ export default function AdminHomepageManagementPage() {
         if (!prev) return null;
         const newCategory: CategoryItem = {
             id: Date.now(),
-            title: 'New Category',
+            title: { bn: 'নতুন ক্যাটাগরি', en: 'New Category' },
             imageUrl: 'https://placehold.co/400x500.png',
             linkUrl: '/courses',
             dataAiHint: 'category placeholder',
@@ -545,12 +543,12 @@ export default function AdminHomepageManagementPage() {
   }) => (
     <div className="space-y-2">
         <Label className="font-bold text-primary">{label}</Label>
-        <div className="flex flex-wrap gap-1 p-2 border rounded-md min-h-10 bg-muted/20">
+        <div className="flex flex-wrap gap-1 p-2 border rounded-xl min-h-10 bg-muted/20">
             {currentIds.length === 0 && <p className="text-xs text-muted-foreground p-1">No courses selected.</p>}
             {currentIds.map(id => {
                 const course = allCourses.find(c => c.id === id);
                 return course ? (
-                    <Badge key={id} variant="secondary" className="gap-1">
+                    <Badge key={id} variant="secondary" className="gap-1 rounded-lg">
                         {course.title}
                         <Button variant="ghost" size="icon" className="h-3 w-3 p-0 hover:bg-transparent" onClick={() => handleCourseIdToggle(sectionKey, id, false)}>
                             <X className="h-3 w-3 text-destructive"/>
@@ -561,16 +559,16 @@ export default function AdminHomepageManagementPage() {
         </div>
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full justify-between">
+                <Button variant="outline" size="sm" className="w-full justify-between rounded-xl">
                     Add course to {label}...
                     <ChevronsUpDown className="h-4 w-4 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl overflow-hidden">
                 <Command>
                     <CommandInput placeholder="Search courses..." />
                     <CommandEmpty>No course found.</CommandEmpty>
-                    <CommandGroup>
+                    <CommandGroup className="max-h-[300px] overflow-y-auto">
                         {allCourses.filter(c => !currentIds.includes(c.id!)).map(course => (
                             <CommandItem
                                 key={course.id}
@@ -603,7 +601,7 @@ export default function AdminHomepageManagementPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight">Homepage Management</h1>
           <p className="mt-1 text-lg text-muted-foreground">Control the content displayed on your homepage using the tabs below.</p>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="shadow-lg">
+        <Button onClick={handleSave} disabled={isSaving} className="shadow-lg rounded-xl">
           {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Save className="mr-2"/>}
           Save Changes
         </Button>
@@ -638,7 +636,7 @@ export default function AdminHomepageManagementPage() {
                         <CardContent>
                             <div className="space-y-2">
                                 <Label htmlFor="logoUrl">Site Logo URL</Label>
-                                <Input id="logoUrl" value={config.logoUrl || ''} onChange={(e) => handleSimpleValueChange('logoUrl', e.target.value)} placeholder="https://example.com/logo.png"/>
+                                <Input id="logoUrl" value={config.logoUrl || ''} onChange={(e) => handleSimpleValueChange('logoUrl', e.target.value)} placeholder="https://example.com/logo.png" className="rounded-xl"/>
                                 <p className="text-xs text-muted-foreground">If a URL is provided, it will replace the default logo across the site.</p>
                             </div>
                         </CardContent>
@@ -646,8 +644,8 @@ export default function AdminHomepageManagementPage() {
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader><CardTitle>Animation Settings</CardTitle><CardDescription>Control the scroll speed of homepage carousels.</CardDescription></CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2"><Label>Teachers Carousel Speed (seconds)</Label><Input type="number" value={config.teachersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('teachersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
-                            <div className="space-y-2"><Label>Partners Carousel Speed (seconds)</Label><Input type="number" value={config.partnersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('partnersSection', 'scrollSpeed', parseInt(e.target.value) || 25)}/></div>
+                            <div className="space-y-2"><Label>Teachers Carousel Speed (seconds)</Label><Input type="number" value={config.teachersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('teachersSection', 'scrollSpeed', parseInt(e.target.value) || 25)} className="rounded-xl"/></div>
+                            <div className="space-y-2"><Label>Partners Carousel Speed (seconds)</Label><Input type="number" value={config.partnersSection?.scrollSpeed ?? 25} onChange={(e) => handleSectionValueChange('partnersSection', 'scrollSpeed', parseInt(e.target.value) || 25)} className="rounded-xl"/></div>
                         </CardContent>
                     </Card>
                     <Card className="rounded-2xl shadow-sm border-white/10">
@@ -659,7 +657,7 @@ export default function AdminHomepageManagementPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="floatingWhatsApp-number">WhatsApp Number</Label>
-                                <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp?.number || ''} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...(prev.floatingWhatsApp || { display: true, number: '' }), number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX"/>
+                                <Input id="floatingWhatsApp-number" value={config.floatingWhatsApp?.number || ''} onChange={(e) => setConfig((prev) => prev ? { ...prev, floatingWhatsApp: { ...(prev.floatingWhatsApp || { display: true, number: '' }), number: e.target.value } } : null)} placeholder="e.g. 8801XXXXXXXXX" className="rounded-xl"/>
                             </div>
                         </CardContent>
                     </Card>
@@ -684,13 +682,13 @@ export default function AdminHomepageManagementPage() {
                                 <div key={banner.id} className="p-4 border rounded-xl space-y-4 relative bg-muted/20">
                                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => removeHeroBanner(banner.id)}><X className="h-5 w-5"/></Button>
                                 <h4 className="font-bold text-primary">Banner {index + 1}</h4>
-                                <div className="space-y-2"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Link URL (e.g., /courses/1)</Label><Input value={banner.href} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} className="rounded-xl" /></div>
+                                <div className="space-y-2"><Label>Link URL (e.g., /courses/1)</Label><Input value={banner.href} onChange={(e) => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} className="rounded-xl" /></div>
                                 </div>
                             ))}
                             <Button variant="outline" className="w-full border-dashed rounded-xl h-14" onClick={addHeroBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
                             <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm bg-muted/20"><Label htmlFor="autoplay-switch" className="font-semibold">Enable Autoplay</Label><Switch id="autoplay-switch" checked={config.heroCarousel?.autoplay ?? true} onCheckedChange={(checked) => handleCarouselSettingChange('autoplay', checked)}/></div>
-                            <div className="space-y-2"><Label htmlFor="autoplay-delay">Autoplay Delay (ms)</Label><Input id="autoplay-delay" type="number" value={config.heroCarousel?.autoplayDelay ?? 5000} onChange={(e) => handleCarouselSettingChange('autoplayDelay', parseInt(e.target.value))} disabled={!config.heroCarousel?.autoplay}/></div>
+                            <div className="space-y-2"><Label htmlFor="autoplay-delay">Autoplay Delay (ms)</Label><Input id="autoplay-delay" type="number" value={config.heroCarousel?.autoplayDelay ?? 5000} onChange={(e) => handleCarouselSettingChange('autoplayDelay', parseInt(e.target.value))} disabled={!config.heroCarousel?.autoplay} className="rounded-xl"/></div>
                         </CardContent>
                     </Card>
                     <Card className="rounded-2xl shadow-sm border-white/10">
@@ -703,16 +701,16 @@ export default function AdminHomepageManagementPage() {
                                 <div key={slide.id} className="p-4 border rounded-xl space-y-4 relative bg-muted/20">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => removeOfflineSlide(slide.id)}><X className="h-5 w-5"/></Button>
                                     <h4 className="font-bold text-primary">Slide {index + 1}</h4>
-                                    <div className="space-y-2"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Image URL</Label><Input value={slide.imageUrl} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} className="rounded-xl" /></div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Title</Label><Input value={slide.title} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} className="rounded-xl" /></div>
+                                        <div className="space-y-2"><Label>Subtitle</Label><Input value={slide.subtitle} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} className="rounded-xl" /></div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'price', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'originalPrice', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label>Offer Price</Label><Input value={slide.price} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'price', e.target.value)} className="rounded-xl" /></div>
+                                        <div className="space-y-2"><Label>Original Price</Label><Input value={slide.originalPrice} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'originalPrice', e.target.value)} className="rounded-xl" /></div>
                                     </div>
-                                    <div className="space-y-2"><Label>Enroll Link URL</Label><Input value={slide.enrollHref} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'enrollHref', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Enroll Link URL</Label><Input value={slide.enrollHref} onChange={(e) => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'enrollHref', e.target.value)} className="rounded-xl" /></div>
                                 </div>
                             ))}
                             <Button variant="outline" className="w-full border-dashed rounded-xl h-14" onClick={addOfflineSlide}><PlusCircle className="mr-2"/>Add Slide</Button>
@@ -725,17 +723,20 @@ export default function AdminHomepageManagementPage() {
                         <CardHeader><CardTitle>Categories Section</CardTitle><CardDescription>Manage the category cards shown on the homepage.</CardDescription></CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'bn', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'en', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'bn', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'en', e.target.value)} className="rounded-xl"/></div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {config.categoriesSection?.categories?.map((category, index) => (
                                 <div key={category.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/20">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-8 w-8 text-destructive" onClick={() => removeCategory(category.id)}><X className="h-5 w-5"/></Button>
                                     <h4 className="font-bold text-primary">Category {index + 1}</h4>
-                                    <div className="space-y-2"><Label>Title</Label><Input value={category.title} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'title', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Image URL</Label><Input value={category.imageUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'imageUrl', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Link URL</Label><Input value={category.linkUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'linkUrl', e.target.value)} /></div>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        <div className="space-y-1"><Label>Title (BN)</Label><Input value={category.title?.bn || ''} onChange={(e) => handleDeepNestedLangChange('categoriesSection', 'categories', index, 'title', 'bn', e.target.value)} className="rounded-xl"/></div>
+                                        <div className="space-y-1"><Label>Title (EN)</Label><Input value={category.title?.en || ''} onChange={(e) => handleDeepNestedLangChange('categoriesSection', 'categories', index, 'title', 'en', e.target.value)} className="rounded-xl"/></div>
+                                    </div>
+                                    <div className="space-y-2"><Label>Image URL</Label><Input value={category.imageUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'imageUrl', e.target.value)} className="rounded-xl"/></div>
+                                    <div className="space-y-2"><Label>Link URL</Label><Input value={category.linkUrl} onChange={(e) => handleNestedArrayChange('categoriesSection', 'categories', index, 'linkUrl', e.target.value)} className="rounded-xl"/></div>
                                 </div>
                                 ))}
                             </div>
@@ -765,8 +766,8 @@ export default function AdminHomepageManagementPage() {
                                 <div key={banner.id} className="p-4 border rounded-xl space-y-4 relative bg-muted/20">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-8 w-8 text-destructive" onClick={() => removeStoreBanner(banner.id)}><X className="h-5 w-5"/></Button>
                                     <h4 className="font-bold text-primary">Banner {index + 1}</h4>
-                                    <div className="space-y-2"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => updateStoreBanner(banner.id, 'imageUrl', e.target.value)} /></div>
-                                    <div className="space-y-2"><Label>Link URL (optional)</Label><Input value={banner.linkUrl || ''} onChange={(e) => updateStoreBanner(banner.id, 'linkUrl', e.target.value)} /></div>
+                                    <div className="space-y-2"><Label>Image URL</Label><Input value={banner.imageUrl} onChange={(e) => updateStoreBanner(banner.id, 'imageUrl', e.target.value)} className="rounded-xl" /></div>
+                                    <div className="space-y-2"><Label>Link URL (optional)</Label><Input value={banner.linkUrl || ''} onChange={(e) => updateStoreBanner(banner.id, 'linkUrl', e.target.value)} className="rounded-xl" /></div>
                                 </div>
                             ))}
                             <Button variant="outline" className="w-full border-dashed rounded-xl h-14" onClick={addStoreBanner}><PlusCircle className="mr-2"/>Add Banner</Button>
@@ -790,12 +791,12 @@ export default function AdminHomepageManagementPage() {
                                 />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Title (BN)</Label><Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Title (EN)</Label><Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} className="rounded-xl"/></div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label>Description (BN)</Label><Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={4}/></div>
-                                <div className="space-y-2"><Label>Description (EN)</Label><Textarea value={config.welcomeSection?.description?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'en', e.target.value)} rows={4}/></div>
+                                <div className="space-y-2"><Label>Description (BN)</Label><Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={4} className="rounded-xl"/></div>
+                                <div className="space-y-2"><Label>Description (EN)</Label><Textarea value={config.welcomeSection?.description?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'en', e.target.value)} rows={4} className="rounded-xl"/></div>
                             </div>
                         </CardContent>
                     </Card>
@@ -810,11 +811,11 @@ export default function AdminHomepageManagementPage() {
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <Label>Page Title</Label>
-                                <Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} />
+                                <Input value={config.topperPageSection?.title || ''} onChange={e => handleSectionValueChange('topperPageSection', 'title', e.target.value)} className="rounded-xl" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Main Illustration Image URL</Label>
-                                <Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} />
+                                <Input value={config.topperPageSection?.mainImageUrl || ''} onChange={e => handleSectionValueChange('topperPageSection', 'mainImageUrl', e.target.value)} className="rounded-xl" />
                             </div>
                             <div className="space-y-4 pt-4 border-t">
                                 <Label className="font-bold text-primary">Feature Cards</Label>
@@ -822,9 +823,9 @@ export default function AdminHomepageManagementPage() {
                                     {config.topperPageSection?.cards?.map((card, index) => (
                                         <div key={card.id} className="p-4 border rounded-xl space-y-3 bg-muted/20">
                                             <h4 className="font-bold">Card {index + 1}</h4>
-                                            <div className="space-y-2"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} /></div>
-                                            <div className="space-y-2"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} /></div>
-                                            <div className="space-y-2"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={2}/></div>
+                                            <div className="space-y-2"><Label>Icon URL</Label><Input value={card.iconUrl} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'iconUrl', e.target.value)} className="rounded-xl" /></div>
+                                            <div className="space-y-2"><Label>Title</Label><Input value={card.title} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'title', e.target.value)} className="rounded-xl" /></div>
+                                            <div className="space-y-2"><Label>Description</Label><Textarea value={card.description} onChange={e => handleNestedArrayChange('topperPageSection', 'cards', index, 'description', e.target.value)} rows={2} className="rounded-xl" /></div>
                                         </div>
                                     ))}
                                 </div>
