@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -53,9 +52,9 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
 
   return (
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 id="free-classes-heading" className="font-headline text-4xl font-bold text-primary">{title[language] || title['en']}</h2>
-          <p className="mt-2 text-muted-foreground max-w-xl mx-auto">{subtitle[language] || subtitle['en']}</p>
+        <div className="text-center mb-10 md:mb-12 space-y-2">
+          <h2 id="free-classes-heading" className="font-headline text-2xl md:text-3xl lg:text-4xl font-bold text-primary">{title[language] || title['en']}</h2>
+          <p className="text-sm md:text-base lg:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">{subtitle[language] || subtitle['en']}</p>
         </div>
 
         <div className="flex items-center justify-center flex-wrap gap-2 mb-8">
@@ -63,7 +62,7 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
             <Button
               key={grade}
               variant={selectedGrade === grade ? 'default' : 'outline'}
-              className="rounded-full font-semibold px-4 py-2 text-sm"
+              className="rounded-full font-bold px-4 py-1 h-8 md:h-10 text-[10px] md:text-xs uppercase tracking-tighter"
               onClick={() => handleGradeChange(grade)}
             >
               {grade}
@@ -71,13 +70,13 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
           ))}
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedClasses.map(item => {
             const videoId = getYoutubeVideoId(item.youtubeUrl);
             const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Invalid+URL';
             return (
               <Link key={item.id} href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                <Card className="glassmorphism-card overflow-hidden h-full flex flex-col">
+                <Card className="glassmorphism-card overflow-hidden h-full flex flex-col rounded-xl md:rounded-2xl border-white/20">
                   <div className="relative aspect-video">
                     <Image
                       src={thumbnailUrl}
@@ -87,12 +86,12 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
                       data-ai-hint="youtube video class"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <PlayCircle className="w-16 h-16 text-primary" />
+                      <PlayCircle className="w-12 h-12 md:w-16 md:h-16 text-primary" />
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-grow">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{item.subject} • {item.instructor}</p>
+                  <div className="p-4 flex flex-col flex-grow text-left">
+                    <h3 className="font-bold text-sm md:text-base leading-tight group-hover:text-primary transition-colors line-clamp-2">{item.title}</h3>
+                    <p className="text-[10px] md:text-xs text-muted-foreground mt-2 font-medium">{item.subject} • {item.instructor}</p>
                   </div>
                 </Card>
               </Link>
@@ -101,19 +100,19 @@ export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-12">
-            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}> <ArrowLeft className="h-4 w-4" /> </Button>
+          <div className="flex justify-center items-center gap-2 mt-10 md:mt-12">
+            <Button variant="outline" size="icon" className="h-8 w-8 md:h-10 md:w-10 rounded-xl" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}> <ArrowLeft className="h-4 w-4" /> </Button>
             {[...Array(totalPages)].map((_, i) => (
               <Button
                 key={i + 1}
                 variant={currentPage === i + 1 ? 'default' : 'outline'}
-                className="h-10 w-10"
+                className="h-8 w-8 md:h-10 md:w-10 rounded-xl font-bold text-xs"
                 onClick={() => handlePageChange(i + 1)}
               >
                 {i + 1}
               </Button>
             ))}
-            <Button variant="outline" size="icon" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}> <ArrowRight className="h-4 w-4" /> </Button>
+            <Button variant="outline" size="icon" className="h-8 w-8 md:h-10 md:w-10 rounded-xl" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}> <ArrowRight className="h-4 w-4" /> </Button>
           </div>
         )}
       </div>
