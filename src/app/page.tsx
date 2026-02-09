@@ -9,6 +9,8 @@ import {
   ArrowRight,
   PlayCircle,
   Users,
+  MessageSquare,
+  Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -167,6 +169,8 @@ export default function Home() {
     { label: { bn: "কোর্স সমাপ্তির হার", en: "Course Completion Rate" }, value: liveStats.completionRate, suffix: "%", color: "bg-[#ffedd5]" },
     { label: { bn: "লাইভ কোর্স", en: "Live Course" }, value: liveStats.liveCoursesCount, color: "bg-[#fef9c3]" },
   ];
+
+  const contactSectionData = homepageConfig?.offlineHubSection?.contactSection;
 
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full">
@@ -496,6 +500,50 @@ export default function Home() {
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
+
+        {/* Have a Question? Section */}
+        {contactSectionData?.display && (
+            <section className="py-10 md:py-14 overflow-hidden">
+                <div className="container mx-auto px-4">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="relative rounded-3xl overflow-hidden p-8 md:p-16 bg-gradient-to-br from-primary via-primary/80 to-black text-white shadow-2xl"
+                    >
+                        <div className="absolute top-0 right-0 -m-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+                        <div className="absolute bottom-0 left-0 -m-20 w-64 h-64 bg-black/20 rounded-full blur-3xl" />
+                        
+                        <div className="relative z-10 max-w-3xl space-y-6">
+                            <div className="inline-block p-4 bg-white/10 backdrop-blur-md rounded-2xl mb-4">
+                                <MessageSquare className="w-10 h-10 text-white" />
+                            </div>
+                            <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tight leading-tight uppercase">
+                                {contactSectionData.title[language] || contactSectionData.title['en'] || "Have a Question?"}
+                            </h2>
+                            <p className="text-lg md:text-xl text-white/80 font-medium leading-relaxed max-w-xl">
+                                {contactSectionData.subtitle[language] || contactSectionData.subtitle['en'] || "Talk to our student advisors anytime."}
+                            </p>
+                            <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
+                                <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 shadow-xl border-none">
+                                    <a href={`tel:${contactSectionData.callButtonNumber}`}>
+                                        <Phone className="mr-3 h-5 w-5" />
+                                        {contactSectionData.callButtonText[language] || contactSectionData.callButtonText['en'] || "Call Support"}
+                                    </a>
+                                </Button>
+                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
+                                    <a href={`https://wa.me/${contactSectionData.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                        <MessageSquare className="mr-3 h-5 w-5" />
+                                        {contactSectionData.whatsappButtonText[language] || contactSectionData.whatsappButtonText['en'] || "WhatsApp Us"}
+                                    </a>
+                                </Button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+        )}
         
         {homepageConfig.appPromo?.display && (
           <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent overflow-hidden py-10 md:py-14">
