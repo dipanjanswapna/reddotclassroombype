@@ -66,7 +66,7 @@ export default async function CoursesPage({
   return (
     <div className="bg-background mesh-gradient min-h-screen">
         {/* Unified Hero Area: Seamless background blending */}
-        <section className="pt-4 md:pt-6 pb-6 md:pb-8 border-b border-white/10 overflow-hidden">
+        <section className="pt-4 md:pt-6 pb-4 md:pb-6 border-b border-white/10 overflow-hidden">
             <div className="container mx-auto px-4">
                 {/* Hero Carousel: Blends into the mesh-gradient background */}
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
@@ -75,22 +75,22 @@ export default async function CoursesPage({
                     </div>
                 )}
 
-                {/* Shop Intro: Scaled down for high-density look */}
-                <div className="text-center max-w-3xl mx-auto space-y-2 md:space-y-3">
-                    <h1 className="font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-[0.9]">
+                {/* Shop Intro: Scaled down significantly for a sleek, high-density look */}
+                <div className="text-center max-w-2xl mx-auto space-y-1.5 md:space-y-2">
+                    <h1 className="font-black text-lg md:text-xl lg:text-2xl tracking-tighter uppercase leading-tight">
                         RDC <span className="text-primary">SHOP</span>
                     </h1>
-                    <div className="min-h-[3rem] md:min-h-auto">
+                    <div className="min-h-[2.5rem] md:min-h-auto">
                         <TypingText 
                             text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
-                            className="text-sm md:text-base text-muted-foreground font-semibold leading-relaxed font-bengali px-4"
+                            className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-4"
                         />
                     </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-4 py-4 md:py-6">
+      <div className="container mx-auto px-4 py-2 md:py-4">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-12 h-12" />
@@ -101,7 +101,7 @@ export default async function CoursesPage({
       </div>
 
       {/* Premium Footer Section: Scaled down banner */}
-      <div className="container mx-auto px-4 pb-16 md:pb-24">
+      <div className="container mx-auto px-4 pb-12 md:pb-16">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>
