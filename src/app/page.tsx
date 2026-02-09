@@ -35,34 +35,10 @@ import { NoticeBoard } from '@/components/notice-board';
 import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 
-
-const DynamicLiveCoursesCarousel = dynamic(() => import('@/components/dynamic-live-courses-carousel').then(mod => mod.DynamicLiveCoursesCarousel), {
-    loading: () => <Skeleton className="h-[380px] w-full" />,
-    ssr: false,
-});
-
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
     loading: () => <Skeleton className="h-[250px] w-full" />,
     ssr: false,
 });
-
-const DynamicMasterclassCarousel = dynamic(() => import('@/components/dynamic-masterclass-carousel').then(mod => mod.DynamicMasterclassCarousel), {
-    loading: () => <Skeleton className="h-[380px] w-full" />,
-    ssr: false,
-});
-
-
-const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
-  switch (platform) {
-    case 'YouTube':
-      return <Youtube className={cn("w-6 h-6 text-white", className)} />;
-    case 'Facebook Page':
-    case 'Facebook Group':
-      return <Facebook className={cn("w-6 h-6 text-white", className)} />;
-    default:
-      return null;
-  }
-};
 
 export default function Home() {
   const { language } = useLanguage();
@@ -142,6 +118,18 @@ export default function Home() {
       )
   }
   
+  const CourseGrid = ({ courses }: { courses: Course[] }) => (
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+        {courses.map(course => (
+            <CourseCard 
+                key={course.id} 
+                {...course} 
+                provider={organizations.find(p => p.id === course.organizationId)} 
+            />
+        ))}
+    </div>
+  );
+
   return (
     <div className="text-foreground mesh-gradient">
         {homepageConfig.welcomeSection?.display && (
@@ -186,7 +174,6 @@ export default function Home() {
                     transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
                     className="group relative glassmorphism-card p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5 bg-white/40 dark:bg-card/40"
                   >
-                      {/* Decorative Background Elements */}
                       <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
                       <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
                       
@@ -252,7 +239,7 @@ export default function Home() {
               <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.[language]}</p>
               <div>
                 <h3 className="font-headline text-2xl font-bold text-center mb-6">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.[language]}</h3>
-                <DynamicLiveCoursesCarousel courses={liveCourses} providers={organizations} />
+                <CourseGrid courses={liveCourses} />
               </div>
             </div>
           </section>
@@ -307,9 +294,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.[language]}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
-                      {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                  </div>
+                  <CourseGrid courses={sscHscCourses} />
               </div>
           </section>
         )}
@@ -318,7 +303,7 @@ export default function Home() {
           <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent">
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.[language]}</h2>
-                  <DynamicMasterclassCarousel courses={masterClasses} providers={organizations} />
+                  <CourseGrid courses={masterClasses} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=মাস্টার কোর্স">{homepageConfig.masterclassSection?.buttonText?.[language] || homepageConfig.masterclassSection?.buttonText?.[language]}</Link>
                   </Button>
@@ -331,9 +316,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.[language]}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
-                      {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                  </div>
+                  <CourseGrid courses={admissionCourses} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=Admission">{homepageConfig.admissionSection?.buttonText?.[language] || homepageConfig.admissionSection?.buttonText?.[language]}</Link>
                   </Button>
@@ -346,9 +329,7 @@ export default function Home() {
               <div className="container mx-auto px-4 text-center">
                   <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.[language]}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
-                      {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                  </div>
+                  <CourseGrid courses={jobCourses} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
                     <Link href="/courses?category=Job+Prep">{homepageConfig.jobPrepSection?.buttonText?.[language] || homepageConfig.jobPrepSection?.buttonText?.[language]}</Link>
                   </Button>
@@ -497,3 +478,15 @@ export default function Home() {
     </div>
   );
 }
+
+const SocialIcon = ({ platform, className }: { platform: string, className?: string }) => {
+  switch (platform) {
+    case 'YouTube':
+      return <Youtube className={cn("w-6 h-6 text-white", className)} />;
+    case 'Facebook Page':
+    case 'Facebook Group':
+      return <Facebook className={cn("w-6 h-6 text-white", className)} />;
+    default:
+      return null;
+  }
+};
