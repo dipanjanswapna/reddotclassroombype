@@ -1,4 +1,3 @@
-
 import { getInstructors } from '@/lib/firebase/firestore';
 import type { Instructor } from '@/lib/types';
 import type { Metadata } from 'next';
@@ -21,18 +20,18 @@ export default async function AllTeachersPage() {
 
   return (
     <div className="mesh-gradient min-h-screen">
-        <section className="bg-gray-900 text-white py-12 md:py-16 relative overflow-hidden">
+        <section className="bg-gray-900 text-white pt-28 md:pt-40 pb-16 md:pb-24 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/10 blur-[120px] rounded-full -z-10" />
             <div className="container mx-auto px-4 text-center">
-                <div className="inline-flex items-center gap-2 bg-primary/20 text-primary-foreground px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 border border-white/10">
+                <div className="inline-flex items-center gap-2 bg-primary/20 text-primary-foreground px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 border border-white/10 shadow-lg">
                     <Star className="w-3.5 h-3.5 fill-current" />
                     Elite Faculty
                 </div>
                 <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight uppercase max-w-4xl mx-auto">
                     meet our <span className="text-primary">RDC</span> star teachers
                 </h1>
-                <p className="mt-4 text-base md:text-lg text-gray-400 font-medium font-bengali">
-                    তোমাদের পড়াশোনাকে আরও সহজ করতে আমরা প্রস্তুত!
+                <p className="mt-6 text-base md:text-lg text-gray-400 font-medium font-bengali max-w-2xl mx-auto">
+                    তোমাদের পড়াশোনাকে আরও সহজ করতে আমরা প্রস্তুত! আমাদের অভিজ্ঞ মেন্টরদের সাথে তোমার যাত্রা শুরু হোক আজই।
                 </p>
             </div>
         </section>

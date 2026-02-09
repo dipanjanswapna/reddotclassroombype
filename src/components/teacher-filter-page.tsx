@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -19,7 +18,7 @@ export function TeacherFilterPage({ instructors, subjects }: { instructors: Inst
         : instructors.filter(inst => inst.title === selectedSubject);
 
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="container mx-auto px-4 py-12 md:py-20">
             <div className="mb-10 md:mb-14">
                 <div className="flex items-center gap-3 mb-6 border-l-4 border-primary pl-4">
                     <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">বিভাগ অনুযায়ী শিক্ষকদের সংগঠিত</h2>
