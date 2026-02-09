@@ -1,11 +1,9 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
 import logoSrc from '@/public/logo.png';
-
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -22,7 +20,7 @@ const fontPoppins = Poppins({
 
 const fontHindSiliguri = Hind_Siliguri({
   subsets: ['bengali', 'latin'],
-  weight: ['400', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-bengali',
   display: 'swap',
 });
@@ -48,7 +46,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-body antialiased', fontInter.variable, fontPoppins.variable, fontHindSiliguri.variable)}>
+      <body className={cn(
+        'font-body antialiased', 
+        fontInter.variable, 
+        fontPoppins.variable, 
+        fontHindSiliguri.variable
+      )}>
         <LayoutWrapper>
             {children}
         </LayoutWrapper>

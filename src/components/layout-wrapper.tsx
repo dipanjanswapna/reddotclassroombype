@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -50,7 +47,10 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (isStore) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
+      <div className={cn(
+        "min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900",
+        language === 'bn' ? 'font-bengali' : 'font-body'
+      )}>
         <StoreHeader categories={categories} />
         <main className="flex-grow">
             {children}
@@ -71,10 +71,11 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const isHomePage = pathname === '/';
 
   return (
-    <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
+    <div lang={language} dir="ltr">
         <div className={cn(
             "min-h-screen flex flex-col",
-            isDashboardPage && "bg-background"
+            isDashboardPage && "bg-background",
+            language === 'bn' ? 'font-bengali' : 'font-body'
         )}>
             <Header homepageConfig={homepageConfig} />
             <main className={cn("flex-grow")}>
