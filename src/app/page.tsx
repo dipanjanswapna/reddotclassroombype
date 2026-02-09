@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -131,7 +130,7 @@ export default function Home() {
   );
 
   return (
-    <div className="text-foreground mesh-gradient">
+    <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full">
         {homepageConfig.welcomeSection?.display && (
             <section className="py-8 md:py-10 text-center overflow-hidden">
                 <div className="container mx-auto px-4">
@@ -151,16 +150,18 @@ export default function Home() {
                                 RED DOT <span className="text-primary">CLASSROOM</span>
                             </h1>
                         </motion.div>
-                        <TypingText 
-                            text={homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en'] || ''}
-                            className="mt-2 text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium break-words"
-                        />
+                        <div className="w-full max-w-2xl mx-auto">
+                            <TypingText 
+                                text={homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en'] || ''}
+                                className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed font-medium break-words"
+                            />
+                        </div>
                      </motion.div>
                 </div>
             </section>
         )}
 
-        <section className="py-0">
+        <section className="py-0 overflow-hidden">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
@@ -168,19 +169,19 @@ export default function Home() {
           <section className="py-10 md:py-14 overflow-hidden relative">
               <div className="container mx-auto px-4">
                   <motion.div 
-                    initial={{ opacity: 0, x: -50 }}
+                    initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                    className="group relative glassmorphism-card p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5 bg-white/40 dark:bg-card/40"
+                    className="group relative glassmorphism-card p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5 bg-white/40 dark:bg-card/40"
                   >
                       <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
                       <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
                       
-                      <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10">
+                      <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10 w-full">
                           <motion.div
                             whileHover={{ scale: 1.05, rotate: -2 }}
-                            className="relative w-32 h-32 md:w-40 md:h-40 shrink-0"
+                            className="relative w-24 h-24 md:w-40 md:h-40 shrink-0"
                           >
                             <Image
                                 src={homepageConfig.strugglingStudentSection.imageUrl}
@@ -190,11 +191,11 @@ export default function Home() {
                                 data-ai-hint="confused student illustration"
                             />
                           </motion.div>
-                          <div className="space-y-2 max-w-lg">
-                              <h3 className="font-headline text-2xl md:text-3xl font-black tracking-tight text-foreground">
+                          <div className="space-y-2 flex-grow">
+                              <h3 className="font-headline text-xl md:text-3xl font-black tracking-tight text-foreground">
                                   {homepageConfig.strugglingStudentSection?.title?.[language] || homepageConfig.strugglingStudentSection?.title?.['en']}
                               </h3>
-                              <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed">
+                              <p className="text-base md:text-xl text-muted-foreground font-medium leading-relaxed">
                                   {homepageConfig.strugglingStudentSection?.subtitle?.[language] || homepageConfig.strugglingStudentSection?.subtitle?.['en']}
                               </p>
                           </div>
@@ -218,7 +219,7 @@ export default function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent">
+          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden">
             <div className="container mx-auto px-4">
               <h2 id="categories-heading" className="font-headline text-3xl font-bold text-center mb-10">
                 {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
@@ -228,12 +229,12 @@ export default function Home() {
           </section>
         )}
 
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 overflow-hidden">
             <NoticeBoard />
         </div>
 
         {homepageConfig.journeySection?.display && (
-          <section aria-labelledby="hero-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent">
+          <section aria-labelledby="hero-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden">
             <div className="container mx-auto px-4">
               <h2 id="hero-heading" className="font-headline text-3xl font-bold text-center mb-4">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.[language]}</h2>
               <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.[language]}</p>
@@ -246,14 +247,14 @@ export default function Home() {
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <section aria-labelledby="teachers-heading">
+          <section aria-labelledby="teachers-heading" className="overflow-hidden">
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-8">
                   <div>
-                      <h2 id="teachers-heading" className="font-headline text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.[language]}</h2>
-                      <p className="text-muted-foreground mt-1">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                      <h2 id="teachers-heading" className="font-headline text-2xl md:text-3xl font-bold">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.[language]}</h2>
+                      <p className="text-muted-foreground mt-1 text-sm md:text-base">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.[language]}</p>
                   </div>
-                  <Button asChild variant="outline" className="rounded-xl">
+                  <Button asChild variant="outline" size="sm" className="rounded-xl shrink-0">
                       <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.[language]}</Link>
                   </Button>
               </div>
@@ -263,7 +264,7 @@ export default function Home() {
         )}
 
         {homepageConfig.videoSection?.display && (
-          <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20">
+          <section aria-labelledby="video-section-heading" className="bg-secondary/30 dark:bg-card/20 overflow-hidden">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="video-section-heading" className="font-headline text-3xl font-bold mb-2">{homepageConfig.videoSection?.title?.[language] || homepageConfig.videoSection?.title?.[language]}</h2>
                 <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">{homepageConfig.videoSection?.description?.[language] || homepageConfig.videoSection?.description?.[language]}</p>
@@ -290,9 +291,9 @@ export default function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section aria-labelledby="ssc-hsc-heading">
+          <section aria-labelledby="ssc-hsc-heading" className="overflow-hidden">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-sm md:text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
                   <h2 id="ssc-hsc-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.[language]}</h2>
                   <CourseGrid courses={sscHscCourses} />
               </div>
@@ -300,7 +301,7 @@ export default function Home() {
         )}
 
         {homepageConfig.masterclassSection?.display && (
-          <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent">
+          <section aria-labelledby="masterclass-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden">
               <div className="container mx-auto px-4 text-center">
                   <h2 id="masterclass-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.masterclassSection?.title?.[language] || homepageConfig.masterclassSection?.title?.[language]}</h2>
                   <CourseGrid courses={masterClasses} />
@@ -312,9 +313,9 @@ export default function Home() {
         )}
 
         {homepageConfig.admissionSection?.display && (
-          <section aria-labelledby="admission-heading">
+          <section aria-labelledby="admission-heading" className="overflow-hidden">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-sm md:text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.admissionSection?.badge?.[language] || homepageConfig.admissionSection?.badge?.[language]}</Badge>
                   <h2 id="admission-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.admissionSection?.title?.[language] || homepageConfig.admissionSection?.title?.[language]}</h2>
                   <CourseGrid courses={admissionCourses} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
@@ -325,9 +326,9 @@ export default function Home() {
         )}
         
         {homepageConfig.jobPrepSection?.display && (
-          <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent">
+          <section aria-labelledby="job-prep-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden">
               <div className="container mx-auto px-4 text-center">
-                  <Badge variant="default" className="mb-4 text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
+                  <Badge variant="default" className="mb-4 text-sm md:text-lg py-1 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">{homepageConfig.jobPrepSection?.badge?.[language] || homepageConfig.jobPrepSection?.badge?.[language]}</Badge>
                   <h2 id="job-prep-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.jobPrepSection?.title?.[language] || homepageConfig.jobPrepSection?.title?.[language]}</h2>
                   <CourseGrid courses={jobCourses} />
                   <Button asChild variant="default" size="lg" className="mt-12 font-bold bg-accent text-accent-foreground rounded-xl shadow-lg">
@@ -340,7 +341,7 @@ export default function Home() {
         <WhyTrustUs data={homepageConfig.whyChooseUs} />
         
         {homepageConfig.collaborations?.display && approvedCollaborators.length > 0 && (
-          <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent">
+          <section aria-labelledby="collaborations-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden">
             <div className="container mx-auto px-4">
               <h2 id="collaborations-heading" className="font-headline text-3xl font-bold text-center mb-12">
                 {homepageConfig.collaborations?.title?.[language] || homepageConfig.collaborations?.title?.[language]}
@@ -351,7 +352,7 @@ export default function Home() {
         )}
 
         {homepageConfig.partnersSection?.display && (
-          <section aria-labelledby="partners-heading">
+          <section aria-labelledby="partners-heading" className="overflow-hidden">
             <div className="container mx-auto px-4">
               <h2 id="partners-heading" className="font-headline text-3xl font-bold text-center mb-12">
                 {homepageConfig.partnersSection?.title?.[language] || homepageConfig.partnersSection?.title?.[language]}
@@ -366,7 +367,7 @@ export default function Home() {
 
 
         {homepageConfig.socialMediaSection?.display && (
-          <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent">
+          <section aria-labelledby="social-media-heading" className="bg-gradient-to-b from-transparent via-accent/5 to-transparent overflow-hidden">
             <div className="container mx-auto px-4 text-center">
               <h2 id="social-media-heading" className="font-headline text-3xl font-bold mb-2">
                 {homepageConfig.socialMediaSection?.title?.[language] || homepageConfig.socialMediaSection?.title?.[language]}
@@ -418,7 +419,7 @@ export default function Home() {
         )}
         
         {homepageConfig.statsSection?.display && (
-          <section aria-labelledby="stats-heading">
+          <section aria-labelledby="stats-heading" className="overflow-hidden">
             <div className="container mx-auto px-4 text-center">
                 <h2 id="stats-heading" className="font-headline text-3xl font-bold mb-8">{homepageConfig.statsSection?.title?.[language] || homepageConfig.statsSection?.title?.[language]}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -434,7 +435,7 @@ export default function Home() {
         )}
 
         {homepageConfig.notesBanner?.display && (
-          <section aria-labelledby="notes-banner-heading">
+          <section aria-labelledby="notes-banner-heading" className="overflow-hidden">
             <div className="container mx-auto px-4">
               <div className="glassmorphism-card p-8 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-primary/10 to-accent/10 border-white/30">
                     <div className='text-center md:text-left'>
@@ -454,23 +455,23 @@ export default function Home() {
         </section>
         
         {homepageConfig.appPromo?.display && (
-          <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent">
+          <section aria-labelledby="app-promo-heading" className="bg-secondary/20 dark:bg-transparent overflow-hidden">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="text-center md:text-left">
-                    <h2 id="app-promo-heading" className="font-headline text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.[language]}</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.[language]}</p>
+                    <h2 id="app-promo-heading" className="font-headline text-2xl md:text-4xl font-bold text-primary">{homepageConfig.appPromo?.title?.[language] || homepageConfig.appPromo?.title?.[language]}</h2>
+                    <p className="mt-4 text-base md:text-lg text-muted-foreground">{homepageConfig.appPromo?.description?.[language] || homepageConfig.appPromo?.description?.[language]}</p>
                     <div className="flex justify-center md:justify-start gap-4 mt-8">
                         <Link href={homepageConfig.appPromo?.googlePlayUrl || '#'}>
-                            <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl"/>
+                            <Image src={homepageConfig.appPromo.googlePlayImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Google Play Store" data-ai-hint="play store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl w-[140px] md:w-[180px] h-auto"/>
                         </Link>
                         <Link href={homepageConfig.appPromo?.appStoreUrl || '#'}>
-                            <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl"/>
+                            <Image src={homepageConfig.appPromo.appStoreImageUrl || 'https://placehold.co/180x60.png'} width={180} height={60} alt="Apple App Store" data-ai-hint="app store button" className="shadow-lg hover:scale-105 transition-transform rounded-xl w-[140px] md:w-[180px] h-auto"/>
                         </Link>
                     </div>
                   </div>
                   <div className="flex justify-center relative">
                       <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl scale-125 -z-10"></div>
-                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain drop-shadow-2xl' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
+                      <Image src={homepageConfig.appPromo.promoImageUrl || "https://i.imgur.com/uR1Y6o6.png"} width={350} height={500} alt="RDC App" className='object-contain drop-shadow-2xl max-w-[280px] md:max-w-full' data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint || "mobile app screenshot"} />
                   </div>
               </div>
           </section>
