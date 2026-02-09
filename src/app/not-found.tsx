@@ -9,8 +9,7 @@ import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Refined 404 Not Found Page.
- * Fixed responsiveness to prevent content cutoff and added bilingual support.
+ * @fileOverview Refined 404 Not Found Page with premium Framer Motion animations.
  */
 export default function NotFound() {
   const { language } = useLanguage();
@@ -39,23 +38,28 @@ export default function NotFound() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.15,
+        delayChildren: 0.3,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+    hidden: { y: 30, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { type: "spring", stiffness: 100, damping: 12 } 
+    },
   };
 
   const letterVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, scale: 0.5, y: 50 },
     visible: { 
       opacity: 1, 
+      scale: 1, 
       y: 0,
-      transition: { type: "spring", damping: 12, stiffness: 200 }
+      transition: { type: "spring", damping: 10, stiffness: 200 }
     },
   };
 
@@ -64,9 +68,23 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-background mesh-gradient flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto">
       
-      {/* Dynamic Background Effects */}
-      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/10 rounded-full blur-[120px] -z-10" />
+      {/* Animated Background decorative blobs */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px] -z-10" 
+      />
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/10 rounded-full blur-[120px] -z-10" 
+      />
 
       <motion.main 
         variants={containerVariants}
@@ -75,84 +93,87 @@ export default function NotFound() {
         className="w-full max-w-4xl text-center flex flex-col items-center relative z-10 py-10"
       >
         
-        {/* Responsive 404 Text */}
-        <motion.div 
-          className="flex mb-4 md:mb-6"
-          initial="hidden"
-          animate="visible"
-        >
+        {/* Animated 404 Text - Each number animate separately */}
+        <div className="flex mb-4 md:mb-8">
           {titleText.split("").map((letter, index) => (
             <motion.span
               key={index}
               variants={letterVariants}
-              className="text-7xl sm:text-9xl md:text-[10rem] lg:text-[13rem] font-black tracking-tighter text-foreground leading-none select-none drop-shadow-2xl"
+              className="text-8xl sm:text-[10rem] md:text-[12rem] lg:text-[15rem] font-black tracking-tighter text-foreground leading-none select-none drop-shadow-2xl inline-block"
               animate={{ 
-                y: [0, -15, 0],
+                y: [0, -20, 0],
               }}
               transition={{ 
-                duration: 4, 
-                repeat: Infinity, 
-                ease: "easeInOut",
-                delay: index * 0.2
+                y: {
+                  duration: 4, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: index * 0.3
+                }
               }}
             >
               {letter === "0" ? <span className="text-primary">0</span> : letter}
             </motion.span>
           ))}
-        </motion.div>
+        </div>
 
         {/* Status Badge */}
         <motion.div 
           variants={itemVariants}
-          className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-[0.2em] border border-primary/20 mb-6 flex items-center gap-2"
+          className="bg-primary/10 text-primary px-5 py-2 rounded-full text-[10px] md:text-xs font-black uppercase tracking-[0.3em] border border-primary/20 mb-8 flex items-center gap-2 shadow-lg shadow-primary/5"
         >
-          <AlertCircle className="w-3.5 h-3.5" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          >
+            <AlertCircle className="w-4 h-4" />
+          </motion.div>
           {translations.badge[language]}
         </motion.div>
 
         {/* Main Heading & Description */}
-        <div className="space-y-4 px-4 max-w-2xl">
+        <div className="space-y-6 px-4 max-w-2xl">
           <motion.h1 
             variants={itemVariants}
-            className="font-headline text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground uppercase leading-tight"
+            className="font-headline text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground uppercase leading-tight"
           >
             {translations.heading[language]}
           </motion.h1>
           <motion.p 
             variants={itemVariants}
-            className="text-xs sm:text-base md:text-lg text-muted-foreground font-medium leading-relaxed"
+            className="text-sm sm:text-lg md:text-xl text-muted-foreground font-medium leading-relaxed opacity-80"
           >
             {translations.description[language]}
           </motion.p>
         </div>
 
-        {/* Responsive Action Buttons */}
+        {/* Action Buttons */}
         <motion.div 
           variants={itemVariants}
-          className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-6"
+          className="mt-12 flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto px-6"
         >
-          <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-12 md:h-14 px-8 md:px-10 shadow-xl shadow-primary/20 group">
-            <Link href="/" className="flex items-center justify-center gap-2">
-              <Home className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:-translate-y-1" />
+          <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 md:h-16 px-10 md:px-12 shadow-2xl shadow-primary/30 group relative overflow-hidden">
+            <Link href="/" className="flex items-center justify-center gap-3">
+              <Home className="w-5 h-5 transition-transform group-hover:-translate-y-1" />
               {translations.homeBtn[language]}
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-12 md:h-14 px-8 md:px-10 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/10 transition-all">
-            <Link href="/contact" className="flex items-center justify-center gap-2">
-              <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
+          <Button asChild variant="outline" size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 md:h-16 px-10 md:px-12 border-white/20 bg-white/50 dark:bg-white/5 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-xl">
+            <Link href="/contact" className="flex items-center justify-center gap-3">
+              <MessageSquare className="w-5 h-5" />
               {translations.supportBtn[language]}
             </Link>
           </Button>
         </motion.div>
 
-        {/* Brand Attribution */}
+        {/* Footer Brand Label */}
         <motion.div 
           variants={itemVariants}
-          className="mt-16 sm:mt-20 flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.4em] text-muted-foreground/40"
+          className="mt-20 sm:mt-24 flex items-center gap-4 text-[10px] md:text-[12px] font-black uppercase tracking-[0.5em] text-muted-foreground/30"
         >
-          <span>RED DOT CLASSROOM</span>
-          <div className="w-1 h-1 rounded-full bg-primary/40" />
-          <span>PRANGONS ECOSYSTEM</span>
+          <span>RDC ECOSYSTEM</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-primary/30" />
+          <span>EST. 2024</span>
         </motion.div>
       </motion.main>
 
