@@ -68,11 +68,11 @@ const CourseCardComponent = (props: CourseCardProps) => {
 
           {/* Card Body / Text Section */}
           <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
-            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors">
+            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left">
               {title}
             </h3>
 
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-0.5 text-left">
                 {provider ? (
                     <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">
                         {provider.name}
@@ -86,7 +86,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
                 )}
             </div>
 
-            <div className="mt-1 md:mt-2 flex items-center gap-2">
+            <div className="mt-1 md:mt-2 flex items-center gap-2 text-left">
                 <span className="text-[14px] md:text-[16px] font-black text-accent drop-shadow-sm">
                     {displayPrice}
                 </span>

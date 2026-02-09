@@ -74,19 +74,19 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
       <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
         <Link href={courseLink}>
-          <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors">{course.title}</h3>
+          <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors text-left">{course.title}</h3>
         </Link>
         
         {provider ? (
-           <div className="flex items-center gap-2 mt-1">
+           <div className="flex items-center gap-2 mt-1 text-left">
             <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">By {provider.name}</p>
           </div>
         ) : (
-          <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate mt-1">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
+          <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate mt-1 text-left">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
         )}
 
         {status === 'in-progress' && typeof course.progress === 'number' && (
-          <div className="mt-2 md:mt-4">
+          <div className="mt-2 md:mt-4 text-left">
             <div className="flex justify-between items-center mb-1">
                 <p className="text-[10px] font-medium">Progress</p>
                 <p className="text-[10px] font-medium text-primary">{course.progress}%</p>
@@ -96,14 +96,14 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         )}
 
         {status === 'completed' && course.completedDate && (
-            <p className="text-[10px] text-green-600 mt-2 font-medium">Completed: {course.completedDate}</p>
+            <p className="text-[10px] text-green-600 mt-2 font-medium text-left">Completed: {course.completedDate}</p>
         )}
         
         {status === 'wishlisted' && (
-            <p className="text-[14px] md:text-[16px] font-black text-accent mt-2">{course.price}</p>
+            <p className="text-[14px] md:text-[16px] font-black text-accent mt-2 text-left">{course.price}</p>
         )}
 
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex gap-2 text-left">
             {status === 'in-progress' && (
                 <Button asChild size="sm" className="w-full font-black text-[10px] h-8 uppercase tracking-tighter">
                     <Link href={continueLink}>Continue</Link>

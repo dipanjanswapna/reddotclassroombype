@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, ChevronDown, Phone, ShoppingCart } from "lucide-react";
+import { Menu, ChevronDown, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -70,11 +70,11 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn("sticky top-0 z-50 w-full py-3 transition-all duration-300", wrapperClassName)}
+      className={cn("fixed top-0 left-0 right-0 z-50 w-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border-b border-white/10 shadow-sm", wrapperClassName)}
     >
       <div className="container">
         <div className={cn(
-          "flex h-16 items-center justify-between rounded-full bg-background/70 dark:bg-card/50 backdrop-blur-xl border border-white/20 dark:border-white/10 px-4 shadow-xl transition-all duration-300",
+          "flex h-16 items-center justify-between px-4 transition-all duration-300",
           containerClassName
         )}>
           <div className="flex items-center gap-2">
