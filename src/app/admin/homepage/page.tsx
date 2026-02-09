@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem } from '@/lib/types';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem, SocialChannel } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -23,7 +23,6 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type SocialChannel = NonNullable<HomepageConfig['socialMediaSection']['channels']>[0];
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 
 export default function AdminHomepageManagementPage() {
@@ -155,6 +154,52 @@ export default function AdminHomepageManagementPage() {
     });
   };
 
+  const addHeroBanner = () => {
+    setConfig(prev => prev ? ({
+      ...prev,
+      heroBanners: [
+        ...prev.heroBanners,
+        { id: Date.now(), href: '/courses/', imageUrl: 'https://placehold.co/800x450.png', alt: 'New Banner', dataAiHint: 'banner placeholder' }
+      ]
+    }) : null);
+  };
+
+  const removeHeroBanner = (id: number) => {
+    setConfig(prev => prev ? ({
+      ...prev,
+      heroBanners: prev.heroBanners.filter(banner => banner.id !== id)
+    }) : null);
+  };
+
+  const addOfflineSlide = () => {
+    setConfig(prev => {
+      if (!prev) return null;
+      const newSlide: OfflineHubHeroSlide = {
+          id: Date.now(),
+          imageUrl: 'https://placehold.co/1200x343.png',
+          dataAiHint: 'students course banner',
+          title: 'New Slide Title',
+          subtitle: 'New Slide Subtitle',
+          price: '৳0',
+          originalPrice: '৳0',
+          enrollHref: '#'
+      };
+      const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
+      return {
+          ...prev,
+          offlineHubHeroCarousel: { ...offlineCarousel, slides: [...(offlineCarousel.slides || []), newSlide] }
+      };
+    });
+  };
+
+  const removeOfflineSlide = (id: number) => {
+    setConfig(prev => {
+      if (!prev || !prev.offlineHubHeroCarousel) return null;
+      const newSlides = prev.offlineHubHeroCarousel.slides.filter(s => s.id !== id);
+      return { ...prev, offlineHubHeroCarousel: { ...prev.offlineHubHeroCarousel, slides: newSlides } };
+    });
+  };
+
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
   }
@@ -162,6 +207,29 @@ export default function AdminHomepageManagementPage() {
   if (!config) {
      return <div className="flex h-screen items-center justify-center"><p>Could not load homepage configuration.</p></div>;
   }
+
+  const allSections = [
+    { key: 'welcomeSection', label: 'Welcome Section'},
+    { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
+    { key: 'offlineHubHeroCarousel', label: 'Offline Hub & RDC Shop Carousel'},
+    { key: 'categoriesSection', label: 'Categories Section' },
+    { key: 'journeySection', label: 'Journey (Live Courses)' },
+    { key: 'teachersSection', label: 'Teachers Section' },
+    { key: 'videoSection', label: 'Video Section' },
+    { key: 'sscHscSection', label: 'SSC & HSC Section' },
+    { key: 'masterclassSection', label: 'Masterclass Section' },
+    { key: 'admissionSection', label: 'Admission Section' },
+    { key: 'jobPrepSection', label: 'Job Prep Section' },
+    { key: 'whyChooseUs', label: 'Why Choose Us' },
+    { key: 'freeClassesSection', label: 'Free Classes' },
+    { key: 'aboutUsSection', label: 'About Us'},
+    { key: 'collaborations', label: 'Collaborations' },
+    { key: 'partnersSection', label: 'Partners' },
+    { key: 'socialMediaSection', label: 'Social Media' },
+    { key: 'notesBanner', label: 'Notes Banner' },
+    { key: 'appPromo', label: 'App Promo' },
+    { key: 'requestCallbackSection', label: 'Callback Section'},
+  ] as const;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8">
@@ -196,6 +264,88 @@ export default function AdminHomepageManagementPage() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
             >
+                {/* --- GENERAL TAB --- */}
+                <TabsContent value="general" className="space-y-8 mt-0">
+                    <Card className="rounded-2xl shadow-sm border-white/10">
+                        <CardHeader><CardTitle>Branding & Visibility</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <Label>Site Logo URL</Label>
+                                <Input value={config.logoUrl || ''} onChange={e => handleSimpleValueChange('logoUrl', e.target.value)} placeholder="https://example.com/logo.png" />
+                            </div>
+                            <div className="space-y-4 border-t pt-4">
+                                <Label className="font-bold">Section Visibility</Label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {allSections.map(section => (
+                                        <div key={section.key} className="flex items-center justify-between rounded-xl border p-3 bg-muted/20">
+                                            <span className="text-xs font-semibold">{section.label}</span>
+                                            <Switch 
+                                                checked={(config as any)[section.key]?.display ?? true} 
+                                                onCheckedChange={(val) => handleSectionToggle(section.key, val)}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- HERO TAB --- */}
+                <TabsContent value="hero" className="space-y-8 mt-0">
+                    <Card className="rounded-2xl shadow-sm border-white/10">
+                        <CardHeader>
+                            <CardTitle>Main Hero Banners</CardTitle>
+                            <CardDescription>Manage the main sliding banners on the homepage.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {config.heroBanners.map((banner, index) => (
+                                <div key={banner.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
+                                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1"><Label className="text-xs">Image URL</Label><Input value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
+                                        <div className="space-y-1"><Label className="text-xs">Link URL</Label><Input value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full border-dashed rounded-xl" onClick={addHeroBanner}><PlusCircle className="mr-2 h-4 w-4"/>Add Banner</Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-2xl shadow-sm border-white/10">
+                        <CardHeader>
+                            <CardTitle>Offline Hub & RDC Shop Carousel</CardTitle>
+                            <CardDescription>The slim sliding banner used on Shop and Offline Hub pages.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {config.offlineHubHeroCarousel?.slides?.map((slide, index) => (
+                                <div key={slide.id} className="p-4 border rounded-xl space-y-3 relative bg-muted/10">
+                                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
+                                    <div className="space-y-2"><Label className="text-xs">Image URL</Label><Input value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} /></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1"><Label className="text-xs">Title (Badge)</Label><Input value={slide.title} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} /></div>
+                                        <div className="space-y-1"><Label className="text-xs">Subtitle (Heading)</Label><Input value={slide.subtitle} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} /></div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full border-dashed rounded-xl" onClick={addOfflineSlide}><PlusCircle className="mr-2 h-4 w-4"/>Add Carousel Slide</Button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- COURSE SECTIONS TAB --- */}
+                <TabsContent value="courses" className="space-y-8 mt-0">
+                    <Card className="rounded-2xl shadow-sm border-white/10">
+                        <CardHeader><CardTitle>Featured Course Lists</CardTitle><CardDescription>Enter comma-separated course IDs to display in each homepage section.</CardDescription></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2"><Label>Journey Section (Live Courses IDs)</Label><Input value={config.liveCoursesIds?.join(', ') || ''} onChange={e => handleStringArrayChange('liveCoursesIds', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>SSC & HSC Section IDs</Label><Input value={config.sscHscCourseIds?.join(', ') || ''} onChange={e => handleStringArrayChange('sscHscCourseIds', e.target.value)} /></div>
+                            <div className="space-y-2"><Label>Admission Section IDs</Label><Input value={config.admissionCoursesIds?.join(', ') || ''} onChange={e => handleStringArrayChange('admissionCoursesIds', e.target.value)} /></div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- PAGES TAB --- */}
                 <TabsContent value="pages" className="space-y-8 mt-0">
                     <Card className="rounded-2xl shadow-sm border-white/10">
                         <CardHeader>
@@ -234,15 +384,6 @@ export default function AdminHomepageManagementPage() {
                                     </div>
                                 )}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
-                                <div className="space-y-2"><Label>Explore Programs Button (EN)</Label><Input value={config.offlineHubSection?.exploreProgramsText?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'exploreProgramsText', 'en', e.target.value)} className="rounded-xl"/></div>
-                                <div className="space-y-2"><Label>Find a Center Button (EN)</Label><Input value={config.offlineHubSection?.findCenterText?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'findCenterText', 'en', e.target.value)} className="rounded-xl"/></div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
-                                <div className="space-y-2"><Label>Programs Section Title (EN)</Label><Input value={config.offlineHubSection?.programsTitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'programsTitle', 'en', e.target.value)} className="rounded-xl"/></div>
-                                <div className="space-y-2"><Label>Centers Section Title (EN)</Label><Input value={config.offlineHubSection?.centersTitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'centersTitle', 'en', e.target.value)} className="rounded-xl"/></div>
-                                <div className="space-y-2 col-span-2"><Label>Centers Section Subtitle (EN)</Label><Input value={config.offlineHubSection?.centersSubtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'centersSubtitle', 'en', e.target.value)} className="rounded-xl"/></div>
-                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -251,4 +392,9 @@ export default function AdminHomepageManagementPage() {
       </Tabs>
     </div>
   );
+
+  function handleStringArrayChange(section: CourseIdSections, value: string) {
+    const ids = value.split(',').map(id => id.trim()).filter(Boolean);
+    setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
+  }
 }
