@@ -45,7 +45,6 @@ export default function AdminHomepageManagementPage() {
             getCourses({ status: 'Published' })
         ]);
         
-        // Ensure critical fields are arrays to prevent .map() errors
         if (fetchedConfig) {
             if (!Array.isArray(fetchedConfig.heroBanners)) fetchedConfig.heroBanners = [];
             if (fetchedConfig.offlineHubHeroCarousel && !Array.isArray(fetchedConfig.offlineHubHeroCarousel.slides)) {
@@ -139,6 +138,17 @@ export default function AdminHomepageManagementPage() {
                     [arrayKey]: array
                 }
             };
+        });
+    };
+
+    const handleHeroBannerChange = (index: number, field: string, value: any) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const newBanners = Array.isArray(prev.heroBanners) ? [...prev.heroBanners] : [];
+            if (newBanners[index]) {
+                newBanners[index] = { ...newBanners[index], [field]: value };
+            }
+            return { ...prev, heroBanners: newBanners };
         });
     };
 
@@ -324,7 +334,7 @@ export default function AdminHomepageManagementPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1">
                                             <Label className="text-xs">Image URL</Label>
-                                            <Input placeholder="Enter image URL (e.g., https://...)" value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} />
+                                            <Input placeholder="Enter image URL (e.g., https://...)" value={banner.imageUrl} onChange={e => handleHeroBannerChange(index, 'imageUrl', e.target.value)} />
                                             {banner.imageUrl && (
                                                 <div className="mt-2 relative aspect-[16/9] w-32 rounded-md overflow-hidden border">
                                                     <Image src={banner.imageUrl} alt="Preview" fill className="object-cover" />
@@ -333,7 +343,7 @@ export default function AdminHomepageManagementPage() {
                                         </div>
                                         <div className="space-y-1">
                                             <Label className="text-xs">Link URL</Label>
-                                            <Input placeholder="e.g., /courses/physics-batch" value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} />
+                                            <Input placeholder="e.g., /courses/physics-batch" value={banner.href} onChange={e => handleHeroBannerChange(index, 'href', e.target.value)} />
                                         </div>
                                     </div>
                                 </div>
