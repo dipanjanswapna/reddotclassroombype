@@ -66,42 +66,42 @@ export default async function CoursesPage({
   return (
     <div className="bg-background mesh-gradient min-h-screen">
         {/* Unified Hero Area: Seamless background blending */}
-        <section className="pt-4 md:pt-6 pb-4 md:pb-6 border-b border-white/10 overflow-hidden">
+        <section className="pt-2 md:pt-4 pb-2 md:pb-4 border-b border-white/5 overflow-hidden">
             <div className="container mx-auto px-4">
-                {/* Hero Carousel: Blends into the mesh-gradient background */}
+                {/* Hero Carousel */}
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
-                    <div className="mb-6 md:mb-8">
+                    <div className="mb-4 md:mb-6">
                         <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
                     </div>
                 )}
 
-                {/* Shop Intro: Scaled down significantly for a sleek, high-density look */}
-                <div className="text-center max-w-2xl mx-auto space-y-1.5 md:space-y-2">
-                    <h1 className="font-black text-lg md:text-xl lg:text-2xl tracking-tighter uppercase leading-tight">
+                {/* Shop Intro: Extreme scaling for high-density feel */}
+                <div className="text-center max-w-xl mx-auto space-y-1 md:space-y-1.5">
+                    <h1 className="font-black text-base md:text-lg lg:text-xl tracking-tight uppercase leading-tight">
                         RDC <span className="text-primary">SHOP</span>
                     </h1>
-                    <div className="min-h-[2.5rem] md:min-h-auto">
+                    <div className="min-h-[2rem] md:min-h-auto">
                         <TypingText 
                             text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
-                            className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-4"
+                            className="text-[10px] md:text-xs text-muted-foreground font-medium leading-relaxed font-bengali px-4"
                         />
                     </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-4 py-2 md:py-4">
+      <div className="container mx-auto px-4 py-1 md:py-2">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
-                  <LoadingSpinner className="w-12 h-12" />
+                  <LoadingSpinner className="w-10 h-10" />
               </div>
           }>
               <CoursesPageContent searchParams={searchParams} />
           </Suspense>
       </div>
 
-      {/* Premium Footer Section: Scaled down banner */}
-      <div className="container mx-auto px-4 pb-12 md:pb-16">
+      {/* Premium Footer Section */}
+      <div className="container mx-auto px-4 pb-10 md:pb-14">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>
