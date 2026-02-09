@@ -32,6 +32,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'static.vecteezy.com', pathname: '/**' },
       { protocol: 'https', hostname: 'png.pngtree.com', pathname: '/**' },
       { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
+      { protocol: 'https', hostname: 'postimg.cc', pathname: '/**' },
+      { protocol: 'https', hostname: 'i.postimg.cc', pathname: '/**' },
       { protocol: 'https', hostname: 'scontent.fdac138-1.fna.fbcdn.net', pathname: '/**' }
     ],
   },
