@@ -826,7 +826,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   strugglingStudentSection: {
     display: true,
     title: { bn: "পড়াশোনায় পিছিয়ে পড়ছো?", en: "Struggling in Studies?" },
-    subtitle: { bn: "এসো তোমার সমস্যার সমাধান করি ✨", en: "Let’s solve your problems together ✨" },
+    subtitle: { bn: "এসো তোমার সমস্যার সমাধান করি ✨", en: "Aaiye apki Samasya ka, Samadan krte hai ✨" },
     imageUrl: "https://cdni.iconscout.com/illustration/premium/thumb/man-confused-about-mobile-happenings-illustration-download-in-svg-png-gif-file-formats--error-warning-alert-exclamation-state-pack-people-illustrations-1784671.png?f=webp",
     buttonText: { bn: "আমরা কিভাবে সাহায্য করি দেখুন", en: "See How We Help" },
   },

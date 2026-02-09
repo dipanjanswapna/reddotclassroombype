@@ -4,7 +4,7 @@ import { getHomepageConfig } from '@/lib/firebase/firestore';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Rocket, Users, BookOpen, HelpCircle, BarChart3 } from 'lucide-react';
+import { ArrowRight, Rocket, Users, BookOpen, HelpCircle, BarChart3, Star, Zap, CheckCircle2 } from 'lucide-react';
 import { FreeClassesSection } from '@/components/free-classes-section';
 import { cn } from '@/lib/utils';
 
@@ -49,82 +49,160 @@ export default async function TopperPage() {
     }
 
   return (
-    <div className="mesh-gradient">
-        <div className="container mx-auto px-4 py-16">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-8">
-                    <h1 className="font-headline text-4xl md:text-5xl font-black tracking-tight leading-tight text-foreground">{sectionData.title}</h1>
-                    <div className="grid sm:grid-cols-2 gap-6">
-                        {sectionData.cards.map(card => {
-                            const Icon = featureIcons[card.title] || Rocket;
-                            return (
-                                <Card key={card.id} className="p-6 glassmorphism-card border-white/30 bg-white/40 group hover:border-primary/50 transition-all duration-300">
-                                    <div className="flex items-start gap-4 mb-3">
-                                        <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover:scale-110 transition-transform">
-                                            <Icon className="w-6 h-6" />
-                                        </div>
-                                        <h2 className="font-black text-lg leading-tight pt-1">{card.title}</h2>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground font-medium">{card.description}</p>
-                                </Card>
-                            )
-                        })}
+    <div className="mesh-gradient min-h-screen pb-20">
+        {/* Hero Section */}
+        <section className="relative py-12 md:py-24 overflow-hidden border-b border-white/10">
+            <div className="absolute inset-0 bg-primary/5 -z-10" />
+            <div className="container mx-auto px-4">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-8 text-center lg:text-left">
+                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4">
+                            <Zap className="w-3.5 h-3.5" />
+                            Academic Excellence
+                        </div>
+                        <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-foreground">
+                            {sectionData.title}
+                        </h1>
+                        <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            We bridge the gap between where you are and where you want to be. Discover our 4-pillar support system designed for Bangladeshi students.
+                        </p>
+                        <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                            <Button asChild size="lg" className="rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 h-14 px-8">
+                                <Link href="#programs">Get Started Now</Link>
+                            </Button>
+                            <Button variant="outline" size="lg" className="rounded-xl font-black uppercase tracking-widest h-14 px-8 bg-white/50 backdrop-blur-sm">
+                                Explore Features
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="relative group flex justify-center">
+                        <div className="absolute inset-0 bg-primary/10 rounded-full blur-[100px] scale-110 opacity-50 group-hover:scale-125 transition-transform duration-700" />
+                        <div className="relative z-10 w-full max-w-lg aspect-square">
+                            <Image
+                                src={sectionData.mainImageUrl}
+                                alt={sectionData.title}
+                                fill
+                                className="object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                                data-ai-hint={sectionData.mainImageDataAiHint}
+                                priority
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="hidden lg:block relative group">
-                    <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-110 opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
-                    <Image
-                        src={sectionData.mainImageUrl}
-                        alt={sectionData.title}
-                        width={600}
-                        height={600}
-                        className="object-contain relative z-10 drop-shadow-2xl"
-                        data-ai-hint={sectionData.mainImageDataAiHint}
-                    />
-                </div>
+            </div>
+        </section>
+
+        {/* Feature Grid */}
+        <div className="container mx-auto px-4 -mt-12 relative z-20">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {sectionData.cards.map((card, index) => {
+                    const Icon = featureIcons[card.title] || Rocket;
+                    return (
+                        <Card key={card.id} className="p-6 md:p-8 glassmorphism-card border-white/40 bg-white/60 dark:bg-card/60 group hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-2xl md:rounded-3xl">
+                            <div className="flex flex-col gap-4">
+                                <div className="p-4 bg-primary/10 rounded-2xl text-primary w-fit group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <Icon className="w-8 h-8" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h2 className="font-black text-lg md:text-xl leading-tight font-headline">{card.title}</h2>
+                                    <p className="text-[13px] md:text-sm text-muted-foreground font-medium leading-relaxed">{card.description}</p>
+                                </div>
+                                <div className="pt-2">
+                                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-primary tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                                        Learn More <ArrowRight className="w-3 h-3" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    )
+                })}
             </div>
         </div>
         
-        <section className="bg-secondary/30 py-16 border-y border-white/20">
+        {/* Programs Section */}
+        <section id="programs" className="py-20 md:py-28 overflow-hidden">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <h2 className="font-headline text-3xl font-black tracking-tight">Academic & Professional Programs</h2>
-                        <p className="text-muted-foreground font-medium text-lg">Select your category to start your journey with RDC</p>
+                <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6">
+                    <div className="max-w-2xl text-left">
+                        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight">Academic & Professional Roadmap</h2>
+                        <p className="text-muted-foreground font-medium text-lg mt-2">Pick your class or goal to see how RDC transforms your learning experience.</p>
                     </div>
-                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90 font-black shadow-xl shadow-primary/20 rounded-xl">
-                        <Link href="/courses">Explore All Courses</Link>
+                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90 font-black shadow-xl shadow-primary/20 rounded-xl px-10 h-14 uppercase tracking-widest text-sm">
+                        <Link href="/courses">All Courses</Link>
                     </Button>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
                     {classButtons.map((btn) => (
                         <Link key={btn.label} href={btn.href}>
                             <div className={cn(
-                                "flex flex-col items-center justify-center p-6 rounded-2xl shadow-sm border border-white/20 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white/60 backdrop-blur-md group",
+                                "flex flex-col items-center justify-center p-6 md:p-8 rounded-3xl shadow-sm border border-white/30 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-xl group",
                                 "hover:border-primary/50"
                             )}>
-                                <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black mb-3 group-hover:scale-110 transition-transform shadow-inner", btn.color)}>
+                                <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black mb-4 group-hover:scale-110 transition-transform shadow-inner", btn.color)}>
                                     {btn.label.match(/\d+/) ? btn.label.match(/\d+/)?.[0] : btn.label[0]}
                                 </div>
-                                <span className="font-black text-sm uppercase tracking-wider text-center">{btn.label}</span>
+                                <span className="font-black text-[11px] md:text-sm uppercase tracking-widest text-center group-hover:text-primary transition-colors">{btn.label}</span>
                             </div>
                         </Link>
                     ))}
                      <Link href="/courses">
-                        <div className="flex flex-col items-center justify-center p-6 rounded-2xl shadow-lg border-2 border-primary/20 bg-primary text-white transition-all duration-300 hover:shadow-primary/30 hover:-translate-y-1 group">
-                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 group-hover:rotate-12 transition-transform">
-                                <Rocket className="w-8 h-8" />
+                        <div className="flex flex-col items-center justify-center p-6 md:p-8 rounded-3xl shadow-xl border-2 border-primary/20 bg-primary text-white transition-all duration-300 hover:shadow-primary/40 hover:-translate-y-1 group">
+                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:rotate-12 transition-transform">
+                                <Rocket className="w-10 h-10" />
                             </div>
-                            <span className="font-black text-sm uppercase tracking-widest">Join Now</span>
+                            <span className="font-black text-[11px] md:text-sm uppercase tracking-widest">Join RDC</span>
                         </div>
                     </Link>
                 </div>
             </div>
         </section>
 
+        {/* Benefits List */}
+        <section className="bg-secondary/30 py-20 border-y border-white/20">
+            <div className="container mx-auto px-4">
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-6">
+                        <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight">Why RDC Toppers Excel?</h2>
+                        <ul className="space-y-4">
+                            {[
+                                "Personalized doubt clearing within minutes",
+                                "Weekly performance analysis and goal setting",
+                                "Exclusive access to topper secrets and shortcuts",
+                                "Gamified learning environment with real rewards",
+                                "Direct access to elite educators across Bangladesh"
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-center gap-3 font-semibold text-gray-700 dark:text-gray-300">
+                                    <div className="bg-green-500/10 p-1 rounded-full"><CheckCircle2 className="w-5 h-5 text-green-600" /></div>
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                            <p className="text-4xl font-black text-primary">150K+</p>
+                            <p className="text-xs font-black uppercase text-muted-foreground">Active Learners</p>
+                        </div>
+                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                            <p className="text-4xl font-black text-accent">98%</p>
+                            <p className="text-xs font-black uppercase text-muted-foreground">Success Rate</p>
+                        </div>
+                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                            <p className="text-4xl font-black text-blue-600">500+</p>
+                            <p className="text-xs font-black uppercase text-muted-foreground">Expert Mentors</p>
+                        </div>
+                        <div className="bg-white/60 p-8 rounded-3xl text-center space-y-2 border border-white/40 shadow-xl">
+                            <p className="text-4xl font-black text-yellow-500">4.9/5</p>
+                            <p className="text-xs font-black uppercase text-muted-foreground">User Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         {config.freeClassesSection?.display && (
-            <section className="py-16">
+            <section className="py-20 md:py-28">
                 <FreeClassesSection sectionData={config.freeClassesSection} />
             </section>
         )}

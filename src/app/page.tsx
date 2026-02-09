@@ -170,7 +170,7 @@ export default function Home() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                    className="group relative glassmorphism-card p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border-white/20 dark:border-white/5 bg-white/40 dark:bg-card/40"
+                    className="group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-2xl border border-border shadow-xl bg-[#e3e3e3]"
                   >
                       <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
                       <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
@@ -189,10 +189,10 @@ export default function Home() {
                             />
                           </motion.div>
                           <div className="space-y-2 flex-grow">
-                              <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-foreground">
+                              <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900">
                                   {homepageConfig.strugglingStudentSection?.title?.[language] || homepageConfig.strugglingStudentSection?.title?.['en']}
                               </h3>
-                              <p className="text-sm md:text-lg lg:text-xl text-muted-foreground font-medium leading-relaxed">
+                              <p className="text-sm md:text-lg lg:text-xl text-gray-600 font-medium leading-relaxed">
                                   {homepageConfig.strugglingStudentSection?.subtitle?.[language] || homepageConfig.strugglingStudentSection?.subtitle?.['en']}
                               </p>
                           </div>
