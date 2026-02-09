@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,7 +90,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
     <Card className="shadow-2xl overflow-hidden border-none rounded-2xl md:rounded-3xl">
         <CardContent className="p-0">
             <div className="grid md:grid-cols-2">
-                <div className="hidden md:flex items-center justify-center bg-[#eef5ff] dark:bg-gray-800 p-8">
+                <div className="hidden md:flex items-center justify-center bg-[#eef2ed] dark:bg-gray-800 p-8">
                      <Image
                         src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
                         alt="Happy student requesting a callback"
@@ -99,8 +100,8 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                         data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
                     />
                 </div>
-                <div className="p-6 md:p-10 bg-[#f7faff] dark:bg-gray-900/50">
-                    <h3 className="text-xl md:text-2xl font-black mb-6 text-foreground font-headline uppercase tracking-tight">Request a callback</h3>
+                <div className="p-6 md:p-10 bg-[#eef2ed] dark:bg-gray-900/50">
+                    <h3 className="text-xl md:text-2xl font-black mb-6 text-gray-900 dark:text-foreground font-headline uppercase tracking-tight">Request a callback</h3>
                     <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
@@ -109,9 +110,9 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Full name*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Full name*</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: Rohit Singh" {...field} className="rounded-xl h-10 md:h-11" />
+                                        <Input placeholder="Ex: Rohit Singh" {...field} className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -122,9 +123,9 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="mobileNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Mobile Number*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Mobile Number*</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: +88017..." {...field} className="rounded-xl h-10 md:h-11" />
+                                        <Input placeholder="Ex: +88017..." {...field} className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -135,10 +136,10 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="class"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Class*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Class*</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11">
+                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -161,10 +162,10 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="goals"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Goals*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Goals*</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11">
+                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -185,10 +186,10 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="preferredCourses"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Preference*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Preference*</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11">
+                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -207,10 +208,10 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="state"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-muted-foreground">Location*</FormLabel>
+                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Location*</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11">
+                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -230,7 +231,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 )}
                             />
                         </div>
-                        <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed">
+                        <p className="text-[10px] md:text-xs text-gray-500 dark:text-muted-foreground leading-relaxed">
                             By continuing, you agree to our{' '}
                             <Link href="/terms" className="underline hover:text-primary font-bold">
                                 Terms & Conditions

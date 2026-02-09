@@ -153,13 +153,13 @@ export default function ContactPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <Card className="shadow-2xl border-white/10 bg-card/30 backdrop-blur-2xl rounded-3xl overflow-hidden">
-                                <CardHeader className="p-8 md:p-10 border-b border-white/5 bg-muted/20">
+                            <Card className="shadow-2xl border-white/10 bg-[#eef2ed] dark:bg-card/30 backdrop-blur-2xl rounded-3xl overflow-hidden">
+                                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-[#eef2ed]/50">
                                     <div className="flex items-center gap-3 mb-2">
                                         <MessageSquare className="w-6 h-6 text-primary" />
-                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight">Send a Message</CardTitle>
+                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">Send a Message</CardTitle>
                                     </div>
-                                    <CardDescription className="text-base font-medium">
+                                    <CardDescription className="text-base font-medium text-gray-600 dark:text-muted-foreground">
                                         Fill out the form below and we'll get back to you within 24 hours.
                                     </CardDescription>
                                 </CardHeader>
@@ -167,18 +167,18 @@ export default function ContactPage() {
                                     <form className="grid gap-8" onSubmit={handleSubmit}>
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Your Name</Label>
+                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">Your Name</Label>
                                                 <Input 
                                                     id="name" 
                                                     placeholder="e.g. Jubayer Ahmed" 
                                                     value={name} 
                                                     onChange={(e) => setName(e.target.value)} 
                                                     required 
-                                                    className="rounded-xl h-12 border-white/10 focus:border-primary/50 bg-background/50"
+                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground"
                                                 />
                                             </div>
                                             <div className="space-y-3">
-                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Email Address</Label>
+                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">Email Address</Label>
                                                 <Input 
                                                     id="email" 
                                                     type="email" 
@@ -186,12 +186,12 @@ export default function ContactPage() {
                                                     value={email} 
                                                     onChange={(e) => setEmail(e.target.value)} 
                                                     required 
-                                                    className="rounded-xl h-12 border-white/10 focus:border-primary/50 bg-background/50"
+                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">How can we help?</Label>
+                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">How can we help?</Label>
                                             <Textarea 
                                                 id="message" 
                                                 placeholder="Write your message here..." 
@@ -199,7 +199,7 @@ export default function ContactPage() {
                                                 value={message} 
                                                 onChange={(e) => setMessage(e.target.value)} 
                                                 required 
-                                                className="rounded-2xl border-white/10 focus:border-primary/50 bg-background/50 resize-none p-4"
+                                                className="rounded-2xl border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground resize-none p-4"
                                             />
                                         </div>
                                         <Button type="submit" size="lg" className="w-full md:w-fit font-black uppercase tracking-widest h-14 px-10 rounded-2xl shadow-xl shadow-primary/20" disabled={isLoading}>
