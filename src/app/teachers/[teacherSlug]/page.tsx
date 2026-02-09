@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getYoutubeVideoId, cn } from '@/lib/utils';
+import { YoutubeModalPlayer } from '@/components/youtube-modal-player';
 
 export async function generateMetadata({ params }: { params: { teacherSlug: string } }): Promise<Metadata> {
   const teacher = await getInstructorBySlug(params.teacherSlug);
@@ -193,7 +194,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                     )}
                 </section>
                 
-                {/* YouTube Classes Section */}
+                {/* YouTube Classes Section with Modal */}
                 {teacher.youtubeClasses && teacher.youtubeClasses.length > 0 && (
                     <section className="py-0">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 border-l-4 border-primary pl-4">
@@ -203,46 +204,7 @@ export default async function TeacherProfilePage({ params }: { params: { teacher
                             </div>
                         </div>
 
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {teacher.youtubeClasses.map((video) => {
-                                const videoId = getYoutubeVideoId(video.youtubeUrl);
-                                const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400.png?text=Video';
-
-                                return (
-                                    <Link key={video.id || video.title} href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                                        <Card className="overflow-hidden h-full flex flex-col rounded-2xl border-white/40 bg-card hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 shadow-md">
-                                            <CardHeader className="p-0">
-                                                <div className="relative aspect-video">
-                                                    <Image
-                                                        src={thumbnailUrl}
-                                                        alt={video.title}
-                                                        fill
-                                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                                        data-ai-hint="youtube video thumbnail"
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 backdrop-blur-[2px]">
-                                                        <div className="bg-primary p-4 rounded-full shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500">
-                                                            <PlayCircle className="w-10 h-10 text-white" />
-                                                        </div>
-                                                    </div>
-                                                    <Badge className="absolute top-4 left-4 bg-red-600 font-black text-[9px] uppercase tracking-widest border-none shadow-lg px-2">
-                                                        <Youtube className="w-3.5 h-3.5 mr-1.5" /> LIVE
-                                                    </Badge>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="p-5 flex-grow flex flex-col justify-center">
-                                                <h3 className="font-black text-sm md:text-base uppercase tracking-tight leading-tight line-clamp-2 group-hover:text-primary transition-colors text-left">
-                                                    {video.title}
-                                                </h3>
-                                                <div className="mt-4 flex items-center gap-2 text-primary font-black text-[9px] uppercase tracking-[0.1em] opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">
-                                                    Watch on YouTube <ChevronRight className="w-3.5 h-3.5" />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                );
-                            })}
-                        </div>
+                        <YoutubeModalPlayer videos={teacher.youtubeClasses} />
                     </section>
                 )}
             </main>
