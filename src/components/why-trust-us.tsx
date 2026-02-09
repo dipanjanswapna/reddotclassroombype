@@ -7,12 +7,20 @@ import type { HomepageConfig } from '@/lib/types';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from './ui/card';
-import { Quote } from 'lucide-react';
+import { Quote, Users, Presentation, Wallet, Headphones, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 type WhyTrustUsProps = {
   data: HomepageConfig['whyChooseUs'];
+};
+
+// Icon Mapping based on feature titles
+const featureIcons: Record<string, any> = {
+    "Best Instructors": Users,
+    "Interactive Learning": Presentation,
+    "Lots for a Low Cost": Wallet,
+    "Support System": Headphones,
 };
 
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
@@ -43,14 +51,22 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                 </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {(data.features || []).map((feature, index) => (
-                <div key={feature.id || `feature-${index}`} className="bg-white/60 dark:bg-background/50 border border-white/40 dark:border-white/10 p-4 md:p-5 rounded-2xl flex flex-row items-center gap-4 hover:border-primary/50 transition-all duration-300 hover:shadow-xl shadow-sm backdrop-blur-sm group">
-                    <div className="bg-primary/10 p-2.5 md:p-3 rounded-xl border-2 border-primary/20 group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <Image src={feature.iconUrl} alt={feature.title?.['en'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="w-8 h-8 md:w-10 md:h-10 object-contain"/>
-                    </div>
-                    <h3 className="font-bold text-sm md:text-base text-card-foreground text-left leading-tight">{feature.title?.[language] || feature.title?.['en']}</h3>
-                </div>
-                ))}
+                {(data.features || []).map((feature, index) => {
+                    const IconComponent = featureIcons[feature.title?.['en'] || ''];
+                    
+                    return (
+                        <div key={feature.id || `feature-${index}`} className="bg-white/60 dark:bg-background/50 border border-white/40 dark:border-white/10 p-4 md:p-5 rounded-2xl flex flex-row items-center gap-4 hover:border-primary/50 transition-all duration-300 hover:shadow-xl shadow-sm backdrop-blur-sm group">
+                            <div className="bg-primary/10 p-2.5 md:p-3 rounded-xl border-2 border-primary/20 group-hover:scale-110 transition-transform duration-300 shrink-0">
+                                {IconComponent ? (
+                                    <IconComponent className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+                                ) : (
+                                    <Image src={feature.iconUrl} alt={feature.title?.['en'] || 'Feature Icon'} width={40} height={40} data-ai-hint={feature.dataAiHint} className="w-8 h-8 md:w-10 md:h-10 object-contain"/>
+                                )}
+                            </div>
+                            <h3 className="font-bold text-sm md:text-base text-card-foreground text-left leading-tight">{feature.title?.[language] || feature.title?.['en']}</h3>
+                        </div>
+                    );
+                })}
             </div>
             </div>
         </div>
