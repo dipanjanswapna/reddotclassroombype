@@ -1,39 +1,13 @@
 
 "use client";
 
-import Link from 'next/link';
-import {
-  Users,
-  BookCopy,
-  UserCog,
-  AreaChart,
-  Settings,
-  LogOut,
-  LayoutDashboard,
-  DollarSign,
-  Home,
-  TicketPercent,
-  CalendarPlus,
-  Handshake,
-  Badge,
-  Notebook,
-  Building,
-  QrCode,
-  Search,
-  PhoneCall,
-  Database,
-  Users2,
-  Megaphone,
-  Store,
-  ShoppingCart,
-  Tags,
-  Gift,
-  Share2,
-  HelpCircle,
-} from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import {
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, CalendarPlus, Handshake, Badge, Notebook, Building, QrCode, Search, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Tags, Gift, Share2, HelpCircle
+} from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
@@ -98,23 +72,21 @@ export default function AdminLayout({
     ];
 
     const getIsActive = (href: string) => {
-        if (href.endsWith('/dashboard') || href.endsWith('/manage-user')) {
-            return pathname === href;
-        }
-        if (href === '/') {
-            return false;
-        }
+        if (href.endsWith('/dashboard') || href.endsWith('/manage-user')) return pathname === href;
+        if (href === '/') return false;
         return pathname.startsWith(href);
     };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20">
-        {children}
+    <div className="flex flex-col min-h-screen bg-background">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 overflow-x-hidden">
+        <div className="container max-w-7xl mx-auto">
+            {children}
+        </div>
       </main>
       <motion.nav 
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
         className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] h-14 px-2"
       >
         <div className="flex justify-start items-center h-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1">
