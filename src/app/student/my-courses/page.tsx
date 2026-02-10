@@ -99,46 +99,46 @@ export default function MyCoursesPage() {
   }
 
   return (
-    <div className="space-y-10 md:space-y-14">
+    <div className="space-y-8 md:space-y-12">
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
         >
-          <div>
-            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase">স্বাগতম, <span className="text-primary">{userInfo?.name || 'Student'}!</span></h1>
-            <p className="mt-2 text-lg text-muted-foreground font-medium">
+          <div className="border-l-4 border-primary pl-4">
+            <h1 className="font-headline text-2xl md:text-3xl font-black tracking-tight leading-none uppercase">স্বাগতম, <span className="text-primary">{userInfo?.name || 'Student'}!</span></h1>
+            <p className="mt-1 text-sm md:text-base text-muted-foreground font-medium">
               আপনার শেখার যাত্রা চালিয়ে যান।
             </p>
           </div>
            <div className="flex items-center gap-2">
               <div className="relative w-full md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9 h-11 rounded-xl bg-card border-white/20" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9 h-10 rounded-xl bg-card border-primary/20" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
             </div>
         </motion.div>
         
-        <section className="space-y-6">
-            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">চলমান কোর্সসমূহ</h2>
+        <section className="space-y-4">
+            <h2 className="font-headline text-lg md:text-xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">চলমান কোর্সসমূহ</h2>
             {filteredInProgress.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                     {filteredInProgress.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
                     })}
                 </div>
             ) : (
-                <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">You have no courses in progress.</p>
                 </Card>
             )}
         </section>
 
         {filteredPrebookedCourses.length > 0 && (
-            <section className="space-y-6">
-                <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">প্রি-বুক করা কোর্স</h2>
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            <section className="space-y-4">
+                <h2 className="font-headline text-lg md:text-xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">প্রি-বুক করা কোর্স</h2>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                     {filteredPrebookedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="prebooked" provider={provider} />;
@@ -147,33 +147,33 @@ export default function MyCoursesPage() {
             </section>
         )}
 
-        <section className="space-y-6">
-            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
+        <section className="space-y-4">
+            <h2 className="font-headline text-lg md:text-xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
             {filteredCompleted.length > 0 ? (
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                     {filteredCompleted.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
                     })}
                 </div>
             ) : (
-                 <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                 <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">You have not completed any courses yet.</p>
                 </Card>
             )}
         </section>
 
-        <section className="space-y-6">
-            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">উইশলিস্টে থাকা কোর্স</h2>
+        <section className="space-y-4">
+            <h2 className="font-headline text-lg md:text-xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">উইশলিস্টে থাকা কোর্স</h2>
             {filteredWishlistedCourses.length > 0 ? (
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                     {filteredWishlistedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;
                     })}
                 </div>
             ) : (
-                <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">Your wishlist is empty.</p>
                 </Card>
             )}

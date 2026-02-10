@@ -52,7 +52,7 @@ export default function DashboardPage() {
 
         const inProgressCourses = enrolledCourses
           .filter(c => enrollments.some(e => e.courseId === c.id && e.status === 'in-progress'))
-          .slice(0, 2)
+          .slice(0, 4)
           .map(course => {
             const enrollment = enrollments.find(e => e.courseId === course.id);
             return {
@@ -118,7 +118,7 @@ export default function DashboardPage() {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-2 border-l-4 border-primary pl-4"
           >
               <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground">
                 স্বাগতম, <span className="text-primary">{userInfo?.name || 'Student'}!</span>
@@ -126,9 +126,9 @@ export default function DashboardPage() {
               <p className="text-muted-foreground font-medium text-lg">আপনার শেখার যাত্রা আরও সহজ করতে আমরা প্রস্তুত।</p>
           </motion.div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white overflow-hidden relative">
+                <Card className="rounded-2xl border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><BookOpen className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">এনরোল করা কোর্স</CardTitle>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white overflow-hidden relative">
+                <Card className="rounded-2xl border-none shadow-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><Flame className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">গড় অগ্রগতি</CardTitle>
@@ -156,7 +156,7 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative">
+                <Card className="rounded-2xl border-none shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><Award className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">অর্জিত সার্টিফিকেট</CardTitle>
@@ -176,32 +176,32 @@ export default function DashboardPage() {
                     <Link href="/student/my-courses">সকল কোর্স দেখুন</Link>
                 </Button>
             </div>
-             <div className="grid gap-8 md:grid-cols-2">
+             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="rounded-3xl border-primary/20 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
-                        <div className="p-6 md:p-8 space-y-6 flex-grow">
-                            <div className="space-y-2">
-                                <h3 className="font-black text-xl md:text-2xl uppercase tracking-tight group-hover:text-primary transition-colors leading-tight">{course.title}</h3>
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">চলমান অধ্যায়: ভৌত বিজ্ঞান প্রথম পত্র</p>
+                    <Card key={course.id} className="rounded-2xl border-primary/20 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
+                        <div className="p-5 space-y-4 flex-grow">
+                            <div className="space-y-1">
+                                <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2">{course.title}</h3>
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">ভৌত বিজ্ঞান প্রথম পত্র</p>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                                 <div className="flex justify-between items-center px-1">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">কোর্স প্রগ্রেস</span>
-                                    <span className="text-xs font-black text-primary">{course.progress}%</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">কোর্স প্রগ্রেস</span>
+                                    <span className="text-[10px] font-black text-primary">{course.progress}%</span>
                                 </div>
-                                <Progress value={course.progress} className="h-2.5 rounded-full bg-white shadow-inner [&>div]:bg-accent" />
+                                <Progress value={course.progress} className="h-1.5 rounded-full bg-white shadow-inner [&>div]:bg-accent" />
                             </div>
                         </div>
-                        <div className="p-6 md:p-8 pt-0 mt-auto">
-                          <Button asChild size="lg" className="w-full font-black uppercase tracking-widest h-14 rounded-xl shadow-xl shadow-primary/20">
+                        <div className="p-5 pt-0 mt-auto">
+                          <Button asChild size="sm" className="w-full font-black uppercase tracking-widest h-10 rounded-xl shadow-xl shadow-primary/20">
                             <Link href={`/student/my-courses/${course.id}`} className="flex items-center justify-center gap-2">
-                                কোর্স চালিয়ে যান
+                                চালিয়ে যান
                             </Link>
                           </Button>
                         </div>
                     </Card>
                 )) : (
-                    <Card className="col-span-2 rounded-3xl border-dashed p-12 text-center bg-muted/20 border-primary/20">
+                    <Card className="col-span-full rounded-2xl border-dashed p-12 text-center bg-muted/20 border-primary/20">
                         <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                         <p className="text-muted-foreground font-bold">You are not enrolled in any courses yet.</p>
                         <Button asChild className="mt-4 rounded-xl font-black uppercase tracking-widest" variant="outline">
@@ -212,59 +212,59 @@ export default function DashboardPage() {
              </div>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-2 items-start">
-            <Card className="rounded-3xl border-primary/20 shadow-xl bg-card overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
-                <CardTitle className="text-lg font-black uppercase tracking-tight">আসন্ন ডেডলাইন</CardTitle>
+          <div className="grid gap-8 md:grid-cols-2 items-start">
+            <Card className="rounded-2xl border-primary/20 shadow-xl bg-card overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-5 border-b border-white/10">
+                <CardTitle className="text-base font-black uppercase tracking-tight">আসন্ন ডেডলাইন</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">
                   <Link href="/student/planner">সব দেখুন</Link>
                 </Button>
               </CardHeader>
-              <CardContent className="p-6">
-                <ul className="space-y-4">
+              <CardContent className="p-5">
+                <ul className="space-y-3">
                   {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: any, index: number) => (
-                    <li key={index} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
-                        <CalendarCheck className="h-6 w-6" />
+                    <li key={index} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                        <CalendarCheck className="h-5 w-5" />
                       </div>
                       <div className="flex-grow min-w-0">
-                        <p className="font-black uppercase tracking-tight text-sm truncate">{deadline.title}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
+                        <p className="font-black uppercase tracking-tight text-xs truncate">{deadline.title}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
                       </div>
                     </li>
                   )) : (
-                    <div className="py-8 text-center opacity-40">
-                        <CalendarCheck className="w-10 h-10 mx-auto mb-2" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No deadlines found</p>
+                    <div className="py-6 text-center opacity-40">
+                        <CalendarCheck className="w-8 h-8 mx-auto mb-2" />
+                        <p className="text-[9px] font-black uppercase tracking-widest">No deadlines found</p>
                     </div>
                   )}
                 </ul>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-primary/20 shadow-xl bg-card overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
-                <CardTitle className="text-lg font-black uppercase tracking-tight">সাম্প্রতিক অর্জন</CardTitle>
+            <Card className="rounded-2xl border-primary/20 shadow-xl bg-card overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-5 border-b border-white/10">
+                <CardTitle className="text-base font-black uppercase tracking-tight">সাম্প্রতিক অর্জন</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">
                   <Link href="/student/achievements">সব দেখুন</Link>
                 </Button>
               </CardHeader>
-              <CardContent className="p-6">
-                <ul className="space-y-4">
+              <CardContent className="p-5">
+                <ul className="space-y-3">
                   {stats.recentAchievements.length > 0 ? stats.recentAchievements.map((ach: any) => (
-                    <li key={ach.id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
-                      <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover:scale-110 transition-transform", ach.color)}>
-                        <ach.icon className="h-6 w-6" />
+                    <li key={ach.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 group-hover:scale-110 transition-transform", ach.color)}>
+                        <ach.icon className="h-5 w-5" />
                       </div>
                       <div className="flex-grow min-w-0">
-                        <p className="font-black uppercase tracking-tight text-sm truncate">{ach.title}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{ach.description}</p>
+                        <p className="font-black uppercase tracking-tight text-xs truncate">{ach.title}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{ach.description}</p>
                       </div>
                     </li>
                   )) : (
-                    <div className="py-8 text-center opacity-40">
-                        <Trophy className="w-10 h-10 mx-auto mb-2" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No achievements yet</p>
+                    <div className="py-6 text-center opacity-40">
+                        <Trophy className="w-8 h-8 mx-auto mb-2" />
+                        <p className="text-[9px] font-black uppercase tracking-widest">No achievements yet</p>
                     </div>
                   )}
                 </ul>
