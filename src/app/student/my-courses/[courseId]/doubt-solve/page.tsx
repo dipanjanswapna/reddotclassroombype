@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { askDoubtAction, reopenDoubtAction, markDoubtAsSatisfiedAction } from '@/app/actions/doubt.actions';
-import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle, AlertTriangle, Image as ImageIcon } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Star, CheckCircle, RefreshCw, XCircle, AlertTriangle, Image as ImageIcon, Sparkles } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -27,7 +27,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ImageUploader } from '@/components/image-uploader';
-
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, answers: DoubtAnswer[], onReopen: (doubtId: string, question: string) => void, onSatisfied: (doubtId: string, rating: number) => void }) {
     const [followup, setFollowup] = useState('');
@@ -54,44 +55,67 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
     }
 
   return (
-    <div className="space-y-4">
-      {/* Original Question */}
-      <div className="p-4 bg-muted rounded-lg">
-        <p className="font-semibold">Your Question:</p>
-        {doubt.questionText && <p className="whitespace-pre-wrap">{doubt.questionText}</p>}
-        {doubt.attachments?.[0]?.url && <Image src={doubt.attachments[0].url} alt="Question attachment" width={300} height={200} className="mt-2 rounded-md" />}
-        <p className="text-xs text-muted-foreground mt-2">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
+    <div className="space-y-6">
+      <div className="p-5 bg-muted rounded-[20px] border border-primary/5">
+        <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Original Question</p>
+        {doubt.questionText && <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-foreground">{doubt.questionText}</p>}
+        {doubt.attachments?.[0]?.url && (
+            <div className="mt-3 relative aspect-video w-full max-w-sm rounded-xl overflow-hidden border-2 border-white shadow-lg">
+                <Image src={doubt.attachments[0].url} alt="Question attachment" fill className="object-cover" />
+            </div>
+        )}
+        <p className="text-[9px] font-bold text-muted-foreground mt-3 uppercase tracking-tighter">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
       </div>
 
-      {/* Answers */}
-      {answers.sort((a,b) => safeToDate(a.answeredAt).getTime() - safeToDate(b.answeredAt).getTime()).map(answer => (
-        <div key={answer.id} className={`p-4 rounded-lg ${answer.doubtSolverId === doubt.studentId ? 'bg-blue-50 dark:bg-blue-900/20 ml-6' : 'bg-green-50 dark:bg-green-900/20'}`}>
-          <p className="font-semibold">{answer.doubtSolverId === doubt.studentId ? 'Your Follow-up' : 'Doubt Solver\'s Answer'}:</p>
-          <p className="whitespace-pre-wrap">{answer.answerText}</p>
-          <p className="text-xs text-muted-foreground mt-2">Answered {formatDistanceToNow(safeToDate(answer.answeredAt), { addSuffix: true })}</p>
-        </div>
-      ))}
+      <div className="space-y-4">
+        {answers.sort((a,b) => safeToDate(a.answeredAt).getTime() - safeToDate(b.answeredAt).getTime()).map(answer => (
+            <div key={answer.id} className={cn(
+                "p-5 rounded-[20px] border max-w-[90%]",
+                answer.doubtSolverId === doubt.studentId 
+                    ? "bg-blue-50 dark:bg-blue-900/20 border-blue-100 ml-auto" 
+                    : "bg-green-50 dark:bg-green-900/20 border-green-100 mr-auto"
+            )}>
+                <p className="text-[9px] font-black uppercase tracking-widest mb-2 opacity-60">
+                    {answer.doubtSolverId === doubt.studentId ? 'You' : 'Expert Solver'}
+                </p>
+                <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">{answer.answerText}</p>
+                <p className="text-[9px] font-bold text-muted-foreground mt-2 uppercase tracking-tighter">{formatDistanceToNow(safeToDate(answer.answeredAt), { addSuffix: true })}</p>
+            </div>
+        ))}
+      </div>
       
-      {/* Actions */}
       {doubt.status === 'Answered' && (
-        <div className="p-4 border rounded-lg space-y-4">
-            <div>
-                 <Label className="font-semibold">Not satisfied? Ask a follow-up question.</Label>
-                 <Textarea value={followup} onChange={e => setFollowup(e.target.value)} placeholder="Type your follow-up question here..."/>
-                 <Button onClick={handleReopen} size="sm" className="mt-2" disabled={!followup.trim() || isReopening}>
-                   {isReopening ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <RefreshCw className="mr-2 h-4 w-4"/>}
+        <div className="p-6 border border-primary/20 rounded-[20px] bg-primary/5 space-y-6">
+            <div className="space-y-3">
+                 <Label className="font-black uppercase text-[10px] tracking-widest text-foreground">Need more help?</Label>
+                 <Textarea 
+                    value={followup} 
+                    onChange={e => setFollowup(e.target.value)} 
+                    placeholder="Type your follow-up question here..."
+                    className="rounded-xl border-primary/10 bg-white"
+                />
+                 <Button onClick={handleReopen} size="sm" className="font-black uppercase text-[10px] tracking-widest h-10 px-6 rounded-xl" disabled={!followup.trim() || isReopening}>
+                   {isReopening ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin"/> : <RefreshCw className="mr-2 h-3.5 w-3.5"/>}
                    Re-open Doubt
                 </Button>
             </div>
-             <div className="border-t pt-4">
-                <Label className="font-semibold">Satisfied with the answer? Please rate the support.</Label>
-                 <div className="flex items-center gap-1 mt-2" onMouseLeave={() => setHoverRating(0)}>
+             <div className="border-t border-primary/10 pt-6">
+                <Label className="font-black uppercase text-[10px] tracking-widest text-foreground">Rate the solution</Label>
+                 <div className="flex items-center gap-1.5 mt-3" onMouseLeave={() => setHoverRating(0)}>
                     {[1, 2, 3, 4, 5].map(star => (
-                        <Star key={star} onClick={() => setRating(star)} onMouseEnter={() => setHoverRating(star)} className={cn("w-6 h-6 cursor-pointer transition-colors", (hoverRating || rating) >= star ? 'text-yellow-400 fill-current' : 'text-gray-300')} />
+                        <Star 
+                            key={star} 
+                            onClick={() => setRating(star)} 
+                            onMouseEnter={() => setHoverRating(star)} 
+                            className={cn(
+                                "w-7 h-7 cursor-pointer transition-all", 
+                                (hoverRating || rating) >= star ? 'text-yellow-400 fill-current scale-110' : 'text-gray-300'
+                            )} 
+                        />
                     ))}
                 </div>
-                 <Button onClick={handleSatisfied} size="sm" className="mt-2" disabled={rating === 0 || isSatisfying}>
-                    {isSatisfying ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CheckCircle className="mr-2 h-4 w-4"/>}
+                 <Button onClick={handleSatisfied} size="sm" className="mt-4 font-black uppercase text-[10px] tracking-widest h-10 px-6 rounded-xl" variant="accent" disabled={rating === 0 || isSatisfying}>
+                    {isSatisfying ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin"/> : <CheckCircle className="mr-2 h-3.5 w-3.5"/>}
                     Mark as Satisfied
                 </Button>
             </div>
@@ -103,7 +127,6 @@ function DoubtThread({ doubt, answers, onReopen, onSatisfied }: { doubt: Doubt, 
 
 export default function DoubtSolvePage() {
   const params = useParams();
-  const router = useRouter();
   const courseId = params.courseId as string;
   const { userInfo, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -217,8 +240,8 @@ export default function DoubtSolvePage() {
 
   if (loading || authLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <LoadingSpinner className="w-10 h-10" />
       </div>
     );
   }
@@ -226,12 +249,12 @@ export default function DoubtSolvePage() {
   if (!isEnrolled) {
       return (
         <div className="space-y-8">
-            <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Access Denied</AlertTitle>
-                <AlertDescription>
+            <Alert variant="destructive" className="rounded-[20px] border-none shadow-xl">
+                <AlertTriangle className="h-5 w-5" />
+                <AlertTitle className="font-black uppercase tracking-tight">Access Denied</AlertTitle>
+                <AlertDescription className="font-medium">
                     You must be enrolled in this course to use the doubt solving feature.
-                    <Button asChild variant="link" className="p-0 h-auto ml-1">
+                    <Button asChild variant="link" className="p-0 h-auto ml-1 text-white font-black">
                         <Link href={`/courses/${courseId}`}>Go to Course Page</Link>
                     </Button>
                 </AlertDescription>
@@ -257,51 +280,78 @@ export default function DoubtSolvePage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Doubt Solve</h1>
-        <p className="mt-1 text-lg text-muted-foreground">Ask questions about {course?.title}.</p>
-      </div>
+    <div className="space-y-10">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="border-l-4 border-primary pl-4"
+      >
+        <h1 className="font-headline text-3xl font-black tracking-tight uppercase">Doubt <span className="text-primary">Solving</span></h1>
+        <p className="mt-1 text-muted-foreground font-medium">Ask questions about {course?.title} and get instant expert help.</p>
+      </motion.div>
 
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">Ask a new question</h3>
-        <div className="space-y-2">
-            <Textarea
-            placeholder="Type your question here..."
-            value={newDoubtText}
-            onChange={(e) => setNewDoubtText(e.target.value)}
-            rows={4}
-            />
-            <ImageUploader onAnswerChange={setNewDoubtImage} existingImageUrl={newDoubtImage || undefined} />
-
-            <Button onClick={handleAskDoubt} disabled={isSubmitting || (!newDoubtText.trim() && !newDoubtImage)}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
-                Submit Question
-            </Button>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">Your previous questions</h3>
-        {doubts.length > 0 ? (
-          <Accordion type="single" collapsible className="w-full space-y-2">
-            {doubts.map(doubt => (
-              <AccordionItem key={doubt.id} value={doubt.id!} className="border rounded-lg bg-card overflow-hidden">
-                <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex-grow text-left">
-                        <p className="font-medium truncate">{doubt.questionText || "Image Doubt"}</p>
-                        <p className="text-xs text-muted-foreground mt-1">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
+      <Card className="rounded-[20px] border-primary/20 shadow-xl overflow-hidden bg-[#eef2ed] dark:bg-card/40">
+        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
+            <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Ask a new question
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
+            <div className="space-y-4">
+                <Textarea
+                    placeholder="Explain your problem clearly..."
+                    value={newDoubtText}
+                    onChange={(e) => setNewDoubtText(e.target.value)}
+                    rows={5}
+                    className="rounded-xl border-primary/10 bg-white h-32 focus:border-primary/50 text-base"
+                />
+                <div className="grid md:grid-cols-2 gap-4 items-end">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Attach an image (Optional)</Label>
+                        <ImageUploader onAnswerChange={setNewDoubtImage} existingImageUrl={newDoubtImage || undefined} />
                     </div>
-                    <Badge variant={getStatusBadgeVariant(doubt.status)} className="ml-4">{doubt.status}</Badge>
+                    <Button onClick={handleAskDoubt} disabled={isSubmitting || (!newDoubtText.trim() && !newDoubtImage)} className="h-12 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
+                        Submit Question
+                    </Button>
+                </div>
+            </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-6">
+        <h2 className="font-headline text-xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">Previous Discussions</h2>
+        {doubts.length > 0 ? (
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            {doubts.map(doubt => (
+              <AccordionItem key={doubt.id} value={doubt.id!} className="border border-primary/10 rounded-[20px] bg-card overflow-hidden shadow-md">
+                <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-primary/5 transition-all">
+                    <div className="flex-grow text-left flex items-center gap-4 min-w-0">
+                        <div className={cn(
+                            "p-2.5 rounded-xl shrink-0",
+                            doubt.status === 'Answered' || doubt.status === 'Satisfied' ? "bg-green-100 text-green-600" : "bg-primary/10 text-primary"
+                        )}>
+                            <MessageSquare className="w-5 h-5" />
+                        </div>
+                        <div className="truncate pr-4">
+                            <p className="font-black text-sm md:text-base uppercase tracking-tight truncate">{doubt.questionText || "Image Inquiry"}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground mt-1 uppercase tracking-tighter">Asked {formatDistanceToNow(safeToDate(doubt.askedAt), { addSuffix: true })}</p>
+                        </div>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(doubt.status)} className="ml-2 font-black text-[9px] uppercase tracking-widest px-3 py-1">{doubt.status}</Badge>
                 </AccordionTrigger>
-                <AccordionContent className="p-4 border-t bg-muted/50">
+                <AccordionContent className="p-6 border-t border-primary/5 bg-muted/10">
                     <DoubtThread doubt={doubt} answers={answers[doubt.id!] || []} onReopen={handleReopen} onSatisfied={handleSatisfied} />
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         ) : (
-          <p className="text-muted-foreground">You haven't asked any questions yet.</p>
+          <div className="text-center py-20 border-2 border-dashed border-primary/10 rounded-[20px] bg-muted/5">
+            <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs">No questions found</p>
+          </div>
         )}
       </div>
     </div>
