@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,6 +5,7 @@ import { EnrolledCourseCard } from '@/components/enrolled-course-card';
 import { getCoursesByIds, getEnrollmentsByUserId, getOrganizations, getPrebookingsByUserId } from '@/lib/firebase/firestore';
 import type { Course, Enrollment, Organization, Prebooking } from '@/lib/types';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
