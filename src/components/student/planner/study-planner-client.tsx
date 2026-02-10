@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, SlidersHorizontal, Volume2, Calendar as CalendarIcon, Save, Loader2, Sparkles, LayoutDashboard, BarChart3, Target, CalendarDays, Settings2 } from 'lucide-react';
+import { PlusCircle, SlidersHorizontal, Volume2, Calendar as CalendarIcon, Save, Loader2, Sparkles, LayoutDashboard, BarChart3, Target, CalendarDays, Settings2, Trash2 } from 'lucide-react';
 import { getFoldersForUser, getListsForUser, getTasksForUser, getGoalsForUser } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
