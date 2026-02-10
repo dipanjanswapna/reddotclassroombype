@@ -50,15 +50,15 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
   return (
     <motion.div 
-      whileHover={{ y: -5 }} 
+      whileHover={{ y: -3 }} 
       transition={{ type: "spring", stiffness: 300 }}
       className="h-full w-full"
     >
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-2xl",
-        "p-3 md:p-4"
+        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-xl",
+        "p-2.5 md:p-3"
       )}>
-        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-xl shadow-inner bg-black/5">
+        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-lg shadow-inner bg-black/5">
           <Link href={courseLink}>
             <Image
               src={course.imageUrl}
@@ -78,7 +78,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
           {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 text-[8px] font-black uppercase tracking-widest shadow-lg">Pre-booked</Badge>}
         </div>
 
-        <div className="flex-1 flex flex-col pt-4 pb-1 space-y-3 text-left">
+        <div className="flex-1 flex flex-col pt-3 pb-1 space-y-3 text-left">
           <div className="space-y-0.5">
               <Link href={courseLink}>
               <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors text-left uppercase tracking-tight">
@@ -115,29 +115,29 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
           <div className="pt-1 flex gap-2 mt-auto">
               {status === 'in-progress' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
                       <Link href={continueLink} className="flex items-center justify-center gap-1.5">
                           চালিয়ে যান <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                   </Button>
               )}
               {status === 'completed' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-10 uppercase tracking-widest rounded-xl" variant="accent">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl" variant="accent">
                       <Link href="/student/certificates">সার্টিফিকেট নিন</Link>
                   </Button>
               )}
               {status === 'wishlisted' && (
                   <>
-                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-10 uppercase tracking-widest rounded-xl">
+                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl">
                           <Link href={`/checkout/${course.id}`}>এনরোল করুন</Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
                           <Trash2 className="h-4 w-4" />
                       </Button>
                   </>
               )}
               {status === 'prebooked' && (
-                  <Button disabled size="sm" className="w-full font-black text-[10px] h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
+                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
                       <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> Pre-booked
                   </Button>
               )}

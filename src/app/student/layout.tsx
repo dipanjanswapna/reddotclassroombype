@@ -64,7 +64,7 @@ export default function StudentLayout({
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-background">
       <main className={cn(
-        "flex-1 px-2 sm:px-4 lg:px-6 pt-20 overflow-x-hidden", 
+        "flex-1 px-1.5 sm:px-2 lg:px-4 pt-20 overflow-x-hidden", 
         isCourseSubPage ? "pb-36" : "pb-28"
       )}>
         <div className="container max-w-7xl mx-auto">
