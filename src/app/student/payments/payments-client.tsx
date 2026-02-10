@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, Loader2, FileText, ShoppingBag, CreditCard, ChevronRight } from 'lucide-react';
+import { Eye, Loader2, FileText, ShoppingBag, CreditCard, ChevronRight, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +36,7 @@ interface PaymentsClientProps {
     initialTransactions: Transaction[];
 }
 
-export function PaymentsClient({ initialTransactions }: TransactionProps) {
+export function PaymentsClient({ initialTransactions }: PaymentsClientProps) {
     const { userInfo } = useAuth();
     const { toast } = useToast();
     

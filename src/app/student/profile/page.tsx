@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2, Trophy, Gift, Zap } from "lucide-react";
+import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2, Trophy, Gift, Zap, Save } from "lucide-react";
 import { saveUserAction, removeUserSessionAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
