@@ -22,8 +22,8 @@ type OfflineHubCarouselProps = {
 
 /**
  * @fileOverview OfflineHubCarousel Component
- * A high-performance hero carousel optimized for extreme content scaling.
- * Features significantly smaller text and buttons for a minimalist, high-density look.
+ * High-performance hero carousel optimized for extreme content scaling.
+ * Fixed ambiguous Tailwind class duration-[8000ms] by using style.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -81,7 +81,8 @@ export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
                     alt={slide.title}
                     fill
                     priority={index === 0}
-                    className="object-cover opacity-50 transition-transform duration-[8000ms] ease-linear group-hover/carousel:scale-110"
+                    className="object-cover opacity-50 group-hover/carousel:scale-110 transition-transform"
+                    style={{ transitionDuration: '8000ms' }}
                     data-ai-hint={slide.dataAiHint}
                   />
                   

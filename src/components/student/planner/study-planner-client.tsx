@@ -51,6 +51,10 @@ const whiteNoises = [
     { name: 'Study Cafe', value: 'cafe' },
 ];
 
+/**
+ * @fileOverview Study Planner Client Component.
+ * Optimized for high-density wall-to-wall responsive UI with 20px corners and px-2 mobile padding.
+ */
 export function StudyPlannerClient() {
     const { toast } = useToast();
     const { userInfo, refreshUserInfo } = useAuth();
@@ -105,7 +109,7 @@ export function StudyPlannerClient() {
         } finally {
             setLoading(false);
         }
-    }, [userInfo, toast, refreshUserInfo]);
+    }, [userInfo, toast]);
 
     useEffect(() => {
         if (!userInfo?.uid) {
@@ -177,10 +181,10 @@ export function StudyPlannerClient() {
         setActiveTask(null);
 
         if (over && active.id !== over.id) {
-            const activeTask = tasks.find(task => task.id === active.id);
-            if (activeTask && typeof over.id === 'string' && ['todo', 'in_progress', 'completed'].includes(over.id)) {
+            const activeTaskItem = tasks.find(task => task.id === active.id);
+            if (activeTaskItem && typeof over.id === 'string' && ['todo', 'in_progress', 'completed'].includes(over.id)) {
                 const newStatus = over.id as PlannerTask['status'];
-                const updatedTask = { ...activeTask, status: newStatus };
+                const updatedTask = { ...activeTaskItem, status: newStatus };
                 
                 setTasks(prevTasks => prevTasks.map(task => task.id === active.id ? updatedTask : task));
                 await saveTask(updatedTask);

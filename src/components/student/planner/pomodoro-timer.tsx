@@ -21,7 +21,7 @@ interface PomodoroTimerProps {
 
 /**
  * @fileOverview Refined Pomodoro Timer.
- * Uses 20px corners and high-density controls for a professional feel.
+ * Removed missing notification.mp3 reference to fix 404 errors.
  */
 export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurationsChange }: PomodoroTimerProps) {
   const [mode, setMode] = useState<PomodoroMode>('work');
@@ -31,7 +31,6 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
   const [selectedTask, setSelectedTask] = useState<string>('general');
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   
   useEffect(() => {
     if (!isActive) {
@@ -50,9 +49,7 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
           setMinutes(m => m - 1);
           setSeconds(59);
         } else {
-          if (audioRef.current) {
-            audioRef.current.play();
-          }
+          // Timer finished
           if (mode === 'work' && selectedTask !== 'general') {
             const sessionDurationSeconds = durations.work * 60;
             onSessionComplete(selectedTask, sessionDurationSeconds);
@@ -151,7 +148,6 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
                     </div>
                 </div>
              </div>
-             <audio ref={audioRef} src="/notification.mp3" preload="auto" />
         </CardContent>
     </Card>
   );

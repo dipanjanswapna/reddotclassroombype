@@ -1,6 +1,6 @@
 'use client';
 
-import { useDroppable } from '@nd-kit/core';
+import { useDroppable } from '@dnd-kit/core';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,10 @@ interface ColumnProps {
   onAddTask: (status: PlannerTask['status']) => void;
 }
 
+/**
+ * @fileOverview Kanban Column Component.
+ * Optimized for high-density wall-to-wall UI with 20px corners.
+ */
 export function Column({ id, title, children, onAddTask }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
