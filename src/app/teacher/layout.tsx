@@ -37,18 +37,18 @@ export default function TeacherLayout({
   }
 
   const menuItems = [
-    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Home", color: "text-blue-500" },
-    { href: "/teacher/courses", icon: BookCopy, label: "Courses", color: "text-red-500" },
-    { href: "/teacher/students", icon: Users, label: "Students", color: "text-emerald-500" },
-    { href: "/teacher/grading", icon: FileCheck2, label: "Grading", color: "text-orange-500" },
-    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Log", color: "text-purple-500" },
-    { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan", color: "text-pink-500" },
-    { href: "/teacher/live-classes", icon: Video, label: "Live", color: "text-cyan-500" },
-    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promos", color: "text-yellow-500" },
-    { href: "/teacher/earnings", icon: DollarSign, label: "Sales", color: "text-green-500" },
-    { href: "/teacher/profile", icon: User, label: "Profile", color: "text-blue-400" },
-    { href: "/teacher/id-card", icon: Badge, label: "ID Card", color: "text-indigo-500" },
-    { href: "/", icon: LogOut, label: "Logout", color: "text-destructive", action: logout },
+    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Home" },
+    { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
+    { href: "/teacher/students", icon: Users, label: "Students" },
+    { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
+    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Log" },
+    { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promos" },
+    { href: "/teacher/earnings", icon: DollarSign, label: "Sales" },
+    { href: "/teacher/profile", icon: User, label: "Profile" },
+    { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
+    { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
   
   const getIsActive = (href: string) => {
@@ -59,7 +59,7 @@ export default function TeacherLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 px-1.5 sm:px-2 lg:px-4 pt-20 pb-28 overflow-x-hidden">
+      <main className="flex-1 px-4 pt-20 pb-28 overflow-x-hidden">
         <div className="container max-w-7xl mx-auto">
             {children}
         </div>
@@ -67,18 +67,18 @@ export default function TeacherLayout({
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-primary/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-2xl flex justify-center overflow-hidden"
       >
-        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1">
+        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={item.action}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[68px] md:min-w-[85px] h-full text-center transition-all duration-300 relative px-1",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[72px] md:min-w-[90px] h-full text-center transition-all duration-300 relative px-1",
                   getIsActive(item.href)
-                    ? "text-accent scale-105"
+                    ? "text-accent"
                     : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -89,14 +89,8 @@ export default function TeacherLayout({
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              {getIsActive(item.href) && (
-                <motion.div 
-                  layoutId="active-nav-line-teacher"
-                  className="absolute top-0 left-1/4 right-1/4 h-0.5 bg-accent rounded-full"
-                />
-              )}
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-accent" : item.color)} />
-              <span className="text-[9px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
+              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-accent" : "")} />
+              <span className="text-[10px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>

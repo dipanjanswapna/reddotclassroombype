@@ -37,17 +37,17 @@ export default function SellerLayout({
   }
 
   const menuItems = [
-    { href: "/seller/dashboard", icon: LayoutDashboard, label: "Home", color: "text-blue-500" },
-    { href: "/seller/courses", icon: BookCopy, label: "Courses", color: "text-red-500" },
-    { href: "/seller/teachers", icon: Users, label: "Faculty", color: "text-emerald-500" },
-    { href: "/seller/call-center", icon: PhoneCall, label: "Calls", color: "text-orange-500" },
-    { href: "/seller/scan-attendance", icon: QrCode, label: "Scan", color: "text-purple-500" },
-    { href: "/seller/analytics", icon: BarChart3, label: "Stats", color: "text-pink-500" },
-    { href: "/seller/payouts", icon: Banknote, label: "Payouts", color: "text-green-500" },
-    { href: "/seller/branding", icon: Paintbrush, label: "Branding", color: "text-cyan-500" },
-    { href: "/seller/profile", icon: Users, label: "Profile", color: "text-blue-400" },
-    { href: "/seller/id-card", icon: Badge, label: "ID Card", color: "text-indigo-500" },
-    { href: "/", icon: LogOut, label: "Logout", color: "text-destructive", action: logout },
+    { href: "/seller/dashboard", icon: LayoutDashboard, label: "Home" },
+    { href: "/seller/courses", icon: BookCopy, label: "Courses" },
+    { href: "/seller/teachers", icon: Users, label: "Faculty" },
+    { href: "/seller/call-center", icon: PhoneCall, label: "Calls" },
+    { href: "/seller/scan-attendance", icon: QrCode, label: "Scan" },
+    { href: "/seller/analytics", icon: BarChart3, label: "Stats" },
+    { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
+    { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
+    { href: "/seller/profile", icon: Users, label: "Profile" },
+    { href: "/seller/id-card", icon: Badge, label: "ID Card" },
+    { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 
   const getIsActive = (href: string) => {
@@ -58,7 +58,7 @@ export default function SellerLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 px-1.5 sm:px-2 lg:px-4 pt-20 pb-28 overflow-x-hidden">
+      <main className="flex-1 px-4 pt-20 pb-28 overflow-x-hidden">
         <div className="container max-w-7xl mx-auto">
             {children}
         </div>
@@ -66,18 +66,18 @@ export default function SellerLayout({
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-primary/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-2xl flex justify-center overflow-hidden"
       >
-        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1">
+        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={item.action}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[68px] md:min-w-[85px] h-full text-center transition-all duration-300 relative px-1",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[72px] md:min-w-[90px] h-full text-center transition-all duration-300 relative px-1",
                   getIsActive(item.href)
-                    ? "text-indigo-600 scale-105"
+                    ? "text-indigo-600"
                     : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -88,14 +88,8 @@ export default function SellerLayout({
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              {getIsActive(item.href) && (
-                <motion.div 
-                  layoutId="active-nav-line-seller"
-                  className="absolute top-0 left-1/4 right-1/4 h-0.5 bg-indigo-600 rounded-full"
-                />
-              )}
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-indigo-600" : item.color)} />
-              <span className="text-[9px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
+              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-indigo-600" : "")} />
+              <span className="text-[10px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
