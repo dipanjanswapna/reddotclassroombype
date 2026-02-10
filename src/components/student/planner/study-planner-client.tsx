@@ -74,7 +74,6 @@ export function StudyPlannerClient() {
         longBreak: 15
     });
 
-    // Settings States
     const [selectedTheme, setSelectedTheme] = useState(userInfo?.plannerSettings?.theme || 'default');
     const [selectedNoise, setSelectedNoise] = useState(userInfo?.plannerSettings?.whiteNoise || 'none');
     const [isSavingSettings, setIsSavingSettings] = useState(false);
@@ -106,7 +105,7 @@ export function StudyPlannerClient() {
         } finally {
             setLoading(false);
         }
-    }, [userInfo, toast]);
+    }, [userInfo, toast, refreshUserInfo]);
 
     useEffect(() => {
         if (!userInfo?.uid) {
@@ -256,7 +255,6 @@ export function StudyPlannerClient() {
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
             <div className="w-full">
                 <Tabs defaultValue="board" className="w-full">
-                    {/* Integrated Tab System with White Pill Design */}
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 px-1">
                         <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
                             <TabsList className="flex w-full md:w-auto h-12 p-1 bg-muted/30 dark:bg-card/20 rounded-[20px] shadow-inner border border-white/10 gap-1">
@@ -342,7 +340,7 @@ export function StudyPlannerClient() {
                                 </TabsContent>
                                 <TabsContent value="settings" className="mt-0 outline-none">
                                      <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-                                        <Card className="rounded-[25px] border-primary/20 shadow-2xl overflow-hidden bg-card">
+                                        <Card className="rounded-[25px] border-primary/20 shadow-xl overflow-hidden bg-card">
                                             <CardHeader className="bg-primary/5 p-8 border-b border-primary/10">
                                                 <CardTitle className="text-xl font-black uppercase tracking-tight">Appearance & Focus</CardTitle>
                                                 <CardDescription className="font-medium text-xs">Personalize your productivity hub workspace.</CardDescription>
