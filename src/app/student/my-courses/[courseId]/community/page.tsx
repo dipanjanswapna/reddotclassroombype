@@ -30,85 +30,80 @@ export default function CourseCommunityPage() {
   const communityUrl = "https://www.facebook.com/groups/rdc.main"; 
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col gap-2 border-l-4 border-primary pl-4"
+        className="flex flex-col gap-2 border-l-4 border-primary pl-3"
       >
-        <h1 className="font-headline text-3xl font-black tracking-tight uppercase">Peer <span className="text-primary">Community</span></h1>
-        <p className="mt-1 text-muted-foreground font-medium">Join secret discussion groups and learn with fellow top achievers.</p>
+        <h1 className="font-headline text-2xl font-black uppercase tracking-tight text-foreground">Peer <span className="text-primary">Community</span></h1>
+        <p className="text-[10px] md:text-sm text-muted-foreground font-medium">Join exclusive groups for top achievers.</p>
       </motion.div>
 
       {communityUrl ? (
-          <div className="max-w-3xl mx-auto">
-            <Card className="rounded-[30px] border-primary/20 shadow-2xl overflow-hidden bg-card border-2">
-                <CardHeader className="bg-primary/5 p-8 md:p-10 border-b border-primary/10 text-center">
-                    <div className="inline-block p-4 bg-primary/10 rounded-3xl mb-6">
-                        <Users className="w-12 h-12 text-primary" />
+          <div className="max-w-2xl mx-auto">
+            <Card className="rounded-[25px] border-primary/20 shadow-2xl overflow-hidden bg-card border-2">
+                <CardHeader className="bg-primary/5 p-6 md:p-8 border-b border-primary/10 text-center">
+                    <div className="inline-block p-3 bg-primary/10 rounded-2xl mb-4">
+                        <Users className="w-10 h-10 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight">Exclusive Access Group</CardTitle>
-                    <CardDescription className="text-sm md:text-base font-medium mt-2">
-                        This is a restricted community for verified students only. 
+                    <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">Exclusive Access</CardTitle>
+                    <CardDescription className="text-[10px] md:text-xs font-bold uppercase tracking-widest mt-1">
+                        Verified Students Only
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="p-8 md:p-10 space-y-8">
-                    <div className="bg-muted/30 p-6 rounded-[20px] border border-dashed border-primary/20 relative group overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12"><ShieldCheck className="w-20 h-20"/></div>
-                        <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-primary mb-4 flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4" /> Your Secret Access Code
+                <CardContent className="p-6 md:p-8 space-y-6">
+                    <div className="bg-muted/30 p-5 rounded-[20px] border border-dashed border-primary/20 relative group overflow-hidden">
+                        <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12"><ShieldCheck className="w-16 h-16"/></div>
+                        <h3 className="font-black text-[8px] uppercase tracking-[0.2em] text-primary mb-3 flex items-center gap-1.5">
+                            <ShieldCheck className="w-3 h-3" /> Secret Access Code
                         </h3>
-                        <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10">
-                            <div className="flex-grow h-14 bg-white dark:bg-black rounded-xl border border-primary/10 flex items-center justify-center px-6 font-mono text-xl md:text-2xl font-black tracking-[0.3em] text-foreground shadow-inner w-full sm:w-auto">
+                        <div className="flex flex-col xs:flex-row items-center gap-3 relative z-10">
+                            <div className="flex-grow h-12 bg-white dark:bg-black rounded-xl border border-primary/10 flex items-center justify-center px-4 font-mono text-lg md:text-xl font-black tracking-[0.2em] text-foreground shadow-inner w-full">
                                 {accessCode}
                             </div>
                             <Button 
                                 variant="outline" 
-                                size="lg" 
-                                className="h-14 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 hover:bg-primary hover:text-white transition-all shadow-lg w-full sm:w-auto" 
+                                size="sm" 
+                                className="h-12 px-6 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 hover:bg-primary hover:text-white transition-all shadow-md w-full xs:w-auto" 
                                 onClick={handleCopy}
                             >
-                                {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                                {copied ? 'Copied' : 'Copy Code'}
+                                {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
+                                {copied ? 'Copied' : 'Copy'}
                             </Button>
                         </div>
-                        <p className="text-[10px] md:text-[11px] font-bold text-muted-foreground mt-6 leading-relaxed bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-white/20">
-                            বি.দ্র. এই কোডটি গোপন রাখুন। গ্রুপে জয়েন রিকোয়েস্ট দেওয়ার সময় এটি প্রদান করতে হবে। আপনার জয়েন রিকোয়েস্টটি সর্বোচ্চ ২৪-৪৮ ঘন্টার মধ্যে এপ্রুভ করা হবে ইনশাআল্লাহ্।
+                        <p className="text-[9px] font-bold text-muted-foreground mt-4 leading-relaxed bg-white/50 dark:bg-black/20 p-2.5 rounded-lg border border-white/20">
+                            বি.দ্র. এই কোডটি গোপন রাখুন। গ্রুপে জয়েন রিকোয়েস্ট দেওয়ার সময় এটি প্রদান করতে হবে।
                         </p>
                     </div>
 
-                    <div className="space-y-4">
-                        <Button asChild size="lg" className="w-full h-16 rounded-[20px] font-black uppercase tracking-widest text-sm shadow-xl shadow-primary/20 bg-[#1877F2] hover:bg-[#166fe5] border-none group">
+                    <div className="space-y-3">
+                        <Button asChild size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 bg-[#1877F2] hover:bg-[#166fe5] border-none group">
                             <Link href={communityUrl} target="_blank" rel="noopener noreferrer">
-                                <Facebook className="mr-3 h-6 w-6 transition-transform group-hover:scale-110" />
-                                Join Official Facebook Group
+                                <Facebook className="mr-2.5 h-5 w-5 transition-transform group-hover:scale-110" />
+                                Join Facebook Group
                             </Link>
                         </Button>
-                        <p className="text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Verified Community Portal</p>
                     </div>
                 </CardContent>
-                <CardFooter className="bg-muted/20 p-6 flex justify-center gap-8 border-t border-primary/5">
-                    <div className="flex items-center gap-2 opacity-60">
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-tighter">24/7 Discussions</span>
+                <CardFooter className="bg-muted/20 p-4 flex justify-center gap-6 border-t border-primary/5">
+                    <div className="flex items-center gap-1.5 opacity-60">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span className="text-[8px] font-black uppercase tracking-tighter">Support</span>
                     </div>
-                    <div className="flex items-center gap-2 opacity-60">
-                        <Users className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-tighter">Peer Learning</span>
+                    <div className="flex items-center gap-1.5 opacity-60">
+                        <Users className="w-3.5 h-3.5" />
+                        <span className="text-[8px] font-black uppercase tracking-tighter">Peers</span>
                     </div>
                 </CardFooter>
             </Card>
         </div>
       ) : (
-        <div className="text-center py-24 bg-muted/5 border-2 border-dashed border-primary/10 rounded-[30px] flex flex-col items-center">
-            <Info className="w-16 h-16 text-primary/20 mx-auto mb-6" />
-            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-40">No dedicated group for this course yet</p>
-            <Button asChild variant="outline" className="mt-6 rounded-xl font-bold uppercase text-[10px] tracking-widest px-8">
-                <Link href="/student/community">Visit Main Community</Link>
-            </Button>
+        <div className="text-center py-20 bg-muted/5 border-2 border-dashed border-primary/10 rounded-[25px] flex flex-col items-center">
+            <Info className="w-12 h-12 text-primary/20 mx-auto mb-4" />
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px] opacity-40">No dedicated group for this course yet</p>
         </div>
       )}
-
     </div>
   );
 }

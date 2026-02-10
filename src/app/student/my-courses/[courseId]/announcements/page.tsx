@@ -60,23 +60,23 @@ export default function AnnouncementsPage() {
   const announcements = course.announcements || [];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 border-l-4 border-primary pl-4"
+        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-l-4 border-primary pl-3"
       >
         <div>
-            <h1 className="font-headline text-3xl font-black tracking-tight uppercase">Important <span className="text-primary">Notices</span></h1>
-            <p className="mt-1 text-muted-foreground font-medium">Critical updates and news for {course.title}.</p>
+            <h1 className="font-headline text-2xl font-black tracking-tight uppercase text-foreground">Important <span className="text-primary">Notices</span></h1>
+            <p className="text-[10px] md:text-sm text-muted-foreground font-medium">Critical updates for {course.title}.</p>
         </div>
-        <Button onClick={handleMarkAsRead} variant="outline" size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest h-10 px-6 border-primary/20">
-            <CheckCheck className="mr-2 h-4 w-4"/>
-            Mark All as Read
+        <Button onClick={handleMarkAsRead} variant="outline" size="sm" className="rounded-xl font-black text-[8px] uppercase tracking-widest h-9 px-4 border-primary/20">
+            <CheckCheck className="mr-1.5 h-3.5 w-3.5"/>
+            Mark All
         </Button>
       </motion.div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {announcements.length > 0 ? (
           announcements.map((ann, idx) => (
             <motion.div
@@ -86,33 +86,33 @@ export default function AnnouncementsPage() {
                 transition={{ delay: idx * 0.1 }}
             >
                 <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden group">
-                    <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                        <div className="flex justify-between items-start gap-4">
-                            <div className="flex items-start gap-4">
-                                <div className="bg-primary p-2.5 rounded-xl shadow-lg shadow-primary/20 text-white group-hover:scale-110 transition-transform">
-                                    <Pin className="w-5 h-5" />
+                    <CardHeader className="bg-primary/5 p-4 border-b border-primary/10">
+                        <div className="flex justify-between items-start gap-3">
+                            <div className="flex items-start gap-3">
+                                <div className="bg-primary p-2 rounded-xl shadow-md text-white group-hover:scale-110 transition-transform">
+                                    <Pin className="w-4 h-4" />
                                 </div>
-                                <div className="space-y-1">
-                                    <CardTitle className="text-xl font-black uppercase tracking-tight leading-tight">{ann.title}</CardTitle>
-                                    <CardDescription className="font-bold text-[10px] uppercase tracking-widest flex items-center gap-1.5 mt-1">
-                                        <Calendar className="w-3 h-3 text-primary" />
-                                        Posted: {format(safeToDate(ann.date), 'PPP')}
+                                <div className="space-y-0.5">
+                                    <CardTitle className="text-base font-black uppercase tracking-tight leading-tight">{ann.title}</CardTitle>
+                                    <CardDescription className="font-bold text-[8px] uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                        <Calendar className="w-2.5 h-2.5 text-primary" />
+                                        Posted: {format(safeToDate(ann.date), 'dd MMM yyyy')}
                                     </CardDescription>
                                 </div>
                             </div>
-                            <Megaphone className="w-6 h-6 text-primary/20 shrink-0 hidden sm:block"/>
+                            <Megaphone className="w-5 h-5 text-primary/20 shrink-0 hidden xs:block"/>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-8">
-                        <p className="text-sm md:text-base text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">{ann.content}</p>
+                    <CardContent className="p-5">
+                        <p className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">{ann.content}</p>
                     </CardContent>
                 </Card>
             </motion.div>
           ))
         ) : (
-          <div className="text-center py-24 bg-muted/5 border-2 border-dashed border-primary/10 rounded-[20px] flex flex-col items-center">
-            <Megaphone className="w-12 h-12 text-primary/20 mx-auto mb-4 opacity-40" />
-            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-40">No announcements yet</p>
+          <div className="text-center py-20 bg-muted/5 border-2 border-dashed border-primary/10 rounded-[20px] flex flex-col items-center">
+            <Megaphone className="w-10 h-10 text-primary/20 mx-auto mb-3 opacity-40" />
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-[9px] opacity-40">No announcements yet</p>
           </div>
         )}
       </div>
