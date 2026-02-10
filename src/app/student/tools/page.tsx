@@ -1,10 +1,10 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Bot, Voicemail, Calculator, ChevronRight, Sparkles, Wand2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Student Tools Hub Page.
