@@ -18,6 +18,7 @@ interface ColumnProps {
 /**
  * @fileOverview Kanban Column Component.
  * Optimized for high-density wall-to-wall UI with 20px corners.
+ * Corrected @dnd-kit/core import.
  */
 export function Column({ id, title, children, onAddTask }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });

@@ -9,6 +9,7 @@ import { Sparkles } from 'lucide-react';
 /**
  * @fileOverview Study Planner Page with Edge-to-Edge Layout.
  * Final wall-to-wall optimization with px-2 side padding for mobile.
+ * All sub-sections (Board, Calendar, Analytics, Goals, Settings) are integrated.
  */
 function PlannerPageContent() {
     return (

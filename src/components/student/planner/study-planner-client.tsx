@@ -54,6 +54,7 @@ const whiteNoises = [
 /**
  * @fileOverview Study Planner Client Component.
  * Optimized for high-density wall-to-wall responsive UI with 20px corners and px-2 mobile padding.
+ * Features integrated settings and white-pill tab system.
  */
 export function StudyPlannerClient() {
     const { toast } = useToast();
@@ -109,7 +110,7 @@ export function StudyPlannerClient() {
         } finally {
             setLoading(false);
         }
-    }, [userInfo, toast]);
+    }, [userInfo, toast, refreshUserInfo]);
 
     useEffect(() => {
         if (!userInfo?.uid) {
@@ -408,7 +409,7 @@ export function StudyPlannerClient() {
                                             </CardContent>
                                             <CardFooter className="bg-primary/5 p-6 border-t border-primary/10 flex justify-end">
                                                 <Button onClick={handleSaveSettings} disabled={isSavingSettings} className="font-black uppercase tracking-widest px-10 h-12 rounded-xl shadow-xl shadow-primary/20">
-                                                    {isSavingSettings ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                                                    {isSavingSettings ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : <Save className="h-4 w-4 mr-2"/>}
                                                     Save Changes
                                                 </Button>
                                             </CardFooter>
