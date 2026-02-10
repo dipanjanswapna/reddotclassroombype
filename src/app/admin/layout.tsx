@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect } from 'react';
@@ -58,22 +59,22 @@ export default function AdminLayout({
     ];
 
     const getIsActive = (href: string) => {
-        if (href.endsWith('/dashboard') || href.endsWith('/manage-user')) return pathname === href;
+        if (href.endsWith('/dashboard')) return pathname === href;
         if (href === '/') return false;
         return pathname.startsWith(href);
     };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 px-4 pt-20 pb-28 overflow-x-hidden">
-        <div className="container max-w-7xl mx-auto">
+    <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-background">
+      <main className="flex-1 px-1 pt-20 pb-28 overflow-x-hidden">
+        <div className="w-full max-w-7xl mx-auto">
             {children}
         </div>
       </main>
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-2xl flex justify-center overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[20px] flex justify-center overflow-hidden"
       >
         <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
