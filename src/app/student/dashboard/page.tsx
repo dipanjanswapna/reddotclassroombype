@@ -8,6 +8,9 @@ import {
   BarChart3,
   CalendarCheck,
   Trophy,
+  Rocket,
+  Flame,
+  Star
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +20,7 @@ import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestor
 import type { Course, Assignment } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
   const { userInfo } = useAuth();
@@ -61,18 +65,16 @@ export default function DashboardPage() {
           ? Math.round(enrollments.reduce((acc, e) => acc + (e.progress || 0), 0) / enrollments.length)
           : 0;
           
-        // --- Achievements Calculation ---
         const achievements = [];
-        // 1. First Enrollment
         if (enrollments.length > 0) {
             achievements.push({
                 id: 'ach_first_steps',
                 title: 'First Steps',
                 description: 'Enrolled in your first course!',
                 icon: Award,
+                color: "text-blue-500"
             });
         }
-        // 2. Course Completion
         const completedCourse = enrolledCourses.find(c => enrollments.some(e => e.courseId === c.id && e.status === 'completed'));
         if (completedCourse) {
             achievements.push({
@@ -80,9 +82,9 @@ export default function DashboardPage() {
                 title: 'Course Completer',
                 description: `Completed ${completedCourse.title}`,
                 icon: BookOpen,
+                color: "text-green-500"
             });
         }
-        // 3. High Score
         let highScoringExam = null;
         for (const course of enrolledCourses) {
             const exam = (course.exams || []).find(e => e.studentId === userInfo.uid && e.status === 'Graded' && e.marksObtained && e.totalMarks > 0 && (e.marksObtained / e.totalMarks) >= 0.9);
@@ -97,6 +99,7 @@ export default function DashboardPage() {
                 title: 'Top of the Class',
                 description: `Scored high in ${highScoringExam.courseTitle} exam.`,
                 icon: Trophy,
+                color: "text-yellow-500"
             });
         }
 
@@ -128,118 +131,159 @@ export default function DashboardPage() {
   }
 
   return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-          <div className="mb-6">
-              <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {userInfo?.name || 'Student'}!</h1>
-              <p className="text-muted-foreground">আপনার পরবর্তী ক্লাস আজ সন্ধ্যা ৭টায়। শুরু করার জন্য প্রস্তুত হন!</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="glassmorphism-card bg-primary/10 border-primary/20">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-primary">চলমান কোর্স</CardTitle>
-                    <BookOpen className="h-4 w-4 text-primary" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-primary">{stats.enrollments.length}</div>
-                    <p className="text-xs text-muted-foreground">আপনার শেখা চালিয়ে যান!</p>
-                </CardContent>
-            </Card>
-            <Card className="glassmorphism-card bg-accent/10 border-accent/20">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-accent-foreground">সামগ্রিক অগ্রগতি</CardTitle>
-                     <BarChart3 className="h-4 w-4 text-accent-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-accent-foreground">{stats.overallProgress}%</div>
-                    <Progress value={stats.overallProgress} className="mt-2 h-2 [&>div]:bg-accent" />
-                </CardContent>
-            </Card>
-            <Card className="glassmorphism-card bg-yellow-500/10 border-yellow-500/20">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-yellow-600">অর্জিত সার্টিফিকেট</CardTitle>
-                    <Award className="h-4 w-4 text-yellow-600" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold text-yellow-600">{stats.completedCoursesCount}</div>
-                    <p className="text-xs text-muted-foreground">আপনি সম্প্রতি একটি কোর্স সম্পন্ন করেছেন।</p>
-                </CardContent>
-            </Card>
+      <div className="space-y-10 md:space-y-14">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col gap-2"
+          >
+              <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground">
+                স্বাগতম, <span className="text-primary">{userInfo?.name || 'Student'}!</span>
+              </h1>
+              <p className="text-muted-foreground font-medium text-lg">আপনার শেখার যাত্রা আরও সহজ করতে আমরা প্রস্তুত।</p>
+          </motion.div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-6 opacity-20"><BookOpen className="w-20 h-20 rotate-12" /></div>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">এনরোল করা কোর্স</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-4xl font-black">{stats.enrollments.length}</div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Rocket className="w-3 h-3" /> যাত্রা অব্যাহত রাখুন</p>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
+            <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-6 opacity-20"><Flame className="w-20 h-20 rotate-12" /></div>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">গড় অগ্রগতি</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-4xl font-black">{stats.overallProgress}%</div>
+                        <div className="mt-4">
+                            <Progress value={stats.overallProgress} className="h-2 bg-white/20 [&>div]:bg-white shadow-inner" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
+            <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-6 opacity-20"><Award className="w-20 h-20 rotate-12" /></div>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">অর্জিত সার্টিফিকেট</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-4xl font-black">{stats.completedCoursesCount}</div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Star className="w-3 h-3 fill-current" /> আপনার সফলতার প্রমাণ</p>
+                    </CardContent>
+                </Card>
+            </motion.div>
         </div>
           
-          <div>
-            <h2 className="font-headline text-2xl font-bold mb-4">আপনার শেখা চালিয়ে যান</h2>
-             <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-l-4 border-primary pl-4">
+                <h2 className="font-headline text-2xl font-black uppercase tracking-tight">আপনার শেখা চালিয়ে যান</h2>
+                <Button asChild variant="link" className="font-black uppercase text-[10px] tracking-widest text-primary p-0 h-auto">
+                    <Link href="/student/my-courses">সকল কোর্স দেখুন</Link>
+                </Button>
+            </div>
+             <div className="grid gap-8 md:grid-cols-2">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="glassmorphism-card flex flex-col">
-                        <CardHeader>
-                            <CardTitle>{course.title}</CardTitle>
-                            <p className="text-sm text-muted-foreground pt-1">পরবর্তী লেসন: ভৌত বিজ্ঞান প্রথম পত্র</p>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                            <Progress value={course.progress} className="mb-2 h-2 [&>div]:bg-accent" />
-                            <p className="text-sm font-medium">{course.progress}% সম্পন্ন</p>
-                        </CardContent>
-                        <div className="p-6 pt-0">
-                          <Button asChild className="w-full">
-                            <Link href={`/student/my-courses/${course.id}`}>কোর্স চালিয়ে যান</Link>
+                    <Card key={course.id} className="rounded-2xl md:rounded-3xl border-white/40 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
+                        <div className="p-6 md:p-8 space-y-6 flex-grow">
+                            <div className="space-y-2">
+                                <h3 className="font-black text-xl md:text-2xl uppercase tracking-tight group-hover:text-primary transition-colors leading-tight">{course.title}</h3>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">চলমান অধ্যায়: ভৌত বিজ্ঞান প্রথম পত্র</p>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">কোর্স প্রগ্রেস</span>
+                                    <span className="text-xs font-black text-primary">{course.progress}%</span>
+                                </div>
+                                <Progress value={course.progress} className="h-2.5 rounded-full bg-white shadow-inner [&>div]:bg-accent" />
+                            </div>
+                        </div>
+                        <div className="p-6 md:p-8 pt-0 mt-auto">
+                          <Button asChild size="lg" className="w-full font-black uppercase tracking-widest h-14 rounded-xl shadow-xl shadow-primary/20">
+                            <Link href={`/student/my-courses/${course.id}`} className="flex items-center justify-center gap-2">
+                                কোর্স চালিয়ে যান
+                            </Link>
                           </Button>
                         </div>
                     </Card>
                 )) : (
-                    <p className="text-muted-foreground col-span-2 text-center py-8">You are not enrolled in any courses yet.</p>
+                    <Card className="col-span-2 rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                        <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                        <p className="text-muted-foreground font-bold">You are not enrolled in any courses yet.</p>
+                        <Button asChild className="mt-4 rounded-xl font-black uppercase tracking-widest" variant="outline">
+                            <Link href="/courses">Browse Courses</Link>
+                        </Button>
+                    </Card>
                 )}
              </div>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2">
-            <Card className="glassmorphism-card">
-              <CardHeader className="flex items-center justify-between">
-                <CardTitle>আসন্ন ডেডলাইন</CardTitle>
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/student/planner">
-                    সব দেখুন
-                  </Link>
+          <div className="grid gap-10 md:grid-cols-2 items-start">
+            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
+                <CardTitle className="text-lg font-black uppercase tracking-tight">আসন্ন ডেডলাইন</CardTitle>
+                <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">
+                  <Link href="/student/planner">সব দেখুন</Link>
                 </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <ul className="space-y-4">
                   {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: any, index: number) => (
-                    <li key={index} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <CalendarCheck className="h-5 w-5 text-muted-foreground" />
+                    <li key={index} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                        <CalendarCheck className="h-6 w-6" />
                       </div>
-                      <div>
-                        <p className="font-semibold">{deadline.title}</p>
-                        <p className="text-sm text-muted-foreground">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
+                      <div className="flex-grow min-w-0">
+                        <p className="font-black uppercase tracking-tight text-sm truncate">{deadline.title}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Due: {new Date(deadline.date as string).toLocaleDateString()}</p>
                       </div>
                     </li>
-                  )) : <p className="text-sm text-muted-foreground">No upcoming deadlines. You're all caught up!</p>}
+                  )) : (
+                    <div className="py-8 text-center opacity-40">
+                        <CalendarCheck className="w-10 h-10 mx-auto mb-2" />
+                        <p className="text-[10px] font-black uppercase tracking-widest">No deadlines found</p>
+                    </div>
+                  )}
                 </ul>
               </CardContent>
             </Card>
 
-            <Card className="glassmorphism-card">
-              <CardHeader className="flex items-center justify-between">
-                <CardTitle>সাম্প্রতিক অর্জন</CardTitle>
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/student/achievements">
-                    সব দেখুন
-                  </Link>
+            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
+                <CardTitle className="text-lg font-black uppercase tracking-tight">সাম্প্রতিক অর্জন</CardTitle>
+                <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">
+                  <Link href="/student/achievements">সব দেখুন</Link>
                 </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <ul className="space-y-4">
                   {stats.recentAchievements.length > 0 ? stats.recentAchievements.map((ach: any) => (
-                    <li key={ach.id} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <ach.icon className="h-5 w-5 text-muted-foreground" />
+                    <li key={ach.id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
+                      <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover:scale-110 transition-transform", ach.color)}>
+                        <ach.icon className="h-6 w-6" />
                       </div>
-                      <div>
-                        <p className="font-semibold">{ach.title}</p>
-                        <p className="text-sm text-muted-foreground">{ach.description}</p>
+                      <div className="flex-grow min-w-0">
+                        <p className="font-black uppercase tracking-tight text-sm truncate">{ach.title}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{ach.description}</p>
                       </div>
                     </li>
-                  )) : <p className="text-sm text-muted-foreground">No recent achievements yet.</p>}
+                  )) : (
+                    <div className="py-8 text-center opacity-40">
+                        <Trophy className="w-10 h-10 mx-auto mb-2" />
+                        <p className="text-[10px] font-black uppercase tracking-widest">No achievements yet</p>
+                    </div>
+                  )}
                 </ul>
               </CardContent>
             </Card>

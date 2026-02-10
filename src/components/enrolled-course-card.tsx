@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Course, Organization } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Trash2, BookmarkCheck } from "lucide-react";
+import { Clock, Trash2, BookmarkCheck, ChevronRight } from "lucide-react";
 import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
@@ -49,84 +50,90 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
   return (
     <Card className={cn(
-      "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-[#c2e7ff] dark:bg-[#c2e7ff]/10 border border-border rounded-xl",
-      "mb-3 md:mb-0 p-2 md:p-0"
+      "flex flex-col h-full overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 bg-[#eef2ed] dark:bg-card/40 border border-white/40 rounded-2xl md:rounded-3xl",
+      "p-3 md:p-4 mb-4"
     )}>
-      <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-lg md:rounded-none">
+      <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-xl md:rounded-2xl shadow-inner bg-black/5">
         <Link href={courseLink}>
           <Image
             src={course.imageUrl}
             alt={course.title}
             fill
-            sizes="(max-width: 640px) 120px, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-500 md:group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
             data-ai-hint={course.dataAiHint}
           />
         </Link>
         {status === 'in-progress' && course.lastViewed && (
-             <Badge variant="secondary" className="absolute top-2 left-2 flex items-center gap-1 text-[10px] scale-75 origin-top-left">
-                <Clock className="h-3 w-3" />
+             <Badge variant="secondary" className="absolute top-3 left-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest bg-white/80 backdrop-blur-md border-white/50 text-foreground">
+                <Clock className="h-3 w-3 text-primary" />
                 {course.lastViewed}
              </Badge>
         )}
-        {status === 'prebooked' && <Badge variant="warning" className="absolute top-2 left-2 text-[10px] scale-75 origin-top-left">Pre-booked</Badge>}
+        {status === 'prebooked' && <Badge variant="warning" className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-widest shadow-lg">Pre-booked</Badge>}
       </div>
 
-      <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
-        <Link href={courseLink}>
-          <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors text-left">{course.title}</h3>
-        </Link>
-        
-        {provider ? (
-           <div className="flex items-center gap-2 mt-1 text-left">
-            <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">By {provider.name}</p>
-          </div>
-        ) : (
-          <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate mt-1 text-left">By {course.instructors?.[0]?.name || 'RDC Instructor'}</p>
-        )}
+      <div className="flex-1 flex flex-col pt-4 pb-2 space-y-3 text-left">
+        <div className="space-y-1">
+            <Link href={courseLink}>
+            <h3 className="text-base md:text-lg font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors text-left uppercase tracking-tight">
+                {course.title}
+            </h3>
+            </Link>
+            {provider ? (
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest truncate">Provided by {provider.name}</p>
+            ) : (
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest truncate mt-1">Mentor: {course.instructors?.[0]?.name || 'RDC Expert'}</p>
+            )}
+        </div>
 
         {status === 'in-progress' && typeof course.progress === 'number' && (
-          <div className="mt-2 md:mt-4 text-left">
-            <div className="flex justify-between items-center mb-1">
-                <p className="text-[10px] font-medium">Progress</p>
-                <p className="text-[10px] font-medium text-primary">{course.progress}%</p>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center px-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Learning Progress</span>
+                <span className="text-xs font-black text-primary">{course.progress}%</span>
             </div>
-            <Progress value={course.progress} className="h-1 md:h-2 [&>div]:bg-accent" />
+            <Progress value={course.progress} className="h-2 rounded-full bg-white/50 [&>div]:bg-accent shadow-inner" />
           </div>
         )}
 
         {status === 'completed' && course.completedDate && (
-            <p className="text-[10px] text-green-600 mt-2 font-medium text-left">Completed: {course.completedDate}</p>
+            <div className="flex items-center gap-2 bg-green-500/10 p-2 rounded-lg border border-green-500/20">
+                <BookmarkCheck className="w-4 h-4 text-green-600" />
+                <p className="text-[10px] text-green-700 font-black uppercase tracking-widest">Completed on {course.completedDate}</p>
+            </div>
         )}
         
         {status === 'wishlisted' && (
-            <p className="text-[14px] md:text-[16px] font-black text-accent mt-2 text-left">{course.price}</p>
+            <p className="text-xl font-black text-primary tracking-tighter mt-1">{course.price}</p>
         )}
 
-        <div className="mt-3 flex gap-2 text-left">
+        <div className="pt-2 flex gap-3 mt-auto">
             {status === 'in-progress' && (
-                <Button asChild size="sm" className="w-full font-black text-[10px] h-8 uppercase tracking-tighter">
-                    <Link href={continueLink}>Continue</Link>
+                <Button asChild size="lg" className="w-full font-black text-xs h-12 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
+                    <Link href={continueLink} className="flex items-center justify-center gap-2">
+                        Continue Learning <ChevronRight className="w-4 h-4" />
+                    </Link>
                 </Button>
             )}
             {status === 'completed' && (
-                <Button asChild size="sm" className="w-full font-black text-[10px] h-8 uppercase tracking-tighter" variant="accent">
-                    <Link href="/student/certificates">Certificate</Link>
+                <Button asChild size="lg" className="w-full font-black text-xs h-12 uppercase tracking-widest rounded-xl" variant="accent">
+                    <Link href="/student/certificates">Claim Certificate</Link>
                 </Button>
             )}
             {status === 'wishlisted' && (
                 <>
-                    <Button asChild size="sm" className="flex-grow font-black text-[10px] h-8 uppercase tracking-tighter">
-                        <Link href={`/checkout/${course.id}`}>Enroll</Link>
+                    <Button asChild size="lg" className="flex-grow font-black text-xs h-12 uppercase tracking-widest rounded-xl">
+                        <Link href={`/checkout/${course.id}`}>Enroll Now</Link>
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={handleRemoveFromWishlist}>
-                        <Trash2 className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-12 w-12 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
+                        <Trash2 className="h-5 w-5" />
                     </Button>
                 </>
             )}
             {status === 'prebooked' && (
-                <Button disabled size="sm" className="w-full font-black text-[10px] h-8 uppercase tracking-tighter">
-                    <BookmarkCheck className="mr-1 h-3 w-3" /> Pre-booked
+                <Button disabled size="lg" className="w-full font-black text-xs h-12 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
+                    <BookmarkCheck className="mr-2 h-4 w-4" /> Securely Pre-booked
                 </Button>
             )}
         </div>
