@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -78,7 +79,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
             language === 'bn' ? 'font-bengali' : 'font-body'
         )}>
             <Header homepageConfig={homepageConfig} />
-            <main className={cn("flex-grow", !isDashboardPage && "pt-16")}>
+            <main className={cn("flex-grow pt-16", isDashboardPage && "min-h-screen")}>
               {children}
             </main>
             {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}

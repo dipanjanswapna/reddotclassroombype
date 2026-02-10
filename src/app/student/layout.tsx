@@ -72,9 +72,14 @@ export default function StudentLayout({
   const isCourseSubPage = pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className={cn("flex-1 p-4 sm:p-6 lg:p-8", isCourseSubPage ? "pb-24" : "pb-20")}>
-        {children}
+    <div className="flex flex-col min-h-full">
+      <main className={cn(
+        "flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden", 
+        isCourseSubPage ? "pb-28" : "pb-24"
+      )}>
+        <div className="container max-w-7xl mx-auto">
+            {children}
+        </div>
       </main>
       
       {!isCourseSubPage && (
