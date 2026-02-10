@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,6 +8,8 @@ import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestor
 import type { Course } from '@/lib/types';
 import { safeToDate } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
+import { motion } from 'framer-motion';
+import { Wallet, Sparkles } from 'lucide-react';
 
 export default function StudentPaymentsPage() {
     const { userInfo, loading: authLoading } = useAuth();
@@ -58,20 +59,31 @@ export default function StudentPaymentsPage() {
 
     if (loading || authLoading) {
         return (
-            <div className="flex items-center justify-center h-[calc(100vh-20rem)]">
+            <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
                 <LoadingSpinner className="w-12 h-12" />
             </div>
         );
     }
     
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div>
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Payment History</h1>
-                <p className="mt-1 text-lg text-muted-foreground">
-                    A record of all your transactions on the platform.
+        <div className="space-y-10 md:space-y-14 pb-10">
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col gap-2 border-l-4 border-primary pl-6"
+            >
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
+                    <Wallet className="w-3 h-3" />
+                    Billing & Transactions
+                </div>
+                <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase leading-tight">
+                    Payments <span className="text-primary">& Invoices</span>
+                </h1>
+                <p className="text-muted-foreground font-medium text-base md:text-lg max-w-2xl">
+                    আপনার সকল পেমেন্ট ট্রানজ্যাকশন এবং ডিজিটাল ইনভয়েস এখানে খুঁজে পাবেন।
                 </p>
-            </div>
+            </motion.div>
+            
             <PaymentsClient initialTransactions={transactions} />
         </div>
     );

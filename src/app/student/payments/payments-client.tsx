@@ -1,15 +1,14 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { getCourse, getDocument, getOrdersByUserId, getInvoiceByEnrollmentId } from '@/lib/firebase/firestore';
 import type { Enrollment, Order, Invoice } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, Loader2 } from 'lucide-react';
+import { Eye, Loader2, FileText, ShoppingBag, CreditCard, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +17,7 @@ import { InvoiceView } from '@/components/invoice-view';
 import { createInvoiceAction, updateInvoiceAction } from '@/app/actions/invoice.actions';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Transaction = {
   id: string;
@@ -36,7 +36,7 @@ interface PaymentsClientProps {
     initialTransactions: Transaction[];
 }
 
-export function PaymentsClient({ initialTransactions }: PaymentsClientProps) {
+export function PaymentsClient({ initialTransactions }: TransactionProps) {
     const { userInfo } = useAuth();
     const { toast } = useToast();
     
@@ -126,96 +126,170 @@ export function PaymentsClient({ initialTransactions }: PaymentsClientProps) {
     };
 
     return (
-        <>
-            <Tabs defaultValue="courses">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="courses">Course Enrollments</TabsTrigger>
-                    <TabsTrigger value="store">Store Orders</TabsTrigger>
-                </TabsList>
-                <TabsContent value="courses" className="mt-4">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Course Enrollment History</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Course</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Invoice</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                {initialTransactions.length > 0 ? initialTransactions.map(t => (
-                                    <TableRow key={t.id}>
-                                        <TableCell>{t.courseName}</TableCell>
-                                        <TableCell>{format(safeToDate(t.date), 'PPP')}</TableCell>
-                                        <TableCell>৳{t.amount.toFixed(2)}</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm" onClick={() => handleViewInvoice(t.enrollment)}>
-                                                <Eye className="mr-2 h-4 w-4"/> View
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                )) : (
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="h-24 text-center">No course enrollments found.</TableCell>
-                                    </TableRow>
-                                )}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                     </Card>
-                </TabsContent>
-                <TabsContent value="store" className="mt-4">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>RDC Store Order History</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {loadingOrders ? <div className="flex justify-center h-24 items-center"><LoadingSpinner /></div> : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Order ID</TableHead>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Total</TableHead>
-                                            <TableHead>Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                    {orders.length > 0 ? orders.map(order => (
-                                        <TableRow key={order.id}>
-                                            <TableCell className="font-mono">#{order.id?.slice(0,8)}</TableCell>
-                                            <TableCell>{format(safeToDate(order.createdAt), 'PPP')}</TableCell>
-                                            <TableCell>৳{order.totalAmount.toFixed(2)}</TableCell>
-                                            <TableCell><Badge>{order.status}</Badge></TableCell>
-                                        </TableRow>
-                                    )) : (
-                                        <TableRow>
-                                            <TableCell colSpan={4} className="h-24 text-center">No store orders found.</TableCell>
-                                        </TableRow>
+        <div className="w-full">
+            <Tabs defaultValue="courses" className="w-full">
+                <div className="w-full md:w-auto overflow-x-auto no-scrollbar mb-8">
+                    <TabsList className="flex w-full md:w-auto h-auto p-1 bg-muted/50 rounded-xl shadow-inner">
+                        <TabsTrigger value="courses" className="rounded-lg px-8 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md flex items-center gap-2">
+                            <CreditCard className="w-3.5 h-3.5" />
+                            Course Enrollments
+                        </TabsTrigger>
+                        <TabsTrigger value="store" className="rounded-lg px-8 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md flex items-center gap-2">
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            Store Orders
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
+
+                <AnimatePresence mode="wait">
+                    <TabsContent value="courses" className="mt-0 outline-none">
+                        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+                                <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">Course Billing</CardTitle>
+                                    <CardDescription className="font-medium text-xs">আপনার এনরোল করা কোর্সের পেমেন্ট হিস্ট্রি এবং ইনভয়েস।</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader className="bg-muted/30">
+                                                <TableRow className="border-black/5">
+                                                    <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">Course Name</TableHead>
+                                                    <TableHead className="font-black uppercase tracking-widest text-[10px]">Purchase Date</TableHead>
+                                                    <TableHead className="font-black uppercase tracking-widest text-[10px]">Amount Paid</TableHead>
+                                                    <TableHead className="font-black uppercase tracking-widest text-[10px] text-right px-6">Invoice</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {initialTransactions.length > 0 ? initialTransactions.map(t => (
+                                                    <TableRow key={t.id} className="border-black/5 hover:bg-muted/20 transition-colors">
+                                                        <TableCell className="px-6 py-4">
+                                                            <div className="font-bold text-sm uppercase tracking-tight">{t.courseName}</div>
+                                                            <div className="text-[9px] font-black uppercase text-muted-foreground mt-0.5">Enrollment ID: #{t.id.slice(-8)}</div>
+                                                        </TableCell>
+                                                        <TableCell className="text-[10px] font-bold text-muted-foreground py-4">
+                                                            {format(safeToDate(t.date), 'PPP')}
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <span className="font-black text-foreground">৳{t.amount.toFixed(0)}</span>
+                                                        </TableCell>
+                                                        <TableCell className="text-right px-6 py-4">
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm" 
+                                                                className="rounded-xl font-black text-[9px] uppercase tracking-widest h-8 px-4 hover:bg-primary hover:text-white transition-all border-black/5"
+                                                                onClick={() => handleViewInvoice(t.enrollment)}
+                                                            >
+                                                                <FileText className="mr-1.5 h-3 w-3" />
+                                                                View Invoice
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )) : (
+                                                    <TableRow>
+                                                        <TableCell colSpan={4} className="h-40 text-center">
+                                                            <div className="flex flex-col items-center justify-center opacity-30">
+                                                                <CreditCard className="w-12 h-12 mb-2" />
+                                                                <p className="text-[10px] font-black uppercase tracking-widest">No course enrollments found</p>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    </TabsContent>
+
+                    <TabsContent value="store" className="mt-0 outline-none">
+                        <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
+                            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+                                <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                                    <CardTitle className="text-xl font-black uppercase tracking-tight">RDC Store Orders</CardTitle>
+                                    <CardDescription className="font-medium text-xs">বুকস, স্টেশনারী এবং অন্যান্য পণ্যের অর্ডার হিস্ট্রি।</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    {loadingOrders ? (
+                                        <div className="flex justify-center h-40 items-center"><LoadingSpinner className="w-8 h-8"/></div>
+                                    ) : (
+                                        <div className="overflow-x-auto">
+                                            <Table>
+                                                <TableHeader className="bg-muted/30">
+                                                    <TableRow className="border-black/5">
+                                                        <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">Order ID</TableHead>
+                                                        <TableHead className="font-black uppercase tracking-widest text-[10px]">Order Date</TableHead>
+                                                        <TableHead className="font-black uppercase tracking-widest text-[10px]">Amount</TableHead>
+                                                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-right px-6">Status</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {orders.length > 0 ? orders.map(order => (
+                                                        <TableRow key={order.id} className="border-black/5 hover:bg-muted/20 transition-colors">
+                                                            <TableCell className="px-6 py-4">
+                                                                <div className="font-bold text-sm uppercase tracking-tight font-mono">#{order.id?.slice(0,8)}</div>
+                                                                <div className="text-[9px] font-black uppercase text-muted-foreground mt-0.5">{order.items.length} Items Purchased</div>
+                                                            </TableCell>
+                                                            <TableCell className="text-[10px] font-bold text-muted-foreground py-4">
+                                                                {format(safeToDate(order.createdAt), 'PPP')}
+                                                            </TableCell>
+                                                            <TableCell className="py-4">
+                                                                <span className="font-black text-foreground">৳{order.totalAmount.toFixed(0)}</span>
+                                                            </TableCell>
+                                                            <TableCell className="text-right px-6 py-4">
+                                                                <Badge className={cn(
+                                                                    "text-[9px] font-black uppercase tracking-widest",
+                                                                    order.status === 'Delivered' ? 'bg-accent' : 'bg-muted text-muted-foreground'
+                                                                )}>
+                                                                    {order.status}
+                                                                </Badge>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )) : (
+                                                        <TableRow>
+                                                            <TableCell colSpan={4} className="h-40 text-center">
+                                                                <div className="flex flex-col items-center justify-center opacity-30">
+                                                                    <ShoppingBag className="w-12 h-12 mb-2" />
+                                                                    <p className="text-[10px] font-black uppercase tracking-widest">No store orders found</p>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
                                     )}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </CardContent>
-                     </Card>
-                </TabsContent>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    </TabsContent>
+                </AnimatePresence>
             </Tabs>
-             <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
-                <DialogContent className="max-w-4xl p-0">
-                   <div className="max-h-[80vh] overflow-y-auto">
+
+            <Dialog open={isInvoiceOpen} onOpenChange={setIsInvoiceOpen}>
+                <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                   <div className="max-h-[85vh] overflow-y-auto custom-scrollbar">
                         {loadingInvoice ? (
-                            <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin" /></div>
+                            <div className="flex flex-col items-center justify-center h-96 gap-4">
+                                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Generating Digital Invoice...</p>
+                            </div>
                         ) : selectedInvoice ? (
                             <InvoiceView invoice={selectedInvoice} />
-                        ) : null}
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-96 gap-4 p-8 text-center">
+                                <AlertTriangle className="h-12 w-12 text-destructive" />
+                                <div>
+                                    <h3 className="font-black uppercase tracking-tight text-lg">Invoicing Error</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">এই কোর্সের জন্য ইনভয়েস লোড করা সম্ভব হয়নি। দয়া করে সাপোর্ট টিমে যোগাযোগ করুন।</p>
+                                </div>
+                                <Button onClick={() => setIsInvoiceOpen(false)} variant="outline" className="rounded-xl font-bold">বন্ধ করুন</Button>
+                            </div>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>
-        </>
+        </div>
     );
 }

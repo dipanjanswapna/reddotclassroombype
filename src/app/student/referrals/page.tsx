@@ -1,8 +1,6 @@
-
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,19 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Gift, Users, Copy, Check, Share2, TicketPercent } from 'lucide-react';
+import { Gift, Users, Copy, Check, Share2, TicketPercent, Award, TrendingUp, Sparkles } from 'lucide-react';
 import { Referral } from '@/lib/types';
 import { getReferralsByReferrerId } from '@/lib/firebase/firestore';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Label } from '@/components/ui/label';
 
 export default function StudentReferralsPage() {
     const { userInfo, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const [referrals, setReferrals] = useState<Referral[]>([]);
     const [loading, setLoading] = useState(true);
-    const [copied, setCopied] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
+    const [copiedCode, setCopiedCode] = useState(false);
 
     const referralLink = userInfo?.classRoll ? `${window.location.origin}/signup?ref=${userInfo.classRoll}` : '';
 
@@ -46,12 +47,25 @@ export default function StudentReferralsPage() {
         fetchReferrals();
     }, [userInfo, authLoading, toast]);
     
-    const handleCopy = (text: string) => {
+    const handleCopy = (text: string, type: 'link' | 'code') => {
         navigator.clipboard.writeText(text);
-        setCopied(true);
+        if (type === 'link') {
+            setCopiedLink(true);
+            setTimeout(() => setCopiedLink(false), 2000);
+        } else {
+            setCopiedCode(true);
+            setTimeout(() => setCopiedCode(false), 2000);
+        }
         toast({ title: 'Copied to clipboard!' });
-        setTimeout(() => setCopied(false), 2000);
     };
+
+    const totalPointsEarned = useMemo(() => {
+        return referrals.reduce((sum, ref) => sum + (ref.rewardedPoints || 0), 0);
+    }, [referrals]);
+
+    const totalDiscountsGiven = useMemo(() => {
+        return referrals.reduce((sum, ref) => sum + (ref.discountGiven || 0), 0);
+    }, [referrals]);
 
     if (loading || authLoading) {
         return (
@@ -62,108 +76,187 @@ export default function StudentReferralsPage() {
     }
     
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-            <div>
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Referrals</h1>
-                <p className="mt-1 text-lg text-muted-foreground">
-                    Invite your friends to RDC and earn rewards!
+        <div className="space-y-10 md:space-y-14 pb-10">
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col gap-2 border-l-4 border-primary pl-6"
+            >
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
+                    <Sparkles className="w-3 h-3" />
+                    Refer & Earn
+                </div>
+                <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase leading-tight">
+                    Invite Your <span className="text-primary">Friends</span>
+                </h1>
+                <p className="text-muted-foreground font-medium text-base md:text-lg max-w-2xl">
+                    বন্ধুদের RDC-তে আমন্ত্রণ জানান এবং জিতে নিন আকর্ষণীয় সব পুরস্কার ও পয়েন্ট!
                 </p>
-            </div>
+            </motion.div>
             
-            <div className="grid md:grid-cols-2 gap-6">
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{referrals.length}</div>
-                        <p className="text-xs text-muted-foreground">Successful sign-ups from your link.</p>
-                    </CardContent>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                 <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                    <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
+                        <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-black leading-none">{referrals.length}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Total Referrals</p>
+                    </div>
                 </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Points Earned</CardTitle>
-                        <Gift className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{userInfo?.studyPoints || 0} Points</div>
-                        <p className="text-xs text-muted-foreground">Use points to redeem rewards.</p>
-                    </CardContent>
+                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                    <div className="bg-amber-100 text-amber-600 p-3 rounded-2xl">
+                        <Award className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-black leading-none">{userInfo?.referralPoints || 0}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Current Balance</p>
+                    </div>
+                </Card>
+                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                    <div className="bg-emerald-100 text-emerald-600 p-3 rounded-2xl">
+                        <TrendingUp className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-black leading-none">{totalPointsEarned}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Lifetime Points</p>
+                    </div>
+                </Card>
+                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                    <div className="bg-rose-100 text-rose-600 p-3 rounded-2xl">
+                        <TicketPercent className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-2xl font-black leading-none">৳{totalDiscountsGiven.toLocaleString()}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Friends Saved</p>
+                    </div>
                 </Card>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Share2 /> Your Referral Code & Link</CardTitle>
-                    <CardDescription>Share your code or link with friends. They will get a discount, and you'll earn points when they enroll!</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Your Code (Class Roll)</Label>
-                        <div className="flex gap-2">
-                            <Input value={userInfo?.classRoll || 'N/A'} readOnly />
-                            <Button variant="outline" onClick={() => handleCopy(userInfo?.classRoll || '')} disabled={!userInfo?.classRoll}>
-                                {copied && userInfo?.classRoll ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 space-y-8">
+                    <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                                <Share2 className="w-5 h-5 text-primary" />
+                                Share & Earn
+                            </CardTitle>
+                            <CardDescription className="font-medium text-xs">আপনার বন্ধুদের আমন্ত্রণ জানাতে নিচের কোড বা লিঙ্কটি ব্যবহার করুন।</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-6">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Referral Code</Label>
+                                <div className="flex gap-2">
+                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-black/5 flex items-center px-4 font-black text-lg tracking-[0.2em] text-primary">
+                                        {userInfo?.classRoll || 'N/A'}
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon" 
+                                        className="h-12 w-12 rounded-xl border-black/5 hover:bg-primary hover:text-white transition-all"
+                                        onClick={() => handleCopy(userInfo?.classRoll || '', 'code')}
+                                    >
+                                        {copiedCode ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Referral Link</Label>
+                                <div className="flex gap-2">
+                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-black/5 flex items-center px-4 text-xs font-mono text-muted-foreground truncate">
+                                        {referralLink}
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon" 
+                                        className="h-12 w-12 rounded-xl border-black/5 hover:bg-primary hover:text-white transition-all"
+                                        onClick={() => handleCopy(referralLink, 'link')}
+                                    >
+                                        {copiedLink ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                                    </Button>
+                                </div>
+                            </div>
+                            
+                            <div className="pt-4 border-t border-black/5">
+                                <h4 className="text-xs font-black uppercase tracking-widest text-foreground mb-3">How it works?</h4>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
+                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">1</div>
+                                        <span>আপনার কোডটি বন্ধুর সাথে শেয়ার করুন।</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
+                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">2</div>
+                                        <span>আপনার কোড ব্যবহার করলে সে পাবে ডিসকাউন্ট।</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
+                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">3</div>
+                                        <span>বন্ধু এনরোল করলে আপনি পাবেন রিওয়ার্ড পয়েন্ট।</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="bg-black/5 p-4 justify-center">
+                            <Button asChild variant="link" className="font-black text-[10px] uppercase tracking-widest text-primary p-0 h-auto">
+                                <Link href="/student/rewards">Redeem Your Points Now &rarr;</Link>
                             </Button>
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label>Your Link</Label>
-                        <div className="flex gap-2">
-                            <Input value={referralLink} readOnly />
-                            <Button variant="outline" onClick={() => handleCopy(referralLink)} disabled={!referralLink}>
-                               {copied && referralLink ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle>Referral History</CardTitle>
-                    <CardDescription>A log of all the friends who joined using your code.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Referred Friend</TableHead>
-                                <TableHead>Course Enrolled</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Discount Given</TableHead>
-                                <TableHead className="text-right">Points Earned</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {referrals.length > 0 ? referrals.map((ref) => (
-                                <TableRow key={ref.id}>
-                                    <TableCell>{ref.referredUserName}</TableCell>
-                                    <TableCell>{ref.courseName}</TableCell>
-                                    <TableCell>{format(safeToDate(ref.date), 'PPP')}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className="gap-1">
-                                            <TicketPercent className="h-3 w-3" />
-                                            ৳{ref.discountGiven.toFixed(2)}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Badge variant="accent">+{ref.rewardedPoints}</Badge>
-                                    </TableCell>
-                                </TableRow>
-                            )) : (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center">
-                                        No referral history yet.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                        </CardFooter>
+                    </Card>
+                </div>
 
+                <div className="lg:col-span-2">
+                    <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                            <CardTitle className="text-xl font-black uppercase tracking-tight">Referral History</CardTitle>
+                            <CardDescription className="font-medium text-xs">আপনার কোড ব্যবহার করে যারা এনরোল করেছে তাদের তালিকা।</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                             <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader className="bg-muted/30">
+                                        <TableRow className="border-black/5">
+                                            <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">Referred Friend</TableHead>
+                                            <TableHead className="font-black uppercase tracking-widest text-[10px]">Course</TableHead>
+                                            <TableHead className="font-black uppercase tracking-widest text-[10px]">Date</TableHead>
+                                            <TableHead className="font-black uppercase tracking-widest text-[10px] text-right px-6">Points</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {referrals.length > 0 ? referrals.map((ref) => (
+                                            <TableRow key={ref.id} className="border-black/5 hover:bg-muted/20 transition-colors">
+                                                <TableCell className="px-6 py-4">
+                                                    <div className="font-bold text-sm uppercase tracking-tight">{ref.referredUserName}</div>
+                                                    <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-accent mt-0.5">
+                                                        <TicketPercent className="w-3 h-3" />
+                                                        ৳{ref.discountGiven.toFixed(0)} Discount Used
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <Badge variant="secondary" className="text-[9px] font-black uppercase tracking-tighter max-w-[120px] truncate">{ref.courseName}</Badge>
+                                                </TableCell>
+                                                <TableCell className="text-[10px] font-bold text-muted-foreground py-4">
+                                                    {format(safeToDate(ref.date), 'dd MMM yyyy')}
+                                                </TableCell>
+                                                <TableCell className="text-right px-6 py-4">
+                                                    <Badge variant="accent" className="font-black text-xs">+{ref.rewardedPoints}</Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        )) : (
+                                            <TableRow>
+                                                <TableCell colSpan={4} className="h-40 text-center">
+                                                    <div className="flex flex-col items-center justify-center opacity-30">
+                                                        <Users className="w-12 h-12 mb-2" />
+                                                        <p className="text-[10px] font-black uppercase tracking-widest">No referrals yet</p>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                             </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 }

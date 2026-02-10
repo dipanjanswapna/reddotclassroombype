@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2 } from "lucide-react";
+import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2, Trophy, Gift, Zap } from "lucide-react";
 import { saveUserAction, removeUserSessionAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export default function StudentProfilePage() {
     const { toast } = useToast();
@@ -127,165 +128,197 @@ export default function StudentProfilePage() {
     }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-      <div>
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Student Profile</h1>
-        <p className="text-muted-foreground">Manage your account and personal information.</p>
-      </div>
+    <div className="space-y-10 md:space-y-14 pb-10">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-l-4 border-primary pl-6"
+      >
+        <div>
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase leading-none">
+                My <span className="text-primary">Profile</span>
+            </h1>
+            <p className="text-muted-foreground font-medium mt-2">Manage your account, rewards and connected devices.</p>
+        </div>
+        <div className="flex items-center gap-4">
+            <Card className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-amber-50 border-amber-200 shadow-sm">
+                <Trophy className="w-5 h-5 text-amber-600" />
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-700/60">Reward Points</span>
+                    <span className="font-black text-amber-700 leading-none">{userInfo.referralPoints || 0}</span>
+                </div>
+            </Card>
+            <Button onClick={handleSave} disabled={isSaving} className="font-black uppercase tracking-widest px-8 rounded-xl shadow-xl shadow-primary/20 h-11">
+                {isSaving ? <Loader2 className="mr-2 animate-spin h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
+                Save Changes
+            </Button>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Info Section */}
         <div className="lg:col-span-2 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/30 shadow-xl overflow-hidden">
-                <CardHeader>
-                <CardTitle className="font-black uppercase tracking-tight">Your Information</CardTitle>
-                <CardDescription className="font-medium text-muted-foreground">Keep your details up-to-date.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
-                            <AvatarImage src={avatarUrl} alt={fullName} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fullName?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-grow">
-                            <Label htmlFor="avatar-upload" className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Update Avatar</Label>
-                            <div className="relative">
-                                <Input id="avatar-upload-visible" type="text" readOnly placeholder="No file selected" className="pr-24 rounded-xl border-black/5" />
-                                <label htmlFor="avatar-upload" className="absolute inset-y-0 right-0 flex items-center">
-                                    <Button asChild variant="outline" className="rounded-l-none rounded-r-xl border-none bg-white hover:bg-white/80 h-full">
-                                        <div><Upload className="mr-2 h-4 w-4"/>Upload</div>
-                                    </Button>
-                                </label>
-                                <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarUpload} />
+            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-[#eef2ed] dark:bg-card/40">
+                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-white/20">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                        <div className="relative group">
+                            <div className="absolute -inset-2 bg-primary/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white shadow-2xl relative z-10">
+                                <AvatarImage src={avatarUrl} alt={fullName} className="object-cover" />
+                                <AvatarFallback className="bg-primary/10 text-primary font-black text-4xl">{fullName?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            </Avatar>
+                            <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 z-20 bg-primary text-white p-2.5 rounded-2xl shadow-xl cursor-pointer hover:scale-110 active:scale-95 transition-all border-2 border-white">
+                                <Upload className="w-5 h-5" />
+                                <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                            </label>
+                        </div>
+                        <div className="space-y-3 text-center md:text-left">
+                            <div className="space-y-1">
+                                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">{fullName}</h2>
+                                <p className="text-muted-foreground font-bold text-sm md:text-base">{email}</p>
+                            </div>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 font-black uppercase text-[10px] tracking-widest px-3 py-1">{userInfo.role}</Badge>
+                                <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 font-black uppercase text-[10px] tracking-widest px-3 py-1">Class {className || 'N/A'}</Badge>
+                                <Badge variant="secondary" className="font-mono text-[10px] uppercase tracking-tighter">ID: {userInfo.registrationNumber || 'N/A'}</Badge>
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="regNumber" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Registration No.</Label>
-                            <Input id="regNumber" value={userInfo.registrationNumber || 'N/A'} readOnly className="cursor-not-allowed bg-white/50 border-black/5 font-mono" />
+                </CardHeader>
+                <CardContent className="p-8 md:p-10 space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Student Full Name</Label>
+                            <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="classRoll" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Class Roll</Label>
-                            <Input id="classRoll" value={userInfo.classRoll || 'N/A'} readOnly className="cursor-not-allowed bg-white/50 border-black/5 font-mono" />
+                        <div className="space-y-3">
+                            <Label htmlFor="className" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Class / Batch Level</Label>
+                            <Input id="className" value={className} onChange={e => setClassName(e.target.value)} placeholder="e.g., Class 11" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="fullName" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Full Name</Label>
-                            <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border-black/5 bg-white" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <Label htmlFor="mobileNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Student Mobile Number</Label>
+                            <Input id="mobileNumber" type="tel" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Email Address</Label>
-                            <Input id="email" type="email" value={email} readOnly disabled className="bg-white/50 border-black/5" />
-                        </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="className" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Class</Label>
-                            <Input id="className" value={className} onChange={e => setClassName(e.target.value)} placeholder="e.g., Class 11" className="rounded-xl border-black/5 bg-white" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="nidNumber" className="text-xs font-black uppercase tracking-widest text-muted-foreground">NID / Birth Certificate No.</Label>
-                            <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} className="rounded-xl border-black/5 bg-white" />
+                        <div className="space-y-3">
+                            <Label htmlFor="guardianMobileNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Guardian's Mobile Number</Label>
+                            <Input id="guardianMobileNumber" type="tel" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="fathersName" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Father's Name</Label>
-                            <Input id="fathersName" value={fathersName} onChange={e => setFathersName(e.target.value)} className="rounded-xl border-black/5 bg-white" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <Label htmlFor="fathersName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Father's Name</Label>
+                            <Input id="fathersName" value={fathersName} onChange={e => setFathersName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="mothersName" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Mother's Name</Label>
-                            <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} className="rounded-xl border-black/5 bg-white" />
+                        <div className="space-y-3">
+                            <Label htmlFor="mothersName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Mother's Name</Label>
+                            <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="mobileNumber" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Your Mobile Number</Label>
-                            <Input id="mobileNumber" type="tel" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="guardianMobileNumber" className="text-xs font-black uppercase tracking-widest text-muted-foreground">Guardian's Mobile Number</Label>
-                            <Input id="guardianMobileNumber" type="tel" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white" />
-                        </div>
+                    <div className="space-y-3">
+                        <Label htmlFor="nidNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">NID / Birth Certificate No.</Label>
+                        <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                     </div>
                 </CardContent>
-                <div className="p-6 pt-0 flex justify-end">
-                    <Button onClick={handleSave} disabled={isSaving} className="font-black uppercase tracking-widest px-8 rounded-xl shadow-lg shadow-primary/20 h-12">
-                        {isSaving ? <Loader2 className="mr-2 animate-spin h-4 w-4"/> : null}
-                        Save Changes
-                    </Button>
-                </div>
             </Card>
         </div>
 
-        {/* Device Management Section */}
+        {/* Sidebar Info Section */}
         <div className="lg:col-span-1 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/30 shadow-xl overflow-hidden">
+            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-white dark:bg-card/40">
+                <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Zap className="w-5 h-5 text-primary" />
+                        <CardTitle className="text-xl font-black uppercase tracking-tight">Quick Overview</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 rounded-2xl bg-muted/50 border border-black/5 text-center">
+                            <p className="text-2xl font-black text-foreground">{(userInfo.enrolledCourses || []).length}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Enrolled</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-muted/50 border border-black/5 text-center">
+                            <p className="text-2xl font-black text-primary">{userInfo.referralPoints || 0}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Points</p>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-black/5 pb-2">Academic Profile</h4>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="font-bold text-muted-foreground">Class Roll</span>
+                                <span className="font-black text-foreground">{userInfo.classRoll || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="font-bold text-muted-foreground">Reg. Number</span>
+                                <span className="font-black text-foreground font-mono">{userInfo.registrationNumber || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="font-bold text-muted-foreground">Joined Date</span>
+                                <span className="font-black text-foreground">{userInfo.joined ? format(safeToDate(userInfo.joined), 'MMM d, yyyy') : 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-white dark:bg-card/40">
                 <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Monitor className="w-5 h-5 text-primary" />
-                        <CardTitle className="text-xl font-black uppercase tracking-tight">Manage Devices</CardTitle>
+                        <CardTitle className="text-xl font-black uppercase tracking-tight">Active Devices</CardTitle>
                     </div>
-                    <CardDescription className="font-medium text-xs">
-                        You can be logged in on up to 2 devices. Manage your active devices here.
+                    <CardDescription className="font-medium text-[10px] uppercase tracking-wider">
+                        Max limit: 2 devices
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                    <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
+                    <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 p-3 rounded-xl">
                         <Info className="h-4 w-4 text-blue-600" />
-                        <AlertDescription className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-tighter">
-                            Device Limit: You can be logged in on a maximum of 2 devices at a time. Removing a device will free up a slot for a new device.
+                        <AlertDescription className="text-[9px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-tighter leading-tight">
+                            Logged in on too many devices? Remove old sessions here to access your courses.
                         </AlertDescription>
                     </Alert>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {(userInfo.activeSessions || []).length > 0 ? (
                             userInfo.activeSessions?.map((session) => {
                                 const isCurrent = session.id === currentSessionId;
                                 const loginDate = safeToDate(session.lastLoginAt);
-                                const formattedDate = !isNaN(loginDate.getTime()) ? format(loginDate, "MMM d, yyyy, hh:mm a") : "Unknown Time";
+                                const formattedDate = !isNaN(loginDate.getTime()) ? format(loginDate, "MMM d, hh:mm a") : "Unknown";
 
                                 return (
                                     <div key={session.id} className={cn(
-                                        "p-4 rounded-2xl border transition-all duration-300",
-                                        isCurrent ? "bg-white border-primary/20 shadow-md ring-1 ring-primary/10" : "bg-white/50 border-black/5"
+                                        "p-3 rounded-2xl border transition-all duration-300",
+                                        isCurrent ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white/50 border-black/5"
                                     )}>
-                                        <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
                                                     "p-2 rounded-xl shrink-0",
-                                                    session.deviceName.toLowerCase().includes('windows') ? "bg-blue-100 text-blue-600" : "bg-primary/10 text-primary"
+                                                    isCurrent ? "bg-primary text-white" : "bg-muted text-muted-foreground"
                                                 )}>
                                                     {session.deviceName.toLowerCase().includes('android') || session.deviceName.toLowerCase().includes('iphone') 
-                                                        ? <Smartphone className="w-5 h-5" /> 
-                                                        : <Monitor className="w-5 h-5" />
+                                                        ? <Smartphone className="w-4 h-4" /> 
+                                                        : <Monitor className="w-4 h-4" />
                                                     }
                                                 </div>
                                                 <div className="space-y-0.5">
-                                                    <div className="flex flex-col">
-                                                        <p className="font-black text-sm uppercase tracking-tight">{session.deviceName}</p>
-                                                        {isCurrent && (
-                                                            <Badge variant="accent" className="text-[8px] font-black uppercase tracking-widest px-1.5 py-0 h-4 gap-1 w-fit mt-1">
-                                                                <CheckCircle2 className="w-2.5 h-2.5" /> Current Device
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-[10px] font-bold text-muted-foreground mt-1">Logged in: {formattedDate}</p>
-                                                    <p className="text-[10px] font-mono text-primary/60">IP Address: {session.ipAddress}</p>
+                                                    <p className="font-black text-xs uppercase tracking-tight">{session.deviceName}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{formattedDate} • {session.ipAddress}</p>
                                                 </div>
                                             </div>
                                             {!isCurrent && (
                                                 <Button 
                                                     variant="ghost" 
                                                     size="icon" 
-                                                    className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg shrink-0" 
+                                                    className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-xl" 
                                                     onClick={() => handleRemoveSession(session.id)}
                                                     disabled={removingSessionId === session.id}
                                                 >
@@ -298,15 +331,14 @@ export default function StudentProfilePage() {
                             })
                         ) : (
                             <div className="text-center py-8 opacity-50">
-                                <Monitor className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                                <p className="text-xs font-bold uppercase">No active sessions found</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest">No active sessions</p>
                             </div>
                         )}
                     </div>
                 </CardContent>
                 <CardFooter className="bg-black/5 p-4 flex justify-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Single Device Policy Enforced</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Proctoring Secure</span>
                 </CardFooter>
             </Card>
         </div>
