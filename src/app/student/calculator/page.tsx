@@ -6,7 +6,7 @@ import { CasioCalculator } from "@/components/calculator";
 
 export default function StudentCalculatorPage() {
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="px-1 py-4 md:py-8 space-y-8">
        <div className="text-center">
             <h1 className="font-headline text-3xl font-bold tracking-tight">Calculators</h1>
             <p className="mt-1 text-lg text-muted-foreground">

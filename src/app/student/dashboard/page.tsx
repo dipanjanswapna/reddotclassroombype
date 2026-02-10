@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -145,7 +146,7 @@ export default function DashboardPage() {
   ];
 
   return (
-      <div className="px-1 md:px-4 space-y-8 md:space-y-12 pb-10">
+      <div className="px-1 space-y-8 md:space-y-12 pb-10">
           <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between border-l-4 border-primary pl-6">
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
@@ -392,7 +393,7 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
+                <Card className="rounded-[25px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-accent" />

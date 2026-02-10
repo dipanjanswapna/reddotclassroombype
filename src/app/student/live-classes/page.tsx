@@ -105,7 +105,7 @@ export default function StudentLiveClassesPage() {
     const past = liveClasses.filter(c => c.status === 'past');
 
     return (
-        <div className="px-2 md:px-4 py-4 md:py-8 space-y-10 md:space-y-14">
+        <div className="px-1 py-4 md:py-8 space-y-10 md:space-y-14">
             <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}

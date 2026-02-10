@@ -19,7 +19,7 @@ export default async function CourseLayout({
   
   return (
     <>
-      <main className="flex-1 px-2 sm:px-4 md:px-6 py-6 md:py-8 pb-32 overflow-x-hidden">
+      <main className="flex-1 px-1 py-6 md:py-8 pb-32 overflow-x-hidden">
         <div className="container max-w-7xl mx-auto p-0">
             {children}
         </div>

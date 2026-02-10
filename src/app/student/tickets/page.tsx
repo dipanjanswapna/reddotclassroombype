@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -110,7 +110,7 @@ export default function StudentTicketsPage() {
     }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="px-1 py-4 md:py-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
             <h1 className="font-headline text-3xl font-bold tracking-tight">Support Tickets</h1>

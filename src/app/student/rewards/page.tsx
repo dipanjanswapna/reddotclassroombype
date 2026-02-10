@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -122,7 +123,7 @@ export default function StudentRewardsPage() {
     }
     
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <div className="px-1 py-4 md:py-8 space-y-8">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Redeem Rewards</h1>
                 <p className="mt-1 text-lg text-muted-foreground">

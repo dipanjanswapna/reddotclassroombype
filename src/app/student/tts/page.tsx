@@ -32,7 +32,7 @@ export default function StudentTtsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-3xl mx-auto">
+    <div className="px-1 py-4 md:py-8 space-y-8 max-w-3xl mx-auto">
         <div className="text-center">
             <h1 className="font-headline text-3xl font-bold tracking-tight">AI Text-to-Speech</h1>
             <p className="mt-1 text-lg text-muted-foreground">

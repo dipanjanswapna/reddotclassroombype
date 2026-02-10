@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -8,12 +9,12 @@ import { Sparkles } from 'lucide-react';
 
 /**
  * @fileOverview Study Planner Page with Edge-to-Edge Layout.
- * Final wall-to-wall optimization with px-2 side padding for mobile.
+ * Final wall-to-wall optimization with px-1 side padding for mobile.
  * All sub-sections (Board, Calendar, Analytics, Goals, Settings) are integrated.
  */
 function PlannerPageContent() {
     return (
-        <div className="px-2 md:px-4 py-4 md:py-8 space-y-8 md:space-y-12">
+        <div className="px-1 py-4 md:py-8 space-y-8 md:space-y-12">
             <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
