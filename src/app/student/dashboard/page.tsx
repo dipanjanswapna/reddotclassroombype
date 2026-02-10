@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,6 +20,7 @@ import type { Course, Assignment } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { userInfo } = useAuth();
