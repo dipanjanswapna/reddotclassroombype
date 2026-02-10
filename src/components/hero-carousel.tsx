@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -93,7 +92,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                 <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
                   <Image
                     src={banner.imageUrl}
-                    alt={banner.alt}
+                    alt={banner.alt || "Hero Banner"}
                     width={1200}
                     height={675}
                     priority={index === 0}
