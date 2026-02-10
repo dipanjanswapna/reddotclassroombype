@@ -96,53 +96,52 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
 
 
   return (
-    <Card className="w-full">
-        <CardHeader className="text-center">
-            <CardTitle>Pomodoro Timer</CardTitle>
-            <CardDescription>Stay focused and manage your study sessions effectively.</CardDescription>
+    <Card className="rounded-[20px] border-primary/20 shadow-xl overflow-hidden bg-card">
+        <CardHeader className="text-center p-4 bg-primary/5 border-b border-primary/10">
+            <CardTitle className="text-xs font-black uppercase tracking-widest">Focus Timer</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center gap-6">
-            <div className="flex gap-2">
-                <Button size="sm" variant={mode === 'work' ? 'default' : 'outline'} onClick={() => switchMode('work')}>Work</Button>
-                <Button size="sm" variant={mode === 'shortBreak' ? 'default' : 'outline'} onClick={() => switchMode('shortBreak')}>Short Break</Button>
-                <Button size="sm" variant={mode === 'longBreak' ? 'default' : 'outline'} onClick={() => switchMode('longBreak')}>Long Break</Button>
+        <CardContent className="flex flex-col items-center gap-4 p-5">
+            <div className="flex gap-1 bg-muted/50 p-1 rounded-xl w-full">
+                <Button size="sm" variant={mode === 'work' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-8 text-[9px] font-black uppercase tracking-tighter" onClick={() => switchMode('work')}>Work</Button>
+                <Button size="sm" variant={mode === 'shortBreak' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-8 text-[9px] font-black uppercase tracking-tighter" onClick={() => switchMode('shortBreak')}>Short</Button>
+                <Button size="sm" variant={mode === 'longBreak' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-8 text-[9px] font-black uppercase tracking-tighter" onClick={() => switchMode('longBreak')}>Long</Button>
             </div>
-            <div className="text-7xl font-bold font-mono text-center bg-muted p-4 rounded-lg w-full">
+            <div className="text-5xl font-black font-mono text-center bg-muted/30 py-6 rounded-[20px] w-full border border-primary/5 text-foreground">
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
-            <div className="flex gap-4">
-                <Button onClick={toggleTimer} size="lg" className="w-28 h-12 text-lg">
-                    {isActive ? <Pause /> : <Play />}
+            <div className="flex gap-2 w-full">
+                <Button onClick={toggleTimer} size="lg" className="flex-grow h-12 rounded-xl shadow-xl shadow-primary/20 transition-all active:scale-95">
+                    {isActive ? <Pause className="w-5 h-5"/> : <Play className="w-5 h-5 ml-1"/>}
                 </Button>
-                 <Button onClick={resetTimer} size="lg" variant="secondary" className="w-28 h-12">
-                    <RotateCcw />
+                 <Button onClick={resetTimer} size="lg" variant="secondary" className="h-12 w-12 rounded-xl">
+                    <RotateCcw className="w-4 h-4" />
                 </Button>
             </div>
-             <div className="w-full space-y-4 pt-4 border-t">
-                 <div className="space-y-2">
-                    <Label>Associated Task</Label>
+             <div className="w-full space-y-3 pt-4 border-t border-primary/10">
+                 <div className="space-y-1.5">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Current Focus</Label>
                     <Select value={selectedTask} onValueChange={setSelectedTask}>
-                        <SelectTrigger><SelectValue placeholder="Select a task..." /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="general">General Study</SelectItem>
+                        <SelectTrigger className="h-9 rounded-xl text-xs font-bold border-primary/5"><SelectValue placeholder="Select a task..." /></SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            <SelectItem value="general" className="text-xs">General Study</SelectItem>
                             {tasksForToday.map(task => (
-                                <SelectItem key={task.id} value={task.id!}>{task.title}</SelectItem>
+                                <SelectItem key={task.id} value={task.id!} className="text-xs">{task.title}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                  </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                    <div>
-                        <Label htmlFor="work-duration" className="text-xs">Work</Label>
-                        <Input id="work-duration" type="number" value={durations.work} onChange={e => handleDurationChange('work', e.target.value)} className="w-full h-9 text-center" />
+                <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                    <div className="space-y-1">
+                        <Label htmlFor="work-duration" className="text-[8px] font-black uppercase tracking-tighter opacity-60">Work</Label>
+                        <Input id="work-duration" type="number" value={durations.work} onChange={e => handleDurationChange('work', e.target.value)} className="h-8 text-center text-xs font-black rounded-lg border-primary/5" />
                     </div>
-                    <div>
-                        <Label htmlFor="short-break-duration" className="text-xs">Short Break</Label>
-                        <Input id="short-break-duration" type="number" value={durations.shortBreak} onChange={e => handleDurationChange('shortBreak', e.target.value)} className="w-full h-9 text-center" />
+                    <div className="space-y-1">
+                        <Label htmlFor="short-break-duration" className="text-[8px] font-black uppercase tracking-tighter opacity-60">Short</Label>
+                        <Input id="short-break-duration" type="number" value={durations.shortBreak} onChange={e => handleDurationChange('shortBreak', e.target.value)} className="h-8 text-center text-xs font-black rounded-lg border-primary/5" />
                     </div>
-                    <div>
-                        <Label htmlFor="long-break-duration" className="text-xs">Long Break</Label>
-                        <Input id="long-break-duration" type="number" value={durations.longBreak} onChange={e => handleDurationChange('longBreak', e.target.value)} className="w-full h-9 text-center"/>
+                    <div className="space-y-1">
+                        <Label htmlFor="long-break-duration" className="text-[8px] font-black uppercase tracking-tighter opacity-60">Long</Label>
+                        <Input id="long-break-duration" type="number" value={durations.longBreak} onChange={e => handleDurationChange('longBreak', e.target.value)} className="h-8 text-center text-xs font-black rounded-lg border-primary/5"/>
                     </div>
                 </div>
              </div>
