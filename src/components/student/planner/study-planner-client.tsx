@@ -1,8 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Course, Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
@@ -280,7 +280,7 @@ export function StudyPlannerClient() {
                                                 <PlusCircle className="w-8 h-8 text-primary" />
                                             </div>
                                             <h3 className="font-headline text-xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
-                                            <p className="text-muted-foreground font-medium mb-6 max-w-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
+                                            <p className="text-muted-foreground font-medium mb-6 max-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
                                             <Button asChild className="rounded-xl font-black uppercase tracking-widest text-[10px] px-8 h-11 shadow-lg shadow-primary/20">
                                                 <Link href="/student/planner/settings">Open Full Settings</Link>
                                             </Button>
