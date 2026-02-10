@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,7 +18,8 @@ import {
   Video,
   Zap,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Megaphone
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -32,6 +32,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn, safeToDate } from '@/lib/utils';
 import { format, isAfter, isBefore, addHours } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 export default function DashboardPage() {
   const { userInfo } = useAuth();
