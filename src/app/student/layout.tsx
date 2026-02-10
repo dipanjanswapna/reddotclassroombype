@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, CalendarClock, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2, Gift
+  LayoutDashboard, BookOpen, CalendarClock, Video, Library, HelpCircle, BookMarked, Users as UsersIcon, Trophy, Bot, Voicemail, Calculator, Heart, Wallet, Award, Bell, User, MessageSquare, LogOut, Badge, ClipboardEdit, FileCheck2, Settings, Share2, Gift, Wrench
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -47,9 +47,7 @@ export default function StudentLayout({
     { href: "/student/grades", icon: FileCheck2, label: "Grades", color: "text-indigo-500" },
     { href: "/student/referrals", icon: Share2, label: "Referrals", color: "text-cyan-500" },
     { href: "/student/rewards", icon: Gift, label: "Rewards", color: "text-yellow-500" },
-    { href: "/student/tutor", icon: Bot, label: "AI Tutor", color: "text-pink-500" },
-    { href: "/student/tts", icon: Voicemail, label: "TTS", color: "text-violet-500" },
-    { href: "/student/calculator", icon: Calculator, label: "Calc", color: "text-slate-500" },
+    { href: "/student/tools", icon: Wrench, label: "Tools", color: "text-pink-500" },
     { href: "/student/wishlist", icon: Heart, label: "Saved", color: "text-red-400" },
     { href: "/student/payments", icon: Wallet, label: "Payments", color: "text-green-500" },
     { href: "/student/profile", icon: User, label: "Profile", color: "text-blue-400" },
@@ -68,7 +66,6 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
-  // Custom logic for nested course sub-pages
   const isCourseSubPage = pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3;
 
   return (
