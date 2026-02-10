@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -16,6 +16,7 @@ import { safeToDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 export default function StudentReferralsPage() {
     const { userInfo, loading: authLoading } = useAuth();

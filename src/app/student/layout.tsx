@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from 'react';
@@ -77,7 +76,7 @@ export default function StudentLayout({
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-black/5 dark:border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-16 px-2 flex justify-center overflow-hidden"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-black/5 dark:border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
         >
           <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1">
             {navItems.map((item) => (
