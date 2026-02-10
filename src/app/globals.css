@@ -22,7 +22,7 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-    --border: 346.8 77.2% 85%; /* Light red tint for borders */
+    --border: 346.8 77.2% 85%;
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%;
     --radius: 0.75rem;
@@ -47,7 +47,7 @@
     --destructive-foreground: 0 85.7% 97.3%;
     --warning: 48 96% 89%;
     --warning-foreground: 38 92% 50%;
-    --border: 346.8 77.2% 25%; /* Dark red tint for borders */
+    --border: 346.8 77.2% 25%;
     --input: 217.2 32.6% 17.5%;
     --ring: 340 80% 55%;
   }
@@ -71,7 +71,7 @@
   }
 
   section {
-    @apply py-10 md:py-14 max-w-full overflow-hidden;
+    @apply py-8 md:py-12 max-w-full overflow-hidden;
   }
 }
 
