@@ -31,7 +31,7 @@ export default function AdminLayout({
     
     if (loading || !user || userInfo?.role !== 'Admin') {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center justify-center h-screen bg-background">
                 <LoadingSpinner className="w-12 h-12" />
             </div>
         );
@@ -53,7 +53,7 @@ export default function AdminLayout({
         { href: "/admin/notices", icon: Megaphone, label: "Notice" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promos" },
         { href: "/admin/financials", icon: DollarSign, label: "Sales" },
-        { href: "/admin/analytics", icon: AreaChart, label: "Analytics" },
+        { href: "/admin/analytics", icon: AreaChart, label: "Stats" },
         { href: "/admin/settings", icon: Settings, label: "System" },
         { href: "/", icon: LogOut, label: "Exit", action: logout },
     ];
@@ -92,12 +92,15 @@ export default function AdminLayout({
               {getIsActive(item.href) && (
                 <motion.div 
                   layoutId="active-nav-pill-admin"
-                  className="absolute inset-x-1 inset-y-2 bg-primary/10 rounded-2xl -z-10"
+                  className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-2xl -z-10"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-primary scale-110" : "scale-100")} />
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
+              <span className={cn(
+                "text-[9px] md:text-[10px] font-black uppercase tracking-tight whitespace-nowrap",
+                getIsActive(item.href) ? "text-primary" : "text-muted-foreground"
+              )}>{item.label}</span>
             </Link>
           ))}
         </div>

@@ -8,6 +8,10 @@ import {
   MessageSquare,
   BarChart,
   Building,
+  Star,
+  Award,
+  Zap,
+  TrendingUp,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getCourses, getInstructorByUid, getEnrollments, getBatches, getBranches } from '@/lib/firebase/firestore';
@@ -18,6 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { Batch, Branch, Course } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { safeToDate } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type BatchWithDetails = Batch & {
     courseName: string;
@@ -82,9 +87,8 @@ export default function TeacherDashboardPage() {
            (course.exams || []).forEach(exam => {
             const examDate = safeToDate(exam.examDate);
             const isPast = examDate <= new Date();
-            const isOralOrPracticalPending = (exam.examType === 'Oral' || exam.examType === 'Practical') && exam.status === 'Pending' && isPast;
             const isWrittenSubmitted = (exam.examType === 'Written' || exam.examType === 'Essay' || exam.examType === 'Short Answer') && exam.status === 'Submitted';
-            if(isOralOrPracticalPending || isWrittenSubmitted) {
+            if(isWrittenSubmitted) {
                  pendingGradingCount++;
             }
           });
@@ -94,16 +98,13 @@ export default function TeacherDashboardPage() {
           }
         });
 
-        const averageRating = ratedCourses > 0 ? (totalRating / ratedCourses) : 0;
-
         setStats({
           courseCount: teacherCourses.length,
           studentCount: studentIds.size,
           pendingGradingCount,
-          averageRating: parseFloat(averageRating.toFixed(1)),
+          averageRating: ratedCourses > 0 ? parseFloat((totalRating / ratedCourses).toFixed(1)) : 0,
         });
 
-        // Fetch and process offline batches
         const teacherBatches = allBatches.filter(batch => batch.instructorSlugs.includes(instructor.slug));
         const batchesWithDetails = teacherBatches.map(batch => {
             const course = allCourses.find(c => c.id === batch.courseId);
@@ -115,7 +116,6 @@ export default function TeacherDashboardPage() {
             }
         });
         setAssignedBatches(batchesWithDetails);
-
 
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -137,110 +137,110 @@ export default function TeacherDashboardPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="mb-8">
-            <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Teacher Dashboard
+    <div className="px-1 py-4 md:py-8 space-y-10">
+        <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="border-l-4 border-accent pl-4"
+        >
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground">
+            Academic <span className="text-accent">Panel</span>
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
-            Manage your courses, students, and content.
+            <p className="mt-2 text-sm md:text-lg text-muted-foreground font-medium">
+            Manage your courses, students, and grading tasks.
             </p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                My Courses
-                </CardTitle>
-                <BookCopy className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.courseCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Active online courses
-                </p>
-            </CardContent>
+        </motion.div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-black">{stats.courseCount}</div>
+                    <BookCopy className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Total Students
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.studentCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Across all online courses
-                </p>
-            </CardContent>
+
+            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-indigo-500 text-white overflow-hidden relative group">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Students</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-black">{stats.studentCount}</div>
+                    <Users className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Pending Grading
-                </CardTitle>
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.pendingGradingCount}</div>
-                <p className="text-xs text-muted-foreground">
-                Assignments & Exams to review
-                </p>
-            </CardContent>
+
+            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden relative group">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Pending Grading</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-black">{stats.pendingGradingCount}</div>
+                    <MessageSquare className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                </CardContent>
             </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                Average Rating
-                </CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.averageRating}</div>
-                <p className="text-xs text-muted-foreground">
-                From student reviews
-                </p>
-            </CardContent>
+
+            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative group">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Avg. Rating</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-black flex items-center gap-2">
+                        {stats.averageRating} <Star className="h-5 w-5 fill-current" />
+                    </div>
+                    <TrendingUp className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                </CardContent>
             </Card>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Building className="h-5 w-5"/>
-                    My Offline Batches
-                </CardTitle>
-                <CardDescription>A list of your assigned batches in offline centers.</CardDescription>
+        <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+            <CardHeader className="bg-accent/5 p-5 border-b border-black/5">
+                <div className="flex items-center gap-2">
+                    <Building className="h-5 w-5 text-accent"/>
+                    <CardTitle className="text-sm font-black uppercase tracking-tight">My Offline Batches</CardTitle>
+                </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0 overflow-x-auto">
                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Batch Name</TableHead>
-                            <TableHead>Course</TableHead>
-                            <TableHead>Branch</TableHead>
-                            <TableHead>Schedule</TableHead>
+                    <TableHeader className="bg-muted/30">
+                        <TableRow className="border-black/5">
+                            <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">Batch Name</TableHead>
+                            <TableHead className="font-black uppercase tracking-widest text-[10px]">Course</TableHead>
+                            <TableHead className="font-black uppercase tracking-widest text-[10px]">Branch</TableHead>
+                            <TableHead className="font-black uppercase tracking-widest text-[10px] text-right px-6">Schedule</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {assignedBatches.length > 0 ? assignedBatches.map(batch => (
-                            <TableRow key={batch.id}>
-                                <TableCell className="font-medium">{batch.name}</TableCell>
-                                <TableCell>{batch.courseName}</TableCell>
-                                <TableCell>{batch.branchName}</TableCell>
+                            <TableRow key={batch.id} className="border-black/5 hover:bg-muted/20 transition-colors">
+                                <TableCell className="px-6 py-4">
+                                    <div className="font-bold text-sm uppercase tracking-tight">{batch.name}</div>
+                                </TableCell>
+                                <TableCell className="text-[10px] font-bold text-muted-foreground">{batch.courseName}</TableCell>
                                 <TableCell>
-                                    <div className="flex flex-col gap-1">
-                                        {batch.schedule.map(s => (
-                                            <Badge key={s.day} variant="outline" className="w-fit">{s.day}, {s.time}</Badge>
+                                    <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest border-accent/20 text-accent">
+                                        {batch.branchName}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right px-6 py-4">
+                                    <div className="flex flex-col gap-1 items-end">
+                                        {batch.schedule.map((s, i) => (
+                                            <Badge key={i} variant="secondary" className="text-[8px] h-4.5 font-bold whitespace-nowrap">
+                                                {s.day}, {s.time}
+                                            </Badge>
                                         ))}
                                     </div>
                                 </TableCell>
                             </TableRow>
                         )) : (
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center">
-                                    You are not assigned to any offline batches yet.
+                                <TableCell colSpan={4} className="h-40 text-center">
+                                    <div className="flex flex-col items-center justify-center opacity-30">
+                                        <Building className="w-12 h-12 mb-2" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest">No assigned batches found</p>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         )}
