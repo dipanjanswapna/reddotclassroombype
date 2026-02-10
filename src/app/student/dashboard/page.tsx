@@ -50,8 +50,8 @@ export default function DashboardPage() {
     inProgressCourses: [],
     completedCoursesCount: 0,
     overallProgress: 0,
-    streak: 12, // Mocked for UI
-    rank: 42,   // Mocked for UI
+    streak: 12, 
+    rank: 42,   
   } as any);
 
   useEffect(() => {
@@ -67,7 +67,6 @@ export default function DashboardPage() {
         
         setNotices(fetchedNotices);
 
-        // Calculate study time today from completed planner tasks
         const todaySeconds = plannerTasks
             .filter(task => task.completedAt && isToday(safeToDate(task.completedAt)))
             .reduce((sum, task) => sum + (task.timeSpentSeconds || 0), 0);
@@ -76,7 +75,6 @@ export default function DashboardPage() {
         const enrolledCourseIds = enrollments.map(e => e.courseId);
         const enrolledCourses = enrolledCourseIds.length > 0 ? await getCoursesByIds(enrolledCourseIds) : [];
 
-        // Check for currently LIVE class
         const now = new Date();
         let foundLive: any = null;
         enrolledCourses.forEach(course => {
@@ -147,8 +145,7 @@ export default function DashboardPage() {
   ];
 
   return (
-      <div className="px-2 md:px-4 space-y-8 md:space-y-12 pb-10">
-          {/* Enhanced Header Section */}
+      <div className="px-1 md:px-4 space-y-8 md:space-y-12 pb-10">
           <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between border-l-4 border-primary pl-6">
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
@@ -186,7 +183,6 @@ export default function DashboardPage() {
               </div>
           </div>
 
-          {/* Live Alert Banner */}
           <AnimatePresence>
             {liveClassNow && (
                 <motion.div 
@@ -214,7 +210,6 @@ export default function DashboardPage() {
             )}
           </AnimatePresence>
 
-          {/* Core Stats Row */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="rounded-[25px] border-none shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><BookOpen className="w-16 h-16 rotate-12" /></div>
@@ -264,9 +259,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-            {/* Left Content (2/3) */}
             <div className="lg:col-span-2 space-y-10">
-                {/* AI Toolkit Section */}
                 <section className="space-y-6">
                     <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">লার্নিং টুলকিট (AI Powered)</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -289,7 +282,6 @@ export default function DashboardPage() {
                     </div>
                 </section>
 
-                {/* Recent Courses */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between border-l-4 border-primary pl-4">
                         <h2 className="font-headline text-2xl font-black uppercase tracking-tight">চালিয়ে যান (Recent Courses)</h2>
@@ -334,9 +326,7 @@ export default function DashboardPage() {
                 </section>
             </div>
 
-            {/* Right Sidebar (1/3) */}
             <div className="space-y-8">
-                {/* Deadlines Section */}
                 <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-primary/5 p-5 border-b border-white/10">
                         <div className="flex items-center justify-between">
@@ -371,7 +361,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Leaderboard Snapshot Widget */}
                 <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
                         <div className="flex items-center gap-2">
@@ -403,7 +392,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Notice Board Section */}
                 <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
                         <div className="flex items-center gap-2">

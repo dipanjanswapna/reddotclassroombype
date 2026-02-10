@@ -64,10 +64,10 @@ export default function StudentLayout({
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-background">
       <main className={cn(
-        "flex-1 px-4 pt-20 overflow-x-hidden", 
+        "flex-1 px-1 pt-20 overflow-x-hidden", 
         isCourseSubPage ? "pb-36" : "pb-28"
       )}>
-        <div className="container max-w-7xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto">
             {children}
         </div>
       </main>
