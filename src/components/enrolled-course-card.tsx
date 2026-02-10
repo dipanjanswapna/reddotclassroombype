@@ -56,7 +56,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
       className="h-full"
     >
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-white/40 rounded-3xl",
+        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-3xl",
         "p-4"
       )}>
         <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-2xl shadow-inner bg-black/5">

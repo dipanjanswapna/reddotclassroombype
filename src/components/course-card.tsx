@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -30,7 +31,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
     <div className="group relative">
       <Link href={coursePageUrl} className="block">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-[#c2e7ff] dark:bg-[#c2e7ff]/10 border border-border rounded-xl",
+          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-[#c2e7ff] dark:bg-[#c2e7ff]/10 border-primary/20 rounded-xl",
           "mb-3 md:mb-0 p-2 md:p-0"
         )}>
           {/* Card Header / Image Section */}
@@ -68,7 +69,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
 
           {/* Card Body / Text Section */}
           <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
-            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left">
+            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left uppercase">
               {title}
             </h3>
 
