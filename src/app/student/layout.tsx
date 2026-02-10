@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect } from 'react';
@@ -40,29 +41,20 @@ export default function StudentLayout({
     { href: "/student/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
     { href: "/student/planner", icon: BookMarked, label: "Planner" },
-    { href: "/student/live-classes", icon: Video, label: "Live Classes" },
+    { href: "/student/live-classes", icon: Video, label: "Live" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes" },
     { href: "/student/exams", icon: ClipboardEdit, label: "Exams" },
-    { href: "/student/deadlines", icon: CalendarClock, label: "Deadlines" },
     { href: "/student/grades", icon: FileCheck2, label: "Grades" },
-    { href: "/student/resources", icon: Library, label: "Resources" },
     { href: "/student/referrals", icon: Share2, label: "Referrals" },
     { href: "/student/rewards", icon: Gift, label: "Rewards" },
-    { href: "/student/community", icon: UsersIcon, label: "Community" },
-    { href: "/student/leaderboard", icon: Trophy, label: "Leaderboard" },
-    { href: "/student/achievements", icon: Trophy, label: "Achievements" },
     { href: "/student/tutor", icon: Bot, label: "AI Tutor" },
     { href: "/student/tts", icon: Voicemail, label: "TTS" },
-    { href: "/student/calculator", icon: Calculator, label: "Calculator" },
-    { href: "/student/wishlist", icon: Heart, label: "Wishlist" },
+    { href: "/student/calculator", icon: Calculator, label: "Calc" },
+    { href: "/student/wishlist", icon: Heart, label: "Saved" },
     { href: "/student/payments", icon: Wallet, label: "Payments" },
-    { href: "/student/certificates", icon: Award, label: "Certificates" },
-    { href: "/student/notifications", icon: Bell, label: "Notifications" },
     { href: "/student/profile", icon: User, label: "Profile" },
-    { href: "/student/id-card", icon: Badge, label: "ID Card" },
-    { href: "/student/guardian", icon: UsersIcon, label: "Guardian" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
-    { href: "/student/settings", icon: Settings, label: "Settings" },
+    { href: "/student/settings", icon: Settings, label: "System" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -76,6 +68,7 @@ export default function StudentLayout({
     return pathname.startsWith(href);
   };
   
+  // Skip bottom nav for specific sub-pages if needed
   if (pathname.startsWith('/student/my-courses/') && pathname.split('/').length > 3) {
       return <>{children}</>;
   }
@@ -85,11 +78,12 @@ export default function StudentLayout({
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-28">
         {children}
       </main>
+      
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", damping: 20, stiffness: 100 }}
-        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden transition-all duration-300"
+        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden"
       >
         <div className="flex justify-start items-center space-x-1 overflow-x-auto no-scrollbar scroll-smooth">
           {navItems.map((item) => (
@@ -97,7 +91,7 @@ export default function StudentLayout({
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-24 h-16 text-center transition-all duration-300 rounded-xl relative",
+                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-20 h-16 text-center transition-all duration-300 rounded-xl relative",
                   getIsActive(item.href)
                     ? "text-primary-foreground scale-105"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
@@ -111,7 +105,7 @@ export default function StudentLayout({
                 />
               )}
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "animate-pulse" : "")} />
-              <span className="text-[10px] font-bold uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
+              <span className="text-[9px] font-black uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>

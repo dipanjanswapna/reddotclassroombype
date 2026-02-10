@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -50,19 +51,17 @@ export default function TeacherLayout({
   }
 
   const menuItems = [
-    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Home" },
     { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
     { href: "/teacher/students", icon: Users, label: "Students" },
     { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
-    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance" },
+    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Log" },
     { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
-    { href: "/teacher/live-classes", icon: Video, label: "Live Classes" },
-    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promo Codes" },
-    { href: "/teacher/pre-bookings", icon: CalendarPlus, label: "Pre-bookings" },
-    { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promos" },
+    { href: "/teacher/earnings", icon: DollarSign, label: "Sales" },
     { href: "/teacher/profile", icon: User, label: "Profile" },
     { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
-    { href: "/teacher/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
   
@@ -85,7 +84,7 @@ export default function TeacherLayout({
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", damping: 20, stiffness: 100 }}
-        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden transition-all duration-300"
+        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden"
       >
         <div className="flex justify-start items-center space-x-1 overflow-x-auto no-scrollbar scroll-smooth">
           {menuItems.map((item) => (
@@ -93,7 +92,7 @@ export default function TeacherLayout({
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-24 h-16 text-center transition-all duration-300 rounded-xl relative",
+                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-20 h-16 text-center transition-all duration-300 rounded-xl relative",
                   getIsActive(item.href)
                     ? "text-primary-foreground scale-105"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
@@ -107,7 +106,7 @@ export default function TeacherLayout({
                 />
               )}
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "animate-pulse" : "")} />
-              <span className="text-[10px] font-bold uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
+              <span className="text-[9px] font-black uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -46,15 +47,14 @@ export default function GuardianLayout({
   }
 
   const menuItems = [
-    { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/guardian/progress", icon: BarChart3, label: "Progress" },
+    { href: "/guardian/dashboard", icon: LayoutDashboard, label: "Home" },
+    { href: "/guardian/progress", icon: BarChart3, label: "Grades" },
     { href: "/guardian/courses", icon: BookOpen, label: "Courses" },
-    { href: "/guardian/attendance", icon: ClipboardCheck, label: "Attendance" },
-    { href: "/guardian/payment-history", icon: Wallet, label: "Payments" },
+    { href: "/guardian/attendance", icon: ClipboardCheck, label: "Attend" },
+    { href: "/guardian/payment-history", icon: Wallet, label: "Billing" },
     { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact" },
     { href: "/guardian/profile", icon: User, label: "Profile" },
     { href: "/guardian/id-card", icon: Badge, label: "ID Card" },
-    { href: "/guardian/settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
   ];
 
@@ -77,7 +77,7 @@ export default function GuardianLayout({
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", damping: 20, stiffness: 100 }}
-        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden transition-all duration-300"
+        className="fixed bottom-4 left-4 right-4 z-40 bg-background/70 dark:bg-card/50 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-2xl shadow-2xl p-1 overflow-hidden"
       >
         <div className="flex justify-start items-center space-x-1 overflow-x-auto no-scrollbar scroll-smooth">
           {menuItems.map((item) => (
@@ -85,7 +85,7 @@ export default function GuardianLayout({
               key={item.href}
               href={item.href}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-24 h-16 text-center transition-all duration-300 rounded-xl relative",
+                  "flex flex-col items-center justify-center gap-1.5 flex-shrink-0 p-2 w-20 h-16 text-center transition-all duration-300 rounded-xl relative",
                   getIsActive(item.href)
                     ? "text-primary-foreground scale-105"
                     : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
@@ -99,7 +99,7 @@ export default function GuardianLayout({
                 />
               )}
               <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "animate-pulse" : "")} />
-              <span className="text-[10px] font-bold uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
+              <span className="text-[9px] font-black uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
         </div>
