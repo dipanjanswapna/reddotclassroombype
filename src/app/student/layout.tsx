@@ -44,6 +44,8 @@ export default function StudentLayout({
     { href: "/student/live-classes", icon: Video, label: "Live", color: "text-orange-500" },
     { href: "/student/quizzes", icon: HelpCircle, label: "Quizzes", color: "text-purple-500" },
     { href: "/student/tools", icon: Wrench, label: "Tools", color: "text-pink-500" },
+    { href: "/student/referrals", icon: Share2, label: "Referrals", color: "text-indigo-500" },
+    { href: "/student/rewards", icon: Gift, label: "Rewards", color: "text-amber-500" },
     { href: "/student/wishlist", icon: Heart, label: "Saved", color: "text-red-400" },
     { href: "/student/payments", icon: Wallet, label: "Payments", color: "text-green-500" },
     { href: "/student/profile", icon: User, label: "Profile", color: "text-blue-400" },
@@ -65,7 +67,7 @@ export default function StudentLayout({
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-background">
       <main className={cn(
         "flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden", 
-        isCourseSubPage ? "pb-32" : "pb-20"
+        isCourseSubPage ? "pb-36" : "pb-24 md:pb-32"
       )}>
         <div className="container max-w-7xl mx-auto">
             {children}
@@ -76,15 +78,15 @@ export default function StudentLayout({
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] h-14 px-2"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 dark:bg-card/90 backdrop-blur-2xl border-t border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] h-16 md:h-20 px-2 flex justify-center"
         >
-          <div className="flex justify-start items-center h-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1">
+          <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto no-scrollbar scroll-smooth gap-1 md:gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 flex-shrink-0 min-w-[70px] h-full text-center transition-all duration-300 relative",
+                    "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[75px] md:min-w-[90px] h-full text-center transition-all duration-300 relative px-1",
                     getIsActive(item.href)
                       ? "text-primary scale-105"
                       : "text-muted-foreground hover:text-foreground"
@@ -93,7 +95,7 @@ export default function StudentLayout({
                 {getIsActive(item.href) && (
                   <motion.div 
                     layoutId="active-nav-pill-student"
-                    className="absolute inset-x-1 inset-y-1.5 bg-primary/10 rounded-lg -z-10"
+                    className="absolute inset-x-1 inset-y-2 md:inset-y-3 bg-primary/10 rounded-xl -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -103,8 +105,8 @@ export default function StudentLayout({
                     className="absolute top-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full"
                   />
                 )}
-                <item.icon className={cn("w-4 h-4", getIsActive(item.href) ? "text-primary" : item.color)} />
-                <span className="text-[8px] font-black uppercase tracking-tighter whitespace-nowrap">{item.label}</span>
+                <item.icon className={cn("w-5 h-5 md:w-6 md:h-6", getIsActive(item.href) ? "text-primary" : item.color)} />
+                <span className="text-[9px] md:text-[11px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
               </Link>
             ))}
           </div>
