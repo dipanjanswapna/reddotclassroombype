@@ -6,6 +6,10 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
+/**
+ * @fileOverview Study Planner Page with Edge-to-Edge Layout.
+ * Uses px-2 for wall-to-wall high-density feel.
+ */
 function PlannerPageContent() {
     return (
         <div className="px-2 md:px-3 py-4 md:py-6 space-y-6 md:space-y-8">

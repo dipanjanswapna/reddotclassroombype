@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,8 +8,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { saveUserAction } from '@/app/actions/user.actions';
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, Sparkles, SlidersHorizontal, Volume2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const themes = [
     { name: 'Default', value: 'default', color: 'bg-primary' },
@@ -22,12 +21,16 @@ const themes = [
 ];
 
 const whiteNoises = [
-    { name: 'None', value: 'none' },
-    { name: 'Rain', value: 'rain' },
-    { name: 'Forest', value: 'forest' },
-    { name: 'Cafe', value: 'cafe' },
+    { name: 'No focus sound', value: 'none' },
+    { name: 'Rainfall', value: 'rain' },
+    { name: 'Zen Forest', value: 'forest' },
+    { name: 'Study Cafe', value: 'cafe' },
 ];
 
+/**
+ * @fileOverview Planner Settings Page.
+ * Refined high-density UI with 20px corners and tight spacing.
+ */
 export default function PlannerSettingsPage() {
     const { userInfo, refreshUserInfo } = useAuth();
     const router = useRouter();
@@ -54,7 +57,7 @@ export default function PlannerSettingsPage() {
                 }
             });
             await refreshUserInfo();
-            toast({ title: 'Success', description: 'Your planner settings have been saved.'});
+            toast({ title: 'Success', description: 'Planner preferences updated.'});
         } catch(error) {
             toast({ title: 'Error', description: 'Could not save settings.', variant: 'destructive'});
         } finally {
@@ -72,55 +75,90 @@ export default function PlannerSettingsPage() {
     };
     
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div>
-            <h1 className="font-headline text-3xl font-bold tracking-tight">Planner Settings</h1>
-            <p className="mt-1 text-lg text-muted-foreground">
-                Customize the appearance and behavior of your study planner.
+    <div className="space-y-10 md:space-y-14">
+        <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-2 border-l-4 border-primary pl-6"
+        >
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
+                <SlidersHorizontal className="w-3 h-3" />
+                Customization
+            </div>
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase leading-tight">
+                Planner <span className="text-primary">Preferences</span>
+            </h1>
+            <p className="text-muted-foreground font-medium text-base md:text-lg max-w-2xl">
+                Personalize your workspace for maximum efficiency.
             </p>
-        </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Planner Settings</CardTitle>
-          <CardDescription>Customize the appearance and behavior of your study planner.</CardDescription>
+        </motion.div>
+
+      <Card className="rounded-[25px] border-primary/20 shadow-2xl overflow-hidden bg-card">
+        <CardHeader className="bg-primary/5 p-8 border-b border-primary/10">
+          <CardTitle className="text-xl font-black uppercase tracking-tight">Appearance & Sounds</CardTitle>
+          <CardDescription className="font-medium text-xs">Choose how your productivity dashboard looks and sounds.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-           <div className="space-y-2">
-                <Label>Theme</Label>
+        <CardContent className="p-8 space-y-10">
+           <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Workspace Theme</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     {themes.map(theme => (
-                        <button key={theme.value} onClick={() => setSelectedTheme(theme.value)} className={`p-4 rounded-lg border-2 ${selectedTheme === theme.value ? 'border-primary' : 'border-transparent'}`}>
-                           <div className={`h-16 w-full rounded-md ${theme.color}`}></div>
-                           <p className="mt-2 text-sm font-medium">{theme.name}</p>
+                        <button 
+                            key={theme.value} 
+                            onClick={() => setSelectedTheme(theme.value)} 
+                            className={cn(
+                                "p-3 rounded-[20px] border-2 transition-all group relative overflow-hidden",
+                                selectedTheme === theme.value ? 'border-primary bg-primary/5' : 'border-primary/5 bg-muted/20 hover:border-primary/20'
+                            )}
+                        >
+                           <div className={cn("h-16 w-full rounded-xl shadow-inner mb-3", theme.color)}></div>
+                           <p className="text-[10px] font-black uppercase tracking-tight text-foreground">{theme.name}</p>
+                           {selectedTheme === theme.value && <Sparkles className="absolute top-2 right-2 w-3 h-3 text-primary" />}
                         </button>
                     ))}
                 </div>
             </div>
-             <div className="space-y-2">
-                <Label>Focus Sound (White Noise)</Label>
-                <Select value={selectedNoise} onValueChange={setSelectedNoise}>
-                    <SelectTrigger><SelectValue/></SelectTrigger>
-                    <SelectContent>
-                        {whiteNoises.map(noise => (
-                            <SelectItem key={noise.value} value={noise.value}>{noise.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-             <div className="p-4 border rounded-md space-y-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Label className="font-semibold">Google Calendar Sync</Label>
-                        <p className="text-xs text-muted-foreground">Sync your study plan with your Google Calendar.</p>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-primary/10 pt-10">
+                <div className="space-y-4">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Focus Background Sound</Label>
+                    <div className="relative">
+                        <Volume2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-50" />
+                        <Select value={selectedNoise} onValueChange={setSelectedNoise}>
+                            <SelectTrigger className="h-12 rounded-xl pl-10 font-bold border-primary/10 bg-background shadow-sm">
+                                <SelectValue placeholder="Pick a focus sound..." />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-white/10">
+                                {whiteNoises.map(noise => (
+                                    <SelectItem key={noise.value} value={noise.value} className="font-bold text-xs uppercase">{noise.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <Button onClick={handleGoogleCalendarSync}><CalendarIcon className="mr-2 h-4 w-4"/>Sync Now</Button>
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest px-1">Played automatically during work sessions.</p>
                 </div>
-            </div>
+
+                <div className="space-y-4">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">External Integration</Label>
+                    <Card className="rounded-[20px] bg-muted/30 border-dashed border-2 border-primary/10 p-5">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="text-center sm:text-left">
+                                <h4 className="font-black text-xs uppercase tracking-tight text-foreground">Google Calendar Sync</h4>
+                                <p className="text-[10px] font-medium text-muted-foreground mt-1">Export your tasks to your Google calendar.</p>
+                            </div>
+                            <Button onClick={handleGoogleCalendarSync} variant="outline" className="rounded-xl h-10 px-6 font-black uppercase text-[10px] tracking-widest border-primary/20 hover:bg-primary hover:text-white transition-all">
+                                <CalendarIcon className="mr-2 h-3.5 w-3.5"/>
+                                Connect Now
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+             </div>
         </CardContent>
-        <CardFooter>
-            <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                Save Settings
+        <CardFooter className="bg-primary/5 p-6 border-t border-primary/10 flex justify-end">
+            <Button onClick={handleSave} disabled={isSaving} className="font-black uppercase tracking-widest px-10 h-12 rounded-xl shadow-xl shadow-primary/20">
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                Save All Preferences
             </Button>
         </CardFooter>
       </Card>

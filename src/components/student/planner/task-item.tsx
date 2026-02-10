@@ -32,6 +32,10 @@ const priorityColors = {
     urgent: 'border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-200',
 }
 
+/**
+ * @fileOverview High-density task item component.
+ * Uses tight padding and 20px corners for professional profile.
+ */
 export function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
     const isOverdue = !isToday(new Date(task.date)) && isPast(new Date(task.date)) && task.status !== 'completed';
   
@@ -50,30 +54,31 @@ export function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
     
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-        <Card className="p-2.5 rounded-xl border-primary/10 shadow-sm hover:shadow-md transition-shadow group relative bg-background">
+        <Card className="p-3 rounded-[20px] border-primary/10 shadow-sm hover:shadow-xl transition-all group relative bg-background border-2">
              <div className="flex justify-between items-start gap-2">
-                <div className="flex items-start gap-1.5 flex-grow min-w-0">
-                     <div {...listeners} className="cursor-grab pt-0.5 opacity-30 group-hover:opacity-100 transition-opacity">
-                        <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
+                <div className="flex items-start gap-2 flex-grow min-w-0">
+                     <div {...listeners} className="cursor-grab pt-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <GripVertical className="h-4 w-4 text-muted-foreground" />
                     </div>
-                    <p className="font-bold text-xs uppercase tracking-tight text-foreground/90 truncate leading-relaxed">{task.title}</p>
+                    <div className="space-y-1">
+                        <p className="font-black text-xs md:text-sm uppercase tracking-tight text-foreground leading-tight truncate">{task.title}</p>
+                        {task.description && <p className="text-[10px] text-muted-foreground line-clamp-1 italic">{task.description}</p>}
+                    </div>
                 </div>
                 <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-primary/10" onClick={onEdit}><Edit className="h-3 w-3 text-primary" /></Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-destructive/10" onClick={onDelete}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-primary/10" onClick={onEdit}><Edit className="h-3.5 w-3.5 text-primary" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-destructive/10" onClick={onDelete}><Trash2 className="h-3.5 w-3.5 text-destructive" /></Button>
                 </div>
             </div>
             
-            {task.description && <p className="text-[10px] text-muted-foreground mt-1 ml-5 line-clamp-1 italic">{task.description}</p>}
-            
-            <div className="flex items-center gap-1.5 mt-2.5 flex-wrap ml-5">
-                <div className="p-1 bg-primary/5 rounded-md">
+            <div className="flex items-center gap-2 mt-3 flex-wrap ml-6">
+                <div className="p-1.5 bg-primary/5 rounded-lg border border-primary/10">
                     {eventIcons[task.type]}
                 </div>
-                {task.courseTitle && <Badge variant="secondary" className="text-[8px] h-4 font-black uppercase px-1.5">{task.courseTitle}</Badge>}
-                {task.time && <Badge variant="outline" className="text-[8px] h-4 font-bold flex items-center gap-1 px-1.5 border-primary/10"><Clock className="h-2.5 w-2.5"/>{task.time}</Badge>}
-                {task.priority && <Badge className={cn("text-[8px] h-4 font-black uppercase px-1.5", priorityColors[task.priority])}>{task.priority}</Badge>}
-                {isOverdue && <Badge variant="destructive" className="text-[8px] h-4 font-black uppercase px-1.5">Late</Badge>}
+                {task.courseTitle && <Badge variant="secondary" className="text-[8px] h-4.5 font-black uppercase px-2 rounded-lg">{task.courseTitle}</Badge>}
+                {task.time && <Badge variant="outline" className="text-[8px] h-4.5 font-bold flex items-center gap-1 px-2 border-primary/10 rounded-lg"><Clock className="h-2.5 w-2.5"/>{task.time}</Badge>}
+                {task.priority && <Badge className={cn("text-[8px] h-4.5 font-black uppercase px-2 rounded-lg", priorityColors[task.priority])}>{task.priority}</Badge>}
+                {isOverdue && <Badge variant="destructive" className="text-[8px] h-4.5 font-black uppercase px-2 rounded-lg">Overdue</Badge>}
             </div>
         </Card>
     </div>

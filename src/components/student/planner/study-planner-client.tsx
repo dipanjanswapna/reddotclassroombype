@@ -33,6 +33,10 @@ import { saveUserAction } from '@/app/actions/user.actions';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/**
+ * @fileOverview Redesigned Study Planner Client.
+ * Features premium pill-style tabs and edge-to-edge high-density UI.
+ */
 export function StudyPlannerClient() {
     const { toast } = useToast();
     const { userInfo, refreshUserInfo } = useAuth();
@@ -155,10 +159,7 @@ export function StudyPlannerClient() {
                 const newStatus = over.id as PlannerTask['status'];
                 const updatedTask = { ...activeTask, status: newStatus };
                 
-                // Optimistic update
                 setTasks(prevTasks => prevTasks.map(task => task.id === active.id ? updatedTask : task));
-
-                // Save to DB
                 await saveTask(updatedTask);
             }
         }
@@ -194,24 +195,29 @@ export function StudyPlannerClient() {
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
             <div className="w-full">
                 <Tabs defaultValue="board" className="w-full">
-                    <div className="flex flex-col md:flex-row gap-3 justify-between items-center mb-6">
-                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
-                            <TabsList className="flex w-full md:w-auto h-11 p-1 bg-muted/50 rounded-xl shadow-inner border border-primary/5">
-                                <TabsTrigger value="board" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Board</TabsTrigger>
-                                <TabsTrigger value="calendar" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Calendar</TabsTrigger>
-                                <TabsTrigger value="analytics" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Analytics</TabsTrigger>
-                                <TabsTrigger value="goals" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Goals</TabsTrigger>
-                                <TabsTrigger value="settings" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Settings</TabsTrigger>
+                    {/* Premium Pill-Style Tabs (Based on image) */}
+                    <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 px-1">
+                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
+                            <TabsList className="flex w-full md:w-auto h-12 p-1.5 bg-muted/30 dark:bg-card/20 rounded-[20px] shadow-inner border border-white/10">
+                                {['board', 'calendar', 'analytics', 'goals', 'settings'].map((tab) => (
+                                    <TabsTrigger 
+                                        key={tab}
+                                        value={tab} 
+                                        className="rounded-[15px] px-6 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300"
+                                    >
+                                        {tab}
+                                    </TabsTrigger>
+                                ))}
                             </TabsList>
                         </div>
-                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[9px] h-10 px-6 rounded-xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
-                            <PlusCircle className="mr-1.5 h-3.5 w-3.5"/> 
+                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-[20px] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
+                            <PlusCircle className="mr-2 h-4 w-4"/> 
                             Add New Task
                         </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-                        <div className="lg:col-span-3 space-y-3">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                        <div className="lg:col-span-3 space-y-4">
                             <FolderListSidebar 
                                 folders={folders} 
                                 lists={lists} 
@@ -234,20 +240,20 @@ export function StudyPlannerClient() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
-                                        className="grid grid-cols-1 md:grid-cols-3 gap-3"
+                                        className="grid grid-cols-1 md:grid-cols-3 gap-4"
                                     >
                                         <Column id="todo" title="To Do" onAddTask={() => handleAddTask('todo')}>
-                                            <div className="space-y-2">
+                                            <div className="space-y-3">
                                                 {columns.todo.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                             </div>
                                         </Column>
                                         <Column id="in_progress" title="In Progress" onAddTask={() => handleAddTask('in_progress')}>
-                                            <div className="space-y-2">
+                                            <div className="space-y-3">
                                                  {columns.in_progress.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                             </div>
                                         </Column>
                                         <Column id="completed" title="Completed" onAddTask={() => handleAddTask('completed')}>
-                                            <div className="space-y-2">
+                                            <div className="space-y-3">
                                                  {columns.completed.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
                                             </div>
                                         </Column>
@@ -269,14 +275,14 @@ export function StudyPlannerClient() {
                                     </motion.div>
                                 </TabsContent>
                                 <TabsContent value="settings" className="mt-0 outline-none">
-                                     <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card">
-                                        <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-                                            <div className="bg-primary/10 p-4 rounded-2xl mb-4">
-                                                <PlusCircle className="w-8 h-8 text-primary" />
+                                     <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
+                                        <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                                            <div className="bg-primary/10 p-5 rounded-[20px] mb-6">
+                                                <PlusCircle className="w-10 h-10 text-primary" />
                                             </div>
-                                            <h3 className="font-headline text-xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
-                                            <p className="text-muted-foreground font-medium mb-6 max-w-sm text-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
-                                            <Button asChild className="rounded-xl font-black uppercase tracking-widest text-[9px] px-8 h-10 shadow-lg shadow-primary/20">
+                                            <h3 className="font-headline text-2xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
+                                            <p className="text-muted-foreground font-medium mb-8 max-w-sm text-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
+                                            <Button asChild className="rounded-[20px] font-black uppercase tracking-widest text-[10px] px-10 h-12 shadow-xl shadow-primary/20">
                                                 <Link href="/student/planner/settings">Open Full Settings</Link>
                                             </Button>
                                         </CardContent>
