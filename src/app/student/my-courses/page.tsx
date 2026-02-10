@@ -10,6 +10,7 @@ import { Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import { motion } from 'framer-motion';
 
 export default function MyCoursesPage() {
   const { userInfo, loading: authLoading } = useAuth();
@@ -98,40 +99,46 @@ export default function MyCoursesPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="space-y-10 md:space-y-14">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+        >
           <div>
-            <h1 className="font-headline text-3xl font-bold tracking-tight">স্বাগতম, {userInfo?.name || 'Student'}!</h1>
-            <p className="mt-1 text-lg text-muted-foreground">
+            <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase">স্বাগতম, <span className="text-primary">{userInfo?.name || 'Student'}!</span></h1>
+            <p className="mt-2 text-lg text-muted-foreground font-medium">
               আপনার শেখার যাত্রা চালিয়ে যান।
             </p>
           </div>
            <div className="flex items-center gap-2">
-              <div className="relative w-full md:w-64">
+              <div className="relative w-full md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <Input placeholder="আপনার কোর্স খুঁজুন..." className="pl-9 h-11 rounded-xl bg-card border-white/20" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
             </div>
-        </div>
+        </motion.div>
         
-        <section>
-            <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">চলমান কোর্সসমূহ</h2>
+        <section className="space-y-6">
+            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">চলমান কোর্সসমূহ</h2>
             {filteredInProgress.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {filteredInProgress.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="in-progress" provider={provider} />
                     })}
                 </div>
             ) : (
-                <p className="text-muted-foreground">You have no courses in progress.</p>
+                <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                    <p className="text-muted-foreground font-bold">You have no courses in progress.</p>
+                </Card>
             )}
         </section>
 
         {filteredPrebookedCourses.length > 0 && (
-            <section>
-                <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">প্রি-বুক করা কোর্স</h2>
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+            <section className="space-y-6">
+                <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">প্রি-বুক করা কোর্স</h2>
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {filteredPrebookedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="prebooked" provider={provider} />;
@@ -140,31 +147,35 @@ export default function MyCoursesPage() {
             </section>
         )}
 
-        <section>
-            <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
+        <section className="space-y-6">
+            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">সম্প্রতি সম্পন্ন কোর্সসমূহ</h2>
             {filteredCompleted.length > 0 ? (
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {filteredCompleted.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="completed" provider={provider} />
                     })}
                 </div>
             ) : (
-                 <p className="text-muted-foreground">You have not completed any courses yet.</p>
+                 <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                    <p className="text-muted-foreground font-bold">You have not completed any courses yet.</p>
+                </Card>
             )}
         </section>
 
-        <section>
-            <h2 className="font-headline text-2xl font-bold mb-4 border-l-4 border-primary pl-4">উইশলিস্টে থাকা কোর্স</h2>
+        <section className="space-y-6">
+            <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">উইশলিস্টে থাকা কোর্স</h2>
             {filteredWishlistedCourses.length > 0 ? (
-                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                     {filteredWishlistedCourses.map((course) => {
                         const provider = organizations.find(p => p.id === course.organizationId);
                         return <EnrolledCourseCard key={course.id} course={course} status="wishlisted" provider={provider} />;
                     })}
                 </div>
             ) : (
-                <p className="text-muted-foreground">Your wishlist is empty.</p>
+                <Card className="rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                    <p className="text-muted-foreground font-bold">Your wishlist is empty.</p>
+                </Card>
             )}
         </section>
     </div>
