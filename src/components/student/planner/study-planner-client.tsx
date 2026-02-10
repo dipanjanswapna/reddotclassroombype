@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, SlidersHorizontal, Volume2, Calendar as CalendarIcon, Save, Loader2, Sparkles, LayoutDashboard, BarChart3, Target, CalendarDays, Settings2, Trash2 } from 'lucide-react';
+import { PlusCircle, Volume2, Calendar as CalendarIcon, Save, Loader2, Sparkles, LayoutDashboard, BarChart3, Target, CalendarDays, Settings2, Trash2, ChevronDown, Check, Layers3 } from 'lucide-react';
 import { getFoldersForUser, getListsForUser, getTasksForUser, getGoalsForUser } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -35,6 +35,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const themes = [
     { name: 'Default', value: 'default', color: 'bg-primary' },
@@ -53,8 +59,8 @@ const whiteNoises = [
 
 /**
  * @fileOverview Study Planner Client Component.
- * Optimized for high-density wall-to-wall responsive UI with 20px corners and px-2 mobile padding.
- * Features integrated settings and white-pill tab system.
+ * Optimized for high-density wall-to-wall responsive UI with 20px corners.
+ * Features a hybrid navigation system with a main 'Board' tab and a dropdown for other views.
  */
 export function StudyPlannerClient() {
     const { toast } = useToast();
@@ -72,6 +78,7 @@ export function StudyPlannerClient() {
 
     const [activeTask, setActiveTask] = useState<PlannerTask | null>(null);
     const [activeListId, setActiveListId] = useState<string>('all');
+    const [activeTab, setActiveTab] = useState<string>('board');
     
     const [pomodoroDurations, setPomodoroDurations] = useState({
         work: 25,
@@ -244,13 +251,14 @@ export function StudyPlannerClient() {
         router.push(authUrl);
     };
 
-    const tabTriggers = [
-        { value: 'board', label: 'Board', icon: LayoutDashboard },
+    const dropdownOptions = [
         { value: 'calendar', label: 'Calendar', icon: CalendarDays },
         { value: 'analytics', label: 'Analytics', icon: BarChart3 },
         { value: 'goals', label: 'Goals', icon: Target },
         { value: 'settings', label: 'Settings', icon: Settings2 },
     ];
+
+    const currentDropdownSelection = dropdownOptions.find(opt => opt.value === activeTab);
 
     if (loading) {
         return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
@@ -259,26 +267,67 @@ export function StudyPlannerClient() {
     return (
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
             <div className="w-full">
-                <Tabs defaultValue="board" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 px-1">
-                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
-                            <TabsList className="flex w-full md:w-auto h-12 p-1 bg-muted/30 dark:bg-card/20 rounded-[20px] shadow-inner border border-white/10 gap-1">
-                                {tabTriggers.map((tab) => (
-                                    <TabsTrigger 
-                                        key={tab.value}
-                                        value={tab.value} 
+                        <div className="w-full md:w-auto flex items-center bg-muted/30 dark:bg-card/20 rounded-[20px] p-1 border border-white/10 shadow-inner gap-1">
+                            <TabsList className="bg-transparent border-none p-0 h-auto gap-1">
+                                <TabsTrigger 
+                                    value="board" 
+                                    className={cn(
+                                        "rounded-[16px] px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 border-none outline-none",
+                                        "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                                        "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <LayoutDashboard className="w-3.5 h-3.5" />
+                                    <span>Board</span>
+                                </TabsTrigger>
+                            </TabsList>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
                                         className={cn(
-                                            "rounded-[16px] px-5 sm:px-8 py-2 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 h-full border-none outline-none",
-                                            "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_15px_rgba(0,0,0,0.1)] data-[state=active]:scale-100",
-                                            "text-muted-foreground hover:text-foreground"
+                                            "rounded-[16px] px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 h-auto",
+                                            activeTab !== 'board' 
+                                                ? "bg-white text-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)]" 
+                                                : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                                         )}
                                     >
-                                        <tab.icon className="w-3.5 h-3.5" />
-                                        <span>{tab.label}</span>
-                                    </TabsTrigger>
-                                ))}
-                            </TabsList>
+                                        {currentDropdownSelection ? (
+                                            <>
+                                                <currentDropdownSelection.icon className="w-3.5 h-3.5" />
+                                                <span>{currentDropdownSelection.label}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Layers3 className="w-3.5 h-3.5" />
+                                                <span>More Views</span>
+                                            </>
+                                        )}
+                                        <ChevronDown className="w-3 h-3 opacity-50" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="rounded-[20px] border-primary/10 shadow-2xl p-2 min-w-[180px]">
+                                    {dropdownOptions.map((opt) => (
+                                        <DropdownMenuItem 
+                                            key={opt.value} 
+                                            onClick={() => setActiveTab(opt.value)}
+                                            className={cn(
+                                                "rounded-xl px-4 py-2.5 mb-1 last:mb-0 cursor-pointer flex items-center gap-3 transition-colors",
+                                                activeTab === opt.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                                            )}
+                                        >
+                                            <opt.icon className="w-4 h-4" />
+                                            <span className="font-black text-[10px] uppercase tracking-widest">{opt.label}</span>
+                                            {activeTab === opt.value && <Check className="w-3 h-3 ml-auto" />}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
+
                         <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-[20px] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
                             <PlusCircle className="mr-2 h-4 w-4"/> 
                             Add New Task
