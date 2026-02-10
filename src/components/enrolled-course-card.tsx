@@ -55,10 +55,10 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
       className="h-full w-full"
     >
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-xl",
+        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-lg",
         "p-2.5 md:p-3"
       )}>
-        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-lg shadow-inner bg-black/5">
+        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-md shadow-inner bg-black/5">
           <Link href={courseLink}>
             <Image
               src={course.imageUrl}
@@ -115,29 +115,29 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
           <div className="pt-1 flex gap-2 mt-auto">
               {status === 'in-progress' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg shadow-xl shadow-primary/20">
                       <Link href={continueLink} className="flex items-center justify-center gap-1.5">
                           চালিয়ে যান <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                   </Button>
               )}
               {status === 'completed' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl" variant="accent">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg" variant="accent">
                       <Link href="/student/certificates">সার্টিফিকেট নিন</Link>
                   </Button>
               )}
               {status === 'wishlisted' && (
                   <>
-                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl">
+                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg">
                           <Link href={`/checkout/${course.id}`}>এনরোল করুন</Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-lg" onClick={handleRemoveFromWishlist}>
                           <Trash2 className="h-4 w-4" />
                       </Button>
                   </>
               )}
               {status === 'prebooked' && (
-                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
+                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg bg-muted text-muted-foreground border-white/20">
                       <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> Pre-booked
                   </Button>
               )}
