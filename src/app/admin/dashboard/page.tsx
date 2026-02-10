@@ -5,7 +5,6 @@ import { Metadata } from 'next';
 import { DashboardClient } from './dashboard-client';
 import { safeToDate } from '@/lib/utils';
 import { StudyPlanEvent } from '@/ai/schemas/study-plan-schemas';
-import { motion } from 'framer-motion';
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',
