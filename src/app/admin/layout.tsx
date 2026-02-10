@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, CalendarPlus, Handshake, Badge, Notebook, Building, QrCode, Search, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Tags, Gift, Share2, HelpCircle, FileCheck2
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -65,7 +65,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 overflow-x-hidden">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pt-20 pb-24 overflow-x-hidden">
         <div className="container max-w-7xl mx-auto">
             {children}
         </div>
@@ -73,7 +73,7 @@ export default function AdminLayout({
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-black/5 dark:border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-primary/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
       >
         <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1">
           {menuItems.map((item) => (

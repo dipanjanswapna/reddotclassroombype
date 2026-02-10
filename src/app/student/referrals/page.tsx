@@ -49,6 +49,7 @@ export default function StudentReferralsPage() {
     }, [userInfo, authLoading, toast]);
     
     const handleCopy = (text: string, type: 'link' | 'code') => {
+        if (!text) return;
         navigator.clipboard.writeText(text);
         if (type === 'link') {
             setCopiedLink(true);
@@ -96,7 +97,7 @@ export default function StudentReferralsPage() {
             </motion.div>
             
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                 <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                 <Card className="p-6 flex flex-col justify-center items-center text-center space-y-2">
                     <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
                         <Users className="w-6 h-6" />
                     </div>
@@ -105,7 +106,7 @@ export default function StudentReferralsPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Total Referrals</p>
                     </div>
                 </Card>
-                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                <Card className="p-6 flex flex-col justify-center items-center text-center space-y-2">
                     <div className="bg-amber-100 text-amber-600 p-3 rounded-2xl">
                         <Award className="w-6 h-6" />
                     </div>
@@ -114,7 +115,7 @@ export default function StudentReferralsPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Current Balance</p>
                     </div>
                 </Card>
-                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                <Card className="p-6 flex flex-col justify-center items-center text-center space-y-2">
                     <div className="bg-emerald-100 text-emerald-600 p-3 rounded-2xl">
                         <TrendingUp className="w-6 h-6" />
                     </div>
@@ -123,7 +124,7 @@ export default function StudentReferralsPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Lifetime Points</p>
                     </div>
                 </Card>
-                <Card className="rounded-2xl border-white/40 shadow-xl bg-card p-6 flex flex-col justify-center items-center text-center space-y-2">
+                <Card className="p-6 flex flex-col justify-center items-center text-center space-y-2">
                     <div className="bg-rose-100 text-rose-600 p-3 rounded-2xl">
                         <TicketPercent className="w-6 h-6" />
                     </div>
@@ -136,8 +137,8 @@ export default function StudentReferralsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-8">
-                    <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
-                        <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                    <Card className="overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
                                 <Share2 className="w-5 h-5 text-primary" />
                                 Share & Earn
@@ -148,13 +149,13 @@ export default function StudentReferralsPage() {
                             <div className="space-y-3">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Referral Code</Label>
                                 <div className="flex gap-2">
-                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-black/5 flex items-center px-4 font-black text-lg tracking-[0.2em] text-primary">
+                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-primary/10 flex items-center px-4 font-black text-lg tracking-[0.2em] text-primary">
                                         {userInfo?.classRoll || 'N/A'}
                                     </div>
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
-                                        className="h-12 w-12 rounded-xl border-black/5 hover:bg-primary hover:text-white transition-all"
+                                        className="h-12 w-12 rounded-xl border-primary/10 hover:bg-primary hover:text-white transition-all"
                                         onClick={() => handleCopy(userInfo?.classRoll || '', 'code')}
                                     >
                                         {copiedCode ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -164,39 +165,21 @@ export default function StudentReferralsPage() {
                             <div className="space-y-3">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Referral Link</Label>
                                 <div className="flex gap-2">
-                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-black/5 flex items-center px-4 text-xs font-mono text-muted-foreground truncate">
+                                    <div className="flex-grow h-12 bg-muted/50 rounded-xl border border-primary/10 flex items-center px-4 text-xs font-mono text-muted-foreground truncate">
                                         {referralLink}
                                     </div>
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
-                                        className="h-12 w-12 rounded-xl border-black/5 hover:bg-primary hover:text-white transition-all"
+                                        className="h-12 w-12 rounded-xl border-primary/10 hover:bg-primary hover:text-white transition-all"
                                         onClick={() => handleCopy(referralLink, 'link')}
                                     >
                                         {copiedLink ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                                     </Button>
                                 </div>
                             </div>
-                            
-                            <div className="pt-4 border-t border-black/5">
-                                <h4 className="text-xs font-black uppercase tracking-widest text-foreground mb-3">How it works?</h4>
-                                <ul className="space-y-3">
-                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
-                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">1</div>
-                                        <span>আপনার কোডটি বন্ধুর সাথে শেয়ার করুন।</span>
-                                    </li>
-                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
-                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">2</div>
-                                        <span>আপনার কোড ব্যবহার করলে সে পাবে ডিসকাউন্ট।</span>
-                                    </li>
-                                    <li className="flex items-start gap-3 text-xs font-medium text-muted-foreground">
-                                        <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black">3</div>
-                                        <span>বন্ধু এনরোল করলে আপনি পাবেন রিওয়ার্ড পয়েন্ট।</span>
-                                    </li>
-                                </ul>
-                            </div>
                         </CardContent>
-                        <CardFooter className="bg-black/5 p-4 justify-center">
+                        <CardFooter className="bg-primary/5 p-4 justify-center">
                             <Button asChild variant="link" className="font-black text-[10px] uppercase tracking-widest text-primary p-0 h-auto">
                                 <Link href="/student/rewards">Redeem Your Points Now &rarr;</Link>
                             </Button>
@@ -205,8 +188,8 @@ export default function StudentReferralsPage() {
                 </div>
 
                 <div className="lg:col-span-2">
-                    <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
-                        <CardHeader className="bg-primary/5 p-6 border-b border-black/5">
+                    <Card className="overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-xl font-black uppercase tracking-tight">Referral History</CardTitle>
                             <CardDescription className="font-medium text-xs">আপনার কোড ব্যবহার করে যারা এনরোল করেছে তাদের তালিকা।</CardDescription>
                         </CardHeader>
@@ -214,7 +197,7 @@ export default function StudentReferralsPage() {
                              <div className="overflow-x-auto">
                                 <Table>
                                     <TableHeader className="bg-muted/30">
-                                        <TableRow className="border-black/5">
+                                        <TableRow className="border-primary/10">
                                             <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">Referred Friend</TableHead>
                                             <TableHead className="font-black uppercase tracking-widest text-[10px]">Course</TableHead>
                                             <TableHead className="font-black uppercase tracking-widest text-[10px]">Date</TableHead>
@@ -223,7 +206,7 @@ export default function StudentReferralsPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {referrals.length > 0 ? referrals.map((ref) => (
-                                            <TableRow key={ref.id} className="border-black/5 hover:bg-muted/20 transition-colors">
+                                            <TableRow key={ref.id} className="border-primary/10 hover:bg-muted/20 transition-colors">
                                                 <TableCell className="px-6 py-4">
                                                     <div className="font-bold text-sm uppercase tracking-tight">{ref.referredUserName}</div>
                                                     <div className="flex items-center gap-1.5 text-[9px] font-black uppercase text-accent mt-0.5">

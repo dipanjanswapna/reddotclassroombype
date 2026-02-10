@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +6,7 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    --card: 108 16% 94%; /* rgb(238, 242, 237) - Default background for cards */
+    --card: 108 16% 94%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -23,21 +22,16 @@
     --destructive-foreground: 0 0% 98%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-    --border: 346.8 77.2% 90%; /* Slim red tint border for light mode */
+    --border: 346.8 77.2% 85%; /* Light red tint for borders */
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%;
-    --radius: 0.5rem;
-    --chart-1: 340 80% 55%;
-    --chart-2: 142 76% 36%;
-    --chart-3: 240 5% 45%;
-    --chart-4: 340 70% 65%;
-    --chart-5: 142 66% 46%;
+    --radius: 0.75rem;
   }
 
   .dark {
     --background: 222.2 47.4% 11.2%;
     --foreground: 210 40% 98%;
-    --card: 108 16% 12%; /* Adjusted for dark mode but keeping the hue */
+    --card: 108 16% 12%;
     --card-foreground: 210 40% 98%;
     --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
@@ -53,14 +47,9 @@
     --destructive-foreground: 0 85.7% 97.3%;
     --warning: 48 96% 89%;
     --warning-foreground: 38 92% 50%;
-    --border: 346.8 77.2% 30%; /* Slim dark red border for dark mode */
+    --border: 346.8 77.2% 25%; /* Dark red tint for borders */
     --input: 217.2 32.6% 17.5%;
     --ring: 340 80% 55%;
-    --chart-1: 340 80% 55%;
-    --chart-2: 142 76% 36%;
-    --chart-3: 240 5% 45%;
-    --chart-4: 340 70% 65%;
-    --chart-5: 142 66% 46%;
   }
 }
 
@@ -72,42 +61,17 @@
   html, body {
     max-width: 100%;
     overflow-x: hidden;
-    position: relative;
     height: 100%;
+    position: relative;
   }
 
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   section {
-    @apply py-8 md:py-10 max-w-full overflow-hidden;
-  }
-
-  /* Global Bengali Font Override */
-  [lang="bn"], 
-  [lang="bn"] h1, [lang="bn"] h2, [lang="bn"] h3, [lang="bn"] h4, [lang="bn"] h5, [lang="bn"] h6,
-  [lang="bn"] button, [lang="bn"] input, [lang="bn"] textarea, [lang="bn"] select,
-  [lang="bn"] .font-headline, [lang="bn"] .font-body {
-    font-family: var(--font-bengali), var(--font-inter), sans-serif !important;
-  }
-}
-
-@layer components {
-  .body-is-404 header,
-  .body-is-404 footer,
-  .body-is-404 a[href*="wa.me"] {
-    display: none !important;
-  }
-
-  .glassmorphism-card {
-    @apply bg-card/70 dark:bg-card/40 backdrop-blur-xl border border-primary/20 dark:border-primary/10 rounded-xl shadow-xl transition-all duration-300;
-  }
-
-  .nav-pill {
-    @apply rounded-full bg-background/60 dark:bg-card/40 backdrop-blur-xl border border-white/10 dark:border-white/5 px-4 shadow-md transition-all duration-300;
+    @apply py-10 md:py-14 max-w-full overflow-hidden;
   }
 }
 
@@ -119,23 +83,16 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .text-shadow {
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  }
   .mesh-gradient {
     background-color: hsla(0,0%,100%,1);
     background-image: 
-      radial-gradient(at 0% 0%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(142,71%,40%,0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(346,77%,49%,0.05) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(142,71%,40%,0.05) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(346,77%,49%,0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(346,77%,49%,0.03) 0px, transparent 50%);
   }
   .dark .mesh-gradient {
     background-color: hsla(222,47%,11%,1);
     background-image: 
-      radial-gradient(at 0% 0%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(142,76%,36%,0.1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(340,80%,55%,0.1) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(142,76%,36%,0.1) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(340,80%,55%,0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(340,80%,55%,0.05) 0px, transparent 50%);
   }
 }

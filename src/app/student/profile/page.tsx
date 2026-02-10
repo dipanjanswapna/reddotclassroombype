@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, CheckCircle2, Trophy, Gift, Zap, Save } from "lucide-react";
+import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, Trophy, Save, Zap } from "lucide-react";
 import { saveUserAction, removeUserSessionAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -156,10 +156,9 @@ export default function StudentProfilePage() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Info Section */}
         <div className="lg:col-span-2 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-[#eef2ed] dark:bg-card/40">
-                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-white/20">
+            <Card className="rounded-3xl overflow-hidden bg-[#eef2ed] dark:bg-card/40">
+                <CardHeader className="p-8 md:p-10 border-b border-primary/10 bg-white/20">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="relative group">
                             <div className="absolute -inset-2 bg-primary/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -189,48 +188,42 @@ export default function StudentProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                             <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Student Full Name</Label>
-                            <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                         <div className="space-y-3">
                             <Label htmlFor="className" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Class / Batch Level</Label>
-                            <Input id="className" value={className} onChange={e => setClassName(e.target.value)} placeholder="e.g., Class 11" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="className" value={className} onChange={e => setClassName(e.target.value)} placeholder="e.g., Class 11" className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                             <Label htmlFor="mobileNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Student Mobile Number</Label>
-                            <Input id="mobileNumber" type="tel" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="mobileNumber" type="tel" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                         <div className="space-y-3">
                             <Label htmlFor="guardianMobileNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Guardian's Mobile Number</Label>
-                            <Input id="guardianMobileNumber" type="tel" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="guardianMobileNumber" type="tel" value={guardianMobileNumber} onChange={e => setGuardianMobileNumber(e.target.value)} placeholder="01XXXXXXXXX" className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                             <Label htmlFor="fathersName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Father's Name</Label>
-                            <Input id="fathersName" value={fathersName} onChange={e => setFathersName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="fathersName" value={fathersName} onChange={e => setFathersName(e.target.value)} className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                         <div className="space-y-3">
                             <Label htmlFor="mothersName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Mother's Name</Label>
-                            <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                            <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                        <Label htmlFor="nidNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">NID / Birth Certificate No.</Label>
-                        <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} className="rounded-xl border-black/5 bg-white h-12 text-base font-medium focus:border-primary/50" />
                     </div>
                 </CardContent>
             </Card>
         </div>
 
-        {/* Sidebar Info Section */}
         <div className="lg:col-span-1 space-y-8">
-            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-white dark:bg-card/40">
-                <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
+            <Card className="rounded-3xl overflow-hidden bg-white dark:bg-card/40">
+                <CardHeader className="bg-primary/5 border-b border-primary/10 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Zap className="w-5 h-5 text-primary" />
                         <CardTitle className="text-xl font-black uppercase tracking-tight">Quick Overview</CardTitle>
@@ -238,18 +231,18 @@ export default function StudentProfilePage() {
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-2xl bg-muted/50 border border-black/5 text-center">
+                        <div className="p-4 rounded-2xl bg-muted/50 border border-primary/5 text-center">
                             <p className="text-2xl font-black text-foreground">{(userInfo.enrolledCourses || []).length}</p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Enrolled</p>
                         </div>
-                        <div className="p-4 rounded-2xl bg-muted/50 border border-black/5 text-center">
+                        <div className="p-4 rounded-2xl bg-muted/50 border border-primary/5 text-center">
                             <p className="text-2xl font-black text-primary">{userInfo.referralPoints || 0}</p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Points</p>
                         </div>
                     </div>
                     
                     <div className="space-y-4">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-black/5 pb-2">Academic Profile</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-primary/10 pb-2">Academic Profile</h4>
                         <div className="space-y-2">
                             <div className="flex justify-between items-center text-xs">
                                 <span className="font-bold text-muted-foreground">Class Roll</span>
@@ -259,33 +252,19 @@ export default function StudentProfilePage() {
                                 <span className="font-bold text-muted-foreground">Reg. Number</span>
                                 <span className="font-black text-foreground font-mono">{userInfo.registrationNumber || 'N/A'}</span>
                             </div>
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="font-bold text-muted-foreground">Joined Date</span>
-                                <span className="font-black text-foreground">{userInfo.joined ? format(safeToDate(userInfo.joined), 'MMM d, yyyy') : 'N/A'}</span>
-                            </div>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
-            <Card className="rounded-2xl md:rounded-3xl border-white/40 shadow-xl overflow-hidden bg-white dark:bg-card/40">
-                <CardHeader className="bg-primary/5 border-b border-black/5 p-6">
+            <Card className="rounded-3xl overflow-hidden bg-white dark:bg-card/40">
+                <CardHeader className="bg-primary/5 border-b border-primary/10 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Monitor className="w-5 h-5 text-primary" />
                         <CardTitle className="text-xl font-black uppercase tracking-tight">Active Devices</CardTitle>
                     </div>
-                    <CardDescription className="font-medium text-[10px] uppercase tracking-wider">
-                        Max limit: 2 devices
-                    </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                    <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 p-3 rounded-xl">
-                        <Info className="h-4 w-4 text-blue-600" />
-                        <AlertDescription className="text-[9px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-tighter leading-tight">
-                            Logged in on too many devices? Remove old sessions here to access your courses.
-                        </AlertDescription>
-                    </Alert>
-
                     <div className="space-y-3">
                         {(userInfo.activeSessions || []).length > 0 ? (
                             userInfo.activeSessions?.map((session) => {
@@ -296,7 +275,7 @@ export default function StudentProfilePage() {
                                 return (
                                     <div key={session.id} className={cn(
                                         "p-3 rounded-2xl border transition-all duration-300",
-                                        isCurrent ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white/50 border-black/5"
+                                        isCurrent ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white/50 border-primary/5"
                                     )}>
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
@@ -311,7 +290,7 @@ export default function StudentProfilePage() {
                                                 </div>
                                                 <div className="space-y-0.5">
                                                     <p className="font-black text-xs uppercase tracking-tight">{session.deviceName}</p>
-                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{formattedDate} • {session.ipAddress}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{formattedDate}</p>
                                                 </div>
                                             </div>
                                             {!isCurrent && (
@@ -336,7 +315,7 @@ export default function StudentProfilePage() {
                         )}
                     </div>
                 </CardContent>
-                <CardFooter className="bg-black/5 p-4 flex justify-center gap-2">
+                <CardFooter className="bg-primary/5 p-4 flex justify-center gap-2 border-t border-primary/10">
                     <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Proctoring Secure</span>
                 </CardFooter>

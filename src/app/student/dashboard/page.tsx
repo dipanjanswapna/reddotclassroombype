@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { getCoursesByIds, getEnrollmentsByUserId } from '@/lib/firebase/firestore';
-import type { Course, Assignment } from '@/lib/types';
+import type { Course } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
@@ -85,24 +85,7 @@ export default function DashboardPage() {
                 color: "text-green-500"
             });
         }
-        let highScoringExam = null;
-        for (const course of enrolledCourses) {
-            const exam = (course.exams || []).find(e => e.studentId === userInfo.uid && e.status === 'Graded' && e.marksObtained && e.totalMarks > 0 && (e.marksObtained / e.totalMarks) >= 0.9);
-            if (exam) {
-                highScoringExam = { ...exam, courseTitle: course.title };
-                break;
-            }
-        }
-        if (highScoringExam) {
-            achievements.push({
-                id: 'ach_top_class',
-                title: 'Top of the Class',
-                description: `Scored high in ${highScoringExam.courseTitle} exam.`,
-                icon: Trophy,
-                color: "text-yellow-500"
-            });
-        }
-
+        
         setStats({
           enrollments,
           upcomingDeadlines,
@@ -145,7 +128,7 @@ export default function DashboardPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white overflow-hidden relative">
+                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><BookOpen className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">এনরোল করা কোর্স</CardTitle>
@@ -158,7 +141,7 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white overflow-hidden relative">
+                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-emerald-600 to-emerald-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><Flame className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">গড় অগ্রগতি</CardTitle>
@@ -173,7 +156,7 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="rounded-2xl md:rounded-3xl border-none shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative">
+                <Card className="rounded-3xl border-none shadow-xl bg-gradient-to-br from-amber-500 to-yellow-400 text-white overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-6 opacity-20"><Award className="w-20 h-20 rotate-12" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] opacity-80">অর্জিত সার্টিফিকেট</CardTitle>
@@ -195,7 +178,7 @@ export default function DashboardPage() {
             </div>
              <div className="grid gap-8 md:grid-cols-2">
                 {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                    <Card key={course.id} className="rounded-2xl md:rounded-3xl border-white/40 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
+                    <Card key={course.id} className="rounded-3xl border-primary/20 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
                         <div className="p-6 md:p-8 space-y-6 flex-grow">
                             <div className="space-y-2">
                                 <h3 className="font-black text-xl md:text-2xl uppercase tracking-tight group-hover:text-primary transition-colors leading-tight">{course.title}</h3>
@@ -218,7 +201,7 @@ export default function DashboardPage() {
                         </div>
                     </Card>
                 )) : (
-                    <Card className="col-span-2 rounded-3xl border-dashed p-12 text-center bg-muted/20">
+                    <Card className="col-span-2 rounded-3xl border-dashed p-12 text-center bg-muted/20 border-primary/20">
                         <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                         <p className="text-muted-foreground font-bold">You are not enrolled in any courses yet.</p>
                         <Button asChild className="mt-4 rounded-xl font-black uppercase tracking-widest" variant="outline">
@@ -230,7 +213,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid gap-10 md:grid-cols-2 items-start">
-            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+            <Card className="rounded-3xl border-primary/20 shadow-xl bg-card overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
                 <CardTitle className="text-lg font-black uppercase tracking-tight">আসন্ন ডেডলাইন</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">
@@ -259,7 +242,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-white/40 shadow-xl bg-card overflow-hidden">
+            <Card className="rounded-3xl border-primary/20 shadow-xl bg-card overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between bg-primary/5 p-6 border-b border-white/10">
                 <CardTitle className="text-lg font-black uppercase tracking-tight">সাম্প্রতিক অর্জন</CardTitle>
                 <Button asChild variant="ghost" size="sm" className="font-black uppercase text-[10px] tracking-widest text-primary h-8 px-3 rounded-lg hover:bg-primary/10">

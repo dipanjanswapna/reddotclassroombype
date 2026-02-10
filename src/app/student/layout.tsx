@@ -17,7 +17,7 @@ export default function StudentLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, userInfo, loading } = useAuth();
+  const { user, userInfo, loading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function StudentLayout({
     { href: "/student/payments", icon: Wallet, label: "Billing", color: "text-cyan-500" },
     { href: "/student/profile", icon: User, label: "Profile", color: "text-blue-400" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support", color: "text-teal-500" },
-    { href: "/", icon: LogOut, label: "Exit", color: "text-destructive" },
+    { href: "/", icon: LogOut, label: "Exit", color: "text-destructive", action: logout },
   ];
   
   const getIsActive = (href: string) => {
@@ -64,7 +64,7 @@ export default function StudentLayout({
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] dark:bg-background">
       <main className={cn(
-        "flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden", 
+        "flex-1 p-4 sm:p-6 lg:p-8 pt-20 overflow-x-hidden", 
         isCourseSubPage ? "pb-36" : "pb-24"
       )}>
         <div className="container max-w-7xl mx-auto">
@@ -76,13 +76,14 @@ export default function StudentLayout({
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-black/5 dark:border-white/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-card/95 backdrop-blur-xl border-t border-primary/10 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-14 px-2 flex justify-center overflow-hidden"
         >
           <div className="flex justify-start md:justify-center items-center h-full w-full max-w-7xl overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={item.action}
                 className={cn(
                     "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[68px] md:min-w-[85px] h-full text-center transition-all duration-300 relative px-1",
                     getIsActive(item.href)
