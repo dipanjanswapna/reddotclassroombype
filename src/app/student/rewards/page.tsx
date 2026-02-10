@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LoadingSpinner } from '@/components/loading-spinner';
-import { Gift, CheckCircle, Clock, Truck, Loader2 } from 'lucide-react';
+import { Gift, CheckCircle, Clock, Truck, Loader2, XCircle } from 'lucide-react';
 import { Reward, RedemptionRequest } from '@/lib/types';
 import { getRewards, getRedeemRequestsByUserId, createRedeemRequest } from '@/lib/firebase/firestore';
 import Image from 'next/image';
