@@ -2,11 +2,11 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, SlidersHorizontal, Volume2, Calendar as CalendarIcon, Save, Loader2, Sparkles, LayoutDashboard, BarChart3, Target, CalendarDays, Settings2 } from 'lucide-react';
 import { getFoldersForUser, getListsForUser, getTasksForUser, getGoalsForUser } from '@/lib/firebase/firestore';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,16 +30,31 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import { saveUserAction } from '@/app/actions/user.actions';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
-/**
- * @fileOverview Redesigned Study Planner Client.
- * Features premium pill-style tabs and edge-to-edge high-density UI.
- */
+const themes = [
+    { name: 'Default', value: 'default', color: 'bg-primary' },
+    { name: 'Forest', value: 'forest', color: 'bg-green-600' },
+    { name: 'Ocean', value: 'ocean', color: 'bg-blue-600' },
+    { name: 'Sunset', value: 'sunset', color: 'bg-orange-600' },
+    { name: 'Rose', value: 'rose', color: 'bg-rose-600' },
+];
+
+const whiteNoises = [
+    { name: 'No focus sound', value: 'none' },
+    { name: 'Rainfall', value: 'rain' },
+    { name: 'Zen Forest', value: 'forest' },
+    { name: 'Study Cafe', value: 'cafe' },
+];
+
 export function StudyPlannerClient() {
     const { toast } = useToast();
     const { userInfo, refreshUserInfo } = useAuth();
+    const router = useRouter();
     
     const [tasks, setTasks] = useState<PlannerTask[]>([]);
     const [folders, setFolders] = useState<Folder[]>([]);
@@ -59,6 +74,11 @@ export function StudyPlannerClient() {
         longBreak: 15
     });
 
+    // Settings States
+    const [selectedTheme, setSelectedTheme] = useState(userInfo?.plannerSettings?.theme || 'default');
+    const [selectedNoise, setSelectedNoise] = useState(userInfo?.plannerSettings?.whiteNoise || 'none');
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
+
     const fetchAllData = useCallback(async () => {
         if (!userInfo) return;
         setLoading(true);
@@ -75,6 +95,10 @@ export function StudyPlannerClient() {
             setGoals(goalsData);
              if (userInfo.pomodoroSettings) {
                 setPomodoroDurations(userInfo.pomodoroSettings);
+            }
+            if (userInfo.plannerSettings) {
+                setSelectedTheme(userInfo.plannerSettings.theme || 'default');
+                setSelectedNoise(userInfo.plannerSettings.whiteNoise || 'none');
             }
         } catch (error) {
             console.error(error);
@@ -187,6 +211,43 @@ export function StudyPlannerClient() {
         }
     }
 
+    const handleSaveSettings = async () => {
+        if (!userInfo?.id) return;
+        setIsSavingSettings(true);
+        try {
+            await saveUserAction({
+                id: userInfo.id,
+                plannerSettings: {
+                    theme: selectedTheme,
+                    whiteNoise: selectedNoise
+                }
+            });
+            await refreshUserInfo();
+            toast({ title: 'Success', description: 'Planner preferences updated.'});
+        } catch(error) {
+            toast({ title: 'Error', description: 'Could not save settings.', variant: 'destructive'});
+        } finally {
+            setIsSavingSettings(false);
+        }
+    };
+
+    const handleGoogleCalendarSync = () => {
+        if (!userInfo?.id) {
+            toast({ title: 'Please log in first', variant: 'destructive'});
+            return;
+        }
+        const authUrl = `/api/google-calendar/auth?userId=${userInfo.id}`;
+        router.push(authUrl);
+    };
+
+    const tabTriggers = [
+        { value: 'board', label: 'Board', icon: LayoutDashboard },
+        { value: 'calendar', label: 'Calendar', icon: CalendarDays },
+        { value: 'analytics', label: 'Analytics', icon: BarChart3 },
+        { value: 'goals', label: 'Goals', icon: Target },
+        { value: 'settings', label: 'Settings', icon: Settings2 },
+    ];
+
     if (loading) {
         return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
     }
@@ -195,17 +256,22 @@ export function StudyPlannerClient() {
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
             <div className="w-full">
                 <Tabs defaultValue="board" className="w-full">
-                    {/* Premium Pill-Style Tabs (Based on image) */}
+                    {/* Integrated Tab System with White Pill Design */}
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 px-1">
-                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
-                            <TabsList className="flex w-full md:w-auto h-12 p-1.5 bg-muted/30 dark:bg-card/20 rounded-[20px] shadow-inner border border-white/10">
-                                {['board', 'calendar', 'analytics', 'goals', 'settings'].map((tab) => (
+                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
+                            <TabsList className="flex w-full md:w-auto h-12 p-1 bg-muted/30 dark:bg-card/20 rounded-[20px] shadow-inner border border-white/10 gap-1">
+                                {tabTriggers.map((tab) => (
                                     <TabsTrigger 
-                                        key={tab}
-                                        value={tab} 
-                                        className="rounded-[15px] px-6 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300"
+                                        key={tab.value}
+                                        value={tab.value} 
+                                        className={cn(
+                                            "rounded-[16px] px-5 sm:px-8 py-2 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 h-full border-none outline-none",
+                                            "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_15px_rgba(0,0,0,0.1)] data-[state=active]:scale-100",
+                                            "text-muted-foreground hover:text-foreground"
+                                        )}
                                     >
-                                        {tab}
+                                        <tab.icon className="w-3.5 h-3.5" />
+                                        <span>{tab.label}</span>
                                     </TabsTrigger>
                                 ))}
                             </TabsList>
@@ -275,18 +341,77 @@ export function StudyPlannerClient() {
                                     </motion.div>
                                 </TabsContent>
                                 <TabsContent value="settings" className="mt-0 outline-none">
-                                     <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
-                                        <CardContent className="flex flex-col items-center justify-center p-12 text-center">
-                                            <div className="bg-primary/10 p-5 rounded-[20px] mb-6">
-                                                <PlusCircle className="w-10 h-10 text-primary" />
-                                            </div>
-                                            <h3 className="font-headline text-2xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
-                                            <p className="text-muted-foreground font-medium mb-8 max-w-sm text-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
-                                            <Button asChild className="rounded-[20px] font-black uppercase tracking-widest text-[10px] px-10 h-12 shadow-xl shadow-primary/20">
-                                                <Link href="/student/planner/settings">Open Full Settings</Link>
-                                            </Button>
-                                        </CardContent>
-                                     </Card>
+                                     <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+                                        <Card className="rounded-[25px] border-primary/20 shadow-2xl overflow-hidden bg-card">
+                                            <CardHeader className="bg-primary/5 p-8 border-b border-primary/10">
+                                                <CardTitle className="text-xl font-black uppercase tracking-tight">Appearance & Focus</CardTitle>
+                                                <CardDescription className="font-medium text-xs">Personalize your productivity hub workspace.</CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="p-8 space-y-10">
+                                                <div className="space-y-4">
+                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Workspace Theme</Label>
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                                        {themes.map(theme => (
+                                                            <button 
+                                                                key={theme.value} 
+                                                                onClick={() => setSelectedTheme(theme.value)} 
+                                                                className={cn(
+                                                                    "p-3 rounded-[20px] border-2 transition-all group relative overflow-hidden",
+                                                                    selectedTheme === theme.value ? 'border-primary bg-primary/5 shadow-md' : 'border-primary/5 bg-muted/20 hover:border-primary/20'
+                                                                )}
+                                                            >
+                                                            <div className={cn("h-16 w-full rounded-xl shadow-inner mb-3", theme.color)}></div>
+                                                            <p className="text-[10px] font-black uppercase tracking-tight text-foreground">{theme.name}</p>
+                                                            {selectedTheme === theme.value && <Sparkles className="absolute top-2 right-2 w-3 h-3 text-primary" />}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-t border-primary/10 pt-10">
+                                                    <div className="space-y-4">
+                                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Focus Background Sound</Label>
+                                                        <div className="relative">
+                                                            <Volume2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-50" />
+                                                            <Select value={selectedNoise} onValueChange={setSelectedNoise}>
+                                                                <SelectTrigger className="h-12 rounded-xl pl-10 font-bold border-primary/5 bg-background shadow-sm">
+                                                                    <SelectValue placeholder="Pick a focus sound..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="rounded-xl border-white/10">
+                                                                    {whiteNoises.map(noise => (
+                                                                        <SelectItem key={noise.value} value={noise.value} className="font-bold text-xs uppercase">{noise.name}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest px-1">Played automatically during work sessions.</p>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Calendar Integration</Label>
+                                                        <Card className="rounded-[20px] bg-muted/30 border-dashed border-2 border-primary/10 p-5">
+                                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                                                <div className="text-center sm:text-left">
+                                                                    <h4 className="font-black text-xs uppercase tracking-tight text-foreground">Google Calendar</h4>
+                                                                    <p className="text-[10px] font-medium text-muted-foreground mt-1">Sync your study sessions.</p>
+                                                                </div>
+                                                                <Button onClick={handleGoogleCalendarSync} variant="outline" className="rounded-xl h-10 px-6 font-black uppercase text-[10px] tracking-widest border-primary/20 hover:bg-primary hover:text-white transition-all">
+                                                                    <CalendarIcon className="mr-2 h-3.5 w-3.5"/>
+                                                                    Connect
+                                                                </Button>
+                                                            </div>
+                                                        </Card>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="bg-primary/5 p-6 border-t border-primary/10 flex justify-end">
+                                                <Button onClick={handleSaveSettings} disabled={isSavingSettings} className="font-black uppercase tracking-widest px-10 h-12 rounded-xl shadow-xl shadow-primary/20">
+                                                    {isSavingSettings ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                                                    Save Changes
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                     </motion.div>
                                 </TabsContent>
                             </AnimatePresence>
                         </div>
