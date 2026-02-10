@@ -1,15 +1,13 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlannerTask } from '@/lib/types';
-import { useAuth } from '@/context/auth-context';
 
 type PomodoroMode = 'work' | 'shortBreak' | 'longBreak';
 type Durations = { work: number; shortBreak: number; longBreak: number; };
@@ -22,7 +20,6 @@ interface PomodoroTimerProps {
 }
 
 export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurationsChange }: PomodoroTimerProps) {
-  const { userInfo } = useAuth();
   const [mode, setMode] = useState<PomodoroMode>('work');
   const [minutes, setMinutes] = useState(durations.work);
   const [seconds, setSeconds] = useState(0);

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlannerTask } from "@/lib/types";
 import { BookOpen, FileText, HelpCircle, Edit, Trash2, Award, Repeat, Clock, GripVertical } from "lucide-react";
-import { format, isPast, isToday } from "date-fns";
+import { isPast, isToday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -33,7 +32,7 @@ const priorityColors = {
     urgent: 'border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-200',
 }
 
-export function TaskItem({ task, onEdit, onDelete, onUpdate }: TaskItemProps) {
+export function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
     const isOverdue = !isToday(new Date(task.date)) && isPast(new Date(task.date)) && task.status !== 'completed';
   
     const {

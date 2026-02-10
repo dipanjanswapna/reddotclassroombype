@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Course, Folder, List, PlannerTask, Goal } from '@/lib/types';
+import { Folder, List, PlannerTask, Goal } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle } from 'lucide-react';
@@ -29,12 +28,7 @@ import {
   useSensors,
   DragEndEvent,
   DragOverlay,
-  Active,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@at-dnd-kit/sortable';
 import { saveUserAction } from '@/app/actions/user.actions';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -202,22 +196,22 @@ export function StudyPlannerClient() {
                 <Tabs defaultValue="board" className="w-full">
                     <div className="flex flex-col md:flex-row gap-3 justify-between items-center mb-6">
                         <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
-                            <TabsList className="flex w-full md:w-auto h-auto p-1 bg-muted/50 rounded-xl shadow-inner border border-primary/5">
-                                <TabsTrigger value="board" className="rounded-lg px-6 py-2 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Board</TabsTrigger>
-                                <TabsTrigger value="calendar" className="rounded-lg px-6 py-2 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Calendar</TabsTrigger>
-                                <TabsTrigger value="analytics" className="rounded-lg px-6 py-2 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Analytics</TabsTrigger>
-                                <TabsTrigger value="goals" className="rounded-lg px-6 py-2 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Goals</TabsTrigger>
-                                <TabsTrigger value="settings" className="rounded-lg px-6 py-2 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Settings</TabsTrigger>
+                            <TabsList className="flex w-full md:w-auto h-11 p-1 bg-muted/50 rounded-xl shadow-inner border border-primary/5">
+                                <TabsTrigger value="board" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Board</TabsTrigger>
+                                <TabsTrigger value="calendar" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Calendar</TabsTrigger>
+                                <TabsTrigger value="analytics" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Analytics</TabsTrigger>
+                                <TabsTrigger value="goals" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Goals</TabsTrigger>
+                                <TabsTrigger value="settings" className="rounded-lg px-6 py-2 font-black uppercase tracking-tight text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300">Settings</TabsTrigger>
                             </TabsList>
                         </div>
-                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[9px] h-10 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
+                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[9px] h-10 px-6 rounded-xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
                             <PlusCircle className="mr-1.5 h-3.5 w-3.5"/> 
                             Add New Task
                         </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                        <div className="lg:col-span-3 space-y-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+                        <div className="lg:col-span-3 space-y-3">
                             <FolderListSidebar 
                                 folders={folders} 
                                 lists={lists} 
@@ -276,12 +270,12 @@ export function StudyPlannerClient() {
                                 </TabsContent>
                                 <TabsContent value="settings" className="mt-0 outline-none">
                                      <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card">
-                                        <CardContent className="flex flex-col items-center justify-center p-10 text-center">
+                                        <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                                             <div className="bg-primary/10 p-4 rounded-2xl mb-4">
                                                 <PlusCircle className="w-8 h-8 text-primary" />
                                             </div>
                                             <h3 className="font-headline text-xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
-                                            <p className="text-muted-foreground font-medium mb-6 max-w-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
+                                            <p className="text-muted-foreground font-medium mb-6 max-w-sm text-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
                                             <Button asChild className="rounded-xl font-black uppercase tracking-widest text-[9px] px-8 h-10 shadow-lg shadow-primary/20">
                                                 <Link href="/student/planner/settings">Open Full Settings</Link>
                                             </Button>
