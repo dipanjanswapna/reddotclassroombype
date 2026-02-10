@@ -7,16 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Info, Trophy, Save, Zap } from "lucide-react";
+import { Loader2, Upload, Monitor, Smartphone, Trash2, ShieldCheck, Trophy, Save, Zap, Badge as BadgeIcon } from "lucide-react";
 import { saveUserAction, removeUserSessionAction } from "@/app/actions/user.actions";
 import { useAuth } from "@/context/auth-context";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
+import { getEnrollmentsByUserId, getCoursesByIds, getBranch, getBatch } from "@/lib/firebase/firestore";
+import type { Course, Branch, Batch } from "@/lib/types";
+
+const IdCardView = dynamic(() => import('@/components/id-card-view').then(mod => mod.IdCardView), {
+  loading: () => <Skeleton className="h-[525px] w-full max-w-[330px] rounded-lg" />,
+  ssr: false,
+});
 
 export default function StudentProfilePage() {
     const { toast } = useToast();
@@ -36,6 +44,12 @@ export default function StudentProfilePage() {
     const [mobileNumber, setMobileNumber] = useState("");
     const [guardianMobileNumber, setGuardianMobileNumber] = useState("");
 
+    // ID Card Specific Data
+    const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+    const [branch, setBranch] = useState<Branch | null>(null);
+    const [batch, setBatch] = useState<Batch | null>(null);
+    const [loadingExtraData, setLoadingExtraData] = useState(true);
+
     useEffect(() => {
         if (userInfo) {
             setFullName(userInfo.name || "");
@@ -48,6 +62,44 @@ export default function StudentProfilePage() {
             setMobileNumber(userInfo.mobileNumber || "");
             setGuardianMobileNumber(userInfo.guardianMobileNumber || "");
             setLoading(false);
+
+            // Fetch extra data for ID Card
+            const fetchExtraData = async () => {
+                try {
+                    const enrollments = await getEnrollmentsByUserId(userInfo.uid);
+                    const courseIds = enrollments.map(e => e.courseId);
+                    const promises: Promise<any>[] = [];
+
+                    if (courseIds.length > 0) {
+                        promises.push(getCoursesByIds(courseIds));
+                    } else {
+                        promises.push(Promise.resolve([]));
+                    }
+
+                    if (userInfo.assignedBranchId) {
+                        promises.push(getBranch(userInfo.assignedBranchId));
+                    } else {
+                        promises.push(Promise.resolve(null));
+                    }
+
+                    if (userInfo.assignedBatchId) {
+                        promises.push(getBatch(userInfo.assignedBatchId));
+                    } else {
+                        promises.push(Promise.resolve(null));
+                    }
+
+                    const [courses, branchData, batchData] = await Promise.all(promises);
+
+                    setEnrolledCourses(courses);
+                    setBranch(branchData);
+                    setBatch(batchData);
+                } catch (error) {
+                    console.error("Failed to fetch ID card data:", error);
+                } finally {
+                    setLoadingExtraData(false);
+                }
+            };
+            fetchExtraData();
         } else if (!authLoading) {
             setLoading(false);
         }
@@ -127,6 +179,9 @@ export default function StudentProfilePage() {
         return <p className="p-8">Could not load your profile. Please try logging in again.</p>
     }
 
+    const joinedDate = safeToDate(userInfo.joined);
+    const formattedJoinedDate = !isNaN(joinedDate.getTime()) ? format(joinedDate, 'PPP') : 'N/A';
+
   return (
     <div className="space-y-10 md:space-y-14 pb-10">
       <motion.div 
@@ -141,7 +196,7 @@ export default function StudentProfilePage() {
             <p className="text-muted-foreground font-medium mt-2">Manage your account, rewards and connected devices.</p>
         </div>
         <div className="flex items-center gap-4">
-            <Card className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-amber-50 border-amber-200 shadow-sm">
+            <Card className="flex items-center gap-3 px-4 py-2 rounded-xl bg-amber-50 border-amber-200 shadow-sm border-primary/20">
                 <Trophy className="w-5 h-5 text-amber-600" />
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase tracking-widest text-amber-700/60">Reward Points</span>
@@ -157,7 +212,7 @@ export default function StudentProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-            <Card className="rounded-3xl overflow-hidden bg-[#eef2ed] dark:bg-card/40">
+            <Card className="rounded-xl overflow-hidden bg-[#eef2ed] dark:bg-card/40 border-primary/20">
                 <CardHeader className="p-8 md:p-10 border-b border-primary/10 bg-white/20">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="relative group">
@@ -166,7 +221,7 @@ export default function StudentProfilePage() {
                                 <AvatarImage src={avatarUrl} alt={fullName} className="object-cover" />
                                 <AvatarFallback className="bg-primary/10 text-primary font-black text-4xl">{fullName?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
-                            <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 z-20 bg-primary text-white p-2.5 rounded-2xl shadow-xl cursor-pointer hover:scale-110 active:scale-95 transition-all border-2 border-white">
+                            <label htmlFor="avatar-upload" className="absolute bottom-2 right-2 z-20 bg-primary text-white p-2.5 rounded-xl shadow-xl cursor-pointer hover:scale-110 active:scale-95 transition-all border-2 border-white">
                                 <Upload className="w-5 h-5" />
                                 <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                             </label>
@@ -217,12 +272,59 @@ export default function StudentProfilePage() {
                             <Input id="mothersName" value={mothersName} onChange={e => setMothersName(e.target.value)} className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
                         </div>
                     </div>
+
+                    <div className="space-y-3">
+                        <Label htmlFor="nidNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">NID / Birth Certificate Number</Label>
+                        <Input id="nidNumber" value={nidNumber} onChange={e => setNidNumber(e.target.value)} placeholder="Enter NID or Birth Cert No." className="rounded-xl border-primary/10 bg-white h-12 text-base font-medium focus:border-primary/50" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Digital ID Card Section */}
+            <Card className="rounded-xl overflow-hidden bg-white dark:bg-card/40 border-primary/20">
+                <CardHeader className="bg-primary/5 border-b border-primary/10 p-6 md:p-8">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-primary/10 p-2 rounded-lg">
+                            <BadgeIcon className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">Digital ID Card</CardTitle>
+                            <CardDescription className="font-medium text-sm">Download your official student identification card.</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-8 md:p-10 flex flex-col items-center">
+                    {loadingExtraData ? (
+                        <div className="flex flex-col items-center gap-4 py-12">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Generating Card Data...</p>
+                        </div>
+                    ) : (
+                        <IdCardView 
+                            name={fullName}
+                            role={userInfo.role}
+                            idNumber={userInfo.registrationNumber || 'N/A'}
+                            joinedDate={formattedJoinedDate}
+                            email={userInfo.email}
+                            imageUrl={avatarUrl}
+                            dataAiHint="student person"
+                            classRoll={userInfo.classRoll}
+                            fathersName={fathersName}
+                            mothersName={mothersName}
+                            nidNumber={nidNumber}
+                            mobileNumber={mobileNumber}
+                            address={"Mirpur DOHS, Dhaka, Bangladesh"}
+                            enrolledCourses={enrolledCourses}
+                            branchName={branch?.name || 'Online'}
+                            batchName={batch?.name || 'N/A'}
+                        />
+                    )}
                 </CardContent>
             </Card>
         </div>
 
         <div className="lg:col-span-1 space-y-8">
-            <Card className="rounded-3xl overflow-hidden bg-white dark:bg-card/40">
+            <Card className="rounded-xl overflow-hidden bg-white dark:bg-card/40 border-primary/20">
                 <CardHeader className="bg-primary/5 border-b border-primary/10 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Zap className="w-5 h-5 text-primary" />
@@ -231,11 +333,11 @@ export default function StudentProfilePage() {
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-2xl bg-muted/50 border border-primary/5 text-center">
+                        <div className="p-4 rounded-xl bg-muted/50 border border-primary/5 text-center">
                             <p className="text-2xl font-black text-foreground">{(userInfo.enrolledCourses || []).length}</p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Enrolled</p>
                         </div>
-                        <div className="p-4 rounded-2xl bg-muted/50 border border-primary/5 text-center">
+                        <div className="p-4 rounded-xl bg-muted/50 border border-primary/5 text-center">
                             <p className="text-2xl font-black text-primary">{userInfo.referralPoints || 0}</p>
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-1">Points</p>
                         </div>
@@ -257,7 +359,7 @@ export default function StudentProfilePage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-3xl overflow-hidden bg-white dark:bg-card/40">
+            <Card className="rounded-xl overflow-hidden bg-white dark:bg-card/40 border-primary/20">
                 <CardHeader className="bg-primary/5 border-b border-primary/10 p-6">
                     <div className="flex items-center gap-2 mb-1">
                         <Monitor className="w-5 h-5 text-primary" />
@@ -274,13 +376,13 @@ export default function StudentProfilePage() {
 
                                 return (
                                     <div key={session.id} className={cn(
-                                        "p-3 rounded-2xl border transition-all duration-300",
+                                        "p-3 rounded-xl border transition-all duration-300",
                                         isCurrent ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white/50 border-primary/5"
                                     )}>
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "p-2 rounded-xl shrink-0",
+                                                    "p-2 rounded-lg shrink-0",
                                                     isCurrent ? "bg-primary text-white" : "bg-muted text-muted-foreground"
                                                 )}>
                                                     {session.deviceName.toLowerCase().includes('android') || session.deviceName.toLowerCase().includes('iphone') 
