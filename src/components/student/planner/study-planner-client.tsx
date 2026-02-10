@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -37,6 +36,7 @@ import {
 } from '@dnd-kit/sortable';
 import { saveUserAction } from '@/app/actions/user.actions';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function StudyPlannerClient() {
     const { toast } = useToast();
@@ -199,19 +199,24 @@ export function StudyPlannerClient() {
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
             <div className="mt-8">
                 <Tabs defaultValue="board" className="w-full">
-                    <div className="flex flex-wrap gap-4 justify-between items-center mb-4">
-                        <TabsList className="grid grid-cols-3 sm:grid-cols-5 w-full sm:w-auto">
-                            <TabsTrigger value="board">Board</TabsTrigger>
-                            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                            <TabsTrigger value="goals">Goals</TabsTrigger>
-                            <TabsTrigger value="settings">Settings</TabsTrigger>
-                        </TabsList>
-                        <Button onClick={() => handleAddTask('todo')}><PlusCircle className="mr-2 h-4 w-4"/> Add Task</Button>
+                    <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
+                        <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
+                            <TabsList className="flex w-full md:w-auto h-auto p-1 bg-muted/50 rounded-xl shadow-inner">
+                                <TabsTrigger value="board" className="rounded-lg px-6 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Board</TabsTrigger>
+                                <TabsTrigger value="calendar" className="rounded-lg px-6 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Calendar</TabsTrigger>
+                                <TabsTrigger value="analytics" className="rounded-lg px-6 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Analytics</TabsTrigger>
+                                <TabsTrigger value="goals" className="rounded-lg px-6 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Goals</TabsTrigger>
+                                <TabsTrigger value="settings" className="rounded-lg px-6 py-2.5 font-bold uppercase tracking-tighter text-[10px] data-[state=active]:shadow-md">Settings</TabsTrigger>
+                            </TabsList>
+                        </div>
+                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+                            <PlusCircle className="mr-2 h-4 w-4"/> 
+                            Add New Task
+                        </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-                        <div className="lg:col-span-1 space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+                        <div className="lg:col-span-1 space-y-8">
                             <FolderListSidebar 
                                 folders={folders} 
                                 lists={lists} 
@@ -228,42 +233,61 @@ export function StudyPlannerClient() {
                             />
                         </div>
                         <div className="lg:col-span-3">
-                            <TabsContent value="board">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <Column id="todo" title="To Do" onAddTask={() => handleAddTask('todo')}>
-                                        <SortableContext items={columns.todo.map(t => t.id!)} strategy={verticalListSortingStrategy}>
-                                            {columns.todo.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
-                                        </SortableContext>
-                                    </Column>
-                                    <Column id="in_progress" title="In Progress" onAddTask={() => handleAddTask('in_progress')}>
-                                        <SortableContext items={columns.in_progress.map(t => t.id!)} strategy={verticalListSortingStrategy}>
-                                             {columns.in_progress.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
-                                        </SortableContext>
-                                    </Column>
-                                    <Column id="completed" title="Completed" onAddTask={() => handleAddTask('completed')}>
-                                        <SortableContext items={columns.completed.map(t => t.id!)} strategy={verticalListSortingStrategy}>
-                                             {columns.completed.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
-                                        </SortableContext>
-                                    </Column>
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="calendar">
-                                <CalendarView tasks={tasks} onEditEvent={handleEditTask} />
-                            </TabsContent>
-                            <TabsContent value="analytics">
-                            <AnalyticsView tasks={tasks} />
-                            </TabsContent>
-                            <TabsContent value="goals">
-                            <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
-                            </TabsContent>
-                            <TabsContent value="settings">
-                                 <div className="text-center p-8 bg-muted rounded-lg">
-                                    <p>More settings are available on the dedicated settings page.</p>
-                                    <Button asChild className="mt-4">
-                                        <Link href="/student/planner/settings">Go to Settings</Link>
-                                    </Button>
-                                 </div>
-                            </TabsContent>
+                            <AnimatePresence mode="wait">
+                                <TabsContent value="board" className="mt-0 outline-none">
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                                    >
+                                        <Column id="todo" title="To Do" onAddTask={() => handleAddTask('todo')}>
+                                            <SortableContext items={columns.todo.map(t => t.id!)} strategy={verticalListSortingStrategy}>
+                                                {columns.todo.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
+                                            </SortableContext>
+                                        </Column>
+                                        <Column id="in_progress" title="In Progress" onAddTask={() => handleAddTask('in_progress')}>
+                                            <SortableContext items={columns.in_progress.map(t => t.id!)} strategy={verticalListSortingStrategy}>
+                                                 {columns.in_progress.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
+                                            </SortableContext>
+                                        </Column>
+                                        <Column id="completed" title="Completed" onAddTask={() => handleAddTask('completed')}>
+                                            <SortableContext items={columns.completed.map(t => t.id!)} strategy={verticalListSortingStrategy}>
+                                                 {columns.completed.map(task => <TaskItem key={task.id} task={task} onEdit={() => handleEditTask(task)} onDelete={() => handleDeleteTask(task.id!)} onUpdate={handleUpdateTask}/>)}
+                                            </SortableContext>
+                                        </Column>
+                                    </motion.div>
+                                </TabsContent>
+                                <TabsContent value="calendar" className="mt-0 outline-none">
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                                        <CalendarView tasks={tasks} onEditEvent={handleEditTask} />
+                                    </motion.div>
+                                </TabsContent>
+                                <TabsContent value="analytics" className="mt-0 outline-none">
+                                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+                                        <AnalyticsView tasks={tasks} />
+                                    </motion.div>
+                                </TabsContent>
+                                <TabsContent value="goals" className="mt-0 outline-none">
+                                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                                        <GoalManager initialGoals={goals} onGoalsChange={setGoals} />
+                                    </motion.div>
+                                </TabsContent>
+                                <TabsContent value="settings" className="mt-0 outline-none">
+                                     <Card className="rounded-2xl border-white/20 shadow-xl bg-card">
+                                        <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                                            <div className="bg-primary/10 p-4 rounded-2xl mb-4">
+                                                <PlusCircle className="w-8 h-8 text-primary" />
+                                            </div>
+                                            <h3 className="font-headline text-xl font-black uppercase tracking-tight mb-2">Planner Customization</h3>
+                                            <p className="text-muted-foreground font-medium mb-6 max-w-sm">Change your theme, focus sounds, and Google Calendar sync settings.</p>
+                                            <Button asChild className="rounded-xl font-black uppercase tracking-widest text-[10px] px-8 h-11 shadow-lg shadow-primary/20">
+                                                <Link href="/student/planner/settings">Open Full Settings</Link>
+                                            </Button>
+                                        </CardContent>
+                                     </Card>
+                                </TabsContent>
+                            </AnimatePresence>
                         </div>
                     </div>
                 </Tabs>

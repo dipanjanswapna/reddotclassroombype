@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
@@ -21,19 +20,27 @@ export function Column({ id, title, children, onAddTask }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div ref={setNodeRef} className="flex flex-col">
-        <Card className={cn("min-h-[40rem] flex-grow", isOver ? 'bg-accent/20' : 'bg-muted/50')}>
-            <CardHeader className="p-4 border-b">
-                <CardTitle className="text-lg text-center">{title}</CardTitle>
+    <div ref={setNodeRef} className="flex flex-col h-full">
+        <Card className={cn(
+            "min-h-[40rem] flex-grow flex flex-col rounded-2xl border-white/20 shadow-xl transition-all duration-300 bg-card",
+            isOver ? 'ring-2 ring-primary ring-offset-4 ring-offset-background' : ''
+        )}>
+            <CardHeader className="p-4 border-b border-white/10 bg-white/20 dark:bg-white/5 backdrop-blur-sm rounded-t-2xl">
+                <CardTitle className="text-sm font-black uppercase tracking-[0.1em] text-center text-foreground/80">{title}</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 flex flex-col h-full">
-                 <ScrollArea className="flex-grow min-h-[20rem] -mr-4 pr-4">
-                     <div className="space-y-4">
+            <CardContent className="p-3 flex flex-col flex-grow overflow-hidden">
+                 <ScrollArea className="flex-grow pr-2">
+                     <div className="space-y-3 py-2">
                         {children}
                     </div>
                  </ScrollArea>
-                 <Button variant="outline" size="sm" className="w-full mt-4" onClick={() => onAddTask(id as PlannerTask['status'])}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Task
+                 <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full mt-3 rounded-xl font-bold uppercase tracking-tighter text-[10px] border border-dashed border-primary/20 hover:bg-primary/5 hover:text-primary transition-all h-9" 
+                    onClick={() => onAddTask(id as PlannerTask['status'])}
+                >
+                    <PlusCircle className="mr-2 h-3 w-3" /> Add Task
                 </Button>
             </CardContent>
         </Card>
