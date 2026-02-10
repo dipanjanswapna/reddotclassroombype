@@ -56,7 +56,7 @@ export default function GuardianLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1 px-2 sm:px-4 lg:px-6 pt-20 pb-28 overflow-x-hidden">
+      <main className="flex-1 px-1.5 sm:px-2 lg:px-4 pt-20 pb-28 overflow-x-hidden">
         <div className="container max-w-7xl mx-auto">
             {children}
         </div>
