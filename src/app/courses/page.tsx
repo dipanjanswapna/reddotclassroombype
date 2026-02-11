@@ -6,6 +6,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
+import { motion } from 'framer-motion';
 
 export const metadata: Metadata = {
   title: 'RDC SHOP - Red Dot Classroom',
@@ -66,31 +67,33 @@ export default async function CoursesPage({
   return (
     <div className="bg-background mesh-gradient min-h-screen">
         {/* Unified Hero Area: Seamless background blending */}
-        <section className="pt-2 md:pt-4 pb-2 md:pb-4 border-b border-white/5 overflow-hidden">
-            <div className="container mx-auto px-4">
+        <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden">
+            <div className="container mx-auto px-1">
                 {/* Hero Carousel */}
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
-                    <div className="mb-4 md:mb-6">
+                    <div className="mb-6">
                         <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
                     </div>
                 )}
 
                 {/* Shop Intro: Extreme scaling for high-density feel */}
-                <div className="text-center max-w-xl mx-auto space-y-1 md:space-y-1.5">
-                    <h1 className="font-black text-base md:text-lg lg:text-xl tracking-tight uppercase leading-tight">
+                <div className="text-center max-w-xl mx-auto space-y-2">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
+                        <TypingText text="Premium Learning Resources" className="inline" />
+                    </div>
+                    <h1 className="font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-tight font-headline">
                         RDC <span className="text-primary">SHOP</span>
                     </h1>
-                    <div className="min-h-[2rem] md:min-h-auto">
-                        <TypingText 
-                            text="আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।"
-                            className="text-[10px] md:text-xs text-muted-foreground font-medium leading-relaxed font-bengali px-4"
-                        />
+                    <div className="min-h-[2.5rem]">
+                        <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-2">
+                            আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-4 py-1 md:py-2">
+      <div className="container mx-auto px-1 py-4">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-10 h-10" />
@@ -101,7 +104,7 @@ export default async function CoursesPage({
       </div>
 
       {/* Premium Footer Section */}
-      <div className="container mx-auto px-4 pb-10 md:pb-14">
+      <div className="container mx-auto px-1 pb-10 md:pb-14">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>

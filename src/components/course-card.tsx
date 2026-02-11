@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -27,25 +28,32 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <div className="group relative">
-      <Link href={coursePageUrl} className="block">
+    <motion.div 
+        whileHover={{ y: -5 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="group relative h-full"
+    >
+      <Link href={coursePageUrl} className="block h-full">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-300 md:hover:shadow-xl md:hover:-translate-y-1 bg-[#c2e7ff] dark:bg-[#c2e7ff]/10 border-primary/20 rounded-lg",
+          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/10 rounded-[20px] group-hover:border-primary/40",
           "mb-3 md:mb-0 p-2 md:p-0"
         )}>
           {/* Card Header / Image Section */}
-          <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-md md:rounded-none">
+          <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-[16px] md:rounded-none">
             <Image
               src={imageUrl}
               alt={title}
               fill
               sizes="(max-width: 640px) 120px, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-500 md:group-hover:scale-110"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
               data-ai-hint={dataAiHint}
             />
             
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
             {/* Corner Ribbons/Badges */}
-            <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none">
+            <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none z-10">
                 {isPrebookingActive ? (
                     <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-orange-500 text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
                         Pre
@@ -67,31 +75,33 @@ const CourseCardComponent = (props: CourseCardProps) => {
           </div>
 
           {/* Card Body / Text Section */}
-          <div className="flex-1 flex flex-col p-2 md:p-4 justify-center md:justify-start gap-1 text-left">
-            <h3 className="text-[13px] md:text-[15px] font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left uppercase">
-              {title}
-            </h3>
+          <div className="flex-1 flex flex-col p-3 md:p-5 justify-center md:justify-start gap-1.5 text-left">
+            <div className="space-y-1">
+                <h3 className="text-[13px] md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left uppercase tracking-tight">
+                {title}
+                </h3>
 
-            <div className="flex flex-col gap-0.5 text-left">
-                {provider ? (
-                    <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">
-                        {provider.name}
-                    </p>
-                ) : (
-                    instructors && instructors.length > 0 && (
-                        <p className="text-[10px] md:text-[11px] font-medium text-muted-foreground truncate">
-                            {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
+                <div className="flex flex-col gap-0.5 text-left">
+                    {provider ? (
+                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 truncate">
+                            {provider.name}
                         </p>
-                    )
-                )}
+                    ) : (
+                        instructors && instructors.length > 0 && (
+                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 truncate">
+                                {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
+                            </p>
+                        )
+                    )}
+                </div>
             </div>
 
-            <div className="mt-1 md:mt-2 flex items-center gap-2 text-left">
-                <span className="text-[14px] md:text-[16px] font-black text-accent drop-shadow-sm">
+            <div className="mt-2 flex items-center gap-2.5 text-left pt-3 border-t border-primary/5">
+                <span className="text-[15px] md:text-[18px] font-black text-accent drop-shadow-sm tracking-tighter">
                     {displayPrice}
                 </span>
                 {hasDiscount && (
-                    <span className="text-[9px] md:text-[10px] text-muted-foreground line-through opacity-60">
+                    <span className="text-[10px] md:text-[11px] text-muted-foreground/40 font-bold line-through decoration-primary/30">
                         {price}
                     </span>
                 )}
@@ -99,7 +109,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
           </div>
         </Card>
       </Link>
-    </div>
+    </motion.div>
   );
 }
 

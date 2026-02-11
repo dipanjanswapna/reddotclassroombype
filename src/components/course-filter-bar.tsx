@@ -3,11 +3,12 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { X, Search as SearchIcon } from 'lucide-react';
+import { X, Search as SearchIcon, Filter } from 'lucide-react';
 import React from 'react';
 import { Instructor, Course, Organization } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { cn } from '@/lib/utils';
+import { Label } from './ui/label';
 
 type CourseFilterBarProps = {
   categories: string[];
@@ -48,54 +49,59 @@ export function CourseFilterBar({ categories, subCategories, instructors, provid
   const hasFilters = selectedCategory !== 'all' || selectedSubCategory !== 'all' || selectedInstructor !== 'all' || selectedProvider !== 'all';
 
   return (
-    <Card className="mb-12 glassmorphism-card border-white/20 bg-white/40 dark:bg-card/40 overflow-hidden rounded-2xl shadow-xl">
-      <div className="p-6 flex flex-col lg:flex-row gap-6 items-center">
-            <div className="flex items-center gap-3 shrink-0">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                    <SearchIcon className="h-5 w-5 text-primary" />
+    <Card className="mb-4 rounded-[20px] border-primary/10 bg-card/50 backdrop-blur-xl shadow-xl overflow-hidden group">
+      <div className="p-5 md:p-8 flex flex-col lg:flex-row gap-8 items-center relative">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
+            
+            <div className="flex items-center gap-4 shrink-0">
+                <div className="p-3 bg-primary/10 rounded-xl text-primary shadow-inner">
+                    <Filter className="h-5 w-5" />
                 </div>
-                <h3 className="font-black text-xl tracking-tight uppercase">Find a Course</h3>
+                <div className="flex flex-col">
+                    <h3 className="font-black text-lg md:text-xl tracking-tighter uppercase leading-none">Filters</h3>
+                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-[0.2em] mt-1">Smart Sorting</p>
+                </div>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Category</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 w-full">
+                <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-[0.15em] text-muted-foreground ml-1">Category</Label>
                     <Select value={selectedCategory} onValueChange={(v) => handleSelect('category', v)}>
-                        <SelectTrigger className="rounded-xl bg-background/50"><SelectValue placeholder="Select Category..." /></SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            <SelectItem value="all">All Categories</SelectItem>
-                            {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        <SelectTrigger className="rounded-xl h-11 bg-background/50 border-primary/5 hover:border-primary/20 transition-all font-bold text-xs"><SelectValue placeholder="All Categories" /></SelectTrigger>
+                        <SelectContent className="rounded-xl border-white/10 shadow-2xl">
+                            <SelectItem value="all" className="font-bold text-xs">All Categories</SelectItem>
+                            {categories.map(c => <SelectItem key={c} value={c} className="font-bold text-xs">{c}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Subject</Label>
+                <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-[0.15em] text-muted-foreground ml-1">Subject</Label>
                     <Select value={selectedSubCategory} onValueChange={(v) => handleSelect('subCategory', v)}>
-                        <SelectTrigger className="rounded-xl bg-background/50"><SelectValue placeholder="Select Subject..." /></SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            <SelectItem value="all">All Subjects</SelectItem>
-                            {subCategories.map(sc => <SelectItem key={sc} value={sc}>{sc}</SelectItem>)}
+                        <SelectTrigger className="rounded-xl h-11 bg-background/50 border-primary/5 hover:border-primary/20 transition-all font-bold text-xs"><SelectValue placeholder="All Subjects" /></SelectTrigger>
+                        <SelectContent className="rounded-xl border-white/10 shadow-2xl">
+                            <SelectItem value="all" className="font-bold text-xs">All Subjects</SelectItem>
+                            {subCategories.map(sc => <SelectItem key={sc} value={sc} className="font-bold text-xs">{sc}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Instructor</Label>
+                <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-[0.15em] text-muted-foreground ml-1">Instructor</Label>
                     <Select value={selectedInstructor} onValueChange={(v) => handleSelect('instructor', v)}>
-                        <SelectTrigger className="rounded-xl bg-background/50"><SelectValue placeholder="Select Instructor..." /></SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            <SelectItem value="all">All Instructors</SelectItem>
-                            {instructors.map(i => <SelectItem key={i.slug} value={i.slug}>{i.name}</SelectItem>)}
+                        <SelectTrigger className="rounded-xl h-11 bg-background/50 border-primary/5 hover:border-primary/20 transition-all font-bold text-xs"><SelectValue placeholder="All Mentors" /></SelectTrigger>
+                        <SelectContent className="rounded-xl border-white/10 shadow-2xl">
+                            <SelectItem value="all" className="font-bold text-xs">All Mentors</SelectItem>
+                            {instructors.map(i => <SelectItem key={i.slug} value={i.slug} className="font-bold text-xs">{i.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">Partner</Label>
+                <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-[0.15em] text-muted-foreground ml-1">Partner</Label>
                     <Select value={selectedProvider} onValueChange={(v) => handleSelect('provider', v)}>
-                        <SelectTrigger className="rounded-xl bg-background/50"><SelectValue placeholder="Select Provider..." /></SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                            <SelectItem value="all">All Providers</SelectItem>
-                            <SelectItem value="rdc">RDC Originals</SelectItem>
-                            {providers.map(p => <SelectItem key={p.id} value={p.id!}>{p.name}</SelectItem>)}
+                        <SelectTrigger className="rounded-xl h-11 bg-background/50 border-primary/5 hover:border-primary/20 transition-all font-bold text-xs"><SelectValue placeholder="All Partners" /></SelectTrigger>
+                        <SelectContent className="rounded-xl border-white/10 shadow-2xl">
+                            <SelectItem value="all" className="font-bold text-xs">All Providers</SelectItem>
+                            <SelectItem value="rdc" className="font-bold text-xs">RDC Originals</SelectItem>
+                            {providers.map(p => <SelectItem key={p.id} value={p.id!} className="font-bold text-xs">{p.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -106,14 +112,12 @@ export function CourseFilterBar({ categories, subCategories, instructors, provid
                     variant="ghost" 
                     size="sm" 
                     onClick={() => router.push(pathname, { scroll: false })}
-                    className="shrink-0 text-destructive hover:bg-destructive/10 rounded-xl font-bold uppercase tracking-tighter"
+                    className="shrink-0 text-destructive hover:bg-destructive/10 rounded-xl font-black uppercase text-[10px] tracking-widest h-11 px-6 border border-destructive/10"
                 >
-                    <X className="mr-2 h-4 w-4"/> Clear
+                    <X className="mr-2 h-4 w-4"/> Clear All
                 </Button>
             )}
       </div>
     </Card>
   );
 }
-
-import { Label } from './ui/label';
