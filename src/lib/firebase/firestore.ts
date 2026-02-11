@@ -809,14 +809,12 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     title: { bn: "RDC শপ", en: "RDC SHOP" },
     description: { 
-      bn: "আপনার RDC ওয়েব অ্যাপে 'Request a callback' ফিচারটি যুক্ত করা হবে, যা সম্ভাব্য শিক্ষার্থীদের কাছ থেকে যোগাযোগের তথ্য এবং তাদের আগ্রহের বিষয় সংগ্রহ করবে, যাতে আপনার টিম তাদের সাথে যোগাযোগ করতে পারে।",
-      en: "The 'Request a callback' feature will be added to your RDC web app, which will collect contact information and topics of interest from potential students, so that your team can communicate with them."
+      bn: "আমাদের প্ল্যাটফর্মে তোমাদের পড়াশোনাকে আরও আধুনিক এবং সহজ করার জন্য আমরা সর্বদা সচেষ্ট।",
+      en: "We are always striving to make your studies more modern and easier on our platform."
     }
   },
   heroBanners: [
-    { id: 1, href: "/courses/1", imageUrl: "https://placehold.co/800x450.png", alt: "HSC 25 Batch", dataAiHint: "students classroom" },
-    { id: 2, href: "/courses/2", imageUrl: "https://placehold.co/800x450.png", alt: "Medical Admission", dataAiHint: "doctor medical" },
-    { id: 3, href: "/courses/3", imageUrl: "https://placehold.co/800x450.png", alt: "IELTS Course", dataAiHint: "travel language" },
+    { id: 1, href: "/courses/", imageUrl: "https://picsum.photos/seed/1/1200/675", alt: "Special Offer", dataAiHint: "students classroom" },
   ],
   heroCarousel: {
     autoplay: true,
@@ -825,53 +823,46 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   strugglingStudentSection: {
     display: true,
     title: { bn: "পড়াশোনায় পিছিয়ে পড়ছো?", en: "Struggling in Studies?" },
-    subtitle: { bn: "এসো তোমার সমস্যার সমাধান করি ✨", en: "Aaiye apki Samasya ka, Samadan krte hai ✨" },
+    subtitle: { bn: "এসো তোমার সমস্যার সমাধান করি ✨", en: "Let's solve your problems together ✨" },
     imageUrl: "https://cdni.iconscout.com/illustration/premium/thumb/man-confused-about-mobile-happenings-illustration-download-in-svg-png-gif-file-formats--error-warning-alert-exclamation-state-pack-people-illustrations-1784671.png?f=webp",
-    buttonText: { bn: "আমরা কিভাবে সাহায্য করি দেখুন", en: "See How We Help" },
+    buttonText: { bn: "আমরা কীভাবে সাহায্য করি", en: "See How We Help" },
   },
   categoriesSection: {
     display: true,
     title: { bn: "ক্যাটাগরি", en: "Categories" },
     categories: [
-      { id: 1, title: { bn: 'মোশন গ্রাফিক', en: 'MOTION GRAPHIC' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Motion+Graphic', dataAiHint: 'motion graphic' },
-      { id: 2, title: { bn: 'বিজ্ঞাপন', en: 'ADVERTISEMENT' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Advertisement', dataAiHint: 'advertisement can' },
-      { id: 3, title: { bn: 'ইউআই ডিজাইন', en: 'UI DESIGN' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=UI+Design', dataAiHint: 'ui design' },
-      { id: 4, title: { bn: 'লোগো ডিজাইন', en: 'LOGO DESIGN' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Logo+Design', dataAiHint: 'logo design' },
-      { id: 5, title: { bn: 'ডিজিটাল আর্ট', en: 'DIGITAL ART' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Digital+Art', dataAiHint: 'digital art' },
-      { id: 6, title: { bn: 'ওয়েব ডিজাইন', en: 'WEB DESIGN' }, imageUrl: 'https://placehold.co/400x500.png', linkUrl: '/courses?category=Web+Design', dataAiHint: 'web design' },
+      { id: 1, title: { bn: 'এইচএসসি', en: 'HSC' }, imageUrl: 'https://picsum.photos/seed/cat1/400/500', linkUrl: '/courses?category=HSC', dataAiHint: 'student book' },
+      { id: 2, title: { bn: 'এসএসসি', en: 'SSC' }, imageUrl: 'https://picsum.photos/seed/cat2/400/500', linkUrl: '/courses?category=SSC', dataAiHint: 'student desk' },
     ]
   },
   journeySection: {
     display: true,
     title: { bn: "আপনার শেখার যাত্রা শুরু করুন", en: "Start Your Learning Journey" },
-    subtitle: { bn: "আমাদের লাইভ কোর্সগুলোতে জয়েন করে আপনার একাডেমিক ও স্কিল ডেভেলপমেন্টের পথে এগিয়ে যান।", en: "Join our live courses to advance your academic and skill development path." },
+    subtitle: { bn: "আমাদের লাইভ কোর্সগুলোতে জয়েন করুন।", en: "Join our live courses." },
     courseTitle: { bn: "লাইভ কোর্সসমূহ", en: "Live Courses" },
   },
-  liveCoursesIds: ["1", "3", "4"],
+  liveCoursesIds: [],
   teachersSection: {
     display: true,
     title: { bn: "আমাদের অভিজ্ঞ শিক্ষকগণ", en: "Our Experienced Teachers" },
-    subtitle: { bn: "দেশের সেরা শিক্ষকদের সাথে আপনার প্রস্তুতিকে নিয়ে যান এক নতুন মাত্রায়।", en: "Take your preparation to a new level with the best teachers in the country." },
+    subtitle: { bn: "দেশের সেরা শিক্ষকদের সাথে আপনার প্রস্তুতি নিন।", en: "Prepare with the best teachers in the country." },
     buttonText: { bn: "সকল শিক্ষক", en: "All Teachers" },
-    instructorIds: ["ins-ja", "ins-fa", "ins-ms", "ins-nh", "ins-si"],
+    instructorIds: [],
     scrollSpeed: 25,
   },
   videoSection: {
     display: true,
-    title: { bn: "কেন হাজারো শিক্ষার্থী RDC-কে বেছে নিয়েছে?", en: "Why have thousands of students chosen RDC?" },
-    description: { bn: "আমাদের শিক্ষার্থীদের সফলতার গল্পগুলো দেখুন এবং জানুন কীভাবে RDC তাদের স্বপ্ন পূরণে সহায়তা করেছে।", en: "Watch the success stories of our students and learn how RDC has helped them achieve their dreams." },
+    title: { bn: "সফলতার গল্প", en: "Success Stories" },
+    description: { bn: "জানুন কীভাবে RDC শিক্ষার্থীদের স্বপ্ন পূরণে সহায়তা করেছে।", en: "Learn how RDC has helped students achieve their dreams." },
     buttonText: { bn: "সকল কোর্স দেখুন", en: "View All Courses" },
-    videos: [
-      { title: "Student Testimonial", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-      { title: "Platform Feature", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-    ],
+    videos: [],
   },
   sscHscSection: {
     display: true,
-    badge: { bn: "SSC ও HSC", en: "SSC & HSC" },
+    badge: { bn: "প্রস্তুতি", en: "Preparation" },
     title: { bn: "SSC ও HSC প্রস্তুতি", en: "SSC & HSC Preparation" },
   },
-  sscHscCourseIds: ["1", "4"],
+  sscHscCourseIds: [],
   masterclassSection: {
     display: true,
     title: { bn: "ফ্রি মাস্টারক্লাস", en: "Free Masterclasses" },
@@ -880,14 +871,14 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   masterClassesIds: [],
   admissionSection: {
     display: true,
-    badge: { bn: "ভর্তি পরীক্ষা", en: "Admission Test" },
+    badge: { bn: "ভর্তি", en: "Admission" },
     title: { bn: "অ্যাডমিশন টেস্ট প্রস্তুতি", en: "Admission Test Preparation" },
     buttonText: { bn: "সকল অ্যাডমিশন কোর্স", en: "All Admission Courses" },
   },
-  admissionCoursesIds: ["2"],
+  admissionCoursesIds: [],
   jobPrepSection: {
     display: true,
-    badge: { bn: "জব প্রস্তুতি", en: "Job Prep" },
+    badge: { bn: "ক্যারিয়ার", en: "Career" },
     title: { bn: "চাকরির প্রস্তুতি", en: "Job Preparation" },
     buttonText: { bn: "সকল জব কোর্স", en: "All Job Courses" },
   },
@@ -895,72 +886,36 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   whyChooseUs: {
     display: true,
     title: { bn: "কেন আমরাই সেরা?", en: "Why We Are The Best?" },
-    description: {bn: "আমাদের সকল শিক্ষক স্ব স্ব ক্ষেত্রে অভিজ্ঞ এবং সেরা শিক্ষা প্রদানে প্রতিজ্ঞাবদ্ধ।", en: "All our instructors are experienced in their respective fields and committed to providing the best education."},
-    features: [
-      { id: 'feat1', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সেরা প্রশিক্ষক", en: "Best Instructors" } },
-      { id: 'feat2', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'video icon', title: { bn: "ইন্টারেক্টিভ লার্নিং", en: "Interactive Learning" } },
-      { id: 'feat3', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'wallet icon', title: { bn: "স্বল্প খরচে অনেক কিছু", en: "Lots for a Low Cost" } },
-      { id: 'feat4', iconUrl: "https://placehold.co/48x48.png", dataAiHint: 'book icon', title: { bn: "সাপোর্ট সিস্টেম", en: "Support System" } },
-    ],
-    testimonials: [
-        {id: 'test1', quote: {bn: "অনলাইনে RDC'র লেসনগুলো পড়েই আমি গোল্ডেন A+ আর স্কলারশিপ পেয়েছি", en: "I got Golden A+ and a scholarship just by studying RDC's lessons online"}, studentName: "মেহজাবিন রহমান", college: "বি.এ.এফ. শাহীন কলেজ", imageUrl: "https://placehold.co/120x120.png", dataAiHint: "student happy"}
-    ]
+    description: {bn: "সেরা শিক্ষা প্রদানে আমরা প্রতিজ্ঞাবদ্ধ।", en: "We are committed to providing the best education."},
+    features: [],
+    testimonials: []
   },
   freeClassesSection: {
     display: true,
-    title: { bn: "আমাদের সকল ফ্রি ক্লাসসমূহ", en: "All Our Free Classes" },
-    subtitle: { bn: "আমাদের ক্লাসের কোয়ালিটি সম্পর্কে ধারণা পেতে সম্পূর্ণ ফ্রিতে দেখে নিতে পারো কিছু ক্লাস", en: "Watch some classes completely free to get an idea about the quality of our classes" },
-    classes: [
-      { id: "fc1", title: "Chapter 1: Science & Tech. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "Class 9" },
-      { id: "fc2", title: "Information Risk Management | Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "ICT", instructor: "Samin Zahan Sieyam", grade: "Class 10" },
-      { id: "fc3", title: "Chapter 3: Motion. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Science", instructor: "Hridita Chakraborty", grade: "Class 9" },
-      { id: "fc4", title: "Chapter 3: Understanding Language. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Bangla", instructor: "Tashmiya Hasan", grade: "Class 6" },
-      { id: "fc5", title: "Meeting an Overseas Friend, My Books, Arshi's letter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "English", instructor: "MD Omor Faruk", grade: "Class 9" },
-      { id: "fc6", title: "Measuring Length. Full Chapter", youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", subject: "Math", instructor: "Shahreen Tabassum Nova", grade: "Class 6" },
-    ]
+    title: { bn: "ফ্রি ক্লাসসমূহ", en: "All Our Free Classes" },
+    subtitle: { bn: "আমাদের ক্লাসগুলো ফ্রিতে দেখে নিন", en: "Watch our classes for free" },
+    classes: []
   },
   aboutUsSection: {
     display: true,
     title: { bn: "আমাদের সম্পর্কে", en: "About Us" },
     subtitle: { bn: "আমাদের পেছনের কারিগরদের সাথে পরিচিত হন।", en: "Meet the team behind our platform." },
-    teamMembers: [
-      {
-        id: "member1",
-        name: "Md. Mufassal E khuda",
-        title: "Co-Founder & CCO",
-        imageUrl: "https://placehold.co/400x500.png",
-        dataAiHint: "founder person",
-        socialLinks: [
-          { platform: 'facebook', url: '#' },
-          { platform: 'external', url: '#' }
-        ]
-      },
-      {
-        id: "member2",
-        name: "Fairoz Khaled Ohi",
-        title: "Founder & CEO",
-        imageUrl: "https://scontent.fdac138-1.fna.fbcdn.net/v/t39.30808-6/487076226_1889375535134421_6130098570179736415_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=thUcU8J7ROoQ7kNvwHydEuI&_nc_oc=AdkINDyf5C7UuRWfgDQyNEz_HhUDKaJST56WCdAl3zayEO_cE2al7Ql8zuHafoE7Ffo&_nc_zt=23&_nc_ht=scontent.fdac138-1.fna&_nc_gid=sqmiXKg937KPft7-jqGDjw&oh=00_AfS2Es-aZsQKwAQAGcDuKtslTnT_8yswe3d9swIMUJkyUw&oe=6872D6A4",
-        dataAiHint: "founder person",
-        socialLinks: [
-          { platform: 'facebook', url: 'https://www.facebook.com/dipanjanswapna2' }
-        ]
-      }
-    ]
+    teamMembers: []
   },
   offlineHubSection: {
     display: true,
     heroTitle: { bn: 'রেড ডট অফলাইন হাব', en: 'Red Dot Offline Hub' },
-    heroSubtitle: { bn: 'ডিজিটাল শ্রেষ্ঠত্ব এবং শারীরিক মিথস্ক্রিয়ার সংমিশ্রণ অনুভব করুন। সরাসরি বিশেষজ্ঞদের কাছ থেকে শিখুন একটি অভিজাত পরিবেশ যা আপনার সেরা পারফরম্যান্সের জন্য ডিজাইন করা হয়েছে।', en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.' },
+    heroSubtitle: { bn: 'সরাসরি বিশেষজ্ঞদের কাছ থেকে শিখুন।', en: 'Learn directly from the experts.' },
     exploreProgramsText: { bn: 'প্রোগ্রামগুলো দেখুন', en: 'Explore Programs' },
     findCenterText: { bn: 'সেন্টার খুঁজুন', en: 'Find a Center' },
     programsTitle: { bn: 'আমাদের প্রোগ্রামসমূহ', en: 'Available Programs' },
     centersTitle: { bn: 'আমাদের অফলাইন হাবসমূহ', en: 'Our Offline Hubs' },
-    centersSubtitle: { bn: 'বাংলাদেশের বিভিন্ন স্থানে আমাদের অত্যাধুনিক সেন্টারগুলো ভিজিট করুন।', en: 'Visit us at any of our state-of-the-art locations across Bangladesh.' },
+    centersSubtitle: { bn: 'সেন্টারগুলো ভিজিট করুন।', en: 'Visit our centers.' },
     contactSection: {
       display: true,
       title: { bn: "কোনো প্রশ্ন আছে?", en: "Ready to Join RDC Offline?" },
-      subtitle: { bn: "আপনার লক্ষ্য পূরণে নিখুঁত সেন্টার এবং ব্যাচ খুঁজে পেতে আমাদের স্টুডেন্ট অ্যাডভাইজরের সাথে কথা বলুন।", en: "Connect with our expert advisors to find the perfect center and batch for your academic goals." },
-      callButtonText: { bn: "কল করুন 01641035736", en: "Call Support" },
+      subtitle: { bn: "আমাদের সাথে কথা বলুন।", en: "Talk to our student advisors." },
+      callButtonText: { bn: "কল করুন", en: "Call Support" },
       callButtonNumber: "01641035736",
       whatsappButtonText: { bn: "WhatsApp-এ মেসেজ দিন", en: "WhatsApp Us" },
       whatsappNumber: "8801641035736",
@@ -977,227 +932,52 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     display: true,
     title: { bn: "আমাদের পার্টনার", en: "Our Partners" },
     scrollSpeed: 25,
-    partners: [
-      { id: 1, name: "Prangon", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 2, name: "BD IT", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 3, name: "MediShark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 4, name: "Skill Shark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-      { id: 5, name: "Spark", logoUrl: "https://placehold.co/140x60.png", href: "#", dataAiHint: "company logo" },
-    ],
+    partners: [],
   },
   socialMediaSection: {
     display: true,
-    title: { bn: "আমাদের সাথে কানেক্টেড থাকুন", en: "Stay Connected With Us" },
-    description: { bn: "আমাদের সোশ্যাল মিডিয়া চ্যানেলগুলোতে যোগ দিন এবং লেটেস্ট আপডেট ও রিসোর্স পান।", en: "Join our social media channels to get the latest updates and resources." },
-    channels: [
-      {
-        id: 1,
-        platform: 'YouTube',
-        name: { bn: "RDC ইউটিউব চ্যানেল", en: "RDC YouTube Channel" },
-        handle: "@reddotclassroom",
-        stat1_value: "1.5M",
-        stat1_label: { bn: "সাবস্ক্রাইবার", en: "Subscribers" },
-        stat2_value: "500+",
-        stat2_label: { bn: "ভিডিও", en: "Videos" },
-        description: { bn: "শিক্ষামূলক ভিডিও, টিউটোরিয়াল এবং লাইভ ক্লাসের জন্য আমাদের ইউটিউব চ্যানেল সাবস্ক্রাইব করুন।", en: "Subscribe to our YouTube channel for educational videos, tutorials, and live classes." },
-        ctaText: { bn: "সাবস্ক্রাইব করুন", en: "Subscribe" },
-        ctaUrl: "#",
-      },
-      {
-        id: 2,
-        platform: 'Facebook Page',
-        name: { bn: "RDC ফেসবুক পেজ", en: "RDC Facebook Page" },
-        handle: "@rdc.bd",
-        stat1_value: "2M",
-        stat1_label: { bn: "ফলোয়ার", en: "Followers" },
-        stat2_value: "1.8M",
-        stat2_label: { bn: "লাইক", en: "Likes" },
-        description: { bn: "কোর্স আপডেট, ঘোষণা এবং কমিউনিটি ইভেন্টের জন্য আমাদের ফেসবুক পেজে লাইক দিন।", en: "Like our Facebook page for course updates, announcements, and community events." },
-        ctaText: { bn: "পেজ ভিজিট করুন", en: "Visit Page" },
-        ctaUrl: "#",
-      },
-    ],
+    title: { bn: "সোশ্যাল মিডিয়া", en: "Stay Connected With Us" },
+    description: { bn: "আমাদের সোশ্যাল মিডিয়ায় যোগ দিন।", en: "Join our social media channels." },
+    channels: [],
   },
   notesBanner: {
     display: true,
-    title: { bn: "ফ্রি নোটস এবং লেকচার শিট", en: "Free Notes and Lecture Sheets" },
-    description: { bn: "আমাদের ওয়েবসাইটে হাজারো ফ্রি নোটস এবং লেকচার শিট ডাউনলোড করে আপনার প্রস্তুতিকে আরও শক্তিশালী করুন।", en: "Strengthen your preparation by downloading thousands of free notes and lecture sheets from our website." },
+    title: { bn: "ফ্রি নোটস", en: "Free Notes" },
+    description: { bn: "ফ্রি নোটস ডাউনলোড করুন।", en: "Download free notes." },
     buttonText: { bn: "ডাউনলোড করুন", en: "Download Now" },
   },
   appPromo: {
     display: true,
-    title: { bn: "RDC অ্যাপ ডাউনলোড করুন", en: "Download the RDC App" },
-    description: { bn: "যেকোনো সময়, যেকোনো স্থানে আপনার পড়াশোনা চালিয়ে যান। লাইভ ক্লাস, কুইজ এবং আরও অনেক কিছু এখন আপনার হাতের মুঠোয়।", en: "Continue your studies anytime, anywhere. Live classes, quizzes, and much more are now at your fingertips." },
+    title: { bn: "RDC অ্যাপ", en: "Download the RDC App" },
+    description: { bn: "আপনার ফোনে পড়াশোনা শুরু করুন।", en: "Start studying on your phone." },
     googlePlayUrl: "#",
     appStoreUrl: "#",
     googlePlayImageUrl: "https://placehold.co/180x60.png",
     appStoreImageUrl: "https://placehold.co/180x60.png",
-    promoImageUrl: "https://i.imgur.com/uR1Y6o6.png",
+    promoImageUrl: "https://picsum.photos/seed/app/400/800",
     promoImageDataAiHint: "mobile app screenshot",
   },
   floatingWhatsApp: {
       display: true,
-      number: "8801700000000"
-  },
-  rdcShopBanner: {
-    display: true,
-    imageUrl: "https://placehold.co/1200x250.png",
-    dataAiHint: "store banner sale"
-  },
-  storeSettings: {
-    deliveryCharge: 60,
-    freeDeliveryThreshold: 2
-  },
-  storeHomepageSection: {
-    bannerCarousel: []
-  },
-  requestCallbackSection: {
-    display: true,
-    imageUrl: "https://i.imgur.com/GZ0gQfN.png",
-    dataAiHint: "student illustration",
+      number: "8801641035736"
   },
   platformSettings: defaultPlatformSettings,
-  referralSettings: {
-      pointsPerReferral: 10,
-      referredDiscountPercentage: 10
-  },
-  topperPageSection: {
-      display: true,
-      title: "How we help you become a Topper from a Struggler?",
-      mainImageUrl: "https://placehold.co/600x600.png",
-      mainImageDataAiHint: "student success graph",
-      cards: [
-          {id: "card1", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "teacher student", title: "Personalized Mentorship", description: "Our expert mentors provide one-on-one guidance to address your specific needs and challenges."},
-          {id: "card2", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "book test", title: "Targeted Study Materials", description: "We offer curated notes and practice tests designed to strengthen your weak areas."},
-          {id: "card3", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "community support", title: "24/7 Doubt Clearing", description: "Get your doubts resolved instantly anytime with our dedicated support team and AI."},
-          {id: "card4", iconUrl: "https://placehold.co/48x48.png", dataAiHint: "progress chart", title: "Performance Tracking", description: "Monitor your progress with detailed analytics and customized feedback to stay on track."}
-      ]
-  },
-  offlineHubHeroCarousel: {
-    display: true,
-    slides: [
-        { id: 1, imageUrl: 'https://placehold.co/1200x343.png', dataAiHint: 'students course banner', title: 'IELTS MASTER', subtitle: 'IELTS MASTERCLASS & MOCK TEST', price: '৳1,200', originalPrice: '৳3,000', enrollHref: '#' }
-    ]
-  },
 };
-
-// Planner Specific Firestore Functions
-export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "folders"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    const folders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
-    return folders.sort((a, b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
-}
-export const getListsForUser = async (userId: string): Promise<List[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "lists"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    const lists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
-    return lists.sort((a,b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
-}
-export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "tasks"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
-    return tasks.sort((a, b) => {
-        const dateA = a.lastUpdatedAt ? safeToDate(a.lastUpdatedAt).getTime() : 0;
-        const dateB = b.lastUpdatedAt ? safeToDate(b.lastUpdatedAt).getTime() : 0;
-        return dateB - dateA;
-    });
-}
-export const getGoalsForUser = async (userId: string): Promise<Goal[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "goals"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Goal));
-}
-export const getListsInFolder = async (folderId: string): Promise<List[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "lists"), where("folderId", "==", folderId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
-}
-export const getTasksInList = async (listId: string): Promise<PlannerTask[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "tasks"), where("listId", "==", listId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
-}
-
-
-// Doubt Solve System
-export const createDoubtSession = async (courseId: string, courseName: string, doubtSolverIds: string[]): Promise<string> => {
-    const db = getDbInstance();
-    if (!db) throw new Error("Firestore is not initialized.");
-    
-    const q = query(collection(db, "doubt_sessions"), where("courseId", "==", courseId));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-        return querySnapshot.docs[0].id;
-    } else {
-        const newSession: Omit<DoubtSession, 'id'> = {
-            courseId,
-            sessionName: `${courseName} Doubt Solve`,
-            assignedDoubtSolverIds: doubtSolverIds,
-            createdAt: Timestamp.now(),
-        };
-        const docRef = await addDoc(collection(db, 'doubt_sessions'), newSession);
-        return docRef.id;
-    }
-}
-export const getDoubtsByCourseAndStudent = async (courseId: string, studentId: string): Promise<Doubt[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "doubts"), where("courseId", "==", courseId), where("studentId", "==", studentId), orderBy("lastUpdatedAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
-}
-export const getDoubt = (id: string) => getDocument<Doubt>('doubts', id);
-export const getDoubts = () => getCollection<Doubt>('doubts');
-export const getDoubtAnswers = async (doubtId: string): Promise<DoubtAnswer[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "doubt_answers"), where("doubtId", "==", doubtId), orderBy("answeredAt", "asc"));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DoubtAnswer));
-}
-export const getDoubtsByCourse = async (courseId: string): Promise<Doubt[]> => {
-    const db = getDbInstance();
-    if (!db) return [];
-    const q = query(collection(db, "doubts"), where("courseId", "==", courseId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
-}
-export const getStudentForDoubt = async (studentId: string): Promise<User | null> => {
-    return getUser(studentId);
-}
-
 
 // Function to get the homepage configuration
 export const getHomepageConfig = async (): Promise<HomepageConfig> => {
     const db = getDbInstance();
     if (!db) {
-      console.warn("Firestore not available on server-side during build, returning default config.");
       return { id: 'default', ...defaultHomepageConfig } as HomepageConfig;
     }
     const docRef = doc(db, 'single_documents', 'homepage_config');
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const data = docSnap.data();
-        const mergedSettings = { ...defaultPlatformSettings, ...(data.platformSettings || {}) };
-        return { id: docSnap.id, ...defaultHomepageConfig, ...data, platformSettings: mergedSettings } as HomepageConfig;
+        return { id: docSnap.id, ...defaultHomepageConfig, ...data } as HomepageConfig;
     } else {
         await setDoc(docRef, defaultHomepageConfig);
-        return { id: docRef.id, ...defaultHomepageConfig } as HomepageConfig;
+        return { id: 'homepage_config', ...defaultHomepageConfig } as HomepageConfig;
     }
 }
 

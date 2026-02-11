@@ -5,21 +5,15 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  Video,
-  ThumbsUp,
   ArrowRight,
-  PlayCircle,
-  Users,
+  Zap,
   MessageSquare,
   Phone,
-  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { Badge } from '@/components/ui/badge';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { cn, getYoutubeVideoId } from '@/lib/utils';
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations, getUsers, getEnrollments, getCourses } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { CategoriesCarousel } from '@/components/categories-carousel';
@@ -44,9 +38,6 @@ export default function Home() {
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
   const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
   const [sscHscCourses, setSscHscCourses] = React.useState<Course[]>([]);
-  const [masterClasses, setMasterClasses] = React.useState<Course[]>([]);
-  const [admissionCourses, setAdmissionCourses] = React.useState<Course[]>([]);
-  const [jobCourses, setJobCourses] = React.useState<Course[]>([]);
   const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -67,9 +58,6 @@ export default function Home() {
         const [
             live,
             sscHsc,
-            masters,
-            admission,
-            job,
             instructorsData,
             orgsData,
             allUsers,
@@ -78,9 +66,6 @@ export default function Home() {
         ] = await Promise.all([
             getCoursesByIds(config.liveCoursesIds || []),
             getCoursesByIds(config.sscHscCourseIds || []),
-            getCoursesByIds(config.masterClassesIds || []),
-            getCoursesByIds(config.admissionCoursesIds || []),
-            getCoursesByIds(config.jobCoursesIds || []),
             getInstructors(),
             getOrganizations(),
             getUsers(),
@@ -90,9 +75,6 @@ export default function Home() {
         
         setLiveCourses(live);
         setSscHscCourses(sscHsc);
-        setMasterClasses(masters);
-        setAdmissionCourses(admission);
-        setJobCourses(job);
         setOrganizations(orgsData);
 
         const featuredIds = config.teachersSection?.instructorIds || [];
@@ -164,11 +146,11 @@ export default function Home() {
                         className="flex flex-col items-center gap-2 md:gap-4"
                      >
                         <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
-                            RED DOT <span className="text-primary">CLASSROOM</span>
+                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
                         </h1>
                         <div className="w-full max-w-2xl mx-auto">
                             <TypingText 
-                                text={homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en'] || ''}
+                                text={homepageConfig.welcomeSection?.description?.[language] || ''}
                                 className="mt-2 text-[11px] md:text-sm lg:text-base text-muted-foreground leading-relaxed font-medium break-words px-4"
                             />
                         </div>
@@ -196,16 +178,16 @@ export default function Home() {
                           </motion.div>
                           <div className="space-y-2 flex-grow">
                               <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900">
-                                  {homepageConfig.strugglingStudentSection?.title?.[language] || homepageConfig.strugglingStudentSection?.title?.['en']}
+                                  {homepageConfig.strugglingStudentSection?.title?.[language] || ''}
                               </h3>
                               <p className="text-sm md:text-lg lg:text-xl text-gray-600 font-medium leading-relaxed">
-                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language] || homepageConfig.strugglingStudentSection?.subtitle?.['en']}
+                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language] || ''}
                               </p>
                           </div>
                       </div>
                       <Button asChild size="lg" className="z-10 w-full md:w-auto font-black text-sm rounded-xl shadow-xl shadow-primary/20">
                         <Link href="/strugglers-studies">
-                            {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.['en']}
+                            {homepageConfig.strugglingStudentSection?.buttonText?.[language] || ''}
                              <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>
@@ -218,7 +200,7 @@ export default function Home() {
           <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0">
               <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 text-left">
-                {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
+                {homepageConfig.categoriesSection?.title?.[language] || ''}
               </h2>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
             </div>
@@ -232,10 +214,10 @@ export default function Home() {
         {homepageConfig.journeySection?.display && (
           <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0">
-              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.['en']}</h2>
-              <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.['en']}</p>
+              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || ''}</h2>
+              <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base">{homepageConfig.journeySection?.subtitle?.[language] || ''}</p>
               <div>
-                <h3 className="font-headline text-base md:text-lg lg:text-xl font-bold mb-6 pl-4">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.['en']}</h3>
+                <h3 className="font-headline text-base md:text-lg lg:text-xl font-bold mb-6 pl-4">{homepageConfig.journeySection?.courseTitle?.[language] || ''}</h3>
                 <CourseGrid courses={liveCourses} />
               </div>
             </div>
@@ -247,27 +229,15 @@ export default function Home() {
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                   <div className="text-left">
-                      <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.['en']}</h2>
-                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm lg:text-base leading-tight">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.['en']}</p>
+                      <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || ''}</h2>
+                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm lg:text-base leading-tight">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
                   <Button asChild variant="outline" size="sm" className="rounded-xl shrink-0 h-8 md:h-10 text-[10px] md:text-xs font-bold uppercase">
-                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.['en']}</Link>
+                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || ''}</Link>
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
             </div>
-          </section>
-        )}
-
-        {homepageConfig.sscHscSection?.display && (
-          <section className="overflow-hidden py-8 md:py-10 px-1">
-              <div className="container mx-auto px-0">
-                  <div className="border-l-4 border-primary pl-4 mb-8 text-left">
-                    <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
-                    <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
-                  </div>
-                  <CourseGrid courses={sscHscCourses} />
-              </div>
           </section>
         )}
 

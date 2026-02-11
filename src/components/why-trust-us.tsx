@@ -1,15 +1,15 @@
+
 'use client';
 
 import React from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/language-context';
 import type { HomepageConfig } from '@/lib/types';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from './ui/card';
-import { Quote, Users, Presentation, Wallet, Headphones, Star, Zap } from 'lucide-react';
+import { Quote, Users, Presentation, Wallet, Headphones, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
 
 type WhyTrustUsProps = {
   data: HomepageConfig['whyChooseUs'];
@@ -31,7 +31,6 @@ const pastelColors = [
 
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
-  const pathname = usePathname();
   const plugin = React.useRef(Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true }));
 
   if (!data || !data.display) {
@@ -42,11 +41,10 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-6 md:py-8 overflow-hidden relative">
+    <section className="py-6 md:py-8 overflow-hidden relative px-1">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-3xl rounded-full -z-10"></div>
       
-      <div className="container mx-auto px-1">
-        {/* Features Section */}
+      <div className="container mx-auto px-0">
         <div className="glassmorphism-card p-6 md:p-10 border-white/30 bg-card dark:bg-card/40 rounded-[20px] mb-8">
             <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-center">
             <div className="space-y-4 text-left">
@@ -62,10 +60,10 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                     
                     return (
                         <div key={feature.id || `feature-${index}`} className={cn(
-                            "border border-white/40 dark:border-white/10 p-3 md:p-4 rounded-[20px] flex flex-row items-center gap-3 hover:border-primary/50 transition-all duration-300 hover:shadow-lg shadow-sm backdrop-blur-sm group",
+                            "border border-white/40 dark:border-white/10 p-3 md:p-4 rounded-[20px] flex flex-row items-center gap-3 transition-all duration-300 shadow-sm backdrop-blur-sm",
                             bgColor
                         )}>
-                            <div className="bg-primary/10 p-2 rounded-xl border-2 border-primary/20 group-hover:scale-110 transition-transform duration-300 shrink-0">
+                            <div className="bg-primary/10 p-2 rounded-xl border-2 border-primary/20 shrink-0">
                                 {IconComponent ? (
                                     <IconComponent className="w-6 h-6 text-primary" />
                                 ) : (
@@ -80,7 +78,6 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             </div>
         </div>
 
-        {/* Testimonials */}
         <div className="z-10 relative max-w-4xl mx-auto">
           <Carousel
             plugins={[plugin.current]}
@@ -97,7 +94,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                             <blockquote className="text-base md:text-lg lg:text-xl font-medium italic relative z-10 text-foreground leading-relaxed tracking-tight">
                                 "{testimonial.quote?.[language] || testimonial.quote?.['en']}"
                             </blockquote>
-                            <div className="space-y-0.5">
+                            <div className="space-y-0.5 text-left">
                                 <p className="font-black text-base md:text-lg text-primary font-headline uppercase tracking-tight">
                                     {testimonial.studentName}
                                 </p>

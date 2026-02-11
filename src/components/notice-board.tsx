@@ -2,16 +2,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Megaphone, Pin, Calendar, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Megaphone, Pin, Calendar } from 'lucide-react';
 import { getNotices } from '@/lib/firebase/firestore';
 import type { Notice } from '@/lib/types';
 import { format } from 'date-fns';
 import { safeToDate } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
-import { cn } from '@/lib/utils';
 
 export function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -54,7 +52,7 @@ export function NoticeBoard() {
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
             <Card className="bg-card dark:bg-card/10 border border-primary/20 rounded-[20px] shadow-lg transition-all duration-300">
                 <CardHeader>
-                    <div className="flex items-center gap-3 text-primary">
+                    <div className="flex items-center gap-3 text-primary text-left">
                         <div className="bg-primary/10 p-2 rounded-xl">
                             <Megaphone className="w-6 h-6 text-primary" />
                         </div>
