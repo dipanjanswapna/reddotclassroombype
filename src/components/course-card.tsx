@@ -27,12 +27,12 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <div className="group relative h-full">
+    <div className="relative h-full">
       <Link href={coursePageUrl} className="block h-full">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden shadow-xl bg-card border-primary/10 rounded-[20px]",
+          "flex flex-row md:flex-col h-full overflow-hidden shadow-xl border-primary/10 rounded-[20px]",
           "mb-3 md:mb-0 p-2 md:p-0"
-        )}>
+        )} style={{ backgroundColor: 'rgb(194, 231, 255)' }}>
           {/* Card Header / Image Section */}
           <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-[16px] md:rounded-none">
             <Image
@@ -44,8 +44,8 @@ const CourseCardComponent = (props: CourseCardProps) => {
               data-ai-hint={dataAiHint}
             />
             
-            {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100" />
+            {/* Overlay Gradient - Static */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
 
             {/* Corner Ribbons/Badges */}
             <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none z-10">
@@ -72,18 +72,18 @@ const CourseCardComponent = (props: CourseCardProps) => {
           {/* Card Body / Text Section */}
           <div className="flex-1 flex flex-col p-3 md:p-5 justify-center md:justify-start gap-1.5 text-left">
             <div className="space-y-1">
-                <h3 className="text-[13px] md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline text-left uppercase tracking-tight">
+                <h3 className="text-[13px] md:text-base font-black leading-tight text-gray-900 line-clamp-2 font-headline text-left uppercase tracking-tight">
                 {title}
                 </h3>
 
                 <div className="flex flex-col gap-0.5 text-left">
                     {provider ? (
-                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 truncate">
+                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-600 truncate">
                             {provider.name}
                         </p>
                     ) : (
                         instructors && instructors.length > 0 && (
-                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 truncate">
+                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-600 truncate">
                                 {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
                             </p>
                         )
@@ -91,12 +91,12 @@ const CourseCardComponent = (props: CourseCardProps) => {
                 </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-2.5 text-left pt-3 border-t border-primary/5">
-                <span className="text-[15px] md:text-[18px] font-black text-accent drop-shadow-sm tracking-tighter">
+            <div className="mt-2 flex items-center gap-2.5 text-left pt-3 border-t border-black/5">
+                <span className="text-[15px] md:text-[18px] font-black text-primary drop-shadow-sm tracking-tighter">
                     {displayPrice}
                 </span>
                 {hasDiscount && (
-                    <span className="text-[10px] md:text-[11px] text-muted-foreground/40 font-bold line-through decoration-primary/30">
+                    <span className="text-[10px] md:text-[11px] text-gray-500 font-bold line-through decoration-primary/30">
                         {price}
                     </span>
                 )}

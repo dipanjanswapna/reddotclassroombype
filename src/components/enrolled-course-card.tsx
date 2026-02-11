@@ -50,10 +50,10 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   return (
     <div className="h-full w-full">
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden shadow-xl bg-card border-primary/20 rounded-lg",
+        "flex flex-col h-full overflow-hidden shadow-xl border-primary/20 rounded-[20px]",
         "p-2.5 md:p-3"
-      )}>
-        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-md shadow-inner bg-black/5">
+      )} style={{ backgroundColor: 'rgb(194, 231, 255)' }}>
+        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-[12px] shadow-inner bg-black/5">
           <Link href={courseLink}>
             <Image
               src={course.imageUrl}
@@ -76,21 +76,21 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         <div className="flex-1 flex flex-col pt-3 pb-1 space-y-3 text-left">
           <div className="space-y-0.5">
               <Link href={courseLink}>
-              <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline text-left uppercase tracking-tight">
+              <h3 className="text-sm md:text-base font-black leading-tight text-gray-900 line-clamp-2 font-headline text-left uppercase tracking-tight">
                   {course.title}
               </h3>
               </Link>
               {provider ? (
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">By {provider.name}</p>
+                  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest truncate">By {provider.name}</p>
               ) : (
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate mt-0.5">Mentor: {course.instructors?.[0]?.name || 'RDC Expert'}</p>
+                  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest truncate mt-0.5">Mentor: {course.instructors?.[0]?.name || 'RDC Expert'}</p>
               )}
           </div>
 
           {status === 'in-progress' && typeof course.progress === 'number' && (
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Progress</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-600">Progress</span>
                   <span className="text-[10px] font-black text-primary">{course.progress}%</span>
               </div>
               <Progress value={course.progress} className="h-1.5 rounded-full bg-white/50 [&>div]:bg-accent shadow-inner" />
@@ -110,29 +110,29 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
           <div className="pt-1 flex gap-2 mt-auto">
               {status === 'in-progress' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg shadow-xl shadow-primary/20">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
                       <Link href={continueLink} className="flex items-center justify-center gap-1.5">
                           চালিয়ে যান <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                   </Button>
               )}
               {status === 'completed' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg" variant="accent">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl" variant="accent">
                       <Link href="/student/certificates">সার্টিফিকেট নিন</Link>
                   </Button>
               )}
               {status === 'wishlisted' && (
                   <>
-                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg">
+                      <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl">
                           <Link href={`/checkout/${course.id}`}>এনরোল করুন</Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-lg" onClick={handleRemoveFromWishlist}>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
                           <Trash2 className="h-4 w-4" />
                       </Button>
                   </>
               )}
               {status === 'prebooked' && (
-                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-lg bg-muted text-muted-foreground border-white/20">
+                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
                       <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> Pre-booked
                   </Button>
               )}
