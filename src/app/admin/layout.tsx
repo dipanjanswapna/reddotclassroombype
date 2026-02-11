@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -101,7 +101,7 @@ export default function AdminLayout({
               {getIsActive(item.href) && (
                 <motion.div 
                   layoutId="active-nav-pill-admin"
-                  className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-2xl -z-10"
+                  className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[20px] -z-10"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}

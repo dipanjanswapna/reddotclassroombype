@@ -94,7 +94,7 @@ export default function StudentLayout({
                 {getIsActive(item.href) && (
                   <motion.div 
                     layoutId="active-nav-pill-student"
-                    className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-2xl -z-10"
+                    className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[20px] -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
