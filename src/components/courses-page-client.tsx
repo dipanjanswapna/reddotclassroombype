@@ -79,7 +79,7 @@ export function CoursesPageClient({
   };
 
   return (
-    <div className="bg-transparent">
+    <div className="bg-transparent px-1">
       <div className="py-2 md:py-4">
           <CourseFilterBar
             categories={allCategories}
@@ -104,7 +104,7 @@ export function CoursesPageClient({
               className="space-y-10 md:space-y-14"
             >
               {hasFilters ? (
-                  <section className='py-0'>
+                  <section className='py-0 px-0'>
                     <h2 className="font-headline mb-6 text-sm md:text-base font-black tracking-tight uppercase border-l-4 border-primary pl-4 flex items-center gap-3">
                       <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                       Found {initialCourses.length} Courses
@@ -129,7 +129,7 @@ export function CoursesPageClient({
               ) : (
                   <>
                     {sortedCategories.map((category) => (
-                      <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0'>
+                      <section key={category} id={category.toLowerCase().replace(/\s+/g, '-')} className='py-0 px-0'>
                         <h2 className="font-headline mb-6 text-sm md:text-base font-black tracking-tight uppercase border-l-4 border-primary pl-4 text-foreground drop-shadow-sm">
                           {category}
                         </h2>
@@ -147,7 +147,7 @@ export function CoursesPageClient({
                     ))}
 
                     {archivedCourses.length > 0 && (
-                      <section id="archived-courses" className='py-0 border-t border-white/10 pt-12 md:pt-16'>
+                      <section id="archived-courses" className='py-0 px-0 border-t border-white/10 pt-12 md:pt-16'>
                           <h2 className="font-headline mb-6 text-sm md:text-base font-black tracking-tight uppercase text-muted-foreground border-l-4 border-muted-foreground/30 pl-4">
                               Archived Courses
                           </h2>

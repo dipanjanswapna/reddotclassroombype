@@ -6,7 +6,6 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
-import { motion } from 'framer-motion';
 
 export const metadata: Metadata = {
   title: 'RDC SHOP - Red Dot Classroom',
@@ -65,10 +64,10 @@ export default async function CoursesPage({
     const homepageConfig = await getHomepageConfig();
     
   return (
-    <div className="bg-background mesh-gradient min-h-screen">
-        {/* Unified Hero Area: Seamless background blending */}
-        <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden">
-            <div className="container mx-auto px-1">
+    <div className="bg-background min-h-screen">
+        {/* Unified Hero Area: Seamless background blending with px-1 */}
+        <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden px-1">
+            <div className="container mx-auto px-0">
                 {/* Hero Carousel */}
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
                     <div className="mb-6">
@@ -76,7 +75,7 @@ export default async function CoursesPage({
                     </div>
                 )}
 
-                {/* Shop Intro: Extreme scaling for high-density feel */}
+                {/* Shop Intro: High-density feel */}
                 <div className="text-center max-w-xl mx-auto space-y-2">
                     <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
                         <TypingText text="Premium Learning Resources" className="inline" />
