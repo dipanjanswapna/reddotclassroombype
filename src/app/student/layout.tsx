@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookOpen, Video, HelpCircle, BookMarked, Trophy, Heart, Wallet, User, MessageSquare, LogOut, FileCheck2, Settings, Share2, Gift, Wrench
+  LayoutDashboard, BookOpen, HelpCircle, BookMarked, Heart, Wallet, User, MessageSquare, LogOut, Wrench, Share2, Gift, Video
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -76,7 +76,7 @@ export default function StudentLayout({
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-2xl flex justify-center overflow-hidden"
+          className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[25px] flex justify-center overflow-hidden"
         >
           <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1 px-2">
             {navItems.map((item) => (
@@ -94,12 +94,15 @@ export default function StudentLayout({
                 {getIsActive(item.href) && (
                   <motion.div 
                     layoutId="active-nav-pill-student"
-                    className="absolute inset-x-1 inset-y-2 bg-primary/10 rounded-xl -z-10"
+                    className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-2xl -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <item.icon className={cn("w-5 h-5 transition-transform duration-300", getIsActive(item.href) ? "scale-110" : "scale-100")} />
-                <span className="text-[10px] font-black uppercase tracking-tight whitespace-nowrap">{item.label}</span>
+                <item.icon className={cn("w-5 h-5 transition-transform duration-300", getIsActive(item.href) ? "text-primary scale-110" : "scale-100")} />
+                <span className={cn(
+                  "text-[9px] md:text-[10px] font-black uppercase tracking-tight whitespace-nowrap",
+                  getIsActive(item.href) ? "text-primary" : "text-muted-foreground"
+                )}>{item.label}</span>
               </Link>
             ))}
           </div>

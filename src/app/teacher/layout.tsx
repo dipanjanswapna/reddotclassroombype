@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from 'react';
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookCopy, Users, Video, DollarSign, User, ClipboardCheck, QrCode, TicketPercent, Badge, LogOut, FileCheck2
+  LayoutDashboard, BookCopy, Users, DollarSign, User, ClipboardCheck, QrCode, TicketPercent, Badge, LogOut, FileCheck2, Video
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
