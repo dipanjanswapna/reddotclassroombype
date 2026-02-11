@@ -12,6 +12,9 @@ import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 
+/**
+ * @fileOverview Teacher Layout refined with px-1 wall-to-wall layout and accent-color active pils.
+ */
 export default function TeacherLayout({
   children,
 }: {

@@ -43,7 +43,6 @@ interface DashboardClientProps {
 
 export function DashboardClient({ courses, users, enrollments }: DashboardClientProps) {
     // --- Data Processing for Charts ---
-    // Revenue Data
     const revenueData = [
       { name: 'Jan', total: 0 },
       { name: 'Feb', total: 0 },
@@ -73,7 +72,6 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
         }
     });
   
-    // User Roles Data
     const roleCounts = users.reduce((acc, user) => {
       acc[user.role] = (acc[user.role] || 0) + 1;
       return acc;
@@ -81,97 +79,104 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
   
     const userRolesData = Object.entries(roleCounts).map(([name, value]) => ({ name, value }));
   
-    // Recent Activity
-    const recentSignups = users.sort((a, b) => safeToDate(b.joined).getTime() - safeToDate(a.joined).getTime()).slice(0, 5);
+    const recentSignups = [...users].sort((a, b) => safeToDate(b.joined).getTime() - safeToDate(a.joined).getTime()).slice(0, 5);
 
     return (
         <div className="space-y-8">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">BDT {totalRevenue.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">All-time revenue</p>
-                </CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Revenue</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-black">৳{totalRevenue.toLocaleString()}</div>
+                        <DollarSign className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                    </CardContent>
                 </Card>
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
-                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{enrollments.length}</div>
-                    <p className="text-xs text-muted-foreground">Across all courses</p>
-                </CardContent>
+                
+                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Enrollments</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-black">{enrollments.length}</div>
+                        <BookOpen className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                    </CardContent>
                 </Card>
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{users.length}</div>
-                    <p className="text-xs text-muted-foreground">All registered users</p>
-                </CardContent>
+
+                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Users</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-black">{users.length}</div>
+                        <Users className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                    </CardContent>
                 </Card>
-                <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
-                    <BarChart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{courses.filter(c => c.status === 'Published').length}</div>
-                    <p className="text-xs text-muted-foreground">Total published courses</p>
-                </CardContent>
+
+                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-black">{courses.filter(c => c.status === 'Published').length}</div>
+                        <BarChart className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
+                    </CardContent>
                 </Card>
             </div>
             
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-1 lg:col-span-4">
-                    <CardHeader>
-                        <CardTitle>Revenue Overview</CardTitle>
-                        <CardDescription>Monthly revenue generated from course enrollments.</CardDescription>
+                <Card className="col-span-1 lg:col-span-4 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                        <CardTitle className="text-sm font-black uppercase tracking-tight">Revenue Overview</CardTitle>
                     </CardHeader>
-                    <CardContent className="pl-2">
+                    <CardContent className="p-5 pl-2">
                         <OverviewChart data={revenueData} />
                     </CardContent>
                 </Card>
-                 <Card className="col-span-1 lg:col-span-3">
-                    <CardHeader>
-                        <CardTitle>User Demographics</CardTitle>
-                        <CardDescription>Distribution of different user roles on the platform.</CardDescription>
+                 <Card className="col-span-1 lg:col-span-3 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                        <CardTitle className="text-sm font-black uppercase tracking-tight">User Demographics</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-5">
                         <UserRolesChart data={userRolesData} />
                     </CardContent>
                 </Card>
             </div>
     
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Activity /> Recent Activity</CardTitle>
-                    <CardDescription>A log of the most recent user signups on the platform.</CardDescription>
+             <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+                <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                    <div className="flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-primary" />
+                        <CardTitle className="text-sm font-black uppercase tracking-tight">Recent Activity</CardTitle>
+                    </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0 overflow-x-auto">
                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Joined</TableHead>
+                        <TableHeader className="bg-muted/30">
+                            <TableRow className="border-primary/10">
+                                <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">User</TableHead>
+                                <TableHead className="font-black uppercase tracking-widest text-[10px]">Role</TableHead>
+                                <TableHead className="font-black uppercase tracking-widest text-[10px]">Joined</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {recentSignups.map(user => {
                                 const joinedDate = safeToDate(user.joined);
                                 return (
-                                    <TableRow key={user.id}>
-                                        <TableCell className="font-medium">{user.name} ({user.email})</TableCell>
-                                        <TableCell><Badge variant="outline">{user.role}</Badge></TableCell>
-                                        <TableCell>{!isNaN(joinedDate.getTime()) ? formatDistanceToNow(joinedDate, { addSuffix: true }) : 'N/A'}</TableCell>
+                                    <TableRow key={user.id} className="border-primary/10 hover:bg-primary/5 transition-colors">
+                                        <TableCell className="px-6 py-4">
+                                            <div className="font-bold text-sm">{user.name}</div>
+                                            <div className="text-[10px] font-medium text-muted-foreground">{user.email}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest px-2.5 h-5 border-primary/20 text-primary">
+                                                {user.role}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-[10px] font-bold text-muted-foreground">
+                                            {!isNaN(joinedDate.getTime()) ? formatDistanceToNow(joinedDate, { addSuffix: true }) : 'N/A'}
+                                        </TableCell>
                                     </TableRow>
                                 )
                             })}

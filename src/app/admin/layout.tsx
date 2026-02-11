@@ -12,6 +12,10 @@ import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 
+/**
+ * @fileOverview Refined Admin Layout with 28 Ordered Buttons and px-1 wall-to-wall UI.
+ * Features a high-density horizontally scrollable bottom nav with white-pill active state.
+ */
 export default function AdminLayout({
   children,
 }: {

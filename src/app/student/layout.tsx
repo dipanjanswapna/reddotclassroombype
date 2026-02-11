@@ -12,6 +12,9 @@ import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 
+/**
+ * @fileOverview Student Layout refined with px-1 wall-to-wall layout and primary red active pils.
+ */
 export default function StudentLayout({
   children,
 }: {
