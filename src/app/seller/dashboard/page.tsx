@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -105,7 +104,7 @@ export default function SellerDashboardPage() {
         </motion.div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Students</CardTitle>
                 </CardHeader>
@@ -115,7 +114,7 @@ export default function SellerDashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-cyan-600 to-blue-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-cyan-600 to-blue-500 text-white overflow-hidden relative group">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
                 </CardHeader>
@@ -125,7 +124,7 @@ export default function SellerDashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Revenue</CardTitle>
                 </CardHeader>
@@ -135,7 +134,7 @@ export default function SellerDashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-violet-600 to-purple-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-violet-600 to-purple-500 text-white overflow-hidden relative group">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Avg. Completion</CardTitle>
                 </CardHeader>
@@ -149,7 +148,7 @@ export default function SellerDashboardPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-            <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+            <Card className="rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
                 <CardHeader className="bg-indigo-600/5 p-6 border-b border-black/5">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-indigo-600"/>
@@ -157,7 +156,7 @@ export default function SellerDashboardPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
-                    <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 flex items-start gap-4">
+                    <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 flex items-start gap-4">
                         <div className="p-3 rounded-xl bg-white shadow-sm shrink-0">
                             <Target className="w-6 h-6 text-indigo-600" />
                         </div>
@@ -172,7 +171,7 @@ export default function SellerDashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+            <Card className="rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
                 <CardHeader className="bg-indigo-600/5 p-6 border-b border-black/5">
                     <div className="flex items-center gap-2">
                         <Building2 className="h-5 w-5 text-indigo-600"/>
@@ -181,7 +180,7 @@ export default function SellerDashboardPage() {
                 </CardHeader>
                 <CardContent className="p-6">
                     <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="h-20 w-20 rounded-2xl bg-muted animate-pulse flex items-center justify-center font-black text-xl">
+                        <div className="h-20 w-20 rounded-xl bg-muted animate-pulse flex items-center justify-center font-black text-xl">
                             {userInfo?.name?.substring(0, 2).toUpperCase()}
                         </div>
                         <div className="space-y-1">
@@ -193,6 +192,9 @@ export default function SellerDashboardPage() {
                         </Button>
                     </div>
                 </CardContent>
+                <CardFooter className="bg-muted/20 p-4 justify-center border-t border-black/5">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Syncing live with RDC Learning Cloud</p>
+                </CardFooter>
             </Card>
         </div>
     </div>

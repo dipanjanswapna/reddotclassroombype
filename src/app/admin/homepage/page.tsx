@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -29,7 +28,7 @@ type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds
 /**
  * @fileOverview Admin Homepage Management
  * Unified CMS for controlling all dynamic sections of the homepage.
- * Optimized for high-density editing with 20px corners.
+ * Optimized for high-density editing with 20px corners and wall-to-wall layout.
  */
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -342,13 +341,13 @@ export default function AdminHomepageManagementPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 px-1">
-      <div className="flex items-center justify-between px-1">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 mb-2">
         <div className="border-l-4 border-primary pl-4">
-          <h1 className="font-headline text-3xl font-black uppercase tracking-tight">Homepage <span className="text-primary">CMS</span></h1>
-          <p className="mt-1 text-sm text-muted-foreground font-medium">Control the content displayed on your homepage.</p>
+          <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">Homepage <span className="text-primary">CMS</span></h1>
+          <p className="mt-1 text-[10px] md:text-sm text-muted-foreground font-medium">Control the content displayed on your homepage.</p>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="shadow-xl rounded-xl font-black h-12 uppercase tracking-widest px-8">
-          {isSaving ? <Loader2 className="mr-2 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+        <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto shadow-xl rounded-xl font-black h-11 md:h-12 uppercase tracking-widest px-6 md:px-8 text-[10px] md:text-xs">
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
           Save Changes
         </Button>
       </div>

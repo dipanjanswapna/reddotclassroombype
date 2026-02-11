@@ -129,7 +129,7 @@ export default function MyCoursesPage() {
                     })}
                 </div>
             ) : (
-                <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
+                <Card className="rounded-[20px] border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">You have no courses in progress.</p>
                 </Card>
             )}
@@ -157,7 +157,7 @@ export default function MyCoursesPage() {
                     })}
                 </div>
             ) : (
-                 <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
+                 <Card className="rounded-[20px] border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">You have not completed any courses yet.</p>
                 </Card>
             )}
@@ -173,7 +173,7 @@ export default function MyCoursesPage() {
                     })}
                 </div>
             ) : (
-                <Card className="rounded-2xl border-dashed p-8 text-center bg-muted/20 border-primary/20">
+                <Card className="rounded-[20px] border-dashed p-8 text-center bg-muted/20 border-primary/20">
                     <p className="text-muted-foreground font-bold">Your wishlist is empty.</p>
                 </Card>
             )}
