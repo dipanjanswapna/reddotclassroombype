@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import {
   Users,
@@ -7,6 +6,7 @@ import {
   BarChart,
   DollarSign,
   Activity,
+  TrendingUp,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Course } from '@/lib/types';
@@ -84,7 +84,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
     return (
         <div className="space-y-8">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
+                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Revenue</CardTitle>
                     </CardHeader>
@@ -94,7 +94,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
                 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
+                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Enrollments</CardTitle>
                     </CardHeader>
@@ -104,7 +104,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
+                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Users</CardTitle>
                     </CardHeader>
@@ -114,7 +114,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
+                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
                     </CardHeader>
@@ -126,7 +126,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
             </div>
             
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-1 lg:col-span-4 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+                <Card className="col-span-1 lg:col-span-4 rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">Revenue Overview</CardTitle>
                     </CardHeader>
@@ -134,7 +134,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                         <OverviewChart data={revenueData} />
                     </CardContent>
                 </Card>
-                 <Card className="col-span-1 lg:col-span-3 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+                 <Card className="col-span-1 lg:col-span-3 rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">User Demographics</CardTitle>
                     </CardHeader>
@@ -144,7 +144,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                 </Card>
             </div>
     
-             <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
+             <Card className="rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
                 <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 text-primary" />

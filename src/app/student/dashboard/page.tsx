@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -189,12 +188,12 @@ export default function DashboardPage() {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="relative rounded-[25px] overflow-hidden p-6 bg-red-600 text-white shadow-2xl shadow-red-600/30 group"
+                    className="relative rounded-[20px] overflow-hidden p-6 bg-red-600 text-white shadow-2xl shadow-red-600/30 group"
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Video className="w-32 h-32 rotate-12"/></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-4 text-center md:text-left">
-                            <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                            <div className="h-12 w-12 rounded-[16px] bg-white/20 flex items-center justify-center shrink-0">
                                 <Video className="w-6 h-6 animate-pulse" />
                             </div>
                             <div>
@@ -212,7 +211,7 @@ export default function DashboardPage() {
           </AnimatePresence>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="rounded-[25px] border-none shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><BookOpen className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">আমার কোর্সসমূহ</CardTitle>
@@ -223,7 +222,7 @@ export default function DashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-none shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><TrendingUp className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">গড় অগ্রগতি</CardTitle>
@@ -236,7 +235,7 @@ export default function DashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-none shadow-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Award className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">অর্জিত সার্টিফিকেট</CardTitle>
@@ -247,7 +246,7 @@ export default function DashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[25px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white overflow-hidden relative group">
+            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Crown className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">লিডারবোর্ড র‍্যাঙ্ক</CardTitle>
@@ -268,7 +267,7 @@ export default function DashboardPage() {
                             <motion.div key={idx} whileHover={{ y: -3 }}>
                                 <Link href={tool.href}>
                                     <Card className="rounded-[20px] border-primary/10 shadow-lg bg-card group hover:border-primary transition-all p-5 flex items-center gap-4">
-                                        <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform", tool.color)}>
+                                        <div className={cn("h-12 w-12 rounded-[16px] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform", tool.color)}>
                                             <tool.icon className="w-6 h-6" />
                                         </div>
                                         <div className="flex-grow min-w-0">
@@ -315,7 +314,7 @@ export default function DashboardPage() {
                                 </div>
                             </Card>
                         )) : (
-                            <Card className="col-span-full rounded-[25px] border-dashed p-12 text-center bg-muted/20 border-primary/20">
+                            <Card className="col-span-full rounded-[20px] border-dashed p-12 text-center bg-muted/20 border-primary/20">
                                 <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                 <p className="text-muted-foreground font-bold">You are not enrolled in any courses yet.</p>
                                 <Button asChild className="mt-4 rounded-xl font-black uppercase tracking-widest" variant="outline">
@@ -328,7 +327,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-8">
-                <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
+                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-primary/5 p-5 border-b border-white/10">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -362,7 +361,7 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/20 shadow-xl bg-card overflow-hidden">
+                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
                         <div className="flex items-center gap-2">
                             <Crown className="w-5 h-5 text-accent" />
@@ -393,7 +392,7 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
+                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-accent" />
