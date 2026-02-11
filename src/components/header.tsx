@@ -39,12 +39,14 @@ import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language } = useLanguage();
   const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
+  const pathname = usePathname();
   const isDark = variant === 'dark';
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -135,29 +137,24 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                   
                   <Separator orientation="vertical" className="h-6 mx-2 hidden lg:block opacity-50" />
                   
-                  <Button variant="ghost" size="sm" className={cn(
-                    "hidden lg:inline-flex rounded-full text-xs font-bold gap-2", 
-                    isDark && "text-white hover:bg-white/20"
-                  )}>
-                    <Phone className="h-3.5 w-3.5 text-primary"/> 01641035736
-                  </Button>
-
                   {!user && (
-                    <div className="flex items-center gap-2 ml-2">
+                    <div className="flex items-center bg-muted/50 dark:bg-white/10 p-1 rounded-[20px] border border-white/10 ml-2 shadow-inner">
                       <Button asChild variant="ghost" size="sm" className={cn(
-                        "rounded-full font-bold",
-                        isDark && "text-white hover:bg-white/20"
+                        "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
+                        pathname === '/login' 
+                          ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
+                          : "text-muted-foreground hover:text-foreground"
                       )}>
                           <Link href="/login">{t.login[language]}</Link>
                       </Button>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button asChild size="sm" className={cn(
-                          "rounded-full font-bold px-6 shadow-lg shadow-primary/20",
-                          isDark && "bg-white text-black hover:bg-gray-200"
-                        )}>
-                            <Link href="/signup">{t.signup[language]}</Link>
-                        </Button>
-                      </motion.div>
+                      <Button asChild variant="ghost" size="sm" className={cn(
+                        "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
+                        pathname === '/signup' 
+                          ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
+                          : "text-muted-foreground hover:text-foreground"
+                      )}>
+                          <Link href="/signup">{t.signup[language]}</Link>
+                      </Button>
                     </div>
                   )}
               </div>
