@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, useSpring, useTransform, animate } from 'framer-motion';
+import { motion, animate } from 'framer-motion';
 import { Card } from './ui/card';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/language-context';
@@ -42,9 +42,9 @@ export function StatsSection({ stats, title }: StatsSectionProps) {
 
   return (
     <section className="py-8 md:py-10 overflow-hidden">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-1">
         {title && (
-          <h2 className="font-headline text-xl md:text-2xl lg:text-3xl font-bold mb-8 md:mb-10 text-center">
+          <h2 className="font-headline text-xl md:text-2xl lg:text-3xl font-black mb-8 md:mb-10 text-center uppercase tracking-tight">
             {title[language] || title['en']}
           </h2>
         )}
@@ -58,7 +58,7 @@ export function StatsSection({ stats, title }: StatsSectionProps) {
               transition={{ delay: index * 0.1 }}
             >
               <Card className={cn(
-                "p-6 md:p-8 flex flex-col justify-center h-36 md:h-40 border-none shadow-sm rounded-xl transition-transform hover:scale-[1.02]",
+                "p-6 md:p-8 flex flex-col justify-center h-36 md:h-40 border-none shadow-sm rounded-[20px] transition-transform hover:scale-[1.02]",
                 stat.color
               )}>
                 <div className="space-y-1">

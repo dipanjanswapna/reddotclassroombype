@@ -11,6 +11,7 @@ import {
   Users,
   MessageSquare,
   Phone,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -20,7 +21,6 @@ import { cn, getYoutubeVideoId } from '@/lib/utils';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations, getUsers, getEnrollments, getCourses } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
-import { PartnersLogoScroll } from '@/components/partners-logo-scroll';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,7 +28,6 @@ import { useLanguage } from '@/context/language-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import WhyTrustUs from '@/components/why-trust-us';
-import { DynamicCollaborationsCarousel } from '@/components/dynamic-collaborations-carousel';
 import { NoticeBoard } from '@/components/notice-board';
 import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
@@ -48,11 +47,9 @@ export default function Home() {
   const [admissionCourses, setAdmissionCourses] = React.useState<Course[]>([]);
   const [jobCourses, setJobCourses] = React.useState<Course[]>([]);
   const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
-  const [approvedCollaborators, setApprovedCollaborators] = React.useState<Organization[]>([]);
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [loading, setLoading] = React.useState(true);
   
-  // Stats state
   const [liveStats, setLiveStats] = React.useState({
     learners: 0,
     completionRate: 0,
@@ -102,28 +99,18 @@ export default function Home() {
             inst.status === 'Approved' && featuredIds.includes(inst.id!)
         ));
 
-        const collabIds = config.collaborations?.organizationIds || [];
-        setApprovedCollaborators(orgsData.filter(org => 
-            org.status === 'approved' && collabIds.includes(org.id!)
-        ));
-
-        // Calculate Live Stats
-        const learnerCount = allUsers.filter(u => u.role === 'Student').length;
         const totalEnrollments = allEnrollments.length;
         const completedEnrollments = allEnrollments.filter(e => e.status === 'completed').length;
         const completionRate = totalEnrollments > 0 ? Math.round((completedEnrollments / totalEnrollments) * 100) : 83;
         
-        const liveCoursesCount = allCourses.filter(c => c.type === 'Online').length;
-        const jobPlacementCount = allEnrollments.filter(e => {
-            const course = allCourses.find(c => c.id === e.courseId);
-            return course?.category === 'Job Prep' || course?.category === 'BCS';
-        }).length + 9000; 
-
         setLiveStats({
-            learners: learnerCount > 0 ? learnerCount : 150000,
+            learners: allUsers.filter(u => u.role === 'Student').length || 150000,
             completionRate,
-            liveCoursesCount: liveCoursesCount > 0 ? liveCoursesCount : 28,
-            jobPlacements: jobPlacementCount
+            liveCoursesCount: allCourses.filter(c => c.type === 'Online').length || 28,
+            jobPlacements: 9000 + (allEnrollments.filter(e => {
+                const course = allCourses.find(c => c.id === e.courseId);
+                return course?.category === 'Job Prep' || course?.category === 'BCS';
+            }).length)
         });
 
       } catch (error) {
@@ -143,13 +130,7 @@ export default function Home() {
     );
   }
   
-  if (!homepageConfig) {
-      return (
-          <div className="flex h-screen items-center justify-center">
-              <p>Could not load homepage content. Please try again later.</p>
-          </div>
-      )
-  }
+  if (!homepageConfig) return null;
   
   const CourseGrid = ({ courses }: { courses: Course[] }) => (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
@@ -170,29 +151,20 @@ export default function Home() {
     { label: { bn: "লাইভ কোর্স", en: "Live Course" }, value: liveStats.liveCoursesCount, color: "bg-[#fef9c3]" },
   ];
 
-  const contactSectionData = homepageConfig?.offlineHubSection?.contactSection;
-
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full px-1">
         {homepageConfig.welcomeSection?.display && (
             <section className="py-6 md:py-8 text-center overflow-hidden">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto px-1">
                      <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
                         className="flex flex-col items-center gap-2 md:gap-4"
                      >
-                        <motion.div 
-                          initial={{ scale: 0.9 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                          className="flex items-center justify-center gap-3 md:gap-4"
-                        >
-                            <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
-                                RED DOT <span className="text-primary">CLASSROOM</span>
-                            </h1>
-                        </motion.div>
+                        <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
+                            RED DOT <span className="text-primary">CLASSROOM</span>
+                        </h1>
                         <div className="w-full max-w-2xl mx-auto">
                             <TypingText 
                                 text={homepageConfig.welcomeSection?.description?.[language] || homepageConfig.welcomeSection?.description?.['en'] || ''}
@@ -210,29 +182,16 @@ export default function Home() {
 
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8 md:py-10 overflow-hidden relative">
-              <div className="container mx-auto px-4">
+              <div className="container mx-auto px-1">
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                    className="group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-[25px] border border-border shadow-xl bg-card"
+                    className="group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-[20px] border border-border shadow-xl bg-card"
                   >
-                      <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
-                      <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/10 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700 ease-in-out"></div>
-                      
                       <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10 w-full">
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: -2 }}
-                            className="relative w-24 h-24 md:w-40 md:h-40 shrink-0"
-                          >
-                            <Image
-                                src={homepageConfig.strugglingStudentSection.imageUrl}
-                                alt="Struggling in studies"
-                                fill
-                                className="object-contain"
-                                data-ai-hint="confused student illustration"
-                            />
+                          <motion.div whileHover={{ scale: 1.05 }} className="relative w-24 h-24 md:w-40 md:h-40 shrink-0">
+                            <Image src={homepageConfig.strugglingStudentSection.imageUrl} alt="Help" fill className="object-contain" />
                           </motion.div>
                           <div className="space-y-2 flex-grow">
                               <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900">
@@ -243,28 +202,21 @@ export default function Home() {
                               </p>
                           </div>
                       </div>
-                      
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="z-10 shrink-0 w-full md:w-auto"
-                      >
-                        <Button asChild size="lg" className="w-full md:w-auto font-black text-sm md:text-lg px-8 h-12 md:h-14 rounded-xl shadow-xl shadow-primary/20 group-hover:shadow-primary/40 transition-all duration-300">
-                            <Link href="/strugglers-studies">
-                                {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.['en']}
-                                 <ArrowRight className="ml-2 md:ml-3 h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-2" />
-                            </Link>
-                        </Button>
-                      </motion.div>
+                      <Button asChild size="lg" className="z-10 w-full md:w-auto font-black text-sm rounded-xl shadow-xl shadow-primary/20">
+                        <Link href="/strugglers-studies">
+                            {homepageConfig.strugglingStudentSection?.buttonText?.[language] || homepageConfig.strugglingStudentSection?.buttonText?.['en']}
+                             <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
                   </motion.div>
               </div>
           </section>
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section aria-labelledby="categories-heading" className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-4">
-              <h2 id="categories-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 md:mb-10 text-left">
+          <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
+            <div className="container mx-auto px-1">
+              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 text-left">
                 {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
               </h2>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
@@ -272,17 +224,17 @@ export default function Home() {
           </section>
         )}
 
-        <div className="container mx-auto px-4 overflow-hidden">
+        <div className="container mx-auto px-1 overflow-hidden">
             <NoticeBoard />
         </div>
 
         {homepageConfig.journeySection?.display && (
-          <section aria-labelledby="journey-heading" className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-4">
-              <h2 id="journey-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.[language]}</h2>
-              <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base leading-relaxed">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.[language]}</p>
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10">
+            <div className="container mx-auto px-1">
+              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.['en']}</h2>
+              <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.['en']}</p>
               <div>
-                <h3 className="font-headline text-base md:text-lg lg:text-xl font-bold mb-6 pl-4">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.[language]}</h3>
+                <h3 className="font-headline text-base md:text-lg lg:text-xl font-bold mb-6 pl-4">{homepageConfig.journeySection?.courseTitle?.[language] || homepageConfig.journeySection?.courseTitle?.['en']}</h3>
                 <CourseGrid courses={liveCourses} />
               </div>
             </div>
@@ -290,15 +242,15 @@ export default function Home() {
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <section aria-labelledby="teachers-heading" className="overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-4">
+          <section className="overflow-hidden py-8 md:py-10">
+            <div className="container mx-auto px-1">
               <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                   <div className="text-left">
-                      <h2 id="teachers-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.[language]}</h2>
-                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm lg:text-base leading-tight">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.[language]}</p>
+                      <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.['en']}</h2>
+                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm lg:text-base leading-tight">{homepageConfig.teachersSection?.subtitle?.[language] || homepageConfig.teachersSection?.subtitle?.['en']}</p>
                   </div>
                   <Button asChild variant="outline" size="sm" className="rounded-xl shrink-0 h-8 md:h-10 text-[10px] md:text-xs font-bold uppercase">
-                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.[language]}</Link>
+                      <Link href="/teachers">{homepageConfig.teachersSection?.buttonText?.[language] || homepageConfig.teachersSection?.buttonText?.['en']}</Link>
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
@@ -307,11 +259,11 @@ export default function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section aria-labelledby="ssc-hsc-heading" className="overflow-hidden py-8 md:py-10">
-              <div className="container mx-auto px-4">
+          <section className="overflow-hidden py-8 md:py-10">
+              <div className="container mx-auto px-1">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
-                    <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] lg:text-xs py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.[language]}</Badge>
-                    <h2 id="ssc-hsc-heading" className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.[language]}</h2>
+                    <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
+                    <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
                   </div>
                   <CourseGrid courses={sscHscCourses} />
               </div>
@@ -325,45 +277,41 @@ export default function Home() {
         )}
 
         <section className="relative overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-4 relative z-10">
+            <div className="container mx-auto px-1 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
-        {contactSectionData?.display && (
+        {homepageConfig.offlineHubSection?.contactSection?.display && (
             <section className="py-8 md:py-10 overflow-hidden">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto px-1">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="relative rounded-[25px] overflow-hidden p-8 md:p-16 bg-gradient-to-br from-primary via-primary/80 to-black text-white shadow-2xl"
+                        className="relative rounded-[20px] overflow-hidden p-8 md:p-16 bg-gradient-to-br from-primary via-primary/80 to-black text-white shadow-2xl"
                     >
-                        <div className="absolute top-0 right-0 -m-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-                        <div className="absolute bottom-0 left-0 -m-20 w-64 h-64 bg-black/20 rounded-full blur-3xl" />
-                        
                         <div className="relative z-10 max-w-3xl space-y-6">
-                            <div className="inline-block p-4 bg-white/10 backdrop-blur-md rounded-2xl mb-4">
+                            <div className="inline-block p-4 bg-white/10 backdrop-blur-md rounded-[20px] mb-4">
                                 <MessageSquare className="w-10 h-10 text-white" />
                             </div>
-                            <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tight leading-tight uppercase">
-                                {contactSectionData.title[language] || contactSectionData.title['en'] || "Have a Question?"}
+                            <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tight leading-tight uppercase text-left">
+                                {homepageConfig.offlineHubSection.contactSection.title[language] || "Have a Question?"}
                             </h2>
-                            <p className="text-lg md:text-xl text-white/80 font-medium leading-relaxed max-w-xl">
-                                {contactSectionData.subtitle[language] || contactSectionData.subtitle['en'] || "Talk to our student advisors anytime."}
+                            <p className="text-lg md:text-xl text-white/80 font-medium leading-relaxed max-w-xl text-left">
+                                {homepageConfig.offlineHubSection.contactSection.subtitle[language] || "Talk to our student advisors anytime."}
                             </p>
                             <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
-                                <Button asChild size="lg" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 shadow-xl border-none">
-                                    <a href={`tel:${contactSectionData.callButtonNumber}`}>
+                                <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 border-none">
+                                    <a href={`tel:${homepageConfig.offlineHubSection.contactSection.callButtonNumber}`}>
                                         <Phone className="mr-3 h-5 w-5" />
-                                        {contactSectionData.callButtonText[language] || contactSectionData.callButtonText['en'] || "Call Support"}
+                                        {homepageConfig.offlineHubSection.contactSection.callButtonText[language] || "Call Support"}
                                     </a>
                                 </Button>
-                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
-                                    <a href={`https://wa.me/${contactSectionData.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
+                                    <a href={`https://wa.me/${homepageConfig.offlineHubSection.contactSection.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
                                         <MessageSquare className="mr-3 h-5 w-5" />
-                                        {contactSectionData.whatsappButtonText[language] || contactSectionData.whatsappButtonText['en'] || "WhatsApp Us"}
+                                        {homepageConfig.offlineHubSection.contactSection.whatsappButtonText[language] || "WhatsApp Us"}
                                     </a>
                                 </Button>
                             </div>
