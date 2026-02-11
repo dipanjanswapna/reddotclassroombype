@@ -26,6 +26,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
 
+/**
+ * @fileOverview Admin Homepage Management
+ * Unified CMS for controlling all dynamic sections of the homepage.
+ * Optimized for high-density editing with 20px corners.
+ */
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
   const [config, setConfig] = useState<HomepageConfig | null>(null);
@@ -132,6 +137,31 @@ export default function AdminHomepageManagementPage() {
                 array[index] = { ...array[index], [field]: value };
             }
             
+            return {
+                ...prev,
+                [sectionKey]: {
+                    ...section,
+                    [arrayKey]: array
+                }
+            };
+        });
+    };
+
+    const handleDeepNestedLangChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
+        setConfig(prev => {
+            if (!prev || index < 0) return prev;
+            
+            const section = (prev[sectionKey] as any) || { display: true };
+            const array = section[arrayKey] ? [...section[arrayKey]] : [];
+    
+            if (array[index]) {
+                const item = { ...array[index] };
+                const langObject = { ...(item[field] || {}) };
+                langObject[lang] = value;
+                item[field] = langObject;
+                array[index] = item;
+            }
+    
             return {
                 ...prev,
                 [sectionKey]: {

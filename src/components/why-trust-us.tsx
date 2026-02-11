@@ -32,7 +32,7 @@ const pastelColors = [
 
 /**
  * @fileOverview WhyTrustUs Component
- * Refined with px-1 wall-to-wall experience and dynamic testimonial integration.
+ * Live testimonial and feature section with px-1 wall-to-wall layout and 20px rounding.
  */
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
@@ -48,6 +48,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   return (
     <section className="py-8 md:py-12 overflow-hidden relative px-1">
       <div className="container mx-auto px-0">
+        {/* Features Grid */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -67,9 +68,8 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                         const bgColor = pastelColors[index % pastelColors.length];
                         
                         return (
-                            <motion.div 
+                            <div 
                                 key={feature.id || `feature-${index}`}
-                                whileHover={{ y: -3 }}
                                 className={cn(
                                     "border border-primary/5 p-4 rounded-[20px] flex items-center gap-4 transition-all shadow-sm",
                                     bgColor
@@ -81,13 +81,14 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                                 <h3 className="font-black text-[11px] md:text-xs text-gray-900 dark:text-foreground uppercase tracking-tight leading-snug">
                                     {feature.title?.[language] || feature.title?.['en']}
                                 </h3>
-                            </motion.div>
+                            </div>
                         );
                     })}
                 </div>
             </div>
         </motion.div>
 
+        {/* Testimonials Carousel - LIVE */}
         <div className="max-w-5xl mx-auto">
           <Carousel
             plugins={[plugin.current]}
@@ -114,7 +115,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                             </div>
                         </div>
                         <div className="md:col-span-4 flex justify-center">
-                            <div className="relative w-40 h-40 md:w-56 md:h-56 rounded-[20px] overflow-hidden border-4 border-white shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <div className="relative w-40 h-40 md:w-56 md:h-56 rounded-[20px] overflow-hidden border-4 border-white shadow-2xl transform rotate-3 transition-transform duration-500 hover:rotate-0">
                                 <Image src={testimonial.imageUrl} alt={testimonial.studentName} fill className="object-cover" data-ai-hint={testimonial.dataAiHint} />
                                 <div className="absolute top-2 right-2 bg-yellow-400 p-1.5 rounded-xl shadow-lg border border-white">
                                     <Star className="w-4 h-4 text-white fill-current" />

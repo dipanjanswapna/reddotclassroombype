@@ -11,6 +11,11 @@ import { safeToDate } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Skeleton } from './ui/skeleton';
 
+/**
+ * @fileOverview NoticeBoard Component
+ * Fetches live notices from Firestore and displays them in a high-density card.
+ * Uses 20px rounding and px-1 spacing.
+ */
 export function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +56,7 @@ export function NoticeBoard() {
     <div className="my-8 px-1">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
             <Card className="bg-card dark:bg-card/10 border border-primary/20 rounded-[20px] shadow-lg transition-all duration-300">
-                <CardHeader>
+                <CardHeader className="p-5 md:p-6 pb-2">
                     <div className="flex items-center gap-3 text-primary text-left">
                         <div className="bg-primary/10 p-2 rounded-xl">
                             <Megaphone className="w-6 h-6 text-primary" />
@@ -59,7 +64,7 @@ export function NoticeBoard() {
                         <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-foreground">Notice Board</CardTitle>
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-5 md:p-6 pt-2">
                     {loading ? (
                        <NoticeBoardSkeleton />
                     ) : notices.length > 0 ? (
@@ -68,10 +73,10 @@ export function NoticeBoard() {
                                 <button 
                                     key={notice.id}
                                     onClick={() => setSelectedNotice(notice)}
-                                    className="w-full text-left p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-200 group"
+                                    className="w-full text-left p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-200 group border border-transparent hover:border-primary/10"
                                 >
                                     <div className="flex items-center gap-3 text-sm font-semibold">
-                                        <Pin className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+                                        <Pin className="h-4 w-4 text-primary group-hover:scale-110 transition-transform shrink-0" />
                                         <span className="truncate flex-grow text-foreground">{notice.title}</span>
                                         <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground shrink-0">{formatDateSafe(notice.publishedAt, 'dd MMM')}</span>
                                     </div>
@@ -79,22 +84,22 @@ export function NoticeBoard() {
                             ))}
                         </div>
                     ) : (
-                       <p className="text-sm text-center text-muted-foreground py-4 font-medium">No recent notices.</p>
+                       <p className="text-sm text-center text-muted-foreground py-4 font-medium italic opacity-60">No recent announcements.</p>
                     )}
                 </CardContent>
             </Card>
 
-            <DialogContent className="rounded-[20px] border-white/10">
+            <DialogContent className="rounded-[20px] border-white/10 max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-bold">{selectedNotice?.title}</DialogTitle>
+                    <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">{selectedNotice?.title}</DialogTitle>
                     {selectedNotice?.publishedAt && (
-                      <DialogDescription className="flex items-center gap-2 pt-2 font-medium">
-                          <Calendar className="w-4 h-4 text-primary"/>
+                      <DialogDescription className="flex items-center gap-2 pt-2 font-bold text-[10px] uppercase tracking-widest">
+                          <Calendar className="w-3.5 h-3.5 text-primary"/>
                           Published on {formatDateSafe(selectedNotice.publishedAt, 'PPP')}
                       </DialogDescription>
                     )}
                 </DialogHeader>
-                <div className="py-4 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto font-medium leading-relaxed">
+                <div className="py-6 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto font-medium leading-relaxed text-sm md:text-base border-t border-primary/5 mt-4">
                     {selectedNotice?.content}
                 </div>
             </DialogContent>

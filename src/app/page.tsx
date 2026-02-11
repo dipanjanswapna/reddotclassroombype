@@ -33,6 +33,11 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
     ssr: false,
 });
 
+/**
+ * @fileOverview Dynamic Homepage
+ * Fetches all configurations from Firestore to provide a "Live" experience via Admin CMS.
+ * Implements px-1 wall-to-wall layout and 20px rounding.
+ */
 export default function Home() {
   const { language } = useLanguage();
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
@@ -132,6 +137,7 @@ export default function Home() {
 
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full px-1">
+        {/* Welcome Section - LIVE */}
         {homepageConfig.welcomeSection?.display && (
             <section className="py-6 md:py-8 text-center overflow-hidden px-1">
                 <div className="container mx-auto px-0">
@@ -155,10 +161,12 @@ export default function Home() {
             </section>
         )}
 
+        {/* Hero Carousel - LIVE */}
         <section className="py-0 overflow-hidden px-1">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
+        {/* Struggling Student Banner - LIVE */}
         {homepageConfig.strugglingStudentSection?.display && (
           <section className="py-8 md:py-10 overflow-hidden relative px-1">
               <div className="container mx-auto px-0">
@@ -192,6 +200,7 @@ export default function Home() {
           </section>
         )}
 
+        {/* Categories Section - LIVE */}
         {homepageConfig.categoriesSection?.display && (
           <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0">
@@ -203,10 +212,12 @@ export default function Home() {
           </section>
         )}
 
+        {/* Notice Board - LIVE */}
         <div className="container mx-auto px-1 overflow-hidden">
             <NoticeBoard />
         </div>
 
+        {/* Journey Section (Live Courses) - LIVE */}
         {homepageConfig.journeySection?.display && (
           <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0">
@@ -220,6 +231,7 @@ export default function Home() {
           </section>
         )}
 
+        {/* Teachers Section - LIVE */}
         {homepageConfig.teachersSection?.display && (
           <section className="overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0">
@@ -237,22 +249,26 @@ export default function Home() {
           </section>
         )}
 
+        {/* Why Choose Us & Testimonials - LIVE */}
         <div className="px-1">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </div>
         
+        {/* Stats Section - LIVE */}
         {homepageConfig.statsSection?.display && (
           <div className="px-1">
             <StatsSection stats={dynamicStats} title={homepageConfig.statsSection.title} />
           </div>
         )}
 
+        {/* Callback Form - LIVE */}
         <section className="relative overflow-hidden py-8 md:py-10 px-1">
             <div className="container mx-auto px-0 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
+        {/* "Have a Question?" Section - LIVE */}
         {homepageConfig.offlineHubSection?.contactSection?.display && (
             <section className="py-8 md:py-10 overflow-hidden px-1">
                 <div className="container mx-auto px-0">
