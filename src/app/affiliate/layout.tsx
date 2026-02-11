@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, Link2, BarChart3, DollarSign, PhoneCall, User, Badge, LogOut
+  LayoutDashboard, Link2, BarChart3, DollarSign, PhoneCall, User, Badge as BadgeIcon, LogOut, Settings, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -43,7 +43,8 @@ export default function AffiliateLayout({
     { href: "/affiliate/payouts", icon: DollarSign, label: "Payouts" },
     { href: "/affiliate/absent-students", icon: PhoneCall, label: "Calls" },
     { href: "/affiliate/profile", icon: User, label: "Profile" },
-    { href: "/affiliate/id-card", icon: Badge, label: "ID Card" },
+    { href: "/affiliate/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/affiliate/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 

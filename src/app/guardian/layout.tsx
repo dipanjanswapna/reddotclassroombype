@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  User, BookOpen, BarChart3, Wallet, MessageSquare, LayoutDashboard, Badge, ClipboardCheck, LogOut
+  User, BookOpen, BarChart3, Wallet, MessageSquare, LayoutDashboard, Badge as BadgeIcon, ClipboardCheck, LogOut, Settings, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -44,7 +44,8 @@ export default function GuardianLayout({
     { href: "/guardian/payment-history", icon: Wallet, label: "Billing" },
     { href: "/guardian/contact-teachers", icon: MessageSquare, label: "Contact" },
     { href: "/guardian/profile", icon: User, label: "Profile" },
-    { href: "/guardian/id-card", icon: Badge, label: "ID Card" },
+    { href: "/guardian/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/guardian/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 

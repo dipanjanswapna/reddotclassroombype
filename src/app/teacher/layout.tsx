@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookCopy, Users, DollarSign, User, ClipboardCheck, QrCode, TicketPercent, Badge, LogOut, FileCheck2, Video
+  LayoutDashboard, BookCopy, Users, DollarSign, User, ClipboardCheck, QrCode, TicketPercent, Badge as BadgeIcon, LogOut, FileCheck2, Video, Settings, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -47,7 +47,8 @@ export default function TeacherLayout({
     { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promos" },
     { href: "/teacher/earnings", icon: DollarSign, label: "Sales" },
     { href: "/teacher/profile", icon: User, label: "Profile" },
-    { href: "/teacher/id-card", icon: Badge, label: "ID Card" },
+    { href: "/teacher/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/teacher/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
   

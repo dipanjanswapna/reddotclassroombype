@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -39,20 +39,30 @@ export default function AdminLayout({
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Home" },
         { href: "/admin/homepage", icon: Home, label: "CMS" },
-        { href: "/admin/store/products", icon: Store, label: "Store" },
+        { href: "/admin/store/products", icon: Store, label: "Products" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
+        { href: "/admin/store/categories", icon: Layers3, label: "Category" },
+        { href: "/admin/store/rewards", icon: Gift, label: "Rewards" },
+        { href: "/admin/store/redeem-requests", icon: Truck, label: "Redeem" },
         { href: "/admin/offline-hub", icon: Building, label: "Offline" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/group-access", icon: Users2, label: "Groups" },
         { href: "/admin/absent-students", icon: PhoneCall, label: "Calls" },
+        { href: "/admin/callback-requests", icon: MessageSquare, label: "Callbacks" },
         { href: "/admin/users", icon: UserCog, label: "Staff" },
-        { href: "/admin/students", icon: Users, label: "Users" },
+        { href: "/admin/students", icon: Users, label: "Students" },
+        { href: "/admin/teachers", icon: UserCheck, label: "Teachers" },
+        { href: "/admin/sellers", icon: Handshake, label: "Partners" },
+        { href: "/admin/doubt-solvers", icon: HelpCircle, label: "Solvers" },
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
+        { href: "/admin/pre-bookings", icon: Bookmark, label: "Pre-book" },
         { href: "/admin/question-bank", icon: Database, label: "Q-Bank" },
         { href: "/admin/notices", icon: Megaphone, label: "Notice" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promos" },
         { href: "/admin/financials", icon: DollarSign, label: "Sales" },
-        { href: "/admin/analytics", icon: AreaChart, label: "Stats" },
+        { href: "/admin/analytics", icon: AreaChart, label: "Traffic" },
+        { href: "/admin/reports", icon: FileBarChart, label: "Reports" },
+        { href: "/admin/id-card", icon: IdCard, label: "ID Card" },
         { href: "/admin/settings", icon: Settings, label: "System" },
         { href: "/", icon: LogOut, label: "Exit", action: logout },
     ];

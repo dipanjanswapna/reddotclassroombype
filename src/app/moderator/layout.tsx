@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, QrCode, PhoneCall, FileScan, Ticket, User, Badge, LogOut
+  LayoutDashboard, QrCode, PhoneCall, FileScan, Ticket, User, Badge as BadgeIcon, LogOut, Settings, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -43,7 +43,8 @@ export default function ModeratorLayout({
     { href: "/moderator/content-review", icon: FileScan, label: "Review" },
     { href: "/moderator/support-tickets", icon: Ticket, label: "Tickets" },
     { href: "/moderator/profile", icon: User, label: "Profile" },
-    { href: "/moderator/id-card", icon: Badge, label: "ID Card" },
+    { href: "/moderator/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/moderator/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, BookCopy, Users, PhoneCall, QrCode, BarChart3, Banknote, Paintbrush, Badge, LogOut
+  LayoutDashboard, BookCopy, Users, PhoneCall, QrCode, BarChart3, Banknote, Paintbrush, Badge as BadgeIcon, LogOut, Settings, IdCard
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -46,7 +46,8 @@ export default function SellerLayout({
     { href: "/seller/payouts", icon: Banknote, label: "Payouts" },
     { href: "/seller/branding", icon: Paintbrush, label: "Branding" },
     { href: "/seller/profile", icon: Users, label: "Profile" },
-    { href: "/seller/id-card", icon: Badge, label: "ID Card" },
+    { href: "/seller/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/seller/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
 
