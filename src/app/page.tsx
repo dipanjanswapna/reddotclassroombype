@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -154,8 +155,8 @@ export default function Home() {
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full px-1">
         {homepageConfig.welcomeSection?.display && (
-            <section className="py-6 md:py-8 text-center overflow-hidden">
-                <div className="container mx-auto px-1">
+            <section className="py-6 md:py-8 text-center overflow-hidden px-1">
+                <div className="container mx-auto px-0">
                      <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -176,13 +177,13 @@ export default function Home() {
             </section>
         )}
 
-        <section className="py-0 overflow-hidden">
+        <section className="py-0 overflow-hidden px-1">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-8 md:py-10 overflow-hidden relative">
-              <div className="container mx-auto px-1">
+          <section className="py-8 md:py-10 overflow-hidden relative px-1">
+              <div className="container mx-auto px-0">
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -214,8 +215,8 @@ export default function Home() {
         )}
 
         {homepageConfig.categoriesSection?.display && (
-          <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-1">
+          <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10 px-1">
+            <div className="container mx-auto px-0">
               <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 text-left">
                 {homepageConfig.categoriesSection?.title?.[language] || homepageConfig.categoriesSection?.title?.['en']}
               </h2>
@@ -229,8 +230,8 @@ export default function Home() {
         </div>
 
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-1">
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10 px-1">
+            <div className="container mx-auto px-0">
               <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || homepageConfig.journeySection?.title?.['en']}</h2>
               <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base">{homepageConfig.journeySection?.subtitle?.[language] || homepageConfig.journeySection?.subtitle?.['en']}</p>
               <div>
@@ -242,8 +243,8 @@ export default function Home() {
         )}
 
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-1">
+          <section className="overflow-hidden py-8 md:py-10 px-1">
+            <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                   <div className="text-left">
                       <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || homepageConfig.teachersSection?.title?.['en']}</h2>
@@ -259,8 +260,8 @@ export default function Home() {
         )}
 
         {homepageConfig.sscHscSection?.display && (
-          <section className="overflow-hidden py-8 md:py-10">
-              <div className="container mx-auto px-1">
+          <section className="overflow-hidden py-8 md:py-10 px-1">
+              <div className="container mx-auto px-0">
                   <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                     <Badge variant="default" className="mb-2 text-[9px] md:text-[10px] py-0.5 px-3 rounded-full bg-primary text-primary-foreground uppercase font-black">{homepageConfig.sscHscSection?.badge?.[language] || homepageConfig.sscHscSection?.badge?.['en']}</Badge>
                     <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.sscHscSection?.title?.[language] || homepageConfig.sscHscSection?.title?.['en']}</h2>
@@ -270,21 +271,25 @@ export default function Home() {
           </section>
         )}
 
-        <WhyTrustUs data={homepageConfig.whyChooseUs} />
+        <div className="px-1">
+            <WhyTrustUs data={homepageConfig.whyChooseUs} />
+        </div>
         
         {homepageConfig.statsSection?.display && (
-          <StatsSection stats={dynamicStats} title={homepageConfig.statsSection.title} />
+          <div className="px-1">
+            <StatsSection stats={dynamicStats} title={homepageConfig.statsSection.title} />
+          </div>
         )}
 
-        <section className="relative overflow-hidden py-8 md:py-10">
-            <div className="container mx-auto px-1 relative z-10">
+        <section className="relative overflow-hidden py-8 md:py-10 px-1">
+            <div className="container mx-auto px-0 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
         {homepageConfig.offlineHubSection?.contactSection?.display && (
-            <section className="py-8 md:py-10 overflow-hidden">
-                <div className="container mx-auto px-1">
+            <section className="py-8 md:py-10 overflow-hidden px-1">
+                <div className="container mx-auto px-0">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}

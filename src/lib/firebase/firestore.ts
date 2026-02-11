@@ -1,3 +1,4 @@
+
 import { getDbInstance } from './config';
 import {
   collection,
@@ -746,12 +747,10 @@ export const getNotices = async (options?: { limit?: number; includeDrafts?: boo
   const db = getDbInstance();
   if (!db) return [];
 
-  // Fetch all notices first
   const q = query(collection(db, 'notices'), orderBy("createdAt", "desc"));
   const querySnapshot = await getDocs(q);
   let allNotices = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notice));
 
-  // Filter on the client-side
   if (!includeDrafts) {
     allNotices = allNotices.filter(notice => notice.isPublished === true);
   }
@@ -1089,7 +1088,6 @@ export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
     const q = query(collection(db, "folders"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const folders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
-    // Sort client-side if needed, Firestore requires composite index for this query + orderBy
     return folders.sort((a, b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getListsForUser = async (userId: string): Promise<List[]> => {
@@ -1098,7 +1096,6 @@ export const getListsForUser = async (userId: string): Promise<List[]> => {
     const q = query(collection(db, "lists"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const lists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
-    // Sort client-side
     return lists.sort((a,b) => safeToDate(a.createdAt).getTime() - safeToDate(b.createdAt).getTime());
 }
 export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
@@ -1107,7 +1104,6 @@ export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> =>
     const q = query(collection(db, "tasks"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
-    // Sort client-side to avoid needing a composite index
     return tasks.sort((a, b) => {
         const dateA = a.lastUpdatedAt ? safeToDate(a.lastUpdatedAt).getTime() : 0;
         const dateB = b.lastUpdatedAt ? safeToDate(b.lastUpdatedAt).getTime() : 0;
@@ -1197,11 +1193,9 @@ export const getHomepageConfig = async (): Promise<HomepageConfig> => {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const data = docSnap.data();
-        // Merge with defaults to ensure all fields are present
         const mergedSettings = { ...defaultPlatformSettings, ...(data.platformSettings || {}) };
         return { id: docSnap.id, ...defaultHomepageConfig, ...data, platformSettings: mergedSettings } as HomepageConfig;
     } else {
-        // If the document doesn't exist, create it with default values
         await setDoc(docRef, defaultHomepageConfig);
         return { id: docRef.id, ...defaultHomepageConfig } as HomepageConfig;
     }
@@ -1237,7 +1231,6 @@ export const getPromoCodeForUserAndCourse = async (userId: string, courseId: str
     );
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
-    // Assuming one unique promo per user-course pair
     const doc = snapshot.docs[0];
     return { id: doc.id, ...doc.data() } as PromoCode;
 }
