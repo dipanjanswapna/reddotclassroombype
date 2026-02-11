@@ -53,7 +53,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
         language === 'bn' ? 'font-bengali' : 'font-body'
       )}>
         <StoreHeader categories={categories} />
-        <main className="flex-grow pt-16 lg:pt-28">
+        <main className="flex-grow pt-16 lg:pt-28 px-1">
             {children}
         </main>
         <StoreFooter categories={categories} />
@@ -79,7 +79,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
             language === 'bn' ? 'font-bengali' : 'font-body'
         )}>
             <Header homepageConfig={homepageConfig} />
-            <main className={cn("flex-grow pt-16", isDashboardPage && "min-h-screen")}>
+            <main className={cn("flex-grow pt-16 px-1", isDashboardPage && "min-h-screen")}>
               {children}
             </main>
             {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}

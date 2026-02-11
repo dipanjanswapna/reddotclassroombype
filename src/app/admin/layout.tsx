@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard, MessageSquare, ShieldAlert
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -37,11 +37,11 @@ export default function AdminLayout({
         );
     }
 
-    // Comprehensive and ordered Admin Menu List
+    // Comprehensive and ordered Admin Menu List (28 Items)
     const menuItems = [
         { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "CMS" },
-        { href: "/admin/store/products", icon: Store, label: "Products" },
+        { href: "/admin/store/products", icon: Store, label: "Store" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
         { href: "/admin/store/categories", icon: Layers3, label: "Categories" },
         { href: "/admin/store/rewards", icon: Gift, label: "Rewards" },
@@ -59,7 +59,7 @@ export default function AdminLayout({
         { href: "/admin/courses", icon: BookCopy, label: "Courses" },
         { href: "/admin/pre-bookings", icon: Bookmark, label: "Pre-book" },
         { href: "/admin/question-bank", icon: Database, label: "Q-Bank" },
-        { href: "/admin/notices", icon: Megaphone, label: "Notice" },
+        { href: "/admin/notices", icon: Megaphone, label: "Notices" },
         { href: "/admin/promo-codes", icon: TicketPercent, label: "Promos" },
         { href: "/admin/financials", icon: DollarSign, label: "Sales" },
         { href: "/admin/analytics", icon: AreaChart, label: "Traffic" },

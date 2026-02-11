@@ -71,7 +71,7 @@ export default function TeacherLayout({
         animate={{ y: 0 }}
         className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[25px] flex justify-center overflow-hidden"
       >
-        <div className="flex justify-start items-center h-full w-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
+        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
