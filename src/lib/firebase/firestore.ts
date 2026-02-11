@@ -1061,3 +1061,83 @@ export const markStudentAsCounseled = async (studentId: string) => {
     const userRef = doc(db, 'users', studentId);
     return updateDoc(userRef, { lastCounseledAt: Timestamp.now() });
 };
+
+// Doubt Solving
+export const getDoubts = () => getCollection<Doubt>('doubts');
+export const getDoubt = (id: string) => getDocument<Doubt>('doubts', id);
+export const getDoubtsByCourseAndStudent = async (courseId: string, studentId: string): Promise<Doubt[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'doubts'), where("courseId", "==", courseId), where("studentId", "==", studentId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Doubt));
+}
+export const getDoubtAnswers = async (doubtId: string): Promise<DoubtAnswer[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'doubt_answers'), where("doubtId", "==", doubtId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as DoubtAnswer));
+}
+export const getStudentForDoubt = (studentId: string) => getDocument<User>('users', studentId);
+
+export const createDoubtSession = async (courseId: string, courseTitle: string, solverIds: string[]): Promise<string> => {
+    const db = getDbInstance();
+    if (!db) throw new Error("Firestore not initialized.");
+    const q = query(collection(db, 'doubt_sessions'), where('courseId', '==', courseId));
+    const snap = await getDocs(q);
+    if (!snap.empty) return snap.docs[0].id;
+
+    const newSession: Omit<DoubtSession, 'id'> = {
+        courseId,
+        sessionName: `Support: ${courseTitle}`,
+        assignedDoubtSolverIds: solverIds,
+        createdAt: Timestamp.now()
+    };
+    const ref = await addDoc(collection(db, 'doubt_sessions'), newSession);
+    return ref.id;
+};
+
+// Planner API (Legacy compatibility)
+export const getFoldersForUser = async (userId: string): Promise<Folder[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'folders'), where('userId', '==', userId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Folder));
+};
+export const getListsForUser = async (userId: string): Promise<List[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'lists'), where('userId', '==', userId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+};
+export const getTasksForUser = async (userId: string): Promise<PlannerTask[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'tasks'), where('userId', '==', userId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+};
+export const getGoalsForUser = async (userId: string): Promise<Goal[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'goals'), where('userId', '==', userId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Goal));
+};
+export const getListsInFolder = async (folderId: string): Promise<List[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'lists'), where('folderId', '==', folderId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as List));
+};
+export const getTasksInList = async (listId: string): Promise<PlannerTask[]> => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'tasks'), where('listId', '==', listId));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlannerTask));
+};

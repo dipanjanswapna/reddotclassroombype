@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -32,7 +33,7 @@ type AutoplaySettings = {
 /**
  * @fileOverview HeroCarousel Component
  * A premium, animated carousel for the homepage.
- * Uses Embla Carousel for logic and Framer Motion for UI effects.
+ * Optimized for px-1 wall-to-wall experience.
  */
 export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanner[], autoplaySettings?: AutoplaySettings }) {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -66,12 +67,14 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
     };
   }, [api]);
 
+  if (!banners || banners.length === 0) return null;
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="relative w-full overflow-hidden py-4 group/carousel"
+      className="relative w-full overflow-hidden py-4 px-1 group/carousel"
     >
       <Carousel
         setApi={setApi}
@@ -79,22 +82,21 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         plugins={plugins}
         className="w-full"
       >
-        <CarouselContent className="-ml-4 md:-ml-8">
+        <CarouselContent className="-ml-2 md:-ml-4">
           {banners.map((banner, index) => (
             <CarouselItem
               key={banner.id}
-              className="pl-4 md:pl-8 basis-[90%] md:basis-[65%] lg:basis-[55%]"
+              className="pl-2 md:pl-4 basis-[95%] md:basis-[75%] lg:basis-[65%]"
             >
               <Link
                 href={banner.href}
-                className="block relative group outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl overflow-hidden shadow-lg transition-all duration-500"
+                className="block relative group outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-[20px] overflow-hidden shadow-2xl transition-all duration-500"
               >
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px]">
                   <Image
                     src={banner.imageUrl}
                     alt={banner.alt || "Hero Banner"}
-                    width={1200}
-                    height={675}
+                    fill
                     priority={index === 0}
                     className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105 carousel-banner-image"
                     data-ai-hint={banner.dataAiHint}
@@ -106,9 +108,8 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
           ))}
         </CarouselContent>
 
-        {/* Navigation Arrows - Glassmorphism Style */}
         <div className="hidden md:flex">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 z-20">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-20">
                 <Button
                     onClick={() => api?.scrollPrev()}
                     variant="ghost"
@@ -119,7 +120,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
                     <ChevronLeft className="w-6 h-6 text-white" />
                 </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 z-20">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-20">
                 <Button
                     onClick={() => api?.scrollNext()}
                     variant="ghost"
@@ -133,16 +134,15 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
         </div>
       </Carousel>
 
-      {/* Modern Progress Dots */}
       <div className="flex justify-center items-center gap-2.5 mt-6">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-              "h-2 rounded-full transition-all duration-500",
+              "h-1.5 rounded-full transition-all duration-500",
               index === current 
-                ? "w-8 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" 
+                ? "w-10 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" 
                 : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
             )}
             aria-label={`Go to slide ${index + 1}`}
@@ -161,7 +161,7 @@ export function HeroCarousel({ banners, autoplaySettings }: { banners: HeroBanne
           transform: scale(1);
         }
         .carousel-banner-image {
-            filter: grayscale(20%) brightness(0.9);
+            filter: grayscale(10%) brightness(0.9);
             transition: all 0.5s ease;
         }
         .is-selected .carousel-banner-image {

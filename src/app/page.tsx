@@ -37,7 +37,6 @@ export default function Home() {
   const { language } = useLanguage();
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
   const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
-  const [sscHscCourses, setSscHscCourses] = React.useState<Course[]>([]);
   const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -57,7 +56,6 @@ export default function Home() {
 
         const [
             live,
-            sscHsc,
             instructorsData,
             orgsData,
             allUsers,
@@ -65,7 +63,6 @@ export default function Home() {
             allCourses
         ] = await Promise.all([
             getCoursesByIds(config.liveCoursesIds || []),
-            getCoursesByIds(config.sscHscCourseIds || []),
             getInstructors(),
             getOrganizations(),
             getUsers(),
@@ -74,7 +71,6 @@ export default function Home() {
         ]);
         
         setLiveCourses(live);
-        setSscHscCourses(sscHsc);
         setOrganizations(orgsData);
 
         const featuredIds = config.teachersSection?.instructorIds || [];
@@ -116,7 +112,7 @@ export default function Home() {
   if (!homepageConfig) return null;
   
   const CourseGrid = ({ courses }: { courses: Course[] }) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8 px-1">
         {courses.map(course => (
             <CourseCard 
                 key={course.id} 
@@ -177,7 +173,7 @@ export default function Home() {
                             <Image src={homepageConfig.strugglingStudentSection.imageUrl} alt="Help" fill className="object-contain" />
                           </motion.div>
                           <div className="space-y-2 flex-grow">
-                              <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900">
+                              <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900 uppercase">
                                   {homepageConfig.strugglingStudentSection?.title?.[language] || ''}
                               </h3>
                               <p className="text-sm md:text-lg lg:text-xl text-gray-600 font-medium leading-relaxed">
@@ -185,7 +181,7 @@ export default function Home() {
                               </p>
                           </div>
                       </div>
-                      <Button asChild size="lg" className="z-10 w-full md:w-auto font-black text-sm rounded-xl shadow-xl shadow-primary/20">
+                      <Button asChild size="lg" className="z-10 w-full md:w-auto font-black text-sm rounded-xl shadow-xl shadow-primary/20 h-14 px-10 uppercase tracking-widest">
                         <Link href="/strugglers-studies">
                             {homepageConfig.strugglingStudentSection?.buttonText?.[language] || ''}
                              <ArrowRight className="ml-2 h-4 w-4" />
@@ -277,13 +273,13 @@ export default function Home() {
                                 {homepageConfig.offlineHubSection.contactSection.subtitle[language] || "Talk to our student advisors anytime."}
                             </p>
                             <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
-                                <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 border-none">
+                                <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 bg-white text-primary hover:bg-white/90 border-none shadow-xl">
                                     <a href={`tel:${homepageConfig.offlineHubSection.contactSection.callButtonNumber}`}>
                                         <Phone className="mr-3 h-5 w-5" />
                                         {homepageConfig.offlineHubSection.contactSection.callButtonText[language] || "Call Support"}
                                     </a>
                                 </Button>
-                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm">
+                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-14 px-10 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm shadow-xl">
                                     <a href={`https://wa.me/${homepageConfig.offlineHubSection.contactSection.whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
                                         <MessageSquare className="mr-3 h-5 w-5" />
                                         {homepageConfig.offlineHubSection.contactSection.whatsappButtonText[language] || "WhatsApp Us"}
