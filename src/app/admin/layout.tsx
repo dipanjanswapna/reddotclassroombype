@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect } from 'react';
@@ -5,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard, MessageSquare
+  Users, BookCopy, UserCog, AreaChart, Settings, LogOut, LayoutDashboard, DollarSign, Home, TicketPercent, Building, QrCode, PhoneCall, Database, Users2, Megaphone, Store, ShoppingCart, Layers3, Gift, Truck, UserCheck, Handshake, HelpCircle, Bookmark, FileBarChart, IdCard, MessageSquare, ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { LoadingSpinner } from '@/components/loading-spinner';
@@ -36,15 +37,16 @@ export default function AdminLayout({
         );
     }
 
+    // Comprehensive and ordered Admin Menu List
     const menuItems = [
-        { href: "/admin/dashboard", icon: LayoutDashboard, label: "Home" },
+        { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { href: "/admin/homepage", icon: Home, label: "CMS" },
         { href: "/admin/store/products", icon: Store, label: "Products" },
         { href: "/admin/store/orders", icon: ShoppingCart, label: "Orders" },
-        { href: "/admin/store/categories", icon: Layers3, label: "Category" },
+        { href: "/admin/store/categories", icon: Layers3, label: "Categories" },
         { href: "/admin/store/rewards", icon: Gift, label: "Rewards" },
         { href: "/admin/store/redeem-requests", icon: Truck, label: "Redeem" },
-        { href: "/admin/offline-hub", icon: Building, label: "Offline" },
+        { href: "/admin/offline-hub", icon: Building, label: "Offline Hub" },
         { href: "/admin/scan-attendance", icon: QrCode, label: "Scan" },
         { href: "/admin/group-access", icon: Users2, label: "Groups" },
         { href: "/admin/absent-students", icon: PhoneCall, label: "Calls" },
@@ -80,12 +82,14 @@ export default function AdminLayout({
             {children}
         </div>
       </main>
+      
+      {/* Premium Bottom Navigation with White Pill Active State */}
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[25px] flex justify-center overflow-hidden"
       >
-        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1 px-2">
+        <div className="flex justify-start items-center h-full w-full max-w-full overflow-x-auto overflow-y-hidden no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
@@ -100,7 +104,7 @@ export default function AdminLayout({
             >
               {getIsActive(item.href) && (
                 <motion.div 
-                  layoutId="active-nav-pill-admin"
+                  layoutId="active-nav-pill-admin-master"
                   className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[20px] -z-10"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
