@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -28,14 +27,10 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
   
   return (
-    <motion.div 
-        whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="group relative h-full"
-    >
+    <div className="group relative h-full">
       <Link href={coursePageUrl} className="block h-full">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/10 rounded-[20px] group-hover:border-primary/40",
+          "flex flex-row md:flex-col h-full overflow-hidden shadow-xl bg-card border-primary/10 rounded-[20px]",
           "mb-3 md:mb-0 p-2 md:p-0"
         )}>
           {/* Card Header / Image Section */}
@@ -45,12 +40,12 @@ const CourseCardComponent = (props: CourseCardProps) => {
               alt={title}
               fill
               sizes="(max-width: 640px) 120px, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover"
               data-ai-hint={dataAiHint}
             />
             
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100" />
 
             {/* Corner Ribbons/Badges */}
             <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none z-10">
@@ -77,7 +72,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
           {/* Card Body / Text Section */}
           <div className="flex-1 flex flex-col p-3 md:p-5 justify-center md:justify-start gap-1.5 text-left">
             <div className="space-y-1">
-                <h3 className="text-[13px] md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline group-hover:text-primary transition-colors text-left uppercase tracking-tight">
+                <h3 className="text-[13px] md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline text-left uppercase tracking-tight">
                 {title}
                 </h3>
 
@@ -109,7 +104,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
           </div>
         </Card>
       </Link>
-    </motion.div>
+    </div>
   );
 }
 

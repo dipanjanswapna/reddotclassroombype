@@ -12,7 +12,6 @@ import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
@@ -49,13 +48,9 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   };
 
   return (
-    <motion.div 
-      whileHover={{ y: -3 }} 
-      transition={{ type: "spring", stiffness: 300 }}
-      className="h-full w-full"
-    >
+    <div className="h-full w-full">
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden transition-all duration-500 shadow-xl bg-card border-primary/20 rounded-lg",
+        "flex flex-col h-full overflow-hidden shadow-xl bg-card border-primary/20 rounded-lg",
         "p-2.5 md:p-3"
       )}>
         <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-md shadow-inner bg-black/5">
@@ -65,7 +60,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
               alt={course.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover"
               data-ai-hint={course.dataAiHint}
             />
           </Link>
@@ -81,7 +76,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         <div className="flex-1 flex flex-col pt-3 pb-1 space-y-3 text-left">
           <div className="space-y-0.5">
               <Link href={courseLink}>
-              <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline hover:text-primary transition-colors text-left uppercase tracking-tight">
+              <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline text-left uppercase tracking-tight">
                   {course.title}
               </h3>
               </Link>
@@ -144,6 +139,6 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
           </div>
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 }
