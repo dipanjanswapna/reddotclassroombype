@@ -10,13 +10,13 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 346.8 77.2% 49.8%;
+    --primary: 346.8 77.2% 29.8%; /* Deep Red #8B1538 */
     --primary-foreground: 355.7 100% 97.3%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 142.4 71.8% 40.2%;
+    --accent: 142.4 71.8% 40.2%; /* Growth Green #28a745 */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -24,18 +24,18 @@
     --warning-foreground: 48 96% 89%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 346.8 77.2% 49.8%;
+    --ring: 346.8 77.2% 29.8%;
     --radius: 20px;
   }
 
   .dark {
-    --background: 222.2 47.4% 11.2%;
+    --background: 222.2 47.4% 11.2%; /* Dark Navy base */
     --foreground: 210 40% 98%;
     --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
     --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
-    --primary: 340 80% 55%;
+    --primary: 346.8 77.2% 40.8%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -49,7 +49,7 @@
     --warning-foreground: 38 92% 50%;
     --border: 346.8 77.2% 25%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 340 80% 55%;
+    --ring: 346.8 77.2% 40.8%;
   }
 }
 
@@ -58,20 +58,27 @@
     @apply border-border;
   }
   
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-    height: 100%;
-    position: relative;
+  html {
+    @apply scroll-smooth;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Bengali Font Utility */
+  .font-bengali {
+    font-family: var(--font-bengali), sans-serif;
+  }
+
+  .font-headline {
+    font-family: var(--font-poppins), sans-serif;
+  }
+
   section {
-    @apply py-8 md:py-12 max-w-full overflow-hidden;
+    @apply py-10 md:py-14 max-w-full overflow-hidden;
   }
 }
 
@@ -86,13 +93,13 @@
   .mesh-gradient {
     background-color: hsla(0,0%,100%,1);
     background-image: 
-      radial-gradient(at 0% 0%, hsla(346,77%,49%,0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(346,77%,49%,0.03) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(346,77%,29%,0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(142,71%,40%,0.05) 0px, transparent 50%);
   }
   .dark .mesh-gradient {
     background-color: hsla(222,47%,11%,1);
     background-image: 
-      radial-gradient(at 0% 0%, hsla(340,80%,55%,0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(340,80%,55%,0.05) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(346,77%,40%,0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(142,71%,40%,0.08) 0px, transparent 50%);
   }
 }

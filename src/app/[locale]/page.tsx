@@ -10,6 +10,7 @@ import {
   Phone,
   Video,
   BookOpen,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -21,6 +22,7 @@ import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import WhyTrustUs from '@/components/why-trust-us';
 import { NoticeBoard } from '@/components/notice-board';
@@ -32,23 +34,6 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
     loading: () => <Skeleton className="h-[250px] w-full rounded-[20px]" />,
     ssr: false,
 });
-
-function HomeSkeleton() {
-    return (
-        <div className="px-1 space-y-8 md:space-y-12 animate-pulse">
-            <div className="py-6 md:py-8 space-y-4">
-                <Skeleton className="h-10 w-3/4 mx-auto max-w-lg rounded-xl" />
-                <Skeleton className="h-4 w-1/2 mx-auto max-w-md rounded-lg" />
-            </div>
-            <div className="px-1">
-                <Skeleton className="aspect-[16/9] md:aspect-[21/7] w-full rounded-[20px]" />
-            </div>
-            <div className="container mx-auto px-1">
-                <Skeleton className="h-40 w-full rounded-[20px]" />
-            </div>
-        </div>
-    );
-}
 
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -111,7 +96,13 @@ export default function Home() {
     fetchData();
   }, []);
 
-  if (loading) return <HomeSkeleton />;
+  if (loading) return (
+    <div className="px-1 py-20 flex flex-col items-center justify-center gap-4">
+        <LoadingSpinner className="w-12 h-12" />
+        <p className="text-sm font-black uppercase tracking-widest animate-pulse">Initializing RDC...</p>
+    </div>
+  );
+  
   if (!homepageConfig) return null;
   
   const CourseGrid = ({ courses }: { courses: Course[] }) => (
@@ -135,90 +126,83 @@ export default function Home() {
 
   return (
     <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full px-1">
+        {/* Welcome Section */}
         {homepageConfig.welcomeSection?.display && (
-            <section className="py-6 md:py-8 text-center overflow-hidden px-1">
+            <section className="py-8 md:py-12 text-center overflow-hidden px-1">
                 <div className="container mx-auto px-0">
-                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="flex flex-col items-center gap-2">
-                        <h1 className="font-headline text-2xl md:text-4xl font-black tracking-tighter text-foreground uppercase">
-                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM (RDC)"}
+                     <motion.div 
+                        initial={{ opacity: 0, y: 20 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.6 }} 
+                        className="flex flex-col items-center gap-3"
+                     >
+                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm mb-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Elite Learning Platform
+                        </div>
+                        <h1 className="font-headline text-3xl md:text-5xl font-black tracking-tighter text-foreground uppercase leading-[0.95]">
+                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
                         </h1>
-                        <div className="w-full max-w-2xl mx-auto">
-                            <TypingText text={homepageConfig.welcomeSection?.description?.[language] || ''} className="mt-2 text-[11px] md:text-sm text-muted-foreground leading-relaxed font-medium px-4" />
+                        <div className="w-full max-w-3xl mx-auto font-bengali">
+                            <TypingText 
+                                text={homepageConfig.welcomeSection?.description?.[language] || ''} 
+                                className="mt-2 text-sm md:text-lg text-muted-foreground leading-relaxed font-medium px-4" 
+                            />
                         </div>
                      </motion.div>
                 </div>
             </section>
         )}
 
+        {/* Hero Area */}
         <section className="py-0 overflow-hidden px-1">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {homepageConfig.strugglingStudentSection?.display && (
-          <section className="py-8 md:py-10 overflow-hidden relative px-1">
-              <div className="container mx-auto px-0">
-                  <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden rounded-[20px] border border-border shadow-xl bg-card">
-                      <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10 w-full">
-                          <div className="relative w-24 h-24 md:w-40 md:h-40 shrink-0">
-                            <Image src={homepageConfig.strugglingStudentSection.imageUrl} alt="Help" fill className="object-contain" />
-                          </div>
-                          <div className="space-y-2 flex-grow">
-                              <h3 className="font-headline text-lg md:text-2xl lg:text-3xl font-black tracking-tight text-gray-900 uppercase">
-                                  {homepageConfig.strugglingStudentSection?.title?.[language] || ''}
-                              </h3>
-                              <p className="text-sm md:text-lg lg:text-xl text-gray-600 font-medium leading-relaxed">
-                                  {homepageConfig.strugglingStudentSection?.subtitle?.[language] || ''}
-                              </p>
-                          </div>
-                      </div>
-                      <Button asChild size="lg" className="z-10 w-full md:w-auto font-black text-sm rounded-xl shadow-xl shadow-primary/20 h-14 px-10 uppercase tracking-widest">
-                        <Link href={getLocalizedPath("/strugglers-studies")}>
-                            {homepageConfig.strugglingStudentSection?.buttonText?.[language] || ''}
-                             <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                  </motion.div>
-              </div>
-          </section>
-        )}
-
+        {/* Categories - Colorful & px-1 */}
         {homepageConfig.categoriesSection?.display && (
-          <section className="bg-secondary/10 dark:bg-transparent overflow-hidden py-8 md:py-10 px-1">
+          <section className="overflow-hidden py-10 md:py-16 px-1">
             <div className="container mx-auto px-0">
-              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-8 text-left">
-                {homepageConfig.categoriesSection?.title?.[language] || ''}
-              </h2>
+              <div className="flex items-center justify-between mb-10 border-l-4 border-primary pl-4">
+                  <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">
+                    {homepageConfig.categoriesSection?.title?.[language] || 'Explore Categories'}
+                  </h2>
+                  <Button asChild variant="link" className="font-black uppercase text-[10px] tracking-widest text-primary p-0">
+                      <Link href={getLocalizedPath("/courses")}>{t.view_all[language]} &rarr;</Link>
+                  </Button>
+              </div>
               <CategoriesCarousel categories={homepageConfig.categoriesSection?.categories || []} />
             </div>
           </section>
         )}
 
-        <div className="container mx-auto px-1 overflow-hidden">
-            <NoticeBoard />
-        </div>
-
+        {/* Live Courses */}
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-10 px-1">
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-10 md:py-16 px-1">
             <div className="container mx-auto px-0">
-              <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase border-l-4 border-primary pl-4 mb-3 text-left">{homepageConfig.journeySection?.title?.[language] || ''}</h2>
-              <p className="text-muted-foreground text-left max-w-2xl mb-8 md:mb-10 pl-4 text-sm md:text-base">{homepageConfig.journeySection?.subtitle?.[language] || ''}</p>
-              <div>
-                <h3 className="font-headline text-base md:text-lg lg:text-xl font-bold mb-6 pl-4">{homepageConfig.journeySection?.courseTitle?.[language] || ''}</h3>
-                <CourseGrid courses={liveCourses} />
+              <div className="border-l-4 border-primary pl-4 mb-10 text-left">
+                <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">
+                    {homepageConfig.journeySection?.title?.[language] || t.featured_courses[language]}
+                </h2>
+                <p className="text-muted-foreground mt-1 text-sm md:text-base font-medium">
+                    {homepageConfig.journeySection?.subtitle?.[language] || ''}
+                </p>
               </div>
+              <CourseGrid courses={liveCourses} />
             </div>
           </section>
         )}
 
+        {/* Faculty */}
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-8 md:py-10 px-1">
+          <section className="overflow-hidden py-10 md:py-16 px-1 bg-muted/20">
             <div className="container mx-auto px-0">
-              <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
+              <div className="flex items-center justify-between mb-10 border-l-4 border-accent pl-4">
                   <div className="text-left">
-                      <h2 className="font-headline text-lg md:text-xl lg:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || ''}</h2>
-                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm lg:text-base leading-tight">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
+                      <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || t.our_mentors[language]}</h2>
+                      <p className="text-muted-foreground mt-1 text-[11px] md:text-sm leading-tight font-medium">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
-                  <Button asChild variant="outline" size="sm" className="rounded-xl shrink-0 h-8 md:h-10 text-[10px] md:text-xs font-bold uppercase">
+                  <Button asChild variant="outline" size="sm" className="rounded-xl border-accent/20 text-accent font-black h-10 uppercase text-[10px]">
                       <Link href={getLocalizedPath("/teachers")}>{homepageConfig.teachersSection?.buttonText?.[language] || ''}</Link>
                   </Button>
               </div>
@@ -227,21 +211,30 @@ export default function Home() {
           </section>
         )}
 
-        <div className="px-1">
+        {/* Trust & Testimonials */}
+        <div className="px-1 py-10">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </div>
         
+        {/* Statistics */}
         {homepageConfig.statsSection?.display && (
           <div className="px-1">
             <StatsSection stats={dynamicStats} title={homepageConfig.statsSection.title} />
           </div>
         )}
 
-        <section className="relative overflow-hidden py-8 md:py-10 px-1">
+        {/* Final CTA */}
+        <section className="relative overflow-hidden py-10 md:py-16 px-1">
             <div className="container mx-auto px-0 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
     </div>
+  );
+}
+
+function LoadingSpinner({ className }: { className?: string }) {
+  return (
+    <div className={cn("animate-spin rounded-full border-4 border-primary border-t-transparent", className)} />
   );
 }

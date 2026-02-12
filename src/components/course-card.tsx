@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -8,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/context/language-context';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
@@ -16,6 +16,7 @@ type CourseCardProps = Partial<Course> & {
 
 const CourseCardComponent = (props: CourseCardProps) => {
   const { id, title, instructors, imageUrl, price, discountPrice, dataAiHint, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
+  const { language } = useLanguage();
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -25,43 +26,37 @@ const CourseCardComponent = (props: CourseCardProps) => {
   const hasDiscount = discountPrice && parseFloat(discountPrice.replace(/[^0-9.]/g, '')) > 0;
   const displayPrice = isPrebookingActive ? prebookingPrice : (hasDiscount ? discountPrice : price);
 
-  const coursePageUrl = partnerSubdomain ? `/sites/${partnerSubdomain}/courses/${id}` : `/courses/${id}`;
+  const coursePageUrl = partnerSubdomain 
+    ? `/sites/${partnerSubdomain}/courses/${id}` 
+    : `/${language}/courses/${id}`;
   
   return (
-    <div className="relative h-full">
-      <Link href={coursePageUrl} className="block h-full">
+    <div className="relative h-full px-1">
+      <Link href={coursePageUrl} className="block h-full group">
         <Card className={cn(
-          "flex flex-row md:flex-col h-full overflow-hidden shadow-xl border-primary/10 rounded-[20px]",
-          "mb-3 md:mb-0 p-2 md:p-0"
-        )} style={{ backgroundColor: 'rgb(194, 231, 255)' }}>
-          {/* Card Header / Image Section */}
-          <div className="relative w-[100px] xs:w-[120px] md:w-full aspect-square md:aspect-video shrink-0 overflow-hidden rounded-[16px] md:rounded-none">
+          "flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-card",
+          "p-2.5"
+        )}>
+          {/* Visual Container */}
+          <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-[16px] shadow-inner bg-black/5">
             <Image
               src={imageUrl}
               alt={title}
               fill
-              sizes="(max-width: 640px) 120px, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
               data-ai-hint={dataAiHint}
             />
             
-            {/* Overlay Gradient - Static */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
 
-            {/* Corner Ribbons/Badges */}
-            <div className="absolute top-0 left-0 overflow-hidden w-16 h-16 pointer-events-none z-10">
+            <div className="absolute top-2 left-2 z-10">
                 {isPrebookingActive ? (
-                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-orange-500 text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
-                        Pre
-                    </div>
+                    <Badge className="bg-orange-500 text-white font-black text-[8px] uppercase tracking-widest px-2.5 py-1 animate-pulse border-none shadow-lg">PRE-BOOK</Badge>
                 ) : type === 'Exam' ? (
-                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-red-600 text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
-                        Exam
-                    </div>
+                    <Badge className="bg-red-600 text-white font-black text-[8px] uppercase tracking-widest px-2.5 py-1 border-none shadow-lg">EXAM BATCH</Badge>
                 ) : (
-                    <div className="absolute top-2 left-[-20px] rotate-[-45deg] bg-primary text-white text-[8px] font-black py-0.5 px-6 shadow-md uppercase tracking-tighter">
-                        New
-                    </div>
+                    <Badge className="bg-primary text-white font-black text-[8px] uppercase tracking-widest px-2.5 py-1 border-none shadow-lg">LATEST</Badge>
                 )}
             </div>
 
@@ -70,43 +65,52 @@ const CourseCardComponent = (props: CourseCardProps) => {
             </div>
           </div>
 
-          {/* Card Body / Text Section */}
-          <div className="flex-1 flex flex-col p-3 md:p-5 justify-center md:justify-start gap-1.5 text-left">
-            <div className="space-y-1">
-                <h3 className="text-[13px] md:text-base font-black leading-tight text-gray-900 line-clamp-2 font-headline text-left uppercase tracking-tight">
+          {/* Content Area */}
+          <div className="flex flex-col pt-4 px-1.5 flex-grow text-left space-y-3">
+            <div className="space-y-1.5">
+                <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline uppercase tracking-tight group-hover:text-primary transition-colors h-[2.5rem] md:h-[3rem]">
                 {title}
                 </h3>
 
-                <div className="flex flex-col gap-0.5 text-left">
+                <div className="flex items-center gap-2">
                     {provider ? (
-                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-600 truncate">
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate max-w-full">
                             {provider.name}
                         </p>
                     ) : (
                         instructors && instructors.length > 0 && (
-                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-gray-600 truncate">
-                                {instructors[0].name} {instructors.length > 1 ? `+${instructors.length - 1}` : ''}
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate max-w-full">
+                                {instructors[0].name}
                             </p>
                         )
                     )}
                 </div>
             </div>
 
-            <div className="mt-2 flex items-center gap-2.5 text-left pt-3 border-t border-black/5">
-                <span className="text-[15px] md:text-[18px] font-black text-primary drop-shadow-sm tracking-tighter">
-                    {displayPrice}
-                </span>
-                {hasDiscount && (
-                    <span className="text-[10px] md:text-[11px] text-gray-500 font-bold line-through decoration-primary/30">
-                        {price}
+            <div className="mt-auto pt-3 border-t border-primary/5 flex items-center justify-between">
+                <div className="flex flex-col">
+                    {hasDiscount && (
+                        <span className="text-[9px] font-black text-muted-foreground line-through decoration-primary/20 opacity-60">
+                            {price}
+                        </span>
+                    )}
+                    <span className="text-lg font-black text-primary tracking-tighter leading-none">
+                        {displayPrice}
                     </span>
-                )}
+                </div>
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                    <ChevronRight className="w-4 h-4" />
+                </div>
             </div>
           </div>
         </Card>
       </Link>
     </div>
   );
+}
+
+function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
+    return <div className={cn("rounded-full px-2 py-0.5 text-xs font-bold", className)}>{children}</div>;
 }
 
 export const CourseCard = React.memo(CourseCardComponent);
