@@ -53,6 +53,17 @@ export const t = {
   bonus_heading: { en: 'Free Bonus Content', bn: 'সাথে যা ফ্রি পাচ্ছেন (Bonus)' },
   related_courses: { en: 'Recommended Courses', bn: 'আমাদের আরও কিছু কোর্স' },
 
+  // Callback Form
+  callback_title: { en: 'Request a callback', bn: 'কলব্যাকের অনুরোধ করুন' },
+  callback_subtitle: { en: 'Our team will contact you soon.', bn: 'আমাদের টিম আপনার সাথে শীঘ্রই যোগাযোগ করবে।' },
+  full_name_label: { en: 'Full Name', bn: 'আপনার সম্পূর্ণ নাম' },
+  mobile_label: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
+  class_label: { en: 'Class', bn: 'শ্রেণী' },
+  goal_label: { en: 'Goals', bn: 'আপনার লক্ষ্য' },
+  preference_label: { en: 'Preference', bn: 'পছন্দসই মাধ্যম' },
+  location_label: { en: 'Location', bn: 'আপনার অবস্থান' },
+  submit_callback: { en: 'Request Callback', bn: 'কলব্যাকের অনুরোধ পাঠান' },
+
   // Store Page
   store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
   all_products: { en: 'All Products', bn: 'সকল পণ্য' },
@@ -92,7 +103,7 @@ export const t = {
   confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
   registering_as: { en: 'I am registering as a', bn: 'আমি নিবন্ধন করছি একজন' },
   student: { en: 'Student', bn: 'শিক্ষার্থী' },
-  guardian: { en: 'Guardian', bn: 'অভিভাবক' },
+  guardian: { en: 'Guardian', bn: 'অভিভাগ' },
   accept_terms: { en: 'I accept the terms', bn: 'আমি শর্তাবলী গ্রহণ করছি' },
   you_agree_to: { en: 'By signing up, you agree to our', bn: 'নিবন্ধন করার মাধ্যমে, আপনি আমাদের সাথে একমত হচ্ছেন' },
   terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },

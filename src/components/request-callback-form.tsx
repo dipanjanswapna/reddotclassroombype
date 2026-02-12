@@ -29,6 +29,9 @@ import { Loader2 } from "lucide-react";
 import { addCallbackRequest } from "@/app/actions/callback.actions";
 import { HomepageConfig } from "@/lib/types";
 import { trackLead } from "@/lib/fpixel";
+import { useLanguage } from "@/context/language-context";
+import { t } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -45,6 +48,7 @@ const formSchema = z.object({
 
 export function RequestCallbackForm({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
     const { toast } = useToast();
+    const { language } = useLanguage();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const callbackSection = homepageConfig?.requestCallbackSection;
 
@@ -54,9 +58,9 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
             fullName: "",
             mobileNumber: "",
             class: "12th+",
-            goals: "NEET",
+            goals: "University Admission",
             preferredCourses: "Online Courses",
-            state: "Bangladesh",
+            state: "Dhaka",
         },
     });
 
@@ -67,8 +71,8 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
             if (result.success) {
                 trackLead('callback_request', { class: values.class, goals: values.goals });
                 toast({
-                    title: "Request Submitted!",
-                    description: "Our team will get back to you shortly.",
+                    title: language === 'bn' ? "আবেদন জমা হয়েছে!" : "Request Submitted!",
+                    description: language === 'bn' ? "আমাদের টিম শীঘ্রই আপনার সাথে যোগাযোগ করবে।" : "Our team will get back to you shortly.",
                 });
                 form.reset();
             } else {
@@ -76,7 +80,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
             }
         } catch(error: any) {
              toast({
-                title: "Submission Failed",
+                title: language === 'bn' ? "ত্রুটি ঘটেছে" : "Submission Failed",
                 description: error.message || "An unexpected error occurred.",
                 variant: "destructive",
             });
@@ -86,7 +90,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
     }
 
   return (
-    <Card className="shadow-2xl overflow-hidden border-none rounded-2xl md:rounded-3xl bg-card">
+    <Card className={cn("shadow-2xl overflow-hidden border-none rounded-[20px] md:rounded-[30px] bg-card", language === 'bn' && "font-bengali")}>
         <CardContent className="p-0">
             <div className="grid md:grid-cols-2">
                 <div className="hidden md:flex items-center justify-center bg-card dark:bg-gray-800 p-8">
@@ -100,7 +104,9 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                     />
                 </div>
                 <div className="p-6 md:p-10 bg-card dark:bg-gray-900/50">
-                    <h3 className="text-xl md:text-2xl font-black mb-6 text-gray-900 dark:text-foreground font-headline uppercase tracking-tight">Request a callback</h3>
+                    <h3 className="text-xl md:text-2xl font-black mb-6 text-gray-900 dark:text-foreground font-headline uppercase tracking-tight">
+                        {t.callback_title[language]}
+                    </h3>
                     <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
@@ -109,9 +115,11 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Full name*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.full_name_label[language]}*
+                                    </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: Rohit Singh" {...field} className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground" />
+                                        <Input placeholder={language === 'bn' ? "উদা: রিয়াদ হাসান" : "Ex: Rohit Singh"} {...field} className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-medium" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -122,9 +130,11 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="mobileNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Mobile Number*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.mobile_label[language]}*
+                                    </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ex: +88017..." {...field} className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground" />
+                                        <Input placeholder="01XXXXXXXXX" {...field} className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-medium" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -135,14 +145,16 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="class"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Class*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.class_label[language]}*
+                                    </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
+                                        <SelectTrigger className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-bold">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="rounded-xl">
+                                    <SelectContent className="rounded-xl font-bold">
                                         <SelectItem value="12th+">12th+</SelectItem>
                                         <SelectItem value="11th">11th</SelectItem>
                                         <SelectItem value="10th">10th</SelectItem>
@@ -161,18 +173,20 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="goals"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Goals*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.goal_label[language]}*
+                                    </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
+                                        <SelectTrigger className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-bold">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="rounded-xl">
-                                        <SelectItem value="NEET">NEET</SelectItem>
-                                        <SelectItem value="JEE">JEE</SelectItem>
-                                        <SelectItem value="Board Exams">Board Exams</SelectItem>
+                                    <SelectContent className="rounded-xl font-bold">
+                                        <SelectItem value="HSC/SSC Exam">Board Exams</SelectItem>
                                         <SelectItem value="University Admission">University Admission</SelectItem>
+                                        <SelectItem value="Job Prep/BCS">BCS & Job Prep</SelectItem>
+                                        <SelectItem value="Skills">Professional Skills</SelectItem>
                                         <SelectItem value="Other">Other</SelectItem>
                                     </SelectContent>
                                     </Select>
@@ -185,17 +199,19 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="preferredCourses"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Preference*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.preference_label[language]}*
+                                    </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
+                                        <SelectTrigger className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-bold">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="rounded-xl">
+                                    <SelectContent className="rounded-xl font-bold">
                                         <SelectItem value="Online Courses">Online Courses</SelectItem>
-                                        <SelectItem value="Offline Courses">Offline Courses</SelectItem>
-                                        <SelectItem value="Both">Both</SelectItem>
+                                        <SelectItem value="Offline Courses">Offline Hub</SelectItem>
+                                        <SelectItem value="Both">Hybrid Mode</SelectItem>
                                     </SelectContent>
                                     </Select>
                                     <FormMessage className="text-[10px]" />
@@ -207,14 +223,16 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 name="state"
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground">Location*</FormLabel>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-gray-500 dark:text-muted-foreground ml-1">
+                                        {t.location_label[language]}*
+                                    </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-10 md:h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground">
+                                        <SelectTrigger className="rounded-xl h-11 bg-white/50 dark:bg-background/50 border-black/5 dark:border-white/10 text-gray-900 dark:text-foreground font-bold">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="rounded-xl">
+                                    <SelectContent className="rounded-xl font-bold">
                                         <SelectItem value="Dhaka">Dhaka</SelectItem>
                                         <SelectItem value="Chattogram">Chattogram</SelectItem>
                                         <SelectItem value="Khulna">Khulna</SelectItem>
@@ -231,13 +249,14 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                             />
                         </div>
                         <p className="text-[10px] md:text-xs text-gray-500 dark:text-muted-foreground leading-relaxed">
-                            By continuing, you agree to our{' '}
+                            {language === 'bn' ? 'এগিয়ে যাওয়ার মাধ্যমে, আপনি আমাদের' : 'By continuing, you agree to our'}{' '}
                             <Link href="/terms" className="underline hover:text-primary font-bold">
-                                Terms & Conditions
+                                {t.terms_of_service[language]}
                             </Link>
                         </p>
-                        <Button type="submit" className="w-full font-black text-sm uppercase tracking-widest h-12 md:h-14 rounded-xl shadow-xl shadow-primary/20" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Request Callback"}
+                        <Button type="submit" className="w-full font-black text-xs uppercase tracking-widest h-12 md:h-14 rounded-xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            {t.submit_callback[language]}
                         </Button>
                     </form>
                     </Form>
