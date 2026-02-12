@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -42,6 +41,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -200,9 +200,8 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                                 <Package className="w-12 h-12 mb-2" />
                                                 <p className="text-[10px] font-black uppercase tracking-widest">Inventory is empty</p>
                                             </div>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
+                                        </TableRow>
+                                    )}
                             </TableBody>
                         </Table>
                     </div>
