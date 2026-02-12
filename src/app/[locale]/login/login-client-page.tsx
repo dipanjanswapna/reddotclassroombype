@@ -1,0 +1,371 @@
+
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
+import { useAuth } from '@/context/auth-context';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle, Loader2, Search, Info } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from '@/components/ui/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User, HomepageConfig } from '@/lib/types';
+import loginImage from '@/public/login.jpg';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { findRollNumberByEmailAction } from '@/app/actions/user.actions';
+
+
+function GoogleIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" aria-hidden="true">
+      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C39.902,36.631,44,30.836,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+    </svg>
+  );
+}
+
+function FacebookIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#3F51B5" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
+            <path fill="#FFF" d="M34.368,25.708h-6.142v16.292h-7.734V25.708h-4.433v-6.52h4.433v-4.66c0-4.39,2.685-6.78,6.597-6.78c1.88,0,3.504,0.14,3.976,0.205v6.251h-3.692c-2.131,0-2.543,1.011-2.543,2.498v2.965h6.643L34.368,25.708z"></path>
+        </svg>
+    )
+}
+
+export default function LoginPageClient({ homepageConfig }: { homepageConfig: HomepageConfig }) {
+  const { language, getLocalizedPath } = useLanguage();
+  const { login, loginWithGoogle, loginWithFacebook, loginWithClassRoll, loginWithStaffId } = useAuth();
+  const { toast } = useToast();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [classRoll, setClassRoll] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
+  const [staffId, setStaffId] = useState('');
+  const [staffPassword, setStaffPassword] = useState('');
+  const [role, setRole] = useState<User['role']>('Teacher');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('student');
+
+  // Find Roll states
+  const [searchEmail, setSearchEmail] = useState('');
+  const [isFindingRoll, setIsFindingRoll] = useState(false);
+  const [foundRoll, setFoundRoll] = useState<string | null>(null);
+  const [findRollError, setFindRollError] = useState<string | null>(null);
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      await login(email, password, role);
+    } catch (err: any) {
+      setError(err.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleClassRollLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+        await loginWithClassRoll(classRoll, studentPassword);
+    } catch (err: any) {
+        setError(err.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  
+  const handleStaffIdLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+        await loginWithStaffId(staffId, staffPassword);
+    } catch (err: any) {
+        setError(err.message || 'Failed to log in with Staff ID. Please check your credentials.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (provider === 'google') {
+          await loginWithGoogle();
+      } else {
+          await loginWithFacebook();
+      }
+    } catch (err: any) {
+       if (err.code === 'auth/popup-closed-by-user') {
+         console.log('Firebase auth popup closed by user.');
+       } else {
+         setError(err.message || `Failed to log in with ${provider}.`);
+       }
+    } finally {
+       setIsLoading(false);
+    }
+  };
+
+  const handleFindRoll = async () => {
+      if (!searchEmail) {
+          setFindRollError("দয়া করে ইমেইল এড্রেস লিখুন।");
+          return;
+      }
+      setIsFindingRoll(true);
+      setFindRollError(null);
+      setFoundRoll(null);
+      
+      const result = await findRollNumberByEmailAction(searchEmail);
+      if (result.success) {
+          setFoundRoll(result.rollNumber!);
+          toast({ title: "রোল নম্বর পাওয়া গেছে!" });
+      } else {
+          setFindRollError(result.message!);
+      }
+      setIsFindingRoll(false);
+  };
+  
+  const currentRole = role === ('Partner' as any) ? 'Seller' : role;
+  const socialLoginDisabled = !homepageConfig.platformSettings.Student.loginEnabled;
+  const roleLoginDisabled = currentRole && currentRole !== 'Admin' && !homepageConfig.platformSettings[currentRole]?.loginEnabled;
+
+  return (
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+      <div className="flex items-center justify-center py-12 px-4">
+        <Card className="w-full max-w-sm mx-auto shadow-lg bg-card rounded-[20px]">
+            <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-headline uppercase tracking-tight">{t.login_welcome[language]}</CardTitle>
+            <CardDescription className="text-xs font-bold uppercase tracking-widest">{t.login_desc[language]}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6">
+
+                {error && (
+                    <Alert variant="destructive" className="rounded-xl">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Login Failed</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-xl">
+                        <TabsTrigger value="student" className="rounded-lg font-black uppercase text-[10px] tracking-widest">Student / Guardian</TabsTrigger>
+                        <TabsTrigger value="staff" className="rounded-lg font-black uppercase text-[10px] tracking-widest">Staff / Seller</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="student">
+                        <div className="pt-4 grid gap-4">
+                            <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isLoading || socialLoginDisabled} className="w-full h-12 rounded-xl font-bold">
+                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GoogleIcon />}
+                                <span className="ml-2">Continue with Google</span>
+                            </Button>
+                            <Button variant="social" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || socialLoginDisabled} className="w-full h-12 rounded-xl font-bold">
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FacebookIcon />}
+                                <span className="ml-2">Continue with Facebook</span>
+                            </Button>
+                            {socialLoginDisabled && <p className="text-xs text-center text-destructive font-bold">Student & Guardian login is temporarily disabled.</p>}
+                            
+                            <div className="relative my-2">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-primary/10" />
+                                </div>
+                                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
+                                    <span className="bg-card px-3 text-muted-foreground">
+                                        {t.or_login_with_roll[language]}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <form className="grid gap-4" onSubmit={handleClassRollLogin}>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="class-roll" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.class_roll[language]}</Label>
+                                    <Input id="class-roll" placeholder="123456" required value={classRoll} onChange={(e) => setClassRoll(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="student-password" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.password[language]}</Label>
+                                    <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <button type="button" className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">
+                                                Forgot Roll Number?
+                                            </button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-md rounded-[20px] border-primary/10">
+                                            <DialogHeader>
+                                                <DialogTitle className="font-headline uppercase tracking-tight">রোল নম্বর খুঁজুন</DialogTitle>
+                                                <DialogDescription className="text-xs font-bold uppercase tracking-widest opacity-60">
+                                                    আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4 py-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="search-email" className="text-[10px] font-black uppercase ml-1">ইমেইল এড্রেস</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input 
+                                                            id="search-email" 
+                                                            type="email" 
+                                                            placeholder="example@mail.com" 
+                                                            value={searchEmail} 
+                                                            onChange={e => setSearchEmail(e.target.value)}
+                                                            className="rounded-xl h-11 border-primary/10"
+                                                        />
+                                                        <Button onClick={handleFindRoll} disabled={isFindingRoll} className="rounded-xl h-11 px-4">
+                                                            {isFindingRoll ? <Loader2 className="h-4 w-4 animate-spin"/> : <Search className="h-4 w-4"/>}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                {findRollError && (
+                                                    <Alert variant="destructive" className="rounded-xl border-none bg-red-50 text-red-800">
+                                                        <AlertTriangle className="h-4 w-4" />
+                                                        <AlertDescription>{findRollError}</AlertDescription>
+                                                    </Alert>
+                                                )}
+                                                {foundRoll && (
+                                                    <Alert className="rounded-xl border-none bg-green-50 text-green-800">
+                                                        <Info className="h-4 w-4 text-green-600" />
+                                                        <AlertDescription className="text-base font-bold">
+                                                            আপনার রোল নম্বরটি হলো: <span className="text-primary text-xl ml-1">{foundRoll}</span>
+                                                        </AlertDescription>
+                                                    </Alert>
+                                                )}
+                                            </div>
+                                            <DialogFooter className="sm:justify-start">
+                                                <DialogTrigger asChild>
+                                                    <Button type="button" variant="secondary" className="rounded-xl font-bold uppercase text-[10px]">বন্ধ করুন</Button>
+                                                </DialogTrigger>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Link href={getLocalizedPath("/password-reset")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">
+                                        {t.forgot_password[language]}
+                                    </Link>
+                                </div>
+                                <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading || socialLoginDisabled}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                    {t.login[language]}
+                                </Button>
+                            </form>
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="staff">
+                        <Tabs defaultValue="email" className="w-full pt-4">
+                            <TabsList className="grid w-full grid-cols-2 bg-muted/30 p-1 rounded-xl">
+                            <TabsTrigger value="email" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{t.email_login[language]}</TabsTrigger>
+                            <TabsTrigger value="id" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{t.login_with_staff_id[language]}</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="email">
+                            <form className="grid gap-4 pt-4" onSubmit={handleEmailLogin}>
+                                    <div className="grid gap-2">
+                                    <Label htmlFor="role" className="text-[10px] font-black uppercase tracking-widest ml-1">Your Role</Label>
+                                    <Select value={role} onValueChange={(value) => setRole(value as User['role'])} required>
+                                        <SelectTrigger id="role" className="h-11 rounded-xl border-primary/10 font-bold">
+                                        <SelectValue placeholder="Select your role" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-primary/10">
+                                        <SelectItem value="Admin" className="font-bold">Admin</SelectItem>
+                                        <SelectItem value="Teacher" className="font-bold">Teacher</SelectItem>
+                                        <SelectItem value="Seller" className="font-bold">Seller</SelectItem>
+                                        <SelectItem value="Moderator" className="font-bold">Moderator</SelectItem>
+                                        <SelectItem value="Affiliate" className="font-bold">Affiliate</SelectItem>
+                                        <SelectItem value="Doubt Solver" className="font-bold">Doubt Solver</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.email[language]}</Label>
+                                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                    </div>
+                                    <div className="grid gap-2">
+                                    <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.password[language]}</Label>
+                                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                    </div>
+                                    {roleLoginDisabled && (
+                                        <Alert variant="destructive" className="p-2 text-[10px] rounded-xl font-bold">
+                                            <AlertDescription>Login for the '{role}' role is temporarily disabled.</AlertDescription>
+                                        </Alert>
+                                    )}
+                                    <div className="flex items-center justify-end">
+                                        <Link href={getLocalizedPath("/password-reset")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">
+                                            {t.forgot_password[language]}
+                                        </Link>
+                                    </div>
+                                    <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading || !!roleLoginDisabled}>
+                                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                        {t.login[language]}
+                                    </Button>
+                                </form>
+                            </TabsContent>
+                            <TabsContent value="id">
+                                <form className="grid gap-4 pt-4" onSubmit={handleStaffIdLogin}>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="staff-id" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.staff_id[language]}</Label>
+                                        <Input id="staff-id" placeholder="12345678" required value={staffId} onChange={(e) => setStaffId(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="staff-password" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.password[language]}</Label>
+                                        <Input id="staff-password" type="password" required value={staffPassword} onChange={(e) => setStaffPassword(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                                    </div>
+                                    <div className="flex items-center justify-end">
+                                        <Link href={getLocalizedPath("/password-reset")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">
+                                            {t.forgot_password[language]}
+                                        </Link>
+                                    </div>
+                                    <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20" disabled={isLoading}>
+                                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                        {t.login[language]}
+                                    </Button>
+                                </form>
+                            </TabsContent>
+                        </Tabs>
+                    </TabsContent>
+                </Tabs>
+                
+
+            <div className="mt-4 text-center text-[11px] font-bold">
+                <span className="text-muted-foreground">{t.no_account[language]}</span>{' '}
+                <Link href={getLocalizedPath("/signup")} className="font-black uppercase tracking-widest text-primary hover:underline">
+                {t.signup[language]}
+                </Link>
+            </div>
+            </CardContent>
+        </Card>
+      </div>
+      <div className="hidden bg-muted lg:block relative">
+        <Image
+          src={loginImage}
+          alt="Students learning in a classroom"
+          placeholder="blur"
+          className="h-full w-full object-cover"
+          data-ai-hint="students classroom"
+        />
+        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
+      </div>
+    </div>
+  );
+}
