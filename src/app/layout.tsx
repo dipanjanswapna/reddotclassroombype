@@ -3,6 +3,7 @@ import '@/app/globals.css';
 import { cn } from '@/lib/utils';
 import { Poppins, Hind_Siliguri, Inter } from 'next/font/google';
 import logoSrc from '@/public/logo.png';
+import { LayoutWrapper } from '@/components/layout-wrapper';
 
 const fontInter = Inter({
   subsets: ['latin'],
@@ -51,7 +52,9 @@ export default function RootLayout({
         fontPoppins.variable, 
         fontHindSiliguri.variable
       )}>
-        {children}
+        <LayoutWrapper>
+            {children}
+        </LayoutWrapper>
       </body>
     </html>
   );
