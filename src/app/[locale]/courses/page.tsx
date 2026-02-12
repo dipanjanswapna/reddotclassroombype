@@ -6,6 +6,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'RED DOT CLASSROOM (RDC)',
@@ -58,14 +59,18 @@ async function CoursesPageContent({ searchParams }: { searchParams?: Promise<{ [
 }
 
 export default async function CoursesPage({
+  params,
   searchParams,
 }: {
+  params: { locale: string };
   searchParams?: Promise<{ [key: string]: string | undefined }>;
 }) {
+    const awaitedParams = await params;
+    const isBn = awaitedParams.locale === 'bn';
     const homepageConfig = await getHomepageConfig();
     
   return (
-    <div className="bg-background min-h-screen">
+    <div className={cn("bg-background min-h-screen", isBn && "font-bengali")}>
         <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden px-1">
             <div className="container mx-auto px-0">
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
@@ -78,11 +83,14 @@ export default async function CoursesPage({
                     <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
                         <TypingText text="Premium Learning Resources" className="inline" />
                     </div>
-                    <h1 className="font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-tight font-headline">
+                    <h1 className={cn(
+                        "font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-tight",
+                        isBn ? "" : "font-headline"
+                    )}>
                         RED DOT CLASSROOM <span className="text-primary">(RDC)</span>
                     </h1>
                     <div className="min-h-[2.5rem]">
-                        <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-2">
+                        <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed px-2">
                             আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RED DOT CLASSROOM (RDC)-তে।
                         </p>
                     </div>

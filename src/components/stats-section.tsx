@@ -39,12 +39,16 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
 
 export function StatsSection({ stats, title }: StatsSectionProps) {
   const { language } = useLanguage();
+  const isBn = language === 'bn';
 
   return (
-    <section className="py-8 md:py-10 overflow-hidden">
+    <section className={cn("py-8 md:py-10 overflow-hidden", isBn && "font-bengali")}>
       <div className="container mx-auto px-1">
         {title && (
-          <h2 className="font-headline text-xl md:text-2xl lg:text-3xl font-black mb-8 md:mb-10 text-center uppercase tracking-tight">
+          <h2 className={cn(
+            "text-xl md:text-2xl lg:text-3xl font-black mb-8 md:mb-10 text-center uppercase tracking-tight",
+            isBn ? "" : "font-headline"
+          )}>
             {title[language] || title['en']}
           </h2>
         )}
@@ -61,7 +65,7 @@ export function StatsSection({ stats, title }: StatsSectionProps) {
                 "p-6 md:p-8 flex flex-col justify-center h-36 md:h-40 border-none shadow-sm rounded-[20px] transition-transform hover:scale-[1.02]",
                 stat.color
               )}>
-                <div className="space-y-1">
+                <div className="space-y-1 text-center sm:text-left">
                   <p className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter">
                     <Counter value={stat.value} suffix={stat.suffix} />
                   </p>

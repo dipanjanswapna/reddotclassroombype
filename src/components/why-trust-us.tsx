@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -33,9 +32,11 @@ const pastelColors = [
 /**
  * @fileOverview WhyTrustUs Component
  * Live testimonial and feature section with px-1 wall-to-wall layout and 20px rounding.
+ * Uses conditional font logic for Bengali Hind Siliguri support.
  */
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
+  const isBn = language === 'bn';
   const plugin = React.useRef(Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true }));
 
   if (!data || !data.display) {
@@ -46,7 +47,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className="py-8 md:py-12 overflow-hidden relative px-1">
+    <section className={cn("py-8 md:py-12 overflow-hidden relative px-1", isBn && "font-bengali")}>
       <div className="container mx-auto px-0">
         {/* Features Grid */}
         <motion.div 
@@ -57,7 +58,10 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
         >
             <div className="grid lg:grid-cols-2 gap-10 items-center">
                 <div className="space-y-5 text-left">
-                    <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-tight uppercase" dangerouslySetInnerHTML={{ __html: renderedTitle }} />
+                    <h2 className={cn(
+                        "font-black tracking-tight leading-tight uppercase",
+                        isBn ? "text-3xl md:text-4xl" : "font-headline text-3xl md:text-4xl"
+                    )} dangerouslySetInnerHTML={{ __html: renderedTitle }} />
                     <p className="text-sm md:text-base text-muted-foreground font-medium leading-relaxed max-w-xl">
                         {data.description?.[language] || data.description?.['en']}
                     </p>
@@ -102,11 +106,14 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                     <CardContent className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
                         <div className="md:col-span-8 relative space-y-6 text-center md:text-left">
                             <Quote className="text-6xl text-primary/10 absolute -top-10 -left-4 pointer-events-none" fill="currentColor" />
-                            <blockquote className="text-lg md:text-2xl font-medium italic relative z-10 text-foreground leading-relaxed tracking-tight font-bengali">
+                            <blockquote className="text-lg md:text-2xl font-medium italic relative z-10 text-foreground leading-relaxed tracking-tight">
                                 "{testimonial.quote?.[language] || testimonial.quote?.['en']}"
                             </blockquote>
                             <div className="space-y-1">
-                                <p className="font-black text-lg md:text-xl text-primary font-headline uppercase tracking-tight">
+                                <p className={cn(
+                                    "font-black text-lg md:text-xl text-primary uppercase tracking-tight",
+                                    !isBn && "font-headline"
+                                )}>
                                     {testimonial.studentName}
                                 </p>
                                 <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-[0.1em]">
