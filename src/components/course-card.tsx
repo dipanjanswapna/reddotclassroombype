@@ -8,6 +8,7 @@ import type { Course, Organization } from "@/lib/types";
 import { CourseCardWishlistButton } from "./course-card-wishlist-button";
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/language-context';
+import { ChevronRight } from 'lucide-react';
 
 type CourseCardProps = Partial<Course> & {
   partnerSubdomain?: string;
