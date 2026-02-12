@@ -14,51 +14,81 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+// Paths that should not receive a locale prefix
+const dashboardPrefixes = [
+  '/admin',
+  '/student',
+  '/teacher',
+  '/moderator',
+  '/seller',
+  '/affiliate',
+  '/doubt-solver',
+];
+
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
   
-  // Sync state with URL locale segment
+  // Sync state with URL locale segment if available
   const urlLocale = params?.locale as Language;
-  const [language, setLanguage] = useState<Language>(urlLocale || 'en');
+  const [language, setLanguage] = useState<Language>('en');
 
   useEffect(() => {
-    if (urlLocale && urlLocale !== language) {
+    // Priority: URL > LocalStorage > Default
+    const savedLang = localStorage.getItem('rdc_preferred_lang') as Language;
+    if (urlLocale) {
       setLanguage(urlLocale);
+      localStorage.setItem('rdc_preferred_lang', urlLocale);
+    } else if (savedLang && (savedLang === 'en' || savedLang === 'bn')) {
+      setLanguage(savedLang);
     }
-  }, [urlLocale, language]);
+  }, [urlLocale]);
 
   const getLocalizedPath = useCallback((path: string) => {
     if (!path) return `/${language}`;
-    // Remove leading slash for consistency
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
     
-    // If it's already localized, return as is
+    // Check if the target path is a dashboard path
+    const isDashboard = dashboardPrefixes.some(prefix => cleanPath.startsWith(prefix));
+    if (isDashboard) {
+        return cleanPath;
+    }
+    
+    // If already localized, return as is
     if (cleanPath.startsWith('/en') || cleanPath.startsWith('/bn')) {
         return cleanPath;
     }
     
-    // Prepend current language
+    // Return localized path
     return `/${language}${cleanPath === '/' ? '' : cleanPath}`;
   }, [language]);
 
   const setLanguageAndRedirect = (lang: Language) => {
     if (lang === language) return;
     
-    // Replace the locale segment in the current pathname
+    localStorage.setItem('rdc_preferred_lang', lang);
+    setLanguage(lang);
+
     const segments = pathname.split('/');
-    // segments[0] is "", segments[1] is the current locale
-    segments[1] = lang;
-    const newPath = segments.join('/') || `/${lang}`;
-    
-    router.push(newPath);
+    const currentLocale = segments[1];
+
+    if (locales.includes(currentLocale)) {
+        // We are on a localized page, replace prefix
+        segments[1] = lang;
+        router.push(segments.join('/') || `/${lang}`);
+    } else {
+        // We are on a dashboard or unlocalized page, just update state (handled above)
+        // No redirect needed for dashboards, they don't use prefixes
+    }
   };
 
   const toggleLanguage = () => {
     const newLang = language === 'bn' ? 'en' : 'bn';
     setLanguageAndRedirect(newLang);
   };
+
+  const locales = ['en', 'bn'];
 
   return (
     <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage: setLanguageAndRedirect, getLocalizedPath }}>

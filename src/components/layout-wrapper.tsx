@@ -1,4 +1,3 @@
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -19,7 +18,6 @@ import { getHomepageConfig, getStoreCategories } from '@/lib/firebase/firestore'
 import React, { Suspense } from 'react';
 import FacebookPixel from './facebook-pixel';
 
-
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { language } = useLanguage();
@@ -31,16 +29,20 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     getHomepageConfig().then(setHomepageConfig);
   }, []);
 
+  // Remove locale prefix for layout logic checks
+  const segments = pathname.split('/');
+  const isLocalized = segments[1] === 'en' || segments[1] === 'bn';
+  const cleanPath = isLocalized ? '/' + segments.slice(2).join('/') : pathname;
+
   const isFullPageLayout =
-    pathname.startsWith('/sites/') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/auth/') ||
-    pathname.startsWith('/signup') ||
-    pathname.startsWith('/seller-program/apply') ||
-    pathname.startsWith('/password-reset');
+    cleanPath.startsWith('/login') ||
+    cleanPath.startsWith('/signup') ||
+    cleanPath.startsWith('/auth/') ||
+    cleanPath.startsWith('/password-reset') ||
+    cleanPath.startsWith('/seller-program/apply');
     
-  const isOfflineHub = pathname.startsWith('/offline-hub');
-  const isStore = pathname.startsWith('/store');
+  const isStore = cleanPath.startsWith('/store') || cleanPath.startsWith('/store/');
+  const isOfflineHub = cleanPath.startsWith('/offline-hub');
 
   if (isFullPageLayout || isOfflineHub) {
     return <>{children}</>;
@@ -48,10 +50,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (isStore) {
     return (
-      <div className={cn(
-        "min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900",
-        language === 'bn' ? 'font-bengali' : 'font-body'
-      )}>
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <StoreHeader categories={categories} />
         <main className="flex-grow pt-12 lg:pt-16 px-1">
             {children}
@@ -67,39 +66,26 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/guardian') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/moderator') ||
-    pathname.startsWith('/seller');
-    
-  const isHomePage = pathname === '/';
+    pathname.startsWith('/seller') ||
+    pathname.startsWith('/doubt-solver');
 
   return (
-    <div lang={language} dir="ltr">
-        <div className={cn(
-            "min-h-screen flex flex-col",
-            isDashboardPage && "bg-background",
-            language === 'bn' ? 'font-bengali' : 'font-body'
-        )}>
-            <Header homepageConfig={homepageConfig} />
-            <main className={cn("flex-grow pt-16 px-1", isDashboardPage && "min-h-screen")}>
-              {children}
-            </main>
-            {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
-             {homepageConfig?.floatingWhatsApp?.display && (
-                <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
-            )}
-        </div>
+    <div className={cn(
+        "min-h-screen flex flex-col",
+        isDashboardPage && "bg-background"
+    )}>
+        <Header homepageConfig={homepageConfig} />
+        <main className={cn("flex-grow pt-16 px-1", isDashboardPage && "min-h-screen")}>
+          {children}
+        </main>
+        {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+         {homepageConfig?.floatingWhatsApp?.display && (
+            <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
+        )}
     </div>
   );
 }
 
-
-/**
- * @fileOverview LayoutWrapper component.
- * This component acts as a conditional layout manager for the entire application.
- * It inspects the current URL pathname to decide whether to render the main
- * Header and Footer components. This allows for different page types, such as
- * full-page marketing sites (e.g., partner sites), auth pages, and dashboard
- * interfaces, to have distinct layouts.
- */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
  return (
      <ThemeProvider
@@ -111,14 +97,14 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <CartProvider>
             <LanguageProvider>
-            <InnerLayout>
-                {children}
-            </InnerLayout>
-            <CartSheet />
-            <Toaster />
-            <Suspense fallback={null}>
-                <FacebookPixel />
-            </Suspense>
+                <InnerLayout>
+                    {children}
+                </InnerLayout>
+                <CartSheet />
+                <Toaster />
+                <Suspense fallback={null}>
+                    <FacebookPixel />
+                </Suspense>
             </LanguageProvider>
         </CartProvider>
       </AuthProvider>
