@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -56,7 +55,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
     { href: getLocalizedPath("/store"), label: t.nav_rdc_store[language] },
     { href: getLocalizedPath("/courses"), label: t.rdc_shop[language]},
     { href: getLocalizedPath("/courses?category=admission"), label: t.nav_admission_test[language] },
-    { href: "/offline-hub", label: t.nav_online_batch[language] },
+    { href: getLocalizedPath("/offline-hub"), label: t.nav_online_batch[language] },
   ];
 
   const moreLinks = [

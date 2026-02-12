@@ -29,6 +29,8 @@ import { NoticeBoard } from '@/components/notice-board';
 import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 import { StatsSection } from '@/components/stats-section';
+import { cn } from '@/lib/utils';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
     loading: () => <Skeleton className="h-[250px] w-full rounded-[20px]" />,
@@ -41,7 +43,7 @@ export default function Home() {
   const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
   const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = useState(true);
   
   const [liveStats, setLiveStats] = React.useState({
     learners: 0,
@@ -159,7 +161,7 @@ export default function Home() {
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {/* Categories - Colorful & px-1 */}
+        {/* Categories */}
         {homepageConfig.categoriesSection?.display && (
           <section className="overflow-hidden py-10 md:py-16 px-1">
             <div className="container mx-auto px-0">
@@ -230,11 +232,5 @@ export default function Home() {
             </div>
         </section>
     </div>
-  );
-}
-
-function LoadingSpinner({ className }: { className?: string }) {
-  return (
-    <div className={cn("animate-spin rounded-full border-4 border-primary border-t-transparent", className)} />
   );
 }
