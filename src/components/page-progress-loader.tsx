@@ -26,11 +26,12 @@ export function PageProgressLoader() {
   }, []);
 
   useEffect(() => {
-    // Finish progress on route change
+    // Start progress on conceptual initiation
+    NProgress.start();
+    // Finish progress on route change detected
     NProgress.done();
     
     return () => {
-      // Start progress on initiation of route change (conceptual in App Router)
       NProgress.start();
     };
   }, [pathname, searchParams]);
@@ -41,6 +42,7 @@ export function PageProgressLoader() {
         background: hsl(var(--primary)) !important;
         height: 3px !important;
         box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary));
+        z-index: 10000 !important;
       }
       #nprogress .peg {
         box-shadow: 0 0 10px hsl(var(--primary)), 0 0 5px hsl(var(--primary)) !important;

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Product, StoreCategory, HomepageConfig } from '@/lib/types';
 import { Input } from './ui/input';
 import { Search, ShoppingBag, Filter, Sparkles, Loader2 } from 'lucide-react';
@@ -33,7 +33,7 @@ export function StorePageClient({
     const [isSearching, setIsSearching] = useState(false);
     const searchParams = useSearchParams();
 
-    // useDebounce from react-use to optimize performance
+    // useDebounce from react-use to reduce server load and improve client perf
     useDebounce(
         () => {
             setDebouncedSearchTerm(searchTerm);
@@ -77,7 +77,7 @@ export function StorePageClient({
         <div className="w-full px-1 -mt-6 lg:-mt-14 space-y-6 md:space-y-10">
             <main className="space-y-8 md:space-y-12">
                 {/* Dynamic Hero Banners */}
-                {homepageConfig?.storeHomepageSection?.bannerCarousel && (
+                {homepageConfig?.storeHomepageSection?.bannerCarousel && !hasFilters && (
                      <div className="rounded-[20px] overflow-hidden shadow-xl border border-primary/5">
                         <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
                      </div>
@@ -87,7 +87,7 @@ export function StorePageClient({
                     {/* Header & Filter Area */}
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center border-l-4 border-primary pl-4">
                         <div className="space-y-0.5 text-left">
-                            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 w-fit">
+                            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 w-fit shadow-sm">
                                 <ShoppingBag className="w-3 h-3" />
                                 RDC Store Hub
                             </div>

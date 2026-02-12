@@ -20,8 +20,9 @@ interface ProductClientPageProps {
 }
 
 /**
- * @fileOverview Refined Product Client Page.
- * Implements dynamic delivery dates and premium UI refinement.
+ * @fileOverview Ultimate Product Client Page.
+ * - Implements dynamic delivery dates based on current day.
+ * - 20px corners and px-1 wall-to-wall design.
  */
 export function ProductClientPage({ product }: ProductClientPageProps) {
   const [selectedImage, setSelectedImage] = useState(product.imageUrl);

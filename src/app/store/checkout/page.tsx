@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { Loader2, ShoppingBag, Info, AlertTriangle, Truck, CheckCircle2, PartyPopper } from 'lucide-react';
+import { Loader2, ShoppingBag, Info, AlertTriangle, Truck, CheckCircle2, PartyPopper, PackageCheck } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { createOrderAction } from '@/app/actions/order.actions';
 import { applyStoreCouponAction } from '@/app/actions/promo.actions';
@@ -18,11 +18,11 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { HomepageConfig } from '@/lib/types';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
+import { addDays, format } from 'date-fns';
 
 const ReactConfetti = dynamic(() => import('react-confetti'), { ssr: false });
 
@@ -39,9 +39,10 @@ const thanas: { [key: string]: string[] } = {
 };
 
 /**
- * @fileOverview Refined Store Checkout Page.
- * Optimized for high-density wall-to-wall UI.
- * Implements react-confetti for a premium success state.
+ * @fileOverview Ultimate Store Checkout Page.
+ * - Implements dynamic confetti on success.
+ * - Shows dynamic delivery dates.
+ * - 20px corners and px-1 spacing consistency.
  */
 export default function CheckoutPage() {
   const { items, clearCart, total } = useCart();
@@ -94,6 +95,14 @@ export default function CheckoutPage() {
   }, [totalItems, config]);
 
   const totalPayable = total + deliveryCharge - discount;
+
+  const deliveryDates = useMemo(() => {
+      const today = new Date();
+      return {
+          inside: format(addDays(today, 3), 'dd MMM yyyy'),
+          outside: format(addDays(today, 7), 'dd MMM yyyy')
+      };
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -158,11 +167,11 @@ export default function CheckoutPage() {
           <div className="container mx-auto max-w-2xl py-24 text-center px-4">
               {showConfetti && <ReactConfetti width={typeof window !== 'undefined' ? window.innerWidth : 1200} height={typeof window !== 'undefined' ? window.innerHeight : 800} recycle={false} />}
               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-8">
-                  <div className="h-24 w-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-green-600/10">
+                  <div className="h-24 w-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-green-600/10 border-4 border-white">
                       <CheckCircle2 className="h-12 w-12" />
                   </div>
                   <div className="space-y-3">
-                      <h1 className="text-3xl md:text-4xl font-black uppercase font-headline text-foreground">Order <span className="text-primary">Confirmed!</span></h1>
+                      <h1 className="text-3xl md:text-4xl font-black uppercase font-headline text-foreground tracking-tight">Order <span className="text-primary">Confirmed!</span></h1>
                       <p className="text-muted-foreground font-medium text-lg">Your order has been placed successfully. You will receive a confirmation call shortly.</p>
                   </div>
                   <Card className="max-w-md mx-auto p-6 bg-muted/30 border-dashed border-2 border-primary/10 rounded-[20px]">
@@ -184,21 +193,8 @@ export default function CheckoutPage() {
       )
   }
 
-  if (items.length === 0 && !isProcessing) {
-      return (
-        <div className="container mx-auto max-w-2xl py-24 text-center px-4">
-            <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground opacity-20" />
-            <h1 className="mt-6 text-2xl font-black uppercase font-headline">Your Cart is Empty</h1>
-            <p className="mt-2 text-muted-foreground font-medium">Looks like you haven't added anything to your cart yet.</p>
-            <Button asChild size="lg" className="mt-8 rounded-xl font-black uppercase tracking-widest px-10 shadow-xl shadow-primary/20 h-14">
-                <Link href="/store">Browse Products</Link>
-            </Button>
-        </div>
-      )
-  }
-
   return (
-    <div className="container mx-auto max-w-5xl py-12 px-4">
+    <div className="container mx-auto max-w-5xl py-12 px-1">
       <div className="flex flex-col gap-2 border-l-4 border-primary pl-4 mb-8">
         <h1 className="text-3xl font-black uppercase font-headline">Secure <span className="text-primary">Checkout</span></h1>
         <p className="text-muted-foreground font-medium">Review your order and shipping information.</p>
@@ -212,7 +208,7 @@ export default function CheckoutPage() {
               <CardDescription className="font-medium text-xs mt-1">
                 <div className="flex items-center gap-2 text-primary">
                     <Truck className="h-4 w-4" />
-                    <span>Estimated Delivery: Dhaka (3 Days), Outside (7 Days)</span>
+                    <span>Est. Arrival: {shippingInfo.district === 'Dhaka' ? deliveryDates.inside : deliveryDates.outside}</span>
                 </div>
               </CardDescription>
             </CardHeader>
@@ -243,7 +239,7 @@ export default function CheckoutPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Detailed Address (Nearest Landmark)*</Label>
-                <Input id="address" placeholder="তোমার নিকটস্থ সুন্দরবন কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} className="rounded-xl h-12 border-primary/10 bg-white focus:border-primary/50" />
+                <Input id="address" placeholder="তোমার নিকটস্থ কুরিয়ার সার্ভিসের ঠিকানা দাও" value={shippingInfo.address} onChange={handleInputChange} className="rounded-xl h-12 border-primary/10 bg-white focus:border-primary/50" />
               </div>
             </CardContent>
           </Card>
@@ -260,22 +256,22 @@ export default function CheckoutPage() {
                     {items.map(item => (
                     <div key={item.id} className="flex items-center justify-between text-sm py-2 group">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 relative rounded-lg overflow-hidden border border-primary/10 bg-white">
+                            <div className="h-10 w-10 relative rounded-lg overflow-hidden border border-primary/10 bg-white shadow-sm">
                                 <Image src={item.imageUrl} alt={item.name} fill className="object-cover"/>
                             </div>
                             <div className="text-left">
-                                <p className="font-bold text-gray-900 line-clamp-1">{item.name}</p>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Qty: {item.quantity}</p>
+                                <p className="font-bold text-gray-900 line-clamp-1 text-xs">{item.name}</p>
+                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Qty: {item.quantity}</p>
                             </div>
                         </div>
-                        <p className="font-black text-foreground">৳{(item.price * item.quantity).toFixed(0)}</p>
+                        <p className="font-black text-foreground text-xs">৳{(item.price * item.quantity).toFixed(0)}</p>
                     </div>
                     ))}
                 </div>
                 
                 <Separator className="bg-primary/5" />
                 
-                <div className="space-y-2.5 text-xs font-bold text-muted-foreground">
+                <div className="space-y-2.5 text-[10px] font-bold text-muted-foreground">
                     <div className="flex justify-between items-center">
                         <span className="uppercase tracking-widest">Subtotal</span>
                         <span className="text-foreground font-black">৳{total.toFixed(0)}</span>
@@ -286,11 +282,6 @@ export default function CheckoutPage() {
                             {deliveryCharge === 0 ? 'FREE' : `৳${deliveryCharge.toFixed(0)}`}
                         </span>
                     </div>
-                    {config?.freeDeliveryThreshold && (
-                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-tighter">
-                            *(Buy {config.freeDeliveryThreshold}+ items for Free Delivery)
-                        </p>
-                    )}
                     {discount > 0 && (
                         <div className="flex justify-between items-center text-green-600">
                             <span className="uppercase tracking-widest">Discount</span>
@@ -319,8 +310,8 @@ export default function CheckoutPage() {
                     <Checkbox id="terms1" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(!!checked)} className="mt-1 rounded-md" />
                     <div className="grid gap-1">
                         <Label htmlFor="terms1" className="text-xs font-black uppercase tracking-tight text-foreground cursor-pointer">Agree to Platform Policies</Label>
-                        <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
-                            I accept the <Link href="/terms" className="text-primary hover:underline">Refund Policy</Link>, <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+                        <p className="text-[9px] text-muted-foreground leading-relaxed font-medium">
+                            I accept the <Link href="/terms" className="text-primary hover:underline">Refund Policy</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                         </p>
                     </div>
                 </div>
