@@ -3,14 +3,12 @@
  * Centralized translations for RDC Master Ecosystem.
  */
 export const t: Record<string, Record<string, string>> = {
-  // Header & Navigation
+  // Navigation
   nav_home: { en: 'Home', bn: 'হোম' },
   nav_rdc_store: { en: 'RDC Store', bn: 'RDC স্টোর' },
   nav_courses: { en: 'Courses', bn: 'কোর্সসমূহ' },
-  nav_admission: { en: 'Admission', bn: 'অ্যাডমিশন' },
   nav_admission_test: { en: 'Admission Test', bn: 'ভর্তি পরীক্ষা' },
-  nav_offline_batch: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
-  nav_online_batch: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
+  nav_offline_hub: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
   nav_more: { en: 'More', bn: 'আরও' },
   nav_blog: { en: 'Blog', bn: 'ব্লগ' },
   nav_faq: { en: 'FAQ', bn: 'জিজ্ঞাসা' },
@@ -23,22 +21,37 @@ export const t: Record<string, Record<string, string>> = {
   login: { en: 'Login', bn: 'লগইন' },
   signup: { en: 'Sign Up', bn: 'নিবন্ধন' },
   register: { en: 'Register', bn: 'নিবন্ধন করুন' },
-  student_portal: { en: 'Student Portal', bn: 'শিক্ষার্থী পোর্টাল' },
-  admin_panel: { en: 'Admin Panel', bn: 'অ্যাডমিন প্যানেল' },
   dashboard: { en: 'Dashboard', bn: 'ড্যাশবোর্ড' },
+  
+  // Footer
+  footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
+  quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
+  for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
+  student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
+  join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
+  become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
+  become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
+  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
+  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
+  teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
+  legal: { en: 'Legal', bn: 'আইনগত' },
+  privacy_policy: { en: 'Privacy Policy', bn: 'গোপনীয়তা নীতি' },
+  terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
+  copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
 
-  // Homepage Sections
-  hero_title: { en: 'Red Dot Classroom', bn: 'রেড ডট ক্লাসরুম' },
-  hero_tagline: { en: 'Learn Smart, Stay Organized, Achieve More!', bn: 'স্মার্টলি শিখুন, সুসংগঠিত থাকুন, লক্ষ্য জয় করুন!' },
+  // Homepage
   categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরি অনুযায়ী খুঁজুন' },
   live_courses_heading: { en: 'Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
   our_mentors: { en: 'Our Elite Faculty', bn: 'আমাদের অভিজ্ঞ শিক্ষক মণ্ডলী' },
-  why_trust_rdc: { en: 'Why Choose RDC?', bn: 'কেন আমরাই সেরা?' },
   stats_heading: { en: 'RDC Journey in Numbers', bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা' },
   callback_title: { en: 'Request a callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
+  full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },
+  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
+  class_label: { en: 'Class', bn: 'শ্রেণী' },
+  submit: { en: 'Submit', bn: 'জমা দিন' },
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
-
+  
   // Offline Hub
   offline_hero_subtitle: { 
     en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.',
@@ -59,79 +72,23 @@ export const t: Record<string, Record<string, string>> = {
   have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
   talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
 
-  // Store & Products
-  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
-  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
-  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
-  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
-  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
-  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
-  add_to_cart: { en: 'Add to Cart', bn: 'কার্টে যোগ করুন' },
-  buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
-  customer_feedback: { en: 'Customer Feedback', bn: 'ক্রেতাদের মতামত' },
-  similar_items: { en: 'Similar Items', bn: 'সদৃশ পণ্য' },
-  back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
-  
-  // Auth & Profile
-  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
-  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
-  connect_contact: { en: 'Contact Us', bn: 'আমাদের সাথে যোগাযোগ করুন' },
-
-  // Footer specific
-  quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
-  for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
-  student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
-  join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
-  become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
-  become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
-  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
-  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
-  teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
-  legal: { en: 'Legal', bn: 'আইনগত' },
-  copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
-  footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
-
-  // Support
-  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
-  connect_with_us_small: { en: 'Connect With Us', bn: 'যুক্ত হোন' },
-  support_hours: { en: 'Support Hours', bn: 'সহায়তার সময়' },
-  send_message: { en: 'Send Message', bn: 'বার্তা পাঠান' },
-  call_us: { en: 'Call Us', bn: 'কল করুন' },
-  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
-  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
-
-  // Forms
-  full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },
-  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
-  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
-  class_label: { en: 'Class', bn: 'শ্রেণী' },
-  goal_label: { en: 'Your Goal', bn: 'আপনার লক্ষ্য' },
-  submit: { en: 'Submit', bn: 'জমা দিন' },
-  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
-  confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
-  submit_application: { en: 'Submit Application', bn: 'আবেদন জমা দিন' },
-  expertise_title: { en: 'Expertise Title', bn: 'দক্ষতার বিষয়' },
-  your_bio: { en: 'Your Bio', bn: 'আপনার জীবনী' },
-  already_have_account: { en: 'Already have an account?', bn: 'আপনার কি অলরেডি একাউন্ট আছে?' },
-  no_account: { en: "Don't have an account?", bn: 'কোনো একাউন্ট নেই?' },
-  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
-  forgot_password_q: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  // Login & Signup
   login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
   login_desc: { en: 'Login to your account', bn: 'আপনার একাউন্টে লগইন করুন' },
-  signup_desc: { en: 'Create your account', bn: 'নতুন একাউন্ট তৈরি করুন' },
-  create_account: { en: 'Create Account', bn: 'নিবন্ধন করুন' },
-  or_continue_with: { en: 'Or continue with', bn: 'অথবা' },
-  or_login_with_roll: { en: 'Or login with class roll', bn: 'অথবা রোল নম্বর দিয়ে লগইন করুন' },
+  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
+  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
+  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
+  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
   class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
-  staff_id: { en: 'Staff ID', bn: 'স্টাফ আইডি' },
-  email_login: { en: 'Email Login', bn: 'ইমেইল লগইন' },
-  login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি দিয়ে লগইন করুন' },
-  accept_terms: { en: 'I accept the terms', bn: 'আমি শর্তাবলী গ্রহণ করছি' },
-  you_agree_to: { en: 'You agree to our', bn: 'আপনি আমাদের' },
-  terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
-  privacy_policy: { en: 'Privacy Policy', bn: 'গোপনীয়তা নীতি' },
-  and: { en: 'and', bn: 'এবং' },
-  back_to_login: { en: 'Back to Login', bn: 'লগইনে ফিরে যান' },
-  send_reset_link: { en: 'Send Reset Link', bn: 'লিঙ্ক পাঠান' },
-  password_reset_desc: { en: 'Reset your password', bn: 'পাসওয়ার্ড রিসেট করুন' },
+  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  no_account: { en: "Don't have an account?", bn: 'কোনো একাউন্ট নেই?' },
+  or_login_with_roll: { en: 'Or login with class roll', bn: 'অথবা রোল নম্বর দিয়ে লগইন করুন' },
+  
+  // Store
+  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
+  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
+  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
+  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
+  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
+  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
 };

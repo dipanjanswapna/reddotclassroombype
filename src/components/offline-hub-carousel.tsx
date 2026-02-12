@@ -23,7 +23,7 @@ type OfflineHubCarouselProps = {
 /**
  * @fileOverview OfflineHubCarousel Component
  * High-performance hero carousel optimized for extreme content scaling.
- * Fixed ambiguous Tailwind class duration-[8000ms] by using style.
+ * Resolved Tailwind ambiguity warning by using inline style for custom duration.
  */
 export function OfflineHubCarousel({ slides }: OfflineHubCarouselProps) {
   const [api, setApi] = React.useState<CarouselApi>();

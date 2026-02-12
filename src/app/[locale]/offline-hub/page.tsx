@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { getHomepageConfig, getCourses, getBranches, getOrganizations } from '@/lib/firebase/firestore';
-import { ArrowRight, MapPin, Phone, MessageSquare, Zap, Target, Award, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Zap, Target, Award, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { CourseCard } from '@/components/course-card';
 import { Course, Branch, Organization, HomepageConfig } from '@/lib/types';
@@ -22,7 +22,7 @@ import { t } from '@/lib/i18n';
  * Fixed the center-left alignment bug in the hero section.
  */
 export default function OfflineHubPage() {
-    const { language, getLocalizedPath } = useLanguage();
+    const { language } = useLanguage();
     const isBn = language === 'bn';
     const [config, setConfig] = React.useState<HomepageConfig | null>(null);
     const [courses, setCourses] = React.useState<Course[]>([]);

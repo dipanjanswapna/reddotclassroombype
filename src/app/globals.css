@@ -68,8 +68,8 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Bengali Font Utility - Optimized */
-  .font-bengali, [lang='bn'] {
+  /* Bengali Font Utility - Higher Priority */
+  .font-bengali, [lang='bn'], [lang='bn'] * {
     font-family: var(--font-bengali), sans-serif !important;
   }
 
