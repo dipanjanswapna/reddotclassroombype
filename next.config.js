@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Cache-busting timestamp: 2026-02-12T12:40:00Z
   allowedDevOrigins: [
     'https://*.cloudworkstations.dev',
     'https://6000-firebase-studio-1751017024253.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev'
