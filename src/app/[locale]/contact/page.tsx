@@ -11,6 +11,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { submitContactFormAction } from '@/app/actions/support.actions';
 import { Loader2, Mail, Phone, MapPin, Send, MessageSquare, Clock, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { t } from '@/lib/i18n';
+import { useLanguage } from '@/context/language-context';
 
 export default function ContactPage() {
     const [name, setName] = useState('');
@@ -18,6 +20,7 @@ export default function ContactPage() {
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
+    const { language } = useLanguage();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,7 +49,7 @@ export default function ContactPage() {
     const contactInfo = [
         {
             icon: Phone,
-            title: "Call Us",
+            title: t.call_us[language],
             details: "+880 1641 035 736",
             subDetails: "Mon - Fri, 10am - 8pm",
             color: "text-blue-500",
@@ -54,7 +57,7 @@ export default function ContactPage() {
         },
         {
             icon: Mail,
-            title: "Email Support",
+            title: t.email_support[language],
             details: "support@rdc.com",
             subDetails: "24/7 Online Support",
             color: "text-primary",
@@ -62,7 +65,7 @@ export default function ContactPage() {
         },
         {
             icon: MapPin,
-            title: "Our Office",
+            title: t.our_office[language],
             details: "Mirpur DOHS, Dhaka",
             subDetails: "Bangladesh, 1216",
             color: "text-green-500",
@@ -71,7 +74,7 @@ export default function ContactPage() {
     ];
 
     return (
-        <div className="bg-background min-h-screen pb-20">
+        <div className={cn("bg-background min-h-screen pb-20", language === 'bn' && "font-bengali")}>
             {/* Modern Header Section */}
             <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
@@ -83,10 +86,10 @@ export default function ContactPage() {
                     >
                         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20">
                             <Globe className="w-3.5 h-3.5" />
-                            Connect With Us
+                            {t.connect_with_us[language]}
                         </div>
                         <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight max-w-4xl mx-auto">
-                            Get in <span className="text-primary">Touch</span>
+                            {language === 'bn' ? 'আমাদের সাথে' : 'Get in'} <span className="text-primary">{language === 'bn' ? 'যোগাযোগ করুন' : 'Touch'}</span>
                         </h1>
                         <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
                             Have questions about our courses or technical issues? We're here to help you on your journey to excellence.
@@ -127,19 +130,19 @@ export default function ContactPage() {
                                 <Clock className="w-24 h-24 rotate-12" />
                             </div>
                             <CardHeader className="p-6">
-                                <CardTitle className="text-lg font-black uppercase tracking-tight text-left">Support Hours</CardTitle>
+                                <CardTitle className="text-lg font-black uppercase tracking-tight text-left">{t.support_hours[language]}</CardTitle>
                                 <CardDescription className="font-medium text-muted-foreground text-left">
                                     Our support team is available during these times to ensure you have the best learning experience.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-2 text-sm font-bold">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="text-muted-foreground">Saturday - Thursday</span>
+                                    <span className="text-muted-foreground">{language === 'bn' ? 'শনিবার - বৃহস্পতিবার' : 'Saturday - Thursday'}</span>
                                     <span>10:00 AM - 10:00 PM</span>
                                 </div>
                                 <div className="flex justify-between pt-1">
-                                    <span className="text-muted-foreground">Friday</span>
-                                    <span className="text-primary">Closed (Emergency Only)</span>
+                                    <span className="text-muted-foreground">{language === 'bn' ? 'শুক্রবার' : 'Friday'}</span>
+                                    <span className="text-primary">{language === 'bn' ? 'বন্ধ (জরুরি শুধু)' : 'Closed (Emergency Only)'}</span>
                                 </div>
                             </CardContent>
                         </Card>
@@ -156,7 +159,7 @@ export default function ContactPage() {
                                 <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-card/50">
                                     <div className="flex items-center gap-3 mb-2">
                                         <MessageSquare className="w-6 h-6 text-primary" />
-                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">Send a Message</CardTitle>
+                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">{t.send_message[language]}</CardTitle>
                                     </div>
                                     <CardDescription className="text-base font-medium text-gray-600 dark:text-muted-foreground text-left">
                                         Fill out the form below and we'll get back to you within 24 hours.
@@ -166,7 +169,7 @@ export default function ContactPage() {
                                     <form className="grid gap-8" onSubmit={handleSubmit}>
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-3 text-left">
-                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">Your Name</Label>
+                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'আপনার নাম' : 'Your Name'}</Label>
                                                 <Input 
                                                     id="name" 
                                                     placeholder="e.g. Jubayer Ahmed" 
@@ -177,7 +180,7 @@ export default function ContactPage() {
                                                 />
                                             </div>
                                             <div className="space-y-3 text-left">
-                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">Email Address</Label>
+                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'ইমেইল এড্রেস' : 'Email Address'}</Label>
                                                 <Input 
                                                     id="email" 
                                                     type="email" 
@@ -190,7 +193,7 @@ export default function ContactPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-3 text-left">
-                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">How can we help?</Label>
+                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'আমরা কীভাবে সাহায্য করতে পারি?' : 'How can we help?'}</Label>
                                             <Textarea 
                                                 id="message" 
                                                 placeholder="Write your message here..." 
@@ -203,7 +206,7 @@ export default function ContactPage() {
                                         </div>
                                         <Button type="submit" size="lg" className="w-full md:w-fit font-black uppercase tracking-widest h-14 px-10 rounded-xl shadow-xl shadow-primary/20" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                                            Send Message
+                                            {t.send_message[language]}
                                         </Button>
                                     </form>
                                 </CardContent>

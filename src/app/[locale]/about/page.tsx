@@ -5,6 +5,7 @@ import { getHomepageConfig } from '@/lib/firebase/firestore';
 import { Facebook, Linkedin, Twitter, ExternalLink, Target, Eye, Users, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { t } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title: 'About Us | RED DOT CLASSROOM (RDC)',
@@ -18,7 +19,9 @@ const socialIconMap: Record<string, any> = {
     external: ExternalLink
 };
 
-export default async function AboutPage() {
+export default async function AboutPage({ params }: { params: { locale: string } }) {
+    const awaitedParams = await params;
+    const language = awaitedParams.locale as 'en' | 'bn';
     const config = await getHomepageConfig();
     const aboutSection = config?.aboutUsSection;
 
@@ -34,20 +37,20 @@ export default async function AboutPage() {
     }
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className={cn("bg-background min-h-screen", language === 'bn' && "font-bengali")}>
         {/* Modern Header Section */}
         <section className="relative py-16 md:py-24 overflow-hidden border-b border-white/5 bg-muted/30">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
             <div className="container mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20">
                     <Users className="w-3.5 h-3.5" />
-                    Our Identity
+                    {t.our_identity[language]}
                 </div>
                 <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight uppercase max-w-4xl mx-auto">
-                    {aboutSection.title?.en || 'About Our Mission'}
+                    {aboutSection.title?.[language] || aboutSection.title?.en || 'About Our Mission'}
                 </h1>
                 <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
-                    {aboutSection.subtitle?.en || "Building the next generation of leaders through accessible and interactive education across Bangladesh."}
+                    {aboutSection.subtitle?.[language] || aboutSection.subtitle?.en || "Building the next generation of leaders through accessible and interactive education across Bangladesh."}
                 </p>
             </div>
         </section>
@@ -60,21 +63,21 @@ export default async function AboutPage() {
                         <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                             <Target className="w-6 h-6" />
                         </div>
-                        <h3 className="font-black uppercase tracking-tight text-xl">Our Mission</h3>
+                        <h3 className="font-black uppercase tracking-tight text-xl">{t.our_mission[language]}</h3>
                         <p className="text-sm text-muted-foreground leading-relaxed font-medium">To democratize quality education in Bangladesh by providing world-class learning resources to every student, regardless of their location.</p>
                     </div>
                     <div className="p-8 rounded-[20px] bg-card border border-white/10 shadow-xl space-y-4 group hover:border-primary/30 transition-all">
                         <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
                             <Eye className="w-6 h-6" />
                         </div>
-                        <h3 className="font-black uppercase tracking-tight text-xl">Our Vision</h3>
+                        <h3 className="font-black uppercase tracking-tight text-xl">{t.our_vision[language]}</h3>
                         <p className="text-sm text-muted-foreground leading-relaxed font-medium">To become the leading hybrid education ecosystem in South Asia, where digital and physical learning blend seamlessly for peak student performance.</p>
                     </div>
                     <div className="p-8 rounded-[20px] bg-card border border-white/10 shadow-xl space-y-4 group hover:border-primary/30 transition-all">
                         <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
                             <Award className="w-6 h-6" />
                         </div>
-                        <h3 className="font-black uppercase tracking-tight text-xl">Core Values</h3>
+                        <h3 className="font-black uppercase tracking-tight text-xl">{t.core_values[language]}</h3>
                         <p className="text-sm text-muted-foreground leading-relaxed font-medium">Integrity, innovation, and student-first thinking are at the heart of everything we do at Red Dot Classroom.</p>
                     </div>
                 </div>
@@ -86,13 +89,13 @@ export default async function AboutPage() {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6">
                     <div className="max-w-2xl text-left">
-                        <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">The Visionary Team</h2>
+                        <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">{t.visionary_team[language]}</h2>
                         <p className="text-muted-foreground font-medium text-lg mt-2">Meet the dedicated individuals driving the PRANGONS ECOSYSTEM forward.</p>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {aboutUsSection.teamMembers?.map(member => {
+                    {aboutSection.teamMembers?.map(member => {
                         const externalLink = member.socialLinks.find(l => l.platform === 'external');
                         const socialLinks = member.socialLinks.filter(l => l.platform !== 'external');
                         return (
@@ -152,7 +155,7 @@ export default async function AboutPage() {
         {/* Brand Philosophy Section */}
         <section className="py-20 bg-primary/5">
             <div className="container mx-auto px-4 text-center max-w-3xl">
-                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-6">Our Philosophy</h2>
+                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-6">{t.philosophy[language]}</h2>
                 <blockquote className="text-xl md:text-2xl font-medium italic text-muted-foreground leading-relaxed">
                     "We don't just teach courses; we build futures. Red Dot Classroom is more than an app—it's a commitment to every dreamer in Bangladesh who wants to achieve something extraordinary."
                 </blockquote>

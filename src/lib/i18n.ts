@@ -16,7 +16,7 @@ export const t = {
   nav_faq: { en: 'FAQ', bn: 'জিজ্ঞাসা' },
   nav_about: { en: 'About Us', bn: 'আমাদের সম্পর্কে' },
   nav_contact: { en: 'Contact', bn: 'যোগাযোগ' },
-  nav_class_6_12: { en: 'Class 6-12', bn: '৬ষ্ঠ - ১২শ শ্রেণী' },
+  nav_class_6_12: { en: 'Class 6-12', bn: '৬ষ্ঠ -১২শ শ্রেণী' },
   nav_skills: { en: 'Skills', bn: 'স্কিলস' },
   rdc_shop: { en: 'RDC Shop', bn: 'RDC শপ' },
   hotline: { en: 'Hotline', bn: 'হটলাইন' },
@@ -130,4 +130,19 @@ export const t = {
   day: { en: 'Day', bn: 'বার' },
   subject: { en: 'Subject', bn: 'বিষয়' },
   time: { en: 'Time', bn: 'সময়' },
+  
+  // Special Sections
+  our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
+  our_mission: { en: 'Our Mission', bn: 'আমাদের লক্ষ্য' },
+  our_vision: { en: 'Our Vision', bn: 'আমাদের স্বপ্ন' },
+  core_values: { en: 'Core Values', bn: 'মূল লক্ষ্য' },
+  visionary_team: { en: 'The Visionary Team', bn: 'আমাদের দূরদর্শী টিম' },
+  philosophy: { en: 'Our Philosophy', bn: 'আমাদের দর্শন' },
+  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
+  connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হন' },
+  call_us: { en: 'Call Us', bn: 'কল করুন' },
+  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
+  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
+  support_hours: { en: 'Support Hours', bn: 'সাপোর্টের সময়' },
+  send_message: { en: 'Send a Message', bn: 'মেসেজ পাঠান' },
 };
