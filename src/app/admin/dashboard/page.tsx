@@ -12,11 +12,18 @@ export const metadata: Metadata = {
 };
 
 // Serializable types for client components
-export type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounseledAt' | 'studyPlan'> & { 
+export type SerializableUser = Omit<User, 'joined' | 'lastLoginAt' | 'lastCounseledAt' | 'studyPlan' | 'activeSessions'> & { 
     joined: string, 
     lastLoginAt?: string,
     lastCounseledAt?: string,
     studyPlan?: StudyPlanEvent[],
+    activeSessions?: {
+        id: string;
+        deviceName: string;
+        ipAddress: string;
+        lastLoginAt: string;
+        userAgent: string;
+    }[];
 };
 
 export type SerializableEnrollment = Omit<Enrollment, 'enrollmentDate' | 'groupAccessedAt' | 'paymentDetails'> & { 
@@ -36,13 +43,20 @@ export default async function AdminDashboardPage() {
   ]);
 
   // Serialize Timestamps to strings before passing to Client Component
-  const users: SerializableUser[] = usersData.map(user => ({
-    ...user,
-    joined: safeToDate(user.joined).toISOString(),
-    lastLoginAt: user.lastLoginAt ? safeToDate(user.lastLoginAt).toISOString() : undefined,
-    lastCounseledAt: user.lastCounseledAt ? safeToDate(user.lastCounseledAt).toISOString() : undefined,
-    studyPlan: user.studyPlan,
-  }));
+  const users: SerializableUser[] = usersData.map(user => {
+    const { joined, lastLoginAt, lastCounseledAt, activeSessions, ...rest } = user;
+    
+    return {
+        ...rest,
+        joined: safeToDate(joined).toISOString(),
+        lastLoginAt: lastLoginAt ? safeToDate(lastLoginAt).toISOString() : undefined,
+        lastCounseledAt: lastCounseledAt ? safeToDate(lastCounseledAt).toISOString() : undefined,
+        activeSessions: activeSessions?.map(session => ({
+            ...session,
+            lastLoginAt: safeToDate(session.lastLoginAt).toISOString()
+        }))
+    } as SerializableUser;
+  });
 
   const enrollments: SerializableEnrollment[] = enrollmentsData.map(enrollment => {
       const { enrollmentDate, groupAccessedAt, ...rest } = enrollment;
