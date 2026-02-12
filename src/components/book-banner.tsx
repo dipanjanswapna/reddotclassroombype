@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -6,13 +5,18 @@ import { Button } from './ui/button';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
+import { Product } from '@/lib/types';
 
 /**
  * @fileOverview BookBanner Component
  * Upgraded UI/UX for the bestseller book section.
- * Uses 20px rounding, high-density layout, and px-1 spacing.
+ * Now dynamic: uses product data if provided.
  */
-export function BookBanner() {
+export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product | null }) {
+    const productImageUrl = bestsellerProduct?.imageUrl || "https://picsum.photos/seed/bookstore1/400/600";
+    const productTitle = bestsellerProduct?.name || "favorite book";
+    const productLink = bestsellerProduct ? `/store/product/${bestsellerProduct.id}` : "/store?category=books";
+
     return (
         <section className="px-1 py-0 overflow-hidden">
             <motion.div 
@@ -40,7 +44,7 @@ export function BookBanner() {
                             <p className="font-black text-primary-foreground/80 uppercase tracking-[0.2em] text-xs md:text-sm">By bestseller authors</p>
                             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-none tracking-tighter uppercase font-headline drop-shadow-2xl">
                                 Meet your next <br className="hidden lg:block"/> 
-                                <span className="text-yellow-400">favorite book</span>
+                                <span className="text-yellow-400">{productTitle}</span>
                             </h2>
                         </div>
 
@@ -50,8 +54,8 @@ export function BookBanner() {
 
                         <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4">
                             <Button asChild size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-yellow-400 hover:text-primary-foreground font-black uppercase tracking-widest h-14 px-10 rounded-xl shadow-2xl transition-all duration-300 active:scale-95 group/btn border-none">
-                                <Link href="/store?category=books">
-                                    Browse Store
+                                <Link href={productLink}>
+                                    {bestsellerProduct ? 'Buy Now' : 'Browse Store'}
                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                                 </Link>
                             </Button>
@@ -75,7 +79,7 @@ export function BookBanner() {
                     </div>
 
                     <div className="relative h-80 md:h-[500px] flex justify-center items-center">
-                        {/* Realistic 3D Book Stack */}
+                        {/* Realistic 3D Image Stack */}
                         <motion.div 
                             animate={{ rotate: [-8, -12, -8], y: [0, 8, 0], x: [0, -5, 0] }}
                             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -83,7 +87,7 @@ export function BookBanner() {
                         >
                             <Image 
                                 src="https://picsum.photos/seed/bookstore2/400/600"
-                                alt="Secondary book"
+                                alt="Decorative element"
                                 width={400}
                                 height={600}
                                 className="object-cover rounded-lg shadow-2xl border border-white/10"
@@ -97,12 +101,12 @@ export function BookBanner() {
                             className="relative w-52 md:w-80 z-10 transition-all duration-500 group-hover:scale-105 group-hover:rotate-2 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)]"
                         >
                             <Image 
-                                 src="https://picsum.photos/seed/bookstore1/400/600"
-                                 alt="Main bestseller book"
+                                 src={productImageUrl}
+                                 alt={productTitle}
                                  width={400}
                                  height={600}
-                                 className="object-cover rounded-lg border border-white/20"
-                                 data-ai-hint="physics book cover"
+                                 className="object-cover rounded-lg border border-white/20 aspect-[4/6]"
+                                 data-ai-hint="product cover"
                             />
                             {/* Premium Glow effect */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />

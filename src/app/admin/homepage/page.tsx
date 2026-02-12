@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon, Info, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem, SocialChannel } from '@/lib/types';
-import { getHomepageConfig, getInstructors, getOrganizations, getCourses } from '@/lib/firebase/firestore';
+import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem, SocialChannel, Product } from '@/lib/types';
+import { getHomepageConfig, getInstructors, getOrganizations, getCourses, getProducts } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
@@ -28,7 +28,7 @@ type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds
 /**
  * @fileOverview Admin Homepage Management
  * Unified CMS for controlling all dynamic sections of the homepage.
- * Optimized for high-density editing with 20px corners and wall-to-wall layout.
+ * Includes store hero and bestseller product management.
  */
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -39,15 +39,17 @@ export default function AdminHomepageManagementPage() {
   const [allOrganizations, setAllOrganizations] = useState<Organization[]>([]);
   const [allInstructors, setAllInstructors] = useState<Instructor[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    async function fetchConfig() {
+    async function fetchData() {
       try {
-        const [fetchedConfig, instructorsData, organizationsData, coursesData] = await Promise.all([
+        const [fetchedConfig, instructorsData, organizationsData, coursesData, productsData] = await Promise.all([
             getHomepageConfig(),
             getInstructors(),
             getOrganizations(),
-            getCourses({ status: 'Published' })
+            getCourses({ status: 'Published' }),
+            getProducts()
         ]);
         
         if (fetchedConfig) {
@@ -58,12 +60,15 @@ export default function AdminHomepageManagementPage() {
             if (!Array.isArray(fetchedConfig.liveCoursesIds)) fetchedConfig.liveCoursesIds = [];
             if (!Array.isArray(fetchedConfig.sscHscCourseIds)) fetchedConfig.sscHscCourseIds = [];
             if (!Array.isArray(fetchedConfig.admissionCoursesIds)) fetchedConfig.admissionCoursesIds = [];
+            if (!fetchedConfig.storeHomepageSection) fetchedConfig.storeHomepageSection = {};
+            if (!Array.isArray(fetchedConfig.storeHomepageSection.bannerCarousel)) fetchedConfig.storeHomepageSection.bannerCarousel = [];
         }
 
         setConfig(fetchedConfig);
         setAllInstructors(Array.isArray(instructorsData) ? instructorsData.filter(i => i.status === 'Approved') : []);
         setAllOrganizations(Array.isArray(organizationsData) ? organizationsData.filter(o => o.status === 'approved') : []);
         setAllCourses(Array.isArray(coursesData) ? coursesData : []);
+        setAllProducts(Array.isArray(productsData) ? productsData : []);
       } catch (error) {
         console.error("Error fetching homepage config:", error);
         toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
@@ -71,7 +76,7 @@ export default function AdminHomepageManagementPage() {
         setLoading(false);
       }
     }
-    fetchConfig();
+    fetchData();
   }, [toast]);
 
   const handleSave = async () => {
@@ -182,23 +187,18 @@ export default function AdminHomepageManagementPage() {
         });
     };
 
-    const handleStringArrayChange = (section: CourseIdSections, value: string) => {
-        const ids = value.split(',').map(id => id.trim()).filter(Boolean);
-        setConfig(prev => prev ? ({ ...prev, [section]: ids }) : null);
+    const handleSectionToggle = (sectionKey: any, value: boolean) => {
+        setConfig(prevConfig => {
+            if (!prevConfig) return null;
+            const newConfig = { ...prevConfig };
+            if (newConfig[sectionKey]) {
+                (newConfig[sectionKey] as any).display = value;
+            } else {
+                (newConfig as any)[sectionKey] = { display: value };
+            }
+            return newConfig;
+        });
     };
-
-  const handleSectionToggle = (sectionKey: any, value: boolean) => {
-    setConfig(prevConfig => {
-      if (!prevConfig) return null;
-      const newConfig = { ...prevConfig };
-      if (newConfig[sectionKey]) {
-        (newConfig[sectionKey] as any).display = value;
-      } else {
-        (newConfig as any)[sectionKey] = { display: value };
-      }
-      return newConfig;
-    });
-  };
 
   const addHeroBanner = () => {
     setConfig(prev => {
@@ -221,6 +221,37 @@ export default function AdminHomepageManagementPage() {
         return {
             ...prev,
             heroBanners: currentBanners.filter(banner => banner.id !== id)
+        };
+    });
+  };
+
+  const addStoreBanner = () => {
+    setConfig(prev => {
+        if (!prev) return null;
+        const currentBanners = Array.isArray(prev.storeHomepageSection?.bannerCarousel) ? prev.storeHomepageSection?.bannerCarousel : [];
+        return {
+            ...prev,
+            storeHomepageSection: {
+                ...(prev.storeHomepageSection || {}),
+                bannerCarousel: [
+                    ...currentBanners,
+                    { id: `sb_${Date.now()}`, imageUrl: '', linkUrl: '' }
+                ]
+            }
+        };
+    });
+  };
+
+  const removeStoreBanner = (id: string) => {
+    setConfig(prev => {
+        if (!prev || !prev.storeHomepageSection) return null;
+        const currentBanners = Array.isArray(prev.storeHomepageSection.bannerCarousel) ? prev.storeHomepageSection.bannerCarousel : [];
+        return {
+            ...prev,
+            storeHomepageSection: {
+                ...prev.storeHomepageSection,
+                bannerCarousel: currentBanners.filter(b => b.id !== id)
+            }
         };
     });
   };
@@ -338,6 +369,7 @@ export default function AdminHomepageManagementPage() {
 
   const safeHeroBanners = Array.isArray(config.heroBanners) ? config.heroBanners : [];
   const safeOfflineSlides = Array.isArray(config.offlineHubHeroCarousel?.slides) ? config.offlineHubHeroCarousel.slides : [];
+  const safeStoreBanners = Array.isArray(config.storeHomepageSection?.bannerCarousel) ? config.storeHomepageSection.bannerCarousel : [];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 px-1">
@@ -358,6 +390,7 @@ export default function AdminHomepageManagementPage() {
                 <TabsTrigger value="general" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">General</TabsTrigger>
                 <TabsTrigger value="hero" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Hero & Banners</TabsTrigger>
                 <TabsTrigger value="courses" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Course Sections</TabsTrigger>
+                <TabsTrigger value="store" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Store Hub</TabsTrigger>
                 <TabsTrigger value="content" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Content & Testimonials</TabsTrigger>
                 <TabsTrigger value="pages" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Special Pages</TabsTrigger>
             </TabsList>
@@ -488,6 +521,81 @@ export default function AdminHomepageManagementPage() {
                                     <PlusCircle className="h-6 w-6 text-primary" />
                                     Add Category
                                 </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- STORE TAB --- */}
+                <TabsContent value="store" className="space-y-8 mt-0">
+                    <Card className="rounded-[20px] border-primary/10 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Store Hero Carousel</CardTitle>
+                            <CardDescription>Banners shown at the top of the RDC Store page.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-4">
+                            {safeStoreBanners.map((banner, index) => (
+                                <div key={banner.id} className="p-5 border border-primary/5 rounded-[20px] space-y-4 relative bg-muted/10">
+                                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full" onClick={() => removeStoreBanner(banner.id)}><X className="h-4 w-4"/></Button>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Banner Image URL</Label>
+                                            <Input placeholder="https://..." value={banner.imageUrl} onChange={e => handleNestedArrayChange('storeHomepageSection', 'bannerCarousel', index, 'imageUrl', e.target.value)} className="rounded-xl h-11" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Link URL</Label>
+                                            <Input placeholder="/store/product/..." value={banner.linkUrl} onChange={e => handleNestedArrayChange('storeHomepageSection', 'bannerCarousel', index, 'linkUrl', e.target.value)} className="rounded-xl h-11" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full border-dashed rounded-xl h-14 font-black uppercase tracking-widest text-[10px]" onClick={addStoreBanner}>
+                                <PlusCircle className="mr-2 h-4 w-4"/>Add Store Banner
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[20px] border-primary/10 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Bestseller Recommendation</CardTitle>
+                            <CardDescription>Select the product to feature in the "Meet your next favorite book" section.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Select Bestseller Product</Label>
+                                <Select 
+                                    value={config.storeHomepageSection?.bestsellerProductId || ''} 
+                                    onValueChange={(val) => handleSectionValueChange('storeHomepageSection', 'bestsellerProductId', val)}
+                                >
+                                    <SelectTrigger className="rounded-xl h-12">
+                                        <SelectValue placeholder="Pick a product to feature..." />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-white/10">
+                                        {allProducts.map(p => (
+                                            <SelectItem key={p.id} value={p.id!} className="font-bold text-xs">
+                                                {p.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {config.storeHomepageSection?.bestsellerProductId && (
+                                    <div className="mt-4 flex items-center gap-4 p-4 rounded-xl border border-primary/10 bg-muted/20">
+                                        {(() => {
+                                            const p = allProducts.find(prod => prod.id === config.storeHomepageSection?.bestsellerProductId);
+                                            return p ? (
+                                                <>
+                                                    <div className="relative h-16 w-12 rounded-lg overflow-hidden border border-white">
+                                                        <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-xs uppercase">{p.name}</p>
+                                                        <p className="text-[10px] font-bold text-primary">৳{p.price}</p>
+                                                    </div>
+                                                </>
+                                            ) : null;
+                                        })()}
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

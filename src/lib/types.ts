@@ -893,6 +893,7 @@ export type StoreHomepageSection = {
     bannerCarousel?: StoreHomepageBanner[];
     productSections?: StoreHomepageProductSection[];
     featuredProductIds?: string[];
+    bestsellerProductId?: string;
 };
 
 export type ReferralSettings = {

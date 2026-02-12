@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -15,7 +14,7 @@ import { motion } from 'framer-motion';
  * @fileOverview RDC Store Page Client Component.
  * Optimized for high-density wall-to-wall UI with px-1 and 20px rounding.
  * Desktop view shows 5 products in a row (xl:grid-cols-5).
- * Spacing adjusted to bring content closer to navigation bar.
+ * Carousel remains visible during search for stability.
  */
 export function StorePageClient({
     initialProducts,
@@ -49,13 +48,19 @@ export function StorePageClient({
         });
     }, [products, searchTerm, allCategories, selectedCategorySlug, selectedSubCategorySlug]);
 
+    const bestsellerProduct = useMemo(() => {
+        const id = homepageConfig?.storeHomepageSection?.bestsellerProductId;
+        if (!id) return null;
+        return products.find(p => p.id === id) || null;
+    }, [products, homepageConfig]);
+
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
         <div className="w-full px-1 -mt-6 lg:-mt-14 space-y-6 md:space-y-10">
             <main className="space-y-8 md:space-y-12">
-                {/* Dynamic Hero Banners - Positioned closer to nav */}
-                {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
+                {/* Dynamic Hero Banners - Stable during search */}
+                {homepageConfig?.storeHomepageSection?.bannerCarousel && (
                      <div className="rounded-[20px] overflow-hidden shadow-xl border border-primary/5">
                         <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
                      </div>
@@ -101,10 +106,10 @@ export function StorePageClient({
                     )}
                 </div>
 
-                {/* Promotional Banner */}
+                {/* Promotional Banner - Dynamic Bestseller */}
                 {!hasFilters && (
                     <div className="pb-10">
-                        <BookBanner />
+                        <BookBanner bestsellerProduct={bestsellerProduct} />
                     </div>
                 )}
             </main>
