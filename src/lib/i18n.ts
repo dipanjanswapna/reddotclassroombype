@@ -75,7 +75,7 @@ export const t: Record<string, Record<string, string>> = {
   meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
   bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
   buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
-  customer_feedback: { en: 'Customer Feedback', bn: 'শিক্ষার্থীদের মতামত' },
+  customer_feedback: { en: 'Student Feedback', bn: 'শিক্ষার্থীদের মতামত' },
   similar_items: { en: 'Similar Items', bn: 'একই ধরণের পণ্য' },
   back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
 
@@ -121,7 +121,7 @@ export const t: Record<string, Record<string, string>> = {
   // Contact & Support
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
   call_us: { en: 'Call Us', bn: 'ফোন করুন' },
-  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
+  email_support: { en: 'Email Support', bn: 'イমেইল সাপোর্ট' },
   our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
   support_hours: { en: 'Support Hours', bn: 'সাপোর্ট আওয়ার' },
   send_message: { en: 'Send a Message', bn: 'বার্তা পাঠান' },

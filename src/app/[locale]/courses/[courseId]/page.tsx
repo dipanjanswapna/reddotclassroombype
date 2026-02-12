@@ -247,6 +247,18 @@ export default async function CourseDetailPage({
                         </Accordion>
                     </section>
                   )}
+
+                  {/* Reviews Section */}
+                  {course.reviewsData && course.reviewsData.length > 0 && (
+                    <section id="reviews" className="py-0 px-0">
+                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('customer_feedback')}</h2>
+                        <Card className="rounded-[25px] border-primary/10 bg-card/50 shadow-xl overflow-hidden p-6 md:p-10 space-y-8">
+                            {course.reviewsData.map((review) => (
+                                <ReviewCard key={review.id} review={review} courseId={courseId} />
+                            ))}
+                        </Card>
+                    </section>
+                  )}
               </div>
             </div>
 
