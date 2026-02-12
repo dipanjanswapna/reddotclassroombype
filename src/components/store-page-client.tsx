@@ -1,16 +1,20 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { Product, StoreCategory, HomepageConfig } from '@/lib/types';
 import { Input } from './ui/input';
-import { Search } from 'lucide-react';
+import { Search, ShoppingBag, Filter, Sparkles } from 'lucide-react';
 import { ProductCard } from './product-card';
 import { useSearchParams } from 'next/navigation';
 import { BookBanner } from './book-banner';
 import { StoreBannerCarousel } from './store-banner-carousel';
+import { motion } from 'framer-motion';
 
+/**
+ * @fileOverview RDC Store Page Client Component.
+ * Optimized for high-density wall-to-wall UI with px-1 and 20px rounding.
+ * Desktop view shows 5 products in a row (xl:grid-cols-5).
+ */
 export function StorePageClient({
     initialProducts,
     allCategories,
@@ -46,38 +50,61 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <main className="space-y-12">
+        <div className="w-full px-1 space-y-8 md:space-y-12">
+            <main className="space-y-10">
+                {/* Dynamic Hero Banners */}
                 {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
-                     <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
+                     <div className="rounded-[20px] overflow-hidden shadow-xl border border-primary/5">
+                        <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
+                     </div>
                 )}
                 
-                <div>
-                    <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold">{pageTitle}</h1>
-                        <div className="relative w-full md:w-auto md:flex-grow max-w-sm">
+                <div className="space-y-8">
+                    {/* Header & Filter Area */}
+                    <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-l-4 border-primary pl-4">
+                        <div className="space-y-1">
+                            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 w-fit">
+                                <ShoppingBag className="w-3 h-3" />
+                                Store Hub
+                            </div>
+                            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight font-headline">
+                                {pageTitle === "All Products" ? "RED DOT CLASSROOM (RDC) Store" : pageTitle}
+                            </h1>
+                        </div>
+                        
+                        <div className="relative w-full md:w-80">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search products..."
-                                className="pl-9"
+                                className="pl-9 h-11 rounded-xl bg-card border-primary/20 focus:border-primary/50"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+
+                    {/* Product Grid - 5 columns on Desktop */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5 px-1">
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
+
+                    {/* Empty State */}
                     {filteredProducts.length === 0 && (
-                        <div className="col-span-full text-center py-16">
-                            <p className="text-muted-foreground">No products found matching your criteria.</p>
+                        <div className="text-center py-24 bg-muted/20 border-2 border-dashed border-primary/10 rounded-[20px] flex flex-col items-center">
+                            <Filter className="w-12 h-12 text-primary/20 mb-4" />
+                            <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-40">No products match your criteria</p>
                         </div>
                     )}
                 </div>
 
-                {!hasFilters && <BookBanner />}
+                {/* Promotional Banner */}
+                {!hasFilters && (
+                    <div className="pb-10">
+                        <BookBanner />
+                    </div>
+                )}
             </main>
         </div>
     );
