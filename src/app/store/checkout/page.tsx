@@ -38,12 +38,6 @@ const thanas: { [key: string]: string[] } = {
   "Mymensingh": ["Kotwali", "Trishal"],
 };
 
-/**
- * @fileOverview Ultimate Store Checkout Page.
- * - Implements dynamic confetti on success.
- * - Shows dynamic delivery dates.
- * - 20px corners and px-1 spacing consistency.
- */
 export default function CheckoutPage() {
   const { items, clearCart, total } = useCart();
   const { userInfo } = useAuth();
@@ -316,7 +310,7 @@ export default function CheckoutPage() {
                     </div>
                 </div>
                <Button size="lg" className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 text-sm" onClick={handlePlaceOrder} disabled={isProcessing}>
-                {isProcessing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <PackageCheck className="mr-2 h-5 w-5" />}
+                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PackageCheck className="mr-2 h-5 w-5" />}
                 Confirm Order
               </Button>
             </CardFooter>

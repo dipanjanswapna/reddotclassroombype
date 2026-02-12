@@ -5,17 +5,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Home, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LayoutWrapper } from '@/components/layout-wrapper';
 import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Ultimate 404 Not Found Page - Fully Optimized for All Devices.
- * - Dynamic scaling using CSS clamp for zero content clipping.
- * - Handles extreme aspect ratios (tall/short screens).
- * - Premium Framer Motion animations.
- * - Bilingual support.
+ * @fileOverview NotFoundContent handles the visual part of the 404 page.
  */
-export default function NotFound() {
+function NotFoundContent() {
   const { language } = useLanguage();
   
   useEffect(() => {
@@ -115,7 +112,7 @@ export default function NotFound() {
             {translations.badge[language]}
           </motion.div>
 
-          {/* 404 Text - Scaled using clamp to prevent cutting off */}
+          {/* 404 Text */}
           <div className="flex items-center justify-center gap-2 md:gap-4 mb-2">
             {["4", "0", "4"].map((digit, i) => (
               <motion.span
@@ -203,12 +200,26 @@ export default function NotFound() {
         .body-is-404 .whatsapp-fab { 
           display: none !important; 
         }
-        
-        /* Ensure the background doesn't shift on mobile address bar hide/show */
         .body-is-404 {
           height: -webkit-fill-available;
         }
       `}</style>
     </div>
+  );
+}
+
+/**
+ * @fileOverview The NotFound component wraps the content in necessary providers
+ * because it is rendered at the root level outside the localized layout.
+ */
+export default function NotFound() {
+  return (
+    <html lang="en">
+      <body className="font-body antialiased">
+        <LayoutWrapper>
+          <NotFoundContent />
+        </LayoutWrapper>
+      </body>
+    </html>
   );
 }

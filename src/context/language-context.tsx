@@ -1,7 +1,7 @@
-
 'use client';
 
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 
 type Language = 'bn' | 'en';
 
@@ -9,38 +9,60 @@ interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
   setLanguage: (lang: Language) => void;
+  getLocalizedPath: (path: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  // Set default language to English
-  const [language, setLanguage] = useState<Language>('en');
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
+  
+  // Sync state with URL locale segment
+  const urlLocale = params?.locale as Language;
+  const [language, setLanguage] = useState<Language>(urlLocale || 'en');
 
   useEffect(() => {
-    const storedLang = localStorage.getItem('language') as Language;
-    if (storedLang) {
-      setLanguage(storedLang);
+    if (urlLocale && urlLocale !== language) {
+      setLanguage(urlLocale);
     }
-  }, []);
+  }, [urlLocale, language]);
 
-  const setLanguageAndStore = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
+  const getLocalizedPath = useCallback((path: string) => {
+    if (!path) return `/${language}`;
+    // Remove leading slash for consistency
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    
+    // If it's already localized, return as is
+    if (cleanPath.startsWith('/en') || cleanPath.startsWith('/bn')) {
+        return cleanPath;
+    }
+    
+    // Prepend current language
+    return `/${language}${cleanPath === '/' ? '' : cleanPath}`;
+  }, [language]);
+
+  const setLanguageAndRedirect = (lang: Language) => {
+    if (lang === language) return;
+    
+    // Replace the locale segment in the current pathname
+    const segments = pathname.split('/');
+    // segments[0] is "", segments[1] is the current locale
+    segments[1] = lang;
+    const newPath = segments.join('/') || `/${lang}`;
+    
+    router.push(newPath);
   };
 
   const toggleLanguage = () => {
     const newLang = language === 'bn' ? 'en' : 'bn';
-    setLanguageAndStore(newLang);
+    setLanguageAndRedirect(newLang);
   };
 
-  const value = { language, toggleLanguage, setLanguage: setLanguageAndStore };
-
   return (
-    <LanguageContext.Provider value={value}>
-      <div lang={language} dir={language === 'bn' ? 'ltr' : 'ltr'}>
-         {children}
-      </div>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage: setLanguageAndRedirect, getLocalizedPath }}>
+      {children}
     </LanguageContext.Provider>
   );
 };

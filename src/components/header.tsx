@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -43,7 +44,7 @@ import { usePathname } from "next/navigation";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const { language } = useLanguage();
+  const { language, getLocalizedPath } = useLanguage();
   const { user } = useAuth();
   const { items, setIsCartOpen } = useCart();
   const pathname = usePathname();
@@ -52,19 +53,19 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const mainNavLinks = [
-    { href: "/store", label: t.nav_rdc_store[language] },
-    { href: "/courses", label: t.rdc_shop[language]},
-    { href: "/courses?category=admission", label: t.nav_admission_test[language] },
+    { href: getLocalizedPath("/store"), label: t.nav_rdc_store[language] },
+    { href: getLocalizedPath("/courses"), label: t.rdc_shop[language]},
+    { href: getLocalizedPath("/courses?category=admission"), label: t.nav_admission_test[language] },
     { href: "/offline-hub", label: t.nav_online_batch[language] },
   ];
 
   const moreLinks = [
-    { href: "/courses?category=class-6-12", label: t.nav_class_6_12[language] },
-    { href: "/courses?category=skills", label: t.nav_skills[language] },
-    { href: "/blog", label: t.nav_blog[language] },
-    { href: "/faq", label: t.nav_faq[language] },
-    { href: "/about", label: t.nav_about[language] },
-    { href: "/contact", label: t.nav_contact[language] },
+    { href: getLocalizedPath("/courses?category=class-6-12"), label: t.nav_class_6_12[language] },
+    { href: getLocalizedPath("/courses?category=skills"), label: t.nav_skills[language] },
+    { href: getLocalizedPath("/blog"), label: t.nav_blog[language] },
+    { href: getLocalizedPath("/faq"), label: t.nav_faq[language] },
+    { href: getLocalizedPath("/about"), label: t.nav_about[language] },
+    { href: getLocalizedPath("/contact"), label: t.nav_contact[language] },
   ];
 
   return (
@@ -80,7 +81,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           containerClassName
         )}>
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center space-x-2 group">
+            <Link href={getLocalizedPath("/")} className="flex items-center space-x-2 group">
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -141,19 +142,19 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                     <div className="flex items-center bg-muted/50 dark:bg-white/10 p-1 rounded-[20px] border border-white/10 ml-2 shadow-inner">
                       <Button asChild variant="ghost" size="sm" className={cn(
                         "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
-                        pathname === '/login' 
+                        pathname.includes('/login') 
                           ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
                           : "text-muted-foreground hover:text-foreground"
                       )}>
-                          <Link href="/login">{t.login[language]}</Link>
+                          <Link href={getLocalizedPath("/login")}>{t.login[language]}</Link>
                       </Button>
                       <Button asChild variant="ghost" size="sm" className={cn(
                         "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
-                        pathname === '/signup' 
+                        pathname.includes('/signup') 
                           ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
                           : "text-muted-foreground hover:text-foreground"
                       )}>
-                          <Link href="/signup">{t.signup[language]}</Link>
+                          <Link href={getLocalizedPath("/signup")}>{t.signup[language]}</Link>
                       </Button>
                     </div>
                   )}
@@ -236,12 +237,12 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                         {!user && (
                             <div className="grid grid-cols-2 gap-3">
                               <Button asChild variant="outline" className="w-full rounded-xl h-12 font-bold">
-                                  <Link href="/login" onClick={() => setMenuOpen(false)}>
+                                  <Link href={getLocalizedPath("/login")} onClick={() => setMenuOpen(false)}>
                                   {t.login[language]}
                                   </Link>
                               </Button>
                               <Button asChild className="w-full rounded-xl h-12 font-bold shadow-lg shadow-primary/20">
-                                  <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                                  <Link href={getLocalizedPath("/signup")} onClick={() => setMenuOpen(false)}>
                                   {t.signup[language]}
                                   </Link>
                               </Button>
