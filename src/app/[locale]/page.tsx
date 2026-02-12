@@ -1,7 +1,9 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   Sparkles,
@@ -38,7 +40,7 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 /**
  * @fileOverview Redefined Home Page
  * Implements Struggling Banner, Notice Board, and Dynamic Contact section.
- * Wall-to-wall design with px-1.
+ * Wall-to-wall design with px-1. Hind Siliguri font enforced for Bengali.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();

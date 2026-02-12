@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -24,7 +25,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 import { UserNav } from "./user-nav";
 import { useLanguage } from "@/context/language-context";
 import { t } from "@/lib/i18n";
@@ -40,6 +40,7 @@ import { useCart } from "@/context/cart-context";
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { Separator } from "./ui/separator";
 
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);

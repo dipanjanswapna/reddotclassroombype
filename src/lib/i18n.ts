@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * Centralized translations for RDC Master Ecosystem.
@@ -117,4 +118,17 @@ export const t: Record<string, Record<string, string>> = {
   teacher_bio: { en: 'Instructor Biography', bn: 'শিক্ষকের জীবনী' },
   teacher_courses: { en: 'Courses by this Mentor', bn: 'শিক্ষকের সকল কোর্সসমূহ' },
   free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
+
+  // Auth & Login
+  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
+  login_desc: { en: 'Login to access your courses', bn: 'আপনার অ্যাকাউন্টে লগইন করুন' },
+  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
+  find_roll_desc: { en: 'Enter your email to retrieve your roll', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
+  full_name: { en: 'Full Name', bn: 'পূর্ণ নাম' },
+  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
+  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
+  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
+  or_login_with_roll: { en: 'Or Login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
+  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },
 };
