@@ -1,5 +1,3 @@
-
-
 import type { Metadata } from 'next';
 import { getHomepageConfig, getProducts, getStoreCategories } from '@/lib/firebase/firestore';
 import { Suspense } from 'react';
@@ -7,13 +5,13 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { StorePageClient } from '@/components/store-page-client';
 
 export const metadata: Metadata = {
-  title: 'RDC Store',
+  title: 'RDC Store | Official Merchandise & Books',
   description: 'Shop for exclusive Red Dot Classroom merchandise, including apparel, stationery, and books.',
 };
 
 async function StoreContent({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
-    const selectedCategorySlug = searchParams?.category;
-    const selectedSubCategorySlug = searchParams?.subCategory;
+    const selectedCategorySlug = searchParams?.category as string | undefined;
+    const selectedSubCategorySlug = searchParams?.subCategory as string | undefined;
 
     const [homepageConfig, allProducts, allCategories] = await Promise.all([
         getHomepageConfig(),
@@ -53,12 +51,14 @@ async function StoreContent({ searchParams }: { searchParams?: { [key: string]: 
 
 export default async function RdcStorePage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {    
     return (
-        <Suspense fallback={
-            <div className="flex flex-grow items-center justify-center h-full w-full p-8">
-                <LoadingSpinner className="w-12 h-12" />
-            </div>
-        }>
-            <StoreContent searchParams={searchParams} />
-        </Suspense>
+        <div className="bg-background min-h-screen">
+            <Suspense fallback={
+                <div className="flex flex-grow items-center justify-center h-[calc(100vh-10rem)] w-full">
+                    <LoadingSpinner className="w-12 h-12" />
+                </div>
+            }>
+                <StoreContent searchParams={searchParams} />
+            </Suspense>
+        </div>
     );
 }

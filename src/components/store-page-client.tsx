@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
  * @fileOverview RDC Store Page Client Component.
  * Optimized for high-density wall-to-wall UI with px-1 and 20px rounding.
  * Desktop view shows 5 products in a row (xl:grid-cols-5).
+ * Spacing adjusted to bring content closer to navigation bar.
  */
 export function StorePageClient({
     initialProducts,
@@ -50,24 +51,24 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="w-full px-1 space-y-8 md:space-y-12">
-            <main className="space-y-10">
-                {/* Dynamic Hero Banners */}
+        <div className="w-full px-1 -mt-4 lg:-mt-10 space-y-6 md:space-y-10">
+            <main className="space-y-8 md:space-y-12">
+                {/* Dynamic Hero Banners - Positioned closer to nav */}
                 {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
                      <div className="rounded-[20px] overflow-hidden shadow-xl border border-primary/5">
                         <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
                      </div>
                 )}
                 
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-8">
                     {/* Header & Filter Area */}
-                    <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-l-4 border-primary pl-4">
-                        <div className="space-y-1">
-                            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 w-fit">
+                    <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center border-l-4 border-primary pl-4">
+                        <div className="space-y-0.5">
+                            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 w-fit">
                                 <ShoppingBag className="w-3 h-3" />
-                                Store Hub
+                                RDC Store Hub
                             </div>
-                            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight font-headline">
+                            <h1 className="text-xl md:text-3xl font-black uppercase tracking-tight font-headline">
                                 {pageTitle === "All Products" ? "RED DOT CLASSROOM (RDC) Store" : pageTitle}
                             </h1>
                         </div>
@@ -83,7 +84,7 @@ export function StorePageClient({
                         </div>
                     </div>
 
-                    {/* Product Grid - 5 columns on Desktop */}
+                    {/* Product Grid - 5 columns on Desktop (xl:grid-cols-5) */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5 px-1">
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
