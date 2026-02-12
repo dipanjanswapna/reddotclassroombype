@@ -32,9 +32,8 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 });
 
 /**
- * @fileOverview Main Entry Page (Localized)
- * Fully responsive, colorful, and i18n compliant.
- * Uses Hind Siliguri font for Bengali text.
+ * @fileOverview Localized Homepage
+ * Fixed 'cn' and 'LoadingSpinner' issues. Applied global Hind Siliguri font.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();

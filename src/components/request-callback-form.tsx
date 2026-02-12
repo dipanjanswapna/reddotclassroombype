@@ -21,10 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { useState } from "react";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { addCallbackRequest } from "@/app/actions/callback.actions";
 import { HomepageConfig } from "@/lib/types";
@@ -48,7 +48,7 @@ const formSchema = z.object({
 
 /**
  * @fileOverview Localized RequestCallbackForm
- * Fully i18n compliant with Hind Siliguri font.
+ * Fixed syntax errors and integrated Hind Siliguri font support.
  */
 export function RequestCallbackForm({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
     const { toast } = useToast();
@@ -111,7 +111,7 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                 <div className="p-8 md:p-14 bg-card text-left">
                     <h3 className={cn(
                         "text-2xl md:text-3xl font-black mb-8 uppercase tracking-tight",
-                        isBn ? "" : "font-headline"
+                        isBn ? "font-bengali" : "font-headline"
                     )}>
                         {t.callback_title[language]}
                     </h3>

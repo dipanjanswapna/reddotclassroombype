@@ -2,7 +2,7 @@
  * @fileOverview Internationalization (i18n) Dictionary.
  * Centralized translations for RDC Master Ecosystem.
  */
-export const t = {
+export const t: Record<string, Record<string, string>> = {
   // Header & Navigation
   nav_home: { en: 'Home', bn: 'হোম' },
   nav_rdc_store: { en: 'RDC Store', bn: 'RDC স্টোর' },
@@ -38,6 +38,16 @@ export const t = {
   callback_title: { en: 'Request a callback', bn: 'কলব্যাকের অনুরোধ করুন' },
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
+
+  // Footer specific
+  quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
+  for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
+  student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
+  join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
+  teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
+  legal: { en: 'Legal', bn: 'আইনগত' },
+  copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
+  footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
 
   // Detail Pages labels
   syllabus: { en: 'Syllabus', bn: 'সিলেবাস' },
@@ -127,16 +137,6 @@ export const t = {
 
   // Roles
   student: { en: 'Student', bn: 'শিক্ষার্থী' },
-  guardian: { en: 'Guardian', bn: 'অভিভাবক' },
+  guardian: { en: 'Guardian', bn: 'অভিভাগ' },
   registering_as: { en: 'Registering as', bn: 'নিবন্ধন করছেন' },
-
-  // Footer specific
-  quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
-  for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
-  student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
-  join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
-  teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
-  legal: { en: 'Legal', bn: 'আইনগত' },
-  copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
-  footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
 };
