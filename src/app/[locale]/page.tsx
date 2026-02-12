@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -39,20 +39,20 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
-  const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
-  const [liveCourses, setLiveCourses] = React.useState<Course[]>([]);
-  const [featuredInstructors, setFeaturedInstructors] = React.useState<Instructor[]>([]);
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [homepageConfig, setHomepageConfig] = useState<HomepageConfig | null>(null);
+  const [liveCourses, setLiveCourses] = useState<Course[]>([]);
+  const [featuredInstructors, setFeaturedInstructors] = useState<Instructor[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const [liveStats, setLiveStats] = React.useState({
+  const [liveStats, setLiveStats] = useState({
     learners: 0,
     completionRate: 0,
     liveCoursesCount: 0,
     jobPlacements: 0
   });
   
-  React.useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const config = await getHomepageConfig();
