@@ -53,7 +53,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
         language === 'bn' ? 'font-bengali' : 'font-body'
       )}>
         <StoreHeader categories={categories} />
-        <main className="flex-grow pt-16 lg:pt-28 px-1">
+        <main className="flex-grow pt-12 lg:pt-16 px-1">
             {children}
         </main>
         <StoreFooter categories={categories} />

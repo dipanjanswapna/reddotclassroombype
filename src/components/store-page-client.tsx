@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -51,7 +52,7 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || searchTerm);
 
     return (
-        <div className="w-full px-1 -mt-4 lg:-mt-10 space-y-6 md:space-y-10">
+        <div className="w-full px-1 -mt-6 lg:-mt-14 space-y-6 md:space-y-10">
             <main className="space-y-8 md:space-y-12">
                 {/* Dynamic Hero Banners - Positioned closer to nav */}
                 {!hasFilters && homepageConfig?.storeHomepageSection?.bannerCarousel && (
