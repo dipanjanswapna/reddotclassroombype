@@ -10,7 +10,7 @@ export const t: Record<string, Record<string, string>> = {
   nav_admission: { en: 'Admission', bn: 'অ্যাডমিশন' },
   nav_admission_test: { en: 'Admission Test', bn: 'ভর্তি পরীক্ষা' },
   nav_offline_batch: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
-  nav_online_batch: { en: 'Online Batch', bn: 'অনলাইন ব্যাচ' },
+  nav_online_batch: { en: 'Offline Hub', bn: 'অফলাইন হাব' },
   nav_more: { en: 'More', bn: 'আরও' },
   nav_blog: { en: 'Blog', bn: 'ব্লগ' },
   nav_faq: { en: 'FAQ', bn: 'জিজ্ঞাসা' },
@@ -86,6 +86,15 @@ export const t: Record<string, Record<string, string>> = {
   legal: { en: 'Legal', bn: 'আইনগত' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
   footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
+
+  // Support
+  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
+  connect_with_us_small: { en: 'Connect With Us', bn: 'যুক্ত হোন' },
+  support_hours: { en: 'Support Hours', bn: 'সহায়তার সময়' },
+  send_message: { en: 'Send Message', bn: 'বার্তা পাঠান' },
+  call_us: { en: 'Call Us', bn: 'কল করুন' },
+  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
+  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
 
   // Forms
   full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },

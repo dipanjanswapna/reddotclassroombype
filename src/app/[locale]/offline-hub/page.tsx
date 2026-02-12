@@ -19,6 +19,7 @@ import { t } from '@/lib/i18n';
 /**
  * @fileOverview Localized Offline Hub Page
  * Premium design with Hind Siliguri font and wall-to-wall px-1 layout.
+ * Fixed 'undefined reading bn' error by ensuring safe access to config objects.
  */
 export default function OfflineHubPage() {
     const { language } = useLanguage();
@@ -101,27 +102,27 @@ export default function OfflineHubPage() {
                                 {offlineHubData?.centersTitle?.[language] || t.offline_hubs_title[language]}
                             </div>
                             
-                            <div className="space-y-4">
+                            <div className="space-y-4 text-left">
                                 <h1 className={cn(
-                                    "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase text-left",
+                                    "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase",
                                     !isBn && "font-headline"
                                 )}>
                                     {offlineHubData?.heroTitle?.[language] || "Red Dot Offline Hub"}
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0 text-left">
-                                    {t.offline_hero_subtitle[language]}
+                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                    {offlineHubData?.heroSubtitle?.[language] || t.offline_hero_subtitle[language]}
                                 </p>
                             </div>
 
                             <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
                                 <Button asChild size="lg" className="rounded-xl font-black uppercase tracking-widest shadow-[0_0_20px_rgba(139,21,56,0.4)] h-14 px-10 bg-primary hover:bg-primary/90 text-white border-none group active:scale-95 transition-all">
                                     <Link href="#programs">
-                                        {t.explore_programs[language]}
+                                        {offlineHubData?.exploreProgramsText?.[language] || t.explore_programs[language]}
                                         <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Link>
                                 </Button>
                                 <Button asChild variant="outline" size="lg" className="rounded-xl font-black uppercase tracking-widest h-14 px-10 border-white/20 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm active:scale-95 transition-all">
-                                    <Link href="#centers">{t.find_center[language]}</Link>
+                                    <Link href="#centers">{offlineHubData?.findCenterText?.[language] || t.find_center[language]}</Link>
                                 </Button>
                             </div>
                         </motion.div>
@@ -173,12 +174,12 @@ export default function OfflineHubPage() {
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-16">
                         <h2 className={cn(
-                            "text-3xl md:text-5xl font-black tracking-tight uppercase leading-tight text-left",
+                            "text-3xl md:text-5xl font-black tracking-tight uppercase leading-tight",
                             !isBn && "font-headline"
                         )}>
-                            {t.our_programs_title[language]}
+                            {offlineHubData?.programsTitle?.[language] || t.our_programs_title[language]}
                         </h2>
-                        <p className="text-gray-400 font-medium text-lg mt-2 text-left">{t.our_programs_subtitle[language]}</p>
+                        <p className="text-gray-400 font-medium text-lg mt-2">{t.our_programs_subtitle[language]}</p>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 md:gap-y-10">
@@ -202,10 +203,10 @@ export default function OfflineHubPage() {
                             "text-3xl md:text-5xl font-black tracking-tight uppercase",
                             !isBn && "font-headline"
                         )}>
-                            {t.offline_hubs_title[language]}
+                            {offlineHubData?.centersTitle?.[language] || t.offline_hubs_title[language]}
                         </h2>
                         <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
-                            {t.offline_hubs_subtitle[language]}
+                            {offlineHubData?.centersSubtitle?.[language] || t.offline_hubs_subtitle[language]}
                         </p>
                     </div>
                     
@@ -247,50 +248,52 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Contact Section */}
-            <section className="py-20 md:py-32 px-1">
-                <div className="container mx-auto px-4">
-                    <motion.div 
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="relative rounded-[40px] overflow-hidden p-10 md:p-24 bg-gradient-to-br from-primary via-primary/90 to-black text-white shadow-2xl border border-white/10"
-                    >
-                        <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-white/10 rounded-full blur-[120px] opacity-50" />
-                        <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-black/40 rounded-full blur-[120px] opacity-50" />
-                        
-                        <div className="relative z-10 max-w-3xl space-y-8 text-left">
-                            <div className="inline-block p-5 bg-white/10 backdrop-blur-md rounded-2xl shadow-inner border border-white/20">
-                                <MessageSquare className="w-12 h-12 text-white" />
+            {offlineHubData?.contactSection?.display && (
+                <section className="py-20 md:py-32 px-1">
+                    <div className="container mx-auto px-4">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="relative rounded-[40px] overflow-hidden p-10 md:p-24 bg-gradient-to-br from-primary via-primary/90 to-black text-white shadow-2xl border border-white/10"
+                        >
+                            <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-white/10 rounded-full blur-[120px] opacity-50" />
+                            <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-black/40 rounded-full blur-[120px] opacity-50" />
+                            
+                            <div className="relative z-10 max-w-3xl space-y-8 text-left">
+                                <div className="inline-block p-5 bg-white/10 backdrop-blur-md rounded-2xl shadow-inner border border-white/20">
+                                    <MessageSquare className="w-12 h-12 text-white" />
+                                </div>
+                                <div className="space-y-4">
+                                    <h2 className={cn(
+                                        "text-4xl md:text-6xl font-black tracking-tight leading-[0.95] uppercase",
+                                        !isBn && "font-headline"
+                                    )}>
+                                        {offlineHubData.contactSection.title?.[language] || t.have_a_question[language]}
+                                    </h2>
+                                    <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-xl">
+                                        {offlineHubData.contactSection.subtitle?.[language] || t.talk_to_advisors[language]}
+                                    </p>
+                                </div>
+                                <div className="pt-6 flex flex-col sm:flex-row items-center gap-5">
+                                    <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-16 px-12 bg-white text-primary hover:bg-gray-100 shadow-2xl border-none active:scale-95 transition-all text-sm">
+                                        <a href={`tel:${offlineHubData.contactSection.callButtonNumber || '01641035736'}`}>
+                                            <Phone className="mr-3 h-5 w-5 fill-current" />
+                                            {offlineHubData.contactSection.callButtonText?.[language] || t.call_us[language]}
+                                        </a>
+                                    </Button>
+                                    <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-16 px-12 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-xl active:scale-95 transition-all text-sm">
+                                        <a href={`https://wa.me/${(offlineHubData.contactSection.whatsappNumber || '8801641035736').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                            <MessageSquare className="mr-3 h-5 w-5" />
+                                            {offlineHubData.contactSection.whatsappButtonText?.[language] || t.nav_contact[language]}
+                                        </a>
+                                    </Button>
+                                </div>
                             </div>
-                            <div className="space-y-4">
-                                <h2 className={cn(
-                                    "text-4xl md:text-6xl font-black tracking-tight leading-[0.95] uppercase text-left",
-                                    !isBn && "font-headline"
-                                )}>
-                                    {t.have_a_question[language]}
-                                </h2>
-                                <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-xl text-left">
-                                    {t.talk_to_advisors[language]}
-                                </p>
-                            </div>
-                            <div className="pt-6 flex flex-col sm:flex-row items-center gap-5">
-                                <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-16 px-12 bg-white text-primary hover:bg-gray-100 shadow-2xl border-none active:scale-95 transition-all text-sm">
-                                    <a href={`tel:01641035736`}>
-                                        <Phone className="mr-3 h-5 w-5 fill-current" />
-                                        {t.call_us[language]}
-                                    </a>
-                                </Button>
-                                <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-16 px-12 border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-xl active:scale-95 transition-all text-sm">
-                                    <a href={`https://wa.me/8801641035736`} target="_blank" rel="noopener noreferrer">
-                                        <MessageSquare className="mr-3 h-5 w-5" />
-                                        {t.nav_contact[language]}
-                                    </a>
-                                </Button>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
+                        </motion.div>
+                    </div>
+                </section>
+            )}
         </div>
     );
 }
