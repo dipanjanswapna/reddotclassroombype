@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Internationalization (i18n) Dictionary.
  * Centralized translations for RDC Master Ecosystem.
@@ -24,6 +23,13 @@ export const t: Record<string, Record<string, string>> = {
   register: { en: 'Register', bn: 'নিবন্ধন করুন' },
   dashboard: { en: 'Dashboard', bn: 'ড্যাশবোর্ড' },
   
+  // Header Info
+  best_learning_platform: { en: 'Best Learning Platform', bn: 'সেরা লার্নিং প্ল্যাটফর্ম' },
+  shop_description: { 
+    en: 'Red Dot Classroom (RDC Shop) is a Dhaka, Bangladesh based online education center specializing in providing high-quality educational resources to students nationwide.', 
+    bn: 'রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র, যা সারা দেশের শিক্ষার্থীদের উচ্চ-মানের শিক্ষামূলক সম্পদ প্রদানে বিশেষজ্ঞ।' 
+  },
+
   // Struggling Section
   struggling_title: { en: 'Struggling in Studies?', bn: 'পড়াশোনায় পিছিয়ে পড়ছো?' },
   struggling_subtitle: { en: "Let's solve your problems together ✨", bn: 'এসো তোমার সমস্যার সমাধান করি ✨' },
@@ -103,7 +109,7 @@ export const t: Record<string, Record<string, string>> = {
   our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
   core_values: { en: 'Core Values', bn: 'মূল আদর্শ' },
   visionary_team: { en: 'Visionary Team', bn: 'দক্ষ টিম' },
-  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের দর্শন' },
+  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের दर्शन' },
 
   // Contact & Support
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },

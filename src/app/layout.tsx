@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="bn" suppressHydrationWarning>
       <body className={cn(
         'font-body antialiased selection:bg-primary/20 selection:text-primary', 
         fontInter.variable, 

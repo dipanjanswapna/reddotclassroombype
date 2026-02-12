@@ -8,6 +8,7 @@ import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
 import { cn } from '@/lib/utils';
 import { t } from '@/lib/i18n';
+import { Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'RDC Shop | Premium Courses',
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 /**
  * @fileOverview Localized RDC Shop Page
- * Uses Hind Siliguri font for all Bengali content.
+ * Refined UI/UX based on user feedback.
  * Wall-to-wall design with px-1.
  */
 async function CoursesPageContent({ searchParams, locale }: { searchParams?: Promise<{ [key: string]: string | undefined }>, locale: string }) {
@@ -77,38 +78,38 @@ export default async function CoursesPage({
     const homepageConfig = await getHomepageConfig();
     
   return (
-    <div className={cn("bg-background min-h-screen", isBn && "font-bengali")}>
+    <div className={cn("bg-background min-h-screen pb-20", isBn && "font-bengali")}>
         <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden px-1">
             <div className="container mx-auto px-0">
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
-                    <div className="mb-6">
+                    <div className="mb-8">
                         <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
                     </div>
                 )}
 
-                <div className="text-center max-w-xl mx-auto space-y-3">
+                <div className="text-left max-w-4xl mx-auto space-y-4 px-1">
                     <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
-                        <TypingText text={isBn ? "প্রিমিয়াম লার্নিং রিসোর্স" : "Premium Learning Resources"} className="inline" />
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {t.best_learning_platform[language]}
                     </div>
+                    
                     <h1 className={cn(
-                        "font-black text-3xl md:text-4xl lg:text-5xl tracking-tighter uppercase leading-tight",
-                        isBn ? "" : "font-headline"
+                        "font-black text-4xl md:text-5xl lg:text-6xl tracking-tighter uppercase leading-none text-foreground",
+                        !isBn && "font-headline"
                     )}>
                         {t.rdc_shop[language]}
                     </h1>
-                    <div className="min-h-[2.5rem]">
-                        <p className="text-sm md:text-lg text-muted-foreground font-medium leading-relaxed px-2">
-                            {isBn 
-                                ? 'আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RED DOT CLASSROOM (RDC)-তে।' 
-                                : 'Find everything you need for your academic success at RED DOT CLASSROOM.'
-                            }
+                    
+                    <div className="max-w-3xl">
+                        <p className="text-base md:text-xl text-muted-foreground font-medium leading-relaxed">
+                            {t.shop_description[language]}
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-1 py-8">
+      <div className="container mx-auto px-1 py-10">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-10 h-10" />
