@@ -18,6 +18,7 @@ type CourseCardProps = Partial<Course> & {
 const CourseCardComponent = (props: CourseCardProps) => {
   const { id, title, instructors, imageUrl, price, discountPrice, dataAiHint, isPrebooking, prebookingPrice, prebookingEndDate, partnerSubdomain, provider, type } = props;
   const { language } = useLanguage();
+  const isBn = language === 'bn';
   
   if (!id || !title || !imageUrl) {
     return null;
@@ -32,10 +33,10 @@ const CourseCardComponent = (props: CourseCardProps) => {
     : `/${language}/courses/${id}`;
   
   return (
-    <div className="relative h-full px-1">
+    <div className={cn("relative h-full px-1", isBn && "font-bengali")}>
       <Link href={coursePageUrl} className="block h-full group">
         <Card className={cn(
-          "flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-card",
+          "flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-[#eef2ed] dark:bg-card/40",
           "p-2.5"
         )}>
           {/* Visual Container */}
@@ -69,7 +70,10 @@ const CourseCardComponent = (props: CourseCardProps) => {
           {/* Content Area */}
           <div className="flex flex-col pt-4 px-1.5 flex-grow text-left space-y-3">
             <div className="space-y-1.5">
-                <h3 className="text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 font-headline uppercase tracking-tight group-hover:text-primary transition-colors h-[2.5rem] md:h-[3rem]">
+                <h3 className={cn(
+                    "text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 uppercase tracking-tight group-hover:text-primary transition-colors h-[2.5rem] md:h-[3rem]",
+                    !isBn && "font-headline"
+                )}>
                 {title}
                 </h3>
 

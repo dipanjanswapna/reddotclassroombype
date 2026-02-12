@@ -22,6 +22,7 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
     const { addToCart } = useCart();
     const { toast } = useToast();
     const { language } = useLanguage();
+    const isBn = language === 'bn';
 
     const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
@@ -53,12 +54,13 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
   
   return (
     <Card className={cn(
-        "group flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] p-2.5 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-card",
-        "relative"
+        "group flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] p-2.5 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-[#f0f9ff] dark:bg-card/40",
+        "relative",
+        isBn && "font-bengali"
     )}>
         <Link href={`/${language}/store/product/${product.id}`} className="block flex flex-col flex-grow outline-none">
             {/* Visual Container */}
-            <CardHeader className="p-0 relative aspect-square overflow-hidden rounded-[16px] shadow-inner bg-muted/20">
+            <CardHeader className="p-0 relative aspect-square overflow-hidden rounded-[16px] shadow-inner bg-white/50">
                 <Image
                     src={product.imageUrl}
                     alt={product.name}
@@ -83,7 +85,10 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
                     <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-70">
                         {product.category}
                     </p>
-                    <h3 className="text-xs md:text-sm font-black leading-tight text-foreground line-clamp-2 font-headline uppercase tracking-tight h-[2.4rem] group-hover:text-primary transition-colors">
+                    <h3 className={cn(
+                        "text-xs md:text-sm font-black leading-tight text-foreground line-clamp-2 uppercase tracking-tight h-[2.4rem] group-hover:text-primary transition-colors",
+                        !isBn && "font-headline"
+                    )}>
                         {product.name}
                     </h3>
                 </div>

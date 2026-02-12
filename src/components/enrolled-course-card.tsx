@@ -12,6 +12,7 @@ import { toggleWishlistAction } from "@/app/actions/user.actions";
 import { useToast } from "./ui/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
+import { useLanguage } from '@/context/language-context';
 
 type EnrolledCourseCardProps = {
   course: Course & { progress?: number; lastViewed?: string; completedDate?: string };
@@ -22,6 +23,8 @@ type EnrolledCourseCardProps = {
 export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseCardProps) {
   const { toast } = useToast();
   const { userInfo, refreshUserInfo } = useAuth();
+  const { language } = useLanguage();
+  const isBn = language === 'bn';
   
   const courseLink = (status === 'in-progress' || status === 'archived' || status === 'prebooked') ? `/student/my-courses/${course.id}` : `/courses/${course.id}`;
   const continueLink = status === 'in-progress' ? `/student/my-courses/${course.id}` : '#';
@@ -48,11 +51,11 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   };
 
   return (
-    <div className="h-full w-full">
+    <div className={cn("h-full w-full", isBn && "font-bengali")}>
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden shadow-xl border-primary/20 rounded-[20px]",
+        "flex flex-col h-full overflow-hidden shadow-xl border-primary/20 rounded-[20px] bg-[#f0f9ff] dark:bg-card/40",
         "p-2.5 md:p-3"
-      )} style={{ backgroundColor: 'rgb(194, 231, 255)' }}>
+      )}>
         <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-[12px] shadow-inner bg-black/5">
           <Link href={courseLink}>
             <Image
@@ -76,7 +79,10 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
         <div className="flex-1 flex flex-col pt-3 pb-1 space-y-3 text-left">
           <div className="space-y-0.5">
               <Link href={courseLink}>
-              <h3 className="text-sm md:text-base font-black leading-tight text-gray-900 line-clamp-2 font-headline text-left uppercase tracking-tight">
+              <h3 className={cn(
+                  "text-sm md:text-base font-black leading-tight text-gray-900 line-clamp-2 uppercase tracking-tight h-[2.5rem] md:h-[3rem]",
+                  !isBn && "font-headline"
+              )}>
                   {course.title}
               </h3>
               </Link>
@@ -112,19 +118,19 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
               {status === 'in-progress' && (
                   <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
                       <Link href={continueLink} className="flex items-center justify-center gap-1.5">
-                          চালিয়ে যান <ChevronRight className="w-3.5 h-3.5" />
+                          {isBn ? 'চালিয়ে যান' : 'Continue'} <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                   </Button>
               )}
               {status === 'completed' && (
                   <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl" variant="accent">
-                      <Link href="/student/certificates">সার্টিফিকেট নিন</Link>
+                      <Link href="/student/certificates">{isBn ? 'সার্টিফিকেট নিন' : 'Get Certificate'}</Link>
                   </Button>
               )}
               {status === 'wishlisted' && (
                   <>
                       <Button asChild size="sm" className="flex-grow font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl">
-                          <Link href={`/checkout/${course.id}`}>এনরোল করুন</Link>
+                          <Link href={`/checkout/${course.id}`}>{isBn ? 'এনরোল করুন' : 'Enroll Now'}</Link>
                       </Button>
                       <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 text-destructive hover:bg-destructive/10 rounded-xl" onClick={handleRemoveFromWishlist}>
                           <Trash2 className="h-4 w-4" />
@@ -133,7 +139,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
               )}
               {status === 'prebooked' && (
                   <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
-                      <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> Pre-booked
+                      <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> {isBn ? 'প্রি-বুক করা হয়েছে' : 'Pre-booked'}
                   </Button>
               )}
           </div>
