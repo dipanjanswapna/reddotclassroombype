@@ -1,13 +1,14 @@
-
-
 import { notFound } from 'next/navigation';
-import { getProduct, getProducts } from '@/lib/firebase/firestore';
+import { getProduct, getProducts, getOrganizations } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { ProductClientPage } from '@/components/product-client-page';
 import { Card } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductReviewSystem } from '@/components/product-review-system';
+import { ProductCard } from '@/components/product-card';
+import { ChevronLeft, ShoppingBag, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export async function generateMetadata({ params }: { params: { productId: string } }): Promise<Metadata> {
   const { productId } = params;
@@ -30,6 +31,9 @@ export async function generateMetadata({ params }: { params: { productId: string
   };
 }
 
+/**
+ * @fileOverview Refined Product Detail Page with px-1 consistency and Related Products.
+ */
 export default async function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params;
   const product = await getProduct(productId);
@@ -38,50 +42,59 @@ export default async function ProductDetailPage({ params }: { params: { productI
     notFound();
   }
 
-  const allProducts = await getProducts();
+  const [allProducts, allOrgs] = await Promise.all([
+      getProducts(),
+      getOrganizations()
+  ]);
+
   const relatedProducts = allProducts.filter(
       p => p.isPublished && p.category === product.category && p.id !== product.id
-  ).slice(0, 4);
+  ).slice(0, 5); // 5 for the desktop row
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 py-8 md:py-12">
-        <div className="container mx-auto px-4">
-            <ProductClientPage product={product} />
+    <div className="bg-transparent pb-20">
+        {/* Navigation Breadcrumb */}
+        <div className="container mx-auto px-4 py-4 md:py-6">
+            <Button asChild variant="ghost" size="sm" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 text-muted-foreground hover:text-primary">
+                <Link href="/store">
+                    <ChevronLeft className="w-4 h-4" />
+                    Back to Store Hub
+                </Link>
+            </Button>
+        </div>
 
-            <div className="mt-12">
+        <div className="container mx-auto px-1 space-y-16">
+            {/* Main Product Info */}
+            <section className="py-0">
+                <ProductClientPage product={product} />
+            </section>
+
+            {/* Reviews Section */}
+            <section className="py-0 px-1">
+                <div className="flex items-center gap-3 mb-8 border-l-4 border-primary pl-4">
+                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">Customer <span className="text-primary">Feedback</span></h2>
+                </div>
                 <ProductReviewSystem product={product} />
-            </div>
+            </section>
 
+            {/* Related Products Grid - 5 columns on desktop */}
             {relatedProducts.length > 0 && (
-                 <section className="mt-16">
-                    <h2 className="font-headline text-3xl font-bold mb-6 text-center">Related Products</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {relatedProducts.map(p => (
-                            <Card key={p.id} className="overflow-hidden group">
-                                <Link href={`/store/product/${p.id}`} className="block">
-                                    <div className="p-0">
-                                    <div className="relative aspect-square">
-                                        <Image
-                                        src={p.imageUrl}
-                                        alt={p.name}
-                                        fill
-                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                    </div>
-                                    </div>
-                                    <div className="p-4">
-                                    <p className="text-xs text-muted-foreground">{p.category}</p>
-                                    <h3 className="font-semibold truncate group-hover:text-primary">{p.name}</h3>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <p className="text-lg font-bold text-primary">৳{p.price}</p>
-                                        {p.oldPrice && (
-                                        <p className="text-sm text-muted-foreground line-through">৳{p.oldPrice}</p>
-                                        )}
-                                    </div>
-                                    </div>
-                                </Link>
-                            </Card>
-                        ))}
+                 <section className="py-0 px-1">
+                    <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
+                        <div className="text-left">
+                            <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">You May <span className="text-primary">Also Like</span></h2>
+                            <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Recommended for your academic journey</p>
+                        </div>
+                        <div className="bg-primary/10 p-2 rounded-xl hidden sm:block">
+                            <ShoppingBag className="w-6 h-6 text-primary" />
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5 px-1">
+                        {relatedProducts.map(p => {
+                            const provider = allOrgs.find(o => o.id === p.sellerId);
+                            return <ProductCard key={p.id} product={p} provider={provider} />;
+                        })}
                     </div>
                 </section>
             )}
@@ -89,5 +102,3 @@ export default async function ProductDetailPage({ params }: { params: { productI
     </div>
   );
 }
-
-
