@@ -21,6 +21,9 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
     const productTitle = bestsellerProduct?.name || t.favorite_book[language];
     const productLink = bestsellerProduct ? `/store/product/${bestsellerProduct.id}` : "/store?category=books";
 
+    // Safe access to translation keys to prevent crashes
+    const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
+
     return (
         <section className={cn("px-1 py-0 overflow-hidden", isBn && "font-bengali")}>
             <motion.div 
@@ -45,12 +48,12 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
                         </motion.div>
                         
                         <div className="space-y-3">
-                            <p className="font-black text-primary-foreground/80 uppercase tracking-[0.2em] text-xs md:text-sm">{t.bestseller_authors[language]}</p>
+                            <p className="font-black text-primary-foreground/80 uppercase tracking-[0.2em] text-xs md:text-sm">{getT('bestseller_authors')}</p>
                             <h2 className={cn(
                                 "text-3xl md:text-5xl lg:text-6xl font-black text-white leading-none tracking-tighter uppercase drop-shadow-2xl",
                                 !isBn && "font-headline"
                             )}>
-                                {t.meet_your_next[language]} <br className="hidden lg:block"/> 
+                                {getT('meet_your_next')} <br className="hidden lg:block"/> 
                                 <span className="text-yellow-400">{productTitle}</span>
                             </h2>
                         </div>
@@ -65,7 +68,7 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
                         <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4">
                             <Button asChild size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-yellow-400 hover:text-primary-foreground font-black uppercase tracking-widest h-14 px-10 rounded-xl shadow-2xl transition-all duration-300 active:scale-95 group/btn border-none">
                                 <Link href={productLink}>
-                                    {t.buy_now[language]}
+                                    {getT('buy_now')}
                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                                 </Link>
                             </Button>
@@ -74,7 +77,7 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
                                 <div className="flex -space-x-2">
                                     {[1,2,3].map(i => (
                                         <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-muted overflow-hidden">
-                                            <Image src={`https://picsum.photos/seed/${i+100}/100/100`} alt="User" width={32} height={32} crossOrigin="anonymous" />
+                                            <Image src={`https://picsum.photos/seed/${i+100}/100/100`} alt="User" width={32} height={32} />
                                         </div>
                                     ))}
                                 </div>
@@ -101,7 +104,6 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
                                 height={600}
                                 className="object-cover rounded-lg shadow-2xl border border-white/10"
                                 data-ai-hint="math book cover"
-                                crossOrigin="anonymous"
                             />
                         </motion.div>
                         
@@ -117,7 +119,6 @@ export function BookBanner({ bestsellerProduct }: { bestsellerProduct?: Product 
                                  height={600}
                                  className="object-cover rounded-lg border border-white/20 aspect-[4/6] bg-white"
                                  data-ai-hint="product cover"
-                                 crossOrigin="anonymous"
                             />
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
                         </motion.div>

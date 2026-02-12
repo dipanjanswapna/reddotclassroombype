@@ -30,6 +30,8 @@ export default async function AboutPage({ params }: { params: { locale: string }
     const config = await getHomepageConfig();
     const aboutSection = config?.aboutUsSection;
 
+    const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
+
     if (!aboutSection || !aboutSection.display) {
         return (
              <div className="container mx-auto px-4 py-20 text-center">
@@ -42,12 +44,12 @@ export default async function AboutPage({ params }: { params: { locale: string }
   return (
     <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
         {/* Modern Header Section */}
-        <section className="relative py-16 md:py-24 overflow-hidden border-b border-white/5 bg-muted/30 rounded-b-[40px]">
+        <section className="relative py-16 md:py-24 overflow-hidden border-b border-white/5 bg-muted/30 rounded-b-[40px] px-0">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
             <div className="container mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20 shadow-sm">
                     <Users className="w-3.5 h-3.5" />
-                    {t.our_identity[language]}
+                    {getT('our_identity')}
                 </div>
                 <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight uppercase max-w-4xl mx-auto">
                     {aboutSection.title?.[language] || aboutSection.title?.en || 'About Our Mission'}
@@ -59,24 +61,24 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Mission & Vision Section */}
-        <section className="py-12 md:py-20">
+        <section className="py-12 md:py-20 px-0">
             <div className="container mx-auto px-4">
                 <div className="grid md:grid-cols-3 gap-8">
                     <CardItem 
                         icon={Target} 
-                        title={t.our_mission[language]} 
+                        title={getT('our_mission')} 
                         desc={isBn ? "বাংলাদেশের প্রতিটি শিক্ষার্থীর কাছে বিশ্বমানের শিক্ষা পৌঁছে দিয়ে শিক্ষাব্যবস্থাকে গণতান্ত্রিক করা।" : "To democratize quality education in Bangladesh by providing world-class learning resources to every student."} 
                         color="primary"
                     />
                     <CardItem 
                         icon={Eye} 
-                        title={t.our_vision[language]} 
+                        title={getT('our_vision')} 
                         desc={isBn ? "দক্ষিণ এশিয়ার অন্যতম সেরা হাইব্রিড লার্নিং প্ল্যাটফর্ম হিসেবে নিজেদের প্রতিষ্ঠিত করা।" : "To become the leading hybrid education ecosystem in South Asia, blending digital and physical learning."} 
                         color="accent"
                     />
                     <CardItem 
                         icon={Award} 
-                        title={t.core_values[language]} 
+                        title={getT('core_values')} 
                         desc={isBn ? "সততা, উদ্ভাবন এবং শিক্ষার্থী-বান্ধব চিন্তা আমাদের প্রতিটি কাজের কেন্দ্রে থাকে।" : "Integrity, innovation, and student-first thinking are at the heart of everything we do at RDC."} 
                         color="blue"
                     />
@@ -85,11 +87,11 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Visionary Team Section */}
-        <section className="py-16 md:py-24 bg-muted/10 rounded-[40px] border-y border-white/5">
+        <section className="py-16 md:py-24 bg-muted/10 rounded-[40px] border-y border-white/5 px-0">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6 text-left">
                     <div className="max-w-2xl">
-                        <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">{t.visionary_team[language]}</h2>
+                        <h2 className="font-headline text-3xl md:text-4xl font-black tracking-tight uppercase">{getT('visionary_team')}</h2>
                         <p className="text-muted-foreground font-medium text-lg mt-2">{isBn ? 'PRANGONS ECOSYSTEM-কে এগিয়ে নিয়ে যাওয়ার কারিগরদের সাথে পরিচিত হন।' : 'Meet the dedicated individuals driving the PRANGONS ECOSYSTEM forward.'}</p>
                     </div>
                 </div>
@@ -139,9 +141,9 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Brand Philosophy */}
-        <section className="py-20 md:py-32">
+        <section className="py-20 md:py-32 px-0">
             <div className="container mx-auto px-4 text-center max-w-3xl">
-                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-8">{t.philosophy[language]}</h2>
+                <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-8">{getT('philosophy')}</h2>
                 <blockquote className="text-xl md:text-3xl font-medium italic text-muted-foreground leading-relaxed tracking-tight">
                     {isBn 
                         ? '"আমরা শুধু কোর্স করাই না; আমরা ভবিষ্যৎ গড়ি। রেড ডট ক্লাসরুম একটি অ্যাপের চেয়েও বেশি—এটি বাংলাদেশের প্রতিটি স্বপ্নবাজ শিক্ষার্থীর প্রতি আমাদের একটি অঙ্গীকার।"'

@@ -38,6 +38,7 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
     const awaitedParams = await params;
     const { locale, teacherSlug } = awaitedParams;
     const language = locale as 'en' | 'bn';
+    const isBn = language === 'bn';
     const teacher = await getInstructorBySlug(teacherSlug);
 
     if (!teacher || teacher.status !== 'Approved') {
@@ -60,12 +61,14 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
     const totalRatingSum = ratedCourses.reduce((sum, course) => sum + (course.rating || 0), 0);
     const averageRating = ratedCourses.length > 0 ? (totalRatingSum / ratedCourses.length).toFixed(1) : "4.9";
 
+    const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
+
     return (
-        <div className={cn("bg-background min-h-screen pb-16", language === 'bn' && "font-bengali")}>
+        <div className={cn("bg-background min-h-screen pb-16 px-1", isBn && "font-bengali")}>
             {/* Breadcrumb */}
             <div className="bg-muted/30 border-b border-white/5 py-2">
                 <div className="container mx-auto px-4 flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                    <Link href={`/${language}`} className="hover:text-primary transition-colors">{t.nav_home[language]}</Link>
+                    <Link href={`/${language}`} className="hover:text-primary transition-colors">{getT('nav_home')}</Link>
                     <ChevronRight className="w-2.5 h-2.5" />
                     <Link href={`/${language}/teachers`} className="hover:text-primary transition-colors">{language === 'bn' ? 'শিক্ষকগণ' : 'Instructors'}</Link>
                     <ChevronRight className="w-2.5 h-2.5" />
@@ -74,7 +77,7 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
             </div>
 
             {/* Premium Hero Section */}
-            <section className="relative pt-8 md:pt-12 pb-8 md:pb-12 border-b border-white/5 overflow-hidden bg-card/20">
+            <section className="relative pt-8 md:pt-12 pb-8 md:pb-12 border-b border-white/5 overflow-hidden bg-card/20 px-0">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-12 gap-8 items-center">
@@ -140,14 +143,14 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
             <main className="container mx-auto px-4 py-8 md:py-12 space-y-10">
                 {/* Biography Section */}
                 <div className="max-w-4xl mx-auto">
-                    <div className="flex items-center gap-3 mb-4 border-l-4 border-primary pl-4">
-                        <h2 className="font-headline text-lg md:text-xl font-black tracking-tight uppercase">{t.teacher_bio[language]}</h2>
+                    <div className="flex items-center gap-3 mb-4 border-l-4 border-primary pl-4 text-left">
+                        <h2 className="font-headline text-lg md:text-xl font-black tracking-tight uppercase">{getT('teacher_bio')}</h2>
                     </div>
                     <Card className="rounded-2xl md:rounded-3xl border-white/40 bg-card shadow-lg relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
                             <GraduationCap className="w-20 h-20 rotate-12" />
                         </div>
-                        <CardContent className="p-6 md:p-10">
+                        <CardContent className="p-6 md:p-10 text-left">
                             <p className="text-sm md:text-base text-muted-foreground font-medium leading-relaxed whitespace-pre-line relative z-10">
                                 {teacher.bio}
                             </p>
@@ -156,10 +159,10 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
                 </div>
 
                 {/* Courses Grid */}
-                <section className="py-0">
+                <section className="py-0 px-0">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 border-l-4 border-primary pl-4">
                         <div className="text-left">
-                            <h2 className="font-headline text-lg md:text-2xl font-black tracking-tight uppercase text-left">{t.teacher_courses[language]}</h2>
+                            <h2 className="font-headline text-lg md:text-2xl font-black tracking-tight uppercase text-left">{getT('teacher_courses')}</h2>
                             <p className="text-muted-foreground font-medium text-xs md:text-sm mt-0.5 text-left">{language === 'bn' ? 'আপনার প্রয়োজনীয় কোর্সটি বেছে নিন।' : 'Pick your path to academic excellence.'}</p>
                         </div>
                         <Badge variant="accent" className="rounded-full px-4 py-1 font-black text-[9px] uppercase tracking-widest shadow-sm">{teacherCourses.length} {language === 'bn' ? 'টি একটিভ ব্যাচ' : 'ACTIVE BATCHES'}</Badge>
@@ -182,10 +185,10 @@ export default async function TeacherProfilePage({ params }: { params: { locale:
                 
                 {/* YouTube Classes Section */}
                 {teacher.youtubeClasses && teacher.youtubeClasses.length > 0 && (
-                    <section className="py-0">
+                    <section className="py-0 px-0">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 border-l-4 border-primary pl-4">
                             <div className="text-left">
-                                <h2 className="font-headline text-lg md:text-2xl font-black tracking-tight uppercase text-left">{t.free_masterclasses[language]}</h2>
+                                <h2 className="font-headline text-lg md:text-2xl font-black tracking-tight uppercase text-left">{getT('free_masterclasses')}</h2>
                                 <p className="text-muted-foreground font-medium text-xs md:text-sm mt-0.5 text-left">{language === 'bn' ? 'আমাদের ফ্রি রিসোর্সগুলো থেকে আজই শিখুন।' : 'Learn from our high-impact free resources.'}</p>
                             </div>
                         </div>

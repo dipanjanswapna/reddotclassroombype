@@ -27,6 +27,8 @@ export default function ContactPage() {
     const { language } = useLanguage();
     const isBn = language === 'bn';
 
+    const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -54,7 +56,7 @@ export default function ContactPage() {
     const contactInfo = [
         {
             icon: Phone,
-            title: t.call_us[language],
+            title: getT('call_us'),
             details: "+880 1641 035 736",
             subDetails: isBn ? "শনিবার - বৃহস্পতিবার, ১০টা - ১০টা" : "Sat - Thu, 10am - 10pm",
             color: "text-blue-500",
@@ -62,7 +64,7 @@ export default function ContactPage() {
         },
         {
             icon: Mail,
-            title: t.email_support[language],
+            title: getT('email_support'),
             details: "support@rdc.com",
             subDetails: isBn ? "২৪/৭ অনলাইন সহায়তা" : "24/7 Online Support",
             color: "text-primary",
@@ -70,7 +72,7 @@ export default function ContactPage() {
         },
         {
             icon: MapPin,
-            title: t.our_office[language],
+            title: getT('our_office'),
             details: "Mirpur DOHS, Dhaka",
             subDetails: "Bangladesh, 1216",
             color: "text-green-500",
@@ -81,7 +83,7 @@ export default function ContactPage() {
     return (
         <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
             {/* Modern Header Section */}
-            <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px]">
+            <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px] px-0">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
                 <div className="container mx-auto px-4 text-center">
                     <motion.div
@@ -91,7 +93,7 @@ export default function ContactPage() {
                     >
                         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20">
                             <Globe className="w-3.5 h-3.5" />
-                            {t.connect_with_us[language]}
+                            {getT('connect_with_us')}
                         </div>
                         <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight max-w-4xl mx-auto">
                             {isBn ? 'আমাদের সাথে' : 'Get in'} <span className="text-primary">{isBn ? 'যোগাযোগ করুন' : 'Touch'}</span>
@@ -138,7 +140,7 @@ export default function ContactPage() {
                                 <Clock className="w-24 h-24 rotate-12" />
                             </div>
                             <CardHeader className="p-6 text-left">
-                                <CardTitle className="text-lg font-black uppercase tracking-tight">{t.support_hours[language]}</CardTitle>
+                                <CardTitle className="text-lg font-black uppercase tracking-tight">{getT('support_hours')}</CardTitle>
                                 <CardDescription className="font-medium text-muted-foreground">
                                     {isBn ? 'আপনাদের নিরবচ্ছিন্ন সেবা প্রদানে আমাদের সাপোর্ট টিম নির্দিষ্ট সময়ে উপস্থিত থাকে।' : 'Our support team is available during these times to ensure you have the best learning experience.'}
                                 </CardDescription>
@@ -167,7 +169,7 @@ export default function ContactPage() {
                                 <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-card/50 text-left">
                                     <div className="flex items-center gap-3 mb-2">
                                         <MessageSquare className="w-6 h-6 text-primary" />
-                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">{t.send_message[language]}</CardTitle>
+                                        <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">{getT('send_message')}</CardTitle>
                                     </div>
                                     <CardDescription className="text-base font-medium text-gray-600 dark:text-muted-foreground">
                                         {isBn ? 'নিচের ফর্মটি পূরণ করুন, আমরা ২৪ ঘন্টার মধ্যে আপনার সাথে যোগাযোগ করব।' : 'Fill out the form below and we\'ll get back to you within 24 hours.'}
@@ -214,7 +216,7 @@ export default function ContactPage() {
                                         </div>
                                         <Button type="submit" size="lg" className="w-full md:w-fit font-black uppercase tracking-widest h-14 px-12 rounded-xl shadow-xl shadow-primary/20" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                                            {isBn ? 'বার্তা পাঠান' : t.send_message[language]}
+                                            {isBn ? 'বার্তা পাঠান' : getT('send_message')}
                                         </Button>
                                     </form>
                                 </CardContent>

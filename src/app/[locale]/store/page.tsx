@@ -28,7 +28,7 @@ async function StoreContent({ searchParams, locale }: { searchParams?: Promise<{
     const publishedProducts = allProducts.filter(p => p.isPublished);
     
     let displayProducts = publishedProducts;
-    let pageTitle = t.all_products[locale as 'en' | 'bn'];
+    let pageTitle = t.all_products[locale as 'en' | 'bn'] || 'All Products';
 
     if (selectedCategorySlug) {
         const category = allCategories.find(c => c.slug === selectedCategorySlug);

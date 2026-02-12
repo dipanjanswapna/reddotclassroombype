@@ -39,7 +39,7 @@ export const t: Record<string, Record<string, string>> = {
   terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
 
-  // Homepage
+  // Homepage & General
   categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরি অনুযায়ী খুঁজুন' },
   live_courses_heading: { en: 'Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
   our_mentors: { en: 'Our Elite Faculty', bn: 'আমাদের অভিজ্ঞ শিক্ষক মণ্ডলী' },
@@ -51,7 +51,45 @@ export const t: Record<string, Record<string, string>> = {
   submit: { en: 'Submit', bn: 'জমা দিন' },
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
+  already_have_account: { en: 'Already have an account?', bn: 'ইতিমধ্যে একাউন্ট আছে?' },
+  no_account: { en: "Don't have an account?", bn: 'কোনো একাউন্ট নেই?' },
+  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  or_continue_with: { en: 'Or continue with', bn: 'অথবা' },
+  create_account: { en: 'Create Account', bn: 'একাউন্ট তৈরি করুন' },
+  signup_desc: { en: 'Join the RDC community', bn: 'RDC কমিউনিটিতে যোগ দিন' },
+  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
+  login_desc: { en: 'Login to your account', bn: 'আপনার একাউন্টে লগইন করুন' },
+  or_login_with_roll: { en: 'Or login with class roll', bn: 'অথবা রোল নম্বর দিয়ে লগইন করুন' },
+  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
+  staff_id: { en: 'Staff ID', bn: 'স্টাফ আইডি' },
+  login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি দিয়ে লগইন' },
+  email_login: { en: 'Email Login', bn: 'ইমেইল লগইন' },
+  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
+  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
   
+  // Store
+  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
+  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
+  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
+  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
+  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
+  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
+  buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
+  customer_feedback: { en: 'Customer Feedback', bn: 'শিক্ষার্থীদের মতামত' },
+  similar_items: { en: 'Similar Items', bn: 'একই ধরণের পণ্য' },
+  back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
+
+  // Course Detail
+  prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
+  curriculum: { en: 'Course Curriculum', bn: 'কোর্স কারিকুলাম' },
+  routine: { en: 'Class Routine', bn: 'ক্লাস রুটিন' },
+  syllabus: { en: 'Syllabus & Modules', bn: 'সিলেবাস ও লেসন' },
+  day: { en: 'Day', bn: 'দিন' },
+  subject: { en: 'Subject', bn: 'বিষয়' },
+  time: { en: 'Time', bn: 'সময়' },
+  demo_class: { en: 'Demo Class', bn: 'ডেমো ক্লাস দেখুন' },
+  includes_heading: { en: 'What is included', bn: 'এই কোর্সে যা থাকছে' },
+
   // Offline Hub
   offline_hero_subtitle: { 
     en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.',
@@ -72,23 +110,25 @@ export const t: Record<string, Record<string, string>> = {
   have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
   talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
 
-  // Login & Signup
-  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
-  login_desc: { en: 'Login to your account', bn: 'আপনার একাউন্টে লগইন করুন' },
-  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
-  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
-  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
-  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
-  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
-  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
-  no_account: { en: "Don't have an account?", bn: 'কোনো একাউন্ট নেই?' },
-  or_login_with_roll: { en: 'Or login with class roll', bn: 'অথবা রোল নম্বর দিয়ে লগইন করুন' },
-  
-  // Store
-  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
-  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
-  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
-  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
-  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
-  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
+  // About Us
+  our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
+  our_mission: { en: 'Our Mission', bn: 'আমাদের লক্ষ্য' },
+  our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
+  core_values: { en: 'Core Values', bn: 'মূল আদর্শ' },
+  visionary_team: { en: 'Visionary Team', bn: 'দক্ষ টিম' },
+  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের দর্শন' },
+
+  // Contact & Support
+  connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
+  call_us: { en: 'Call Us', bn: 'ফোন করুন' },
+  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
+  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
+  support_hours: { en: 'Support Hours', bn: 'সাপোর্ট আওয়ার' },
+  send_message: { en: 'Send a Message', bn: 'বার্তা পাঠান' },
+  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
+
+  // Teachers
+  teacher_bio: { en: 'Instructor Biography', bn: 'শিক্ষকের জীবনী' },
+  teacher_courses: { en: 'Courses by this Mentor', bn: 'শিক্ষকের সকল কোর্সসমূহ' },
+  free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
 };
