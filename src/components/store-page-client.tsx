@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,11 +10,13 @@ import { BookBanner } from './book-banner';
 import { StoreBannerCarousel } from './store-banner-carousel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDebounce } from 'react-use';
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview RDC Store Page Client Component.
- * Optimized for high-density wall-to-wall UI with px-1 and 20px rounding.
- * Implements useDebounce for optimized search experience.
+ * @fileOverview Localized RDC Store Page Client Component.
+ * Optimized for high-density wall-to-wall UI with px-1 and Hind Siliguri support.
  */
 export function StorePageClient({
     initialProducts,
@@ -28,6 +29,8 @@ export function StorePageClient({
     pageTitle: string;
     homepageConfig: HomepageConfig | null;
 }) {
+    const { language } = useLanguage();
+    const isBn = language === 'bn';
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -74,11 +77,11 @@ export function StorePageClient({
     const hasFilters = !!(selectedCategorySlug || selectedSubCategorySlug || debouncedSearchTerm);
 
     return (
-        <div className="w-full px-1 -mt-6 lg:-mt-14 space-y-6 md:space-y-10">
+        <div className={cn("w-full px-1 -mt-6 lg:-mt-14 space-y-6 md:space-y-10 pb-20", isBn && "font-bengali")}>
             <main className="space-y-8 md:space-y-12">
                 {/* Dynamic Hero Banners */}
                 {homepageConfig?.storeHomepageSection?.bannerCarousel && !hasFilters && (
-                     <div className="rounded-[20px] overflow-hidden shadow-xl border border-primary/5">
+                     <div className="rounded-[25px] overflow-hidden shadow-2xl border border-primary/10">
                         <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
                      </div>
                 )}
@@ -89,10 +92,13 @@ export function StorePageClient({
                         <div className="space-y-0.5 text-left">
                             <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 w-fit shadow-sm">
                                 <ShoppingBag className="w-3 h-3" />
-                                RDC Store Hub
+                                {t.store_hub[language]}
                             </div>
-                            <h1 className="text-xl md:text-3xl font-black uppercase tracking-tight font-headline text-foreground">
-                                {pageTitle === "All Products" ? "RED DOT CLASSROOM (RDC) Store" : pageTitle}
+                            <h1 className={cn(
+                                "text-xl md:text-3xl font-black uppercase tracking-tight text-foreground",
+                                !isBn && "font-headline"
+                            )}>
+                                {pageTitle === "All Products" ? t.all_products[language] : pageTitle}
                             </h1>
                         </div>
                         
@@ -105,8 +111,8 @@ export function StorePageClient({
                                 )}
                             </div>
                             <Input
-                                placeholder="Search products..."
-                                className="pl-9 h-11 rounded-xl bg-card border-primary/20 focus:border-primary/50 transition-all shadow-sm"
+                                placeholder={t.search_placeholder[language]}
+                                className="pl-9 h-11 rounded-xl bg-card border-primary/20 focus:border-primary/50 transition-all shadow-inner"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
@@ -130,7 +136,7 @@ export function StorePageClient({
 
                     {/* Empty State */}
                     {filteredProducts.length === 0 && (
-                        <div className="text-center py-24 bg-muted/20 border-2 border-dashed border-primary/10 rounded-[20px] flex flex-col items-center">
+                        <div className="text-center py-24 bg-muted/20 border-2 border-dashed border-primary/10 rounded-[25px] flex flex-col items-center">
                             <Filter className="w-12 h-12 text-primary/20 mb-4" />
                             <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-40">No products match your criteria</p>
                         </div>

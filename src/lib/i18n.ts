@@ -39,6 +39,44 @@ export const t: Record<string, Record<string, string>> = {
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
 
+  // Offline Hub (New Requested Strings)
+  offline_hero_subtitle: { 
+    en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.',
+    bn: 'ডিজিটাল উৎকর্ষ এবং সরাসরি ক্লাসরুম অভিজ্ঞতার এক অনন্য সমন্বয়। সেরা মেন্টরদের তত্ত্বাবধানে নিজেকে গড়ে তুলুন এক এলিট পারফরম্যান্সের জন্য।'
+  },
+  explore_programs: { en: 'Explore Programs', bn: 'প্রোগ্রামগুলো দেখুন' },
+  find_center: { en: 'Find a Center', bn: 'সেন্টার খুঁজুন' },
+  multimedia_classrooms: { en: 'Multimedia Classrooms', bn: 'মাল্টিমিডিয়া ক্লাসরুম' },
+  multimedia_desc: { en: 'Digital smart boards and high-speed connectivity.', bn: 'ডিজিটাল স্মার্ট বোর্ড এবং উচ্চগতির ইন্টারনেট সংযোগ।' },
+  top_educators: { en: 'Top Educators', bn: 'সেরা মেন্টরগণ' },
+  top_educators_desc: { en: "Direct access to the country's elite mentors.", bn: 'দেশের শ্রেষ্ঠ শিক্ষকদের সরাসরি সান্নিধ্য।' },
+  exam_environment: { en: 'Exam Environment', bn: 'পরীক্ষার উপযুক্ত পরিবেশ' },
+  exam_environment_desc: { en: 'Standardized testing conditions for peak performance.', bn: 'সাফল্যের শিখরে পৌঁছাতে আন্তর্জাতিক মানের পরীক্ষার পরিবেশ।' },
+  our_programs_title: { en: 'Our Programs', bn: 'আমাদের প্রোগ্রামসমূহ' },
+  our_programs_subtitle: { en: 'Pick your path to academic excellence in our physical classrooms.', bn: 'আমাদের ফিজিক্যাল ক্লাসরুমে আপনার সফলতার পথটি বেছে নিন।' },
+  offline_hubs_title: { en: 'Our Offline Hubs', bn: 'আমাদের অফলাইন হাবসমূহ' },
+  offline_hubs_subtitle: { en: 'Visit us at any of our state-of-the-art locations across Bangladesh.', bn: 'বাংলাদেশের যেকোনো প্রান্ত থেকে আমাদের অত্যাধুনিক সেন্টারে চলে আসুন।' },
+  have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
+  talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
+
+  // Store & Products
+  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
+  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
+  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
+  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
+  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
+  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
+  add_to_cart: { en: 'Add to Cart', bn: 'কার্টে যোগ করুন' },
+  buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
+  customer_feedback: { en: 'Customer Feedback', bn: 'ক্রেতাদের মতামত' },
+  similar_items: { en: 'Similar Items', bn: 'সদৃশ পণ্য' },
+  back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
+  
+  // Auth & Profile
+  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
+  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
+  connect_contact: { en: 'Contact Us', bn: 'আমাদের সাথে যোগাযোগ করুন' },
+
   // Footer specific
   quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
@@ -68,23 +106,13 @@ export const t: Record<string, Record<string, string>> = {
   teacher_courses: { en: 'Courses by Instructor', bn: 'শিক্ষকের কোর্সসমূহ' },
   free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
   
-  // Store & Products
-  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
-  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
-  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
-  add_to_cart: { en: 'Add to Cart', bn: 'কার্টে যোগ করুন' },
-  buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
-  customer_feedback: { en: 'Customer Feedback', bn: 'ক্রেতাদের মতামত' },
-  similar_items: { en: 'Similar Items', bn: 'সদৃশ পণ্য' },
-  back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
-  
   // About Us Page
   our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
   our_mission: { en: 'Our Mission', bn: 'আমাদের লক্ষ্য' },
   our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
   core_values: { en: 'Core Values', bn: 'মূল লক্ষ্য' },
   visionary_team: { en: 'The Visionary Team', bn: 'আমাদের দক্ষ টিম' },
-  philosophy: { en: 'Our Philosophy', bn: 'আমাদের দর্শন' },
+  philosophy: { en: 'Our Philosophy', bn: 'আমাদের दर्शन' },
 
   // Contact Page
   call_us: { en: 'Call Us', bn: 'কল করুন' },
