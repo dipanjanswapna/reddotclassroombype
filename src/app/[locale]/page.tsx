@@ -96,7 +96,7 @@ export default function Home() {
       }
     }
     fetchData();
-  }, [language]); // Refetch on language change to ensure i18n consistency
+  }, [language]); 
 
   if (loading) return (
     <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen">
