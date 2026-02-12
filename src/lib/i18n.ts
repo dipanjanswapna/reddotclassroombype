@@ -99,7 +99,7 @@ export const t: Record<string, Record<string, string>> = {
   // Forms
   full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },
   email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
-  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
+  mobile_number: { en: 'Mobile Number', bn: 'মোাবাইল নম্বর' },
   class_label: { en: 'Class', bn: 'শ্রেণী' },
   goal_label: { en: 'Your Goal', bn: 'আপনার লক্ষ্য' },
   submit: { en: 'Submit', bn: 'জমা দিন' },

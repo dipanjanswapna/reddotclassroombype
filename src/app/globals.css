@@ -68,9 +68,9 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Bengali Font Utility */
-  .font-bengali {
-    font-family: var(--font-bengali), sans-serif;
+  /* Bengali Font Utility - Optimized */
+  .font-bengali, [lang='bn'] {
+    font-family: var(--font-bengali), sans-serif !important;
   }
 
   .font-headline {
@@ -105,5 +105,19 @@
   
   .glassmorphism-card {
     @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-xl;
+  }
+
+  /* Custom Scrollbar for high-density components */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/40;
   }
 }
