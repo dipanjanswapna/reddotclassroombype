@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from './ui/separator';
-import { Star, Truck, ShieldCheck, ShoppingCart, Minus, Plus, Share2, Heart } from 'lucide-react';
+import { Star, Truck, ShieldCheck, ShoppingCart, Minus, Plus, Share2, Heart, PackageCheck, AlertCircle } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
@@ -19,7 +19,8 @@ interface ProductClientPageProps {
 
 /**
  * @fileOverview Refined Product Client Page.
- * High-density layout with 20px rounding and px-1 wall-to-wall consistency.
+ * Optimized for dynamic stock status and zero-state ratings.
+ * Features 20px rounding and px-1 wall-to-wall consistency.
  */
 export function ProductClientPage({ product }: ProductClientPageProps) {
   const [selectedImage, setSelectedImage] = useState(product.imageUrl);
@@ -27,11 +28,15 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   const { toast } = useToast();
   const { addToCart } = useCart();
 
+  const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+
   const handleQuantityChange = (amount: number) => {
     setQuantity((prev) => Math.max(1, prev + amount));
   };
   
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
+    
     addToCart({
       id: product.id!,
       name: product.name,
@@ -46,7 +51,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   }
 
   const handleShare = () => {
-      if (navigator.share) {
+      if (typeof navigator !== 'undefined' && navigator.share) {
           navigator.share({
               title: product.name,
               url: window.location.href,
@@ -60,9 +65,9 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
   const gallery = [product.imageUrl, ...(product.gallery || [])].slice(0, 4);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start px-1">
       {/* Visual Section: Image Gallery (5/12 cols) */}
-      <div className="lg:col-span-5 space-y-4 px-1">
+      <div className="lg:col-span-5 space-y-4">
         <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -80,9 +85,16 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                   SAVE ৳{(product.oldPrice - product.price).toFixed(0)}
               </Badge>
           )}
+          {isOutOfStock && (
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10">
+                  <Badge variant="destructive" className="px-6 py-2 text-sm font-black uppercase tracking-widest rounded-xl shadow-2xl">
+                      Sold Out
+                  </Badge>
+              </div>
+          )}
         </motion.div>
         
-        <div className="grid grid-cols-4 gap-3 px-1">
+        <div className="grid grid-cols-4 gap-3">
           {gallery.map((img, idx) => (
             <button
               key={idx}
@@ -104,11 +116,17 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
       </div>
 
       {/* Info Section (7/12 cols) */}
-      <div className="lg:col-span-7 space-y-8 px-1">
-        <div className="space-y-4">
+      <div className="lg:col-span-7 space-y-8">
+        <div className="space-y-4 text-left">
             <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 font-black text-[10px] uppercase tracking-widest px-3 py-1">{product.category}</Badge>
                 {product.subCategory && <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-widest px-3 py-1">{product.subCategory}</Badge>}
+                <Badge className={cn(
+                    "font-black text-[10px] uppercase tracking-widest px-3 py-1 border-none shadow-sm",
+                    isOutOfStock ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
+                )}>
+                    {isOutOfStock ? 'Sold Out' : 'In Stock'}
+                </Badge>
             </div>
             
             <h1 className="font-headline text-2xl md:text-4xl font-black tracking-tight leading-tight uppercase text-foreground">
@@ -116,19 +134,19 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             </h1>
 
             <div className="flex items-center gap-4">
-                <div className="flex items-center bg-yellow-400/10 px-2 py-1 rounded-lg border border-yellow-400/20">
+                <div className="flex items-center bg-yellow-400/10 px-2.5 py-1 rounded-lg border border-yellow-400/20">
                     <Star className="w-4 h-4 text-yellow-500 fill-current mr-1.5" />
-                    <span className="text-sm font-black text-yellow-700">{product.ratings || '4.9'}</span>
+                    <span className="text-sm font-black text-yellow-700">{product.ratings || '0'} Star</span>
                 </div>
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest border-l border-black/10 pl-4">
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] border-l border-black/10 pl-4">
                     {product.reviewsCount || 0} Verified Reviews
                 </span>
             </div>
         </div>
 
         <div className="flex items-end gap-4 bg-muted/30 p-6 rounded-[20px] border border-primary/5">
-            <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Current Price</p>
+            <div className="space-y-1 text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Premium Price</p>
                 <div className="flex items-baseline gap-3">
                     <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">৳{product.price}</span>
                     {product.oldPrice && (
@@ -136,7 +154,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                     )}
                 </div>
             </div>
-            {product.stock && product.stock < 10 && product.stock > 0 && (
+            {!isOutOfStock && product.stock !== undefined && product.stock < 10 && (
                 <Badge variant="destructive" className="mb-2 rounded-lg font-black text-[9px] uppercase tracking-widest animate-pulse">
                     Only {product.stock} Left!
                 </Badge>
@@ -149,7 +167,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                     variant="ghost" 
                     size="icon" 
                     onClick={() => handleQuantityChange(-1)} 
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || isOutOfStock}
                     className="h-10 w-10 rounded-xl hover:bg-white dark:hover:bg-black transition-all"
                 >
                     <Minus className="h-4 w-4"/>
@@ -159,6 +177,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                     variant="ghost" 
                     size="icon" 
                     onClick={() => handleQuantityChange(1)}
+                    disabled={isOutOfStock}
                     className="h-10 w-10 rounded-xl hover:bg-white dark:hover:bg-black transition-all"
                 >
                     <Plus className="h-4 w-4"/>
@@ -167,12 +186,18 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             
             <Button 
                 size="lg" 
-                className="flex-grow h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 text-sm active:scale-95 transition-all" 
+                className={cn(
+                    "flex-grow h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl text-sm active:scale-95 transition-all",
+                    isOutOfStock ? "bg-muted text-muted-foreground cursor-not-allowed shadow-none" : "shadow-primary/30"
+                )} 
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={isOutOfStock}
             >
-                <ShoppingCart className="mr-2 h-5 w-5"/>
-                {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {isOutOfStock ? (
+                    <><AlertCircle className="mr-2 h-5 w-5"/> Sold Out</>
+                ) : (
+                    <><ShoppingCart className="mr-2 h-5 w-5"/> Add to Cart</>
+                )}
             </Button>
 
             <div className="flex gap-2">
@@ -191,7 +216,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                     <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-600 group-hover:scale-110 transition-transform">
                         <Truck className="h-6 w-6" />
                     </div>
-                    <div>
+                    <div className="text-left">
                         <p className="font-black text-[10px] uppercase tracking-widest text-foreground leading-none">Fast Delivery</p>
                         <p className="text-[11px] font-medium text-muted-foreground mt-1">Inside Dhaka: 3 Days</p>
                     </div>
@@ -202,7 +227,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                     <div className="p-3 rounded-2xl bg-green-500/10 text-green-600 group-hover:scale-110 transition-transform">
                         <ShieldCheck className="h-6 w-6" />
                     </div>
-                    <div>
+                    <div className="text-left">
                         <p className="font-black text-[10px] uppercase tracking-widest text-foreground leading-none">Secure Pay</p>
                         <p className="text-[11px] font-medium text-muted-foreground mt-1">100% SSL Certified</p>
                     </div>
@@ -210,7 +235,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
             </Card>
         </div>
 
-        <div className="pt-4 border-t border-black/5">
+        <div className="pt-4 border-t border-black/5 text-left">
             <h3 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground mb-4 ml-1">Product Details</h3>
             <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground font-medium leading-relaxed bg-muted/20 p-6 rounded-[20px] border border-primary/5">
                 {product.description || "No detailed description available for this item."}
