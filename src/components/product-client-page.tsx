@@ -1,17 +1,19 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from './ui/separator';
-import { Star, Truck, ShieldCheck, ShoppingCart, Minus, Plus, Share2, Heart, PackageCheck, AlertCircle } from 'lucide-react';
+import { Star, Truck, ShieldCheck, ShoppingCart, Minus, Plus, Share2, Heart, PackageCheck, AlertCircle, Calendar } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
 import { useCart } from '@/context/cart-context';
 import { motion, AnimatePresence } from 'framer-motion';
+import { addDays, format } from 'date-fns';
 
 interface ProductClientPageProps {
   product: Product;
@@ -19,8 +21,7 @@ interface ProductClientPageProps {
 
 /**
  * @fileOverview Refined Product Client Page.
- * Optimized for dynamic stock status and zero-state ratings.
- * Features 20px rounding and px-1 wall-to-wall consistency.
+ * Implements dynamic delivery dates and premium UI refinement.
  */
 export function ProductClientPage({ product }: ProductClientPageProps) {
   const [selectedImage, setSelectedImage] = useState(product.imageUrl);
@@ -49,6 +50,14 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
         description: `${quantity} x ${product.name} has been added to your cart.`,
     });
   }
+
+  const deliveryDates = useMemo(() => {
+      const today = new Date();
+      return {
+          inside: format(addDays(today, 3), 'dd MMM yyyy'),
+          outside: format(addDays(today, 7), 'dd MMM yyyy')
+      };
+  }, []);
 
   const handleShare = () => {
       if (typeof navigator !== 'undefined' && navigator.share) {
@@ -217,8 +226,10 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
                         <Truck className="h-6 w-6" />
                     </div>
                     <div className="text-left">
-                        <p className="font-black text-[10px] uppercase tracking-widest text-foreground leading-none">Fast Delivery</p>
-                        <p className="text-[11px] font-medium text-muted-foreground mt-1">Inside Dhaka: 3 Days</p>
+                        <p className="font-black text-[10px] uppercase tracking-widest text-foreground leading-none">Estimated Arrival</p>
+                        <p className="text-[11px] font-bold text-primary mt-1 flex items-center gap-1.5">
+                            <Calendar className="w-3 h-3" /> {deliveryDates.inside} (Dhaka)
+                        </p>
                     </div>
                 </CardContent>
             </Card>
