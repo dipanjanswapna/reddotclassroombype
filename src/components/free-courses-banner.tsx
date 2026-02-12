@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -54,11 +55,11 @@ export function FreeCoursesBanner({ bannerConfig }: FreeCoursesBannerProps) {
                 </motion.div>
 
                 <h2 className="text-lg md:text-xl lg:text-2xl font-black font-headline tracking-tighter uppercase drop-shadow-lg">
-                    RDC <span className="text-primary">SHOP</span>
+                    RED DOT CLASSROOM <span className="text-primary">(RDC)</span>
                 </h2>
                 
                 <p className="text-[9px] md:text-[11px] lg:text-xs text-gray-300 font-medium leading-relaxed max-w-sm md:max-w-md mx-auto drop-shadow-md font-bengali">
-                    আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
+                    আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC-তে। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
                 </p>
                 
                 <motion.div 

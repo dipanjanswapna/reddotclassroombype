@@ -807,7 +807,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
   logoUrl: "",
   welcomeSection: {
     display: true,
-    title: { bn: "RDC শপ", en: "RDC SHOP" },
+    title: { bn: "RED DOT CLASSROOM (RDC)", en: "RED DOT CLASSROOM (RDC)" },
     description: { 
       bn: "আমাদের প্ল্যাটফর্মে তোমাদের পড়াশোনাকে আরও আধুনিক এবং সহজ করার জন্য আমরা সর্বদা সচেষ্ট।",
       en: "We are always striving to make your studies more modern and easier on our platform."

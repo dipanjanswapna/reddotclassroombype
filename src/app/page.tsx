@@ -148,7 +148,7 @@ export default function Home() {
                         className="flex flex-col items-center gap-2 md:gap-4"
                      >
                         <h1 className="font-black text-2xl md:text-4xl tracking-tighter text-foreground uppercase">
-                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
+                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM (RDC)"}
                         </h1>
                         <div className="w-full max-w-2xl mx-auto">
                             <TypingText 

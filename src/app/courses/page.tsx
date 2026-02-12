@@ -1,3 +1,4 @@
+
 import { getCourses, getOrganizations, getHomepageConfig, getInstructors } from '@/lib/firebase/firestore';
 import type { Metadata } from 'next';
 import { CoursesPageClient } from '@/components/courses-page-client';
@@ -81,7 +82,7 @@ export default async function CoursesPage({
                         <TypingText text="Premium Learning Resources" className="inline" />
                     </div>
                     <h1 className="font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-tight font-headline">
-                        RDC <span className="text-primary">SHOP</span>
+                        RED DOT CLASSROOM <span className="text-primary">(RDC)</span>
                     </h1>
                     <div className="min-h-[2.5rem]">
                         <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-2">
