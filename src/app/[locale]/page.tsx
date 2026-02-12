@@ -33,7 +33,8 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 
 /**
  * @fileOverview Localized Homepage
- * Fixed 'cn' and 'LoadingSpinner' issues. Applied global Hind Siliguri font.
+ * Implements Hind Siliguri font and premium colourful UI.
+ * Consistent 20px corners and px-1 wall-to-wall design.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();

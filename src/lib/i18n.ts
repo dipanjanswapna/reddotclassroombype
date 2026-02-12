@@ -35,7 +35,7 @@ export const t: Record<string, Record<string, string>> = {
   our_mentors: { en: 'Our Elite Faculty', bn: 'আমাদের অভিজ্ঞ শিক্ষক মণ্ডলী' },
   why_trust_rdc: { en: 'Why Choose RDC?', bn: 'কেন আমরাই সেরা?' },
   stats_heading: { en: 'RDC Journey in Numbers', bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা' },
-  callback_title: { en: 'Request a callback', bn: 'কলব্যাকের অনুরোধ করুন' },
+  callback_title: { en: 'Request a callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
 
@@ -64,6 +64,9 @@ export const t: Record<string, Record<string, string>> = {
   prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
   demo_class: { en: 'Watch Demo', bn: 'ডেমো ক্লাস' },
   includes_heading: { en: 'This course includes', bn: 'এই কোর্সে যা যা থাকছে' },
+  teacher_bio: { en: 'Teacher Biography', bn: 'শিক্ষকের জীবনী' },
+  teacher_courses: { en: 'Courses by Instructor', bn: 'শিক্ষকের কোর্সসমূহ' },
+  free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
   
   // Store & Products
   store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
@@ -137,6 +140,6 @@ export const t: Record<string, Record<string, string>> = {
 
   // Roles
   student: { en: 'Student', bn: 'শিক্ষার্থী' },
-  guardian: { en: 'Guardian', bn: 'অভিভাগ' },
+  guardian: { en: 'Guardian', bn: 'অভিভাবক' },
   registering_as: { en: 'Registering as', bn: 'নিবন্ধন করছেন' },
 };
