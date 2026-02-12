@@ -53,8 +53,8 @@ interface ProductManagerProps {
 
 /**
  * @fileOverview Refined Admin Store Product Manager.
+ * Fully responsive Edit Product dialog fix.
  * Optimized for high-density wall-to-wall UI with 20px corners.
- * Features an ultra-responsive 2-column dialog that adapts to all devices.
  */
 export function ProductManager({ initialProducts, sellers, categories }: ProductManagerProps) {
     const { toast } = useToast();
@@ -238,7 +238,7 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
 
             {/* Ultra Responsive Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-[95vw] md:max-w-4xl rounded-[25px] border-primary/20 shadow-2xl p-0 overflow-hidden outline-none bg-background">
+                <DialogContent className="max-w-[95vw] md:max-w-4xl h-[95vh] md:h-auto max-h-[95vh] rounded-[25px] border-primary/20 shadow-2xl p-0 overflow-hidden outline-none bg-background flex flex-col">
                     {/* Fixed Header */}
                     <DialogHeader className="bg-primary/5 p-5 md:p-6 border-b border-primary/10 shrink-0">
                         <div className="flex items-center gap-4">
@@ -255,109 +255,111 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                     </DialogHeader>
 
                     {editingProduct && (
-                        <div className="flex flex-col lg:grid lg:grid-cols-12 max-h-[70svh] overflow-y-auto custom-scrollbar">
-                            {/* Left Column: Visuals & Core (Stacked on Mobile) */}
-                            <div className="lg:col-span-4 bg-muted/20 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-primary/5 space-y-8">
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-1 block text-left">Identity Visual</Label>
-                                    <div className="aspect-square relative rounded-[20px] overflow-hidden border-4 border-white shadow-xl bg-white group mx-auto max-w-[240px] lg:max-w-full">
-                                        <Image src={editingProduct.imageUrl || 'https://placehold.co/600x600.png'} alt="Preview" fill className="object-contain p-4"/>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            <div className="flex flex-col lg:grid lg:grid-cols-12">
+                                {/* Left Column: Visuals & Core (Stacked on Mobile) */}
+                                <div className="lg:col-span-4 bg-muted/20 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-primary/5 space-y-8">
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-1 block text-left">Identity Visual</Label>
+                                        <div className="aspect-square relative rounded-[20px] overflow-hidden border-4 border-white shadow-xl bg-white group mx-auto max-w-[240px] lg:max-w-full">
+                                            <Image src={editingProduct.imageUrl || 'https://placehold.co/600x600.png'} alt="Preview" fill className="object-contain p-4"/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black uppercase tracking-widest opacity-60 text-left block">Image URL</Label>
+                                            <Input 
+                                                value={editingProduct.imageUrl || ''} 
+                                                onChange={e => updateField('imageUrl', e.target.value)} 
+                                                className="rounded-xl h-10 text-[11px] font-mono"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-60 text-left block">Image URL</Label>
+
+                                    <div className="p-5 rounded-[20px] bg-white border border-primary/10 space-y-5">
+                                        <div className="flex items-center justify-between">
+                                            <Label className="font-black text-[10px] uppercase tracking-widest text-foreground">Live Visibility</Label>
+                                            <Switch checked={editingProduct.isPublished} onCheckedChange={(val) => updateField('isPublished', val)} />
+                                        </div>
+                                        <Separator className="bg-primary/5" />
+                                        <div className="space-y-2">
+                                            <Label className="font-black text-[10px] uppercase tracking-widest text-foreground text-left block">Seller Origin</Label>
+                                            <Select value={editingProduct.sellerId || 'rdc'} onValueChange={(v) => updateField('sellerId', v === 'rdc' ? undefined : v)}>
+                                                <SelectTrigger className="rounded-xl h-10 border-primary/5 bg-muted/20 font-bold text-[11px] uppercase"><SelectValue /></SelectTrigger>
+                                                <SelectContent className="rounded-xl border-white/10">
+                                                    <SelectItem value="rdc" className="font-bold text-xs uppercase">RDC Originals</SelectItem>
+                                                    {sellers.map(s => <SelectItem key={s.id} value={s.id!} className="font-bold text-xs uppercase">{s.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Column: Content & Inventory (Stacked on Mobile) */}
+                                <div className="lg:col-span-8 p-6 md:p-8 space-y-8 bg-card">
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Name</Label>
                                         <Input 
-                                            value={editingProduct.imageUrl || ''} 
-                                            onChange={e => updateField('imageUrl', e.target.value)} 
-                                            className="rounded-xl h-10 text-[11px] font-mono"
+                                            placeholder="e.g., Higher Math Guide" 
+                                            value={editingProduct.name || ''} 
+                                            onChange={e => updateField('name', e.target.value)} 
+                                            className="rounded-xl h-12 md:h-14 text-base md:text-lg font-black uppercase border-primary/10 focus:border-primary shadow-sm"
                                         />
                                     </div>
-                                </div>
 
-                                <div className="p-5 rounded-[20px] bg-white border border-primary/10 space-y-5">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="font-black text-[10px] uppercase tracking-widest text-foreground">Live Visibility</Label>
-                                        <Switch checked={editingProduct.isPublished} onCheckedChange={(val) => updateField('isPublished', val)} />
-                                    </div>
-                                    <Separator className="bg-primary/5" />
-                                    <div className="space-y-2">
-                                        <Label className="font-black text-[10px] uppercase tracking-widest text-foreground text-left block">Seller Origin</Label>
-                                        <Select value={editingProduct.sellerId || 'rdc'} onValueChange={(v) => updateField('sellerId', v === 'rdc' ? undefined : v)}>
-                                            <SelectTrigger className="rounded-xl h-10 border-primary/5 bg-muted/20 font-bold text-[11px] uppercase"><SelectValue /></SelectTrigger>
-                                            <SelectContent className="rounded-xl border-white/10">
-                                                <SelectItem value="rdc" className="font-bold text-xs uppercase">RDC Originals</SelectItem>
-                                                {sellers.map(s => <SelectItem key={s.id} value={s.id!} className="font-bold text-xs uppercase">{s.name}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Right Column: Content & Inventory (Stacked on Mobile) */}
-                            <div className="lg:col-span-8 p-6 md:p-8 space-y-8 bg-card">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Name</Label>
-                                    <Input 
-                                        placeholder="e.g., Higher Math Guide" 
-                                        value={editingProduct.name || ''} 
-                                        onChange={e => updateField('name', e.target.value)} 
-                                        className="rounded-xl h-12 md:h-14 text-base md:text-lg font-black uppercase border-primary/10 focus:border-primary shadow-sm"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Primary Category</Label>
-                                        <Select value={editingProduct.category} onValueChange={(v) => updateField('category', v)}>
-                                            <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase"><SelectValue /></SelectTrigger>
-                                            <SelectContent className="rounded-xl border-white/10">
-                                                {categories.map(cat => <SelectItem key={cat.id} value={cat.name} className="font-black text-xs uppercase">{cat.name}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Sub-Category</Label>
-                                        <Select 
-                                            value={editingProduct.subCategory} 
-                                            onValueChange={(v) => updateField('subCategory', v)}
-                                            disabled={availableSubCategories.length === 0}
-                                        >
-                                            <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase disabled:opacity-40"><SelectValue placeholder="No sub-category"/></SelectTrigger>
-                                            <SelectContent className="rounded-xl border-white/10">
-                                                {availableSubCategories.map(sub => <SelectItem key={sub.name} value={sub.name} className="font-black text-xs uppercase">{sub.name}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-
-                                <div className="p-5 md:p-6 rounded-[20px] bg-[#eef2ed] dark:bg-black/20 border border-primary/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-primary text-left block">Price (BDT)</Label>
-                                        <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-primary">৳</span>
-                                            <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-black text-lg border-primary/10 bg-white" />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="space-y-3">
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Primary Category</Label>
+                                            <Select value={editingProduct.category} onValueChange={(v) => updateField('category', v)}>
+                                                <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase"><SelectValue /></SelectTrigger>
+                                                <SelectContent className="rounded-xl border-white/10">
+                                                    {categories.map(cat => <SelectItem key={cat.id} value={cat.name} className="font-black text-xs uppercase">{cat.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Sub-Category</Label>
+                                            <Select 
+                                                value={editingProduct.subCategory} 
+                                                onValueChange={(v) => updateField('subCategory', v)}
+                                                disabled={availableSubCategories.length === 0}
+                                            >
+                                                <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase disabled:opacity-40"><SelectValue placeholder="No sub-category"/></SelectTrigger>
+                                                <SelectContent className="rounded-xl border-white/10">
+                                                    {availableSubCategories.map(sub => <SelectItem key={sub.name} value={sub.name} className="font-black text-xs uppercase">{sub.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Old Price</Label>
-                                        <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-muted-foreground opacity-60">৳</span>
-                                            <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-bold text-muted-foreground bg-white/50 border-primary/5" />
+
+                                    <div className="p-5 md:p-6 rounded-[20px] bg-[#eef2ed] dark:bg-black/20 border border-primary/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black uppercase tracking-widest text-primary text-left block">Price (BDT)</Label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-primary">৳</span>
+                                                <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-black text-lg border-primary/10 bg-white" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Old Price</Label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-muted-foreground opacity-60">৳</span>
+                                                <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-bold text-muted-foreground bg-white/50 border-primary/5" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Stock Units</Label>
+                                            <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} className="rounded-xl h-11 font-black text-center border-primary/10 bg-white" />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Stock Units</Label>
-                                        <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} className="rounded-xl h-11 font-black text-center border-primary/10 bg-white" />
-                                    </div>
-                                </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Description</Label>
-                                    <Textarea 
-                                        value={editingProduct.description || ''} 
-                                        onChange={e => updateField('description', e.target.value)} 
-                                        rows={6} 
-                                        className="rounded-[20px] border-primary/10 bg-muted/5 text-sm font-medium leading-relaxed resize-none p-5 focus:border-primary shadow-inner" 
-                                    />
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Description</Label>
+                                        <Textarea 
+                                            value={editingProduct.description || ''} 
+                                            onChange={e => updateField('description', e.target.value)} 
+                                            rows={6} 
+                                            className="rounded-[20px] border-primary/10 bg-muted/5 text-sm font-medium leading-relaxed resize-none p-5 focus:border-primary shadow-inner" 
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
