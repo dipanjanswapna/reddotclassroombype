@@ -249,7 +249,7 @@ export function ProductClientPage({ product }: ProductClientPageProps) {
 
         <div className="pt-4 border-t border-black/5 text-left">
             <h3 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground mb-4 ml-1">Product Details</h3>
-            <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground font-medium leading-relaxed bg-muted/20 p-6 rounded-[20px] border border-primary/5">
+            <div className="prose prose-sm dark:prose-invert max-none text-muted-foreground font-medium leading-relaxed bg-muted/20 p-6 rounded-[20px] border border-primary/5">
                 {product.description || "No detailed description available for this item."}
             </div>
         </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -176,7 +177,7 @@ export default function DashboardPage() {
                 <Card className="flex items-center gap-3 px-4 py-2 rounded-[20px] bg-amber-50 border-amber-200 shadow-sm border-2">
                     <Trophy className="w-5 h-5 text-amber-600" />
                     <div className="flex flex-col">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-700/60">Points</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-700/60">Points</span>
                         <span className="font-black text-lg text-amber-700 leading-none">{userInfo?.referralPoints || 0}</span>
                     </div>
                 </Card>
@@ -394,9 +395,11 @@ export default function DashboardPage() {
 
                 <Card className="rounded-[20px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
                     <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
-                        <div className="flex items-center gap-2">
-                            <Bell className="w-5 h-5 text-accent" />
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">নোটিশ বোর্ড</CardTitle>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Bell className="w-5 h-5 text-accent" />
+                                <CardTitle className="text-sm font-black uppercase tracking-tight">নোটিশ বোর্ড</CardTitle>
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent className="p-5">
