@@ -53,8 +53,8 @@ interface ProductManagerProps {
 
 /**
  * @fileOverview Refined Admin Store Product Manager.
- * Optimized for high-density wall-to-wall UI with 20px corners and sky blue card theme.
- * Implements 5-column desktop grid capability and dynamic category filtering.
+ * Optimized for high-density wall-to-wall UI with 20px corners.
+ * Features an ultra-responsive 2-column dialog that adapts to all devices.
  */
 export function ProductManager({ initialProducts, sellers, categories }: ProductManagerProps) {
     const { toast } = useToast();
@@ -141,18 +141,18 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                         <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     </div>
                     <Input 
-                        placeholder="Search by name, SKU or category..." 
+                        placeholder="Search products..." 
                         className="pl-9 h-11 rounded-xl bg-white dark:bg-background border-primary/10 focus:border-primary transition-all shadow-inner" 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <Button onClick={() => handleOpenDialog(null)} className="w-full md:w-auto h-11 rounded-xl font-black uppercase tracking-widest text-[10px] px-8 shadow-xl shadow-primary/20 active:scale-95 transition-all">
-                    <PlusCircle className="mr-2 h-4 w-4"/> Register New Product
+                    <PlusCircle className="mr-2 h-4 w-4"/> Add New Product
                 </Button>
             </div>
 
-            {/* High Density Table */}
+            {/* Catalog Grid */}
             <Card className="rounded-[20px] border-primary/10 shadow-2xl overflow-hidden bg-card">
                 <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                     <div className="flex items-center gap-3">
@@ -202,12 +202,9 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <span className={cn("font-black text-sm", (product.stock || 0) < 10 ? "text-orange-600" : "text-foreground")}>
-                                                    {product.stock ?? 'N/A'}
-                                                </span>
-                                                {(product.stock || 0) < 10 && <span className="flex h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />}
-                                            </div>
+                                            <span className={cn("font-black text-sm", (product.stock || 0) < 10 ? "text-orange-600" : "text-foreground")}>
+                                                {product.stock ?? 'N/A'}
+                                            </span>
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant={product.isPublished ? "accent" : "secondary"} className="font-black text-[9px] uppercase tracking-widest px-3 h-5 border-none shadow-sm">
@@ -233,81 +230,60 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {filteredProducts.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="h-40 text-center">
-                                            <div className="flex flex-col items-center justify-center opacity-30">
-                                                <Package className="w-12 h-12 mb-2" />
-                                                <p className="text-[10px] font-black uppercase tracking-widest">No products found matching search</p>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
                             </TableBody>
                         </Table>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Premium 2-Column Dialog */}
+            {/* Ultra Responsive Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-4xl rounded-[25px] border-primary/20 shadow-2xl p-0 overflow-hidden outline-none">
-                    <DialogHeader className="bg-primary/5 p-6 border-b border-primary/10">
+                <DialogContent className="max-w-[95vw] md:max-w-4xl rounded-[25px] border-primary/20 shadow-2xl p-0 overflow-hidden outline-none bg-background">
+                    {/* Fixed Header */}
+                    <DialogHeader className="bg-primary/5 p-5 md:p-6 border-b border-primary/10 shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="bg-primary p-3 rounded-2xl shadow-lg text-white">
-                                <PlusCircle className="w-6 h-6" />
+                            <div className="bg-primary p-2.5 md:p-3 rounded-2xl shadow-lg text-white">
+                                <Edit className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div>
-                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">
-                                    {editingProduct?.id ? 'Dynamic Product Editor' : 'Register New Item'}
+                                <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">
+                                    {editingProduct?.id ? 'Product Editor' : 'Register New Item'}
                                 </DialogTitle>
-                                <DialogDescription className="font-medium text-[10px] uppercase tracking-[0.2em] opacity-60">Master Database Synchronization</DialogDescription>
+                                <DialogDescription className="font-medium text-[9px] md:text-[10px] uppercase tracking-[0.2em] opacity-60">Synchronizing with RDC Store DB</DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
+
                     {editingProduct && (
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-background">
-                            {/* Side Panel: Media & Visibility (4/12) */}
-                            <div className="lg:col-span-4 bg-muted/20 p-8 border-r border-primary/5 space-y-8 overflow-y-auto max-h-[65vh] custom-scrollbar">
+                        <div className="flex flex-col lg:grid lg:grid-cols-12 max-h-[70svh] overflow-y-auto custom-scrollbar">
+                            {/* Left Column: Visuals & Core (Stacked on Mobile) */}
+                            <div className="lg:col-span-4 bg-muted/20 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-primary/5 space-y-8">
                                 <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-1">Product Identity Visual</Label>
-                                    <div className="aspect-square relative rounded-[25px] overflow-hidden border-4 border-white shadow-2xl bg-white group flex items-center justify-center">
-                                        {editingProduct.imageUrl ? (
-                                            <Image src={editingProduct.imageUrl} alt="Preview" fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"/>
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center text-muted-foreground/30">
-                                                <ImageIcon className="w-16 h-16 mb-2" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Awaiting Image URL</span>
-                                            </div>
-                                        )}
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-1 block text-left">Identity Visual</Label>
+                                    <div className="aspect-square relative rounded-[20px] overflow-hidden border-4 border-white shadow-xl bg-white group mx-auto max-w-[240px] lg:max-w-full">
+                                        <Image src={editingProduct.imageUrl || 'https://placehold.co/600x600.png'} alt="Preview" fill className="object-contain p-4"/>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-60">Image Repository URL</Label>
+                                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-60 text-left block">Image URL</Label>
                                         <Input 
-                                            placeholder="https://..." 
                                             value={editingProduct.imageUrl || ''} 
                                             onChange={e => updateField('imageUrl', e.target.value)} 
-                                            className="rounded-xl h-11 bg-white border-primary/10 text-[11px] font-mono shadow-inner"
+                                            className="rounded-xl h-10 text-[11px] font-mono"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="p-6 rounded-[25px] bg-white border border-primary/10 shadow-sm space-y-6">
+                                <div className="p-5 rounded-[20px] bg-white border border-primary/10 space-y-5">
                                     <div className="flex items-center justify-between">
-                                        <div className="space-y-0.5">
-                                            <Label className="font-black text-[11px] uppercase tracking-widest text-foreground leading-none">Live Visibility</Label>
-                                            <p className="text-[9px] text-muted-foreground font-medium mt-1">Publish to storefront</p>
-                                        </div>
+                                        <Label className="font-black text-[10px] uppercase tracking-widest text-foreground">Live Visibility</Label>
                                         <Switch checked={editingProduct.isPublished} onCheckedChange={(val) => updateField('isPublished', val)} />
                                     </div>
                                     <Separator className="bg-primary/5" />
-                                    <div className="space-y-3">
-                                        <Label className="font-black text-[11px] uppercase tracking-widest text-foreground">Assigned Seller</Label>
+                                    <div className="space-y-2">
+                                        <Label className="font-black text-[10px] uppercase tracking-widest text-foreground text-left block">Seller Origin</Label>
                                         <Select value={editingProduct.sellerId || 'rdc'} onValueChange={(v) => updateField('sellerId', v === 'rdc' ? undefined : v)}>
-                                            <SelectTrigger className="rounded-xl h-11 border-primary/5 bg-muted/30 font-bold text-xs uppercase shadow-none">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-xl border-white/10 shadow-2xl">
+                                            <SelectTrigger className="rounded-xl h-10 border-primary/5 bg-muted/20 font-bold text-[11px] uppercase"><SelectValue /></SelectTrigger>
+                                            <SelectContent className="rounded-xl border-white/10">
                                                 <SelectItem value="rdc" className="font-bold text-xs uppercase">RDC Originals</SelectItem>
                                                 {sellers.map(s => <SelectItem key={s.id} value={s.id!} className="font-bold text-xs uppercase">{s.name}</SelectItem>)}
                                             </SelectContent>
@@ -316,15 +292,15 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                 </div>
                             </div>
 
-                            {/* Main Content: Attributes & Details (8/12) */}
-                            <div className="lg:col-span-8 p-8 space-y-8 overflow-y-auto max-h-[65vh] custom-scrollbar bg-card">
+                            {/* Right Column: Content & Inventory (Stacked on Mobile) */}
+                            <div className="lg:col-span-8 p-6 md:p-8 space-y-8 bg-card">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Product Designation</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Name</Label>
                                     <Input 
-                                        placeholder="e.g., Higher Math Guide 2025 Edition" 
+                                        placeholder="e.g., Higher Math Guide" 
                                         value={editingProduct.name || ''} 
                                         onChange={e => updateField('name', e.target.value)} 
-                                        className="rounded-xl h-14 text-lg md:text-xl font-black uppercase tracking-tight border-primary/10 focus:border-primary shadow-sm"
+                                        className="rounded-xl h-12 md:h-14 text-base md:text-lg font-black uppercase border-primary/10 focus:border-primary shadow-sm"
                                     />
                                 </div>
 
@@ -332,20 +308,20 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                     <div className="space-y-3">
                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Primary Category</Label>
                                         <Select value={editingProduct.category} onValueChange={(v) => updateField('category', v)}>
-                                            <SelectTrigger className="rounded-xl h-12 border-primary/10 bg-muted/10 font-black text-xs uppercase tracking-widest"><SelectValue /></SelectTrigger>
+                                            <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase"><SelectValue /></SelectTrigger>
                                             <SelectContent className="rounded-xl border-white/10">
                                                 {categories.map(cat => <SelectItem key={cat.id} value={cat.name} className="font-black text-xs uppercase">{cat.name}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Sub-Category Link</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Sub-Category</Label>
                                         <Select 
                                             value={editingProduct.subCategory} 
                                             onValueChange={(v) => updateField('subCategory', v)}
                                             disabled={availableSubCategories.length === 0}
                                         >
-                                            <SelectTrigger className="rounded-xl h-12 border-primary/10 bg-muted/10 font-black text-xs uppercase tracking-widest disabled:opacity-40"><SelectValue placeholder="No sub-category available"/></SelectTrigger>
+                                            <SelectTrigger className="rounded-xl h-11 border-primary/10 bg-muted/10 font-black text-xs uppercase disabled:opacity-40"><SelectValue placeholder="No sub-category"/></SelectTrigger>
                                             <SelectContent className="rounded-xl border-white/10">
                                                 {availableSubCategories.map(sub => <SelectItem key={sub.name} value={sub.name} className="font-black text-xs uppercase">{sub.name}</SelectItem>)}
                                             </SelectContent>
@@ -353,68 +329,69 @@ export function ProductManager({ initialProducts, sellers, categories }: Product
                                     </div>
                                 </div>
 
-                                <div className="p-6 rounded-[25px] bg-[#eef2ed] dark:bg-black/20 border border-primary/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div className="p-5 md:p-6 rounded-[20px] bg-[#eef2ed] dark:bg-black/20 border border-primary/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-primary text-left block">Selling Price (BDT)</Label>
+                                        <Label className="text-[9px] font-black uppercase tracking-widest text-primary text-left block">Price (BDT)</Label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-primary">৳</span>
-                                            <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} className="pl-7 rounded-xl h-12 font-black text-xl border-primary/10 bg-white" />
+                                            <Input type="number" value={editingProduct.price || 0} onChange={e => updateField('price', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-black text-lg border-primary/10 bg-white" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Original Price</Label>
+                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Old Price</Label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-muted-foreground opacity-60">৳</span>
-                                            <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} className="pl-7 rounded-xl h-12 font-bold text-muted-foreground bg-white/50 border-primary/5" />
+                                            <Input type="number" value={editingProduct.oldPrice || ''} onChange={e => updateField('oldPrice', Number(e.target.value))} className="pl-7 rounded-xl h-11 font-bold text-muted-foreground bg-white/50 border-primary/5" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Units in Stock</Label>
-                                        <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} className="rounded-xl h-12 font-black text-center border-primary/10 bg-white" />
+                                        <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left block">Stock Units</Label>
+                                        <Input type="number" value={editingProduct.stock || 0} onChange={e => updateField('stock', Number(e.target.value))} className="rounded-xl h-11 font-black text-center border-primary/10 bg-white" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Detailed Description</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 text-left block">Product Description</Label>
                                     <Textarea 
                                         value={editingProduct.description || ''} 
                                         onChange={e => updateField('description', e.target.value)} 
-                                        rows={8} 
-                                        className="rounded-[25px] border-primary/10 bg-muted/5 text-sm font-medium leading-relaxed resize-none p-6 focus:border-primary shadow-inner" 
-                                        placeholder="Add key features, specifications, or author information here..."
+                                        rows={6} 
+                                        className="rounded-[20px] border-primary/10 bg-muted/5 text-sm font-medium leading-relaxed resize-none p-5 focus:border-primary shadow-inner" 
                                     />
                                 </div>
                             </div>
                         </div>
                     )}
-                    <DialogFooter className="bg-primary/5 p-6 border-t border-primary/10 flex justify-between items-center">
-                        <DialogClose asChild><Button variant="ghost" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8">Discard</Button></DialogClose>
-                        <Button onClick={handleSave} disabled={isSaving} className="rounded-xl font-black uppercase tracking-widest text-[10px] h-12 px-12 shadow-xl shadow-primary/30 active:scale-95 transition-all">
+
+                    {/* Fixed Footer */}
+                    <DialogFooter className="bg-primary/5 p-5 md:p-6 border-t border-primary/10 flex flex-row justify-between items-center gap-3 shrink-0">
+                        <DialogClose asChild><Button variant="ghost" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-11">Discard</Button></DialogClose>
+                        <Button onClick={handleSave} disabled={isSaving} className="rounded-xl font-black uppercase tracking-widest text-[10px] h-11 px-8 md:px-12 shadow-xl shadow-primary/30 active:scale-95 transition-all">
                             {isSaving ? <Loader2 className="animate-spin h-4 w-4 mr-2"/> : <Check className="h-4 w-4 mr-2"/>}
-                            {editingProduct?.id ? 'Commit Changes' : 'Register Product'}
+                            Commit Database
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Deletion Dialog */}
+            {/* Deletion Confirm */}
             <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
-                <AlertDialogContent className="rounded-[30px] border-none shadow-2xl p-8">
+                <AlertDialogContent className="rounded-[25px] border-none shadow-2xl p-8">
                     <AlertDialogHeader className="space-y-4 text-center">
                         <div className="h-16 w-16 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto shadow-inner">
                             <Trash2 className="w-8 h-8" />
                         </div>
                         <div className="space-y-2">
-                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Confirm Deletion?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-base font-medium text-muted-foreground leading-relaxed">
-                                You are about to remove <strong>{productToDelete?.name}</strong> from the system. This action is irreversible and will affect live listings.
+                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Erase Product?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium text-muted-foreground leading-relaxed">
+                                This action is permanent. <strong>{productToDelete?.name}</strong> will be removed from all active storefronts.
                             </AlertDialogDescription>
                         </div>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="flex-col sm:flex-row gap-3 pt-6 mt-4 border-t border-primary/5">
-                        <AlertDialogCancel className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 flex-1 border-primary/10">Cancel Action</AlertDialogCancel>
+                    <AlertDialogFooter className="flex-row gap-3 pt-6 mt-4 border-t border-primary/5">
+                        <AlertDialogCancel className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 flex-1 mt-0">No, Wait</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 rounded-xl font-black uppercase text-[10px] tracking-widest h-12 flex-1 shadow-xl shadow-destructive/20 border-none">
-                            Confirm Deletion
+                            Yes, Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
