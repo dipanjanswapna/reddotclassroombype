@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from "react";
@@ -49,6 +50,7 @@ const formSchema = z.object({
 /**
  * @fileOverview Localized RequestCallbackForm
  * Optimized high-density design with Hind Siliguri font and 20px corners.
+ * Corrected syntax to fix 'Unexpected token Card' error.
  */
 export function RequestCallbackForm({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
     const { toast } = useToast();
@@ -94,130 +96,130 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
         }
     }
 
-  return (
-    <Card className={cn("shadow-2xl overflow-hidden border-none rounded-[30px] bg-card", isBn && "font-bengali")}>
-        <CardContent className="p-0">
-            <div className="grid md:grid-cols-2">
-                <div className="hidden md:flex items-center justify-center bg-muted/30 p-12">
-                     <Image
-                        src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
-                        alt="Support illustration"
-                        width={350}
-                        height={450}
-                        className="object-contain drop-shadow-2xl"
-                        data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
-                    />
+    return (
+        <Card className={cn("shadow-2xl overflow-hidden border-none rounded-[30px] bg-card", isBn && "font-bengali")}>
+            <CardContent className="p-0">
+                <div className="grid md:grid-cols-2">
+                    <div className="hidden md:flex items-center justify-center bg-muted/30 p-12">
+                         <Image
+                            src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
+                            alt="Support illustration"
+                            width={350}
+                            height={450}
+                            className="object-contain drop-shadow-2xl"
+                            data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
+                        />
+                    </div>
+                    <div className="p-8 md:p-14 bg-card text-left">
+                        <h3 className={cn(
+                            "text-2xl md:text-3xl font-black mb-8 uppercase tracking-tight text-left",
+                            isBn ? "font-bengali" : "font-headline"
+                        )}>
+                            {t.callback_title[language] || (isBn ? "কলব্যাক রিকোয়েস্ট করুন" : "Request a Callback")}
+                        </h3>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                                     <FormField
+                                        control={form.control}
+                                        name="fullName"
+                                        render={({ field }) => (
+                                            <FormItem className="text-left">
+                                            <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                {t.full_name[language]}*
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input placeholder={isBn ? "উদা: রিয়াদ হাসান" : "Ex: Rohit Singh"} {...field} className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-bold focus:border-primary/50" />
+                                            </FormControl>
+                                            <FormMessage className="text-[10px]" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                     <FormField
+                                        control={form.control}
+                                        name="mobileNumber"
+                                        render={({ field }) => (
+                                            <FormItem className="text-left">
+                                            <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                {t.mobile_number[language] || (isBn ? "মোবাইল নম্বর" : "Mobile Number")}*
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="01XXXXXXXXX" {...field} className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-bold focus:border-primary/50" />
+                                            </FormControl>
+                                            <FormMessage className="text-[10px]" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                     <FormField
+                                        control={form.control}
+                                        name="class"
+                                        render={({ field }) => (
+                                        <FormItem className="text-left">
+                                            <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                {t.class_label[language] || (isBn ? "ক্লাস" : "Class")}*
+                                            </FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-black uppercase text-xs">
+                                                <SelectValue />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="rounded-xl font-bold">
+                                                <SelectItem value="12th+">12th+</SelectItem>
+                                                <SelectItem value="11th">11th</SelectItem>
+                                                <SelectItem value="10th">10th</SelectItem>
+                                                <SelectItem value="9th">9th</SelectItem>
+                                                <SelectItem value="8th">8th</SelectItem>
+                                                <SelectItem value="7th">7th</SelectItem>
+                                                <SelectItem value="6th">6th</SelectItem>
+                                            </SelectContent>
+                                            </Select>
+                                            <FormMessage className="text-[10px]" />
+                                        </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="goals"
+                                        render={({ field }) => (
+                                        <FormItem className="text-left">
+                                            <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                {isBn ? 'আপনার লক্ষ্য' : 'Your Goal'}*
+                                            </FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-black uppercase text-xs">
+                                                <SelectValue />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="rounded-xl font-bold">
+                                                <SelectItem value="HSC/SSC Exam">Board Exams</SelectItem>
+                                                <SelectItem value="University Admission">University Admission</SelectItem>
+                                                <SelectItem value="Job Prep/BCS">BCS & Job Prep</SelectItem>
+                                                <SelectItem value="Skills">Professional Skills</SelectItem>
+                                                <SelectItem value="Other">Other</SelectItem>
+                                            </SelectContent>
+                                            </Select>
+                                            <FormMessage className="text-[10px]" />
+                                        </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed text-left">
+                                    {isBn ? 'এগিয়ে যাওয়ার মাধ্যমে, আপনি আমাদের' : 'By continuing, you agree to our'}{' '}
+                                    <Link href="/terms" className="underline hover:text-primary font-black uppercase tracking-widest">
+                                        {t.terms_of_service[language]}
+                                    </Link>
+                                </p>
+                                <Button type="submit" className="w-full font-black text-sm uppercase tracking-[0.2em] h-14 md:h-16 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isSubmitting}>
+                                    {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+                                    {t.submit[language] || (isBn ? "জমা দিন" : "Submit")}
+                                </Button>
+                            </form>
+                        </Form>
+                    </div>
                 </div>
-                <div className="p-8 md:p-14 bg-card text-left">
-                    <h3 className={cn(
-                        "text-2xl md:text-3xl font-black mb-8 uppercase tracking-tight text-left",
-                        isBn ? "font-bengali" : "font-headline"
-                    )}>
-                        {t.callback_title[language]}
-                    </h3>
-                    <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
-                             <FormField
-                                control={form.control}
-                                name="fullName"
-                                render={({ field }) => (
-                                    <FormItem className="text-left">
-                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
-                                        {t.full_name[language]}*
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={isBn ? "উদা: রিয়াদ হাসান" : "Ex: Rohit Singh"} {...field} className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-bold focus:border-primary/50" />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="mobileNumber"
-                                render={({ field }) => (
-                                    <FormItem className="text-left">
-                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
-                                        {t.mobile_number[language]}*
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="01XXXXXXXXX" {...field} className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-bold focus:border-primary/50" />
-                                    </FormControl>
-                                    <FormMessage className="text-[10px]" />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="class"
-                                render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
-                                        {t.class_label[language]}*
-                                    </FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-black uppercase text-xs">
-                                        <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="rounded-xl font-bold">
-                                        <SelectItem value="12th+">12th+</SelectItem>
-                                        <SelectItem value="11th">11th</SelectItem>
-                                        <SelectItem value="10th">10th</SelectItem>
-                                        <SelectItem value="9th">9th</SelectItem>
-                                        <SelectItem value="8th">8th</SelectItem>
-                                        <SelectItem value="7th">7th</SelectItem>
-                                        <SelectItem value="6th">6th</SelectItem>
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="goals"
-                                render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
-                                        {isBn ? 'আপনার লক্ষ্য' : 'Your Goal'}*
-                                    </FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-primary/5 text-gray-900 font-black uppercase text-xs">
-                                        <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="rounded-xl font-bold">
-                                        <SelectItem value="HSC/SSC Exam">Board Exams</SelectItem>
-                                        <SelectItem value="University Admission">University Admission</SelectItem>
-                                        <SelectItem value="Job Prep/BCS">BCS & Job Prep</SelectItem>
-                                        <SelectItem value="Skills">Professional Skills</SelectItem>
-                                        <SelectItem value="Other">Other</SelectItem>
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                                )}
-                            />
-                        </div>
-                        <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed text-left">
-                            {isBn ? 'এগিয়ে যাওয়ার মাধ্যমে, আপনি আমাদের' : 'By continuing, you agree to our'}{' '}
-                            <Link href="/terms" className="underline hover:text-primary font-black uppercase tracking-widest">
-                                {t.terms_of_service[language]}
-                            </Link>
-                        </p>
-                        <Button type="submit" className="w-full font-black text-sm uppercase tracking-[0.2em] h-14 md:h-16 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-                            {t.submit[language]}
-                        </Button>
-                    </form>
-                    </Form>
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-  );
+            </CardContent>
+        </Card>
+    );
 }

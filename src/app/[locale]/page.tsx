@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { NoticeBoard } from '@/components/notice-board';
 import { Card, CardContent } from '@/components/ui/card';
+import { RequestCallbackForm } from '@/components/request-callback-form';
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
     loading: () => <Skeleton className="h-[250px] w-full rounded-[20px]" />,
@@ -38,9 +39,10 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 });
 
 /**
- * @fileOverview Redefined Home Page
- * Implements Struggling Banner, Notice Board, and Dynamic Contact section.
- * Wall-to-wall design with px-1. Hind Siliguri font enforced for Bengali.
+ * @fileOverview Localized Home Page
+ * Notice Board moved after struggling section.
+ * Callback section added after stats.
+ * Hind Siliguri font enforced.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -105,10 +107,10 @@ export default function Home() {
   }, [language]); 
 
   if (loading) return (
-    <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen">
+    <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen bg-background">
         <LoadingSpinner className="w-12 h-12" />
         <p className={cn("text-sm font-black uppercase tracking-widest animate-pulse", isBn && "font-bengali")}>
-            {isBn ? 'লোড হচ্ছে...' : 'Initializing RDC...'}
+            {isBn ? 'ক্লাসরুম তৈরি হচ্ছে...' : 'Initializing RDC...'}
         </p>
     </div>
   );
@@ -120,48 +122,43 @@ export default function Home() {
   return (
     <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
         
-        {/* Welcome & Notice Board Dual Layout */}
+        {/* Welcome Section */}
         <section className="pt-10 pb-6 md:pt-16 md:pb-10">
-            <div className="container mx-auto grid lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-8 text-left space-y-6">
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }} 
-                        animate={{ opacity: 1, y: 0 }} 
-                        transition={{ duration: 0.6 }} 
-                        className="flex flex-col gap-4"
-                    >
-                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm w-fit">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            {isBn ? 'সেরা লার্নিং প্ল্যাটফর্ম' : 'Elite Learning Platform'}
-                        </div>
-                        <h1 className={cn(
-                            "font-black tracking-tighter text-foreground uppercase leading-[0.95]",
-                            isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline"
-                        )}>
-                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
-                        </h1>
-                        <div className="w-full max-w-2xl">
-                            <TypingText 
-                                text={homepageConfig.welcomeSection?.description?.[language] || ''} 
-                                className="text-sm md:text-xl text-muted-foreground leading-relaxed font-medium" 
-                            />
-                        </div>
-                    </motion.div>
-                </div>
-                <div className="lg:col-span-4">
-                    <NoticeBoard />
-                </div>
+            <div className="container mx-auto text-left space-y-6">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.6 }} 
+                    className="flex flex-col gap-4"
+                >
+                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm w-fit">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {isBn ? 'সেরা লার্নিং প্ল্যাটফর্ম' : 'Elite Learning Platform'}
+                    </div>
+                    <h1 className={cn(
+                        "font-black tracking-tighter text-foreground uppercase leading-[0.95]",
+                        isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline"
+                    )}>
+                        {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
+                    </h1>
+                    <div className="w-full max-w-3xl">
+                        <TypingText 
+                            text={homepageConfig.welcomeSection?.description?.[language] || ''} 
+                            className="text-sm md:text-xl text-muted-foreground leading-relaxed font-medium" 
+                        />
+                    </div>
+                </motion.div>
             </div>
         </section>
 
         {/* Dynamic Banners */}
-        <section className="py-0 overflow-hidden px-1 mb-12">
+        <section className="py-0 overflow-hidden px-1 mb-8 md:mb-12">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {/* Struggling in Studies Banner */}
         {homepageConfig.strugglingStudentSection?.display && (
-            <section className="px-1 py-12 md:py-20">
+            <section className="px-1 py-8 md:py-12">
                 <div className="container mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -200,6 +197,13 @@ export default function Home() {
                 </div>
             </section>
         )}
+
+        {/* Notice Board - Now placed after Struggling section */}
+        <section className="px-1 py-4 md:py-8">
+            <div className="container mx-auto max-w-4xl">
+                <NoticeBoard />
+            </div>
+        </section>
 
         {/* Categories Section */}
         {homepageConfig.categoriesSection?.display && (
@@ -275,7 +279,7 @@ export default function Home() {
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </div>
         
-        {/* Stats Section */}
+        {/* Stats Section (Our Achievements) */}
         {homepageConfig.statsSection?.display && (
           <div className="px-1">
             <StatsSection stats={[
@@ -286,6 +290,13 @@ export default function Home() {
             ]} title={{ bn: 'আমাদের অর্জন', en: 'Our Achievements' }} />
           </div>
         )}
+
+        {/* Request a Callback Section - Added after Stats */}
+        <section className="px-1 py-12 md:py-20">
+            <div className="container mx-auto">
+                <RequestCallbackForm homepageConfig={homepageConfig} />
+            </div>
+        </section>
 
         {/* Have a Question? Dynamic Contact Section */}
         <section className="px-1 py-12 md:py-24 overflow-hidden">

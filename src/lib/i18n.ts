@@ -131,4 +131,14 @@ export const t: Record<string, Record<string, string>> = {
   or_login_with_roll: { en: 'Or Login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
   forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
   no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },
+  
+  // Callback
+  callback_title: { en: 'Request a Callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
+  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
+  class_label: { en: 'Class', bn: 'ক্লাস' },
+  submit: { en: 'Submit', bn: 'জমা দিন' },
+  categories_heading: { en: 'Categories', bn: 'ক্যাটাগরি' },
+  view_all: { en: 'View All', bn: 'সব দেখুন' },
+  live_courses_heading: { en: 'Live Courses', bn: 'লাইভ কোর্সসমূহ' },
+  our_mentors: { en: 'Our Mentors', bn: 'আমাদের মেন্টরগণ' },
 };
