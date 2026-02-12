@@ -4,7 +4,11 @@ import type { NextRequest } from 'next/server';
 const locales = ['en', 'bn'];
 const defaultLocale = 'en';
 
-// Dashboards and internal paths that should NOT have a locale prefix
+/**
+ * @fileOverview Middleware for Locale-based Routing.
+ * Handles automatic redirection to /en or /bn for public pages.
+ * Excludes dashboard paths to keep their URLs clean as per user instruction.
+ */
 const dashboardPrefixes = [
   '/admin',
   '/student',

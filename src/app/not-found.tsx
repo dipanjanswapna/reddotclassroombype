@@ -10,7 +10,8 @@ import { useLanguage } from '@/context/language-context';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview NotFoundContent handles the visual part of the 404 page.
+ * @fileOverview Global 404 Page Content.
+ * Handles the visual presentation of the 404 error with high-quality animations.
  */
 function NotFoundContent() {
   const { language } = useLanguage();
@@ -160,7 +161,7 @@ function NotFoundContent() {
             <Button 
               asChild 
               size="lg" 
-              className="w-full sm:w-64 rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 shadow-2xl shadow-primary/30 group text-[10px] md:text-xs"
+              className="w-full sm:w-64 rounded-xl md:rounded-2xl font-black uppercase tracking-widest h-12 md:h-16 shadow-2xl shadow-primary/30 group text-[10px] md:text-xs border-none"
             >
               <Link href="/" className="flex items-center justify-center gap-3">
                 <Home className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:-translate-y-1" />
@@ -209,8 +210,8 @@ function NotFoundContent() {
 }
 
 /**
- * @fileOverview The NotFound component wraps the content in necessary providers
- * because it is rendered at the root level outside the localized layout.
+ * @fileOverview Root Not Found component.
+ * Wraps the 404 content in providers to avoid context errors outside the locale segment.
  */
 export default function NotFound() {
   return (
