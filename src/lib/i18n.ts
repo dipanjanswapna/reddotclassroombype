@@ -23,6 +23,21 @@ export const t: Record<string, Record<string, string>> = {
   register: { en: 'Register', bn: 'নিবন্ধন করুন' },
   dashboard: { en: 'Dashboard', bn: 'ড্যাশবোর্ড' },
   
+  // Struggling Section
+  struggling_title: { en: 'Struggling in Studies?', bn: 'পড়াশোনায় পিছিয়ে পড়ছো?' },
+  struggling_subtitle: { en: "Let's solve your problems together ✨", bn: 'এসো তোমার সমস্যার সমাধান করি ✨' },
+  see_how_we_help: { en: 'See How We Help', bn: 'আমরা কীভাবে সাহায্য করি' },
+  
+  // Notice Board
+  notice_board: { en: 'Notice Board', bn: 'নোটিশ বোর্ড' },
+  recent_updates: { en: 'Recent Updates', bn: 'সাম্প্রতিক আপডেট' },
+  
+  // Contact Section
+  have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
+  talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
+  call_now: { en: 'Call 01641035736', bn: 'কল করুন ০১৬৪১০৩৫৭৩৬' },
+  message_whatsapp: { en: 'Message on WhatsApp', bn: 'হোয়াটসঅ্যাপে মেসেজ দিন' },
+
   // Footer
   footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
   quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
@@ -39,34 +54,6 @@ export const t: Record<string, Record<string, string>> = {
   terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
 
-  // Homepage & General
-  categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরি অনুযায়ী খুঁজুন' },
-  live_courses_heading: { en: 'Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
-  our_mentors: { en: 'Our Elite Faculty', bn: 'আমাদের অভিজ্ঞ শিক্ষক মণ্ডলী' },
-  stats_heading: { en: 'RDC Journey in Numbers', bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা' },
-  callback_title: { en: 'Request a callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
-  full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },
-  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
-  class_label: { en: 'Class', bn: 'শ্রেণী' },
-  submit: { en: 'Submit', bn: 'জমা দিন' },
-  view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
-  connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
-  already_have_account: { en: 'Already have an account?', bn: 'ইতিমধ্যে একাউন্ট আছে?' },
-  no_account: { en: "Don't have an account?", bn: 'কোনো একাউন্ট নেই?' },
-  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
-  or_continue_with: { en: 'Or continue with', bn: 'অথবা' },
-  create_account: { en: 'Create Account', bn: 'একাউন্ট তৈরি করুন' },
-  signup_desc: { en: 'Join the RDC community', bn: 'RDC কমিউনিটিতে যোগ দিন' },
-  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
-  login_desc: { en: 'Login to your account', bn: 'আপনার একাউন্টে লগইন করুন' },
-  or_login_with_roll: { en: 'Or login with class roll', bn: 'অথবা রোল নম্বর দিয়ে লগইন করুন' },
-  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
-  staff_id: { en: 'Staff ID', bn: 'স্টাফ আইডি' },
-  login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি দিয়ে লগইন' },
-  email_login: { en: 'Email Login', bn: 'ইমেইল লগইন' },
-  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
-  find_roll_desc: { en: 'Enter your registered email address.', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
-  
   // Store
   store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
   all_products: { en: 'All Products', bn: 'সকল পণ্য' },
@@ -107,8 +94,7 @@ export const t: Record<string, Record<string, string>> = {
   our_programs_subtitle: { en: 'Pick your path to academic excellence in our physical classrooms.', bn: 'আমাদের ফিজিক্যাল ক্লাসরুমে আপনার সফলতার পথটি বেছে নিন।' },
   offline_hubs_title: { en: 'Our Offline Hubs', bn: 'আমাদের অফলাইন হাবসমূহ' },
   offline_hubs_subtitle: { en: 'Visit us at any of our state-of-the-art locations across Bangladesh.', bn: 'বাংলাদেশের যেকোনো প্রান্ত থেকে আমাদের অত্যাধুনিক সেন্টারে চলে আসুন।' },
-  have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
-  talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
+  talk_to_advisors_simple: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
 
   // About Us
   our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
@@ -121,7 +107,7 @@ export const t: Record<string, Record<string, string>> = {
   // Contact & Support
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
   call_us: { en: 'Call Us', bn: 'ফোন করুন' },
-  email_support: { en: 'Email Support', bn: 'イমেইল সাপোর্ট' },
+  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
   our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
   support_hours: { en: 'Support Hours', bn: 'সাপোর্ট আওয়ার' },
   send_message: { en: 'Send a Message', bn: 'বার্তা পাঠান' },
