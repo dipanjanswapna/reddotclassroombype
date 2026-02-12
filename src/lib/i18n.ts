@@ -39,7 +39,7 @@ export const t: Record<string, Record<string, string>> = {
   view_all: { en: 'View All', bn: 'সবগুলো দেখুন' },
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
 
-  // Offline Hub (New Requested Strings)
+  // Offline Hub
   offline_hero_subtitle: { 
     en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.',
     bn: 'ডিজিটাল উৎকর্ষ এবং সরাসরি ক্লাসরুম অভিজ্ঞতার এক অনন্য সমন্বয়। সেরা মেন্টরদের তত্ত্বাবধানে নিজেকে গড়ে তুলুন এক এলিট পারফরম্যান্সের জন্য।'
@@ -87,41 +87,6 @@ export const t: Record<string, Record<string, string>> = {
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
   footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
 
-  // Detail Pages labels
-  syllabus: { en: 'Syllabus', bn: 'সিলেবাস' },
-  instructors: { en: 'Instructors', bn: 'শিক্ষকগণ' },
-  routine: { en: 'Class Routine', bn: 'ক্লাস রুটিন' },
-  reviews: { en: 'Student Feedback', bn: 'শিক্ষার্থীদের মতামত' },
-  faq_heading: { en: 'Frequently Asked Questions', bn: 'সচরাচর জিজ্ঞাসিত প্রশ্ন' },
-  payment_info: { en: 'Payment Process', bn: 'পেমেন্ট প্রক্রিয়া' },
-  related_courses: { en: 'Related Courses', bn: 'সম্পর্কিত কোর্সসমূহ' },
-  curriculum: { en: 'What you will learn', bn: 'আপনি যা শিখবেন' },
-  day: { en: 'Day', bn: 'দিন' },
-  subject: { en: 'Subject', bn: 'বিষয়' },
-  time: { en: 'Time', bn: 'সময়' },
-  prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
-  demo_class: { en: 'Watch Demo', bn: 'ডেমো ক্লাস' },
-  includes_heading: { en: 'This course includes', bn: 'এই কোর্সে যা যা থাকছে' },
-  teacher_bio: { en: 'Teacher Biography', bn: 'শিক্ষকের জীবনী' },
-  teacher_courses: { en: 'Courses by Instructor', bn: 'শিক্ষকের কোর্সসমূহ' },
-  free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
-  
-  // About Us Page
-  our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
-  our_mission: { en: 'Our Mission', bn: 'আমাদের লক্ষ্য' },
-  our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
-  core_values: { en: 'Core Values', bn: 'মূল লক্ষ্য' },
-  visionary_team: { en: 'The Visionary Team', bn: 'আমাদের দক্ষ টিম' },
-  philosophy: { en: 'Our Philosophy', bn: 'আমাদের दर्शन' },
-
-  // Contact Page
-  call_us: { en: 'Call Us', bn: 'কল করুন' },
-  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
-  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
-  support_hours: { en: 'Support Hours', bn: 'সহায়তার সময়' },
-  send_message: { en: 'Send Message', bn: 'বার্তা পাঠান' },
-  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
-
   // Forms
   full_name: { en: 'Full Name', bn: 'সম্পূর্ণ নাম' },
   email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
@@ -156,18 +121,4 @@ export const t: Record<string, Record<string, string>> = {
   back_to_login: { en: 'Back to Login', bn: 'লগইনে ফিরে যান' },
   send_reset_link: { en: 'Send Reset Link', bn: 'লিঙ্ক পাঠান' },
   password_reset_desc: { en: 'Reset your password', bn: 'পাসওয়ার্ড রিসেট করুন' },
-
-  // Teacher / Seller signup specific
-  become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
-  become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
-  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
-  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
-  teacher_signup_desc: { en: 'Apply to join our faculty', bn: 'আমাদের ফ্যাকাল্টি মেম্বার হতে আবেদন করুন' },
-  affiliate_signup_desc: { en: 'Start earning by referring', bn: 'রেফার করে আয় শুরু করুন' },
-  moderator_signup_desc: { en: 'Help maintain our community', bn: 'কমিউনিটি বজায় রাখতে সাহায্য করুন' },
-
-  // Roles
-  student: { en: 'Student', bn: 'শিক্ষার্থী' },
-  guardian: { en: 'Guardian', bn: 'অভিভাবক' },
-  registering_as: { en: 'Registering as', bn: 'নিবন্ধন করছেন' },
 };

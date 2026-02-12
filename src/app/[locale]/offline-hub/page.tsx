@@ -102,10 +102,13 @@ export default function OfflineHubPage() {
                             </div>
                             
                             <div className="space-y-4">
-                                <h1 className="font-headline text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase">
+                                <h1 className={cn(
+                                    "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase text-left",
+                                    !isBn && "font-headline"
+                                )}>
                                     {offlineHubData?.heroTitle?.[language] || "Red Dot Offline Hub"}
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0 text-left">
                                     {t.offline_hero_subtitle[language]}
                                 </p>
                             </div>
@@ -155,7 +158,7 @@ export default function OfflineHubPage() {
                                 <div className="p-4 bg-primary/10 rounded-[20px] text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-xl border border-primary/5">
                                     <f.icon className="w-7 h-7" />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <h3 className="font-black text-xl uppercase tracking-tight leading-none text-white">{f.title}</h3>
                                     <p className="text-sm text-gray-500 font-medium leading-relaxed">{f.desc}</p>
                                 </div>
@@ -169,13 +172,16 @@ export default function OfflineHubPage() {
             <section id="programs" className="py-20 md:py-28 px-1">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-16">
-                        <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tight uppercase leading-tight">
+                        <h2 className={cn(
+                            "text-3xl md:text-5xl font-black tracking-tight uppercase leading-tight text-left",
+                            !isBn && "font-headline"
+                        )}>
                             {t.our_programs_title[language]}
                         </h2>
-                        <p className="text-gray-400 font-medium text-lg mt-2">{t.our_programs_subtitle[language]}</p>
+                        <p className="text-gray-400 font-medium text-lg mt-2 text-left">{t.our_programs_subtitle[language]}</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 md:gap-y-10">
                         {courses.length > 0 ? courses.map((course) => {
                             const provider = organizations.find(p => p.id === course.organizationId);
                             return <CourseCard key={course.id} {...course} provider={provider} />
@@ -191,8 +197,11 @@ export default function OfflineHubPage() {
             {/* Branch Directory */}
             <section id="centers" className="py-20 md:py-28 bg-black/20 px-1">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-20 space-y-4 px-4">
-                        <h2 className="font-headline text-3xl md:text-5xl font-black tracking-tight uppercase">
+                    <div className="text-left md:text-center mb-20 space-y-4 px-4 border-l-4 border-primary md:border-none md:pl-0 pl-6">
+                        <h2 className={cn(
+                            "text-3xl md:text-5xl font-black tracking-tight uppercase",
+                            !isBn && "font-headline"
+                        )}>
                             {t.offline_hubs_title[language]}
                         </h2>
                         <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
@@ -200,7 +209,7 @@ export default function OfflineHubPage() {
                         </p>
                     </div>
                     
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-1">
                         {branches.length > 0 ? branches.map((branch) => (
                             <Card key={branch.id} className="p-8 border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-primary/30 transition-all duration-500 group rounded-[25px] flex flex-col shadow-2xl">
                                 <div className="space-y-6 flex-grow">
@@ -212,7 +221,7 @@ export default function OfflineHubPage() {
                                             {branch.branchCode || 'ACTIVE'}
                                         </Badge>
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 text-left">
                                         <h3 className="font-black text-2xl leading-none group-hover:text-primary transition-colors uppercase tracking-tight text-white">{branch.name}</h3>
                                         <p className="text-sm text-gray-500 font-medium line-clamp-3 leading-relaxed">{branch.address}</p>
                                     </div>
@@ -249,15 +258,18 @@ export default function OfflineHubPage() {
                         <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-white/10 rounded-full blur-[120px] opacity-50" />
                         <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-black/40 rounded-full blur-[120px] opacity-50" />
                         
-                        <div className="relative z-10 max-w-3xl space-y-8">
+                        <div className="relative z-10 max-w-3xl space-y-8 text-left">
                             <div className="inline-block p-5 bg-white/10 backdrop-blur-md rounded-2xl shadow-inner border border-white/20">
                                 <MessageSquare className="w-12 h-12 text-white" />
                             </div>
                             <div className="space-y-4">
-                                <h2 className="font-headline text-4xl md:text-6xl font-black tracking-tight leading-[0.95] uppercase">
+                                <h2 className={cn(
+                                    "text-4xl md:text-6xl font-black tracking-tight leading-[0.95] uppercase text-left",
+                                    !isBn && "font-headline"
+                                )}>
                                     {t.have_a_question[language]}
                                 </h2>
-                                <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-xl">
+                                <p className="text-xl md:text-2xl text-white/80 font-medium leading-relaxed max-w-xl text-left">
                                     {t.talk_to_advisors[language]}
                                 </p>
                             </div>

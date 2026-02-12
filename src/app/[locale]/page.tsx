@@ -96,7 +96,7 @@ export default function Home() {
       }
     }
     fetchData();
-  }, []);
+  }, [language]); // Refetch on language change to ensure i18n consistency
 
   if (loading) return (
     <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen">
@@ -110,7 +110,7 @@ export default function Home() {
   if (!homepageConfig) return null;
   
   const CourseGrid = ({ courses }: { courses: Course[] }) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-0 md:gap-y-8 px-1">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 md:gap-y-8 px-1">
         {courses.map(course => (
             <CourseCard 
                 key={course.id} 
@@ -146,7 +146,7 @@ export default function Home() {
                         </div>
                         <h1 className={cn(
                             "font-black tracking-tighter text-foreground uppercase leading-[0.95]",
-                            isBn ? "text-4xl md:text-6xl font-bengali" : "text-4xl md:text-7xl font-headline"
+                            isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline"
                         )}>
                             {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
                         </h1>
@@ -154,8 +154,7 @@ export default function Home() {
                             <TypingText 
                                 text={homepageConfig.welcomeSection?.description?.[language] || ''} 
                                 className={cn(
-                                    "mt-4 text-sm md:text-xl text-muted-foreground leading-relaxed font-medium px-4",
-                                    isBn && "font-bengali"
+                                    "mt-4 text-sm md:text-xl text-muted-foreground leading-relaxed font-medium px-4"
                                 )} 
                             />
                         </div>
@@ -176,11 +175,11 @@ export default function Home() {
               <div className="flex items-center justify-between mb-10 border-l-4 border-primary pl-4">
                   <h2 className={cn(
                       "font-black tracking-tight uppercase",
-                      isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
+                      isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
                   )}>
                     {t.categories_heading[language]}
                   </h2>
-                  <Button asChild variant="link" className={cn("font-black uppercase text-[10px] tracking-widest text-primary p-0", isBn && "font-bengali")}>
+                  <Button asChild variant="link" className={cn("font-black uppercase text-[10px] tracking-widest text-primary p-0")}>
                       <Link href={getLocalizedPath("/courses")}>{t.view_all[language]} &rarr;</Link>
                   </Button>
               </div>
@@ -195,12 +194,12 @@ export default function Home() {
             <div className="container mx-auto px-0">
               <div className="border-l-4 border-primary pl-4 mb-10 text-left">
                 <h2 className={cn(
-                    "font-black tracking-tight uppercase",
-                    isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
+                    "font-black tracking-tight uppercase text-left",
+                    isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
                 )}>
                     {t.live_courses_heading[language]}
                 </h2>
-                <p className={cn("text-muted-foreground mt-1 text-sm md:text-lg font-medium", isBn && "font-bengali")}>
+                <p className={cn("text-muted-foreground mt-1 text-sm md:text-lg font-medium text-left")}>
                     {homepageConfig.journeySection?.subtitle?.[language] || ''}
                 </p>
               </div>
@@ -216,12 +215,12 @@ export default function Home() {
               <div className="flex items-center justify-between mb-10 border-l-4 border-accent pl-4">
                   <div className="text-left">
                       <h2 className={cn(
-                          "font-black tracking-tight uppercase",
-                          isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
+                          "font-black tracking-tight uppercase text-left",
+                          isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
                       )}>{t.our_mentors[language]}</h2>
-                      <p className={cn("text-muted-foreground mt-1 text-sm md:text-base leading-tight font-medium", isBn && "font-bengali")}>{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
+                      <p className={cn("text-muted-foreground mt-1 text-sm md:text-base leading-tight font-medium text-left")}>{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
-                  <Button asChild variant="outline" size="sm" className={cn("rounded-xl border-accent/20 text-accent font-black h-11 uppercase text-[10px] px-6", isBn && "font-bengali")}>
+                  <Button asChild variant="outline" size="sm" className={cn("rounded-xl border-accent/20 text-accent font-black h-11 uppercase text-[10px] px-6")}>
                       <Link href={getLocalizedPath("/teachers")}>{isBn ? 'সকল শিক্ষক' : 'All Teachers'}</Link>
                   </Button>
               </div>
