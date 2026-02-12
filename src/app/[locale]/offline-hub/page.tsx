@@ -66,8 +66,8 @@ export default function OfflineHubPage() {
 
     return (
         <div className="bg-gray-900 text-white min-h-screen">
-            {/* Cinematic Hero */}
-            <section className="relative pt-28 pb-16 md:pt-40 md:pb-24 overflow-hidden border-b border-white/5">
+            {/* Cinematic Hero - Reduced Top Padding */}
+            <section className="relative pt-6 pb-16 md:pt-10 md:pb-24 overflow-hidden border-b border-white/5">
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
