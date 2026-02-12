@@ -101,7 +101,9 @@ export default function Home() {
   if (loading) return (
     <div className="px-1 py-20 flex flex-col items-center justify-center gap-4">
         <LoadingSpinner className="w-12 h-12" />
-        <p className="text-sm font-black uppercase tracking-widest animate-pulse">Initializing RDC...</p>
+        <p className={cn("text-sm font-black uppercase tracking-widest animate-pulse", language === 'bn' && "font-bengali")}>
+            {language === 'bn' ? 'RDC লোড হচ্ছে...' : 'Initializing RDC...'}
+        </p>
     </div>
   );
   
@@ -127,7 +129,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="text-foreground mesh-gradient overflow-x-hidden max-w-full px-1">
+    <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1", language === 'bn' && "font-bengali")}>
         {/* Welcome Section */}
         {homepageConfig.welcomeSection?.display && (
             <section className="py-8 md:py-12 text-center overflow-hidden px-1">
@@ -140,12 +142,12 @@ export default function Home() {
                      >
                         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm mb-2">
                             <Sparkles className="w-3.5 h-3.5" />
-                            Elite Learning Platform
+                            {language === 'bn' ? 'সেরা লার্নিং প্ল্যাটফর্ম' : 'Elite Learning Platform'}
                         </div>
                         <h1 className="font-headline text-3xl md:text-5xl font-black tracking-tighter text-foreground uppercase leading-[0.95]">
                             {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
                         </h1>
-                        <div className="w-full max-w-3xl mx-auto font-bengali">
+                        <div className="w-full max-w-3xl mx-auto">
                             <TypingText 
                                 text={homepageConfig.welcomeSection?.description?.[language] || ''} 
                                 className="mt-2 text-sm md:text-lg text-muted-foreground leading-relaxed font-medium px-4" 
@@ -167,7 +169,7 @@ export default function Home() {
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-10 border-l-4 border-primary pl-4">
                   <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">
-                    {homepageConfig.categoriesSection?.title?.[language] || 'Explore Categories'}
+                    {t.categories_heading[language]}
                   </h2>
                   <Button asChild variant="link" className="font-black uppercase text-[10px] tracking-widest text-primary p-0">
                       <Link href={getLocalizedPath("/courses")}>{t.view_all[language]} &rarr;</Link>
@@ -184,7 +186,7 @@ export default function Home() {
             <div className="container mx-auto px-0">
               <div className="border-l-4 border-primary pl-4 mb-10 text-left">
                 <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">
-                    {homepageConfig.journeySection?.title?.[language] || t.featured_courses[language]}
+                    {t.live_courses_heading[language]}
                 </h2>
                 <p className="text-muted-foreground mt-1 text-sm md:text-base font-medium">
                     {homepageConfig.journeySection?.subtitle?.[language] || ''}
@@ -201,11 +203,11 @@ export default function Home() {
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-10 border-l-4 border-accent pl-4">
                   <div className="text-left">
-                      <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">{homepageConfig.teachersSection?.title?.[language] || t.our_mentors[language]}</h2>
+                      <h2 className="font-headline text-xl md:text-2xl font-black tracking-tight uppercase">{t.our_mentors[language]}</h2>
                       <p className="text-muted-foreground mt-1 text-[11px] md:text-sm leading-tight font-medium">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
                   <Button asChild variant="outline" size="sm" className="rounded-xl border-accent/20 text-accent font-black h-10 uppercase text-[10px]">
-                      <Link href={getLocalizedPath("/teachers")}>{homepageConfig.teachersSection?.buttonText?.[language] || ''}</Link>
+                      <Link href={getLocalizedPath("/teachers")}>{language === 'bn' ? 'সকল শিক্ষক' : 'All Teachers'}</Link>
                   </Button>
               </div>
               <DynamicTeachersCarousel instructors={featuredInstructors} scrollSpeed={homepageConfig.teachersSection?.scrollSpeed} />
@@ -221,7 +223,7 @@ export default function Home() {
         {/* Statistics */}
         {homepageConfig.statsSection?.display && (
           <div className="px-1">
-            <StatsSection stats={dynamicStats} title={homepageConfig.statsSection.title} />
+            <StatsSection stats={dynamicStats} title={t.stats_heading} />
           </div>
         )}
 

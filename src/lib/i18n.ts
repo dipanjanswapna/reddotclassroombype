@@ -33,6 +33,9 @@ export const t = {
   our_mentors: { en: 'Our Elite Faculty', bn: 'আমাদের অভিজ্ঞ শিক্ষক মণ্ডলী' },
   why_trust_rdc: { en: 'Why Choose RDC?', bn: 'কেন RDC-তে আস্থা রাখবেন?' },
   success_stories: { en: 'Success Stories', bn: 'সফলতার গল্প' },
+  categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরি অনুযায়ী খুঁজুন' },
+  live_courses_heading: { en: 'Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
+  stats_heading: { en: 'RDC Journey in Numbers', bn: 'লক্ষাধিক শিক্ষার্থীর পথচলা' },
 
   // Course Details
   course_overview: { en: 'Overview', bn: 'সংক্ষিপ্ত বর্ণনা' },
@@ -40,9 +43,15 @@ export const t = {
   instructors: { en: 'Instructors', bn: 'শিক্ষকগণ' },
   enroll_now: { en: 'Enroll Now', bn: 'ভর্তি হন' },
   prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
-  curriculum: { en: 'What you will learn', bn: 'আপনি যা শিখবেন' },
+  curriculum: { en: 'What you will master', bn: 'আপনি যা শিখবেন' },
   routine: { en: 'Class Routine', bn: 'ক্লাস রুটিন' },
   reviews: { en: 'Student Feedback', bn: 'শিক্ষার্থীদের মতামত' },
+  exam_schedule: { en: 'Exam Schedule', bn: 'পরীক্ষার রুটিন' },
+  payment_process: { en: 'Payment Process', bn: 'পেমেন্ট প্রক্রিয়া' },
+  demo_class: { en: 'Watch Demo', bn: 'ডিমো ক্লাস দেখুন' },
+  includes_heading: { en: 'What this course includes', bn: 'এই কোর্সে যা যা থাকছে' },
+  bonus_heading: { en: 'Free Bonus Content', bn: 'সাথে যা ফ্রি পাচ্ছেন (Bonus)' },
+  related_courses: { en: 'Recommended Courses', bn: 'আমাদের আরও কিছু কোর্স' },
 
   // Store Page
   store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
@@ -51,6 +60,13 @@ export const t = {
   out_of_stock: { en: 'Out of Stock', bn: 'স্টক শেষ' },
   bestseller: { en: 'Bestseller', bn: 'বেস্টসেলার' },
   track_order: { en: 'Track Order', bn: 'অর্ডার ট্র্যাক করুন' },
+  customer_feedback: { en: 'Customer Feedback', bn: 'কাস্টমার ফিডব্যাক' },
+  similar_items: { en: 'Similar Items', bn: 'আরও পণ্যসমূহ' },
+
+  // Teacher Profile
+  teacher_bio: { en: 'Instructor Biography', bn: 'শিক্ষকের পরিচিতি' },
+  teacher_courses: { en: 'Courses by this Mentor', bn: 'ইন্সট্রাক্টরের কোর্সসমূহ' },
+  free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
 
   // Auth Pages
   login_welcome: { en: 'Welcome Back!', bn: 'আবারও স্বাগতম!' },

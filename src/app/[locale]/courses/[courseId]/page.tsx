@@ -107,7 +107,7 @@ export default async function CourseDetailPage({
   const hasDiscount = course.discountPrice && parseFloat(course.discountPrice.replace(/[^0-9.]/g, '')) > 0;
 
   return (
-    <div className="bg-background min-h-screen font-bengali">
+    <div className={cn("bg-background min-h-screen", language === 'bn' && "font-bengali")}>
       {/* Dynamic Breadcrumbs */}
       <div className="bg-muted/30 border-b border-white/5 py-3">
         <div className="container mx-auto px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -173,6 +173,21 @@ export default async function CourseDetailPage({
 
               {/* Course Detail Components */}
               <div className="pt-10 space-y-16">
+                  {/* Learning Outcomes */}
+                  {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
+                    <section id="features" className="py-0">
+                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{t.curriculum[language]}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {course.whatYouWillLearn.map((item, index) => (
+                                <div key={index} className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-white/5">
+                                    <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                                    <p className="text-sm font-semibold leading-relaxed">{item}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                  )}
+
                   {/* Routine */}
                   {course.classRoutine && course.classRoutine.length > 0 && (
                     <section id="routine" className="py-0">
@@ -267,14 +282,14 @@ export default async function CourseDetailPage({
                             />
                             <div className="flex gap-2">
                                 <WishlistButton courseId={course.id!} />
-                                <Button variant="outline" className="flex-grow rounded-xl font-black h-12 text-[10px] uppercase tracking-widest">{language === 'bn' ? 'ডিমো দেখুন' : 'Watch Demo'}</Button>
+                                <Button variant="outline" className="flex-grow rounded-xl font-black h-12 text-[10px] uppercase tracking-widest">{t.demo_class[language]}</Button>
                             </div>
                         </div>
                         
                         <Separator className="bg-primary/5" />
                         
                         <div className="space-y-4">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-foreground border-l-2 border-primary pl-3">এই কোর্সে যা যা থাকছে</h3>
+                            <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-foreground border-l-2 border-primary pl-3">{t.includes_heading[language]}</h3>
                             <ul className="space-y-3">
                                 {course.features?.slice(0, 5).map((f, i) => (
                                     <li key={i} className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
@@ -292,7 +307,7 @@ export default async function CourseDetailPage({
                         </div>
                         <div className="flex flex-col items-center gap-1 opacity-60">
                             <Clock className="w-4 h-4 text-primary" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">Life Access</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest">Lifetime Access</span>
                         </div>
                     </CardFooter>
                 </Card>

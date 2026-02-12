@@ -10,6 +10,7 @@ import { ProductCard } from '@/components/product-card';
 import { ChevronLeft, ShoppingBag, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { t } from '@/lib/i18n';
+import { cn } from '@/lib/utils';
 
 type Language = 'en' | 'bn';
 
@@ -53,7 +54,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
   ).slice(0, 5);
 
   return (
-    <div className="bg-transparent pb-20 font-bengali">
+    <div className={cn("bg-transparent pb-20", language === 'bn' && "font-bengali")}>
         {/* Breadcrumb */}
         <div className="container mx-auto px-4 py-6">
             <Button asChild variant="ghost" size="sm" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 text-muted-foreground hover:text-primary">
@@ -73,7 +74,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
             {/* Reviews Section */}
             <section className="py-0 px-1">
                 <div className="flex items-center gap-3 mb-8 border-l-4 border-primary pl-4">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">{language === 'bn' ? 'কাস্টমার ফিডব্যাক' : 'Customer Feedback'}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">{t.customer_feedback[language]}</h2>
                 </div>
                 <ProductReviewSystem product={product} />
             </section>
@@ -83,7 +84,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
                  <section className="py-0 px-1">
                     <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                         <div className="text-left">
-                            <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">{language === 'bn' ? 'আরও পণ্যসমূহ' : 'Related Products'}</h2>
+                            <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">{t.similar_items[language]}</h2>
                             <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Recommended for you</p>
                         </div>
                         <div className="bg-primary/10 p-2 rounded-xl hidden sm:block">
