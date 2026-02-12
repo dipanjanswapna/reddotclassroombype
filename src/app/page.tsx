@@ -9,6 +9,8 @@ import {
   Zap,
   MessageSquare,
   Phone,
+  Video,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -20,18 +22,63 @@ import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/context/language-context';
-import { LoadingSpinner } from '@/components/loading-spinner';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import WhyTrustUs from '@/components/why-trust-us';
 import { NoticeBoard } from '@/components/notice-board';
 import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 import { StatsSection } from '@/components/stats-section';
+import { Card, CardContent } from '@/components/ui/card';
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
-    loading: () => <Skeleton className="h-[250px] w-full" />,
+    loading: () => <Skeleton className="h-[250px] w-full rounded-[20px]" />,
     ssr: false,
 });
+
+/**
+ * @fileOverview Skeleton Loading UI for Home Page
+ */
+function HomeSkeleton() {
+    return (
+        <div className="px-1 space-y-8 md:space-y-12 animate-pulse">
+            {/* Header Skeleton */}
+            <div className="py-6 md:py-8 space-y-4">
+                <Skeleton className="h-10 w-3/4 mx-auto max-w-lg rounded-xl" />
+                <Skeleton className="h-4 w-1/2 mx-auto max-w-md rounded-lg" />
+            </div>
+            
+            {/* Hero Carousel Skeleton */}
+            <div className="px-1">
+                <Skeleton className="aspect-[16/9] md:aspect-[21/7] w-full rounded-[20px]" />
+            </div>
+
+            {/* Notice Board Skeleton */}
+            <div className="container mx-auto px-1">
+                <Skeleton className="h-40 w-full rounded-[20px]" />
+            </div>
+
+            {/* Categories Skeleton */}
+            <div className="container mx-auto px-1 space-y-6">
+                <Skeleton className="h-8 w-48 rounded-lg" />
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {[...Array(6)].map((_, i) => (
+                        <Skeleton key={i} className="aspect-[4/5] w-full rounded-[20px]" />
+                    ))}
+                </div>
+            </div>
+
+            {/* Courses Grid Skeleton */}
+            <div className="container mx-auto px-1 space-y-6">
+                <Skeleton className="h-8 w-64 rounded-lg" />
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                        <Skeleton key={i} className="h-64 w-full rounded-[20px]" />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 /**
  * @fileOverview Dynamic Homepage
@@ -107,11 +154,7 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <LoadingSpinner className="h-12 w-12" />
-      </div>
-    );
+    return <HomeSkeleton />;
   }
   
   if (!homepageConfig) return null;
