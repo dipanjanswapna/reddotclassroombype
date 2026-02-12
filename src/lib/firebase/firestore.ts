@@ -810,7 +810,7 @@ const defaultHomepageConfig: Omit<HomepageConfig, 'id'> = {
     title: { bn: "RED DOT CLASSROOM (RDC)", en: "RED DOT CLASSROOM (RDC)" },
     description: { 
       bn: "আমাদের প্ল্যাটফর্মে তোমাদের পড়াশোনাকে আরও আধুনিক এবং সহজ করার জন্য আমরা সর্বদা সচেষ্ট।",
-      en: "We are always striving to make your studies more modern and easier on our platform."
+      en: "is an online education center based in Dhaka, Bangladesh, specializing in providing high-quality educational resources to students across the country."
     }
   },
   heroBanners: [

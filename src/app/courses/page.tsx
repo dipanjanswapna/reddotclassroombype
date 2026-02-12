@@ -9,8 +9,8 @@ import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
 
 export const metadata: Metadata = {
-  title: 'RDC SHOP - Red Dot Classroom',
-  description: 'Browse all available courses, books, and stationeries on RDC SHOP. Explore a wide range of products for HSC, SSC, Admission Tests, and skills development.',
+  title: 'RED DOT CLASSROOM (RDC)',
+  description: 'Browse all available courses, books, and stationeries on RED DOT CLASSROOM (RDC). Explore a wide range of products for HSC, SSC, Admission Tests, and skills development.',
 };
 
 async function CoursesPageContent({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) {
@@ -86,7 +86,7 @@ export default async function CoursesPage({
                     </h1>
                     <div className="min-h-[2.5rem]">
                         <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed font-bengali px-2">
-                            আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RDC SHOP-এ। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
+                            আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RED DOT CLASSROOM (RDC)-তে। সেরা শিক্ষকদের সাথে নিজের শেখার যাত্রা শুরু করুন।
                         </p>
                     </div>
                 </div>
