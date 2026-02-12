@@ -26,12 +26,11 @@ export function PageProgressLoader() {
   }, []);
 
   useEffect(() => {
-    // Start progress on conceptual initiation
-    NProgress.start();
     // Finish progress on route change detected
     NProgress.done();
     
     return () => {
+      // Start progress on conceptual initiation
       NProgress.start();
     };
   }, [pathname, searchParams]);
