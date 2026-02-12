@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProductReviewSystem } from '@/components/product-review-system';
 import { ProductCard } from '@/components/product-card';
-import { ChevronLeft, ShoppingBag, Sparkles } from 'lucide-center';
+import { ChevronLeft, ShoppingBag, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { t } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
