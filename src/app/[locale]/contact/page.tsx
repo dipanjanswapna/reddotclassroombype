@@ -14,6 +14,10 @@ import { cn } from '@/lib/utils';
 import { t } from '@/lib/i18n';
 import { useLanguage } from '@/context/language-context';
 
+/**
+ * @fileOverview Localized Contact Page
+ * Premium design with Hind Siliguri font support and px-1 layout.
+ */
 export default function ContactPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -21,6 +25,7 @@ export default function ContactPage() {
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const { language } = useLanguage();
+    const isBn = language === 'bn';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,8 +35,8 @@ export default function ContactPage() {
 
         if (result.success) {
             toast({
-                title: "Message Sent!",
-                description: "Thank you for contacting us. We'll get back to you shortly.",
+                title: isBn ? "বার্তা পাঠানো হয়েছে!" : "Message Sent!",
+                description: isBn ? "আমাদের সাথে যোগাযোগ করার জন্য ধন্যবাদ।" : "Thank you for contacting us. We'll get back to you shortly.",
             });
             setName('');
             setEmail('');
@@ -51,7 +56,7 @@ export default function ContactPage() {
             icon: Phone,
             title: t.call_us[language],
             details: "+880 1641 035 736",
-            subDetails: "Mon - Fri, 10am - 8pm",
+            subDetails: isBn ? "শনিবার - বৃহস্পতিবার, ১০টা - ১০টা" : "Sat - Thu, 10am - 10pm",
             color: "text-blue-500",
             bgColor: "bg-blue-500/10"
         },
@@ -59,7 +64,7 @@ export default function ContactPage() {
             icon: Mail,
             title: t.email_support[language],
             details: "support@rdc.com",
-            subDetails: "24/7 Online Support",
+            subDetails: isBn ? "২৪/৭ অনলাইন সহায়তা" : "24/7 Online Support",
             color: "text-primary",
             bgColor: "bg-primary/10"
         },
@@ -74,9 +79,9 @@ export default function ContactPage() {
     ];
 
     return (
-        <div className={cn("bg-background min-h-screen pb-20", language === 'bn' && "font-bengali")}>
+        <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
             {/* Modern Header Section */}
-            <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden">
+            <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px]">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
                 <div className="container mx-auto px-4 text-center">
                     <motion.div
@@ -89,10 +94,13 @@ export default function ContactPage() {
                             {t.connect_with_us[language]}
                         </div>
                         <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight max-w-4xl mx-auto">
-                            {language === 'bn' ? 'আমাদের সাথে' : 'Get in'} <span className="text-primary">{language === 'bn' ? 'যোগাযোগ করুন' : 'Touch'}</span>
+                            {isBn ? 'আমাদের সাথে' : 'Get in'} <span className="text-primary">{isBn ? 'যোগাযোগ করুন' : 'Touch'}</span>
                         </h1>
                         <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
-                            Have questions about our courses or technical issues? We're here to help you on your journey to excellence.
+                            {isBn 
+                                ? 'আপনার যেকোনো প্রশ্ন বা কারিগরি সমস্যার জন্য আমরা সবসময় প্রস্তুত। আপনার লার্নিং জার্নি আমাদের জন্য গুরুত্বপূর্ণ।'
+                                : "Have questions about our courses or technical issues? We're here to help you on your journey to excellence."
+                            }
                         </p>
                     </motion.div>
                 </div>
@@ -110,39 +118,39 @@ export default function ContactPage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                             >
-                                <Card className="border-white/10 bg-card/50 backdrop-blur-xl hover:border-primary/30 transition-all duration-300 rounded-[20px]">
+                                <Card className="border-white/10 bg-card/50 backdrop-blur-xl hover:border-primary/30 transition-all duration-300 rounded-[20px] shadow-lg">
                                     <CardContent className="p-6 flex items-center gap-4">
                                         <div className={cn("p-3 rounded-2xl shrink-0", item.bgColor, item.color)}>
                                             <item.icon className="w-6 h-6" />
                                         </div>
-                                        <div>
-                                            <h3 className="font-black uppercase tracking-tight text-sm text-left">{item.title}</h3>
-                                            <p className="font-bold text-foreground text-left">{item.details}</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{item.subDetails}</p>
+                                        <div className="text-left">
+                                            <h3 className="font-black uppercase tracking-tight text-sm">{item.title}</h3>
+                                            <p className="font-bold text-foreground">{item.details}</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.subDetails}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             </motion.div>
                         ))}
 
-                        <Card className="bg-primary/5 border-primary/20 rounded-[20px] overflow-hidden relative">
+                        <Card className="bg-primary/5 border-primary/20 rounded-[20px] overflow-hidden relative shadow-md">
                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <Clock className="w-24 h-24 rotate-12" />
                             </div>
-                            <CardHeader className="p-6">
-                                <CardTitle className="text-lg font-black uppercase tracking-tight text-left">{t.support_hours[language]}</CardTitle>
-                                <CardDescription className="font-medium text-muted-foreground text-left">
-                                    Our support team is available during these times to ensure you have the best learning experience.
+                            <CardHeader className="p-6 text-left">
+                                <CardTitle className="text-lg font-black uppercase tracking-tight">{t.support_hours[language]}</CardTitle>
+                                <CardDescription className="font-medium text-muted-foreground">
+                                    {isBn ? 'আপনাদের নিরবচ্ছিন্ন সেবা প্রদানে আমাদের সাপোর্ট টিম নির্দিষ্ট সময়ে উপস্থিত থাকে।' : 'Our support team is available during these times to ensure you have the best learning experience.'}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="p-6 pt-0 space-y-2 text-sm font-bold">
                                 <div className="flex justify-between border-b border-primary/10 pb-2">
-                                    <span className="text-muted-foreground">{language === 'bn' ? 'শনিবার - বৃহস্পতিবার' : 'Saturday - Thursday'}</span>
+                                    <span className="text-muted-foreground">{isBn ? 'শনিবার - বৃহস্পতিবার' : 'Saturday - Thursday'}</span>
                                     <span>10:00 AM - 10:00 PM</span>
                                 </div>
                                 <div className="flex justify-between pt-1">
-                                    <span className="text-muted-foreground">{language === 'bn' ? 'শুক্রবার' : 'Friday'}</span>
-                                    <span className="text-primary">{language === 'bn' ? 'বন্ধ (জরুরি শুধু)' : 'Closed (Emergency Only)'}</span>
+                                    <span className="text-muted-foreground">{isBn ? 'শুক্রবার' : 'Friday'}</span>
+                                    <span className="text-primary">{isBn ? 'বন্ধ' : 'Closed'}</span>
                                 </div>
                             </CardContent>
                         </Card>
@@ -155,32 +163,32 @@ export default function ContactPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <Card className="shadow-2xl border-white/10 bg-card dark:bg-card/30 backdrop-blur-2xl rounded-[20px] overflow-hidden">
-                                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-card/50">
+                            <Card className="shadow-2xl border-white/10 bg-card dark:bg-card/30 backdrop-blur-2xl rounded-[30px] overflow-hidden">
+                                <CardHeader className="p-8 md:p-10 border-b border-black/5 bg-card/50 text-left">
                                     <div className="flex items-center gap-3 mb-2">
                                         <MessageSquare className="w-6 h-6 text-primary" />
                                         <CardTitle className="text-2xl md:text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-foreground">{t.send_message[language]}</CardTitle>
                                     </div>
-                                    <CardDescription className="text-base font-medium text-gray-600 dark:text-muted-foreground text-left">
-                                        Fill out the form below and we'll get back to you within 24 hours.
+                                    <CardDescription className="text-base font-medium text-gray-600 dark:text-muted-foreground">
+                                        {isBn ? 'নিচের ফর্মটি পূরণ করুন, আমরা ২৪ ঘন্টার মধ্যে আপনার সাথে যোগাযোগ করব।' : 'Fill out the form below and we\'ll get back to you within 24 hours.'}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-8 md:p-10">
                                     <form className="grid gap-8" onSubmit={handleSubmit}>
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-3 text-left">
-                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'আপনার নাম' : 'Your Name'}</Label>
+                                                <Label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{isBn ? 'আপনার নাম' : 'Your Name'}</Label>
                                                 <Input 
                                                     id="name" 
-                                                    placeholder="e.g. Jubayer Ahmed" 
+                                                    placeholder={isBn ? "উদা: রিয়াদ হাসান" : "e.g. Jubayer Ahmed"} 
                                                     value={name} 
                                                     onChange={(e) => setName(e.target.value)} 
                                                     required 
-                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground"
+                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground shadow-sm"
                                                 />
                                             </div>
                                             <div className="space-y-3 text-left">
-                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'ইমেইল এড্রেস' : 'Email Address'}</Label>
+                                                <Label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{isBn ? 'ইমেইল এড্রেস' : 'Email Address'}</Label>
                                                 <Input 
                                                     id="email" 
                                                     type="email" 
@@ -188,25 +196,25 @@ export default function ContactPage() {
                                                     value={email} 
                                                     onChange={(e) => setEmail(e.target.value)} 
                                                     required 
-                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground"
+                                                    className="rounded-xl h-12 border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground shadow-sm"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-3 text-left">
-                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{language === 'bn' ? 'আমরা কীভাবে সাহায্য করতে পারি?' : 'How can we help?'}</Label>
+                                            <Label htmlFor="message" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground ml-1">{isBn ? 'আপনার বার্তা' : 'How can we help?'}</Label>
                                             <Textarea 
                                                 id="message" 
-                                                placeholder="Write your message here..." 
+                                                placeholder={isBn ? "আপনার কথাগুলো বিস্তারিত লিখুন..." : "Write your message here..."} 
                                                 rows={6} 
                                                 value={message} 
                                                 onChange={(e) => setMessage(e.target.value)} 
                                                 required 
-                                                className="rounded-[20px] border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground resize-none p-4"
+                                                className="rounded-[20px] border-black/10 focus:border-primary/50 bg-white/50 dark:bg-background/50 text-gray-900 dark:text-foreground resize-none p-4 shadow-sm"
                                             />
                                         </div>
-                                        <Button type="submit" size="lg" className="w-full md:w-fit font-black uppercase tracking-widest h-14 px-10 rounded-xl shadow-xl shadow-primary/20" disabled={isLoading}>
+                                        <Button type="submit" size="lg" className="w-full md:w-fit font-black uppercase tracking-widest h-14 px-12 rounded-xl shadow-xl shadow-primary/20" disabled={isLoading}>
                                             {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                                            {t.send_message[language]}
+                                            {isBn ? 'বার্তা পাঠান' : t.send_message[language]}
                                         </Button>
                                     </form>
                                 </CardContent>

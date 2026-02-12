@@ -7,13 +7,19 @@ import { OfflineHubCarousel } from '@/components/offline-hub-carousel';
 import { FreeCoursesBanner } from '@/components/free-courses-banner';
 import { TypingText } from '@/components/typing-text';
 import { cn } from '@/lib/utils';
+import { t } from '@/lib/i18n';
 
 export const metadata: Metadata = {
-  title: 'RED DOT CLASSROOM (RDC)',
-  description: 'Browse all available courses, books, and stationeries on RED DOT CLASSROOM (RDC).',
+  title: 'RDC Shop | Premium Courses',
+  description: 'Explore the highest-quality academic courses at RED DOT CLASSROOM.',
 };
 
-async function CoursesPageContent({ searchParams }: { searchParams?: Promise<{ [key: string]: string | undefined }> }) {
+/**
+ * @fileOverview Localized RDC Shop Page
+ * Uses Hind Siliguri font for all Bengali content.
+ * Wall-to-wall design with px-1.
+ */
+async function CoursesPageContent({ searchParams, locale }: { searchParams?: Promise<{ [key: string]: string | undefined }>, locale: string }) {
   const resolvedParams = await searchParams;
   const selectedCategory = resolvedParams?.category;
   const selectedSubCategory = resolvedParams?.subCategory;
@@ -66,7 +72,8 @@ export default async function CoursesPage({
   searchParams?: Promise<{ [key: string]: string | undefined }>;
 }) {
     const awaitedParams = await params;
-    const isBn = awaitedParams.locale === 'bn';
+    const language = awaitedParams.locale as 'en' | 'bn';
+    const isBn = language === 'bn';
     const homepageConfig = await getHomepageConfig();
     
   return (
@@ -79,36 +86,39 @@ export default async function CoursesPage({
                     </div>
                 )}
 
-                <div className="text-center max-w-xl mx-auto space-y-2">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
-                        <TypingText text="Premium Learning Resources" className="inline" />
+                <div className="text-center max-w-xl mx-auto space-y-3">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
+                        <TypingText text={isBn ? "প্রিমিয়াম লার্নিং রিসোর্স" : "Premium Learning Resources"} className="inline" />
                     </div>
                     <h1 className={cn(
-                        "font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter uppercase leading-tight",
+                        "font-black text-3xl md:text-4xl lg:text-5xl tracking-tighter uppercase leading-tight",
                         isBn ? "" : "font-headline"
                     )}>
-                        RED DOT CLASSROOM <span className="text-primary">(RDC)</span>
+                        {t.rdc_shop[language]}
                     </h1>
                     <div className="min-h-[2.5rem]">
-                        <p className="text-[11px] md:text-sm text-muted-foreground font-medium leading-relaxed px-2">
-                            আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RED DOT CLASSROOM (RDC)-তে।
+                        <p className="text-sm md:text-lg text-muted-foreground font-medium leading-relaxed px-2">
+                            {isBn 
+                                ? 'আপনার প্রয়োজনীয় সকল কোর্স এবং শিক্ষা উপকরণ এখন RED DOT CLASSROOM (RDC)-তে।' 
+                                : 'Find everything you need for your academic success at RED DOT CLASSROOM.'
+                            }
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-      <div className="container mx-auto px-1 py-4">
+      <div className="container mx-auto px-1 py-8">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-10 h-10" />
               </div>
           }>
-              <CoursesPageContent searchParams={searchParams} />
+              <CoursesPageContent searchParams={searchParams} locale={language} />
           </Suspense>
       </div>
 
-      <div className="container mx-auto px-1 pb-10 md:pb-14">
+      <div className="container mx-auto px-1 pb-16">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>

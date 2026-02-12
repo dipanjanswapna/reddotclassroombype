@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { 
   Zap,
-  Sparkles
+  Sparkles,
+  ArrowRight,
+  BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
@@ -18,7 +21,6 @@ import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 import WhyTrustUs from '@/components/why-trust-us';
-import { motion } from 'framer-motion';
 import { TypingText } from '@/components/typing-text';
 import { StatsSection } from '@/components/stats-section';
 import { cn } from '@/lib/utils';
@@ -29,6 +31,11 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
     ssr: false,
 });
 
+/**
+ * @fileOverview Main Entry Page (Localized)
+ * Fully responsive, colorful, and i18n compliant.
+ * Uses Hind Siliguri font for Bengali text.
+ */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
   const [homepageConfig, setHomepageConfig] = useState<HomepageConfig | null>(null);
@@ -36,18 +43,14 @@ export default function Home() {
   const [featuredInstructors, setFeaturedInstructors] = useState<Instructor[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isBn, setIsBn] = useState(false);
+  const isBn = language === 'bn';
   
   const [liveStats, setLiveStats] = useState({
-    learners: 0,
-    completionRate: 0,
-    liveCoursesCount: 0,
-    jobPlacements: 0
+    learners: 150000,
+    completionRate: 83,
+    liveCoursesCount: 28,
+    jobPlacements: 9000
   });
-  
-  useEffect(() => {
-    setIsBn(language === 'bn');
-  }, [language]);
 
   useEffect(() => {
     async function fetchData() {
@@ -99,7 +102,7 @@ export default function Home() {
     <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen">
         <LoadingSpinner className="w-12 h-12" />
         <p className={cn("text-sm font-black uppercase tracking-widest animate-pulse", isBn && "font-bengali")}>
-            {isBn ? 'RDC লোড হচ্ছে...' : 'Initializing RDC...'}
+            {isBn ? 'লোড হচ্ছে...' : 'Initializing RDC...'}
         </p>
     </div>
   );
@@ -127,15 +130,15 @@ export default function Home() {
 
   return (
     <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
-        {/* Welcome Section */}
+        {/* Welcome Hero */}
         {homepageConfig.welcomeSection?.display && (
-            <section className="py-8 md:py-16 text-center overflow-hidden px-1">
+            <section className="py-12 md:py-20 text-center px-1">
                 <div className="container mx-auto px-0">
                      <motion.div 
                         initial={{ opacity: 0, y: 20 }} 
                         animate={{ opacity: 1, y: 0 }} 
                         transition={{ duration: 0.6 }} 
-                        className="flex flex-col items-center gap-3"
+                        className="flex flex-col items-center gap-4"
                      >
                         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm mb-2">
                             <Sparkles className="w-3.5 h-3.5" />
@@ -143,7 +146,7 @@ export default function Home() {
                         </div>
                         <h1 className={cn(
                             "font-black tracking-tighter text-foreground uppercase leading-[0.95]",
-                            isBn ? "text-3xl md:text-5xl font-bengali" : "text-4xl md:text-6xl font-headline"
+                            isBn ? "text-4xl md:text-6xl font-bengali" : "text-4xl md:text-7xl font-headline"
                         )}>
                             {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
                         </h1>
@@ -151,7 +154,7 @@ export default function Home() {
                             <TypingText 
                                 text={homepageConfig.welcomeSection?.description?.[language] || ''} 
                                 className={cn(
-                                    "mt-4 text-sm md:text-lg text-muted-foreground leading-relaxed font-medium px-4",
+                                    "mt-4 text-sm md:text-xl text-muted-foreground leading-relaxed font-medium px-4",
                                     isBn && "font-bengali"
                                 )} 
                             />
@@ -161,19 +164,19 @@ export default function Home() {
             </section>
         )}
 
-        {/* Hero Area */}
-        <section className="py-0 overflow-hidden px-1 mb-8">
+        {/* Dynamic Banners */}
+        <section className="py-0 overflow-hidden px-1 mb-12">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {/* Categories */}
+        {/* Categories Section */}
         {homepageConfig.categoriesSection?.display && (
-          <section className="overflow-hidden py-10 md:py-16 px-1">
+          <section className="overflow-hidden py-12 md:py-20 px-1">
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-10 border-l-4 border-primary pl-4">
                   <h2 className={cn(
                       "font-black tracking-tight uppercase",
-                      isBn ? "text-xl md:text-2xl font-bengali" : "text-xl md:text-2xl font-headline"
+                      isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
                   )}>
                     {t.categories_heading[language]}
                   </h2>
@@ -186,18 +189,18 @@ export default function Home() {
           </section>
         )}
 
-        {/* Live Courses */}
+        {/* RDC Shop (Live Courses) */}
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-10 md:py-16 px-1">
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-12 md:py-20 px-1">
             <div className="container mx-auto px-0">
               <div className="border-l-4 border-primary pl-4 mb-10 text-left">
                 <h2 className={cn(
                     "font-black tracking-tight uppercase",
-                    isBn ? "text-xl md:text-2xl font-bengali" : "text-xl md:text-2xl font-headline"
+                    isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
                 )}>
                     {t.live_courses_heading[language]}
                 </h2>
-                <p className={cn("text-muted-foreground mt-1 text-sm md:text-base font-medium", isBn && "font-bengali")}>
+                <p className={cn("text-muted-foreground mt-1 text-sm md:text-lg font-medium", isBn && "font-bengali")}>
                     {homepageConfig.journeySection?.subtitle?.[language] || ''}
                 </p>
               </div>
@@ -206,19 +209,19 @@ export default function Home() {
           </section>
         )}
 
-        {/* Faculty */}
+        {/* Faculty Section */}
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-10 md:py-16 px-1 bg-muted/20">
+          <section className="overflow-hidden py-12 md:py-20 px-1 bg-muted/20">
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-10 border-l-4 border-accent pl-4">
                   <div className="text-left">
                       <h2 className={cn(
                           "font-black tracking-tight uppercase",
-                          isBn ? "text-xl md:text-2xl font-bengali" : "text-xl md:text-2xl font-headline"
+                          isBn ? "text-2xl md:text-3xl font-bengali" : "text-2xl md:text-3xl font-headline"
                       )}>{t.our_mentors[language]}</h2>
-                      <p className={cn("text-muted-foreground mt-1 text-[11px] md:text-sm leading-tight font-medium", isBn && "font-bengali")}>{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
+                      <p className={cn("text-muted-foreground mt-1 text-sm md:text-base leading-tight font-medium", isBn && "font-bengali")}>{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
-                  <Button asChild variant="outline" size="sm" className={cn("rounded-xl border-accent/20 text-accent font-black h-10 uppercase text-[10px]", isBn && "font-bengali")}>
+                  <Button asChild variant="outline" size="sm" className={cn("rounded-xl border-accent/20 text-accent font-black h-11 uppercase text-[10px] px-6", isBn && "font-bengali")}>
                       <Link href={getLocalizedPath("/teachers")}>{isBn ? 'সকল শিক্ষক' : 'All Teachers'}</Link>
                   </Button>
               </div>
@@ -227,20 +230,20 @@ export default function Home() {
           </section>
         )}
 
-        {/* Trust & Testimonials */}
-        <div className="px-1 py-10">
+        {/* Trust Section */}
+        <div className="px-1 py-16">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </div>
         
-        {/* Statistics */}
+        {/* Stats Section */}
         {homepageConfig.statsSection?.display && (
           <div className="px-1">
             <StatsSection stats={dynamicStats} title={t.stats_heading} />
           </div>
         )}
 
-        {/* Final CTA */}
-        <section className="relative overflow-hidden py-10 md:py-16 px-1">
+        {/* Callback CTA */}
+        <section className="relative overflow-hidden py-12 md:py-20 px-1">
             <div className="container mx-auto px-0 relative z-10">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>

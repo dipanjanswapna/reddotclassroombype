@@ -46,6 +46,10 @@ const formSchema = z.object({
   state: z.string(),
 });
 
+/**
+ * @fileOverview Localized RequestCallbackForm
+ * Fully i18n compliant with Hind Siliguri font.
+ */
 export function RequestCallbackForm({ homepageConfig }: { homepageConfig: HomepageConfig | null }) {
     const { toast } = useToast();
     const { language } = useLanguage();
@@ -91,39 +95,39 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
     }
 
   return (
-    <Card className={cn("shadow-2xl overflow-hidden border-none rounded-[20px] md:rounded-[30px] bg-card", isBn && "font-bengali")}>
+    <Card className={cn("shadow-2xl overflow-hidden border-none rounded-[30px] bg-card", isBn && "font-bengali")}>
         <CardContent className="p-0">
             <div className="grid md:grid-cols-2">
-                <div className="hidden md:flex items-center justify-center bg-muted p-8">
+                <div className="hidden md:flex items-center justify-center bg-muted p-12">
                      <Image
                         src={callbackSection?.imageUrl || "https://i.imgur.com/GZ0gQfN.png"}
-                        alt="Happy student requesting a callback"
-                        width={300}
-                        height={400}
-                        className="object-contain"
+                        alt="Support illustration"
+                        width={350}
+                        height={450}
+                        className="object-contain drop-shadow-2xl"
                         data-ai-hint={callbackSection?.dataAiHint || "student illustration"}
                     />
                 </div>
-                <div className="p-6 md:p-10 bg-card">
+                <div className="p-8 md:p-14 bg-card text-left">
                     <h3 className={cn(
-                        "text-xl md:text-2xl font-black mb-6 uppercase tracking-tight text-left",
-                        isBn ? "font-bengali" : "font-headline"
+                        "text-2xl md:text-3xl font-black mb-8 uppercase tracking-tight",
+                        isBn ? "" : "font-headline"
                     )}>
                         {t.callback_title[language]}
                     </h3>
                     <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                              <FormField
                                 control={form.control}
                                 name="fullName"
                                 render={({ field }) => (
-                                    <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
-                                        {t.full_name_label[language]}*
+                                    <FormItem>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                        {t.full_name[language]}*
                                     </FormLabel>
                                     <FormControl>
-                                        <Input placeholder={isBn ? "উদা: রিয়াদ হাসান" : "Ex: Rohit Singh"} {...field} className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-medium" />
+                                        <Input placeholder={isBn ? "উদা: রিয়াদ হাসান" : "Ex: Rohit Singh"} {...field} className="rounded-xl h-12 bg-muted/30 border-black/5 text-gray-900 font-bold focus:border-primary/50" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -133,12 +137,12 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 control={form.control}
                                 name="mobileNumber"
                                 render={({ field }) => (
-                                    <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
-                                        {t.mobile_label[language]}*
+                                    <FormItem>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                        {t.mobile_number[language]}*
                                     </FormLabel>
                                     <FormControl>
-                                        <Input placeholder="01XXXXXXXXX" {...field} className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-medium" />
+                                        <Input placeholder="01XXXXXXXXX" {...field} className="rounded-xl h-12 bg-muted/30 border-black/5 text-gray-900 font-bold focus:border-primary/50" />
                                     </FormControl>
                                     <FormMessage className="text-[10px]" />
                                     </FormItem>
@@ -148,13 +152,13 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 control={form.control}
                                 name="class"
                                 render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
+                                <FormItem>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
                                         {t.class_label[language]}*
                                     </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-bold">
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-black/5 text-gray-900 font-black uppercase text-xs">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -176,13 +180,13 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 control={form.control}
                                 name="goals"
                                 render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
-                                        {t.goal_label[language]}*
+                                <FormItem>
+                                    <FormLabel className="text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                        {isBn ? 'আপনার লক্ষ্য' : 'Your Goal'}*
                                     </FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-bold">
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/30 border-black/5 text-gray-900 font-black uppercase text-xs">
                                         <SelectValue />
                                         </SelectTrigger>
                                     </FormControl>
@@ -198,69 +202,16 @@ export function RequestCallbackForm({ homepageConfig }: { homepageConfig: Homepa
                                 </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="preferredCourses"
-                                render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
-                                        {t.preference_label[language]}*
-                                    </FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-bold">
-                                        <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="rounded-xl font-bold">
-                                        <SelectItem value="Online Courses">Online Courses</SelectItem>
-                                        <SelectItem value="Offline Courses">Offline Hub</SelectItem>
-                                        <SelectItem value="Both">Hybrid Mode</SelectItem>
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="state"
-                                render={({ field }) => (
-                                <FormItem className="text-left">
-                                    <FormLabel className={cn("text-[10px] uppercase font-black tracking-widest text-muted-foreground ml-1", isBn && "font-bengali")}>
-                                        {t.location_label[language]}*
-                                    </FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className="rounded-xl h-11 bg-muted/30 border-black/5 text-gray-900 font-bold">
-                                        <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="rounded-xl font-bold">
-                                        <SelectItem value="Dhaka">Dhaka</SelectItem>
-                                        <SelectItem value="Chattogram">Chattogram</SelectItem>
-                                        <SelectItem value="Khulna">Khulna</SelectItem>
-                                        <SelectItem value="Rajshahi">Rajshahi</SelectItem>
-                                        <SelectItem value="Barishal">Barishal</SelectItem>
-                                        <SelectItem value="Sylhet">Sylhet</SelectItem>
-                                        <SelectItem value="Rangpur">Rangpur</SelectItem>
-                                        <SelectItem value="Mymensingh">Mymensingh</SelectItem>
-                                    </SelectContent>
-                                    </Select>
-                                    <FormMessage className="text-[10px]" />
-                                </FormItem>
-                                )}
-                            />
                         </div>
-                        <p className={cn("text-[10px] md:text-xs text-muted-foreground leading-relaxed text-left", isBn && "font-bengali")}>
+                        <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed">
                             {isBn ? 'এগিয়ে যাওয়ার মাধ্যমে, আপনি আমাদের' : 'By continuing, you agree to our'}{' '}
-                            <Link href="/terms" className="underline hover:text-primary font-bold">
+                            <Link href="/terms" className="underline hover:text-primary font-black uppercase tracking-widest">
                                 {t.terms_of_service[language]}
                             </Link>
                         </p>
-                        <Button type="submit" className={cn("w-full font-black text-xs uppercase tracking-widest h-12 md:h-14 rounded-xl shadow-xl shadow-primary/20 transition-all active:scale-95", isBn && "font-bengali")} disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            {t.submit_callback[language]}
+                        <Button type="submit" className="w-full font-black text-sm uppercase tracking-[0.2em] h-14 md:h-16 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+                            {t.submit[language]}
                         </Button>
                     </form>
                     </Form>
