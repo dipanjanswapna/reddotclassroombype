@@ -91,7 +91,7 @@ export const t: Record<string, Record<string, string>> = {
     en: 'Our payment process is simple. You can pay via bKash, Nagad, Rocket or any Debit/Credit card. Upon enrollment, the course will be added to your dashboard instantly.', 
     bn: 'আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। ভর্তির সাথে সাথেই আপনি আপনার ড্যাশবোর্ডে কোর্সটি পেয়ে যাবেন।' 
   },
-  popular_courses: { en: 'Our other popular courses', bn: 'আমাদের আরও কিছু জনপ্রিয় কোর্স' },
+  popular_courses: { en: 'Our popular courses', bn: 'আমাদের আরও কিছু জনপ্রিয় কোর্স' },
 
   // Offline Hub
   offline_hero_subtitle: { 
@@ -118,7 +118,7 @@ export const t: Record<string, Record<string, string>> = {
   our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
   core_values: { en: 'Core Values', bn: 'মূল আদর্শ' },
   visionary_team: { en: 'Visionary Team', bn: 'দক্ষ টিম' },
-  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের दर्शन' },
+  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের দর্শন' },
 
   // Contact & Support
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
