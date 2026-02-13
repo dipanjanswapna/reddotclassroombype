@@ -18,7 +18,7 @@ import { t } from '@/lib/i18n';
 
 /**
  * @fileOverview Localized Offline Hub Page
- * Standardized reduced spacing (py-8 md:py-12).
+ * Standardized high-density reduced spacing (py-6 md:py-10).
  * Hind Siliguri font enforcement.
  */
 export default function OfflineHubPage() {
@@ -86,23 +86,23 @@ export default function OfflineHubPage() {
 
     return (
         <div className={cn("bg-gray-900 text-white min-h-screen px-1 overflow-x-hidden", isBn && "font-bengali")}>
-            {/* Cinematic Hero */}
-            <section className="relative pt-10 pb-12 md:pt-14 md:pb-16 overflow-hidden border-b border-white/5 px-0">
+            {/* Cinematic Hero - Reduced Spacing */}
+            <section className="relative pt-8 pb-10 md:pt-12 md:pb-14 overflow-hidden border-b border-white/5 px-0">
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
                         <motion.div 
                             initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
-                            className="space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left"
+                            className="space-y-6 md:space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left"
                         >
                             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-5 py-2 rounded-full text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-lg backdrop-blur-md">
                                 <MapPin className="w-4 h-4" />
                                 {t.offline_hubs_title[language] || "RDC Physical Centers"}
                             </div>
                             
-                            <div className="space-y-5">
+                            <div className="space-y-4 md:space-y-5">
                                 <h1 className={cn(
                                     "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95] uppercase drop-shadow-2xl text-left",
                                     !isBn && "font-headline"
@@ -114,7 +114,7 @@ export default function OfflineHubPage() {
                                 </p>
                             </div>
 
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
+                            <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
                                 <Button asChild size="lg" className="rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/40 h-14 px-10 bg-primary hover:bg-primary/90 text-white border-none group active:scale-95 transition-all text-xs">
                                     <Link href="#programs" className="flex items-center">
                                         {t.explore_programs[language] || "Explore Programs"}
@@ -159,10 +159,10 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* High-Density Features */}
-            <section className="py-8 bg-black/40 border-b border-white/5 px-0">
+            {/* High-Density Features - Standard Padding */}
+            <section className="py-6 md:py-10 bg-black/40 border-b border-white/5 px-0">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 md:gap-12">
                         {features.map((f, i) => (
                             <div key={i} className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 group">
                                 <div className="p-4 bg-primary/10 rounded-[20px] text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-xl border border-primary/5">
@@ -178,10 +178,10 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Programs Section */}
-            <section id="programs" className="py-8 md:py-12 px-0">
+            {/* Programs Section - Standard Padding */}
+            <section id="programs" className="py-6 md:py-10 px-0">
                 <div className="container mx-auto px-4">
-                    <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-16">
+                    <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-10 md:mb-12">
                         <h2 className={cn(
                             "text-3xl md:text-5xl font-black tracking-tight uppercase leading-tight",
                             !isBn && "font-headline"
@@ -191,12 +191,12 @@ export default function OfflineHubPage() {
                         <p className="text-gray-400 font-medium text-lg mt-2">{t.our_programs_subtitle[language] || "Pick your path to academic excellence."}</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8 md:gap-y-10">
                         {courses.length > 0 ? courses.map((course) => {
                             const provider = organizations.find(p => p.id === course.organizationId);
                             return <CourseCard key={course.id} {...course} provider={provider} />
                         }) : (
-                            <div className="col-span-full text-center py-32 text-gray-500 font-black uppercase tracking-widest text-xs border-2 border-dashed border-white/5 rounded-[30px] bg-white/[0.02]">
+                            <div className="col-span-full text-center py-24 md:py-32 text-gray-500 font-black uppercase tracking-widest text-xs border-2 border-dashed border-white/5 rounded-[30px] bg-white/[0.02]">
                                 No offline courses available at the moment
                             </div>
                         )}
@@ -204,10 +204,10 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Branch Directory */}
-            <section id="centers" className="py-8 md:py-12 bg-black/20 px-0">
+            {/* Branch Directory - Standard Padding */}
+            <section id="centers" className="py-6 md:py-10 bg-black/20 px-0">
                 <div className="container mx-auto px-4">
-                    <div className="text-left md:text-center mb-20 space-y-4 border-l-4 border-primary md:border-none pl-6 md:pl-0">
+                    <div className="text-left md:text-center mb-12 md:mb-16 space-y-4 border-l-4 border-primary md:border-none pl-6 md:pl-0">
                         <h2 className={cn(
                             "text-3xl md:text-5xl font-black tracking-tight uppercase",
                             !isBn && "font-headline"
@@ -256,14 +256,14 @@ export default function OfflineHubPage() {
                 </div>
             </section>
 
-            {/* Contact Section */}
-            <section className="py-10 md:py-16 px-0">
+            {/* Contact Section - Standard Padding */}
+            <section className="py-8 md:py-12 px-0">
                 <div className="container mx-auto px-4">
                     <motion.div 
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="relative rounded-[40px] overflow-hidden p-10 md:p-24 bg-gradient-to-br from-primary via-primary/90 to-black text-white shadow-2xl border border-white/10"
+                        className="relative rounded-[40px] overflow-hidden p-10 md:p-20 bg-gradient-to-br from-primary via-primary/90 to-black text-white shadow-2xl border border-white/10"
                     >
                         <div className="absolute top-0 right-0 -m-20 w-96 h-96 bg-white/10 rounded-full blur-[120px] opacity-50" />
                         <div className="absolute bottom-0 left-0 -m-20 w-96 h-96 bg-black/40 rounded-full blur-[120px] opacity-50" />
@@ -283,7 +283,7 @@ export default function OfflineHubPage() {
                                     {t.talk_to_advisors[language] || "Talk to our student advisors anytime."}
                                 </p>
                             </div>
-                            <div className="pt-6 flex flex-col sm:flex-row items-center gap-5">
+                            <div className="pt-4 flex flex-col sm:flex-row items-center gap-5">
                                 <Button asChild size="lg" className="w-full sm:w-auto rounded-xl font-black uppercase tracking-widest h-16 px-12 bg-white text-primary hover:bg-gray-100 shadow-2xl border-none active:scale-95 transition-all text-sm">
                                     <a href="tel:01641035736">
                                         <Phone className="mr-3 h-5 w-5 fill-current" />

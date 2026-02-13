@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 /**
  * @fileOverview Localized RDC Shop Page
- * Refined UI/UX based on user feedback.
+ * Standardized high-density reduced spacing (py-6 md:py-10).
  * Wall-to-wall design with px-1.
  */
 async function CoursesPageContent({ searchParams, locale }: { searchParams?: Promise<{ [key: string]: string | undefined }>, locale: string }) {
@@ -82,7 +82,7 @@ export default async function CoursesPage({
         <section className="pt-4 pb-2 border-b border-white/5 overflow-hidden px-1">
             <div className="container mx-auto px-0">
                 {homepageConfig?.offlineHubHeroCarousel?.display && (
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <OfflineHubCarousel slides={homepageConfig.offlineHubHeroCarousel.slides} />
                     </div>
                 )}
@@ -109,7 +109,7 @@ export default async function CoursesPage({
             </div>
         </section>
 
-      <div className="container mx-auto px-1 py-10">
+      <div className="container mx-auto px-1 py-6 md:py-10">
           <Suspense fallback={
               <div className="flex flex-grow items-center justify-center h-64">
                   <LoadingSpinner className="w-10 h-10" />
@@ -119,7 +119,7 @@ export default async function CoursesPage({
           </Suspense>
       </div>
 
-      <div className="container mx-auto px-1 pb-16">
+      <div className="container mx-auto px-1 pb-12">
         <FreeCoursesBanner bannerConfig={homepageConfig?.rdcShopBanner} />
       </div>
     </div>

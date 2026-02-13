@@ -17,6 +17,10 @@ type FreeClassesSectionProps = {
 
 const ITEMS_PER_PAGE = 6;
 
+/**
+ * @fileOverview FreeClassesSection Component
+ * Standardized high-density reduced spacing (py-6 md:py-10).
+ */
 export function FreeClassesSection({ sectionData }: FreeClassesSectionProps) {
   const { title, subtitle, classes } = sectionData;
   const { language } = useLanguage();

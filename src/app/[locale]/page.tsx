@@ -39,7 +39,7 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 
 /**
  * @fileOverview Localized Home Page
- * Standardized reduced spacing (py-8 md:py-12).
+ * Standardized high-density reduced spacing (py-6 md:py-10).
  * Hind Siliguri font enforced.
  */
 export default function Home() {
@@ -120,14 +120,14 @@ export default function Home() {
   return (
     <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
         
-        {/* Welcome Section */}
-        <section className="pt-8 pb-4 md:pt-12 md:pb-6">
-            <div className="container mx-auto text-left space-y-6">
+        {/* Welcome Section - Reduced Padding */}
+        <section className="pt-6 pb-2 md:pt-8 md:pb-4">
+            <div className="container mx-auto text-left space-y-4">
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }} 
                     animate={{ opacity: 1, y: 0 }} 
                     transition={{ duration: 0.6 }} 
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-3"
                 >
                     <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm w-fit">
                         <Sparkles className="w-3.5 h-3.5" />
@@ -149,23 +149,23 @@ export default function Home() {
             </div>
         </section>
 
-        {/* Dynamic Banners */}
-        <section className="py-0 overflow-hidden px-1 mb-6 md:mb-8">
+        {/* Dynamic Banners - Standard Padding */}
+        <section className="py-4 md:py-6 overflow-hidden px-1">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {/* Struggling in Studies Banner */}
+        {/* Struggling in Studies Banner - Standard Padding */}
         {homepageConfig.strugglingStudentSection?.display && (
-            <section className="px-1 py-8 md:py-12">
+            <section className="px-1 py-6 md:py-10">
                 <div className="container mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        className="relative rounded-[30px] overflow-hidden bg-gradient-to-br from-[#8B1538] to-[#1a1a2e] p-8 md:p-16 shadow-2xl group"
+                        className="relative rounded-[30px] overflow-hidden bg-gradient-to-br from-[#8B1538] to-[#1a1a2e] p-8 md:p-14 shadow-2xl group"
                     >
                         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110" />
-                        <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                        <div className="grid md:grid-cols-2 gap-10 items-center relative z-10">
                             <div className="space-y-6 text-center md:text-left">
                                 <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">
                                     <AlertCircle className="w-3.5 h-3.5" />
@@ -196,18 +196,18 @@ export default function Home() {
             </section>
         )}
 
-        {/* Notice Board */}
-        <section className="px-1 py-4 md:py-6">
+        {/* Notice Board - Standard Padding */}
+        <section className="px-1 py-6 md:py-10">
             <div className="container mx-auto max-w-4xl">
                 <NoticeBoard />
             </div>
         </section>
 
-        {/* Categories Section */}
+        {/* Categories Section - Standard Padding */}
         {homepageConfig.categoriesSection?.display && (
-          <section className="overflow-hidden py-8 md:py-12 px-1">
+          <section className="overflow-hidden py-6 md:py-10 px-1">
             <div className="container mx-auto px-0">
-              <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
+              <div className="flex items-center justify-between mb-6 border-l-4 border-primary pl-4">
                   <h2 className={cn(
                       "font-black tracking-tight uppercase",
                       isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
@@ -223,9 +223,9 @@ export default function Home() {
           </section>
         )}
 
-        {/* Live Courses */}
+        {/* Live Courses - Standard Padding */}
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-12 px-1">
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-6 md:py-10 px-1">
             <div className="container mx-auto px-0">
               <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                 <h2 className={cn(
@@ -251,9 +251,9 @@ export default function Home() {
           </section>
         )}
 
-        {/* Faculty Section */}
+        {/* Faculty Section - Standard Padding */}
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-8 md:py-12 px-1 bg-muted/20">
+          <section className="overflow-hidden py-6 md:py-10 px-1 bg-muted/20">
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-8 border-l-4 border-accent pl-4 text-left">
                   <div className="text-left">
@@ -272,14 +272,14 @@ export default function Home() {
           </section>
         )}
 
-        {/* Trust Section */}
-        <section className="px-1 py-8 md:py-12">
+        {/* Trust Section - Standard Padding */}
+        <section className="px-1 py-6 md:py-10">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </section>
         
-        {/* Stats Section (Our Achievements) */}
+        {/* Stats Section - Standard Padding */}
         {homepageConfig.statsSection?.display && (
-          <section className="px-1 py-8 md:py-12">
+          <section className="px-1 py-6 md:py-10">
             <StatsSection stats={[
                 { label: { bn: "জব প্লেসমেন্ট", en: "Job Placement" }, value: liveStats.jobPlacements, suffix: "+", color: "bg-[#dcfce7]" },
                 { label: { bn: "শিক্ষার্থী", en: "Learner" }, value: liveStats.learners, suffix: "+", color: "bg-[#dbeafe]" },
@@ -289,26 +289,26 @@ export default function Home() {
           </section>
         )}
 
-        {/* Request a Callback Section */}
-        <section className="px-1 py-8 md:py-12">
+        {/* Request a Callback Section - Standard Padding */}
+        <section className="px-1 py-6 md:py-10">
             <div className="container mx-auto">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
-        {/* Have a Question? Dynamic Contact Section */}
-        <section className="px-1 py-8 md:py-12 overflow-hidden">
+        {/* Have a Question? - Standard Padding */}
+        <section className="px-1 py-6 md:py-10 overflow-hidden">
             <div className="container mx-auto">
                 <Card className="rounded-[40px] border-none shadow-2xl bg-[#eef2ed] dark:bg-card/20 overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 pointer-events-none">
                         <Megaphone className="w-48 h-48 text-primary" />
                     </div>
-                    <CardContent className="p-10 md:p-20 text-center space-y-8 relative z-10">
+                    <CardContent className="p-10 md:p-16 text-center space-y-8 relative z-10">
                         <div className="flex flex-col items-center gap-4">
-                            <div className="bg-primary/10 p-4 rounded-[20px] shadow-inner mb-4">
-                                <MessageSquare className="w-12 h-12 text-primary" />
+                            <div className="bg-primary/10 p-4 rounded-[20px] shadow-inner mb-2">
+                                <MessageSquare className="w-10 h-10 text-primary" />
                             </div>
-                            <h2 className="text-3xl md:text-5xl font-black uppercase font-headline tracking-tighter text-foreground">
+                            <h2 className="text-3xl md:text-5xl font-black uppercase font-headline tracking-tighter text-foreground leading-none">
                                 {getT('have_a_question')}
                             </h2>
                             <p className="text-muted-foreground font-medium text-lg md:text-xl max-w-2xl mx-auto">
@@ -316,7 +316,7 @@ export default function Home() {
                             </p>
                         </div>
                         
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-2">
                             <Button asChild size="lg" className="w-full sm:w-auto h-16 px-10 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 group">
                                 <a href="tel:01641035736">
                                     <Phone className="mr-3 h-5 w-5 fill-current transition-transform group-hover:rotate-12" />

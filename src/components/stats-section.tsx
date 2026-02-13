@@ -37,12 +37,16 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
   );
 }
 
+/**
+ * @fileOverview StatsSection Component
+ * Standardized high-density reduced spacing (py-6 md:py-10).
+ */
 export function StatsSection({ stats, title }: StatsSectionProps) {
   const { language } = useLanguage();
   const isBn = language === 'bn';
 
   return (
-    <section className={cn("py-8 md:py-10 overflow-hidden", isBn && "font-bengali")}>
+    <section className={cn("py-6 md:py-10 overflow-hidden", isBn && "font-bengali")}>
       <div className="container mx-auto px-1">
         {title && (
           <h2 className={cn(

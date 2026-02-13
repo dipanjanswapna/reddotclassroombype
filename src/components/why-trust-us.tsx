@@ -31,7 +31,7 @@ const pastelColors = [
 
 /**
  * @fileOverview WhyTrustUs Component
- * Standardized reduced spacing (py-8 md:py-12).
+ * Standardized high-density reduced spacing (py-6 md:py-10).
  * Hind Siliguri font support.
  */
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
@@ -47,17 +47,17 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const renderedTitle = titleText.replace(/RDC/g, `<span class="text-primary">RDC</span>`);
 
   return (
-    <section className={cn("py-8 md:py-12 overflow-hidden relative px-1", isBn && "font-bengali")}>
+    <section className={cn("py-6 md:py-10 overflow-hidden relative px-1", isBn && "font-bengali")}>
       <div className="container mx-auto px-0">
         {/* Features Grid */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-6 md:p-10 border border-primary/10 bg-card rounded-[20px] mb-10 shadow-xl"
+            className="p-6 md:p-10 border border-primary/10 bg-card rounded-[20px] mb-8 md:mb-10 shadow-xl"
         >
-            <div className="grid lg:grid-cols-2 gap-10 items-center">
-                <div className="space-y-5 text-left">
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-center">
+                <div className="space-y-4 md:space-y-5 text-left">
                     <h2 className={cn(
                         "font-black tracking-tight leading-tight uppercase",
                         isBn ? "text-3xl md:text-4xl" : "font-headline text-3xl md:text-4xl"
@@ -92,8 +92,8 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
             </div>
         </motion.div>
 
-        {/* Testimonials Carousel - LIVE */}
-        <div className="max-w-5xl mx-auto">
+        {/* Testimonials Carousel - Standard Padding */}
+        <div className="max-w-5xl mx-auto pt-2">
           <Carousel
             plugins={[plugin.current]}
             className="w-full"
