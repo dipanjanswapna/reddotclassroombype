@@ -1,11 +1,12 @@
-
 'use client';
 
 import { motion } from 'framer-motion';
+import React from 'react';
 
 /**
  * @fileOverview TypingText Component
  * Provides a character-by-character typing animation for string content.
+ * Robust implementation to avoid removeChild errors.
  */
 export function TypingText({ text, className }: { text: string; className?: string }) {
   if (!text) return null;
@@ -44,7 +45,7 @@ export function TypingText({ text, className }: { text: string; className?: stri
       {characters.map((char, index) => (
         <motion.span
           variants={child}
-          key={index}
+          key={`char-${index}-${char}`}
         >
           {char}
         </motion.span>

@@ -109,7 +109,7 @@ export const t: Record<string, Record<string, string>> = {
   our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
   core_values: { en: 'Core Values', bn: 'মূল আদর্শ' },
   visionary_team: { en: 'Visionary Team', bn: 'দক্ষ টিম' },
-  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের दर्शन' },
+  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের দর্শন' },
 
   // Contact & Support
   connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },

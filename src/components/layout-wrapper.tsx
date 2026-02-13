@@ -20,13 +20,26 @@ import FacebookPixel from './facebook-pixel';
 
 const InnerLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  const { language } = useLanguage();
   const [categories, setCategories] = React.useState([]);
   const [homepageConfig, setHomepageConfig] = React.useState<HomepageConfig | null>(null);
+  const [isLoaded, setIsLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    getStoreCategories().then(setCategories as any);
-    getHomepageConfig().then(setHomepageConfig);
+    async function loadData() {
+        try {
+            const [cats, config] = await Promise.all([
+                getStoreCategories(),
+                getHomepageConfig()
+            ]);
+            setCategories(cats as any);
+            setHomepageConfig(config);
+        } catch (error) {
+            console.error("Layout load error:", error);
+        } finally {
+            setIsLoaded(true);
+        }
+    }
+    loadData();
   }, []);
 
   // Remove locale prefix for layout logic checks
@@ -78,7 +91,7 @@ const InnerLayout = ({ children }: { children: React.ReactNode }) => {
         <main className={cn("flex-grow pt-16 px-1", isDashboardPage && "min-h-screen")}>
           {children}
         </main>
-        {!isDashboardPage && homepageConfig && <Footer homepageConfig={homepageConfig} />}
+        {!isDashboardPage && homepageConfig && isLoaded && <Footer homepageConfig={homepageConfig} />}
          {homepageConfig?.floatingWhatsApp?.display && (
             <FloatingActionButton whatsappNumber={homepageConfig.floatingWhatsApp.number} />
         )}

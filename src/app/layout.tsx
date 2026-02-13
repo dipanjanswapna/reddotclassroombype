@@ -41,17 +41,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: any;
 }) {
+  const locale = params?.locale || 'en';
+
   return (
-    <html lang="bn" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={cn(
         'font-body antialiased selection:bg-primary/20 selection:text-primary', 
         fontInter.variable, 
         fontPoppins.variable, 
         fontHindSiliguri.variable
-      )}>
+      )} suppressHydrationWarning>
         <LayoutWrapper>
             {children}
         </LayoutWrapper>
