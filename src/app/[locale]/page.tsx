@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -43,6 +42,7 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
  * Notice Board moved after struggling section.
  * Callback section added after stats.
  * Hind Siliguri font enforced.
+ * Standardized reduced spacing (py-8 md:py-12).
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -123,7 +123,7 @@ export default function Home() {
     <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
         
         {/* Welcome Section */}
-        <section className="pt-10 pb-6 md:pt-16 md:pb-10">
+        <section className="pt-8 pb-4 md:pt-12 md:pb-6">
             <div className="container mx-auto text-left space-y-6">
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }} 
@@ -152,13 +152,13 @@ export default function Home() {
         </section>
 
         {/* Dynamic Banners */}
-        <section className="py-0 overflow-hidden px-1 mb-8 md:mb-12">
+        <section className="py-0 overflow-hidden px-1 mb-6 md:mb-8">
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
         {/* Struggling in Studies Banner */}
         {homepageConfig.strugglingStudentSection?.display && (
-            <section className="px-1 py-8 md:py-12">
+            <section className="px-1 py-6 md:py-10">
                 <div className="container mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -177,7 +177,7 @@ export default function Home() {
                                     {getT('struggling_subtitle')}
                                 </h2>
                                 <Button asChild size="lg" className="bg-white text-primary hover:bg-yellow-400 hover:text-black font-black uppercase tracking-widest h-14 px-10 rounded-2xl shadow-2xl transition-all active:scale-95 border-none">
-                                    <Link href="/strugglers-studies" className="flex items-center gap-2">
+                                    <Link href={getLocalizedPath("/strugglers-studies")} className="flex items-center gap-2">
                                         {getT('see_how_we_help')}
                                         <ArrowRight className="w-4 h-4" />
                                     </Link>
@@ -198,8 +198,8 @@ export default function Home() {
             </section>
         )}
 
-        {/* Notice Board - Now placed after Struggling section */}
-        <section className="px-1 py-4 md:py-8">
+        {/* Notice Board */}
+        <section className="px-1 py-4 md:py-6">
             <div className="container mx-auto max-w-4xl">
                 <NoticeBoard />
             </div>
@@ -207,9 +207,9 @@ export default function Home() {
 
         {/* Categories Section */}
         {homepageConfig.categoriesSection?.display && (
-          <section className="overflow-hidden py-12 md:py-20 px-1">
+          <section className="overflow-hidden py-8 md:py-12 px-1">
             <div className="container mx-auto px-0">
-              <div className="flex items-center justify-between mb-10 border-l-4 border-primary pl-4">
+              <div className="flex items-center justify-between mb-8 border-l-4 border-primary pl-4">
                   <h2 className={cn(
                       "font-black tracking-tight uppercase",
                       isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
@@ -227,9 +227,9 @@ export default function Home() {
 
         {/* Live Courses */}
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-12 md:py-20 px-1">
+          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-8 md:py-12 px-1">
             <div className="container mx-auto px-0">
-              <div className="border-l-4 border-primary pl-4 mb-10 text-left">
+              <div className="border-l-4 border-primary pl-4 mb-8 text-left">
                 <h2 className={cn(
                     "font-black tracking-tight uppercase text-left",
                     isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline"
@@ -255,9 +255,9 @@ export default function Home() {
 
         {/* Faculty Section */}
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-12 md:py-20 px-1 bg-muted/20">
+          <section className="overflow-hidden py-8 md:py-12 px-1 bg-muted/20">
             <div className="container mx-auto px-0">
-              <div className="flex items-center justify-between mb-10 border-l-4 border-accent pl-4 text-left">
+              <div className="flex items-center justify-between mb-8 border-l-4 border-accent pl-4 text-left">
                   <div className="text-left">
                       <h2 className={cn(
                           "font-black tracking-tight uppercase text-left",
@@ -275,31 +275,31 @@ export default function Home() {
         )}
 
         {/* Trust Section */}
-        <div className="px-1 py-16">
+        <section className="px-1 py-10 md:py-14">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
-        </div>
+        </section>
         
         {/* Stats Section (Our Achievements) */}
         {homepageConfig.statsSection?.display && (
-          <div className="px-1">
+          <section className="px-1 py-8 md:py-12">
             <StatsSection stats={[
                 { label: { bn: "জব প্লেসমেন্ট", en: "Job Placement" }, value: liveStats.jobPlacements, suffix: "+", color: "bg-[#dcfce7]" },
                 { label: { bn: "শিক্ষার্থী", en: "Learner" }, value: liveStats.learners, suffix: "+", color: "bg-[#dbeafe]" },
                 { label: { bn: "কোর্স সমাপ্তির হার", en: "Course Completion Rate" }, value: liveStats.completionRate, suffix: "%", color: "bg-[#ffedd5]" },
                 { label: { bn: "লাইভ কোর্স", en: "Live Course" }, value: liveStats.liveCoursesCount, color: "bg-[#fef9c3]" },
             ]} title={{ bn: 'আমাদের অর্জন', en: 'Our Achievements' }} />
-          </div>
+          </section>
         )}
 
-        {/* Request a Callback Section - Added after Stats */}
-        <section className="px-1 py-12 md:py-20">
+        {/* Request a Callback Section */}
+        <section className="px-1 py-10 md:py-14">
             <div className="container mx-auto">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
         {/* Have a Question? Dynamic Contact Section */}
-        <section className="px-1 py-12 md:py-24 overflow-hidden">
+        <section className="px-1 py-10 md:py-16 overflow-hidden">
             <div className="container mx-auto">
                 <Card className="rounded-[40px] border-none shadow-2xl bg-[#eef2ed] dark:bg-card/20 overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 pointer-events-none">

@@ -71,6 +71,10 @@ export async function generateMetadata({ params }: { params: { courseId: string 
   }
 }
 
+/**
+ * @fileOverview Localized Course Detail Page
+ * Standardized reduced spacing.
+ */
 export default async function CourseDetailPage({
   params,
 }: {
@@ -123,7 +127,7 @@ export default async function CourseDetailPage({
       </div>
 
       {/* Premium Hero */}
-      <section className="relative pt-10 pb-12 border-b border-white/5 overflow-hidden">
+      <section className="relative pt-8 pb-10 border-b border-white/5 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
@@ -175,7 +179,7 @@ export default async function CourseDetailPage({
               </div>
 
               {/* Course Detail Components */}
-              <div className="pt-10 space-y-16">
+              <div className="pt-8 space-y-12">
                   {/* Learning Outcomes */}
                   {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                     <section id="features" className="py-0 px-0">

@@ -21,7 +21,7 @@ const socialIconMap: Record<string, any> = {
 
 /**
  * @fileOverview Localized About Us Page
- * Premium storytelling design with Hind Siliguri font.
+ * Standardized reduced spacing.
  */
 export default async function AboutPage({ params }: { params: { locale: string } }) {
     const awaitedParams = await params;
@@ -44,7 +44,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
   return (
     <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
         {/* Modern Header Section */}
-        <section className="relative py-16 md:py-24 overflow-hidden border-b border-white/5 bg-muted/30 rounded-b-[40px] px-0">
+        <section className="relative py-12 md:py-16 overflow-hidden border-b border-white/5 bg-muted/30 rounded-b-[40px] px-0">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
             <div className="container mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20 shadow-sm">
@@ -61,7 +61,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Mission & Vision Section */}
-        <section className="py-12 md:py-20 px-0">
+        <section className="py-10 md:py-14 px-0">
             <div className="container mx-auto px-4">
                 <div className="grid md:grid-cols-3 gap-8">
                     <CardItem 
@@ -87,7 +87,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Visionary Team Section */}
-        <section className="py-16 md:py-24 bg-muted/10 rounded-[40px] border-y border-white/5 px-0">
+        <section className="py-12 md:py-16 bg-muted/10 rounded-[40px] border-y border-white/5 px-0">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-l-4 border-primary pl-6 text-left">
                     <div className="max-w-2xl">
@@ -141,7 +141,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
         </section>
 
         {/* Brand Philosophy */}
-        <section className="py-20 md:py-32 px-0">
+        <section className="py-16 md:py-24 px-0">
             <div className="container mx-auto px-4 text-center max-w-3xl">
                 <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight mb-8">{getT('philosophy')}</h2>
                 <blockquote className="text-xl md:text-3xl font-medium italic text-muted-foreground leading-relaxed tracking-tight">

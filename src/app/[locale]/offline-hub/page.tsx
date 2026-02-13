@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -19,7 +18,8 @@ import { t } from '@/lib/i18n';
 
 /**
  * @fileOverview Localized Offline Hub Page
- * Refined UI/UX alignment and Hind Siliguri font enforcement.
+ * Hind Siliguri font enforcement.
+ * Standardized reduced spacing.
  */
 export default function OfflineHubPage() {
     const { language } = useLanguage();
@@ -87,7 +87,7 @@ export default function OfflineHubPage() {
     return (
         <div className={cn("bg-gray-900 text-white min-h-screen px-1 overflow-x-hidden", isBn && "font-bengali")}>
             {/* Cinematic Hero */}
-            <section className="relative pt-10 pb-16 md:pt-16 md:pb-24 overflow-hidden border-b border-white/5 px-0">
+            <section className="relative pt-10 pb-12 md:pt-14 md:pb-16 overflow-hidden border-b border-white/5 px-0">
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -160,7 +160,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* High-Density Features */}
-            <section className="py-12 bg-black/40 border-b border-white/5 px-0">
+            <section className="py-8 bg-black/40 border-b border-white/5 px-0">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
                         {features.map((f, i) => (
@@ -179,7 +179,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Programs Section */}
-            <section id="programs" className="py-20 md:py-28 px-0">
+            <section id="programs" className="py-10 md:py-14 px-0">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-16">
                         <h2 className={cn(
@@ -205,7 +205,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Branch Directory */}
-            <section id="centers" className="py-20 md:py-28 bg-black/20 px-0">
+            <section id="centers" className="py-10 md:py-14 bg-black/20 px-0">
                 <div className="container mx-auto px-4">
                     <div className="text-left md:text-center mb-20 space-y-4 border-l-4 border-primary md:border-none pl-6 md:pl-0">
                         <h2 className={cn(
@@ -257,7 +257,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Contact Section */}
-            <section className="py-20 md:py-32 px-0">
+            <section className="py-12 md:py-20 px-0">
                 <div className="container mx-auto px-4">
                     <motion.div 
                         initial={{ opacity: 0, y: 30 }}

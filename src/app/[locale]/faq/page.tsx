@@ -52,7 +52,7 @@ const getFaqData = (language: 'en' | 'bn') => {
 
 /**
  * @fileOverview Localized FAQ Page
- * Implements Hind Siliguri font and premium RDC UI.
+ * Standardized reduced spacing.
  */
 export default async function FaqPage({ params }: { params: { locale: string } }) {
     const awaitedParams = await params;
@@ -65,7 +65,7 @@ export default async function FaqPage({ params }: { params: { locale: string } }
   return (
     <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
       {/* Hero Header */}
-      <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px] px-0">
+      <section className="relative py-12 md:py-16 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px] px-0">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20 shadow-sm">
@@ -82,10 +82,10 @@ export default async function FaqPage({ params }: { params: { locale: string } }
       </section>
 
       {/* FAQ Sections */}
-      <div className="container mx-auto px-4 mt-12 md:mt-20">
-        <div className="max-w-4xl mx-auto space-y-16">
+      <div className="container mx-auto px-4 mt-8 md:mt-12">
+        <div className="max-w-4xl mx-auto space-y-10">
           {faqSections.map((section, idx) => (
-            <div key={idx} className="space-y-8 text-left">
+            <div key={idx} className="space-y-6 text-left">
               <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
                 <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
                     <section.icon className="w-6 h-6" />
@@ -95,14 +95,14 @@ export default async function FaqPage({ params }: { params: { locale: string } }
                 </h2>
               </div>
               
-              <Accordion type="single" collapsible className="w-full space-y-4">
+              <Accordion type="single" collapsible className="w-full space-y-3">
                 {section.items.map((item, iIdx) => (
                   <AccordionItem 
                     value={`item-${idx}-${iIdx}`} 
                     key={iIdx}
                     className="border border-white/10 rounded-[25px] overflow-hidden bg-card/50 shadow-lg hover:border-primary/30 transition-all"
                   >
-                    <AccordionTrigger className="text-base md:text-xl font-black text-left px-8 py-6 hover:no-underline hover:bg-white/5 uppercase tracking-tight">
+                    <AccordionTrigger className="text-base md:text-lg font-black text-left px-8 py-6 hover:no-underline hover:bg-white/5 uppercase tracking-tight">
                       {item.question}
                     </AccordionTrigger>
                     <AccordionContent className="px-8 pb-8 text-muted-foreground leading-relaxed text-sm md:text-lg font-medium text-left border-t border-primary/5 mt-2 pt-6">
@@ -116,7 +116,7 @@ export default async function FaqPage({ params }: { params: { locale: string } }
         </div>
 
         {/* Contact CTA */}
-        <div className="max-w-4xl mx-auto mt-24">
+        <div className="max-w-4xl mx-auto mt-16 md:mt-24">
           <div className="p-10 md:p-16 rounded-[40px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 text-center space-y-8 relative overflow-hidden shadow-2xl">
             <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
             <div className="bg-primary/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">

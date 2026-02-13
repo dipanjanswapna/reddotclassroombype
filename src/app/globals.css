@@ -77,8 +77,9 @@
     font-family: var(--font-poppins), sans-serif;
   }
 
+  /* Standardized Section Spacing - Reduced from py-10/14 */
   section {
-    @apply py-10 md:py-14 max-w-full overflow-hidden;
+    @apply py-8 md:py-12 max-w-full overflow-hidden;
   }
 }
 

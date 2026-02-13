@@ -33,6 +33,10 @@ export async function generateMetadata({ params }: { params: { productId: string
   };
 }
 
+/**
+ * @fileOverview Localized Product Detail Page
+ * Standardized reduced spacing.
+ */
 export default async function ProductDetailPage({ params }: { params: { locale: string; productId: string } }) {
   const awaitedParams = await params;
   const { productId, locale } = awaitedParams;
@@ -59,7 +63,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
   return (
     <div className={cn("bg-transparent pb-20 px-1", isBn && "font-bengali")}>
         {/* Breadcrumb */}
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-4 md:py-6">
             <Button asChild variant="ghost" size="sm" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 text-muted-foreground hover:text-primary">
                 <Link href={`/${language}/store`}>
                     <ChevronLeft className="w-4 h-4" />
@@ -68,7 +72,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
             </Button>
         </div>
 
-        <div className="container mx-auto px-1 space-y-16">
+        <div className="container mx-auto px-1 space-y-12 md:space-y-16">
             {/* Main Product Info */}
             <section className="py-0">
                 <ProductClientPage product={product} />

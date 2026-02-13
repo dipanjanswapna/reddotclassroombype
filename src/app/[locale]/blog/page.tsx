@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 /**
  * @fileOverview Localized Blog Page
- * Wall-to-wall px-1 layout with Hind Siliguri font.
+ * Standardized reduced spacing.
  */
 export default async function BlogPage({ params }: { params: { locale: string } }) {
   const awaitedParams = await params;
@@ -28,7 +28,7 @@ export default async function BlogPage({ params }: { params: { locale: string } 
   return (
     <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
       {/* Modern Header Section */}
-      <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px]">
+      <section className="relative py-12 md:py-16 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px]">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20 shadow-sm">
@@ -48,7 +48,7 @@ export default async function BlogPage({ params }: { params: { locale: string } 
       </section>
 
       {/* Blog Grid Section */}
-      <div className="container mx-auto px-4 py-12 md:py-20">
+      <div className="container mx-auto px-4 py-10 md:py-14">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {blogPosts.map((post, index) => (
             <Card key={post.slug} className="group flex flex-col glassmorphism-card border-white/20 bg-white/40 dark:bg-card/40 overflow-hidden rounded-[30px] shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">

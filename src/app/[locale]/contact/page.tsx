@@ -16,7 +16,7 @@ import { useLanguage } from '@/context/language-context';
 
 /**
  * @fileOverview Localized Contact Page
- * Premium design with Hind Siliguri font support and px-1 layout.
+ * Standardized reduced spacing.
  */
 export default function ContactPage() {
     const [name, setName] = useState('');
@@ -83,7 +83,7 @@ export default function ContactPage() {
     return (
         <div className={cn("bg-background min-h-screen pb-20 px-1", isBn && "font-bengali")}>
             {/* Modern Header Section */}
-            <section className="relative py-16 md:py-24 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px] px-0">
+            <section className="relative py-12 md:py-16 bg-muted/30 border-b border-white/5 overflow-hidden rounded-b-[40px] px-0">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
                 <div className="container mx-auto px-4 text-center">
                     <motion.div
@@ -108,7 +108,7 @@ export default function ContactPage() {
                 </div>
             </section>
 
-            <div className="container mx-auto px-4 mt-12 md:mt-20">
+            <div className="container mx-auto px-4 mt-8 md:mt-12">
                 <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
                     
                     {/* Contact Info Sidebar */}
