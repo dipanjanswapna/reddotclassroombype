@@ -23,6 +23,7 @@ import { HomepageConfig } from '@/lib/types';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { addDays, format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const ReactConfetti = dynamic(() => import('react-confetti'), { ssr: false });
 
