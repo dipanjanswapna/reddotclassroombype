@@ -52,7 +52,7 @@ const getFaqData = (language: 'en' | 'bn') => {
 
 /**
  * @fileOverview Localized FAQ Page
- * Standardized reduced spacing.
+ * Standardized reduced spacing (py-8 md:py-12).
  */
 export default async function FaqPage({ params }: { params: { locale: string } }) {
     const awaitedParams = await params;
@@ -72,10 +72,10 @@ export default async function FaqPage({ params }: { params: { locale: string } }
             <Globe className="w-3.5 h-3.5" />
             {getT('support_center')}
           </div>
-          <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight">
+          <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight text-left">
             {isBn ? 'আপনার যা কিছু' : 'How can we'} <span className="text-primary">{isBn ? 'জিজ্ঞাসা' : 'Help'}</span>?
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed text-left">
             {isBn ? 'রেড ডট ক্লাসরুম প্ল্যাটফর্ম সম্পর্কে সবচেয়ে বেশি জিজ্ঞাসিত প্রশ্নের উত্তর এখানে পাবেন।' : 'Find answers to the most frequently asked questions about the Red Dot Classroom platform.'}
           </p>
         </div>
@@ -116,7 +116,7 @@ export default async function FaqPage({ params }: { params: { locale: string } }
         </div>
 
         {/* Contact CTA */}
-        <div className="max-w-4xl mx-auto mt-16 md:mt-24">
+        <div className="max-w-4xl mx-auto mt-12 md:mt-16">
           <div className="p-10 md:p-16 rounded-[40px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 text-center space-y-8 relative overflow-hidden shadow-2xl">
             <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
             <div className="bg-primary/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">

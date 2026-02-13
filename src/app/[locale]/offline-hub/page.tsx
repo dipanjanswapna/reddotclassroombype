@@ -18,8 +18,8 @@ import { t } from '@/lib/i18n';
 
 /**
  * @fileOverview Localized Offline Hub Page
+ * Standardized reduced spacing (py-8 md:py-12).
  * Hind Siliguri font enforcement.
- * Standardized reduced spacing.
  */
 export default function OfflineHubPage() {
     const { language } = useLanguage();
@@ -104,12 +104,12 @@ export default function OfflineHubPage() {
                             
                             <div className="space-y-5">
                                 <h1 className={cn(
-                                    "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95] uppercase drop-shadow-2xl",
+                                    "text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95] uppercase drop-shadow-2xl text-left",
                                     !isBn && "font-headline"
                                 )}>
                                     {offlineHubData?.heroTitle?.[language] || "Red Dot Offline Hub"}
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0 text-left">
                                     {t.offline_hero_subtitle[language] || "Experience the fusion of digital excellence and physical interaction."}
                                 </p>
                             </div>
@@ -179,7 +179,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Programs Section */}
-            <section id="programs" className="py-10 md:py-14 px-0">
+            <section id="programs" className="py-8 md:py-12 px-0">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl text-left border-l-4 border-primary pl-6 mb-16">
                         <h2 className={cn(
@@ -205,7 +205,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Branch Directory */}
-            <section id="centers" className="py-10 md:py-14 bg-black/20 px-0">
+            <section id="centers" className="py-8 md:py-12 bg-black/20 px-0">
                 <div className="container mx-auto px-4">
                     <div className="text-left md:text-center mb-20 space-y-4 border-l-4 border-primary md:border-none pl-6 md:pl-0">
                         <h2 className={cn(
@@ -257,7 +257,7 @@ export default function OfflineHubPage() {
             </section>
 
             {/* Contact Section */}
-            <section className="py-12 md:py-20 px-0">
+            <section className="py-10 md:py-16 px-0">
                 <div className="container mx-auto px-4">
                     <motion.div 
                         initial={{ opacity: 0, y: 30 }}

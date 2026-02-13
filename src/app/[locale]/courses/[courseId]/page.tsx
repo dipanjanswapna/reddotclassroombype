@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 
 /**
  * @fileOverview Localized Course Detail Page
- * Standardized reduced spacing.
+ * Standardized reduced spacing (py-8 md:py-12).
  */
 export default async function CourseDetailPage({
   params,

@@ -39,10 +39,8 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 
 /**
  * @fileOverview Localized Home Page
- * Notice Board moved after struggling section.
- * Callback section added after stats.
- * Hind Siliguri font enforced.
  * Standardized reduced spacing (py-8 md:py-12).
+ * Hind Siliguri font enforced.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -158,7 +156,7 @@ export default function Home() {
 
         {/* Struggling in Studies Banner */}
         {homepageConfig.strugglingStudentSection?.display && (
-            <section className="px-1 py-6 md:py-10">
+            <section className="px-1 py-8 md:py-12">
                 <div className="container mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -275,7 +273,7 @@ export default function Home() {
         )}
 
         {/* Trust Section */}
-        <section className="px-1 py-10 md:py-14">
+        <section className="px-1 py-8 md:py-12">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </section>
         
@@ -292,14 +290,14 @@ export default function Home() {
         )}
 
         {/* Request a Callback Section */}
-        <section className="px-1 py-10 md:py-14">
+        <section className="px-1 py-8 md:py-12">
             <div className="container mx-auto">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
         {/* Have a Question? Dynamic Contact Section */}
-        <section className="px-1 py-10 md:py-16 overflow-hidden">
+        <section className="px-1 py-8 md:py-12 overflow-hidden">
             <div className="container mx-auto">
                 <Card className="rounded-[40px] border-none shadow-2xl bg-[#eef2ed] dark:bg-card/20 overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 pointer-events-none">

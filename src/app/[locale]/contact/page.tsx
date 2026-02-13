@@ -16,7 +16,7 @@ import { useLanguage } from '@/context/language-context';
 
 /**
  * @fileOverview Localized Contact Page
- * Standardized reduced spacing.
+ * Standardized reduced spacing (py-8 md:py-12).
  */
 export default function ContactPage() {
     const [name, setName] = useState('');
@@ -95,10 +95,10 @@ export default function ContactPage() {
                             <Globe className="w-3.5 h-3.5" />
                             {getT('connect_with_us')}
                         </div>
-                        <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight max-w-4xl mx-auto">
+                        <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight text-left">
                             {isBn ? 'আমাদের সাথে' : 'Get in'} <span className="text-primary">{isBn ? 'যোগাযোগ করুন' : 'Touch'}</span>
                         </h1>
-                        <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+                        <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed text-left">
                             {isBn 
                                 ? 'আপনার যেকোনো প্রশ্ন বা কারিগরি সমস্যার জন্য আমরা সবসময় প্রস্তুত। আপনার লার্নিং জার্নি আমাদের জন্য গুরুত্বপূর্ণ।'
                                 : "Have questions about our courses or technical issues? We're here to help you on your journey to excellence."

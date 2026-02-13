@@ -31,8 +31,8 @@ const pastelColors = [
 
 /**
  * @fileOverview WhyTrustUs Component
- * Live testimonial and feature section with px-1 wall-to-wall layout and 20px rounding.
- * Uses conditional font logic for Bengali Hind Siliguri support.
+ * Standardized reduced spacing (py-8 md:py-12).
+ * Hind Siliguri font support.
  */
 export default function WhyTrustUs({ data }: WhyTrustUsProps) {
   const { language } = useLanguage();
