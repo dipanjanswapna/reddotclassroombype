@@ -77,7 +77,7 @@
     font-family: var(--font-poppins), sans-serif;
   }
 
-  /* Standardized Section Spacing - Reduced for high density */
+  /* Standardized Section Spacing - Equal and Reduced for high density */
   section {
     @apply py-6 md:py-10 max-w-full overflow-hidden;
   }

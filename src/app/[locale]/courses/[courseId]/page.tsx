@@ -52,7 +52,7 @@ import { t } from '@/lib/i18n';
 
 type Language = 'en' | 'bn';
 
-export async function generateMetadata({ params }: { params: { courseId: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ courseId: string }> }): Promise<Metadata> {
   const awaitedParams = await params;
   const course = await getCourse(awaitedParams.courseId);
 
@@ -74,12 +74,12 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 /**
  * @fileOverview Localized Course Detail Page
  * Standardized dynamic sections: Overview, Instructors, Cycles, Syllabus, FAQ, Payment.
- * Wall-to-wall design with px-1.
+ * Standardized spacing (py-6 md:py-10) and wall-to-wall design (px-1).
  */
 export default async function CourseDetailPage({
   params,
 }: {
-  params: { locale: string; courseId: string };
+  params: Promise<{ locale: string; courseId: string }>;
 }) {
   const awaitedParams = await params;
   const { courseId, locale } = awaitedParams;
