@@ -74,6 +74,7 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 /**
  * @fileOverview Localized Course Detail Page
  * Standardized dynamic sections: Overview, Instructors, Cycles, Syllabus, FAQ, Payment.
+ * Wall-to-wall design with px-1.
  */
 export default async function CourseDetailPage({
   params,
@@ -306,6 +307,17 @@ export default async function CourseDetailPage({
                               </div>
                           </CardContent>
                       </Card>
+                  </section>
+
+                  {/* Popular Courses at bottom */}
+                  <section className="py-0 px-0">
+                      <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('popular_courses')}</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                          {relatedCourses.map((c) => {
+                              const provider = allOrgs.find(o => o.id === c.organizationId);
+                              return <CourseCard key={c.id} {...c} provider={provider} />;
+                          })}
+                      </div>
                   </section>
               </div>
             </div>
