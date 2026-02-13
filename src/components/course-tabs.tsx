@@ -1,69 +1,44 @@
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Course } from '@/lib/types';
-
+import { useLanguage } from '@/context/language-context';
+import { t } from '@/lib/i18n';
 
 export function CourseTabs({ course }: { course: Course }) {
-    const [isSticky, setSticky] = useState(false);
-    const [activeTab, setActiveTab] = useState('features');
+    const { language } = useLanguage();
+    const [activeTab, setActiveTab] = useState('overview');
 
     const tabs = React.useMemo(() => {
         let baseTabs = [
-            { id: 'features', label: 'Overview' },
-            { id: 'instructors', label: 'Instructors' },
+            { id: 'overview', label: t.overview[language] },
+            { id: 'instructors', label: t.instructors[language] },
         ];
 
         if (course.cycles && course.cycles.length > 0) {
-            baseTabs.push({ id: 'cycles', label: 'Cycles' });
+            baseTabs.push({ id: 'cycles', label: t.cycles[language] });
         }
 
-        if (course.type === 'Exam') {
-            if (course.examTemplates && course.examTemplates.length > 0) {
-                baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
-            }
-        } else {
-            if (course.classRoutine && course.classRoutine.length > 0) {
-                baseTabs.push({ id: 'routine', label: 'Routine' });
-            }
-        
-            if (course.examTemplates && course.examTemplates.length > 0) {
-                baseTabs.push({ id: 'exam-schedule', label: 'Exam Schedule' });
-            }
-        
-            if (course.syllabus && course.syllabus.length > 0) {
-                baseTabs.push({ id: 'syllabus', label: 'Syllabus' });
-            }
+        if (course.syllabus && course.syllabus.length > 0) {
+            baseTabs.push({ id: 'syllabus', label: t.syllabus[language] });
         }
         
-        if (course.reviewsData && course.reviewsData.length > 0) {
-            baseTabs.push({ id: 'reviews', label: 'Reviews' });
-        }
-
         if (course.faqs && course.faqs.length > 0) {
-            baseTabs.push({ id: 'faq', label: 'FAQ' });
+            baseTabs.push({ id: 'faq', label: t.nav_faq[language] });
         }
 
         if (course.price) {
-            baseTabs.push({ id: 'payment', label: 'Payment' });
+            baseTabs.push({ id: 'payment', label: t.payment_info[language] });
         }
         
         return baseTabs;
-    }, [course]);
+    }, [course, language]);
 
     const handleScroll = () => {
-        const header = document.querySelector('header');
-        if (header) {
-            const headerBottom = header.getBoundingClientRect().bottom;
-            // The value '64' corresponds to the height of the header (h-16)
-            setSticky(window.scrollY > headerBottom + 400); // Adjust this value based on hero section height
-        }
-        
         let currentTab = '';
-        const offset = (header ? header.offsetHeight : 64) + 60; // Header height + tabs height
+        const offset = 150; // Header height + some margin
         for (const tab of tabs) {
             const section = document.getElementById(tab.id);
             if (section && section.getBoundingClientRect().top <= offset) {
@@ -84,9 +59,8 @@ export function CourseTabs({ course }: { course: Course }) {
 
     const scrollToSection = (id: string) => {
         const section = document.getElementById(id);
-        const header = document.querySelector('header');
-        if (section && header) {
-            const topPos = section.offsetTop - header.offsetHeight - 50; // header height + some margin
+        if (section) {
+            const topPos = section.offsetTop - 120; // approximate offset
             window.scrollTo({
                 top: topPos,
                 behavior: 'smooth'
@@ -95,17 +69,17 @@ export function CourseTabs({ course }: { course: Course }) {
     };
 
     return (
-        <div className={cn("bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b transition-all sticky top-16 z-40")}>
-            <div className="container mx-auto px-4 overflow-x-auto">
-                <nav className="flex items-center space-x-2 text-sm font-medium">
+        <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b sticky top-16 z-40">
+            <div className="container mx-auto px-4 overflow-x-auto no-scrollbar">
+                <nav className="flex items-center space-x-2 text-sm font-bold">
                     {tabs.map((tab) => (
                         <Button
                             key={tab.id}
                             variant="ghost"
                             onClick={() => scrollToSection(tab.id)}
                             className={cn(
-                                "py-4 px-3 whitespace-nowrap transition-colors hover:text-primary rounded-none border-b-2",
-                                activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                                "py-6 px-4 whitespace-nowrap transition-all uppercase text-[10px] tracking-widest rounded-none border-b-2",
+                                activeTab === tab.id ? "border-primary text-primary bg-primary/5" : "border-transparent text-muted-foreground hover:text-primary"
                             )}
                         >
                             {tab.label}

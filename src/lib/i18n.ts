@@ -74,6 +74,9 @@ export const t: Record<string, Record<string, string>> = {
   back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
 
   // Course Detail
+  overview: { en: 'Overview', bn: 'ওভারভিউ' },
+  instructors: { en: 'Instructors', bn: 'শিক্ষকগণ' },
+  cycles: { en: 'Course Cycles', bn: 'কোর্স সাইকেল' },
   prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
   curriculum: { en: 'Course Curriculum', bn: 'কোর্স কারিকুলাম' },
   routine: { en: 'Class Routine', bn: 'ক্লাস রুটিন' },
@@ -83,6 +86,11 @@ export const t: Record<string, Record<string, string>> = {
   time: { en: 'Time', bn: 'সময়' },
   demo_class: { en: 'Demo Class', bn: 'ডেমো ক্লাস দেখুন' },
   includes_heading: { en: 'What is included', bn: 'এই কোর্সে যা থাকছে' },
+  payment_info: { en: 'Payment Process', bn: 'পেমেন্ট প্রক্রিয়া' },
+  payment_desc: { 
+    en: 'Our payment process is simple. You can pay via bKash, Nagad, Rocket or any Debit/Credit card. Upon enrollment, the course will be added to your dashboard instantly.', 
+    bn: 'আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। ভর্তির সাথে সাথেই আপনি আপনার ড্যাশবোর্ডে কোর্সটি পেয়ে যাবেন।' 
+  },
 
   // Offline Hub
   offline_hero_subtitle: { 

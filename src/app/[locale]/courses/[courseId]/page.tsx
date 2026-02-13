@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: { params: { courseId: string 
 
 /**
  * @fileOverview Localized Course Detail Page
- * Standardized reduced spacing (py-8 md:py-12).
+ * Standardized dynamic sections: Overview, Instructors, Cycles, Syllabus, FAQ, Payment.
  */
 export default async function CourseDetailPage({
   params,
@@ -132,7 +132,7 @@ export default async function CourseDetailPage({
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-8 space-y-8">
-              <div className="space-y-6 text-left">
+              <div id="overview" className="space-y-6 text-left scroll-mt-32">
                 {isPrebookingActive && (
                     <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest animate-pulse border-orange-500/20 shadow-lg">
                         {getT('prebook_now')} - {format(new Date(course.prebookingEndDate!), 'dd MMM yyyy')}
@@ -179,10 +179,12 @@ export default async function CourseDetailPage({
               </div>
 
               {/* Course Detail Components */}
-              <div className="pt-8 space-y-12">
+              <div className="pt-8 space-y-16">
+                  <CourseTabs course={course} />
+
                   {/* Learning Outcomes */}
                   {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
-                    <section id="features" className="py-0 px-0">
+                    <section className="py-0 px-0">
                         <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('curriculum')}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {course.whatYouWillLearn.map((item, index) => (
@@ -195,36 +197,55 @@ export default async function CourseDetailPage({
                     </section>
                   )}
 
-                  {/* Routine */}
-                  {course.classRoutine && course.classRoutine.length > 0 && (
-                    <section id="routine" className="py-0 px-0">
-                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('routine')}</h2>
-                        <Card className="rounded-[25px] overflow-hidden border-primary/10 shadow-xl bg-card">
-                            <Table>
-                                <TableHeader className="bg-primary/5">
-                                    <TableRow className="border-primary/10">
-                                        <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">{getT('day')}</TableHead>
-                                        <TableHead className="font-black uppercase tracking-widest text-[10px]">{getT('subject')}</TableHead>
-                                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-right px-6">{getT('time')}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {course.classRoutine.map((item, index) => (
-                                        <TableRow key={index} className="border-primary/5 hover:bg-primary/[0.02]">
-                                            <TableCell className="px-6 font-black text-sm uppercase">{item.day}</TableCell>
-                                            <TableCell className="font-bold text-sm text-primary">{item.subject}</TableCell>
-                                            <TableCell className="text-right px-6 font-black text-sm text-muted-foreground">{item.time}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Card>
+                  {/* Instructors */}
+                  {course.instructors && course.instructors.length > 0 && (
+                    <section id="instructors" className="py-0 px-0 scroll-mt-32">
+                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('instructors')}</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {course.instructors.map((inst) => (
+                                <Link key={inst.slug} href={`/teachers/${inst.slug}`} className="group text-center">
+                                    <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 p-1 rounded-2xl border-2 border-primary/10 group-hover:border-primary transition-all overflow-hidden">
+                                        <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover rounded-xl" data-ai-hint={inst.dataAiHint} />
+                                    </div>
+                                    <h3 className="font-black text-sm uppercase tracking-tight">{inst.name}</h3>
+                                    <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">{inst.title}</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                  )}
+
+                  {/* Cycles */}
+                  {course.cycles && course.cycles.length > 0 && (
+                    <section id="cycles" className="py-0 px-0 scroll-mt-32">
+                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('cycles')}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {course.cycles.map((cycle) => (
+                                <Card key={cycle.id} className="rounded-2xl border-primary/10 overflow-hidden bg-card shadow-lg hover:border-primary transition-all">
+                                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/5">
+                                        <div className="flex justify-between items-center">
+                                            <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
+                                            <span className="font-black text-lg text-primary">{cycle.price}</span>
+                                        </div>
+                                        <CardTitle className="text-lg font-black uppercase mt-3">{cycle.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-5">
+                                        <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
+                                    </CardContent>
+                                    <CardFooter className="p-5 pt-0">
+                                        <Button asChild className="w-full rounded-xl font-black uppercase tracking-widest h-10 shadow-lg shadow-primary/20">
+                                            <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll Cycle</Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
                     </section>
                   )}
 
                   {/* Syllabus */}
                   {course.syllabus && course.syllabus.length > 0 && (
-                    <section id="syllabus" className="py-0 px-0">
+                    <section id="syllabus" className="py-0 px-0 scroll-mt-32">
                         <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('syllabus')}</h2>
                         <Accordion type="single" collapsible className="w-full space-y-3">
                             {course.syllabus.map((item) => (
@@ -252,17 +273,40 @@ export default async function CourseDetailPage({
                     </section>
                   )}
 
-                  {/* Reviews Section */}
-                  {course.reviewsData && course.reviewsData.length > 0 && (
-                    <section id="reviews" className="py-0 px-0">
-                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('customer_feedback')}</h2>
-                        <Card className="rounded-[25px] border-primary/10 bg-card/50 shadow-xl overflow-hidden p-6 md:p-10 space-y-8">
-                            {course.reviewsData.map((review) => (
-                                <ReviewCard key={review.id} review={review} courseId={courseId} />
+                  {/* FAQ */}
+                  {course.faqs && course.faqs.length > 0 && (
+                    <section id="faq" className="py-0 px-0 scroll-mt-32">
+                        <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('nav_faq')}</h2>
+                        <Accordion type="single" collapsible className="w-full space-y-3">
+                            {course.faqs.map((faq, idx) => (
+                                <AccordionItem key={idx} value={`faq-${idx}`} className="border border-primary/10 rounded-2xl overflow-hidden bg-card">
+                                    <AccordionTrigger className="px-6 py-4 font-bold text-left hover:no-underline hover:bg-primary/5">
+                                        {faq.question}
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-6 pb-6 pt-2 text-muted-foreground font-medium leading-relaxed border-t border-primary/5">
+                                        {faq.answer}
+                                    </AccordionContent>
+                                </AccordionItem>
                             ))}
-                        </Card>
+                        </Accordion>
                     </section>
                   )}
+
+                  {/* Payment */}
+                  <section id="payment" className="py-0 px-0 scroll-mt-32">
+                      <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6 mb-8">{getT('payment_info')}</h2>
+                      <Card className="rounded-[30px] border-primary/10 bg-primary/5 overflow-hidden">
+                          <CardContent className="p-8 flex flex-col md:flex-row gap-8 items-center">
+                              <div className="h-20 w-20 bg-primary rounded-3xl flex items-center justify-center text-white shadow-xl shadow-primary/20 shrink-0">
+                                  <ShieldCheck className="w-10 h-10" />
+                              </div>
+                              <div className="space-y-3 text-center md:text-left">
+                                  <h3 className="font-black text-xl uppercase tracking-tight">{isBn ? 'নিরাপদ পেমেন্ট গেটওয়ে' : '100% Secure Payment'}</h3>
+                                  <p className="text-muted-foreground font-medium leading-relaxed">{getT('payment_desc')}</p>
+                              </div>
+                          </CardContent>
+                      </Card>
+                  </section>
               </div>
             </div>
 
