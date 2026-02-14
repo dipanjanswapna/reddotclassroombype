@@ -160,4 +160,10 @@ export const t: Record<string, Record<string, string>> = {
   mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
   class_label: { en: 'Class', bn: 'ক্লাস' },
   submit: { en: 'Submit', bn: 'জমা দিন' },
+  
+  // Sections
+  categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরিগুলো দেখুন' },
+  live_courses_heading: { en: 'Our Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
+  our_mentors: { en: 'Our Expert Mentors', bn: 'আমাদের অভিজ্ঞ মেন্টরগণ' },
+  view_all: { en: 'View All', bn: 'সব দেখুন' },
 };

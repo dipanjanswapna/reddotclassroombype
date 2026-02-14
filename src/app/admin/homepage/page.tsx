@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon, Info, Sparkles } from 'lucide-react';
+import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon, Info, Sparkles, MessageSquare, Zap, Target } from 'lucide-react';
 import Image from 'next/image';
 import { HomepageConfig, TeamMember, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageBanner, Course, CategoryItem, SocialChannel, Product } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses, getProducts } from '@/lib/firebase/firestore';
@@ -160,6 +160,10 @@ export default function AdminHomepageManagementPage() {
         const newCat: CategoryItem = { id: Date.now(), title: { bn: '', en: '' }, imageUrl: '', linkUrl: '', dataAiHint: '' };
         return { ...prev, categoriesSection: { ...prev.categoriesSection, categories: [...(prev.categoriesSection.categories || []), newCat] } };
     });
+  };
+
+  const removeCategory = (id: number) => {
+    setConfig(prev => prev ? ({ ...prev, categoriesSection: { ...prev.categoriesSection, categories: prev.categoriesSection.categories.filter(c => c.id !== id) } }) : null);
   };
 
   const handleInstructorToggle = (id: string, add: boolean) => {

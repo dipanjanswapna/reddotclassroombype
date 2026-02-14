@@ -367,3 +367,182 @@ export const getEnrollmentsByUserId = async (uid: string) => {
 export const addNotification = (notif: Omit<Notification, 'id'>) => addDocument('notifications', notif);
 export const getAttendanceRecords = () => getCollection<AttendanceRecord>('attendance');
 export const getBatches = () => getCollection<Batch>('batches');
+export const getBranch = (id: string) => getDocument<Branch>('branches', id);
+export const getBatch = (id: string) => getDocument<Batch>('batches', id);
+export const getBranches = () => getCollection<Branch>('branches');
+export const getPendingReports = async () => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'reported_content'), where("status", "==", "pending"));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReportedContent));
+}
+export const getPayoutsByUserId = async (uid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'payouts'), where("userId", "==", uid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Payout));
+}
+export const getCallbackRequests = () => getCollection<CallbackRequest>('callbacks');
+export const markStudentAsCounseled = async (id: string) => updateDocument('users', id, { lastCounseledAt: Timestamp.now() });
+export const getPrebookingsByUserId = async (uid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'prebookings'), where("userId", "==", uid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
+export const getPrebookingsByCourseId = async (cid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'prebookings'), where("courseId", "==", cid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Prebooking));
+}
+export const addPrebooking = (data: Omit<Prebooking, 'id'>) => addDocument('prebookings', data);
+export const getPrebookingForUser = async (cid: string, uid: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'prebookings'), where("courseId", "==", cid), where("userId", "==", uid));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as Prebooking;
+}
+export const getPromoCodeForUserAndCourse = async (uid: string, cid: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'promo_codes'), where("restrictedToUserId", "==", uid), where("applicableCourseIds", "array-contains", cid), where("isActive", "==", true));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as PromoCode;
+}
+export const getPromoCodeByCode = async (code: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'promo_codes'), where("code", "==", code));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as PromoCode;
+}
+export const getEnrollments = () => getCollection<Enrollment>('enrollments');
+export const getEnrollmentsByCourseId = async (cid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'enrollments'), where("courseId", "==", cid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Enrollment));
+}
+export const updateEnrollment = (id: string, data: Partial<Enrollment>) => updateDocument('enrollments', id, data);
+export const getInvoiceByEnrollmentId = async (eid: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'invoices'), where("enrollmentId", "==", eid));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as Invoice;
+}
+export const addSupportTicket = (data: Omit<SupportTicket, 'id'>) => addDocument('support_tickets', data);
+export const updateSupportTicket = (id: string, data: Partial<SupportTicket>) => updateDocument('support_tickets', id, data);
+export const getSupportTicket = (id: string) => getDocument<SupportTicket>('support_tickets', id);
+export const getSupportTickets = () => getCollection<SupportTicket>('support_tickets');
+export const getSupportTicketsByUserId = async (uid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'support_tickets'), where("userId", "==", uid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as SupportTicket));
+}
+export const addBlogPost = (data: Omit<BlogPost, 'id'>) => addDocument('blog_posts', data);
+export const updateBlogPost = (id: string, data: Partial<BlogPost>) => updateDocument('blog_posts', id, data);
+export const deleteBlogPost = (id: string) => deleteDocument('blog_posts', id);
+export const getBlogPosts = () => getCollection<BlogPost>('blog_posts');
+export const getBlogPostBySlug = async (slug: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'blog_posts'), where("slug", "==", slug));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as BlogPost;
+}
+export const addPromoCode = (data: Omit<PromoCode, 'id'>) => addDocument('promo_codes', data);
+export const updatePromoCode = (id: string, data: Partial<PromoCode>) => updateDocument('promo_codes', id, data);
+export const deletePromoCode = (id: string) => deleteDocument('promo_codes', id);
+export const addOrganization = (data: Partial<Organization>) => addDocument('organizations', data);
+export const updateOrganization = (id: string, data: Partial<Organization>) => updateDocument('organizations', id, data);
+export const deleteOrganization = (id: string) => deleteDocument('organizations', id);
+export const getReportedContent = () => getCollection<ReportedContent>('reported_content');
+export const addReportedContent = (data: Omit<ReportedContent, 'id'>) => addDocument('reported_content', data);
+export const updateReportedContent = (id: string, data: Partial<ReportedContent>) => updateDocument('reported_content', id, data);
+export const addUser = (data: Partial<User>) => addDocument('users', data);
+export const deleteUser = (id: string) => deleteDocument('users', id);
+export const addBranch = (data: Branch) => addDocument('branches', data);
+export const updateBranch = (id: string, data: Partial<Branch>) => updateDocument('branches', id, data);
+export const deleteBranch = (id: string) => deleteDocument('branches', id);
+export const addBatch = (data: Omit<Batch, 'id'>) => addDocument('batches', data);
+export const updateBatch = (id: string, data: Partial<Batch>) => updateDocument('batches', id, data);
+export const deleteBatch = (id: string) => deleteDocument('batches', id);
+export const saveAttendanceRecords = async (records: ({ id: string, update: Partial<AttendanceRecord> } | { create: Omit<AttendanceRecord, 'id'> })[]) => {
+    const db = getDbInstance();
+    if (!db) return;
+    const batch = writeBatch(db);
+    records.forEach(r => {
+        if ('create' in r) batch.set(doc(collection(db, 'attendance')), r.create);
+        else batch.update(doc(db, 'attendance', r.id), r.update);
+    });
+    await batch.commit();
+}
+export const getAttendanceRecordForStudentByDate = async (sid: string, date: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'attendance'), where("studentId", "==", sid), where("date", "==", date));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as AttendanceRecord;
+}
+export const getAttendanceForStudent = async (sid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'attendance'), where("studentId", "==", sid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
+}
+export const getAttendanceForStudentInCourse = async (sid: string, cid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'attendance'), where("studentId", "==", sid), where("courseId", "==", cid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
+}
+export const updateAttendanceRecord = (id: string, data: Partial<AttendanceRecord>) => updateDocument('attendance', id, data);
+export const getUserByOfflineRoll = async (roll: string) => {
+    const db = getDbInstance();
+    if (!db) return null;
+    const q = query(collection(db, 'users'), where("offlineRollNo", "==", roll));
+    const snap = await getDocs(q);
+    return snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() } as User;
+}
+export const getUsersByBatchId = async (bid: string) => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'users'), where("assignedBatchId", "==", bid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+}
+export const getCategories = async () => {
+    const db = getDbInstance();
+    if (!db) return [];
+    const q = query(collection(db, 'courses'));
+    const snap = await getDocs(q);
+    const cats = new Set(snap.docs.map(d => d.data().category).filter(Boolean));
+    return Array.from(cats) as string[];
+}
+export const findUserByRegistrationOrRoll = async (val: string) => {
+    const db = getDbInstance();
+    if (!db) return { userId: null };
+    let q = query(collection(db, 'users'), where("registrationNumber", "==", val));
+    let snap = await getDocs(q);
+    if (snap.empty) {
+        q = query(collection(db, 'users'), where("classRoll", "==", val));
+        snap = await getDocs(q);
+    }
+    if (snap.empty) {
+        q = query(collection(db, 'users'), where("offlineRollNo", "==", val));
+        snap = await getDocs(q);
+    }
+    return { userId: snap.empty ? null : snap.docs[0].id };
+}
