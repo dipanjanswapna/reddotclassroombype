@@ -112,48 +112,10 @@ export const t: Record<string, Record<string, string>> = {
   offline_hubs_subtitle: { en: 'Visit us at any of our state-of-the-art locations across Bangladesh.', bn: 'বাংলাদেশের যেকোনো প্রান্ত থেকে আমাদের অত্যাধুনিক সেন্টারে চলে আসুন।' },
   talk_to_advisors_simple: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
 
-  // About Us
-  our_identity: { en: 'Our Identity', bn: 'আমাদের পরিচয়' },
-  our_mission: { en: 'Our Mission', bn: 'আমাদের লক্ষ্য' },
-  our_vision: { en: 'Our Vision', bn: 'আমাদের ভিশন' },
-  core_values: { en: 'Core Values', bn: 'মূল আদর্শ' },
-  visionary_team: { en: 'Visionary Team', bn: 'দক্ষ টিম' },
-  philosophy: { en: 'Brand Philosophy', bn: 'আমাদের দর্শন' },
-
-  // Contact & Support
-  connect_with_us: { en: 'Connect With Us', bn: 'আমাদের সাথে যুক্ত হোন' },
-  call_us: { en: 'Call Us', bn: 'ফোন করুন' },
-  email_support: { en: 'Email Support', bn: 'ইমেইল সাপোর্ট' },
-  our_office: { en: 'Our Office', bn: 'আমাদের অফিস' },
-  support_hours: { en: 'Support Hours', bn: 'সাপোর্ট আওয়ার' },
-  send_message: { en: 'Send a Message', bn: 'বার্তা পাঠান' },
-  support_center: { en: 'Support Center', bn: 'সাপোর্ট সেন্টার' },
-
-  // Teachers
-  teacher_bio: { en: 'Instructor Biography', bn: 'শিক্ষকের জীবনী' },
-  teacher_courses: { en: 'Courses by this Mentor', bn: 'শিক্ষকের সকল কোর্সসমূহ' },
-  free_masterclasses: { en: 'Free Masterclasses', bn: 'ফ্রি মাস্টারক্লাস' },
-
-  // Auth & Login
-  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
-  login_desc: { en: 'Login to access your courses', bn: 'আপনার অ্যাকাউন্টে লগইন করুন' },
-  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
-  find_roll_desc: { en: 'Enter your email to retrieve your roll', bn: 'আপনার রেজিস্ট্রেশন করা ইমেইল এড্রেসটি লিখুন।' },
-  full_name: { en: 'Full Name', bn: 'পূর্ণ নাম' },
-  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
-  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
-  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
-  or_login_with_roll: { en: 'Or Login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
-  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
-  no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },
-  
   // Callback
   callback_title: { en: 'Request a Callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
+  full_name: { en: 'Full Name', bn: 'পূর্ণ নাম' },
   mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
   class_label: { en: 'Class', bn: 'ক্লাস' },
   submit: { en: 'Submit', bn: 'জমা দিন' },
-  categories_heading: { en: 'Categories', bn: 'ক্যাটাগরি' },
-  view_all: { en: 'View All', bn: 'সব দেখুন' },
-  live_courses_heading: { en: 'Live Courses', bn: 'লাইভ কোর্সসমূহ' },
-  our_mentors: { en: 'Our Mentors', bn: 'আমাদের মেন্টরগণ' },
 };

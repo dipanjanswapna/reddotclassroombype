@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,12 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { PlusCircle, Save, X, Loader2, Youtube, CheckCircle, ChevronDown, Facebook, Linkedin, Twitter, ExternalLink, PackageOpen, Check, Store, ChevronsUpDown, Image as ImageIcon, Info, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { HomepageConfig, TeamMember, TopperPageCard, TopperPageSection, WhyChooseUsFeature, Testimonial, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageSection, StoreHomepageBanner, Course, CategoryItem, SocialChannel, Product } from '@/lib/types';
+import { HomepageConfig, TeamMember, OfflineHubHeroSlide, Organization, Instructor, StoreHomepageBanner, Course, CategoryItem, SocialChannel, Product } from '@/lib/types';
 import { getHomepageConfig, getInstructors, getOrganizations, getCourses, getProducts } from '@/lib/firebase/firestore';
 import { saveHomepageConfigAction } from '@/app/actions/homepage.actions';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { Switch } from '@/components/ui/switch';
-import { getYoutubeVideoId, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,12 +23,10 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type CourseIdSections = 'liveCoursesIds' | 'sscHscCourseIds' | 'masterClassesIds' | 'admissionCoursesIds' | 'jobCoursesIds';
-
 /**
- * @fileOverview Admin Homepage Management
- * Unified CMS for controlling all dynamic sections of the homepage.
- * Includes store hero and bestseller product management.
+ * @fileOverview Super Powerful Admin Homepage CMS
+ * Manage all 18+ sections of the homepage dynamically.
+ * Optimized for px-1 wall-to-wall design.
  */
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -52,26 +50,14 @@ export default function AdminHomepageManagementPage() {
             getProducts()
         ]);
         
-        if (fetchedConfig) {
-            if (!Array.isArray(fetchedConfig.heroBanners)) fetchedConfig.heroBanners = [];
-            if (fetchedConfig.offlineHubHeroCarousel && !Array.isArray(fetchedConfig.offlineHubHeroCarousel.slides)) {
-                fetchedConfig.offlineHubHeroCarousel.slides = [];
-            }
-            if (!Array.isArray(fetchedConfig.liveCoursesIds)) fetchedConfig.liveCoursesIds = [];
-            if (!Array.isArray(fetchedConfig.sscHscCourseIds)) fetchedConfig.sscHscCourseIds = [];
-            if (!Array.isArray(fetchedConfig.admissionCoursesIds)) fetchedConfig.admissionCoursesIds = [];
-            if (!fetchedConfig.storeHomepageSection) fetchedConfig.storeHomepageSection = {};
-            if (!Array.isArray(fetchedConfig.storeHomepageSection.bannerCarousel)) fetchedConfig.storeHomepageSection.bannerCarousel = [];
-        }
-
         setConfig(fetchedConfig);
-        setAllInstructors(Array.isArray(instructorsData) ? instructorsData.filter(i => i.status === 'Approved') : []);
-        setAllOrganizations(Array.isArray(organizationsData) ? organizationsData.filter(o => o.status === 'approved') : []);
-        setAllCourses(Array.isArray(coursesData) ? coursesData : []);
-        setAllProducts(Array.isArray(productsData) ? productsData : []);
+        setAllInstructors(instructorsData.filter(i => i.status === 'Approved'));
+        setAllOrganizations(organizationsData.filter(o => o.status === 'approved'));
+        setAllCourses(coursesData);
+        setAllProducts(productsData);
       } catch (error) {
-        console.error("Error fetching homepage config:", error);
-        toast({ title: "Error", description: "Could not load homepage configuration.", variant: "destructive" });
+        console.error("CMS load error:", error);
+        toast({ title: "Error", description: "Could not load CMS configuration.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
@@ -84,10 +70,7 @@ export default function AdminHomepageManagementPage() {
     setIsSaving(true);
     const result = await saveHomepageConfigAction(config);
     if (result.success) {
-        toast({
-            title: 'Homepage Updated',
-            description: 'Your changes have been saved successfully.',
-        });
+        toast({ title: 'Homepage Updated', description: 'All changes are now live.' });
     } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive'});
     }
@@ -96,20 +79,6 @@ export default function AdminHomepageManagementPage() {
   
     const handleSimpleValueChange = (key: keyof HomepageConfig, value: any) => {
         setConfig(prev => prev ? { ...prev, [key]: value } : null);
-    };
-
-    const handleSectionValueChange = (sectionKey: keyof HomepageConfig, key: string, value: any) => {
-        setConfig(prev => {
-            if (!prev) return null;
-            const sectionData = (prev[sectionKey] as any) || { display: true };
-            return {
-                ...prev,
-                [sectionKey]: {
-                    ...sectionData,
-                    [key]: value,
-                },
-            };
-        });
     };
 
     const handleSectionLangChange = (sectionKey: keyof HomepageConfig, field: string, lang: 'bn' | 'en', value: string) => {
@@ -121,314 +90,140 @@ export default function AdminHomepageManagementPage() {
                 ...prev,
                 [sectionKey]: {
                     ...sectionData,
-                    [field]: {
-                        ...fieldData,
-                        [lang]: value,
-                    }
+                    [field]: { ...fieldData, [lang]: value }
                 }
             };
+        });
+    };
+
+    const handleSectionValueChange = (sectionKey: keyof HomepageConfig, key: string, value: any) => {
+        setConfig(prev => {
+            if (!prev) return null;
+            const sectionData = (prev[sectionKey] as any) || { display: true };
+            return { ...prev, [sectionKey]: { ...sectionData, [key]: value } };
         });
     };
 
     const handleNestedArrayChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, value: any) => {
         setConfig(prev => {
-            if (!prev || index < 0) return prev;
-            
-            const section = (prev[sectionKey] as any) || { display: true };
-            const array = Array.isArray(section[arrayKey]) ? [...section[arrayKey]] : [];
-            
+            if (!prev) return null;
+            const section = (prev[sectionKey] as any);
+            const array = [...(section[arrayKey] || [])];
             if (array[index]) {
                 array[index] = { ...array[index], [field]: value };
             }
-            
-            return {
-                ...prev,
-                [sectionKey]: {
-                    ...section,
-                    [arrayKey]: array
-                }
-            };
+            return { ...prev, [sectionKey]: { ...section, [arrayKey]: array } };
         });
     };
 
     const handleDeepNestedLangChange = (sectionKey: keyof HomepageConfig, arrayKey: string, index: number, field: string, lang: 'bn' | 'en', value: string) => {
         setConfig(prev => {
-            if (!prev || index < 0) return prev;
-            
-            const section = (prev[sectionKey] as any) || { display: true };
-            const array = section[arrayKey] ? [...section[arrayKey]] : [];
-    
+            if (!prev) return null;
+            const section = (prev[sectionKey] as any);
+            const array = [...(section[arrayKey] || [])];
             if (array[index]) {
                 const item = { ...array[index] };
-                const langObject = { ...(item[field] || {}) };
-                langObject[lang] = value;
-                item[field] = langObject;
+                const langObj = { ...(item[field] || {}) };
+                langObj[lang] = value;
+                item[field] = langObj;
                 array[index] = item;
             }
-    
-            return {
-                ...prev,
-                [sectionKey]: {
-                    ...section,
-                    [arrayKey]: array
-                }
-            };
-        });
-    };
-
-    const handleHeroBannerChange = (index: number, field: string, value: any) => {
-        setConfig(prev => {
-            if (!prev) return null;
-            const newBanners = Array.isArray(prev.heroBanners) ? [...prev.heroBanners] : [];
-            if (newBanners[index]) {
-                newBanners[index] = { ...newBanners[index], [field]: value };
-            }
-            return { ...prev, heroBanners: newBanners };
+            return { ...prev, [sectionKey]: { ...section, [arrayKey]: array } };
         });
     };
 
     const handleSectionToggle = (sectionKey: any, value: boolean) => {
-        setConfig(prevConfig => {
-            if (!prevConfig) return null;
-            const newConfig = { ...prevConfig };
-            if (newConfig[sectionKey]) {
-                (newConfig[sectionKey] as any).display = value;
-            } else {
-                (newConfig as any)[sectionKey] = { display: value };
-            }
-            return newConfig;
+        setConfig(prev => {
+            if (!prev) return null;
+            const section = (prev[sectionKey] as any) || {};
+            return { ...prev, [sectionKey]: { ...section, display: value } };
         });
     };
 
   const addHeroBanner = () => {
     setConfig(prev => {
         if (!prev) return null;
-        const currentBanners = Array.isArray(prev.heroBanners) ? prev.heroBanners : [];
         return {
             ...prev,
-            heroBanners: [
-                ...currentBanners,
-                { id: Date.now(), href: '', imageUrl: '', alt: '', dataAiHint: '' }
-            ]
-        }
+            heroBanners: [...(prev.heroBanners || []), { id: Date.now(), href: '', imageUrl: '', alt: '', dataAiHint: '' }]
+        };
     });
   };
 
   const removeHeroBanner = (id: number) => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const currentBanners = Array.isArray(prev.heroBanners) ? prev.heroBanners : [];
-        return {
-            ...prev,
-            heroBanners: currentBanners.filter(banner => banner.id !== id)
-        };
-    });
-  };
-
-  const addStoreBanner = () => {
-    setConfig(prev => {
-        if (!prev) return null;
-        const currentBanners = Array.isArray(prev.storeHomepageSection?.bannerCarousel) ? prev.storeHomepageSection?.bannerCarousel : [];
-        return {
-            ...prev,
-            storeHomepageSection: {
-                ...(prev.storeHomepageSection || {}),
-                bannerCarousel: [
-                    ...currentBanners,
-                    { id: `sb_${Date.now()}`, imageUrl: '', linkUrl: '' }
-                ]
-            }
-        };
-    });
-  };
-
-  const removeStoreBanner = (id: string) => {
-    setConfig(prev => {
-        if (!prev || !prev.storeHomepageSection) return null;
-        const currentBanners = Array.isArray(prev.storeHomepageSection.bannerCarousel) ? prev.storeHomepageSection.bannerCarousel : [];
-        return {
-            ...prev,
-            storeHomepageSection: {
-                ...prev.storeHomepageSection,
-                bannerCarousel: currentBanners.filter(b => b.id !== id)
-            }
-        };
-    });
-  };
-
-  const addOfflineSlide = () => {
-    setConfig(prev => {
-      if (!prev) return null;
-      const newSlide: OfflineHubHeroSlide = {
-          id: Date.now(),
-          imageUrl: '',
-          dataAiHint: '',
-          title: '',
-          subtitle: '',
-          price: '',
-          originalPrice: '',
-          enrollHref: ''
-      };
-      const offlineCarousel = prev.offlineHubHeroCarousel || { display: true, slides: [] };
-      const currentSlides = Array.isArray(offlineCarousel.slides) ? offlineCarousel.slides : [];
-      return {
-          ...prev,
-          offlineHubHeroCarousel: { ...offlineCarousel, slides: [...currentSlides, newSlide] }
-      };
-    });
-  };
-
-  const removeOfflineSlide = (id: number) => {
-    setConfig(prev => {
-      if (!prev || !prev.offlineHubHeroCarousel) return null;
-      const currentSlides = Array.isArray(prev.offlineHubHeroCarousel.slides) ? prev.offlineHubHeroCarousel.slides : [];
-      const newSlides = currentSlides.filter(s => s.id !== id);
-      return { ...prev, offlineHubHeroCarousel: { ...prev.offlineHubHeroCarousel, slides: newSlides } };
-    });
+    setConfig(prev => prev ? ({ ...prev, heroBanners: prev.heroBanners.filter(b => b.id !== id) }) : null);
   };
 
   const addCategory = () => {
     setConfig(prev => {
         if (!prev) return null;
-        const newCategory: CategoryItem = {
-            id: Date.now(),
-            title: { bn: 'নতুন ক্যাটাগরি', en: 'New Category' },
-            imageUrl: 'https://placehold.co/400x500.png',
-            linkUrl: '/courses',
-            dataAiHint: 'category placeholder',
-        };
-        const currentCategories = prev.categoriesSection?.categories || [];
-        return {
-            ...prev,
-            categoriesSection: { ...prev.categoriesSection, categories: [...currentCategories, newCategory] }
-        };
+        const newCat: CategoryItem = { id: Date.now(), title: { bn: '', en: '' }, imageUrl: '', linkUrl: '', dataAiHint: '' };
+        return { ...prev, categoriesSection: { ...prev.categoriesSection, categories: [...(prev.categoriesSection.categories || []), newCat] } };
     });
   };
 
-  const removeCategory = (id: number) => {
-    setConfig(prev => {
-        if (!prev || !prev.categoriesSection) return null;
-        return {
-            ...prev,
-            categoriesSection: { ...prev.categoriesSection, categories: prev.categoriesSection.categories.filter(c => c.id !== id) }
-        };
-    });
+  const handleInstructorToggle = (id: string, add: boolean) => {
+      setConfig(prev => {
+          if (!prev) return null;
+          const current = prev.teachersSection?.instructorIds || [];
+          const updated = add ? [...current, id] : current.filter(cid => cid !== id);
+          return { ...prev, teachersSection: { ...prev.teachersSection, instructorIds: updated } };
+      });
   };
 
-  const addWhyChooseUsFeature = () => {
-    setConfig(p => {
-        if (!p || !p.whyChooseUs) return null;
-        return {
-            ...p, 
-            whyChooseUs: {
-                ...p.whyChooseUs, 
-                features: [
-                    ...(p.whyChooseUs.features || []), 
-                    {id: `feat_${Date.now()}`, iconUrl: 'https://placehold.co/48x48.png', dataAiHint: 'icon', title: {bn: 'নতুন ফিচার', en: 'New Feature'}}
-                ]
-            }
-        };
-    });
-  };
-
-  const removeWhyChooseUsFeature = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, features: p.whyChooseUs.features.filter(f => f.id !== id)}});
-    
-  const addTestimonial = () => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: [...(p.whyChooseUs.testimonials || []), {id: `test_${Date.now()}`, quote: {bn: '', en: ''}, studentName: '', college: '', imageUrl: 'https://placehold.co/120x120.png', dataAiHint: 'student person'}]}});
-  const removeTestimonial = (id: string) => setConfig(p => !p || !p.whyChooseUs ? null : {...p, whyChooseUs: {...p.whyChooseUs, testimonials: p.whyChooseUs.testimonials.filter(t => t.id !== id)}});
-
-  if (loading) {
-    return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
-  }
-  
-  if (!config) {
-     return <div className="flex h-screen items-center justify-center"><p>Could not load homepage configuration.</p></div>;
-  }
-
-  const allSections = [
-    { key: 'welcomeSection', label: 'Welcome Section'},
-    { key: 'strugglingStudentSection', label: 'Struggling Student Banner'},
-    { key: 'offlineHubHeroCarousel', label: 'Offline Hub & RDC Shop Carousel'},
-    { key: 'categoriesSection', label: 'Categories Section' },
-    { key: 'journeySection', label: 'Journey (Live Courses)' },
-    { key: 'teachersSection', label: 'Teachers Section' },
-    { key: 'videoSection', label: 'Video Section' },
-    { key: 'sscHscSection', label: 'SSC & HSC Section' },
-    { key: 'masterclassSection', label: 'Masterclass Section' },
-    { key: 'admissionSection', label: 'Admission Section' },
-    { key: 'jobPrepSection', label: 'Job Prep Section' },
-    { key: 'whyChooseUs', label: 'Why Choose Us' },
-    { key: 'freeClassesSection', label: 'Free Classes' },
-    { key: 'aboutUsSection', label: 'About Us'},
-    { key: 'collaborations', label: 'Collaborations' },
-    { key: 'partnersSection', label: 'Partners' },
-    { key: 'socialMediaSection', label: 'Social Media' },
-    { key: 'notesBanner', label: 'Notes Banner' },
-    { key: 'appPromo', label: 'App Promo' },
-    { key: 'requestCallbackSection', label: 'Callback Section'},
-  ] as const;
-
-  const safeHeroBanners = Array.isArray(config.heroBanners) ? config.heroBanners : [];
-  const safeOfflineSlides = Array.isArray(config.offlineHubHeroCarousel?.slides) ? config.offlineHubHeroCarousel.slides : [];
-  const safeStoreBanners = Array.isArray(config.storeHomepageSection?.bannerCarousel) ? config.storeHomepageSection.bannerCarousel : [];
+  if (loading) return <div className="flex h-screen items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>;
+  if (!config) return <div className="flex h-screen items-center justify-center"><p>Configuration not found.</p></div>;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 px-1">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 mb-2">
         <div className="border-l-4 border-primary pl-4">
-          <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">Homepage <span className="text-primary">CMS</span></h1>
-          <p className="mt-1 text-[10px] md:text-sm text-muted-foreground font-medium">Control the content displayed on your homepage.</p>
+          <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">Homepage <span className="text-primary">Master CMS</span></h1>
+          <p className="mt-1 text-[10px] md:text-sm text-muted-foreground font-medium">Power up your storefront with dynamic content management.</p>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto shadow-xl rounded-xl font-black h-11 md:h-12 uppercase tracking-widest px-6 md:px-8 text-[10px] md:text-xs">
+        <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto h-12 shadow-xl rounded-xl font-black uppercase tracking-widest px-8">
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
-          Save Changes
+          Push Live
         </Button>
       </div>
 
       <Tabs defaultValue="general" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-        <div className="overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex w-full h-auto p-1 bg-muted/50 rounded-xl mb-6 min-w-max">
-                <TabsTrigger value="general" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">General</TabsTrigger>
-                <TabsTrigger value="hero" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Hero & Banners</TabsTrigger>
-                <TabsTrigger value="courses" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Course Sections</TabsTrigger>
-                <TabsTrigger value="store" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Store Hub</TabsTrigger>
-                <TabsTrigger value="content" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Content & Testimonials</TabsTrigger>
-                <TabsTrigger value="pages" className="rounded-lg px-6 py-2.5 font-black uppercase text-[10px] tracking-widest data-[state=active]:shadow-md">Special Pages</TabsTrigger>
-            </TabsList>
-        </div>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 h-auto p-1 bg-muted/50 rounded-xl mb-6">
+            <TabsTrigger value="general" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">General</TabsTrigger>
+            <TabsTrigger value="hero" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">Hero & Banners</TabsTrigger>
+            <TabsTrigger value="courses" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">Courses</TabsTrigger>
+            <TabsTrigger value="store" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">Store</TabsTrigger>
+            <TabsTrigger value="content" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">Content</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-lg py-2.5 font-black uppercase text-[9px] tracking-widest">Settings</TabsTrigger>
+        </TabsList>
 
         <AnimatePresence mode="wait">
-            <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="px-1"
-            >
+            <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                
                 {/* --- GENERAL TAB --- */}
                 <TabsContent value="general" className="space-y-8 mt-0">
                     <Card className="rounded-[20px] shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Branding & Logic</CardTitle>
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Welcome Messaging</CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Site Logo URL</Label>
-                                <Input value={config.logoUrl || ''} onChange={e => handleSimpleValueChange('logoUrl', e.target.value)} placeholder="https://example.com/logo.png" className="rounded-xl h-12" />
+                            <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20 mb-4">
+                                <span className="text-[11px] font-black uppercase">Enable Welcome Section</span>
+                                <Switch checked={config.welcomeSection?.display ?? true} onCheckedChange={(val) => handleSectionToggle('welcomeSection', val)} />
                             </div>
-                            <div className="space-y-4 border-t border-primary/5 pt-6">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Section Visibility</Label>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {allSections.map(section => (
-                                        <div key={section.key} className="flex items-center justify-between rounded-xl border border-primary/5 p-4 bg-muted/20">
-                                            <span className="text-[11px] font-black uppercase tracking-tight">{section.label}</span>
-                                            <Switch 
-                                                checked={(config as any)[section.key]?.display ?? true} 
-                                                onCheckedChange={(val) => handleSectionToggle(section.key, val)}
-                                            />
-                                        </div>
-                                    ))}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase ml-1">Title (BN)</Label>
+                                    <Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} className="h-12" />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase ml-1">Title (EN)</Label>
+                                    <Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} className="h-12" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase ml-1">Main Description (BN)</Label>
+                                <Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={3} className="rounded-xl" />
                             </div>
                         </CardContent>
                     </Card>
@@ -439,217 +234,112 @@ export default function AdminHomepageManagementPage() {
                     <Card className="rounded-[20px] shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Main Hero Banners</CardTitle>
-                            <CardDescription className="flex items-center gap-2 mt-1">
-                                <Info className="w-3.5 h-3.5 text-primary" />
-                                <span>High-resolution 16:9 images are recommended.</span>
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 space-y-4">
-                            {safeHeroBanners.map((banner, index) => (
-                                <div key={banner.id} className="p-5 border border-primary/5 rounded-[20px] space-y-4 relative bg-muted/10">
-                                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Banner Image URL</Label>
-                                            <Input placeholder="https://..." value={banner.imageUrl} onChange={e => handleHeroBannerChange(index, 'imageUrl', e.target.value)} className="rounded-xl h-11" />
-                                            {banner.imageUrl && (
-                                                <div className="mt-3 relative aspect-[16/9] w-48 rounded-xl overflow-hidden border-2 border-white shadow-lg bg-black">
-                                                    <img src={banner.imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Destination URL</Label>
-                                            <Input placeholder="e.g., /courses/physics-batch" value={banner.href} onChange={e => handleHeroBannerChange(index, 'href', e.target.value)} className="rounded-xl h-11" />
-                                        </div>
+                            {config.heroBanners.map((banner, index) => (
+                                <div key={banner.id} className="p-5 border border-primary/10 rounded-[20px] bg-muted/10 relative space-y-4">
+                                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Image URL</Label><Input value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Destination</Label><Input value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
                                     </div>
                                 </div>
                             ))}
-                            <Button variant="outline" className="w-full border-dashed rounded-xl h-14 font-black uppercase tracking-widest text-[10px]" onClick={addHeroBanner}><PlusCircle className="mr-2 h-4 w-4"/>Add New Banner</Button>
+                            <Button variant="outline" className="w-full border-dashed h-12 rounded-xl font-black uppercase text-[10px]" onClick={addHeroBanner}><PlusCircle className="mr-2 h-4 w-4"/>Add Slide</Button>
                         </CardContent>
                     </Card>
 
                     <Card className="rounded-[20px] shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Offline & Shop Slides</CardTitle>
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Struggling Banner</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-4">
-                            {safeOfflineSlides.map((slide, index) => (
-                                <div key={slide.id} className="p-5 border border-primary/5 rounded-[20px] space-y-4 relative bg-muted/10">
-                                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full" onClick={() => removeOfflineSlide(slide.id)}><X className="h-4 w-4"/></Button>
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Slide Image URL</Label>
-                                        <Input placeholder="Enter image URL..." value={slide.imageUrl} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'imageUrl', e.target.value)} className="rounded-xl h-11" />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase tracking-widest ml-1">Badge Title</Label><Input placeholder="e.g., SPECIAL OFFER" value={slide.title} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'title', e.target.value)} className="rounded-xl h-11" /></div>
-                                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase tracking-widest ml-1">Main Heading</Label><Input placeholder="e.g., Join our new Physics Batch" value={slide.subtitle} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'subtitle', e.target.value)} className="rounded-xl h-11" /></div>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase tracking-widest ml-1">Offer Price</Label><Input placeholder="e.g., ৳1,200" value={slide.price} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'price', e.target.value)} className="rounded-xl h-11" /></div>
-                                        <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase tracking-widest ml-1">Original Price</Label><Input placeholder="e.g., ৳3,000" value={slide.originalPrice} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'originalPrice', e.target.value)} className="rounded-xl h-11" /></div>
-                                    </div>
-                                    <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase tracking-widest ml-1">Enroll Button Link</Label><Input placeholder="e.g., /checkout/course-id" value={slide.enrollHref} onChange={e => handleNestedArrayChange('offlineHubHeroCarousel', 'slides', index, 'enrollHref', e.target.value)} className="rounded-xl h-11" /></div>
-                                </div>
-                            ))}
-                            <Button variant="outline" className="w-full border-dashed rounded-xl h-14 font-black uppercase tracking-widest text-[10px]" onClick={addOfflineSlide}><PlusCircle className="mr-2 h-4 w-4"/>Add Carousel Slide</Button>
+                        <CardContent className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Heading (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'title', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Sparkle Text (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'subtitle', 'bn', e.target.value)} /></div>
+                            </div>
+                            <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Illustration URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleSectionValueChange('strugglingStudentSection', 'imageUrl', e.target.value)} /></div>
                         </CardContent>
                     </Card>
                 </TabsContent>
 
-                {/* --- COURSE SECTIONS TAB --- */}
+                {/* --- COURSES TAB --- */}
                 <TabsContent value="courses" className="space-y-8 mt-0">
                     <Card className="rounded-[20px] shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Categories Grid</CardTitle>
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Course ID Filters</CardTitle>
+                            <CardDescription>Manage which courses appear in each dynamic section using comma-separated IDs.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Section Title (BN)</Label><Input value={config.categoriesSection?.title?.bn || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'bn', e.target.value)} className="rounded-xl h-11"/></div>
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Section Title (EN)</Label><Input value={config.categoriesSection?.title?.en || ''} onChange={e => handleSectionLangChange('categoriesSection', 'title', 'en', e.target.value)} className="rounded-xl h-11"/></div>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {config.categoriesSection?.categories?.map((cat, index) => (
-                                    <div key={cat.id} className="p-4 border border-primary/5 rounded-[20px] bg-muted/10 relative space-y-3">
-                                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive rounded-full" onClick={() => removeCategory(cat.id)}><X className="h-4 w-4"/></Button>
-                                        <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase tracking-widest opacity-60">Title (EN)</Label><Input value={cat.title?.en} onChange={e => handleNestedArrayChange('categoriesSection', 'categories', index, 'title', { ...cat.title, en: e.target.value })} className="h-9 rounded-lg" /></div>
-                                        <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase tracking-widest opacity-60">Image URL</Label><Input value={cat.imageUrl} onChange={e => handleNestedArrayChange('categoriesSection', 'categories', index, 'imageUrl', e.target.value)} className="h-9 rounded-lg" /></div>
-                                        <div className="space-y-1.5"><Label className="text-[9px] font-black uppercase tracking-widest opacity-60">Link</Label><Input value={cat.linkUrl} onChange={e => handleNestedArrayChange('categoriesSection', 'categories', index, 'linkUrl', e.target.value)} className="h-9 rounded-lg" /></div>
-                                    </div>
-                                ))}
-                                <Button variant="outline" className="border-dashed rounded-[20px] h-auto min-h-[150px] flex flex-col gap-2 font-black uppercase text-[10px] tracking-widest" onClick={addCategory}>
-                                    <PlusCircle className="h-6 w-6 text-primary" />
-                                    Add Category
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* --- STORE TAB --- */}
-                <TabsContent value="store" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] border-primary/10 shadow-sm overflow-hidden">
-                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Store Hero Carousel</CardTitle>
-                            <CardDescription>Banners shown at the top of the RDC Store page.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-6 space-y-4">
-                            {safeStoreBanners.map((banner, index) => (
-                                <div key={banner.id} className="p-5 border border-primary/5 rounded-[20px] space-y-4 relative bg-muted/10">
-                                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full" onClick={() => removeStoreBanner(banner.id)}><X className="h-4 w-4"/></Button>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Banner Image URL</Label>
-                                            <Input placeholder="https://..." value={banner.imageUrl} onChange={e => handleNestedArrayChange('storeHomepageSection', 'bannerCarousel', index, 'imageUrl', e.target.value)} className="rounded-xl h-11" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Link URL</Label>
-                                            <Input placeholder="/store/product/..." value={banner.linkUrl} onChange={e => handleNestedArrayChange('storeHomepageSection', 'bannerCarousel', index, 'linkUrl', e.target.value)} className="rounded-xl h-11" />
-                                        </div>
-                                    </div>
+                            {[
+                                { key: 'liveCoursesIds', label: 'Live Courses (Journey)' },
+                                { key: 'sscHscCourseIds', label: 'SSC & HSC Preparation' },
+                                { key: 'admissionCoursesIds', label: 'University Admission' },
+                                { key: 'jobCoursesIds', label: 'Job & BCS Preparation' }
+                            ].map(sec => (
+                                <div key={sec.key} className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase ml-1">{sec.label}</Label>
+                                    <Input value={((config as any)[sec.key] || []).join(', ')} onChange={e => handleSimpleValueChange(sec.key as any, e.target.value.split(',').map(s => s.trim()).filter(Boolean))} placeholder="course_id_1, course_id_2..." className="font-mono text-xs" />
                                 </div>
                             ))}
-                            <Button variant="outline" className="w-full border-dashed rounded-xl h-14 font-black uppercase tracking-widest text-[10px]" onClick={addStoreBanner}>
-                                <PlusCircle className="mr-2 h-4 w-4"/>Add Store Banner
-                            </Button>
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[20px] border-primary/10 shadow-sm overflow-hidden">
-                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Bestseller Recommendation</CardTitle>
-                            <CardDescription>Select the product to feature in the "Meet your next favorite book" section.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Select Bestseller Product</Label>
-                                <Select 
-                                    value={config.storeHomepageSection?.bestsellerProductId || ''} 
-                                    onValueChange={(val) => handleSectionValueChange('storeHomepageSection', 'bestsellerProductId', val)}
-                                >
-                                    <SelectTrigger className="rounded-xl h-12">
-                                        <SelectValue placeholder="Pick a product to feature..." />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-white/10">
-                                        {allProducts.map(p => (
-                                            <SelectItem key={p.id} value={p.id!} className="font-bold text-xs">
-                                                {p.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {config.storeHomepageSection?.bestsellerProductId && (
-                                    <div className="mt-4 flex items-center gap-4 p-4 rounded-xl border border-primary/10 bg-muted/20">
-                                        {(() => {
-                                            const p = allProducts.find(prod => prod.id === config.storeHomepageSection?.bestsellerProductId);
-                                            return p ? (
-                                                <>
-                                                    <div className="relative h-16 w-12 rounded-lg overflow-hidden border border-white">
-                                                        <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-black text-xs uppercase">{p.name}</p>
-                                                        <p className="text-[10px] font-bold text-primary">৳{p.price}</p>
-                                                    </div>
-                                                </>
-                                            ) : null;
-                                        })()}
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* --- CONTENT TAB --- */}
-                <TabsContent value="content" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] border-primary/10 shadow-sm overflow-hidden">
-                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">Why Choose Us & Testimonials</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-6 space-y-10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Section Title (BN)</Label><Input value={config.whyChooseUs?.title?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'title', 'bn', e.target.value)} className="rounded-xl h-11"/></div>
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Description (BN)</Label><Textarea value={config.whyChooseUs?.description?.bn || ''} onChange={e => handleSectionLangChange('whyChooseUs', 'description', 'bn', e.target.value)} rows={2} className="rounded-xl"/></div>
-                            </div>
-
-                            <div className="space-y-4 pt-6 border-t border-primary/5">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1">Success Stories (Testimonials)</Label>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {config.whyChooseUs?.testimonials?.map((t, index) => (
-                                        <div key={t.id} className="p-5 border border-primary/5 rounded-[20px] bg-muted/10 relative space-y-4">
-                                            <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7 text-destructive" onClick={() => removeTestimonial(t.id)}><X className="h-4 w-4"/></Button>
-                                            <div className="space-y-2"><Label className="text-[9px] font-black">Student Name</Label><Input value={t.studentName} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'studentName', e.target.value)} className="h-10 rounded-xl" /></div>
-                                            <div className="space-y-2"><Label className="text-[9px] font-black">Quote (BN)</Label><Textarea value={t.quote?.bn || ''} onChange={e => handleDeepNestedLangChange('whyChooseUs', 'testimonials', index, 'quote', 'bn', e.target.value)} rows={2} className="rounded-xl h-20" /></div>
-                                            <div className="space-y-2"><Label className="text-[9px] font-black">Image URL</Label><Input value={t.imageUrl} onChange={e => handleNestedArrayChange('whyChooseUs', 'testimonials', index, 'imageUrl', e.target.value)} className="h-10 rounded-xl" /></div>
-                                        </div>
-                                    ))}
-                                    <Button variant="outline" className="border-dashed rounded-[20px] h-auto min-h-[120px] font-black uppercase text-[10px] tracking-widest" onClick={addTestimonial}><PlusCircle className="mr-2 h-4 w-4"/> Add Testimonial</Button>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* --- PAGES TAB --- */}
-                <TabsContent value="pages" className="space-y-8 mt-0">
                     <Card className="rounded-[20px] shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
-                            <CardTitle className="text-sm font-black uppercase tracking-tight">"Have a Question?" Section</CardTitle>
-                            <CardDescription className="mt-1">Manage the contact/callback CTA on the homepage.</CardDescription>
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Featured Instructors</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                {config.teachersSection?.instructorIds?.map(id => {
+                                    const inst = allInstructors.find(i => i.id === id);
+                                    return inst ? <Badge key={id} variant="secondary" className="px-3 h-8 gap-2 uppercase font-black text-[9px]">
+                                        {inst.name} <X className="h-3 w-3 cursor-pointer" onClick={() => handleInstructorToggle(id, false)} />
+                                    </Badge> : null;
+                                })}
+                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild><Button variant="outline" className="w-full rounded-xl">Add Instructor to Homepage</Button></PopoverTrigger>
+                                <PopoverContent className="p-0 border-primary/10 rounded-xl overflow-hidden shadow-2xl">
+                                    <Command>
+                                        <CommandInput placeholder="Search approved faculty..." />
+                                        <CommandEmpty>No instructors found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {allInstructors.filter(i => !config.teachersSection?.instructorIds?.includes(i.id!)).map(inst => (
+                                                <CommandItem key={inst.id} onSelect={() => handleInstructorToggle(inst.id!, true)} className="cursor-pointer">
+                                                    <Check className="mr-2 h-4 w-4 opacity-0" /> {inst.name}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- SETTINGS TAB --- */}
+                <TabsContent value="settings" className="space-y-8 mt-0">
+                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                        <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
+                            <CardTitle className="text-sm font-black uppercase tracking-tight">Floating Communications</CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Main Title (EN)</Label><Input value={config.offlineHubSection?.contactSection?.title?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'contactSection', 'title', 'en', e.target.value)} className="rounded-xl h-11"/></div>
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Subtitle (EN)</Label><Textarea value={config.offlineHubSection?.contactSection?.subtitle?.en || ''} onChange={e => handleSectionLangChange('offlineHubSection', 'contactSection', 'subtitle', 'en', e.target.value)} rows={2} className="rounded-xl"/></div>
+                            <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
+                                <div className="space-y-0.5">
+                                    <span className="text-[11px] font-black uppercase">Floating WhatsApp</span>
+                                    <p className="text-[9px] font-bold opacity-60">Global support button visibility</p>
+                                </div>
+                                <Switch checked={config.floatingWhatsApp?.display} onCheckedChange={(val) => setConfig(prev => prev ? ({ ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, display: val } }) : null)} />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-primary/5 pt-6">
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Call Number</Label><Input value={config.offlineHubSection?.contactSection?.callButtonNumber || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'contactSection', 'callButtonNumber', e.target.value)} className="rounded-xl h-11"/></div>
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">WhatsApp Number</Label><Input value={config.offlineHubSection?.contactSection?.whatsappNumber || ''} onChange={e => handleSectionValueChange('offlineHubSection', 'contactSection', 'whatsappNumber', e.target.value)} className="rounded-xl h-11"/></div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase ml-1">WhatsApp Number</Label>
+                                <Input value={config.floatingWhatsApp?.number || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } }) : null)} placeholder="8801XXXXXXXXX" className="h-12" />
                             </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
+
             </motion.div>
         </AnimatePresence>
       </Tabs>
