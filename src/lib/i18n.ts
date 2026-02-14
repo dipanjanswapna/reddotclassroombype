@@ -30,6 +30,54 @@ export const t: Record<string, Record<string, string>> = {
     bn: 'রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র, যা সারা দেশের শিক্ষার্থীদের উচ্চ-মানের শিক্ষামূলক সম্পদ প্রদানে বিশেষজ্ঞ।' 
   },
 
+  // Login Page
+  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
+  login_desc: { en: 'Enter your credentials to access your portal.', bn: 'আপনার পোর্টালে প্রবেশ করতে তথ্য দিন।' },
+  or_login_with_roll: { en: 'Or login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
+  class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
+  password: { en: 'Password', bn: 'পাসওয়ার্ড' },
+  find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
+  find_roll_desc: { en: 'Enter your registered email to find your roll.', bn: 'আপনার রেজিস্টার্ড ইমেইল দিয়ে রোল খুঁজুন।' },
+  email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
+  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  email_login: { en: 'Email Login', bn: 'ইমেইল লগইন' },
+  login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি দিয়ে লগইন' },
+  staff_id: { en: 'Staff Registration ID', bn: 'স্টাফ রেজিস্ট্রেশন আইডি' },
+  no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },
+  already_have_account: { en: 'Already have an account?', bn: 'আগে থেকেই অ্যাকাউন্ট আছে?' },
+
+  // Signup Page
+  create_account: { en: 'Create Account', bn: 'অ্যাকাউন্ট তৈরি করুন' },
+  signup_desc: { en: 'Join thousands of students across Bangladesh.', bn: 'সারা দেশের হাজারো শিক্ষার্থীর সাথে যুক্ত হোন।' },
+  or_continue_with: { en: 'Or continue with', bn: 'অথবা কন্টিনিউ করুন' },
+  full_name: { en: 'Full Name', bn: 'পূর্ণ নাম' },
+  registering_as: { en: 'Registering as', bn: 'নিবন্ধন করছেন' },
+  student: { en: 'Student', bn: 'শিক্ষার্থী' },
+  guardian: { en: 'Guardian', bn: 'অভিভাবক' },
+  accept_terms: { en: 'I accept the Terms and Conditions', bn: 'আমি ব্যবহারের শর্তাবলী মেনে নিচ্ছি' },
+  you_agree_to: { en: 'By signing up, you agree to our', bn: 'নিবন্ধন করার মাধ্যমে আপনি আমাদের' },
+  terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
+  and: { en: 'and', bn: 'এবং' },
+  privacy_policy: { en: 'Privacy Policy', bn: 'গোপনীয়তা নীতি' },
+
+  // Role Applications
+  become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
+  teacher_signup_desc: { en: 'Apply to join our elite faculty team.', bn: 'আমাদের এলিট ফ্যাকাল্টি টিমে যোগ দিতে আবেদন করুন।' },
+  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
+  affiliate_signup_desc: { en: 'Earn rewards by referring new students.', bn: 'রেফার করে ইনকাম করুন।' },
+  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
+  moderator_signup_desc: { en: 'Help maintain our community standards.', bn: 'কমিউনিটির মান বজায় রাখতে সহায়তা করুন।' },
+  submit_application: { en: 'Submit Application', bn: 'আবেদন জমা দিন' },
+  confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
+  expertise_title: { en: 'Expertise / Title', bn: 'দক্ষতা / পদবী' },
+  your_bio: { en: 'Your Biography', bn: 'আপনার সম্পর্কে' },
+
+  // Password Reset
+  forgot_password_q: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  password_reset_desc: { en: "Enter your email to receive a reset link.", bn: 'পাসওয়ার্ড রিসেট লিঙ্ক পেতে ইমেইল দিন।' },
+  send_reset_link: { en: 'Send Reset Link', bn: 'রিসেট লিঙ্ক পাঠান' },
+  back_to_login: { en: 'Back to Login', bn: 'লগইনে ফিরে যান' },
+
   // Struggling Section
   struggling_title: { en: 'Struggling in Studies?', bn: 'পড়াশোনায় পিছিয়ে পড়ছো?' },
   struggling_subtitle: { en: "Let's solve your problems together ✨", bn: 'এসো তোমার সমস্যার সমাধান করি ✨' },
@@ -51,14 +99,8 @@ export const t: Record<string, Record<string, string>> = {
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
   student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
   join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
-  become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
-  become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
-  become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
-  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
   teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
   legal: { en: 'Legal', bn: 'আইনগত' },
-  privacy_policy: { en: 'Privacy Policy', bn: 'গোপনীয়তা নীতি' },
-  terms_of_service: { en: 'Terms of Service', bn: 'ব্যবহারের শর্তাবলী' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
 
   // Store

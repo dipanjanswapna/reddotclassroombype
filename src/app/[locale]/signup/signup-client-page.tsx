@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -18,6 +17,7 @@ import { useAuth } from '@/context/auth-context';
 import { User, HomepageConfig } from '@/lib/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import signupImage from '@/public/signup.jpg';
+import { cn } from '@/lib/utils';
 
 function GoogleIcon() {
   return (
@@ -44,6 +44,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
   const { signup, loginWithGoogle, loginWithFacebook } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isBn = language === 'bn';
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -52,6 +53,9 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
   const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Helper for safe translations
+  const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +88,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
 
 
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+    <div className={cn("w-full lg:grid lg:min-h-screen lg:grid-cols-2", isBn && "font-bengali")}>
       <div className="hidden bg-muted lg:block">
         <Image
           src={signupImage}
@@ -94,80 +98,80 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
           data-ai-hint="students success graduation"
         />
       </div>
-      <div className="flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-sm shadow-lg rounded-[20px] border-primary/10">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-headline uppercase tracking-tight">{t.create_account[language]}</CardTitle>
-            <CardDescription className="text-xs font-bold uppercase tracking-widest">{t.signup_desc[language]}</CardDescription>
+      <div className="flex items-center justify-center py-12 px-1">
+        <Card className="w-full max-w-sm mx-auto shadow-2xl rounded-[25px] border-primary/10 overflow-hidden">
+          <CardHeader className="text-center bg-primary/5 p-8 border-b border-primary/10">
+            <CardTitle className="text-2xl font-headline uppercase tracking-tight">{getT('create_account')}</CardTitle>
+            <CardDescription className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">{getT('signup_desc')}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
+          <CardContent className="p-8">
+            <div className="grid gap-6">
                 {error && (
-                    <Alert variant="destructive" className="rounded-xl">
+                    <Alert variant="destructive" className="rounded-xl border-none shadow-lg">
                         <AlertTriangle className="h-4 w-4" />
                         <AlertTitle>Signup Failed</AlertTitle>
-                        <AlertDescription>{error}</AlertDescription>
+                        <AlertDescription className="text-xs font-medium">{error}</AlertDescription>
                     </Alert>
                 )}
               
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" className="w-full h-11 rounded-xl font-bold" onClick={() => handleSocialLogin('google')} disabled={isLoading || !homepageConfig.platformSettings.Student.signupEnabled}>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="w-full h-12 rounded-xl font-bold shadow-sm border-primary/10 hover:bg-primary/5" onClick={() => handleSocialLogin('google')} disabled={isLoading || !homepageConfig.platformSettings.Student.signupEnabled}>
                       <GoogleIcon />
-                      <span className="ml-2">Google</span>
+                      <span className="ml-2 text-[10px] font-black uppercase tracking-tighter">Google</span>
                   </Button>
-                  <Button variant="outline" className="w-full h-11 rounded-xl font-bold" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || !homepageConfig.platformSettings.Student.signupEnabled}>
+                  <Button variant="outline" className="w-full h-12 rounded-xl font-bold shadow-sm border-primary/10 hover:bg-primary/5" onClick={() => handleSocialLogin('facebook')} disabled={isLoading || !homepageConfig.platformSettings.Student.signupEnabled}>
                       <FacebookIcon />
-                      <span className="ml-2">Facebook</span>
+                      <span className="ml-2 text-[10px] font-black uppercase tracking-tighter">Facebook</span>
                   </Button>
               </div>
               
-              <div className="relative">
+              <div className="relative my-2">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-primary/10" />
+                  <span className="w-full border-t border-primary/5" />
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
+                <div className="relative flex justify-center text-[9px] uppercase font-black tracking-[0.2em]">
                   <span className="bg-card px-2 text-muted-foreground">
-                    {t.or_continue_with[language]}
+                    {getT('or_continue_with')}
                   </span>
                 </div>
               </div>
 
-              <form className="grid gap-4" onSubmit={handleSignup}>
-                  <div className="grid gap-2">
-                  <Label htmlFor="full-name" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.full_name[language]}</Label>
-                  <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+              <form className="grid gap-5" onSubmit={handleSignup}>
+                  <div className="space-y-2">
+                    <Label htmlFor="full-name" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('full_name')}</Label>
+                    <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.email[language]}</Label>
-                  <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('email')}</Label>
+                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="grid gap-2">
-                  <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.password[language]}</Label>
-                  <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
+                    <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                   <div className="grid gap-2">
-                      <Label htmlFor="referral-code" className="text-[10px] font-black uppercase tracking-widest ml-1">Referral Code (Optional)</Label>
-                      <Input id="referral-code" placeholder="Enter friend's class roll" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-11 rounded-xl border-primary/10" />
+                   <div className="space-y-2">
+                      <Label htmlFor="referral-code" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">Referral Code (Optional)</Label>
+                      <Input id="referral-code" placeholder="Enter friend's class roll" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="grid gap-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest ml-1">{t.registering_as[language]}</Label>
-                      <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-2">
+                  <div className="space-y-3">
+                      <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('registering_as')}</Label>
+                      <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-3">
                           <div>
                               <RadioGroupItem value="Student" id="role-student" className="peer sr-only" disabled={!homepageConfig.platformSettings.Student.signupEnabled}/>
                               <Label
                                   htmlFor="role-student"
-                                  className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-muted bg-popover p-2 text-center text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50 transition-all"
+                                  className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-muted bg-popover p-3 text-center text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50 transition-all"
                               >
-                                  {t.student[language]}
+                                  {getT('student')}
                               </Label>
                           </div>
                           <div>
                               <RadioGroupItem value="Guardian" id="role-guardian" className="peer sr-only" disabled={!homepageConfig.platformSettings.Guardian.signupEnabled}/>
                               <Label
                                   htmlFor="role-guardian"
-                                  className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-muted bg-popover p-2 text-center text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50 transition-all"
+                                  className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-muted bg-popover p-3 text-center text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-50 transition-all"
                               >
-                                  {t.guardian[language]}
+                                  {getT('guardian')}
                               </Label>
                           </div>
                       </RadioGroup>
@@ -179,27 +183,27 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                           htmlFor="terms"
                           className="text-[10px] font-black uppercase tracking-tight text-foreground cursor-pointer"
                           >
-                          {t.accept_terms[language]}
+                          {getT('accept_terms')}
                           </Label>
                           <p className="text-[10px] font-medium text-muted-foreground leading-relaxed">
-                          {t.you_agree_to[language]}{' '}
-                          <Link href={getLocalizedPath("/terms")} className="text-primary hover:underline font-bold">{t.terms_of_service[language]}</Link> {t.and[language]} <Link href={getLocalizedPath("/privacy")} className='text-primary hover:underline font-bold'>{t.privacy_policy[language]}</Link>.
+                          {getT('you_agree_to')}{' '}
+                          <Link href={getLocalizedPath("/terms")} className="text-primary hover:underline font-bold">{getT('terms_of_service')}</Link> {getT('and')} <Link href={getLocalizedPath("/privacy")} className='text-primary hover:underline font-bold'>{getT('privacy_policy')}</Link>.
                           </p>
                       </div>
                   </div>
-                  <Button type="submit" className="w-full font-black uppercase tracking-widest h-12 rounded-xl shadow-lg shadow-primary/20 mt-4" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                  {t.create_account[language]}
+                  <Button type="submit" className="w-full font-black uppercase tracking-[0.2em] h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin"/>}
+                  {getT('create_account')}
                   </Button>
               </form>
             
               <div className="mt-4 text-center text-[11px] font-bold">
-                  <span className="text-muted-foreground">{t.already_have_account[language]}</span>{' '}
+                  <span className="text-muted-foreground uppercase tracking-widest opacity-60">{getT('already_have_account')}</span>{' '}
                   <Link href={getLocalizedPath("/login")} className="font-black uppercase tracking-widest text-primary hover:underline">
-                  {t.login[language]}
+                  {getT('login')}
                   </Link>
               </div>
-              <div className="mt-6 text-center space-y-3">
+              <div className="mt-6 text-center space-y-3 pt-6 border-t border-primary/5">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Want to join our team?</p>
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
                       {homepageConfig.platformSettings.Teacher.signupEnabled && <Link href={getLocalizedPath("/auth/teacher-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">Apply as Teacher</Link>}

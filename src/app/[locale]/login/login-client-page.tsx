@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { findRollNumberByEmailAction } from '@/app/actions/user.actions';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 function GoogleIcon() {
   return (
@@ -75,6 +76,9 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
   const [isFindingRoll, setIsFindingRoll] = useState(false);
   const [foundRoll, setFoundRoll] = useState<string | null>(null);
   const [findRollError, setFindRollError] = useState<string | null>(null);
+
+  // Helper for safe translations
+  const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,17 +164,17 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
 
   return (
     <div className={cn("w-full lg:grid lg:min-h-screen lg:grid-cols-2", isBn && "font-bengali")}>
-      <div className="flex items-center justify-center py-12 px-4 bg-background">
-        <Card className="w-full max-w-sm mx-auto shadow-2xl bg-card rounded-[30px] overflow-hidden border-primary/10">
+      <div className="flex items-center justify-center py-12 px-1 bg-background">
+        <Card className="w-full max-w-sm mx-auto shadow-2xl bg-card rounded-[25px] overflow-hidden border-primary/10">
             <CardHeader className="text-center bg-primary/5 p-8 border-b border-primary/10">
                 <CardTitle className={cn(
                     "text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground",
                     !isBn && "font-headline"
                 )}>
-                    {t.login_welcome[language]}
+                    {getT('login_welcome')}
                 </CardTitle>
                 <CardDescription className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-1 opacity-60">
-                    {t.login_desc[language]}
+                    {getT('login_desc')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-8 p-8">
@@ -210,40 +214,40 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                 </div>
                                 <div className="relative flex justify-center text-[9px] uppercase font-black tracking-[0.2em]">
                                     <span className="bg-card px-3 text-muted-foreground">
-                                        {t.or_login_with_roll[language]}
+                                        {getT('or_login_with_roll')}
                                     </span>
                                 </div>
                             </div>
 
                             <form className="grid gap-5" onSubmit={handleClassRollLogin}>
                                 <div className="space-y-2 text-left">
-                                    <Label htmlFor="class-roll" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.class_roll[language]}</Label>
+                                    <Label htmlFor="class-roll" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('class_roll')}</Label>
                                     <div className="relative">
                                         <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                                         <Input id="class-roll" placeholder="123456" required value={classRoll} onChange={(e) => setClassRoll(e.target.value)} className="h-12 rounded-xl border-primary/10 pl-10 bg-muted/20" />
                                     </div>
                                 </div>
                                 <div className="space-y-2 text-left">
-                                    <Label htmlFor="student-password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.password[language]}</Label>
+                                    <Label htmlFor="student-password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
                                     <Input id="student-password" type="password" required value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                                 </div>
                                 <div className="flex items-center justify-between px-1">
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <button type="button" className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline">
-                                                {t.find_roll_title[language]}?
+                                                {getT('find_roll_title')}?
                                             </button>
                                         </DialogTrigger>
-                                        <DialogContent className="sm:max-w-md rounded-[30px] border-primary/10 overflow-hidden px-1">
+                                        <DialogContent className="sm:max-w-md rounded-[25px] border-primary/10 overflow-hidden px-1">
                                             <DialogHeader className="bg-primary/5 p-8 border-b border-primary/10">
-                                                <DialogTitle className="font-headline text-2xl font-black uppercase tracking-tight">{t.find_roll_title[language]}</DialogTitle>
+                                                <DialogTitle className="font-headline text-2xl font-black uppercase tracking-tight">{getT('find_roll_title')}</DialogTitle>
                                                 <DialogDescription className="text-[10px] font-bold uppercase tracking-widest opacity-60">
-                                                    {t.find_roll_desc[language]}
+                                                    {getT('find_roll_desc')}
                                                 </DialogDescription>
                                             </DialogHeader>
                                             <div className="space-y-6 p-8">
                                                 <div className="space-y-3">
-                                                    <Label htmlFor="search-email" className="text-[10px] font-black uppercase tracking-widest ml-1">{t.email[language]}</Label>
+                                                    <Label htmlFor="search-email" className="text-[10px] font-black uppercase tracking-widest ml-1">{getT('email')}</Label>
                                                     <div className="flex gap-2">
                                                         <Input 
                                                             id="search-email" 
@@ -286,12 +290,12 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                         </DialogContent>
                                     </Dialog>
                                     <Link href={getLocalizedPath("/password-reset")} className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline">
-                                        {t.forgot_password[language]}
+                                        {getT('forgot_password')}
                                     </Link>
                                 </div>
                                 <Button type="submit" className="w-full font-black uppercase tracking-[0.2em] h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isLoading || socialLoginDisabled}>
                                     {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <ShieldCheck className="mr-2 h-5 w-5" />}
-                                    {t.login[language]}
+                                    {getT('login')}
                                 </Button>
                             </form>
                         </div>
@@ -300,8 +304,8 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                     <TabsContent value="staff" className="mt-6">
                         <Tabs defaultValue="email" className="w-full">
                             <TabsList className="grid w-full grid-cols-2 bg-muted/30 p-1 rounded-xl shadow-inner border border-black/5 mb-6">
-                                <TabsTrigger value="email" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{t.email_login[language]}</TabsTrigger>
-                                <TabsTrigger value="id" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{t.login_with_staff_id[language]}</TabsTrigger>
+                                <TabsTrigger value="email" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{getT('email_login')}</TabsTrigger>
+                                <TabsTrigger value="id" className="rounded-lg text-[9px] font-black uppercase tracking-widest">{getT('login_with_staff_id')}</TabsTrigger>
                             </TabsList>
                             <TabsContent value="email">
                                 <form className="grid gap-5" onSubmit={handleEmailLogin}>
@@ -322,14 +326,14 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                         </Select>
                                     </div>
                                     <div className="space-y-2 text-left">
-                                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.email[language]}</Label>
+                                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('email')}</Label>
                                         <div className="relative">
                                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                                             <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-xl border-primary/10 pl-10 bg-muted/20" />
                                         </div>
                                     </div>
                                     <div className="space-y-2 text-left">
-                                        <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.password[language]}</Label>
+                                        <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
                                         <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                                     </div>
                                     {roleLoginDisabled && (
@@ -339,33 +343,33 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                                     )}
                                     <div className="flex items-center justify-end px-1">
                                         <Link href={getLocalizedPath("/password-reset")} className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline">
-                                            {t.forgot_password[language]}
+                                            {getT('forgot_password')}
                                         </Link>
                                     </div>
                                     <Button type="submit" className="w-full font-black uppercase tracking-[0.2em] h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isLoading || !!roleLoginDisabled}>
                                         {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <ShieldCheck className="mr-2 h-5 w-5" />}
-                                        {t.login[language]}
+                                        {getT('login')}
                                     </Button>
                                 </form>
                             </TabsContent>
                             <TabsContent value="id">
                                 <form className="grid gap-5" onSubmit={handleStaffIdLogin}>
                                     <div className="space-y-2 text-left">
-                                        <Label htmlFor="staff-id" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.staff_id[language]}</Label>
+                                        <Label htmlFor="staff-id" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('staff_id')}</Label>
                                         <Input id="staff-id" placeholder="12345678" required value={staffId} onChange={(e) => setStaffId(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                                     </div>
                                     <div className="space-y-2 text-left">
-                                        <Label htmlFor="staff-password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{t.password[language]}</Label>
+                                        <Label htmlFor="staff-password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
                                         <Input id="staff-password" type="password" required value={staffPassword} onChange={(e) => setStaffPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                                     </div>
                                     <div className="flex items-center justify-end px-1">
                                         <Link href={getLocalizedPath("/password-reset")} className="text-[9px] font-black uppercase tracking-widest text-primary hover:underline">
-                                            {t.forgot_password[language]}
+                                            {getT('forgot_password')}
                                         </Link>
                                     </div>
                                     <Button type="submit" className="w-full font-black uppercase tracking-[0.2em] h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <ShieldCheck className="mr-2 h-5 w-5" />}
-                                        {t.login[language]}
+                                        {getT('login')}
                                     </Button>
                                 </form>
                             </TabsContent>
@@ -375,9 +379,9 @@ export default function LoginPageClient({ homepageConfig }: { homepageConfig: Ho
                 
 
             <div className="mt-4 text-center text-[11px] font-bold">
-                <span className="text-muted-foreground uppercase tracking-widest opacity-60">{t.no_account[language]}</span>{' '}
+                <span className="text-muted-foreground uppercase tracking-widest opacity-60">{getT('no_account')}</span>{' '}
                 <Link href={getLocalizedPath("/signup")} className="font-black uppercase tracking-widest text-primary hover:underline">
-                    {t.signup[language]}
+                    {getT('signup')}
                 </Link>
             </div>
             </CardContent>
