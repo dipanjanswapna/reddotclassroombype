@@ -26,12 +26,12 @@ export const t: Record<string, Record<string, string>> = {
   // Header Info
   best_learning_platform: { en: 'Best Learning Platform', bn: 'সেরা লার্নিং প্ল্যাটফর্ম' },
   shop_description: { 
-    en: 'Red Dot Classroom (RDC Shop) is a Dhaka, Bangladesh based online education center specializing in providing high-quality educational resources to students nationwide.', 
-    bn: 'রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র, যা সারা দেশের শিক্ষার্থীদের উচ্চ-মানের শিক্ষামূলক সম্পদ প্রদানে বিশেষজ্ঞ।' 
+    en: 'Red Dot Classroom (RDC Shop) is a Dhaka, Bangladesh based online education center.', 
+    bn: 'রেড ডট ক্লাসরুম (RDC শপ) ঢাকা, বাংলাদেশ ভিত্তিক একটি অনলাইন শিক্ষা কেন্দ্র।' 
   },
 
-  // Login Page
-  login_welcome: { en: 'Welcome Back', bn: 'স্বাগতম' },
+  // Login & Signup
+  login_welcome: { en: 'Welcome back', bn: 'স্বাগতম' },
   login_desc: { en: 'Enter your credentials to access your portal.', bn: 'আপনার পোর্টালে প্রবেশ করতে তথ্য দিন।' },
   or_login_with_roll: { en: 'Or login with Class Roll', bn: 'অথবা ক্লাস রোল দিয়ে লগইন করুন' },
   class_roll: { en: 'Class Roll', bn: 'ক্লাস রোল' },
@@ -39,14 +39,12 @@ export const t: Record<string, Record<string, string>> = {
   find_roll_title: { en: 'Find Roll Number', bn: 'রোল নম্বর খুঁজুন' },
   find_roll_desc: { en: 'Enter your registered email to find your roll.', bn: 'আপনার রেজিস্টার্ড ইমেইল দিয়ে রোল খুঁজুন।' },
   email: { en: 'Email Address', bn: 'ইমেইল এড্রেস' },
-  forgot_password: { en: 'Forgot Password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
+  forgot_password: { en: 'Forgot password?', bn: 'পাসওয়ার্ড ভুলে গেছেন?' },
   email_login: { en: 'Email Login', bn: 'ইমেইল লগইন' },
   login_with_staff_id: { en: 'Login with Staff ID', bn: 'স্টাফ আইডি দিয়ে লগইন' },
   staff_id: { en: 'Staff Registration ID', bn: 'স্টাফ রেজিস্ট্রেশন আইডি' },
   no_account: { en: "Don't have an account?", bn: 'অ্যাকাউন্ট নেই?' },
   already_have_account: { en: 'Already have an account?', bn: 'আগে থেকেই অ্যাকাউন্ট আছে?' },
-
-  // Signup Page
   create_account: { en: 'Create Account', bn: 'অ্যাকাউন্ট তৈরি করুন' },
   signup_desc: { en: 'Join thousands of students across Bangladesh.', bn: 'সারা দেশের হাজারো শিক্ষার্থীর সাথে যুক্ত হোন।' },
   or_continue_with: { en: 'Or continue with', bn: 'অথবা কন্টিনিউ করুন' },
@@ -60,11 +58,18 @@ export const t: Record<string, Record<string, string>> = {
   and: { en: 'and', bn: 'এবং' },
   privacy_policy: { en: 'Privacy Policy', bn: 'গোপনীয়তা নীতি' },
 
+  // Callback Form
+  callback_title: { en: 'Request a callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
+  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
+  class_label: { en: 'Class', bn: 'ক্লাস' },
+  your_goal: { en: 'Your Goal', bn: 'আপনার লক্ষ্য' },
+  submit: { en: 'Submit', bn: 'জমা দিন' },
+
   // Role Applications
   become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
   become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
   become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
-  become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
+  become_a_moderator: { en: 'Become a Moderator', bn: ' মডারেটর হিসেবে যোগ দিন' },
   teacher_signup_desc: { en: 'Apply to join our elite faculty team.', bn: 'আমাদের এলিট ফ্যাকাল্টি টিমে যোগ দিতে আবেদন করুন।' },
   affiliate_signup_desc: { en: 'Earn rewards by referring new students.', bn: 'রেফার করে ইনকাম করুন।' },
   moderator_signup_desc: { en: 'Help maintain our community standards.', bn: 'কমিউনিটির মান বজায় রাখতে সহায়তা করুন।' },
@@ -79,13 +84,12 @@ export const t: Record<string, Record<string, string>> = {
   send_reset_link: { en: 'Send Reset Link', bn: 'রিসেট লিঙ্ক পাঠান' },
   back_to_login: { en: 'Back to Login', bn: 'লগইনে ফিরে যান' },
 
-  // Sections
+  // Common
   footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
   quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
   student_guardian_login: { en: 'Student & Guardian Login', bn: 'শিক্ষার্থী ও অভিভাবক লগইন' },
   join_us: { en: 'Join Our Team', bn: 'আমাদের সাথে যোগ দিন' },
-  teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
   legal: { en: 'Legal', bn: 'আইনগত' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
   view_all: { en: 'View All', bn: 'সব দেখুন' },

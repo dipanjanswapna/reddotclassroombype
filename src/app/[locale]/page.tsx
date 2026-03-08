@@ -63,6 +63,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const isBn = language === 'bn';
   
+  // Safe translation helper
+  const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -106,8 +109,6 @@ export default function Home() {
   );
   
   if (!homepageConfig) return null;
-  
-  const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   return (
     <div className={cn("text-foreground overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
@@ -119,7 +120,7 @@ export default function Home() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="flex flex-col gap-3">
                         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-tight border border-primary/20 w-fit">
                             <Sparkles className="w-3.5 h-3.5" />
-                            {isBn ? 'সেরা লার্নিং প্ল্যাটফর্ম' : 'Elite Learning Platform'}
+                            {getT('best_learning_platform')}
                         </div>
                         <h1 className={cn("font-bold tracking-tight text-foreground leading-[1.1]", isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline")}>
                             {homepageConfig.welcomeSection?.title?.[language] || "Red Dot Classroom"}
