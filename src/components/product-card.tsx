@@ -54,13 +54,13 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
   
   return (
     <Card className={cn(
-        "group flex flex-col h-full overflow-hidden shadow-xl border-primary/5 rounded-[20px] p-2.5 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-[#f0f9ff] dark:bg-card/40",
+        "group flex flex-col h-full overflow-hidden shadow-sm border border-border rounded-xl p-2.5 transition-all duration-500 hover:shadow-md hover:-translate-y-1 bg-white dark:bg-card/40",
         "relative",
         isBn && "font-bengali"
     )}>
         <Link href={`/${language}/store/product/${product.id}`} className="block flex flex-col flex-grow outline-none">
             {/* Visual Container */}
-            <CardHeader className="p-0 relative aspect-square overflow-hidden rounded-[16px] shadow-inner bg-white/50">
+            <CardHeader className="p-0 relative aspect-square overflow-hidden rounded-lg shadow-inner bg-muted">
                 <Image
                     src={product.imageUrl}
                     alt={product.name}
@@ -93,7 +93,7 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
                     </h3>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 border-b border-primary/5 pb-2">
+                <div className="flex items-center justify-between gap-2 border-b border-border pb-2">
                     <div className="flex items-center gap-1">
                         <Star className={cn("w-3 h-3", (product.ratings || 0) > 0 ? "text-yellow-500 fill-current" : "text-gray-300")} />
                         <span className="text-[10px] font-black text-gray-700">{product.ratings || '4.9'}</span>
@@ -120,7 +120,7 @@ const ProductCardComponent = ({ product, provider }: ProductCardProps) => {
                         onClick={handleAddToCart} 
                         disabled={isOutOfStock}
                         className={cn(
-                            "h-9 w-9 rounded-xl transition-all active:scale-90 shadow-lg",
+                            "h-9 w-9 rounded-xl transition-all active:scale-90 shadow-sm",
                             isOutOfStock ? "bg-muted text-muted-foreground shadow-none" : "bg-primary text-white shadow-primary/20 hover:bg-primary/90"
                         )}
                     >

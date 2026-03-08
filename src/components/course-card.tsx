@@ -36,7 +36,7 @@ const CourseCardComponent = (props: CourseCardProps) => {
     <div className={cn("relative h-full px-1", isBn && "font-bengali")}>
       <Link href={coursePageUrl} className="block h-full group">
         <Card className={cn(
-          "flex flex-col h-full overflow-hidden shadow-sm border border-border rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white dark:bg-card",
+          "flex flex-col h-full overflow-hidden shadow-sm border border-border rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 bg-white dark:bg-card",
           "p-3"
         )}>
           {/* Visual Container */}

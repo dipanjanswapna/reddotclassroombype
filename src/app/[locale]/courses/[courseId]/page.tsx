@@ -111,7 +111,7 @@ export default async function CourseDetailPage({
 
   return (
     <div className={cn("bg-background min-h-screen px-1 pb-20", isBn && "font-bengali")}>
-      {/* Breadcrumb - Standard High Density */}
+      {/* Breadcrumb */}
       <div className="bg-muted/30 border-b border-white/5 py-3 -mx-1">
         <div className="container mx-auto px-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             <Link href={`/${language}`} className="hover:text-primary transition-colors">{getT('nav_home')}</Link>
@@ -122,7 +122,6 @@ export default async function CourseDetailPage({
         </div>
       </div>
 
-      {/* Hero Header - Geometric Stacking */}
       <section id="overview" className="relative pt-8 pb-10 border-b border-white/5 overflow-hidden scroll-mt-32 -mx-1">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4">
@@ -131,7 +130,7 @@ export default async function CourseDetailPage({
               <div className="space-y-6 text-left">
                 <div className="flex flex-wrap items-center gap-3">
                     {isPrebookingActive && (
-                        <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest animate-pulse border-orange-500/20 shadow-lg">
+                        <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest border-orange-500/20 shadow-sm">
                             {getT('prebook_now')}
                         </Badge>
                     )}
@@ -148,7 +147,7 @@ export default async function CourseDetailPage({
 
                 <div className="flex flex-wrap items-center gap-6 pt-2">
                     <div className="flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-xl">
+                        <div className="bg-primary/10 p-2 rounded-lg">
                             <Users className="w-5 h-5 text-primary" />
                         </div>
                         <div>
@@ -157,7 +156,7 @@ export default async function CourseDetailPage({
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="bg-yellow-400/10 p-2 rounded-xl">
+                        <div className="bg-yellow-400/10 p-2 rounded-lg">
                             <Star className="w-5 h-5 text-yellow-500 fill-current" />
                         </div>
                         <div>
@@ -166,7 +165,7 @@ export default async function CourseDetailPage({
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="bg-accent/10 p-2 rounded-xl">
+                        <div className="bg-accent/10 p-2 rounded-lg">
                             <Award className="w-5 h-5 text-accent" />
                         </div>
                         <div>
@@ -178,7 +177,7 @@ export default async function CourseDetailPage({
               </div>
 
               {/* Video Intro */}
-              <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl border-4 border-white/5 bg-black group">
+              <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl border border-border bg-black group">
                 <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                     <Image
                     src={course.imageUrl}
@@ -200,7 +199,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('curriculum')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {course.whatYouWillLearn.map((item, index) => (
-                            <div key={index} className="flex items-start gap-4 p-4 bg-muted/20 dark:bg-card/40 rounded-xl border border-primary/5 hover:border-primary/20 transition-all group">
+                            <div key={index} className="flex items-start gap-4 p-4 bg-muted/20 dark:bg-card/40 rounded-xl border border-border hover:border-primary/20 transition-all group">
                                 <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform" />
                                 <p className="text-sm font-semibold leading-relaxed">{item}</p>
                             </div>
@@ -233,8 +232,8 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('cycles')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
-                            <Card key={cycle.id} className="rounded-xl border-primary/10 overflow-hidden bg-card shadow-xl hover:border-primary transition-all group flex flex-col">
-                                <CardHeader className="bg-primary/5 p-6 border-b border-primary/5">
+                            <Card key={cycle.id} className="rounded-xl border-border overflow-hidden bg-card shadow-sm hover:border-primary transition-all group flex flex-col">
+                                <CardHeader className="bg-primary/5 p-6 border-b border-border">
                                     <div className="flex justify-between items-center">
                                         <Badge variant="outline" className="font-bold text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
                                         <span className="font-bold text-xl text-primary">{cycle.price}</span>
@@ -245,7 +244,7 @@ export default async function CourseDetailPage({
                                     <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
                                 </CardContent>
                                 <CardFooter className="p-6 pt-0 mt-auto">
-                                    <Button asChild className="w-full rounded-xl font-bold uppercase tracking-widest h-12 shadow-lg shadow-primary/20">
+                                    <Button asChild className="w-full rounded-xl font-bold uppercase tracking-widest h-12 shadow-sm">
                                         <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll in Cycle</Link>
                                     </Button>
                                 </CardFooter>
@@ -261,18 +260,18 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('syllabus')}</h2>
                     <Accordion type="single" collapsible className="w-full space-y-3">
                         {course.syllabus.map((item) => (
-                            <AccordionItem key={item.id} value={item.id} className="border border-primary/10 rounded-xl overflow-hidden bg-card/50 shadow-sm">
+                            <AccordionItem key={item.id} value={item.id} className="border border-border rounded-xl overflow-hidden bg-card/50 shadow-sm">
                                 <AccordionTrigger className="px-6 py-5 hover:no-underline font-bold uppercase tracking-tight text-left">
                                     <div className="flex items-center gap-4">
-                                        <div className="bg-primary/10 p-2.5 rounded-xl"><BookOpen className="w-5 h-5 text-primary"/></div>
+                                        <div className="bg-primary/10 p-2.5 rounded-lg"><BookOpen className="w-5 h-5 text-primary"/></div>
                                         <div className="flex flex-col">
                                             <span>{item.title}</span>
                                             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{item.lessons.length} Learning Sessions</span>
                                         </div>
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="p-0 border-t border-primary/5 bg-background">
-                                    <ul className="divide-y divide-primary/5">
+                                <AccordionContent className="p-0 border-t border-border bg-background">
+                                    <ul className="divide-y divide-border">
                                         {item.lessons.map(lesson => (
                                             <li key={lesson.id} className="flex items-center gap-4 px-8 py-4 hover:bg-primary/5 transition-colors group">
                                                 <div className="p-2.5 bg-muted rounded-lg group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
@@ -280,7 +279,7 @@ export default async function CourseDetailPage({
                                                     <span className="font-bold text-sm block group-hover:text-primary transition-colors">{lesson.title}</span>
                                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
                                                 </div>
-                                                <Badge variant="outline" className="text-[9px] font-bold uppercase border-primary/10">{lesson.duration}</Badge>
+                                                <Badge variant="outline" className="text-[9px] font-bold uppercase border-border">{lesson.duration}</Badge>
                                             </li>
                                         ))}
                                     </ul>
@@ -291,31 +290,12 @@ export default async function CourseDetailPage({
                 </div>
               )}
 
-              {/* FAQ Section */}
-              {course.faqs && course.faqs.length > 0 && (
-                <div id="faq" className="space-y-8 scroll-mt-32">
-                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('nav_faq')}</h2>
-                    <Accordion type="single" collapsible className="w-full space-y-3">
-                        {course.faqs.map((faq, idx) => (
-                            <AccordionItem key={idx} value={`faq-${idx}`} className="border border-primary/10 rounded-xl overflow-hidden bg-card shadow-sm">
-                                <AccordionTrigger className="px-6 py-5 font-bold text-left hover:no-underline hover:bg-primary/5 uppercase tracking-tight text-sm md:text-base">
-                                    {faq.question}
-                                </AccordionTrigger>
-                                <AccordionContent className="px-8 pb-8 pt-4 text-muted-foreground font-medium leading-relaxed border-t border-primary/5">
-                                    {faq.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </div>
-              )}
-
               {/* Secure Payment */}
               <div id="payment" className="space-y-8 scroll-mt-32">
                   <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('payment_info')}</h2>
-                  <Card className="rounded-xl border-primary/10 bg-primary/5 overflow-hidden shadow-inner">
+                  <Card className="rounded-xl border-border bg-primary/5 overflow-hidden shadow-inner">
                       <CardContent className="p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
-                          <div className="h-24 w-24 bg-primary rounded-xl flex items-center justify-center text-white shadow-2xl shadow-primary/30 shrink-0 transform -rotate-6">
+                          <div className="h-24 w-24 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shrink-0 transform -rotate-6">
                               <ShieldCheck className="w-12 h-12" />
                           </div>
                           <div className="space-y-4 text-center md:text-left">
@@ -334,9 +314,9 @@ export default async function CourseDetailPage({
               </div>
             </div>
 
-            {/* Sticky Pricing Sidebar - Standardized Solid Look */}
+            {/* Sticky Pricing Sidebar */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
-                <Card className="rounded-xl border-2 border-primary/20 shadow-2xl overflow-hidden bg-card p-1.5">
+                <Card className="rounded-xl border border-border shadow-xl overflow-hidden bg-card p-1.5">
                     <div className="relative aspect-video rounded-lg overflow-hidden m-1 shadow-inner bg-black">
                         <Image src={course.imageUrl} alt={course.title} fill className="object-cover opacity-90" priority />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><PlayCircle className="w-16 h-16 text-white/80" /></div>
@@ -374,11 +354,11 @@ export default async function CourseDetailPage({
                             />
                             <div className="grid grid-cols-2 gap-2">
                                 <WishlistButton courseId={course.id!} />
-                                <Button variant="outline" className="rounded-xl font-bold h-12 text-[10px] uppercase tracking-widest border-primary/10">Demo Class</Button>
+                                <Button variant="outline" className="rounded-xl font-bold h-12 text-[10px] uppercase tracking-widest border-border">Demo Class</Button>
                             </div>
                         </div>
                         
-                        <Separator className="bg-primary/5" />
+                        <Separator className="bg-border" />
                         
                         <div className="space-y-4">
                             <h3 className="font-bold text-[10px] uppercase tracking-[0.2em] text-foreground border-l-2 border-primary pl-3">Inside the batch</h3>
@@ -395,7 +375,7 @@ export default async function CourseDetailPage({
                         </div>
                     </CardContent>
                     
-                    <CardFooter className="bg-primary/5 p-5 flex justify-center gap-8 border-t border-primary/10">
+                    <CardFooter className="bg-primary/5 p-5 flex justify-center gap-8 border-t border-border">
                         <div className="flex flex-col items-center gap-1.5 opacity-60">
                             <ShieldCheck className="w-4 h-4 text-primary" />
                             <span className="text-[8px] font-bold uppercase tracking-widest">SSL Encrypted</span>
@@ -411,15 +391,15 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
-      {/* Popular Courses Section - Final Dynamic Grid */}
-      <section className="py-12 md:py-16 px-0 border-t border-white/5 -mx-1">
+      {/* Popular Courses Section */}
+      <section className="py-12 md:py-16 px-0 border-t border-border -mx-1">
           <div className="container mx-auto px-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 border-l-4 border-primary pl-6">
                   <div className="text-left">
                     <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight">{getT('popular_courses')}</h2>
                     <p className="text-muted-foreground font-medium text-sm md:text-lg mt-1">Students are excelling in these batches right now.</p>
                   </div>
-                  <Button asChild variant="outline" className="rounded-xl font-bold h-11 uppercase text-[10px] px-6 border-primary/20">
+                  <Button asChild variant="outline" className="rounded-xl font-bold h-11 uppercase text-[10px] px-6 border-border">
                       <Link href={`/${language}/courses`}>View All Shop</Link>
                   </Button>
               </div>

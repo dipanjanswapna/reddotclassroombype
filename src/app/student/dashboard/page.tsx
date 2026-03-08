@@ -188,12 +188,12 @@ export default function DashboardPage() {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="relative rounded-[20px] overflow-hidden p-6 bg-red-600 text-white shadow-2xl shadow-red-600/30 group"
+                    className="relative rounded-xl overflow-hidden p-6 bg-red-600 text-white shadow-2xl shadow-red-600/30 group"
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Video className="w-32 h-32 rotate-12"/></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-4 text-center md:text-left">
-                            <div className="h-12 w-12 rounded-[16px] bg-white/20 flex items-center justify-center shrink-0">
+                            <div className="h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
                                 <Video className="w-6 h-6 animate-pulse" />
                             </div>
                             <div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
           </AnimatePresence>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
+            <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><BookOpen className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Enrolled Courses</CardTitle>
@@ -222,7 +222,7 @@ export default function DashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
+            <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><TrendingUp className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Overall Progress</CardTitle>
@@ -230,12 +230,12 @@ export default function DashboardPage() {
                 <CardContent>
                     <div className="text-3xl font-black">{stats.overallProgress}%</div>
                     <div className="mt-4">
-                        <Progress value={stats.overallProgress} className="h-1.5 bg-white/20 [&>div]:bg-white" />
+                        <Progress value={stats.overallProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
                     </div>
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white overflow-hidden relative group">
+            <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-amber-500 to-orange-400 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Award className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Certificates</CardTitle>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white overflow-hidden relative group">
+            <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-purple-600 to-pink-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Crown className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Leaderboard Rank</CardTitle>
@@ -266,11 +266,11 @@ export default function DashboardPage() {
                         {aiTools.map((tool, idx) => (
                             <motion.div key={idx} whileHover={{ y: -3 }}>
                                 <Link href={tool.href}>
-                                    <Card className="rounded-[20px] border-primary/10 shadow-lg bg-card group hover:border-primary transition-all p-5 flex items-center gap-4">
-                                        <div className={cn("h-12 w-12 rounded-[16px] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform", tool.color)}>
+                                    <Card className="rounded-xl border-border shadow-sm bg-card group hover:border-primary transition-all p-5 flex items-center gap-4">
+                                        <div className={cn("h-12 w-12 rounded-lg flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform", tool.color)}>
                                             <tool.icon className="w-6 h-6" />
                                         </div>
-                                        <div className="flex-grow min-w-0">
+                                        <div className="flex-grow min-w-0 text-left">
                                             <h3 className="font-black text-sm uppercase tracking-tight">{tool.title}</h3>
                                             <p className="text-[10px] font-medium text-muted-foreground truncate">{tool.desc}</p>
                                         </div>
@@ -291,8 +291,8 @@ export default function DashboardPage() {
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                         {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                            <Card key={course.id} className="rounded-[20px] border-primary/20 bg-white shadow-xl overflow-hidden group flex flex-col">
-                                <div className="p-5 space-y-4 flex-grow">
+                            <Card key={course.id} className="rounded-xl border-border bg-white shadow-sm overflow-hidden group flex flex-col">
+                                <div className="p-5 space-y-4 flex-grow text-left">
                                     <div className="space-y-1">
                                         <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2">{course.title}</h3>
                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{course.category}</p>
@@ -302,11 +302,11 @@ export default function DashboardPage() {
                                             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Course Progress</span>
                                             <span className="text-[10px] font-black text-primary">{course.progress}%</span>
                                         </div>
-                                        <Progress value={course.progress} className="h-1.5 rounded-full bg-muted shadow-inner [&>div]:bg-accent" />
+                                        <Progress value={course.progress} className="h-1 rounded-full bg-muted shadow-inner [&>div]:bg-accent" />
                                     </div>
                                 </div>
                                 <div className="p-5 pt-0 mt-auto">
-                                <Button asChild size="sm" className="w-full font-black uppercase tracking-widest h-10 rounded-xl shadow-xl shadow-primary/20">
+                                <Button asChild size="sm" className="w-full font-black uppercase tracking-widest h-10 rounded-xl shadow-sm shadow-primary/20">
                                     <Link href={`/student/my-courses/${course.id}`} className="flex items-center justify-center gap-2">
                                         Continue Learning <ChevronRight className="w-3.5 h-3.5" />
                                     </Link>
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                                 </div>
                             </Card>
                         )) : (
-                            <Card className="col-span-full rounded-[20px] border-dashed p-12 text-center bg-muted/20 border-primary/20">
+                            <Card className="col-span-full rounded-xl border-dashed p-12 text-center bg-muted/20 border-border">
                                 <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                 <p className="text-muted-foreground font-bold">You are not enrolled in any courses yet.</p>
                                 <Button asChild className="mt-4 rounded-xl font-black uppercase tracking-widest" variant="outline">
@@ -326,9 +326,9 @@ export default function DashboardPage() {
                 </section>
             </div>
 
-            <div className="space-y-8">
-                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-white/10 text-left">
+            <div className="space-y-8 text-left">
+                <Card className="rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <CalendarCheck className="w-5 h-5 text-primary" />
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                     <CardContent className="p-5">
                         <ul className="space-y-3">
                         {stats.upcomingDeadlines.length > 0 ? stats.upcomingDeadlines.map((deadline: any, index: number) => (
-                            <li key={index} className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group">
+                            <li key={index} className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-border group">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
                                 <Zap className="h-5 w-5" />
                             </div>
@@ -361,8 +361,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10 text-left">
+                <Card className="rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                         <div className="flex items-center gap-2">
                             <Crown className="w-5 h-5 text-accent" />
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Leaderboard</CardTitle>
@@ -386,14 +386,14 @@ export default function DashboardPage() {
                                 <Badge className="bg-transparent text-foreground border-none font-black text-xs">#{user.rank}</Badge>
                             </div>
                         ))}
-                        <Button asChild variant="outline" className="w-full h-10 rounded-xl font-black uppercase text-[9px] tracking-widest border-primary/10">
+                        <Button asChild variant="outline" className="w-full h-10 rounded-xl font-black uppercase text-[9px] tracking-widest border-border">
                             <Link href="/student/leaderboard">View Full Board</Link>
                         </Button>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[20px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
-                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10 text-left">
+                <Card className="rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Bell className="w-5 h-5 text-accent" />
@@ -404,7 +404,7 @@ export default function DashboardPage() {
                     <CardContent className="p-5">
                         <ul className="space-y-3">
                         {notices.length > 0 ? notices.map((notice) => (
-                            <li key={notice.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/20 group cursor-pointer">
+                            <li key={notice.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-border group cursor-pointer">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent group-hover:scale-110 transition-transform mt-0.5">
                                 <Megaphone className="h-5 w-5" />
                             </div>

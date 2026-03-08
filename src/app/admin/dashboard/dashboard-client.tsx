@@ -84,7 +84,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
     return (
         <div className="space-y-8">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
+                <Card className="rounded-xl border-border shadow-sm bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Revenue</CardTitle>
                     </CardHeader>
@@ -94,7 +94,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
                 
-                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
+                <Card className="rounded-xl border-border shadow-sm bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Enrollments</CardTitle>
                     </CardHeader>
@@ -104,7 +104,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
+                <Card className="rounded-xl border-border shadow-sm bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Users</CardTitle>
                     </CardHeader>
@@ -114,7 +114,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[20px] border-primary/10 shadow-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
+                <Card className="rounded-xl border-border shadow-sm bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
                     </CardHeader>
@@ -126,16 +126,16 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
             </div>
             
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-1 lg:col-span-4 rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                <Card className="col-span-1 lg:col-span-4 rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">Revenue Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pl-2">
                         <OverviewChart data={revenueData} />
                     </CardContent>
                 </Card>
-                 <Card className="col-span-1 lg:col-span-3 rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                 <Card className="col-span-1 lg:col-span-3 rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">User Demographics</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5">
@@ -144,8 +144,8 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                 </Card>
             </div>
     
-             <Card className="rounded-[20px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+             <Card className="rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                <CardHeader className="bg-muted/30 p-5 border-b border-border">
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 text-primary" />
                         <CardTitle className="text-sm font-black uppercase tracking-tight">Recent Activity</CardTitle>
@@ -154,7 +154,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                 <CardContent className="p-0 overflow-x-auto">
                     <Table>
                         <TableHeader className="bg-muted/30">
-                            <TableRow className="border-primary/10">
+                            <TableRow className="border-border">
                                 <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">User</TableHead>
                                 <TableHead className="font-black uppercase tracking-widest text-[10px]">Role</TableHead>
                                 <TableHead className="font-black uppercase tracking-widest text-[10px]">Joined</TableHead>
@@ -164,7 +164,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                             {recentSignups.map(user => {
                                 const joinedDate = safeToDate(user.joined);
                                 return (
-                                    <TableRow key={user.id} className="border-primary/10 hover:bg-primary/5 transition-colors">
+                                    <TableRow key={user.id} className="border-border hover:bg-muted/30 transition-colors">
                                         <TableCell className="px-6 py-4">
                                             <div className="font-bold text-sm">{user.name}</div>
                                             <div className="text-[10px] font-medium text-muted-foreground">{user.email}</div>

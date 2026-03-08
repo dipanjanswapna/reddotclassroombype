@@ -53,10 +53,10 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
   return (
     <div className={cn("h-full w-full", isBn && "font-bengali")}>
       <Card className={cn(
-        "flex flex-col h-full overflow-hidden shadow-xl border-primary/20 rounded-[20px] bg-[#f0f9ff] dark:bg-card/40",
+        "flex flex-col h-full overflow-hidden shadow-sm border border-border rounded-xl bg-card",
         "p-2.5 md:p-3"
       )}>
-        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-[12px] shadow-inner bg-black/5">
+        <div className="relative w-full aspect-video shrink-0 overflow-hidden rounded-lg shadow-inner bg-muted">
           <Link href={courseLink}>
             <Image
               src={course.imageUrl}
@@ -80,26 +80,26 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
           <div className="space-y-0.5">
               <Link href={courseLink}>
               <h3 className={cn(
-                  "text-sm md:text-base font-black leading-tight text-gray-900 line-clamp-2 uppercase tracking-tight h-[2.5rem] md:h-[3rem]",
+                  "text-sm md:text-base font-black leading-tight text-foreground line-clamp-2 uppercase tracking-tight h-[2.5rem] md:h-[3rem]",
                   !isBn && "font-headline"
               )}>
                   {course.title}
               </h3>
               </Link>
               {provider ? (
-                  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest truncate">By {provider.name}</p>
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">By {provider.name}</p>
               ) : (
-                  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest truncate mt-0.5">Mentor: {course.instructors?.[0]?.name || 'RDC Expert'}</p>
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate mt-0.5">Mentor: {course.instructors?.[0]?.name || 'RDC Expert'}</p>
               )}
           </div>
 
           {status === 'in-progress' && typeof course.progress === 'number' && (
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-600">Progress</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Progress</span>
                   <span className="text-[10px] font-black text-primary">{course.progress}%</span>
               </div>
-              <Progress value={course.progress} className="h-1.5 rounded-full bg-white/50 [&>div]:bg-accent shadow-inner" />
+              <Progress value={course.progress} className="h-1 rounded-full bg-muted shadow-inner [&>div]:bg-accent" />
             </div>
           )}
 
@@ -116,7 +116,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
 
           <div className="pt-1 flex gap-2 mt-auto">
               {status === 'in-progress' && (
-                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20">
+                  <Button asChild size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl shadow-sm">
                       <Link href={continueLink} className="flex items-center justify-center gap-1.5">
                           {isBn ? 'চালিয়ে যান' : 'Continue'} <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
@@ -138,7 +138,7 @@ export function EnrolledCourseCard({ course, status, provider }: EnrolledCourseC
                   </>
               )}
               {status === 'prebooked' && (
-                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-white/20">
+                  <Button disabled size="sm" className="w-full font-black text-[10px] h-9 md:h-10 uppercase tracking-widest rounded-xl bg-muted text-muted-foreground border-border">
                       <BookmarkCheck className="mr-1.5 h-3.5 w-3.5" /> {isBn ? 'প্রি-বুক করা হয়েছে' : 'Pre-booked'}
                   </Button>
               )}

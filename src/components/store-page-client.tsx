@@ -81,7 +81,7 @@ export function StorePageClient({
             <main className="space-y-8 md:space-y-12">
                 {/* Dynamic Hero Banners */}
                 {homepageConfig?.storeHomepageSection?.bannerCarousel && !hasFilters && (
-                     <div className="rounded-[25px] overflow-hidden shadow-2xl border border-primary/10">
+                     <div className="rounded-xl overflow-hidden shadow-sm border border-border">
                         <StoreBannerCarousel banners={homepageConfig.storeHomepageSection.bannerCarousel} />
                      </div>
                 )}
@@ -112,7 +112,7 @@ export function StorePageClient({
                             </div>
                             <Input
                                 placeholder={t.search_placeholder[language]}
-                                className="pl-9 h-11 rounded-xl bg-card border-primary/20 focus:border-primary/50 transition-all shadow-inner"
+                                className="pl-9 h-11 rounded-xl bg-card border-border focus:border-primary/50 transition-all shadow-inner"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
@@ -136,7 +136,7 @@ export function StorePageClient({
 
                     {/* Empty State */}
                     {filteredProducts.length === 0 && (
-                        <div className="text-center py-24 bg-muted/20 border-2 border-dashed border-primary/10 rounded-[25px] flex flex-col items-center">
+                        <div className="text-center py-24 bg-muted/20 border-2 border-dashed border-border rounded-xl flex flex-col items-center">
                             <Filter className="w-12 h-12 text-primary/20 mb-4" />
                             <p className="text-muted-foreground font-black uppercase tracking-widest text-xs opacity-40">No products match your criteria</p>
                         </div>

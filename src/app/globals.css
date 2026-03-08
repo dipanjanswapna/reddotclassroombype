@@ -73,15 +73,16 @@
   }
 
   .font-headline {
+    @apply font-bold tracking-tight text-foreground;
     font-family: var(--font-poppins), sans-serif;
   }
 
   section {
-    @apply py-10 md:py-14 max-w-full overflow-hidden;
+    @apply py-8 md:py-12 max-w-full overflow-hidden;
   }
 
   h1, h2, h3, h4 {
-    @apply font-headline font-bold tracking-tight text-foreground;
+    @apply font-headline;
     text-transform: none !important; /* Enforcing Sentence/Title Case */
   }
 
