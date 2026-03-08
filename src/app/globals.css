@@ -25,11 +25,11 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 29.8%;
-    --radius: 20px;
+    --radius: 0.75rem; /* Standardized to rounded-xl (12px) */
   }
 
   .dark {
-    --background: 222.2 47.4% 11.2%; /* Dark Navy base */
+    --background: 222.2 47.4% 11.2%;
     --foreground: 210 40% 98%;
     --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
@@ -68,7 +68,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Bengali Font Utility - Higher Priority */
   .font-bengali, [lang='bn'], [lang='bn'] * {
     font-family: var(--font-bengali), sans-serif !important;
   }
@@ -77,9 +76,17 @@
     font-family: var(--font-poppins), sans-serif;
   }
 
-  /* Standardized Section Spacing - Equal and Reduced for high density */
   section {
     @apply py-6 md:py-10 max-w-full overflow-hidden;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-headline font-bold tracking-tight text-foreground;
+    text-transform: none !important; /* Force Sentence/Title case */
+  }
+
+  p {
+    @apply font-body font-normal text-muted-foreground leading-relaxed;
   }
 }
 
@@ -91,24 +98,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .mesh-gradient {
-    background-color: hsla(0,0%,100%,1);
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(346,77%,29%,0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(142,71%,40%,0.08) 0px, transparent 50%);
-  }
-  .dark .mesh-gradient {
-    background-color: hsla(222,47%,11%,1);
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(346,77%,40%,0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(142,71%,40%,0.12) 0px, transparent 50%);
-  }
   
-  .glassmorphism-card {
-    @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-xl;
+  /* Solid professional backgrounds instead of glass */
+  .pro-card {
+    @apply bg-white dark:bg-card border border-border shadow-sm;
   }
 
-  /* Custom Scrollbar for high-density components */
   .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
   }
@@ -117,8 +112,5 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-primary/20 rounded-full;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/40;
   }
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -42,6 +41,9 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { Separator } from "./ui/separator";
 
+/**
+ * @fileOverview Professional Header with clean geometric style and no glassmorphism.
+ */
 export function Header({ containerClassName, variant = "light", wrapperClassName, homepageConfig }: { containerClassName?: string; variant?: "light" | "dark", wrapperClassName?: string, homepageConfig: HomepageConfig | null }) {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const { language, getLocalizedPath } = useLanguage();
@@ -72,8 +74,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
     <motion.header 
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn("fixed top-0 left-0 right-0 z-50 w-full bg-background/80 dark:bg-card/80 backdrop-blur-xl border-b border-white/10 shadow-sm", wrapperClassName)}
+      className={cn("fixed top-0 left-0 right-0 z-50 w-full bg-white dark:bg-background border-b border-border", wrapperClassName)}
     >
       <div className="container">
         <div className={cn(
@@ -82,48 +83,34 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
         )}>
           <div className="flex items-center gap-2">
             <Link href={getLocalizedPath("/")} className="flex items-center space-x-2 group">
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative h-8 md:h-10 w-auto transition-transform duration-300"
-                >
-                  <Image 
-                    src={homepageConfig?.logoUrl || logoSrc} 
-                    alt="RED DOT CLASSROOM Logo" 
-                    width={120} 
-                    height={40} 
-                    className="h-full w-auto object-contain"
-                    priority 
-                  />
-                </motion.div>
+                <Image 
+                  src={homepageConfig?.logoUrl || logoSrc} 
+                  alt="Red Dot Classroom Logo" 
+                  width={120} 
+                  height={40} 
+                  className="h-8 md:h-9 w-auto object-contain transition-transform group-hover:scale-105"
+                  priority 
+                />
             </Link>
           </div>
           
           <nav className="hidden lg:flex items-center space-x-1 text-sm font-semibold">
               {mainNavLinks.map((link) => (
-              <motion.div key={link.href} whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="ghost" asChild className={cn(
-                  "rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
-                  isDark && "text-white hover:bg-white/20"
-                )}>
+                <Button key={link.href} variant="ghost" asChild className="rounded-lg hover:bg-muted transition-colors px-4">
                     <Link href={link.href}>
                       {link.label}
                     </Link>
                 </Button>
-              </motion.div>
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className={cn(
-                        "flex items-center gap-1 rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300",
-                        isDark && "text-white hover:bg-white/20"
-                      )}>
+                      <Button variant="ghost" className="flex items-center gap-1 rounded-lg hover:bg-muted transition-colors px-4">
                       {t.nav_more[language]} <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="rounded-xl border-white/10 shadow-2xl">
+                  <DropdownMenuContent align="start" className="rounded-xl shadow-lg p-2 border-border">
                       {moreLinks.map((link) => (
-                          <DropdownMenuItem key={link.href} asChild className="rounded-lg">
+                          <DropdownMenuItem key={link.href} asChild className="rounded-lg cursor-pointer">
                               <Link href={link.href}>{link.label}</Link>
                           </DropdownMenuItem>
                       ))}
@@ -133,27 +120,17 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
 
           <div className="flex items-center justify-end space-x-2">
               <div className="hidden sm:flex items-center space-x-1">
-                  <LanguageToggle className={cn("rounded-full h-9", isDark && "text-white hover:bg-white/20")} />
-                  <ThemeToggle className={cn("rounded-full h-9", isDark && "text-white hover:bg-white/20")} />
+                  <LanguageToggle className="rounded-lg h-9 hover:bg-muted" />
+                  <ThemeToggle className="rounded-lg h-9 hover:bg-muted" />
                   
-                  <Separator orientation="vertical" className="h-6 mx-2 hidden lg:block opacity-50" />
+                  <Separator orientation="vertical" className="h-6 mx-2 hidden lg:block" />
                   
                   {!user && (
-                    <div className="flex items-center bg-muted/50 dark:bg-white/10 p-1 rounded-[20px] border border-white/10 ml-2 shadow-inner">
-                      <Button asChild variant="ghost" size="sm" className={cn(
-                        "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
-                        pathname.includes('/login') 
-                          ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
-                          : "text-muted-foreground hover:text-foreground"
-                      )}>
+                    <div className="flex items-center gap-1">
+                      <Button asChild variant="ghost" size="sm" className="rounded-lg font-bold">
                           <Link href={getLocalizedPath("/login")}>{t.login[language]}</Link>
                       </Button>
-                      <Button asChild variant="ghost" size="sm" className={cn(
-                        "rounded-[16px] h-8 px-5 font-black uppercase text-[9px] tracking-widest transition-all duration-300",
-                        pathname.includes('/signup') 
-                          ? "bg-white dark:bg-primary text-primary dark:text-white shadow-md scale-105" 
-                          : "text-muted-foreground hover:text-foreground"
-                      )}>
+                      <Button asChild size="sm" className="rounded-lg font-bold">
                           <Link href={getLocalizedPath("/signup")}>{t.signup[language]}</Link>
                       </Button>
                     </div>
@@ -161,7 +138,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               </div>
               
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className={cn("relative rounded-full", isDark && "text-white hover:bg-white/20")} onClick={() => setIsCartOpen(true)}>
+                <Button variant="ghost" size="icon" className="relative rounded-lg hover:bg-muted" onClick={() => setIsCartOpen(true)}>
                   <ShoppingCart className="h-5 w-5" />
                   {itemCount > 0 && (
                       <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0 text-[10px] border-2 border-background">{itemCount}</Badge>
@@ -175,33 +152,33 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               <div className="lg:hidden">
               <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className={cn("rounded-full", isDark && "text-white hover:bg-white/20")}>
+                  <Button variant="ghost" size="icon" aria-label="Toggle Menu" className="rounded-lg">
                       <Menu className="h-6 w-6" />
                   </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-background/90 backdrop-blur-2xl border-r-0">
-                      <SheetHeader className="p-6 border-b bg-muted/20">
-                          <SheetTitle className="text-left flex items-center gap-2">
+                  <SheetContent side="left" className="p-0 w-full max-w-sm flex flex-col bg-white dark:bg-background border-r">
+                      <SheetHeader className="p-6 border-b text-left">
+                          <SheetTitle className="flex items-center gap-2">
                             <Image src={homepageConfig?.logoUrl || logoSrc} alt="Logo" width={100} height={32} className="h-8 w-auto object-contain" />
                           </SheetTitle>
-                          <SheetDescription className="text-left text-xs">Empowering learners across Bangladesh.</SheetDescription>
+                          <SheetDescription>Empowering learners across Bangladesh.</SheetDescription>
                       </SheetHeader>
                       
                       <div className="flex-grow overflow-y-auto px-4 py-6">
-                        <div className="flex flex-col space-y-2">
+                        <div className="flex flex-col space-y-1">
                             {mainNavLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setMenuOpen(false)}
-                                className="px-4 py-3 text-lg font-bold transition-all hover:bg-primary/10 hover:text-primary rounded-xl"
+                                className="px-4 py-3 text-lg font-bold transition-all hover:bg-muted rounded-xl"
                             >
                                 {link.label}
                             </Link>
                             ))}
                             <Accordion type="single" collapsible className="w-full">
                             <AccordionItem value="more-links" className="border-b-0">
-                                <AccordionTrigger className="px-4 py-3 text-lg font-bold transition-all hover:bg-primary/10 hover:text-primary rounded-xl hover:no-underline justify-between">
+                                <AccordionTrigger className="px-4 py-3 text-lg font-bold transition-all hover:bg-muted rounded-xl hover:no-underline justify-between">
                                 {t.nav_more[language]}
                                 </AccordionTrigger>
                                 <AccordionContent>
@@ -211,7 +188,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                                         key={link.href}
                                         href={link.href}
                                         onClick={() => setMenuOpen(false)}
-                                        className="px-4 py-2 text-base font-semibold transition-all hover:text-primary rounded-lg"
+                                        className="px-4 py-2 text-base font-semibold transition-all hover:text-primary"
                                     >
                                         {link.label}
                                     </Link>
@@ -223,8 +200,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                         </div>
                       </div>
 
-                      <Separator className="opacity-50" />
-                      <div className="p-6 bg-muted/10 space-y-6">
+                      <div className="p-6 bg-muted/30 space-y-6">
                         <div className="flex flex-col gap-3">
                           <Button variant="outline" className="w-full justify-start rounded-xl h-12 font-bold gap-3" asChild>
                             <a href="tel:01641035736">
@@ -241,21 +217,13 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
                                   {t.login[language]}
                                   </Link>
                               </Button>
-                              <Button asChild className="w-full rounded-xl h-12 font-bold shadow-lg shadow-primary/20">
+                              <Button asChild className="w-full rounded-xl h-12 font-bold">
                                   <Link href={getLocalizedPath("/signup")} onClick={() => setMenuOpen(false)}>
                                   {t.signup[language]}
                                   </Link>
                               </Button>
                             </div>
                         )}
-                        
-                        <div className="flex justify-between items-center px-2">
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Preferences</p>
-                            <div className="flex gap-2">
-                              <LanguageToggle className="rounded-full bg-background shadow-sm border border-white/10" />
-                              <ThemeToggle className="rounded-full bg-background shadow-sm border border-white/10" />
-                            </div>
-                        </div>
                       </div>
                   </SheetContent>
               </Sheet>

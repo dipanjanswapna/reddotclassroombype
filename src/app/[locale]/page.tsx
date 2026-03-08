@@ -38,14 +38,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RequestCallbackForm } from '@/components/request-callback-form';
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
-    loading: () => <Skeleton className="h-[250px] w-full rounded-[20px]" />,
+    loading: () => <Skeleton className="h-[250px] w-full rounded-xl" />,
     ssr: false,
 });
 
 /**
  * @fileOverview Localized Master Homepage
- * Standardized high-density layout with 18 dynamic sections.
- * px-1 wall-to-wall design enforced.
+ * Clean, professional geometric design with Sentence Case and Title Case hierarchy.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -69,8 +68,6 @@ export default function Home() {
             live, ssc, adm, job,
             instructorsData,
             orgsData,
-            allUsers,
-            allCourses
         ] = await Promise.all([
             getCoursesByIds(config.liveCoursesIds || []),
             getCoursesByIds(config.sscHscCourseIds || []),
@@ -78,8 +75,6 @@ export default function Home() {
             getCoursesByIds(config.jobCoursesIds || []),
             getInstructors(),
             getOrganizations(),
-            getUsers(),
-            getCourses({ status: 'Published' })
         ]);
         
         setLiveCourses(live);
@@ -105,7 +100,7 @@ export default function Home() {
   if (loading) return (
     <div className="px-1 py-20 flex flex-col items-center justify-center gap-4 min-h-screen bg-background">
         <LoadingSpinner className="w-12 h-12" />
-        <p className={cn("text-xs font-black uppercase tracking-widest animate-pulse", isBn && "font-bengali")}>
+        <p className={cn("text-xs font-semibold uppercase tracking-widest animate-pulse", isBn && "font-bengali")}>
             {isBn ? 'ক্লাসরুম তৈরি হচ্ছে...' : 'Initializing RDC...'}
         </p>
     </div>
@@ -116,22 +111,22 @@ export default function Home() {
   const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   return (
-    <div className={cn("text-foreground mesh-gradient overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
+    <div className={cn("text-foreground overflow-x-hidden max-w-full px-1 pb-20", isBn && "font-bengali")}>
         
         {/* 1. Welcome Section */}
         {homepageConfig.welcomeSection?.display && (
             <section className="pt-6 pb-2 md:pt-8 md:pb-4">
                 <div className="container mx-auto text-left space-y-4">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="flex flex-col gap-3">
-                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 shadow-sm w-fit">
+                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-tight border border-primary/20 w-fit">
                             <Sparkles className="w-3.5 h-3.5" />
                             {isBn ? 'সেরা লার্নিং প্ল্যাটফর্ম' : 'Elite Learning Platform'}
                         </div>
-                        <h1 className={cn("font-black tracking-tighter text-foreground uppercase leading-[0.95]", isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline")}>
-                            {homepageConfig.welcomeSection?.title?.[language] || "RED DOT CLASSROOM"}
+                        <h1 className={cn("font-bold tracking-tight text-foreground leading-[1.1]", isBn ? "text-4xl md:text-6xl" : "text-4xl md:text-7xl font-headline")}>
+                            {homepageConfig.welcomeSection?.title?.[language] || "Red Dot Classroom"}
                         </h1>
                         <div className="w-full max-w-3xl">
-                            <TypingText text={homepageConfig.welcomeSection?.description?.[language] || ''} className="text-sm md:text-xl text-muted-foreground leading-relaxed font-medium" />
+                            <TypingText text={homepageConfig.welcomeSection?.description?.[language] || ''} className="text-base md:text-xl text-muted-foreground leading-relaxed font-medium" />
                         </div>
                     </motion.div>
                 </div>
@@ -147,25 +142,25 @@ export default function Home() {
         {homepageConfig.strugglingStudentSection?.display && (
             <section className="px-1 py-6 md:py-10">
                 <div className="container mx-auto">
-                    <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="relative rounded-[30px] overflow-hidden bg-gradient-to-br from-[#8B1538] to-[#1a1a2e] p-8 md:p-14 shadow-2xl group">
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="relative rounded-xl overflow-hidden bg-primary p-8 md:p-14 shadow-lg group">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110" />
                         <div className="grid md:grid-cols-2 gap-10 items-center relative z-10">
                             <div className="space-y-6 text-center md:text-left">
-                                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">
+                                <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-tight border border-white/20">
                                     <AlertCircle className="w-3.5 h-3.5" />
                                     {isBn ? homepageConfig.strugglingStudentSection.title.bn : homepageConfig.strugglingStudentSection.title.en}
                                 </div>
-                                <h2 className="text-3xl md:text-5xl font-black text-white leading-tight uppercase tracking-tight">
+                                <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight tracking-tight">
                                     {isBn ? homepageConfig.strugglingStudentSection.subtitle.bn : homepageConfig.strugglingStudentSection.subtitle.en}
                                 </h2>
-                                <Button asChild size="lg" className="bg-white text-primary hover:bg-yellow-400 hover:text-black font-black uppercase tracking-widest h-14 px-10 rounded-2xl shadow-2xl transition-all border-none">
+                                <Button asChild size="lg" variant="secondary" className="font-bold h-14 px-10 rounded-xl transition-all border-none">
                                     <Link href={getLocalizedPath("/strugglers-studies")} className="flex items-center gap-2">
                                         {isBn ? homepageConfig.strugglingStudentSection.buttonText.bn : homepageConfig.strugglingStudentSection.buttonText.en} <ArrowRight className="w-4 h-4" />
                                     </Link>
                                 </Button>
                             </div>
                             <div className="relative h-64 md:h-80 flex justify-center items-center">
-                                <Image src={homepageConfig.strugglingStudentSection.imageUrl} alt="Help" width={400} height={400} className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform group-hover:scale-105 duration-700" />
+                                <Image src={homepageConfig.strugglingStudentSection.imageUrl} alt="Help" width={400} height={400} className="object-contain drop-shadow-xl transition-transform group-hover:scale-105 duration-700" />
                             </div>
                         </div>
                     </motion.div>
@@ -185,10 +180,10 @@ export default function Home() {
           <section className="overflow-hidden py-6 md:py-10 px-1">
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-6 border-l-4 border-primary pl-4">
-                  <h2 className={cn("font-black tracking-tight uppercase", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
+                  <h2 className={cn("font-bold tracking-tight", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
                     {homepageConfig.categoriesSection.title[language] || "Categories"}
                   </h2>
-                  <Button asChild variant="link" className="font-black uppercase text-[10px] tracking-widest text-primary p-0 h-auto">
+                  <Button asChild variant="link" className="font-bold text-sm text-primary p-0 h-auto">
                       <Link href={getLocalizedPath("/courses")}>{getT('view_all')} &rarr;</Link>
                   </Button>
               </div>
@@ -199,13 +194,13 @@ export default function Home() {
 
         {/* 6. Journey Section (Live Courses) */}
         {homepageConfig.journeySection?.display && (
-          <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent overflow-hidden py-6 md:py-10 px-1">
+          <section className="bg-muted/30 overflow-hidden py-6 md:py-10 px-1">
             <div className="container mx-auto px-0">
               <div className="border-l-4 border-primary pl-4 mb-8 text-left">
-                <h2 className={cn("font-black tracking-tight uppercase text-left", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
+                <h2 className={cn("font-bold tracking-tight text-left", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
                     {homepageConfig.journeySection.title[language] || "Live Courses"}
                 </h2>
-                <p className="text-muted-foreground mt-1 text-sm md:text-lg font-medium text-left">
+                <p className="text-muted-foreground mt-1 text-sm md:text-base font-medium text-left">
                     {homepageConfig.journeySection?.subtitle?.[language] || ''}
                 </p>
               </div>
@@ -220,16 +215,16 @@ export default function Home() {
 
         {/* 7. Teachers Section */}
         {homepageConfig.teachersSection?.display && (
-          <section className="overflow-hidden py-6 md:py-10 px-1 bg-muted/20">
+          <section className="overflow-hidden py-6 md:py-10 px-1">
             <div className="container mx-auto px-0">
               <div className="flex items-center justify-between mb-8 border-l-4 border-accent pl-4 text-left">
                   <div className="text-left">
-                      <h2 className={cn("font-black tracking-tight uppercase text-left", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
+                      <h2 className={cn("font-bold tracking-tight text-left", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
                         {homepageConfig.teachersSection.title[language] || "Our Mentors"}
                       </h2>
-                      <p className="text-muted-foreground mt-1 text-sm md:text-base leading-tight font-medium text-left">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
+                      <p className="text-muted-foreground mt-1 text-sm md:text-base font-medium text-left">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
-                  <Button asChild variant="outline" size="sm" className="rounded-xl border-accent/20 text-accent font-black h-11 uppercase text-[10px] px-6">
+                  <Button asChild variant="outline" size="sm" className="rounded-xl border-accent/20 text-accent font-bold h-11 px-6">
                       <Link href={getLocalizedPath("/teachers")}>{isBn ? 'সকল শিক্ষক' : 'All Teachers'}</Link>
                   </Button>
               </div>
@@ -238,97 +233,61 @@ export default function Home() {
           </section>
         )}
 
-        {/* 12. Why Choose Us (Why We Are The Best) */}
-        <section className="px-1 py-6 md:py-10">
+        {/* 12. Why Choose Us */}
+        <section className="px-1 py-6 md:py-10 bg-muted/20">
             <WhyTrustUs data={homepageConfig.whyChooseUs} />
         </section>
         
-        {/* 20. Stats Section (Our Achievements) */}
+        {/* 20. Stats Section */}
         {homepageConfig.statsSection?.display && (
           <section className="px-1 py-6 md:py-10">
-            <StatsSection stats={homepageConfig.statsSection.stats.map(s => ({...s, color: 'bg-muted/20'}))} title={homepageConfig.statsSection.title} />
+            <StatsSection stats={homepageConfig.statsSection.stats.map(s => ({...s, color: 'bg-card border'}))} title={homepageConfig.statsSection.title} />
           </section>
         )}
 
-        {/* 18. Callback Section (Request a Callback) */}
+        {/* 18. Callback Section */}
         <section className="px-1 py-6 md:py-10">
             <div className="container mx-auto">
                 <RequestCallbackForm homepageConfig={homepageConfig} />
             </div>
         </section>
 
-        {/* 8. SSC & HSC Section */}
-        {sscHscCourses.length > 0 && (
-            <section className="py-6 md:py-10 px-1">
-                <div className="container mx-auto">
-                    <h2 className="font-headline text-2xl font-black uppercase mb-8 border-l-4 border-primary pl-4">{homepageConfig.sscHscSection?.title?.[language] || 'SSC & HSC'}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {sscHscCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                    </div>
-                </div>
-            </section>
-        )}
-
-        {/* 10. Admission Section */}
-        {admissionCourses.length > 0 && (
-            <section className="py-6 md:py-10 px-1">
-                <div className="container mx-auto">
-                    <h2 className="font-headline text-2xl font-black uppercase mb-8 border-l-4 border-primary pl-4">{homepageConfig.admissionSection?.title?.[language] || 'University Admission'}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {admissionCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                    </div>
-                </div>
-            </section>
-        )}
-
-        {/* 11. Job Prep Section */}
-        {jobCourses.length > 0 && (
-            <section className="py-6 md:py-10 px-1 bg-muted/10">
-                <div className="container mx-auto">
-                    <h2 className="font-headline text-2xl font-black uppercase mb-8 border-l-4 border-primary pl-4">{homepageConfig.jobPrepSection?.title?.[language] || 'Job & BCS Prep'}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {jobCourses.map(course => <CourseCard key={course.id} {...course} provider={organizations.find(p => p.id === course.organizationId)} />)}
-                    </div>
-                </div>
-            </section>
-        )}
-
         {/* 15. Social Media Section */}
         {homepageConfig.socialMediaSection?.display && (
-            <section className="px-1 py-6 md:py-10 bg-card">
+            <section className="px-1 py-6 md:py-10 bg-muted/30">
                 <div className="container mx-auto">
                     <div className="text-center mb-12 space-y-2">
-                        <h2 className="font-headline text-2xl md:text-4xl font-black uppercase tracking-tight">{homepageConfig.socialMediaSection.title[language]}</h2>
+                        <h2 className="font-headline text-2xl md:text-4xl font-bold tracking-tight">{homepageConfig.socialMediaSection.title[language]}</h2>
                         <p className="text-muted-foreground font-medium">{homepageConfig.socialMediaSection.description[language]}</p>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {homepageConfig.socialMediaSection.channels.map(channel => (
-                            <Card key={channel.id} className="rounded-3xl border-primary/10 shadow-xl overflow-hidden group">
-                                <CardHeader className="bg-muted/30 p-6 flex flex-row items-center justify-between border-b border-black/5">
+                            <Card key={channel.id} className="rounded-xl border-border shadow-sm overflow-hidden group bg-card">
+                                <CardHeader className="p-6 flex flex-row items-center justify-between border-b border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-xl bg-white shadow-sm">
+                                        <div className="p-2 rounded-xl bg-muted/50">
                                             {channel.platform === 'YouTube' ? <Video className="text-red-600" /> : <Users className="text-blue-600" />}
                                         </div>
                                         <div>
-                                            <h3 className="font-black text-sm uppercase tracking-tight">{channel.name[language]}</h3>
-                                            <p className="text-[10px] font-bold text-muted-foreground">{channel.handle}</p>
+                                            <h3 className="font-bold text-sm">{channel.name[language]}</h3>
+                                            <p className="text-xs text-muted-foreground">{channel.handle}</p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="font-black text-[8px] uppercase tracking-widest">{channel.platform}</Badge>
+                                    <Badge variant="outline" className="font-bold text-[10px]">{channel.platform}</Badge>
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="grid grid-cols-2 gap-4 mb-4">
-                                        <div className="text-center p-2 rounded-xl bg-muted/20">
-                                            <p className="font-black text-xl text-primary leading-none">{channel.stat1_value}</p>
-                                            <p className="text-[8px] font-bold uppercase text-muted-foreground mt-1">{channel.stat1_label[language]}</p>
+                                        <div className="text-center p-3 rounded-xl bg-muted/30">
+                                            <p className="font-bold text-xl text-primary leading-none">{channel.stat1_value}</p>
+                                            <p className="text-[10px] font-medium text-muted-foreground mt-1">{channel.stat1_label[language]}</p>
                                         </div>
-                                        <div className="text-center p-2 rounded-xl bg-muted/20">
-                                            <p className="font-black text-xl text-primary leading-none">{channel.stat2_value}</p>
-                                            <p className="text-[8px] font-bold uppercase text-muted-foreground mt-1">{channel.stat2_label[language]}</p>
+                                        <div className="text-center p-3 rounded-xl bg-muted/30">
+                                            <p className="font-bold text-xl text-primary leading-none">{channel.stat2_value}</p>
+                                            <p className="text-[10px] font-medium text-muted-foreground mt-1">{channel.stat2_label[language]}</p>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground font-medium mb-6 line-clamp-2">{channel.description[language]}</p>
-                                    <Button asChild className="w-full rounded-xl font-black uppercase text-[10px] tracking-widest h-10">
+                                    <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2">{channel.description[language]}</p>
+                                    <Button asChild variant="outline" className="w-full rounded-xl font-bold text-xs h-10">
                                         <Link href={channel.ctaUrl} target="_blank">{channel.ctaText[language]}</Link>
                                     </Button>
                                 </CardContent>
@@ -341,12 +300,12 @@ export default function Home() {
 
         {/* 17. App Promo Section */}
         {homepageConfig.appPromo?.display && (
-            <section className="px-1 py-10 md:py-16 bg-gradient-to-br from-primary to-[#1a1a2e] text-white overflow-hidden rounded-[40px] m-4">
+            <section className="px-1 py-10 md:py-16 bg-primary text-white overflow-hidden rounded-xl m-4">
                 <div className="container mx-auto">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div className="space-y-8 text-center lg:text-left">
                             <div className="space-y-4">
-                                <h2 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95]">
+                                <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
                                     {homepageConfig.appPromo.title[language]}
                                 </h2>
                                 <p className="text-lg md:text-xl text-white/80 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -363,31 +322,10 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="relative flex justify-center lg:justify-end">
-                            <div className="absolute inset-0 bg-white/5 rounded-full blur-[120px] scale-110" />
                             <div className="relative w-full max-w-xs md:max-w-md aspect-[4/5]">
-                                <Image src={homepageConfig.appPromo.promoImageUrl} alt="App Interface" fill className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.5)]" data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint} />
+                                <Image src={homepageConfig.appPromo.promoImageUrl} alt="App Interface" fill className="object-contain drop-shadow-2xl" data-ai-hint={homepageConfig.appPromo.promoImageDataAiHint} />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-        )}
-
-        {/* 14. Partners Section */}
-        {homepageConfig.partnersSection?.display && (
-            <section className="px-1 py-10 md:py-14 border-t border-primary/5">
-                <div className="container mx-auto">
-                    <div className="flex items-center justify-center gap-2 mb-10 opacity-40 grayscale group-hover:grayscale-0 transition-all">
-                        <div className="h-px w-12 bg-muted-foreground" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">{homepageConfig.partnersSection.title[language]}</span>
-                        <div className="h-px w-12 bg-muted-foreground" />
-                    </div>
-                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
-                        {homepageConfig.partnersSection.partners.map(p => (
-                            <Link key={p.id} href={p.href} target="_blank" className="opacity-60 hover:opacity-100 transition-opacity">
-                                <Image src={p.logoUrl} alt={p.name} width={140} height={60} className="h-8 md:h-10 w-auto object-contain grayscale hover:grayscale-0 transition-all" data-ai-hint={p.dataAiHint} />
-                            </Link>
-                        ))}
                     </div>
                 </div>
             </section>
