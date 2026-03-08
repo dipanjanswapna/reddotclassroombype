@@ -122,6 +122,7 @@ export default function WhyTrustUs({ data }: WhyTrustUsProps) {
                         </div>
                         <div className="md:col-span-4 flex justify-center">
                             <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-xl overflow-hidden border-4 border-white shadow-lg">
+                                Image placeholder handled by type
                                 <Image src={testimonial.imageUrl} alt={testimonial.studentName} fill className="object-cover" data-ai-hint={testimonial.dataAiHint} />
                                 <div className="absolute top-2 right-2 bg-yellow-400 p-1.5 rounded-lg shadow-sm border border-white">
                                     <Star className="w-4 h-4 text-white fill-current" />
