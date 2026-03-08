@@ -71,11 +71,6 @@ export async function generateMetadata({ params }: { params: Promise<{ courseId:
   }
 }
 
-/**
- * @fileOverview Fully Responsive & Dynamic Course Detail Page
- * Sections: Overview, Instructors, Cycles, Syllabus, FAQ, Payment, Popular Courses.
- * Optimized for all devices with px-1 wall-to-wall design.
- */
 export default async function CourseDetailPage({
   params,
 }: {
@@ -116,9 +111,9 @@ export default async function CourseDetailPage({
 
   return (
     <div className={cn("bg-background min-h-screen px-1 pb-20", isBn && "font-bengali")}>
-      {/* Breadcrumb - High Density */}
+      {/* Breadcrumb - Standard High Density */}
       <div className="bg-muted/30 border-b border-white/5 py-3 -mx-1">
-        <div className="container mx-auto px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        <div className="container mx-auto px-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             <Link href={`/${language}`} className="hover:text-primary transition-colors">{getT('nav_home')}</Link>
             <ChevronRight className="w-3 h-3" />
             <Link href={`/${language}/courses`} className="hover:text-primary transition-colors">{getT('nav_courses')}</Link>
@@ -127,7 +122,7 @@ export default async function CourseDetailPage({
         </div>
       </div>
 
-      {/* Hero Header - Responsive Stacking */}
+      {/* Hero Header - Geometric Stacking */}
       <section id="overview" className="relative pt-8 pb-10 border-b border-white/5 overflow-hidden scroll-mt-32 -mx-1">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full -z-10" />
         <div className="container mx-auto px-4">
@@ -136,14 +131,14 @@ export default async function CourseDetailPage({
               <div className="space-y-6 text-left">
                 <div className="flex flex-wrap items-center gap-3">
                     {isPrebookingActive && (
-                        <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[9px] font-black uppercase tracking-widest animate-pulse border-orange-500/20 shadow-lg">
+                        <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest animate-pulse border-orange-500/20 shadow-lg">
                             {getT('prebook_now')}
                         </Badge>
                     )}
-                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 font-black text-[9px] uppercase tracking-widest px-3 py-1.5">{course.category}</Badge>
+                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 font-bold text-[9px] uppercase tracking-widest px-3 py-1.5">{course.category}</Badge>
                 </div>
                 
-                <h1 className="font-headline text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] uppercase text-foreground">
+                <h1 className="font-headline text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-foreground">
                     {course.title}
                 </h1>
                 
@@ -157,8 +152,8 @@ export default async function CourseDetailPage({
                             <Users className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Learners</p>
-                            <p className="text-sm font-black">{studentCount.toLocaleString()}+</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">Learners</p>
+                            <p className="text-sm font-bold">{studentCount.toLocaleString()}+</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -166,8 +161,8 @@ export default async function CourseDetailPage({
                             <Star className="w-5 h-5 text-yellow-500 fill-current" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Success Rate</p>
-                            <p className="text-sm font-black">{course.rating || '4.9'}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">Success Rate</p>
+                            <p className="text-sm font-bold">{course.rating || '4.9'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -175,8 +170,8 @@ export default async function CourseDetailPage({
                             <Award className="w-5 h-5 text-accent" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Status</p>
-                            <p className="text-sm font-black">Verified</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">Status</p>
+                            <p className="text-sm font-bold">Verified</p>
                         </div>
                     </div>
                 </div>
@@ -202,7 +197,7 @@ export default async function CourseDetailPage({
               {/* Learning Outcomes */}
               {course.whatYouWillLearn && course.whatYouWillLearn.length > 0 && (
                 <div className="space-y-8">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('curriculum')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('curriculum')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {course.whatYouWillLearn.map((item, index) => (
                             <div key={index} className="flex items-start gap-4 p-4 bg-[#eef2ed] dark:bg-card/40 rounded-[20px] border border-primary/5 hover:border-primary/20 transition-all group">
@@ -217,14 +212,14 @@ export default async function CourseDetailPage({
               {/* Instructors Section */}
               {course.instructors && course.instructors.length > 0 && (
                 <div id="instructors" className="space-y-8 scroll-mt-32">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('instructors')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('instructors')}</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                         {course.instructors.map((inst) => (
                             <Link key={inst.slug} href={`/teachers/${inst.slug}`} className="group text-center">
                                 <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 p-1 rounded-[2rem] border-2 border-primary/10 group-hover:border-primary transition-all duration-500 overflow-hidden bg-white">
                                     <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover rounded-[1.8rem] transition-transform duration-500 group-hover:scale-110" />
                                 </div>
-                                <h3 className="font-black text-sm uppercase tracking-tight group-hover:text-primary transition-colors">{inst.name}</h3>
+                                <h3 className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors">{inst.name}</h3>
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">{inst.title}</p>
                             </Link>
                         ))}
@@ -235,22 +230,22 @@ export default async function CourseDetailPage({
               {/* Course Cycles */}
               {course.cycles && course.cycles.length > 0 && (
                 <div id="cycles" className="space-y-8 scroll-mt-32">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('cycles')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('cycles')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
                             <Card key={cycle.id} className="rounded-[2.5rem] border-primary/10 overflow-hidden bg-card shadow-xl hover:border-primary transition-all group flex flex-col">
                                 <CardHeader className="bg-primary/5 p-6 border-b border-primary/5">
                                     <div className="flex justify-between items-center">
-                                        <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
-                                        <span className="font-black text-xl text-primary">{cycle.price}</span>
+                                        <Badge variant="outline" className="font-bold text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
+                                        <span className="font-bold text-xl text-primary">{cycle.price}</span>
                                     </div>
-                                    <CardTitle className="text-lg font-black uppercase mt-4 tracking-tight group-hover:text-primary transition-colors">{cycle.title}</CardTitle>
+                                    <CardTitle className="text-lg font-bold uppercase mt-4 tracking-tight group-hover:text-primary transition-colors">{cycle.title}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-6 flex-grow">
                                     <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
                                 </CardContent>
                                 <CardFooter className="p-6 pt-0 mt-auto">
-                                    <Button asChild className="w-full rounded-xl font-black uppercase tracking-widest h-12 shadow-lg shadow-primary/20">
+                                    <Button asChild className="w-full rounded-xl font-bold uppercase tracking-widest h-12 shadow-lg shadow-primary/20">
                                         <Link href={`/checkout/${courseId}?cycleId=${cycle.id}`}>Enroll in Cycle</Link>
                                     </Button>
                                 </CardFooter>
@@ -263,11 +258,11 @@ export default async function CourseDetailPage({
               {/* Interactive Syllabus */}
               {course.syllabus && course.syllabus.length > 0 && (
                 <div id="syllabus" className="space-y-8 scroll-mt-32">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('syllabus')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('syllabus')}</h2>
                     <Accordion type="single" collapsible className="w-full space-y-3">
                         {course.syllabus.map((item) => (
                             <AccordionItem key={item.id} value={item.id} className="border border-primary/10 rounded-[25px] overflow-hidden bg-card/50 shadow-sm">
-                                <AccordionTrigger className="px-6 py-5 hover:no-underline font-black uppercase tracking-tight text-left">
+                                <AccordionTrigger className="px-6 py-5 hover:no-underline font-bold uppercase tracking-tight text-left">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-primary/10 p-2.5 rounded-xl"><BookOpen className="w-5 h-5 text-primary"/></div>
                                         <div className="flex flex-col">
@@ -283,9 +278,9 @@ export default async function CourseDetailPage({
                                                 <div className="p-2.5 bg-muted rounded-xl group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
                                                 <div className="flex-grow">
                                                     <span className="font-bold text-sm block group-hover:text-primary transition-colors">{lesson.title}</span>
-                                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
                                                 </div>
-                                                <Badge variant="outline" className="text-[9px] font-black uppercase border-primary/10">{lesson.duration}</Badge>
+                                                <Badge variant="outline" className="text-[9px] font-bold uppercase border-primary/10">{lesson.duration}</Badge>
                                             </li>
                                         ))}
                                     </ul>
@@ -299,7 +294,7 @@ export default async function CourseDetailPage({
               {/* FAQ Section */}
               {course.faqs && course.faqs.length > 0 && (
                 <div id="faq" className="space-y-8 scroll-mt-32">
-                    <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('nav_faq')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('nav_faq')}</h2>
                     <Accordion type="single" collapsible className="w-full space-y-3">
                         {course.faqs.map((faq, idx) => (
                             <AccordionItem key={idx} value={`faq-${idx}`} className="border border-primary/10 rounded-[20px] overflow-hidden bg-card shadow-sm">
@@ -317,20 +312,20 @@ export default async function CourseDetailPage({
 
               {/* Secure Payment */}
               <div id="payment" className="space-y-8 scroll-mt-32">
-                  <h2 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight border-l-4 border-primary pl-6">{getT('payment_info')}</h2>
+                  <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('payment_info')}</h2>
                   <Card className="rounded-[2.5rem] border-primary/10 bg-primary/5 overflow-hidden shadow-inner">
                       <CardContent className="p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
                           <div className="h-24 w-24 bg-primary rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-primary/30 shrink-0 transform -rotate-6">
                               <ShieldCheck className="w-12 h-12" />
                           </div>
                           <div className="space-y-4 text-center md:text-left">
-                              <h3 className="font-black text-2xl uppercase tracking-tight text-foreground">{isBn ? 'নিরাপদ পেমেন্ট গেটওয়ে' : '100% Secure Payment'}</h3>
+                              <h3 className="font-bold text-2xl uppercase tracking-tight text-foreground">{isBn ? 'নিরাপদ পেমেন্ট গেটওয়ে' : '100% Secure Payment'}</h3>
                               <p className="text-muted-foreground font-medium leading-relaxed text-sm md:text-base">
                                   {getT('payment_desc')}
                               </p>
                               <div className="flex flex-wrap justify-center md:justify-start gap-3 opacity-60">
                                   {['bKash', 'Nagad', 'Rocket', 'Visa', 'MasterCard'].map(m => (
-                                      <Badge key={m} variant="outline" className="font-black text-[8px] uppercase tracking-widest">{m}</Badge>
+                                      <Badge key={m} variant="outline" className="font-bold text-[8px] uppercase tracking-widest">{m}</Badge>
                                   ))}
                               </div>
                           </div>
@@ -339,7 +334,7 @@ export default async function CourseDetailPage({
               </div>
             </div>
 
-            {/* Sticky Pricing Sidebar - Optimized for all devices */}
+            {/* Sticky Pricing Sidebar - Standardized Solid Look */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
                 <Card className="rounded-[2.5rem] border-2 border-primary/20 shadow-2xl overflow-hidden bg-card p-1.5">
                     <div className="relative aspect-video rounded-[2rem] overflow-hidden m-1 shadow-inner bg-black">
@@ -349,21 +344,21 @@ export default async function CourseDetailPage({
                     
                     <CardHeader className="p-6 pb-2 text-left">
                         <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="destructive" className="animate-pulse rounded-full text-[8px] font-black uppercase px-2">Limited Slots</Badge>
+                            <Badge variant="destructive" className="animate-pulse rounded-full text-[8px] font-bold uppercase px-2">Limited Slots</Badge>
                         </div>
                         <div className="space-y-1">
                             {isPrebookingActive ? (
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground line-through opacity-50 decoration-primary">{course.price}</span>
-                                    <span className="text-4xl lg:text-5xl font-black text-primary tracking-tighter">{course.prebookingPrice}</span>
+                                    <span className="text-[10px] font-bold uppercase text-muted-foreground line-through opacity-50 decoration-primary">{course.price}</span>
+                                    <span className="text-4xl lg:text-5xl font-bold text-primary tracking-tighter">{course.prebookingPrice}</span>
                                 </div>
                             ) : hasDiscount ? (
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground line-through opacity-50 decoration-primary">{course.price}</span>
-                                    <span className="text-4xl lg:text-5xl font-black text-primary tracking-tighter">{course.discountPrice}</span>
+                                    <span className="text-[10px] font-bold uppercase text-muted-foreground line-through opacity-50 decoration-primary">{course.price}</span>
+                                    <span className="text-4xl lg:text-5xl font-bold text-primary tracking-tighter">{course.discountPrice}</span>
                                 </div>
                             ) : (
-                                <span className="text-4xl lg:text-5xl font-black text-primary tracking-tighter">{course.price}</span>
+                                <span className="text-4xl lg:text-5xl font-bold text-primary tracking-tighter">{course.price}</span>
                             )}
                         </div>
                     </CardHeader>
@@ -379,14 +374,14 @@ export default async function CourseDetailPage({
                             />
                             <div className="grid grid-cols-2 gap-2">
                                 <WishlistButton courseId={course.id!} />
-                                <Button variant="outline" className="rounded-xl font-black h-12 text-[10px] uppercase tracking-widest border-primary/10">Demo Class</Button>
+                                <Button variant="outline" className="rounded-xl font-bold h-12 text-[10px] uppercase tracking-widest border-primary/10">Demo Class</Button>
                             </div>
                         </div>
                         
                         <Separator className="bg-primary/5" />
                         
                         <div className="space-y-4">
-                            <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-foreground border-l-2 border-primary pl-3">Inside the batch</h3>
+                            <h3 className="font-bold text-[10px] uppercase tracking-[0.2em] text-foreground border-l-2 border-primary pl-3">Inside the batch</h3>
                             <ul className="space-y-3">
                                 {course.features?.slice(0, 6).map((f, i) => (
                                     <li key={i} className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
@@ -403,11 +398,11 @@ export default async function CourseDetailPage({
                     <CardFooter className="bg-primary/5 p-5 flex justify-center gap-8 border-t border-primary/10">
                         <div className="flex flex-col items-center gap-1.5 opacity-60">
                             <ShieldCheck className="w-4 h-4 text-primary" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">SSL Encrypted</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest">SSL Encrypted</span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5 opacity-60">
                             <Clock className="w-4 h-4 text-primary" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">Full Access</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest">Full Access</span>
                         </div>
                     </CardFooter>
                 </Card>
@@ -421,10 +416,10 @@ export default async function CourseDetailPage({
           <div className="container mx-auto px-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 border-l-4 border-primary pl-6">
                   <div className="text-left">
-                    <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl font-black uppercase tracking-tight">{getT('popular_courses')}</h2>
+                    <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight">{getT('popular_courses')}</h2>
                     <p className="text-muted-foreground font-medium text-sm md:text-lg mt-1">Students are excelling in these batches right now.</p>
                   </div>
-                  <Button asChild variant="outline" className="rounded-xl font-black h-11 uppercase text-[10px] px-6 border-primary/20">
+                  <Button asChild variant="outline" className="rounded-xl font-bold h-11 uppercase text-[10px] px-6 border-primary/20">
                       <Link href={`/${language}/courses`}>View All Shop</Link>
                   </Button>
               </div>

@@ -77,12 +77,12 @@
   }
 
   section {
-    @apply py-6 md:py-10 max-w-full overflow-hidden;
+    @apply py-8 md:py-14 max-w-full overflow-hidden;
   }
 
   h1, h2, h3, h4 {
     @apply font-headline font-bold tracking-tight text-foreground;
-    text-transform: none !important; /* Force Sentence/Title case as per instructions */
+    text-transform: none !important; /* Force Sentence/Title case */
   }
 
   p {
@@ -101,7 +101,7 @@
   
   /* Solid professional backgrounds instead of glass */
   .pro-card {
-    @apply bg-white dark:bg-card border border-border shadow-sm;
+    @apply bg-white dark:bg-card border border-border shadow-sm rounded-xl;
   }
 
   .custom-scrollbar::-webkit-scrollbar {

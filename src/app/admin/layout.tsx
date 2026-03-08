@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 
 /**
  * @fileOverview Refined Admin Layout with Geometric Standards and Sentence Case labels.
+ * Implements solid pro-cards and standardized rounding.
  */
 export default function AdminLayout({
   children,
