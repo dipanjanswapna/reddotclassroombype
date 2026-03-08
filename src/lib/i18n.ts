@@ -62,10 +62,11 @@ export const t: Record<string, Record<string, string>> = {
 
   // Role Applications
   become_a_teacher: { en: 'Become a Teacher', bn: 'শিক্ষক হিসেবে যোগ দিন' },
-  teacher_signup_desc: { en: 'Apply to join our elite faculty team.', bn: 'আমাদের এলিট ফ্যাকাল্টি টিমে যোগ দিতে আবেদন করুন।' },
+  become_a_seller: { en: 'Become a Seller', bn: 'সেলার হিসেবে যোগ দিন' },
   become_an_affiliate: { en: 'Become an Affiliate', bn: 'অ্যাফিলিয়েট হিসেবে যোগ দিন' },
-  affiliate_signup_desc: { en: 'Earn rewards by referring new students.', bn: 'রেফার করে ইনকাম করুন।' },
   become_a_moderator: { en: 'Become a Moderator', bn: 'মডারেটর হিসেবে যোগ দিন' },
+  teacher_signup_desc: { en: 'Apply to join our elite faculty team.', bn: 'আমাদের এলিট ফ্যাকাল্টি টিমে যোগ দিতে আবেদন করুন।' },
+  affiliate_signup_desc: { en: 'Earn rewards by referring new students.', bn: 'রেফার করে ইনকাম করুন।' },
   moderator_signup_desc: { en: 'Help maintain our community standards.', bn: 'কমিউনিটির মান বজায় রাখতে সহায়তা করুন।' },
   submit_application: { en: 'Submit Application', bn: 'আবেদন জমা দিন' },
   confirm_password: { en: 'Confirm Password', bn: 'পাসওয়ার্ড নিশ্চিত করুন' },
@@ -78,22 +79,7 @@ export const t: Record<string, Record<string, string>> = {
   send_reset_link: { en: 'Send Reset Link', bn: 'রিসেট লিঙ্ক পাঠান' },
   back_to_login: { en: 'Back to Login', bn: 'লগইনে ফিরে যান' },
 
-  // Struggling Section
-  struggling_title: { en: 'Struggling in Studies?', bn: 'পড়াশোনায় পিছিয়ে পড়ছো?' },
-  struggling_subtitle: { en: "Let's solve your problems together ✨", bn: 'এসো তোমার সমস্যার সমাধান করি ✨' },
-  see_how_we_help: { en: 'See How We Help', bn: 'আমরা কীভাবে সাহায্য করি' },
-  
-  // Notice Board
-  notice_board: { en: 'Notice Board', bn: 'নোটিশ বোর্ড' },
-  recent_updates: { en: 'Recent Updates', bn: 'সাম্প্রতিক আপডেট' },
-  
-  // Contact Section
-  have_a_question: { en: 'Have a Question?', bn: 'কোনো প্রশ্ন আছে?' },
-  talk_to_advisors: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
-  call_now: { en: 'Call 01641035736', bn: 'কল করুন ০১৬৪১০৩৫৭৩৬' },
-  message_whatsapp: { en: 'Message on WhatsApp', bn: 'হোয়াটসঅ্যাপে মেসেজ দিন' },
-
-  // Footer
+  // Sections
   footer_tagline: { en: 'Quality education for every student in Bangladesh.', bn: 'বাংলাদেশের প্রতিটি শিক্ষার্থীর জন্য গুণগত শিক্ষা।' },
   quick_links: { en: 'Quick Links', bn: 'প্রয়োজনীয় লিঙ্ক' },
   for_students: { en: 'For Students', bn: 'শিক্ষার্থীদের জন্য' },
@@ -102,68 +88,5 @@ export const t: Record<string, Record<string, string>> = {
   teacher_seller_staff_login: { en: 'Staff & Seller Login', bn: 'স্টাফ ও সেলার লগইন' },
   legal: { en: 'Legal', bn: 'আইনগত' },
   copyright: { en: 'All rights reserved.', bn: 'সর্বস্বত্ব সংরক্ষিত।' },
-
-  // Store
-  store_hub: { en: 'RDC Store Hub', bn: 'RDC স্টোর হাব' },
-  all_products: { en: 'All Products', bn: 'সকল পণ্য' },
-  search_placeholder: { en: 'Search products...', bn: 'পণ্য খুঁজুন...' },
-  favorite_book: { en: 'favorite book', bn: 'প্রিয় বইটি' },
-  meet_your_next: { en: 'Meet your next', bn: 'খুঁজে নিন আপনার পরবর্তী' },
-  bestseller_authors: { en: 'By bestseller authors', bn: 'বেস্টসেলার লেখকদের দ্বারা' },
-  buy_now: { en: 'Buy Now', bn: 'এখনই কিনুন' },
-  customer_feedback: { en: 'Student Feedback', bn: 'শিক্ষার্থীদের মতামত' },
-  similar_items: { en: 'Similar Items', bn: 'একই ধরণের পণ্য' },
-  back_to_home: { en: 'Back to Home', bn: 'হোমে ফিরে যান' },
-
-  // Course Detail
-  overview: { en: 'Overview', bn: 'ওভারভিউ' },
-  instructors: { en: 'Instructors', bn: 'শিক্ষকগণ' },
-  cycles: { en: 'Course Cycles', bn: 'কোর্স সাইকেল' },
-  prebook_now: { en: 'Pre-book Now', bn: 'প্রি-বুক করুন' },
-  curriculum: { en: 'Course Curriculum', bn: 'কোর্স কারিকুলাম' },
-  routine: { en: 'Class Routine', bn: 'ক্লাস রুটিন' },
-  syllabus: { en: 'Syllabus & Modules', bn: 'সিলেবাস ও লেসন' },
-  day: { en: 'Day', bn: 'দিন' },
-  subject: { en: 'Subject', bn: 'বিষয়' },
-  time: { en: 'Time', bn: 'সময়' },
-  demo_class: { en: 'Demo Class', bn: 'ডেমো ক্লাস দেখুন' },
-  includes_heading: { en: 'What is included', bn: 'এই কোর্সে যা থাকছে' },
-  payment_info: { en: 'Payment Process', bn: 'পেমেন্ট প্রক্রিয়া' },
-  payment_desc: { 
-    en: 'Our payment process is simple. You can pay via bKash, Nagad, Rocket or any Debit/Credit card. Upon enrollment, the course will be added to your dashboard instantly.', 
-    bn: 'আমাদের পেমেন্ট প্রক্রিয়া খুবই সহজ। আপনি বিকাশ, নগদ, রকেট অথবা যেকোনো ডেবিট/ক্রেডিট কার্ডের মাধ্যমে পেমেন্ট করতে পারেন। ভর্তির সাথে সাথেই আপনি আপনার ড্যাশবোর্ডে কোর্সটি পেয়ে যাবেন।' 
-  },
-  popular_courses: { en: 'Our popular courses', bn: 'আমাদের আরও কিছু জনপ্রিয় কোর্স' },
-
-  // Offline Hub
-  offline_hero_subtitle: { 
-    en: 'Experience the fusion of digital excellence and physical interaction. Learn directly from the experts in an environment designed for elite performance.',
-    bn: 'ডিজিটাল উৎকর্ষ এবং সরাসরি ক্লাসরুম অভিজ্ঞতার এক অনন্য সমন্বয়। সেরা মেন্টরদের তত্ত্বাবধানে নিজেকে গড়ে তুলুন এক এলিট পারফরম্যান্সের জন্য।'
-  },
-  explore_programs: { en: 'Explore Programs', bn: 'প্রোগ্রামগুলো দেখুন' },
-  find_center: { en: 'Find a Center', bn: 'সেন্টার খুঁজুন' },
-  multimedia_classrooms: { en: 'Multimedia Classrooms', bn: 'মাল্টিমিডিয়া ক্লাসরুম' },
-  multimedia_desc: { en: 'Digital smart boards and high-speed connectivity.', bn: 'ডিজিটাল স্মার্ট বোর্ড এবং উচ্চগতির ইন্টারনেট সংযোগ।' },
-  top_educators: { en: 'Top Educators', bn: 'সেরা মেন্টরগণ' },
-  top_educators_desc: { en: "Direct access to the country's elite mentors.", bn: 'দেশের শ্রেষ্ঠ শিক্ষকদের সরাসরি সান্নিধ্য।' },
-  exam_environment: { en: 'Exam Environment', bn: 'পরীক্ষার উপযুক্ত পরিবেশ' },
-  exam_environment_desc: { en: 'Standardized testing conditions for peak performance.', bn: 'সাফল্যের শিখরে পৌঁছাতে আন্তর্জাতিক মানের পরীক্ষার পরিবেশ।' },
-  our_programs_title: { en: 'Our Programs', bn: 'আমাদের প্রোগ্রামসমূহ' },
-  our_programs_subtitle: { en: 'Pick your path to academic excellence in our physical classrooms.', bn: 'আমাদের ফিজিক্যাল ক্লাসরুমে আপনার সফলতার পথটি বেছে নিন।' },
-  offline_hubs_title: { en: 'Our Offline Hubs', bn: 'আমাদের অফলাইন হাবসমূহ' },
-  offline_hubs_subtitle: { en: 'Visit us at any of our state-of-the-art locations across Bangladesh.', bn: 'বাংলাদেশের যেকোনো প্রান্ত থেকে আমাদের অত্যাধুনিক সেন্টারে চলে আসুন।' },
-  talk_to_advisors_simple: { en: 'Talk to our student advisors anytime.', bn: 'যেকোনো প্রয়োজনে আমাদের স্টুডেন্ট অ্যাডভাইজারদের সাথে কথা বলুন।' },
-
-  // Callback
-  callback_title: { en: 'Request a Callback', bn: 'কলব্যাক রিকোয়েস্ট করুন' },
-  full_name: { en: 'Full Name', bn: 'পূর্ণ নাম' },
-  mobile_number: { en: 'Mobile Number', bn: 'মোবাইল নম্বর' },
-  class_label: { en: 'Class', bn: 'ক্লাস' },
-  submit: { en: 'Submit', bn: 'জমা দিন' },
-  
-  // Sections
-  categories_heading: { en: 'Explore Categories', bn: 'ক্যাটাগরিগুলো দেখুন' },
-  live_courses_heading: { en: 'Our Live Courses', bn: 'আমাদের লাইভ কোর্সসমূহ' },
-  our_mentors: { en: 'Our Expert Mentors', bn: 'আমাদের অভিজ্ঞ মেন্টরগণ' },
   view_all: { en: 'View All', bn: 'সব দেখুন' },
 };

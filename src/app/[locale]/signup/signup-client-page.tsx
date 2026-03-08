@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { UserSquare, AlertTriangle, Loader2 } from 'lucide-react';
+import { UserSquare, AlertTriangle, Loader2, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { t } from '@/lib/i18n';
 import { useAuth } from '@/context/auth-context';
@@ -39,6 +39,11 @@ function FacebookIcon() {
     )
 }
 
+/**
+ * @fileOverview Signup Page Component
+ * Fixed i18n crash error with safe getter.
+ * Standardized with 20px corners and px-1 spacing.
+ */
 export default function SignupPageClient({ homepageConfig }: { homepageConfig: HomepageConfig }) {
   const { language, getLocalizedPath } = useLanguage();
   const { signup, loginWithGoogle, loginWithFacebook } = useAuth();
@@ -54,7 +59,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Helper for safe translations
+  // Safe translation getter
   const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -88,15 +93,22 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
 
 
   return (
-    <div className={cn("w-full lg:grid lg:min-h-screen lg:grid-cols-2", isBn && "font-bengali")}>
-      <div className="hidden bg-muted lg:block">
+    <div className={cn("w-full lg:grid lg:min-h-screen lg:grid-cols-2 px-1", isBn && "font-bengali")}>
+      <div className="hidden bg-muted lg:block relative">
         <Image
           src={signupImage}
           alt="Students celebrating their success"
           placeholder="blur"
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
           data-ai-hint="students success graduation"
         />
+        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute bottom-12 left-12 right-12 text-white text-left space-y-2">
+            <h2 className="text-4xl font-black uppercase font-headline leading-none">Join RDC Today</h2>
+            <p className="text-lg font-medium opacity-80 max-w-md">Start your journey to excellence with the best mentors in the country.</p>
+        </div>
       </div>
       <div className="flex items-center justify-center py-12 px-1">
         <Card className="w-full max-w-sm mx-auto shadow-2xl rounded-[25px] border-primary/10 overflow-hidden">
@@ -104,7 +116,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
             <CardTitle className="text-2xl font-headline uppercase tracking-tight">{getT('create_account')}</CardTitle>
             <CardDescription className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">{getT('signup_desc')}</CardDescription>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 space-y-6">
             <div className="grid gap-6">
                 {error && (
                     <Alert variant="destructive" className="rounded-xl border-none shadow-lg">
@@ -137,23 +149,23 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
               </div>
 
               <form className="grid gap-5" onSubmit={handleSignup}>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                     <Label htmlFor="full-name" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('full_name')}</Label>
                     <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                     <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('email')}</Label>
                     <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                     <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
                     <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                   <div className="space-y-2">
+                   <div className="space-y-2 text-left">
                       <Label htmlFor="referral-code" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">Referral Code (Optional)</Label>
                       <Input id="referral-code" placeholder="Enter friend's class roll" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('registering_as')}</Label>
                       <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-3">
                           <div>
@@ -176,7 +188,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                           </div>
                       </RadioGroup>
                   </div>
-                  <div className="flex items-start space-x-3 mt-2">
+                  <div className="flex items-start space-x-3 mt-2 text-left">
                       <Checkbox id="terms" required className="mt-1 rounded-md" />
                       <div className="grid gap-1.5 leading-tight">
                           <Label
@@ -192,7 +204,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                       </div>
                   </div>
                   <Button type="submit" className="w-full font-black uppercase tracking-[0.2em] h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin"/>}
+                  {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <ShieldCheck className="mr-2 h-5 w-5" />}
                   {getT('create_account')}
                   </Button>
               </form>
@@ -206,10 +218,10 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
               <div className="mt-6 text-center space-y-3 pt-6 border-t border-primary/5">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Want to join our team?</p>
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-                      {homepageConfig.platformSettings.Teacher.signupEnabled && <Link href={getLocalizedPath("/auth/teacher-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">Apply as Teacher</Link>}
-                      {homepageConfig.platformSettings.Seller.signupEnabled && <Link href={getLocalizedPath("/seller-program/apply")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">Apply as Seller</Link>}
-                      {homepageConfig.platformSettings.Affiliate.signupEnabled && <Link href={getLocalizedPath("/auth/affiliate-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">Join as Affiliate</Link>}
-                      {homepageConfig.platformSettings.Moderator.signupEnabled && <Link href={getLocalizedPath("/auth/moderator-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">Join as Moderator</Link>}
+                      {homepageConfig.platformSettings.Teacher.signupEnabled && <Link href={getLocalizedPath("/auth/teacher-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_teacher')}</Link>}
+                      {homepageConfig.platformSettings.Seller.signupEnabled && <Link href={getLocalizedPath("/seller-program/apply")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_seller')}</Link>}
+                      {homepageConfig.platformSettings.Affiliate.signupEnabled && <Link href={getLocalizedPath("/auth/affiliate-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_an_affiliate')}</Link>}
+                      {homepageConfig.platformSettings.Moderator.signupEnabled && <Link href={getLocalizedPath("/auth/moderator-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_moderator')}</Link>}
                   </div>
               </div>
             </div>
