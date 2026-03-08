@@ -178,7 +178,7 @@ export default async function CourseDetailPage({
               </div>
 
               {/* Video Intro */}
-              <div className="relative aspect-video rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black group">
+              <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl border-4 border-white/5 bg-black group">
                 <Link href={course.videoUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                     <Image
                     src={course.imageUrl}
@@ -200,7 +200,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('curriculum')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {course.whatYouWillLearn.map((item, index) => (
-                            <div key={index} className="flex items-start gap-4 p-4 bg-[#eef2ed] dark:bg-card/40 rounded-[20px] border border-primary/5 hover:border-primary/20 transition-all group">
+                            <div key={index} className="flex items-start gap-4 p-4 bg-muted/20 dark:bg-card/40 rounded-xl border border-primary/5 hover:border-primary/20 transition-all group">
                                 <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0 group-hover:scale-110 transition-transform" />
                                 <p className="text-sm font-semibold leading-relaxed">{item}</p>
                             </div>
@@ -216,8 +216,8 @@ export default async function CourseDetailPage({
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                         {course.instructors.map((inst) => (
                             <Link key={inst.slug} href={`/teachers/${inst.slug}`} className="group text-center">
-                                <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 p-1 rounded-[2rem] border-2 border-primary/10 group-hover:border-primary transition-all duration-500 overflow-hidden bg-white">
-                                    <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover rounded-[1.8rem] transition-transform duration-500 group-hover:scale-110" />
+                                <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 p-1 rounded-xl border-2 border-primary/10 group-hover:border-primary transition-all duration-500 overflow-hidden bg-white">
+                                    <Image src={inst.avatarUrl} alt={inst.name} fill className="object-cover rounded-lg transition-transform duration-500 group-hover:scale-110" />
                                 </div>
                                 <h3 className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors">{inst.name}</h3>
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">{inst.title}</p>
@@ -233,7 +233,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('cycles')}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
-                            <Card key={cycle.id} className="rounded-[2.5rem] border-primary/10 overflow-hidden bg-card shadow-xl hover:border-primary transition-all group flex flex-col">
+                            <Card key={cycle.id} className="rounded-xl border-primary/10 overflow-hidden bg-card shadow-xl hover:border-primary transition-all group flex flex-col">
                                 <CardHeader className="bg-primary/5 p-6 border-b border-primary/5">
                                     <div className="flex justify-between items-center">
                                         <Badge variant="outline" className="font-bold text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
@@ -261,7 +261,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('syllabus')}</h2>
                     <Accordion type="single" collapsible className="w-full space-y-3">
                         {course.syllabus.map((item) => (
-                            <AccordionItem key={item.id} value={item.id} className="border border-primary/10 rounded-[25px] overflow-hidden bg-card/50 shadow-sm">
+                            <AccordionItem key={item.id} value={item.id} className="border border-primary/10 rounded-xl overflow-hidden bg-card/50 shadow-sm">
                                 <AccordionTrigger className="px-6 py-5 hover:no-underline font-bold uppercase tracking-tight text-left">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-primary/10 p-2.5 rounded-xl"><BookOpen className="w-5 h-5 text-primary"/></div>
@@ -275,7 +275,7 @@ export default async function CourseDetailPage({
                                     <ul className="divide-y divide-primary/5">
                                         {item.lessons.map(lesson => (
                                             <li key={lesson.id} className="flex items-center gap-4 px-8 py-4 hover:bg-primary/5 transition-colors group">
-                                                <div className="p-2.5 bg-muted rounded-xl group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
+                                                <div className="p-2.5 bg-muted rounded-lg group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
                                                 <div className="flex-grow">
                                                     <span className="font-bold text-sm block group-hover:text-primary transition-colors">{lesson.title}</span>
                                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
@@ -297,7 +297,7 @@ export default async function CourseDetailPage({
                     <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('nav_faq')}</h2>
                     <Accordion type="single" collapsible className="w-full space-y-3">
                         {course.faqs.map((faq, idx) => (
-                            <AccordionItem key={idx} value={`faq-${idx}`} className="border border-primary/10 rounded-[20px] overflow-hidden bg-card shadow-sm">
+                            <AccordionItem key={idx} value={`faq-${idx}`} className="border border-primary/10 rounded-xl overflow-hidden bg-card shadow-sm">
                                 <AccordionTrigger className="px-6 py-5 font-bold text-left hover:no-underline hover:bg-primary/5 uppercase tracking-tight text-sm md:text-base">
                                     {faq.question}
                                 </AccordionTrigger>
@@ -313,9 +313,9 @@ export default async function CourseDetailPage({
               {/* Secure Payment */}
               <div id="payment" className="space-y-8 scroll-mt-32">
                   <h2 className="font-headline text-2xl md:text-3xl font-bold uppercase tracking-tight border-l-4 border-primary pl-6">{getT('payment_info')}</h2>
-                  <Card className="rounded-[2.5rem] border-primary/10 bg-primary/5 overflow-hidden shadow-inner">
+                  <Card className="rounded-xl border-primary/10 bg-primary/5 overflow-hidden shadow-inner">
                       <CardContent className="p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
-                          <div className="h-24 w-24 bg-primary rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-primary/30 shrink-0 transform -rotate-6">
+                          <div className="h-24 w-24 bg-primary rounded-xl flex items-center justify-center text-white shadow-2xl shadow-primary/30 shrink-0 transform -rotate-6">
                               <ShieldCheck className="w-12 h-12" />
                           </div>
                           <div className="space-y-4 text-center md:text-left">
@@ -336,8 +336,8 @@ export default async function CourseDetailPage({
 
             {/* Sticky Pricing Sidebar - Standardized Solid Look */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
-                <Card className="rounded-[2.5rem] border-2 border-primary/20 shadow-2xl overflow-hidden bg-card p-1.5">
-                    <div className="relative aspect-video rounded-[2rem] overflow-hidden m-1 shadow-inner bg-black">
+                <Card className="rounded-xl border-2 border-primary/20 shadow-2xl overflow-hidden bg-card p-1.5">
+                    <div className="relative aspect-video rounded-lg overflow-hidden m-1 shadow-inner bg-black">
                         <Image src={course.imageUrl} alt={course.title} fill className="object-cover opacity-90" priority />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><PlayCircle className="w-16 h-16 text-white/80" /></div>
                     </div>

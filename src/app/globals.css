@@ -77,12 +77,12 @@
   }
 
   section {
-    @apply py-8 md:py-14 max-w-full overflow-hidden;
+    @apply py-10 md:py-14 max-w-full overflow-hidden;
   }
 
   h1, h2, h3, h4 {
     @apply font-headline font-bold tracking-tight text-foreground;
-    text-transform: none !important; /* Force Sentence/Title case */
+    text-transform: none !important; /* Enforcing Sentence/Title Case */
   }
 
   p {
