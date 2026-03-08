@@ -82,7 +82,7 @@
 
   h1, h2, h3, h4 {
     @apply font-headline font-bold tracking-tight text-foreground;
-    text-transform: none !important; /* Force Sentence/Title case */
+    text-transform: none !important; /* Force Sentence/Title case as per instructions */
   }
 
   p {
