@@ -278,7 +278,7 @@ export default async function CourseDetailPage({
                                                 <div className="p-2.5 bg-muted rounded-xl group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
                                                 <div className="flex-grow">
                                                     <span className="font-bold text-sm block group-hover:text-primary transition-colors">{lesson.title}</span>
-                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>
                                                 </div>
                                                 <Badge variant="outline" className="text-[9px] font-bold uppercase border-primary/10">{lesson.duration}</Badge>
                                             </li>
