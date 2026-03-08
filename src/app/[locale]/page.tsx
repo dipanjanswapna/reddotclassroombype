@@ -50,9 +50,8 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 });
 
 /**
- * @fileOverview Localized Master Homepage
- * Clean, professional geometric design with rounded-xl corners.
- * Implements Sentence Case and Title Case hierarchy.
+ * @fileOverview Localized Master Homepage with Geometric UI Overhaul.
+ * Implements Sentence Case typography and solid rounded-xl cards.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
@@ -63,7 +62,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const isBn = language === 'bn';
   
-  // Safe translation helper
   const getT = (key: string) => t[key]?.[language] || t[key]?.['en'] || key;
 
   useEffect(() => {
@@ -138,7 +136,7 @@ export default function Home() {
           <HeroCarousel banners={homepageConfig.heroBanners || []} autoplaySettings={homepageConfig.heroCarousel} />
         </section>
 
-        {/* 3. Struggling Student Banner */}
+        {/* 3. Banner Section */}
         {homepageConfig.strugglingStudentSection?.display && (
             <section className="px-1 py-6 md:py-10">
                 <div className="container mx-auto">

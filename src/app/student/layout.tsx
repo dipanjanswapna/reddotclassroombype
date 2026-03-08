@@ -12,7 +12,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 
 /**
- * @fileOverview Student Layout refined with px-1 wall-to-wall layout and primary red active pills.
+ * @fileOverview Student Layout refined with Geometric Standards and Sentence Case labels.
  */
 export default function StudentLayout({
   children,
@@ -41,17 +41,17 @@ export default function StudentLayout({
 
   const navItems = [
     { href: "/student/dashboard", icon: LayoutDashboard, label: "Home" },
-    { href: "/student/my-courses", icon: BookOpen, label: "Courses" },
-    { href: "/student/tools", icon: Wrench, label: "Tools" },
-    { href: "/student/planner", icon: BookMarked, label: "Planner" },
-    { href: "/student/live-classes", icon: Video, label: "Live" },
-    { href: "/student/referrals", icon: Share2, label: "Refer" },
-    { href: "/student/rewards", icon: Gift, label: "Rewards" },
-    { href: "/student/wishlist", icon: Heart, label: "Saved" },
+    { href: "/student/my-courses", icon: BookOpen, label: "My Courses" },
+    { href: "/student/tools", icon: Wrench, label: "Learning Tools" },
+    { href: "/student/planner", icon: BookMarked, label: "Study Planner" },
+    { href: "/student/live-classes", icon: Video, label: "Live Classes" },
+    { href: "/student/referrals", icon: Share2, label: "Refer & Earn" },
+    { href: "/student/rewards", icon: Gift, label: "My Rewards" },
+    { href: "/student/wishlist", icon: Heart, label: "Saved Courses" },
     { href: "/student/payments", icon: Wallet, label: "Billing" },
     { href: "/student/profile", icon: User, label: "Profile" },
     { href: "/student/tickets", icon: MessageSquare, label: "Support" },
-    { href: "/", icon: LogOut, label: "Exit", action: logout },
+    { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
   
   const getIsActive = (href: string) => {
@@ -79,7 +79,7 @@ export default function StudentLayout({
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[20px] flex justify-center overflow-hidden"
+          className="fixed bottom-4 left-4 right-4 z-50 bg-white/90 dark:bg-card/90 backdrop-blur-xl border border-border shadow-xl h-16 rounded-[20px] flex justify-center overflow-hidden"
         >
           <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
             {navItems.map((item) => (
@@ -88,7 +88,7 @@ export default function StudentLayout({
                 href={item.href}
                 onClick={item.action}
                 className={cn(
-                    "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[72px] md:min-w-[90px] h-full text-center transition-all duration-300 relative px-1",
+                    "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[85px] h-full text-center transition-all duration-300 relative px-1",
                     getIsActive(item.href)
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -97,13 +97,13 @@ export default function StudentLayout({
                 {getIsActive(item.href) && (
                   <motion.div 
                     layoutId="active-nav-pill-student"
-                    className="absolute inset-x-1 inset-y-2 bg-white dark:bg-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-xl -z-10"
+                    className="absolute inset-x-1 inset-y-2 bg-primary/10 rounded-xl -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <item.icon className={cn("w-5 h-5 transition-transform duration-300", getIsActive(item.href) ? "text-primary scale-110" : "scale-100")} />
+                <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-primary" : "")} />
                 <span className={cn(
-                  "text-[9px] md:text-[10px] font-black uppercase tracking-tight whitespace-nowrap",
+                  "text-[9px] font-bold uppercase tracking-tight whitespace-nowrap",
                   getIsActive(item.href) ? "text-primary" : "text-muted-foreground"
                 )}>{item.label}</span>
               </Link>

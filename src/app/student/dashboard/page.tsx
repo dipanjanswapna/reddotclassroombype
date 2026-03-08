@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -140,9 +139,9 @@ export default function DashboardPage() {
   }
 
   const aiTools = [
-    { title: "AI Tutor", desc: "জিজ্ঞাসা করো তোমার প্রশ্ন", href: "/student/tutor", icon: Bot, color: "bg-pink-100 text-pink-600" },
-    { title: "Smart TTS", desc: "নোট অডিওতে শোনো", href: "/student/tts", icon: Voicemail, color: "bg-violet-100 text-violet-600" },
-    { title: "Solver", desc: "ম্যাথ সমাধান করো", href: "/student/calculator", icon: Calculator, color: "bg-blue-100 text-blue-600" },
+    { title: "AI Tutor", desc: "Ask questions from your syllabus", href: "/student/tutor", icon: Bot, color: "bg-pink-100 text-pink-600" },
+    { title: "Smart TTS", desc: "Listen to your notes", href: "/student/tts", icon: Voicemail, color: "bg-violet-100 text-violet-600" },
+    { title: "Solver", desc: "Solve math problems", href: "/student/calculator", icon: Calculator, color: "bg-blue-100 text-blue-600" },
   ];
 
   return (
@@ -154,27 +153,27 @@ export default function DashboardPage() {
                 className="space-y-1"
               >
                   <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground">
-                    স্বাগতম, <span className="text-primary">{userInfo?.name?.split(' ')[0] || 'Student'}!</span>
+                    Welcome back, <span className="text-primary">{userInfo?.name?.split(' ')[0] || 'Student'}!</span>
                   </h1>
-                  <p className="text-muted-foreground font-medium text-base md:text-lg">পড়াশোনার আজকের লক্ষ্যগুলো পূরণ করতে প্রস্তুত তো?</p>
+                  <p className="text-muted-foreground font-medium text-base md:text-lg">Are you ready to crush your academic goals today?</p>
               </motion.div>
               
               <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                <Card className="flex items-center gap-3 px-4 py-2 rounded-[20px] bg-orange-50 border-orange-200 shadow-sm border-2">
+                <Card className="flex items-center gap-3 px-4 py-2 rounded-xl bg-orange-50 border-orange-200 shadow-sm border-2">
                     <Flame className="w-5 h-5 text-orange-600 animate-pulse" />
                     <div className="flex flex-col">
                         <span className="text-[9px] font-black uppercase tracking-widest text-orange-700/60">Study Streak</span>
                         <span className="font-black text-lg text-orange-700 leading-none">{stats.streak} Days</span>
                     </div>
                 </Card>
-                <Card className="flex items-center gap-3 px-4 py-2 rounded-[20px] bg-blue-50 border-blue-200 shadow-sm border-2">
+                <Card className="flex items-center gap-3 px-4 py-2 rounded-xl bg-blue-50 border-blue-200 shadow-sm border-2">
                     <Clock className="w-5 h-5 text-blue-600" />
                     <div className="flex flex-col">
                         <span className="text-[9px] font-black uppercase tracking-widest text-blue-700/60">Study Today</span>
                         <span className="font-black text-lg text-blue-700 leading-none">{studyTimeToday} Min</span>
                     </div>
                 </Card>
-                <Card className="flex items-center gap-3 px-4 py-2 rounded-[20px] bg-amber-50 border-amber-200 shadow-sm border-2">
+                <Card className="flex items-center gap-3 px-4 py-2 rounded-xl bg-amber-50 border-amber-200 shadow-sm border-2">
                     <Trophy className="w-5 h-5 text-amber-600" />
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black uppercase tracking-widest text-amber-700/60">Points</span>
@@ -215,18 +214,18 @@ export default function DashboardPage() {
             <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><BookOpen className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">আমার কোর্সসমূহ</CardTitle>
+                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Enrolled Courses</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-black">{stats.enrollments.length}</div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Rocket className="w-3 h-3" /> যাত্রা অব্যাহত রাখুন</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Rocket className="w-3 h-3" /> Continue learning</p>
                 </CardContent>
             </Card>
 
             <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><TrendingUp className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">গড় অগ্রগতি</CardTitle>
+                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Overall Progress</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-black">{stats.overallProgress}%</div>
@@ -239,22 +238,22 @@ export default function DashboardPage() {
             <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Award className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">অর্জিত সার্টিফিকেট</CardTitle>
+                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Certificates</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-black">{stats.completedCoursesCount}</div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Star className="w-3 h-3 fill-current" /> আপনার সফলতার প্রমাণ</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Star className="w-3 h-3 fill-current" /> Proof of success</p>
                 </CardContent>
             </Card>
 
             <Card className="rounded-[20px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:scale-110 transition-transform"><Crown className="w-16 h-16 rotate-12" /></div>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">লিডারবোর্ড র‍্যাঙ্ক</CardTitle>
+                    <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Leaderboard Rank</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-3xl font-black">#{stats.rank}</div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><TrendingUp className="w-3 h-3" /> শীর্ষে পৌঁছাতে লড়াই করো</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><TrendingUp className="w-3 h-3" /> Fight for the top</p>
                 </CardContent>
             </Card>
         </div>
@@ -262,7 +261,7 @@ export default function DashboardPage() {
         <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-10">
                 <section className="space-y-6">
-                    <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4">লার্নিং টুলকিট (AI Powered)</h2>
+                    <h2 className="font-headline text-2xl font-black uppercase tracking-tight border-l-4 border-primary pl-4 text-left">Learning Toolkit (AI Powered)</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {aiTools.map((tool, idx) => (
                             <motion.div key={idx} whileHover={{ y: -3 }}>
@@ -285,14 +284,14 @@ export default function DashboardPage() {
 
                 <section className="space-y-6">
                     <div className="flex items-center justify-between border-l-4 border-primary pl-4">
-                        <h2 className="font-headline text-2xl font-black uppercase tracking-tight">চালিয়ে যান (Recent Courses)</h2>
+                        <h2 className="font-headline text-2xl font-black uppercase tracking-tight text-left">In Progress</h2>
                         <Button asChild variant="link" className="font-black uppercase text-[10px] tracking-widest text-primary p-0 h-auto">
-                            <Link href="/student/my-courses">সকল কোর্স দেখুন</Link>
+                            <Link href="/student/my-courses">All Courses</Link>
                         </Button>
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                         {stats.inProgressCourses.length > 0 ? stats.inProgressCourses.map((course: any) => (
-                            <Card key={course.id} className="rounded-[20px] border-primary/20 bg-[#eef2ed] dark:bg-card/40 shadow-xl overflow-hidden group flex flex-col">
+                            <Card key={course.id} className="rounded-[20px] border-primary/20 bg-white shadow-xl overflow-hidden group flex flex-col">
                                 <div className="p-5 space-y-4 flex-grow">
                                     <div className="space-y-1">
                                         <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2">{course.title}</h3>
@@ -300,16 +299,16 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <div className="flex justify-between items-center px-1">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">কোর্স প্রগ্রেস</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Course Progress</span>
                                             <span className="text-[10px] font-black text-primary">{course.progress}%</span>
                                         </div>
-                                        <Progress value={course.progress} className="h-1.5 rounded-full bg-white shadow-inner [&>div]:bg-accent" />
+                                        <Progress value={course.progress} className="h-1.5 rounded-full bg-muted shadow-inner [&>div]:bg-accent" />
                                     </div>
                                 </div>
                                 <div className="p-5 pt-0 mt-auto">
                                 <Button asChild size="sm" className="w-full font-black uppercase tracking-widest h-10 rounded-xl shadow-xl shadow-primary/20">
                                     <Link href={`/student/my-courses/${course.id}`} className="flex items-center justify-center gap-2">
-                                        চালিয়ে যান <ChevronRight className="w-3 h-3" />
+                                        Continue Learning <ChevronRight className="w-3.5 h-3.5" />
                                     </Link>
                                 </Button>
                                 </div>
@@ -329,11 +328,11 @@ export default function DashboardPage() {
 
             <div className="space-y-8">
                 <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-white/10">
+                    <CardHeader className="bg-primary/5 p-5 border-b border-white/10 text-left">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <CalendarCheck className="w-5 h-5 text-primary" />
-                                <CardTitle className="text-sm font-black uppercase tracking-tight">আসন্ন ডেডলাইন</CardTitle>
+                                <CardTitle className="text-sm font-black uppercase tracking-tight">Upcoming Deadlines</CardTitle>
                             </div>
                             <Button asChild variant="ghost" size="sm" className="h-8 w-8 rounded-lg p-0">
                                 <Link href="/student/planner"><ChevronRight className="w-4 h-4" /></Link>
@@ -363,7 +362,7 @@ export default function DashboardPage() {
                 </Card>
 
                 <Card className="rounded-[20px] border-primary/20 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
+                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10 text-left">
                         <div className="flex items-center gap-2">
                             <Crown className="w-5 h-5 text-accent" />
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Leaderboard</CardTitle>
@@ -394,11 +393,11 @@ export default function DashboardPage() {
                 </Card>
 
                 <Card className="rounded-[20px] border-primary/20 shadow-xl bg-accent/5 p-5 border-b border-white/10">
-                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10">
+                    <CardHeader className="bg-accent/5 p-5 border-b border-white/10 text-left">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Bell className="w-5 h-5 text-accent" />
-                                <CardTitle className="text-sm font-black uppercase tracking-tight">নোটিশ বোর্ড</CardTitle>
+                                <CardTitle className="text-sm font-black uppercase tracking-tight">Notice Board</CardTitle>
                             </div>
                         </div>
                     </CardHeader>

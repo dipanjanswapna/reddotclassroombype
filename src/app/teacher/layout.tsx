@@ -12,8 +12,7 @@ import { LoadingSpinner } from '@/components/loading-spinner';
 import { motion } from 'framer-motion';
 
 /**
- * @fileOverview Teacher Layout refined with px-1 wall-to-wall layout and accent-color active pills.
- * Implementation of 20px corners across UI.
+ * @fileOverview Teacher Layout refined with Geometric Standards and Sentence Case labels.
  */
 export default function TeacherLayout({
   children,
@@ -42,16 +41,16 @@ export default function TeacherLayout({
 
   const menuItems = [
     { href: "/teacher/dashboard", icon: LayoutDashboard, label: "Home" },
-    { href: "/teacher/courses", icon: BookCopy, label: "Courses" },
+    { href: "/teacher/courses", icon: BookCopy, label: "My Courses" },
     { href: "/teacher/students", icon: Users, label: "Students" },
-    { href: "/teacher/grading", icon: FileCheck2, label: "Grading" },
-    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Log" },
-    { href: "/teacher/scan-attendance", icon: QrCode, label: "Scan" },
-    { href: "/teacher/live-classes", icon: Video, label: "Live" },
-    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Promos" },
-    { href: "/teacher/earnings", icon: DollarSign, label: "Sales" },
-    { href: "/teacher/profile", icon: User, label: "Profile" },
-    { href: "/teacher/id-card", icon: IdCard, label: "ID Card" },
+    { href: "/teacher/grading", icon: FileCheck2, label: "Grading Tasks" },
+    { href: "/teacher/attendance", icon: ClipboardCheck, label: "Attendance Log" },
+    { href: "/teacher/scan-attendance", icon: QrCode, label: "Scanner" },
+    { href: "/teacher/live-classes", icon: Video, label: "Live Sessions" },
+    { href: "/teacher/promo-codes", icon: TicketPercent, label: "Coupons" },
+    { href: "/teacher/earnings", icon: DollarSign, label: "Earnings" },
+    { href: "/teacher/profile", icon: User, label: "My Profile" },
+    { href: "/teacher/id-card", icon: IdCard, label: "Digital ID" },
     { href: "/teacher/settings", icon: Settings, label: "Account" },
     { href: "/", icon: LogOut, label: "Logout", action: logout },
   ];
@@ -72,16 +71,16 @@ export default function TeacherLayout({
       <motion.nav 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-4 left-4 right-4 z-50 bg-background/80 dark:bg-card/80 backdrop-blur-2xl border border-primary/10 shadow-[0_8px_30px_rgba(0,0,0,0.12)] h-16 rounded-[20px] flex justify-center overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 z-50 bg-white/90 dark:bg-card/90 backdrop-blur-xl border border-border shadow-xl h-16 rounded-[20px] flex justify-center overflow-hidden"
       >
-        <div className="flex justify-start md:justify-center items-center h-full w-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
+        <div className="flex justify-start items-center h-full w-full max-w-full overflow-x-auto no-scrollbar scroll-smooth gap-1 px-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={item.action}
               className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[72px] md:min-w-[90px] h-full text-center transition-all duration-300 relative px-1",
+                  "flex flex-col items-center justify-center gap-1 flex-shrink-0 min-w-[85px] h-full text-center transition-all duration-300 relative px-1",
                   getIsActive(item.href)
                     ? "text-accent"
                     : "text-muted-foreground hover:text-foreground"
@@ -90,13 +89,13 @@ export default function TeacherLayout({
               {getIsActive(item.href) && (
                 <motion.div 
                   layoutId="active-nav-pill-teacher-master"
-                  className="absolute inset-x-1 inset-y-2 bg-white dark:bg-accent shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-xl -z-10"
+                  className="absolute inset-x-1 inset-y-2 bg-accent/10 rounded-xl -z-10"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-accent scale-110" : "scale-100")} />
+              <item.icon className={cn("w-5 h-5", getIsActive(item.href) ? "text-accent" : "")} />
               <span className={cn(
-                "text-[9px] md:text-[10px] font-black uppercase tracking-tight whitespace-nowrap",
+                "text-[9px] font-bold uppercase tracking-tight whitespace-nowrap",
                 getIsActive(item.href) ? "text-accent" : "text-muted-foreground"
               )}>{item.label}</span>
             </Link>
