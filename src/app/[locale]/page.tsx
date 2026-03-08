@@ -50,8 +50,8 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 });
 
 /**
- * @fileOverview Localized Master Homepage with Geometric UI Overhaul.
- * Implements Sentence Case typography and solid rounded-xl cards.
+ * @fileOverview Localized Master Homepage with Geometric UI Standards.
+ * Standardized with rounded-xl corners and Title Case typography.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();

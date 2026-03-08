@@ -21,7 +21,7 @@ interface PomodoroTimerProps {
 
 /**
  * @fileOverview Refined Pomodoro Timer.
- * Removed missing notification.mp3 reference to fix 404 errors.
+ * Standardized with rounded-xl corners and Title Case typography.
  */
 export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurationsChange }: PomodoroTimerProps) {
   const [mode, setMode] = useState<PomodoroMode>('work');
@@ -94,35 +94,35 @@ export function PomodoroTimer({ tasks, onSessionComplete, durations, onDurations
 
 
   return (
-    <Card className="rounded-[20px] border-primary/20 shadow-xl overflow-hidden bg-card">
+    <Card className="rounded-xl border-primary/20 shadow-xl overflow-hidden bg-card">
         <CardHeader className="text-center p-4 bg-primary/5 border-b border-primary/10">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Focus Session</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-5 p-5">
-            <div className="flex gap-1.5 bg-muted/50 p-1 rounded-xl w-full">
-                <Button size="sm" variant={mode === 'work' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('work')}>Study</Button>
-                <Button size="sm" variant={mode === 'shortBreak' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('shortBreak')}>Short</Button>
-                <Button size="sm" variant={mode === 'longBreak' ? 'default' : 'ghost'} className="flex-1 rounded-lg h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('longBreak')}>Long</Button>
+            <div className="flex gap-1.5 bg-muted/50 p-1 rounded-lg w-full">
+                <Button size="sm" variant={mode === 'work' ? 'default' : 'ghost'} className="flex-1 rounded-md h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('work')}>Study</Button>
+                <Button size="sm" variant={mode === 'shortBreak' ? 'default' : 'ghost'} className="flex-1 rounded-md h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('shortBreak')}>Short</Button>
+                <Button size="sm" variant={mode === 'longBreak' ? 'default' : 'ghost'} className="flex-1 rounded-md h-9 text-[9px] font-black uppercase tracking-widest transition-all" onClick={() => switchMode('longBreak')}>Long</Button>
             </div>
             
-            <div className="text-6xl font-black font-mono text-center bg-primary/[0.03] py-8 rounded-[25px] w-full border-2 border-primary/5 text-foreground tracking-tighter shadow-inner">
+            <div className="text-6xl font-black font-mono text-center bg-primary/[0.03] py-8 rounded-xl w-full border-2 border-primary/5 text-foreground tracking-tighter shadow-inner">
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
 
             <div className="flex gap-2.5 w-full">
-                <Button onClick={toggleTimer} size="lg" className="flex-grow h-14 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95 group">
+                <Button onClick={toggleTimer} size="lg" className="flex-grow h-14 rounded-xl shadow-xl shadow-primary/20 transition-all active:scale-95 group">
                     {isActive ? <Pause className="w-6 h-6"/> : <Play className="w-6 h-6 ml-1 group-hover:scale-110 transition-transform"/>}
                 </Button>
-                 <Button onClick={resetTimer} size="lg" variant="secondary" className="h-14 w-14 rounded-2xl border border-black/5">
+                 <Button onClick={resetTimer} size="lg" variant="secondary" className="h-14 w-14 rounded-xl border border-black/5">
                     <RotateCcw className="w-5 h-5 opacity-60" />
                 </Button>
             </div>
 
-             <div className="w-full space-y-4 pt-5 border-t border-primary/10">
+             <div className="w-full space-y-4 pt-5 border-t border-primary/10 text-left">
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase tracking-[0.15em] text-muted-foreground ml-1">Assign Task Focus</Label>
                     <Select value={selectedTask} onValueChange={setSelectedTask}>
-                        <SelectTrigger className="h-11 rounded-xl text-[11px] font-bold border-primary/5 bg-background shadow-sm">
+                        <SelectTrigger className="h-11 rounded-lg text-[11px] font-bold border-primary/5 bg-background shadow-sm">
                             <SelectValue placeholder="Select a task..." />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-white/10">

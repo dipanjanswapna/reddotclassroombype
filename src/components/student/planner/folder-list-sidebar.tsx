@@ -31,6 +31,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
+/**
+ * @fileOverview Sidebar for Planner Workspace.
+ * Standardized with rounded-xl corners and Title Case typography.
+ */
 export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChange, onSelectList, activeListId }: FolderListSidebarProps) {
     const { userInfo } = useAuth();
     const router = useRouter();
@@ -82,7 +86,7 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
 
   return (
     <>
-    <Card className="rounded-[20px] border-primary/20 shadow-xl overflow-hidden bg-card">
+    <Card className="rounded-xl border-primary/20 shadow-xl overflow-hidden bg-card">
       <CardHeader className="p-4 bg-primary/5 border-b border-primary/10">
         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Library Workspace</CardTitle>
       </CardHeader>
@@ -166,28 +170,28 @@ export function FolderListSidebar({ folders, lists, onFoldersChange, onListsChan
     </Card>
     
     <Dialog open={isFolderDialogOpen} onOpenChange={setIsFolderDialogOpen}>
-        <DialogContent className="rounded-[25px]"><DialogHeader><DialogTitle className="font-headline uppercase tracking-tight">Create New Folder</DialogTitle></DialogHeader>
-        <Input className="rounded-xl h-12" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g., HSC 2025" />
-        <DialogFooter><Button className="rounded-xl font-black uppercase tracking-widest text-[10px] h-12 shadow-xl shadow-primary/20" onClick={handleSaveFolder}>Save Folder</Button></DialogFooter></DialogContent>
+        <DialogContent className="rounded-xl"><DialogHeader><DialogTitle className="font-headline uppercase tracking-tight">Create New Folder</DialogTitle></DialogHeader>
+        <Input className="rounded-lg h-12" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} placeholder="e.g., HSC 2025" />
+        <DialogFooter><Button className="rounded-lg font-black uppercase tracking-widest text-[10px] h-12 shadow-sm" onClick={handleSaveFolder}>Save Folder</Button></DialogFooter></DialogContent>
     </Dialog>
     
     <Dialog open={isListDialogOpen} onOpenChange={setIsListDialogOpen}>
-         <DialogContent className="rounded-[25px]"><DialogHeader><DialogTitle className="font-headline uppercase tracking-tight">Create New List</DialogTitle></DialogHeader>
-         <Input className="rounded-xl h-12" value={newList.name} onChange={(e) => setNewList(p => ({...p, name: e.target.value}))} placeholder="e.g., Physics Chapter 5" />
+         <DialogContent className="rounded-xl"><DialogHeader><DialogTitle className="font-headline uppercase tracking-tight">Create New List</DialogTitle></DialogHeader>
+         <Input className="rounded-lg h-12" value={newList.name} onChange={(e) => setNewList(p => ({...p, name: e.target.value}))} placeholder="e.g., Physics Chapter 5" />
          <Select value={newList.folderId} onValueChange={(v) => setNewList(p => ({...p, folderId: v}))}>
-            <SelectTrigger className="rounded-xl h-12 font-bold"><SelectValue placeholder="Select a folder (optional)..." /></SelectTrigger>
+            <SelectTrigger className="rounded-lg h-12 font-bold"><SelectValue placeholder="Select a folder (optional)..." /></SelectTrigger>
             <SelectContent className="rounded-xl border-white/10">
                 <SelectItem value="none">No Folder</SelectItem>
                 {folders.map(f => <SelectItem key={f.id} value={f.id!}>{f.name}</SelectItem>)}
             </SelectContent>
          </Select>
-         <DialogFooter><Button className="rounded-xl font-black uppercase tracking-widest text-[10px] h-12 shadow-xl shadow-primary/20" onClick={handleSaveList}>Save List</Button></DialogFooter></DialogContent>
+         <DialogFooter><Button className="rounded-lg font-black uppercase tracking-widest text-[10px] h-12 shadow-sm" onClick={handleSaveList}>Save List</Button></DialogFooter></DialogContent>
     </Dialog>
 
     <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <AlertDialogContent className="rounded-[25px]">
+        <AlertDialogContent className="rounded-xl">
             <AlertDialogHeader><AlertDialogTitle className="font-headline uppercase tracking-tight">Delete item?</AlertDialogTitle><AlertDialogDescription className="font-medium text-sm">This will permanently delete "{itemToDelete?.item.name}". All sub-items will be removed.</AlertDialogDescription></AlertDialogHeader>
-            <AlertDialogFooter><AlertDialogCancel className="rounded-xl font-bold uppercase text-[10px]">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 rounded-xl font-black uppercase text-[10px]">Delete Permanently</AlertDialogAction></AlertDialogFooter>
+            <AlertDialogFooter><AlertDialogCancel className="rounded-lg font-bold uppercase text-[10px]">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 rounded-lg font-black uppercase text-[10px]">Delete Permanently</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
     </>

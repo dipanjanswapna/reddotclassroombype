@@ -233,14 +233,14 @@ export default async function CourseDetailPage({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {course.cycles.sort((a,b) => a.order - b.order).map((cycle) => (
                             <Card key={cycle.id} className="rounded-xl border-border overflow-hidden bg-card shadow-sm hover:border-primary transition-all group flex flex-col">
-                                <CardHeader className="bg-primary/5 p-6 border-b border-border">
+                                <CardHeader className="bg-primary/5 p-6 border-b border-border text-left">
                                     <div className="flex justify-between items-center">
                                         <Badge variant="outline" className="font-bold text-[9px] uppercase tracking-widest border-primary/20 text-primary">Cycle {cycle.order}</Badge>
                                         <span className="font-bold text-xl text-primary">{cycle.price}</span>
                                     </div>
                                     <CardTitle className="text-lg font-bold uppercase mt-4 tracking-tight group-hover:text-primary transition-colors">{cycle.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-6 flex-grow">
+                                <CardContent className="p-6 flex-grow text-left">
                                     <p className="text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">{cycle.description}</p>
                                 </CardContent>
                                 <CardFooter className="p-6 pt-0 mt-auto">
@@ -274,7 +274,9 @@ export default async function CourseDetailPage({
                                     <ul className="divide-y divide-border">
                                         {item.lessons.map(lesson => (
                                             <li key={lesson.id} className="flex items-center gap-4 px-8 py-4 hover:bg-primary/5 transition-colors group">
-                                                <div className="p-2.5 bg-muted rounded-lg group-hover:bg-primary/10"><PlayCircle className="w-4 h-4 text-primary"/></div>
+                                                <div className="p-2.5 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
+                                                    <PlayCircle className="w-4 h-4 text-primary"/>
+                                                </div>
                                                 <div className="flex-grow">
                                                     <span className="font-bold text-sm block group-hover:text-primary transition-colors">{lesson.title}</span>
                                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter mt-0.5">{lesson.type}</span>

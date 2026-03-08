@@ -24,9 +24,8 @@ import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Super Powerful Admin Homepage CMS
- * Manage all 18+ sections of the homepage dynamically.
- * Optimized for px-1 wall-to-wall design.
+ * @fileOverview Super Powerful Admin Homepage CMS.
+ * Standardized with rounded-xl corners and Title Case typography.
  */
 export default function AdminHomepageManagementPage() {
   const { toast } = useToast();
@@ -182,8 +181,8 @@ export default function AdminHomepageManagementPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 px-1">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 mb-2">
         <div className="border-l-4 border-primary pl-4">
-          <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight">Homepage <span className="text-primary">Master CMS</span></h1>
-          <p className="mt-1 text-[10px] md:text-sm text-muted-foreground font-medium">Power up your storefront with dynamic content management.</p>
+          <h1 className="font-headline text-2xl md:text-3xl font-black uppercase tracking-tight text-left">Homepage <span className="text-primary">Master CMS</span></h1>
+          <p className="mt-1 text-[10px] md:text-sm text-muted-foreground font-medium text-left">Power up your storefront with dynamic content management.</p>
         </div>
         <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto h-12 shadow-xl rounded-xl font-black uppercase tracking-widest px-8">
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
@@ -206,11 +205,11 @@ export default function AdminHomepageManagementPage() {
                 
                 {/* --- GENERAL TAB --- */}
                 <TabsContent value="general" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Welcome Messaging</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="p-6 space-y-6 text-left">
                             <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20 mb-4">
                                 <span className="text-[11px] font-black uppercase">Enable Welcome Section</span>
                                 <Switch checked={config.welcomeSection?.display ?? true} onCheckedChange={(val) => handleSectionToggle('welcomeSection', val)} />
@@ -218,16 +217,16 @@ export default function AdminHomepageManagementPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase ml-1">Title (BN)</Label>
-                                    <Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} className="h-12" />
+                                    <Input value={config.welcomeSection?.title?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'bn', e.target.value)} className="h-12 rounded-lg" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase ml-1">Title (EN)</Label>
-                                    <Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} className="h-12" />
+                                    <Input value={config.welcomeSection?.title?.en || ''} onChange={e => handleSectionLangChange('welcomeSection', 'title', 'en', e.target.value)} className="h-12 rounded-lg" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase ml-1">Main Description (BN)</Label>
-                                <Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={3} className="rounded-xl" />
+                                <Textarea value={config.welcomeSection?.description?.bn || ''} onChange={e => handleSectionLangChange('welcomeSection', 'description', 'bn', e.target.value)} rows={3} className="rounded-lg" />
                             </div>
                         </CardContent>
                     </Card>
@@ -235,17 +234,17 @@ export default function AdminHomepageManagementPage() {
 
                 {/* --- HERO TAB --- */}
                 <TabsContent value="hero" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Main Hero Banners</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-4">
+                        <CardContent className="p-6 space-y-4 text-left">
                             {config.heroBanners.map((banner, index) => (
-                                <div key={banner.id} className="p-5 border border-primary/10 rounded-[20px] bg-muted/10 relative space-y-4">
+                                <div key={banner.id} className="p-5 border border-primary/10 rounded-xl bg-muted/10 relative space-y-4">
                                     <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => removeHeroBanner(banner.id)}><X className="h-4 w-4"/></Button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Image URL</Label><Input value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} /></div>
-                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Destination</Label><Input value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} /></div>
+                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Image URL</Label><Input value={banner.imageUrl} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'imageUrl', e.target.value)} className="rounded-lg" /></div>
+                                        <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Destination</Label><Input value={banner.href} onChange={e => handleNestedArrayChange('heroBanners', 'heroBanners', index, 'href', e.target.value)} className="rounded-lg" /></div>
                                     </div>
                                 </div>
                             ))}
@@ -253,28 +252,28 @@ export default function AdminHomepageManagementPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Struggling Banner</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="p-6 space-y-6 text-left">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Heading (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'title', 'bn', e.target.value)} /></div>
-                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Sparkle Text (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'subtitle', 'bn', e.target.value)} /></div>
+                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Heading (BN)</Label><Input value={config.strugglingStudentSection?.title?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'title', 'bn', e.target.value)} className="rounded-lg" /></div>
+                                <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Sparkle Text (BN)</Label><Input value={config.strugglingStudentSection?.subtitle?.bn || ''} onChange={e => handleSectionLangChange('strugglingStudentSection', 'subtitle', 'bn', e.target.value)} className="rounded-lg" /></div>
                             </div>
-                            <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Illustration URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleSectionValueChange('strugglingStudentSection', 'imageUrl', e.target.value)} /></div>
+                            <div className="space-y-2"><Label className="text-[10px] font-black uppercase ml-1">Illustration URL</Label><Input value={config.strugglingStudentSection?.imageUrl || ''} onChange={e => handleSectionValueChange('strugglingStudentSection', 'imageUrl', e.target.value)} className="rounded-lg" /></div>
                         </CardContent>
                     </Card>
                 </TabsContent>
 
                 {/* --- COURSES TAB --- */}
                 <TabsContent value="courses" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Course ID Filters</CardTitle>
-                            <CardDescription>Manage which courses appear in each dynamic section using comma-separated IDs.</CardDescription>
+                            <CardDescription className="font-medium text-xs">Manage which courses appear in each dynamic section using comma-separated IDs.</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="p-6 space-y-6 text-left">
                             {[
                                 { key: 'liveCoursesIds', label: 'Live Courses (Journey)' },
                                 { key: 'sscHscCourseIds', label: 'SSC & HSC Preparation' },
@@ -283,21 +282,21 @@ export default function AdminHomepageManagementPage() {
                             ].map(sec => (
                                 <div key={sec.key} className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase ml-1">{sec.label}</Label>
-                                    <Input value={((config as any)[sec.key] || []).join(', ')} onChange={e => handleSimpleValueChange(sec.key as any, e.target.value.split(',').map(s => s.trim()).filter(Boolean))} placeholder="course_id_1, course_id_2..." className="font-mono text-xs" />
+                                    <Input value={((config as any)[sec.key] || []).join(', ')} onChange={e => handleSimpleValueChange(sec.key as any, e.target.value.split(',').map(s => s.trim()).filter(Boolean))} placeholder="course_id_1, course_id_2..." className="font-mono text-xs rounded-lg" />
                                 </div>
                             ))}
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Featured Instructors</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6">
+                        <CardContent className="p-6 text-left">
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {config.teachersSection?.instructorIds?.map(id => {
                                     const inst = allInstructors.find(i => i.id === id);
-                                    return inst ? <Badge key={id} variant="secondary" className="px-3 h-8 gap-2 uppercase font-black text-[9px]">
+                                    return inst ? <Badge key={id} variant="secondary" className="px-3 h-8 gap-2 uppercase font-black text-[9px] rounded-lg">
                                         {inst.name} <X className="h-3 w-3 cursor-pointer" onClick={() => handleInstructorToggle(id, false)} />
                                     </Badge> : null;
                                 })}
@@ -324,11 +323,11 @@ export default function AdminHomepageManagementPage() {
 
                 {/* --- SETTINGS TAB --- */}
                 <TabsContent value="settings" className="space-y-8 mt-0">
-                    <Card className="rounded-[20px] shadow-sm border-primary/10">
+                    <Card className="rounded-xl shadow-sm border-primary/10">
                         <CardHeader className="bg-primary/5 p-6 border-b border-primary/10">
                             <CardTitle className="text-sm font-black uppercase tracking-tight">Floating Communications</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="p-6 space-y-6 text-left">
                             <div className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
                                 <div className="space-y-0.5">
                                     <span className="text-[11px] font-black uppercase">Floating WhatsApp</span>
@@ -338,7 +337,7 @@ export default function AdminHomepageManagementPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase ml-1">WhatsApp Number</Label>
-                                <Input value={config.floatingWhatsApp?.number || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } }) : null)} placeholder="8801XXXXXXXXX" className="h-12" />
+                                <Input value={config.floatingWhatsApp?.number || ''} onChange={e => setConfig(prev => prev ? ({ ...prev, floatingWhatsApp: { ...prev.floatingWhatsApp, number: e.target.value } }) : null)} placeholder="8801XXXXXXXXX" className="h-12 rounded-lg" />
                             </div>
                         </CardContent>
                     </Card>

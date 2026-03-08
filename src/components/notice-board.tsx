@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,9 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Skeleton } from './ui/skeleton';
 
 /**
- * @fileOverview NoticeBoard Component
- * Fetches live notices from Firestore and displays them in a high-density card.
- * Uses 20px rounding and px-1 spacing.
+ * @fileOverview NoticeBoard Component.
+ * Standardized with rounded-xl corners and Title Case typography.
  */
 export function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -55,10 +53,10 @@ export function NoticeBoard() {
   return (
     <div className="my-8 px-1">
         <Dialog open={!!selectedNotice} onOpenChange={(isOpen) => !isOpen && setSelectedNotice(null)}>
-            <Card className="bg-card dark:bg-card/10 border border-primary/20 rounded-[20px] shadow-lg transition-all duration-300">
+            <Card className="bg-white dark:bg-card/10 border border-primary/20 rounded-xl shadow-lg transition-all duration-300">
                 <CardHeader className="p-5 md:p-6 pb-2">
                     <div className="flex items-center gap-3 text-primary text-left">
-                        <div className="bg-primary/10 p-2 rounded-xl">
+                        <div className="bg-primary/10 p-2 rounded-lg">
                             <Megaphone className="w-6 h-6 text-primary" />
                         </div>
                         <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-foreground">Notice Board</CardTitle>
@@ -73,7 +71,7 @@ export function NoticeBoard() {
                                 <button 
                                     key={notice.id}
                                     onClick={() => setSelectedNotice(notice)}
-                                    className="w-full text-left p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 transition-all duration-200 group border border-transparent hover:border-primary/10"
+                                    className="w-full text-left p-3 rounded-lg hover:bg-muted transition-all duration-200 group border border-transparent hover:border-primary/10"
                                 >
                                     <div className="flex items-center gap-3 text-sm font-semibold">
                                         <Pin className="h-4 w-4 text-primary group-hover:scale-110 transition-transform shrink-0" />
@@ -89,17 +87,17 @@ export function NoticeBoard() {
                 </CardContent>
             </Card>
 
-            <DialogContent className="rounded-[20px] border-white/10 max-w-2xl">
+            <DialogContent className="rounded-xl border-white/10 max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">{selectedNotice?.title}</DialogTitle>
                     {selectedNotice?.publishedAt && (
-                      <DialogDescription className="flex items-center gap-2 pt-2 font-bold text-[10px] uppercase tracking-widest">
+                      <DialogDescription className="flex items-center gap-2 pt-2 font-bold text-[10px] uppercase tracking-widest text-left">
                           <Calendar className="w-3.5 h-3.5 text-primary"/>
                           Published on {formatDateSafe(selectedNotice.publishedAt, 'PPP')}
                       </DialogDescription>
                     )}
                 </DialogHeader>
-                <div className="py-6 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto font-medium leading-relaxed text-sm md:text-base border-t border-primary/5 mt-4">
+                <div className="py-6 whitespace-pre-wrap text-muted-foreground max-h-[60vh] overflow-y-auto font-medium leading-relaxed text-sm md:text-base border-t border-primary/5 mt-4 text-left">
                     {selectedNotice?.content}
                 </div>
             </DialogContent>

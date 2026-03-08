@@ -59,8 +59,7 @@ const whiteNoises = [
 
 /**
  * @fileOverview Study Planner Client Component.
- * Optimized for high-density wall-to-wall responsive UI with 20px corners.
- * Features a hybrid navigation system with a main 'Board' tab and a dropdown for other views.
+ * Optimized for high-density wall-to-wall responsive UI with rounded-xl corners.
  */
 export function StudyPlannerClient() {
     const { toast } = useToast();
@@ -269,13 +268,13 @@ export function StudyPlannerClient() {
             <div className="w-full">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8 px-1">
-                        <div className="w-full md:w-auto flex items-center bg-muted/30 dark:bg-card/20 rounded-[20px] p-1 border border-white/10 shadow-inner gap-1">
+                        <div className="w-full md:w-auto flex items-center bg-muted/30 dark:bg-card/20 rounded-xl p-1 border border-white/10 shadow-inner gap-1">
                             <TabsList className="bg-transparent border-none p-0 h-auto gap-1">
                                 <TabsTrigger 
                                     value="board" 
                                     className={cn(
-                                        "rounded-[16px] px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 border-none outline-none",
-                                        "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                                        "rounded-lg px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 border-none outline-none",
+                                        "data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm",
                                         "text-muted-foreground hover:text-foreground"
                                     )}
                                 >
@@ -289,9 +288,9 @@ export function StudyPlannerClient() {
                                     <Button 
                                         variant="ghost" 
                                         className={cn(
-                                            "rounded-[16px] px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 h-auto",
+                                            "rounded-lg px-6 sm:px-10 py-2.5 font-black uppercase tracking-wider text-[10px] md:text-xs transition-all duration-300 flex items-center gap-2 h-auto",
                                             activeTab !== 'board' 
-                                                ? "bg-white text-primary shadow-[0_4px_15px_rgba(0,0,0,0.1)]" 
+                                                ? "bg-white text-primary shadow-sm" 
                                                 : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                                         )}
                                     >
@@ -309,13 +308,13 @@ export function StudyPlannerClient() {
                                         <ChevronDown className="w-3 h-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start" className="rounded-[20px] border-primary/10 shadow-2xl p-2 min-w-[180px]">
+                                <DropdownMenuContent align="start" className="rounded-xl border-primary/10 shadow-2xl p-2 min-w-[180px]">
                                     {dropdownOptions.map((opt) => (
                                         <DropdownMenuItem 
                                             key={opt.value} 
                                             onClick={() => setActiveTab(opt.value)}
                                             className={cn(
-                                                "rounded-xl px-4 py-2.5 mb-1 last:mb-0 cursor-pointer flex items-center gap-3 transition-colors",
+                                                "rounded-lg px-4 py-2.5 mb-1 last:mb-0 cursor-pointer flex items-center gap-3 transition-colors",
                                                 activeTab === opt.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
                                             )}
                                         >
@@ -328,7 +327,7 @@ export function StudyPlannerClient() {
                             </DropdownMenu>
                         </div>
 
-                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-[20px] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
+                        <Button onClick={() => handleAddTask('todo')} className="w-full md:w-auto font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
                             <PlusCircle className="mr-2 h-4 w-4"/> 
                             Add New Task
                         </Button>
@@ -394,12 +393,12 @@ export function StudyPlannerClient() {
                                 </TabsContent>
                                 <TabsContent value="settings" className="mt-0 outline-none">
                                      <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-                                        <Card className="rounded-[25px] border-primary/20 shadow-xl overflow-hidden bg-card">
+                                        <Card className="rounded-xl border-primary/20 shadow-xl overflow-hidden bg-card">
                                             <CardHeader className="bg-primary/5 p-8 border-b border-primary/10">
                                                 <CardTitle className="text-xl font-black uppercase tracking-tight">Appearance & Focus</CardTitle>
-                                                <CardDescription className="font-medium text-xs">Personalize your productivity hub workspace.</CardDescription>
+                                                <CardDescription className="font-medium text-xs text-left">Personalize your productivity hub workspace.</CardDescription>
                                             </CardHeader>
-                                            <CardContent className="p-8 space-y-10">
+                                            <CardContent className="p-8 space-y-10 text-left">
                                                 <div className="space-y-4">
                                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Workspace Theme</Label>
                                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
@@ -408,7 +407,7 @@ export function StudyPlannerClient() {
                                                                 key={theme.value} 
                                                                 onClick={() => setSelectedTheme(theme.value)} 
                                                                 className={cn(
-                                                                    "p-3 rounded-[20px] border-2 transition-all group relative overflow-hidden",
+                                                                    "p-3 rounded-xl border-2 transition-all group relative overflow-hidden",
                                                                     selectedTheme === theme.value ? 'border-primary bg-primary/5 shadow-md' : 'border-primary/5 bg-muted/20 hover:border-primary/20'
                                                                 )}
                                                             >
@@ -426,7 +425,7 @@ export function StudyPlannerClient() {
                                                         <div className="relative">
                                                             <Volume2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-50" />
                                                             <Select value={selectedNoise} onValueChange={setSelectedNoise}>
-                                                                <SelectTrigger className="h-12 rounded-xl pl-10 font-bold border-primary/5 bg-background shadow-sm">
+                                                                <SelectTrigger className="h-12 rounded-lg pl-10 font-bold border-primary/5 bg-background shadow-sm">
                                                                     <SelectValue placeholder="Pick a focus sound..." />
                                                                 </SelectTrigger>
                                                                 <SelectContent className="rounded-xl border-white/10">
@@ -441,7 +440,7 @@ export function StudyPlannerClient() {
 
                                                     <div className="space-y-4">
                                                         <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Calendar Integration</Label>
-                                                        <Card className="rounded-[20px] bg-muted/30 border-dashed border-2 border-primary/10 p-5">
+                                                        <Card className="rounded-xl bg-muted/30 border-dashed border-2 border-primary/10 p-5">
                                                             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                                                                 <div className="text-center sm:text-left">
                                                                     <h4 className="font-black text-xs uppercase tracking-tight text-foreground">Google Calendar</h4>

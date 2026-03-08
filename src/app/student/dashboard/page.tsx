@@ -38,6 +38,10 @@ import { cn, safeToDate } from '@/lib/utils';
 import { format, isAfter, isBefore, addHours, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
+/**
+ * @fileOverview Student Dashboard with refined Geometric UI.
+ * Standardized with rounded-xl corners and Title Case typography.
+ */
 export default function DashboardPage() {
   const { userInfo } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -152,10 +156,10 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, x: 0 }}
                 className="space-y-1"
               >
-                  <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground">
+                  <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tight leading-none uppercase text-foreground text-left">
                     Welcome back, <span className="text-primary">{userInfo?.name?.split(' ')[0] || 'Student'}!</span>
                   </h1>
-                  <p className="text-muted-foreground font-medium text-base md:text-lg">Are you ready to crush your academic goals today?</p>
+                  <p className="text-muted-foreground font-medium text-base md:text-lg text-left">Are you ready to crush your academic goals today?</p>
               </motion.div>
               
               <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
@@ -216,7 +220,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Enrolled Courses</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-left">
                     <div className="text-3xl font-black">{stats.enrollments.length}</div>
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Rocket className="w-3 h-3" /> Continue learning</p>
                 </CardContent>
@@ -227,7 +231,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Overall Progress</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-left">
                     <div className="text-3xl font-black">{stats.overallProgress}%</div>
                     <div className="mt-4">
                         <Progress value={stats.overallProgress} className="h-1 bg-white/20 [&>div]:bg-white" />
@@ -240,7 +244,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Certificates</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-left">
                     <div className="text-3xl font-black">{stats.completedCoursesCount}</div>
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><Star className="w-3 h-3 fill-current" /> Proof of success</p>
                 </CardContent>
@@ -251,7 +255,7 @@ export default function DashboardPage() {
                 <CardHeader className="pb-2">
                     <CardTitle className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Leaderboard Rank</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-left">
                     <div className="text-3xl font-black">#{stats.rank}</div>
                     <p className="text-[9px] font-bold uppercase tracking-widest mt-2 opacity-90 flex items-center gap-1.5"><TrendingUp className="w-3 h-3" /> Fight for the top</p>
                 </CardContent>

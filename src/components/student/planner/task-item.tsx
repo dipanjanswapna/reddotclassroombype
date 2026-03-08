@@ -34,7 +34,7 @@ const priorityColors = {
 
 /**
  * @fileOverview High-density task item component.
- * Uses tight padding and 20px corners for professional profile.
+ * Standardized with rounded-xl corners and solid backgrounds.
  */
 export function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
     const isOverdue = !isToday(new Date(task.date)) && isPast(new Date(task.date)) && task.status !== 'completed';
@@ -54,7 +54,7 @@ export function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
     
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-        <Card className="p-3 rounded-[20px] border-primary/10 shadow-sm hover:shadow-xl transition-all group relative bg-background border-2">
+        <Card className="p-3 rounded-xl border-primary/10 shadow-sm hover:shadow-xl transition-all group relative bg-white dark:bg-card/80 border-2">
              <div className="flex justify-between items-start gap-2">
                 <div className="flex items-start gap-2 flex-grow min-w-0">
                      <div {...listeners} className="cursor-grab pt-1 opacity-20 group-hover:opacity-100 transition-opacity">
