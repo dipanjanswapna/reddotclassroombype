@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -82,55 +81,55 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
   
   return (
     <>
-    <Card>
+    <Card className="rounded-xl shadow-sm">
         <CardHeader>
-            <CardTitle>All Courses</CardTitle>
-            <CardDescription>A list of all courses in the system, including their status.</CardDescription>
+            <CardTitle>All Academic Courses</CardTitle>
+            <CardDescription>A list of all courses in the system, including their approval status.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
             <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/50">
                     <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Instructor</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="px-6 font-bold">Course Title</TableHead>
+                        <TableHead className="font-bold">Lead Instructor</TableHead>
+                        <TableHead className="font-bold">Price</TableHead>
+                        <TableHead className="font-bold">Status</TableHead>
+                        <TableHead className="text-right px-6 font-bold">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {courses.map((course) => (
-                        <TableRow key={course.id}>
-                            <TableCell className="font-medium">{course.title}</TableCell>
-                            <TableCell>{course.instructors?.[0]?.name || 'N/A'}</TableCell>
-                            <TableCell>{course.price}</TableCell>
+                        <TableRow key={course.id} className="hover:bg-muted/30">
+                            <TableCell className="px-6 font-semibold">{course.title}</TableCell>
+                            <TableCell className="font-medium">{course.instructors?.[0]?.name || 'N/A'}</TableCell>
+                            <TableCell className="font-bold text-primary">{course.price}</TableCell>
                             <TableCell>
-                                <Badge variant={getStatusBadgeVariant(course.status as Status)}>
+                                <Badge variant={getStatusBadgeVariant(course.status as Status)} className="rounded-lg uppercase text-[9px] font-black">
                                     {course.status}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right px-6">
                                 <div className="flex gap-2 justify-end">
                                     {course.status === 'Pending Approval' && (
                                         <>
-                                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-primary-foreground" onClick={() => handleStatusChange(course.id!, 'Published')} aria-label={`Approve ${course.title}`}>
-                                                <CheckCircle className="mr-2 h-4 w-4" />
+                                            <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold" onClick={() => handleStatusChange(course.id!, 'Published')}>
+                                                <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
                                                 Approve
                                             </Button>
-                                            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(course.id!, 'Rejected')} aria-label={`Reject ${course.title}`}>
-                                                <XCircle className="mr-2 h-4 w-4" />
+                                            <Button size="sm" variant="destructive" className="h-8 rounded-lg font-bold" onClick={() => handleStatusChange(course.id!, 'Rejected')}>
+                                                <XCircle className="mr-1.5 h-3.5 w-3.5" />
                                                 Reject
                                             </Button>
                                         </>
                                     )}
-                                    <Button variant="outline" size="sm" asChild>
-                                        <Link href={`/admin/courses/builder/${course.id}`} aria-label={`Edit ${course.title}`}>
-                                            <Pencil className="mr-2 h-4 w-4" />
+                                    <Button variant="outline" size="sm" asChild className="h-8 rounded-lg font-bold">
+                                        <Link href={`/admin/courses/builder/${course.id}`}>
+                                            <Pencil className="mr-1.5 h-3.5 w-3.5" />
                                             Edit
                                         </Link>
                                     </Button>
-                                    <Button variant="destructive" size="sm" onClick={() => setCourseToDelete(course)} aria-label={`Delete ${course.title}`}>
-                                        <Trash2 className="mr-2 h-4 w-4" />
+                                    <Button variant="destructive" size="sm" className="h-8 rounded-lg font-bold" onClick={() => setCourseToDelete(course)}>
+                                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
                                         Delete
                                     </Button>
                                 </div>
@@ -142,16 +141,16 @@ export function AdminCoursesClient({ initialCourses }: { initialCourses: Course[
         </CardContent>
     </Card>
      <AlertDialog open={!!courseToDelete} onOpenChange={(open) => !open && setCourseToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-xl">
             <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="font-headline uppercase">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="font-medium text-sm">
                 This action cannot be undone. This will permanently delete the course "{courseToDelete?.title}" and all its associated data.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">Continue</AlertDialogAction>
+            <AlertDialogCancel className="rounded-lg font-bold">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90 rounded-lg font-bold">Continue</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>

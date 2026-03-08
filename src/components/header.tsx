@@ -96,7 +96,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
           
           <nav className="hidden lg:flex items-center space-x-1 text-sm font-semibold">
               {mainNavLinks.map((link) => (
-                <Button key={link.href} variant="ghost" asChild className="rounded-lg hover:bg-muted transition-colors px-4">
+                <Button key={link.href} variant="ghost" asChild className="rounded-lg hover:bg-muted transition-colors px-4 text-gray-700 dark:text-gray-200">
                     <Link href={link.href}>
                       {link.label}
                     </Link>
@@ -104,7 +104,7 @@ export function Header({ containerClassName, variant = "light", wrapperClassName
               ))}
               <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-1 rounded-lg hover:bg-muted transition-colors px-4">
+                      <Button variant="ghost" className="flex items-center gap-1 rounded-lg hover:bg-muted transition-colors px-4 text-gray-700 dark:text-gray-200">
                       {t.nav_more[language]} <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                   </DropdownMenuTrigger>
