@@ -99,7 +99,6 @@
     scrollbar-width: none;
   }
   
-  /* Solid professional backgrounds instead of glass */
   .pro-card {
     @apply bg-white dark:bg-card border border-border shadow-sm rounded-xl;
   }
