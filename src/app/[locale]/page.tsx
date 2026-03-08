@@ -16,12 +16,18 @@ import {
   CheckCircle2,
   Users,
   Award,
-  Video
+  Video,
+  Star,
+  Activity,
+  Heart,
+  TrendingUp,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CourseCard } from '@/components/course-card';
 import { HeroCarousel } from '@/components/hero-carousel';
-import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations, getUsers, getEnrollments, getCourses } from '@/lib/firebase/firestore';
+import { getHomepageConfig, getCoursesByIds, getInstructors, getOrganizations } from '@/lib/firebase/firestore';
 import type { HomepageConfig, Course, Instructor, Organization } from '@/lib/types';
 import { CategoriesCarousel } from '@/components/categories-carousel';
 import dynamic from 'next/dynamic';
@@ -34,8 +40,9 @@ import { StatsSection } from '@/components/stats-section';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { NoticeBoard } from '@/components/notice-board';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RequestCallbackForm } from '@/components/request-callback-form';
+import { Badge } from '@/components/ui/badge';
 
 const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teachers-carousel').then(mod => mod.DynamicTeachersCarousel), {
     loading: () => <Skeleton className="h-[250px] w-full rounded-xl" />,
@@ -44,15 +51,13 @@ const DynamicTeachersCarousel = dynamic(() => import('@/components/dynamic-teach
 
 /**
  * @fileOverview Localized Master Homepage
- * Clean, professional geometric design with Sentence Case and Title Case hierarchy.
+ * Clean, professional geometric design with rounded-xl corners.
+ * Implements Sentence Case and Title Case hierarchy.
  */
 export default function Home() {
   const { language, getLocalizedPath } = useLanguage();
   const [homepageConfig, setHomepageConfig] = useState<HomepageConfig | null>(null);
   const [liveCourses, setLiveCourses] = useState<Course[]>([]);
-  const [sscHscCourses, setSscHscCourses] = useState<Course[]>([]);
-  const [admissionCourses, setAdmissionCourses] = useState<Course[]>([]);
-  const [jobCourses, setJobCourses] = useState<Course[]>([]);
   const [featuredInstructors, setFeaturedInstructors] = useState<Instructor[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,22 +70,16 @@ export default function Home() {
         setHomepageConfig(config);
 
         const [
-            live, ssc, adm, job,
+            live,
             instructorsData,
             orgsData,
         ] = await Promise.all([
             getCoursesByIds(config.liveCoursesIds || []),
-            getCoursesByIds(config.sscHscCourseIds || []),
-            getCoursesByIds(config.admissionCoursesIds || []),
-            getCoursesByIds(config.jobCoursesIds || []),
             getInstructors(),
             getOrganizations(),
         ]);
         
         setLiveCourses(live);
-        setSscHscCourses(ssc);
-        setAdmissionCourses(adm);
-        setJobCourses(job);
         setOrganizations(orgsData);
 
         const featuredIds = config.teachersSection?.instructorIds || [];
@@ -220,7 +219,7 @@ export default function Home() {
               <div className="flex items-center justify-between mb-8 border-l-4 border-accent pl-4 text-left">
                   <div className="text-left">
                       <h2 className={cn("font-bold tracking-tight text-left", isBn ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl font-headline")}>
-                        {homepageConfig.teachersSection.title[language] || "Our Mentors"}
+                        Our Mentors
                       </h2>
                       <p className="text-muted-foreground mt-1 text-sm md:text-base font-medium text-left">{homepageConfig.teachersSection?.subtitle?.[language] || ''}</p>
                   </div>
@@ -308,6 +307,7 @@ export default function Home() {
                                 <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
                                     {homepageConfig.appPromo.title[language]}
                                 </h2>
+                                <h3 className="text-xl md:text-2xl font-medium opacity-90">Download our mobile app for better learning.</h3>
                                 <p className="text-lg md:text-xl text-white/80 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
                                     {homepageConfig.appPromo.description[language]}
                                 </p>
