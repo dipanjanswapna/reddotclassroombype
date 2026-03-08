@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import {
   Users,
@@ -7,6 +6,7 @@ import {
   BarChart,
   DollarSign,
   Activity,
+  TrendingUp,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Course } from '@/lib/types';
@@ -41,6 +41,9 @@ interface DashboardClientProps {
     enrollments: SerializableEnrollment[];
 }
 
+/**
+ * @fileOverview Admin Dashboard with standardized rounded-xl corners and Title Case.
+ */
 export function DashboardClient({ courses, users, enrollments }: DashboardClientProps) {
     // --- Data Processing for Charts ---
     const revenueData = [
@@ -84,41 +87,41 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
     return (
         <div className="space-y-8">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
-                    <CardHeader className="pb-2">
+                <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-red-600 to-red-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Revenue</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="text-left">
                         <div className="text-2xl font-black">৳{totalRevenue.toLocaleString()}</div>
                         <DollarSign className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
                     </CardContent>
                 </Card>
                 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
-                    <CardHeader className="pb-2">
+                <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-blue-600 to-blue-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Enrollments</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="text-left">
                         <div className="text-2xl font-black">{enrollments.length}</div>
                         <BookOpen className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
-                    <CardHeader className="pb-2">
+                <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-green-600 to-green-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Users</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="text-left">
                         <div className="text-2xl font-black">{users.length}</div>
                         <Users className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-[25px] border-primary/10 shadow-xl bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
-                    <CardHeader className="pb-2">
+                <Card className="rounded-xl border-none shadow-sm bg-gradient-to-br from-purple-600 to-purple-500 text-white overflow-hidden relative group">
+                    <CardHeader className="pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Active Courses</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="text-left">
                         <div className="text-2xl font-black">{courses.filter(c => c.status === 'Published').length}</div>
                         <BarChart className="absolute top-2 right-2 h-12 w-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform" />
                     </CardContent>
@@ -126,16 +129,16 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
             </div>
             
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-1 lg:col-span-4 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                <Card className="col-span-1 lg:col-span-4 rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">Revenue Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pl-2">
                         <OverviewChart data={revenueData} />
                     </CardContent>
                 </Card>
-                 <Card className="col-span-1 lg:col-span-3 rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                    <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+                 <Card className="col-span-1 lg:col-span-3 rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                    <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                         <CardTitle className="text-sm font-black uppercase tracking-tight">User Demographics</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5">
@@ -144,8 +147,8 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                 </Card>
             </div>
     
-             <Card className="rounded-[25px] border-primary/5 shadow-xl bg-card overflow-hidden">
-                <CardHeader className="bg-primary/5 p-5 border-b border-primary/10">
+             <Card className="rounded-xl border-border shadow-sm bg-card overflow-hidden">
+                <CardHeader className="bg-muted/30 p-5 border-b border-border text-left">
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 text-primary" />
                         <CardTitle className="text-sm font-black uppercase tracking-tight">Recent Activity</CardTitle>
@@ -154,7 +157,7 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                 <CardContent className="p-0 overflow-x-auto">
                     <Table>
                         <TableHeader className="bg-muted/30">
-                            <TableRow className="border-primary/10">
+                            <TableRow className="border-border">
                                 <TableHead className="font-black uppercase tracking-widest text-[10px] px-6">User</TableHead>
                                 <TableHead className="font-black uppercase tracking-widest text-[10px]">Role</TableHead>
                                 <TableHead className="font-black uppercase tracking-widest text-[10px]">Joined</TableHead>
@@ -164,17 +167,17 @@ export function DashboardClient({ courses, users, enrollments }: DashboardClient
                             {recentSignups.map(user => {
                                 const joinedDate = safeToDate(user.joined);
                                 return (
-                                    <TableRow key={user.id} className="border-primary/10 hover:bg-primary/5 transition-colors">
-                                        <TableCell className="px-6 py-4">
+                                    <TableRow key={user.id} className="border-border hover:bg-muted/30 transition-colors">
+                                        <TableCell className="px-6 py-4 text-left">
                                             <div className="font-bold text-sm">{user.name}</div>
                                             <div className="text-[10px] font-medium text-muted-foreground">{user.email}</div>
                                         </TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest px-2.5 h-5 border-primary/20 text-primary">
+                                        <TableCell className="text-left">
+                                            <Badge variant="outline" className="font-black text-[9px] uppercase tracking-widest px-2.5 h-5 border-primary/20 text-primary rounded-lg">
                                                 {user.role}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-[10px] font-bold text-muted-foreground">
+                                        <TableCell className="text-[10px] font-bold text-muted-foreground text-left">
                                             {!isNaN(joinedDate.getTime()) ? formatDistanceToNow(joinedDate, { addSuffix: true }) : 'N/A'}
                                         </TableCell>
                                     </TableRow>
