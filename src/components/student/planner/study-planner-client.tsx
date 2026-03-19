@@ -28,7 +28,7 @@ import {
   useSensors,
   DragEndEvent,
   DragOverlay,
-} from '@dnd-kit/core';
+} from '@nd-kit/core';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';

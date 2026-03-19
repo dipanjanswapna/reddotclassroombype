@@ -29,7 +29,7 @@ export function Column({ id, title, children, onAddTask }: ColumnProps) {
             isOver ? 'ring-2 ring-primary/50 ring-offset-2 ring-offset-background scale-[1.01]' : ''
         )}>
             <CardHeader className="p-4 border-b border-primary/10 bg-primary/5 rounded-t-xl">
-                <CardTitle className="text-[11px] font-black uppercase tracking-[0.25em] text-center text-primary">{title}</CardTitle>
+                <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-center text-primary">{title}</CardTitle>
             </CardHeader>
             <CardContent className="p-3 flex flex-col flex-grow overflow-hidden">
                  <ScrollArea className="flex-grow pr-1">

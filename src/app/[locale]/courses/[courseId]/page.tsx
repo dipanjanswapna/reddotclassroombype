@@ -320,7 +320,7 @@ export default async function CourseDetailPage({
             <div className="lg:col-span-4 lg:sticky lg:top-24">
                 <Card className="rounded-xl border border-border shadow-xl overflow-hidden bg-card p-1.5">
                     <div className="relative aspect-video rounded-lg overflow-hidden m-1 shadow-inner bg-black">
-                        <Image src={course.imageUrl} alt={course.title} fill className="object-cover opacity-90" priority />
+                        <Image src={course.imageUrl} alt={course.title} fill className="object-cover opacity-80" priority />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><PlayCircle className="w-16 h-16 text-white/80" /></div>
                     </div>
                     

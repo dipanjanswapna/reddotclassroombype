@@ -154,19 +154,19 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                     <Input id="full-name" placeholder="Jubayer Ahmed" required value={fullName} onChange={e => setFullName(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
                   <div className="space-y-2 text-left">
-                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('email')}</Label>
+                    <Label htmlFor="email" className="text-[10px) font-black uppercase tracking-widest ml-1 opacity-60">{getT('email')}</Label>
                     <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
                   <div className="space-y-2 text-left">
-                    <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
+                    <Label htmlFor="password" className="text-[10px) font-black uppercase tracking-widest ml-1 opacity-60">{getT('password')}</Label>
                     <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
                    <div className="space-y-2 text-left">
-                      <Label htmlFor="referral-code" className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">Referral Code (Optional)</Label>
+                      <Label htmlFor="referral-code" className="text-[10px) font-black uppercase tracking-widest ml-1 opacity-60">Referral Code (Optional)</Label>
                       <Input id="referral-code" placeholder="Enter friend's class roll" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-12 rounded-xl border-primary/10 bg-muted/20" />
                   </div>
                   <div className="space-y-3 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-60">{getT('registering_as')}</Label>
+                      <Label className="text-[10px) font-black uppercase tracking-widest ml-1 opacity-60">{getT('registering_as')}</Label>
                       <RadioGroup defaultValue={role} onValueChange={(value: User['role']) => setRole(value)} className="grid grid-cols-2 gap-3">
                           <div>
                               <RadioGroupItem value="Student" id="role-student" className="peer sr-only" disabled={!homepageConfig.platformSettings.Student.signupEnabled}/>
@@ -199,7 +199,7 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
                           </Label>
                           <p className="text-[10px] font-medium text-muted-foreground leading-relaxed">
                           {getT('you_agree_to')}{' '}
-                          <Link href={getLocalizedPath("/terms")} className="text-primary hover:underline font-bold">{getT('terms_of_service')}</Link> {getT('and')} <Link href={getLocalizedPath("/privacy")} className='text-primary hover:underline font-bold'>{getT('privacy_policy')}</Link>.
+                          <Link href="/terms" className="text-primary hover:underline font-bold">{getT('terms_of_service')}</Link> {getT('and')} <Link href="/privacy" className='text-primary hover:underline font-bold'>{getT('privacy_policy')}</Link>.
                           </p>
                       </div>
                   </div>
@@ -211,17 +211,17 @@ export default function SignupPageClient({ homepageConfig }: { homepageConfig: H
             
               <div className="mt-4 text-center text-[11px] font-bold">
                   <span className="text-muted-foreground uppercase tracking-widest opacity-60">{getT('already_have_account')}</span>{' '}
-                  <Link href={getLocalizedPath("/login")} className="font-black uppercase tracking-widest text-primary hover:underline">
+                  <Link href="/login" className="font-black uppercase tracking-widest text-primary hover:underline">
                   {getT('login')}
                   </Link>
               </div>
               <div className="mt-6 text-center space-y-3 pt-6 border-t border-primary/5">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Want to join our team?</p>
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-                      {homepageConfig.platformSettings.Teacher.signupEnabled && <Link href={getLocalizedPath("/auth/teacher-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_teacher')}</Link>}
-                      {homepageConfig.platformSettings.Seller.signupEnabled && <Link href={getLocalizedPath("/seller-program/apply")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_seller')}</Link>}
-                      {homepageConfig.platformSettings.Affiliate.signupEnabled && <Link href={getLocalizedPath("/auth/affiliate-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_an_affiliate')}</Link>}
-                      {homepageConfig.platformSettings.Moderator.signupEnabled && <Link href={getLocalizedPath("/auth/moderator-signup")} className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_moderator')}</Link>}
+                      {homepageConfig.platformSettings.Teacher.signupEnabled && <Link href="/auth/teacher-signup" className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_teacher')}</Link>}
+                      {homepageConfig.platformSettings.Seller.signupEnabled && <Link href="/seller-program/apply" className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_seller')}</Link>}
+                      {homepageConfig.platformSettings.Affiliate.signupEnabled && <Link href="/auth/affiliate-signup" className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_an_affiliate')}</Link>}
+                      {homepageConfig.platformSettings.Moderator.signupEnabled && <Link href="/auth/moderator-signup" className="text-[10px] font-black uppercase tracking-tighter text-primary hover:underline">{getT('become_a_moderator')}</Link>}
                   </div>
               </div>
             </div>
