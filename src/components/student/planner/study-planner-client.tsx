@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -28,7 +29,7 @@ import {
   useSensors,
   DragEndEvent,
   DragOverlay,
-} from '@nd-kit/core';
+} from '@dnd-kit/core';
 import { saveUserAction } from '@/app/actions/user.actions';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,7 +60,7 @@ const whiteNoises = [
 
 /**
  * @fileOverview Study Planner Client Component.
- * Optimized for high-density wall-to-wall responsive UI with rounded-xl corners.
+ * Standardized with rounded-xl corners and Title Case typography.
  */
 export function StudyPlannerClient() {
     const { toast } = useToast();
